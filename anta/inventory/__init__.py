@@ -177,14 +177,14 @@ class AntaInventory(dict[str, AntaDevice]):
 
         Args:
         ----
-            filename: Path to device inventory YAML file
-            username: Username to use to connect to devices
-            password: Password to use to connect to devices
-            enable: Whether or not the commands need to be run in enable mode towards the devices
-            enable_password: Enable password to use if required
-            timeout: timeout in seconds for every API call.
-            insecure: Disable SSH Host Key validation
-            disable_cache: Disable cache globally
+            filename: Path to device inventory YAML file.
+            username: Username to use to connect to devices.
+            password: Password to use to connect to devices.
+            enable_password: Enable password to use if required.
+            timeout: Timeout value in seconds for outgoing API calls.
+            enable: Whether or not the commands need to be run in enable mode towards the devices.
+            insecure: Disable SSH Host Key validation.
+            disable_cache: Disable cache globally.
 
         Raises
         ------

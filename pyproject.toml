@@ -154,15 +154,10 @@ warn_untyped_fields = true
 # Testing
 ################################
 [tool.pytest.ini_options]
-# TODO - may need cov-append for Tox
 # When run from anta directory this will read cov-config from pyproject.toml
 addopts = "-ra -q -vv --cov --cov-report term:skip-covered --color yes"
 log_level = "WARNING"
-log_cli = true
 render_collapsed = true
-filterwarnings = [
-  "ignore::urllib3.exceptions.InsecureRequestWarning"
-]
 testpaths = ["tests"]
 
 [tool.coverage.run]

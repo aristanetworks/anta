@@ -72,7 +72,6 @@ if __name__ == "__main__":
         filename="inv.yml",
         username="arista",
         password="@rista123",
-        timeout=15,
     )
 
     # Run the main coroutine
@@ -129,7 +128,6 @@ if __name__ == "__main__":
         filename="inv.yml",
         username="arista",
         password="@rista123",
-        timeout=15,
     )
 
     # Create a list of commands with json output

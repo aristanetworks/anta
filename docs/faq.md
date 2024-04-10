@@ -23,10 +23,31 @@ toc_depth: 4
 
 # Frequently Asked Questions (FAQ)
 
-## `<Foo>Timeout` error in the logs
+## A local OS error occurred while connecting to a device
+???+ faq "A local OS error occurred while connecting to a device"
+
+    When running ANTA, you can receive `A local OS error occurred while connecting to <device>` errors. The underlying [`OSError`](https://docs.python.org/3/library/exceptions.html#OSError) exception can have various reasons: `[Errno 24] Too many open files` or `[Errno 16] Device or resource busy`.
+
+    This usually means that the operating system refused to open a new file descriptor (or socket) for the ANTA process. This might be due to the hard limit for open file descriptors currently set for the ANTA process.
+
+    At startup, ANTA sets the soft limit of its process to the hard limit up to 16384. This is because the soft limit is usually 1024 and the hard limit is usually higher (depends on the system). If the hard limit of the ANTA process is still lower than the number of selected tests in ANTA, the ANTA process may request to the operating system too many file descriptors and get an error, a WARNING is displayed at startup if this is the case.
+
+    ### Solution
+
+    One solution could be to raise the hard limit for the user starting the ANTA process.
+    You can get the current hard limit for a user using the command `ulimit -n -H` while logged in.
+    Create the file `/etc/security/limits.d/10-anta.conf` with the following content:
+    ```
+    <user>	hard	nofile	<value>
+    ```
+    The `user` is the one with which the ANTA process is started.
+    The `value` is the new hard limit. The maximum value depends on the system. A hard limit of 16384 should be sufficient for ANTA to run in most high scale scenarios. After creating this file, log out the current session and log in again.
+
+
+## `Timeout` error in the logs
 ???+ faq "`Timeout` error in the logs"
 
-    When running ANTA, you can receive `<Foo>Timeout` errors in the logs (could be ReadTimeout, WriteTimeout, ConnectTimeout, PoolTimeout). More details on the timeouts of the underlying library are available here: https://www.python-httpx.org/advanced/timeouts/
+    When running ANTA, you can receive `<Foo>Timeout` errors in the logs (could be ReadTimeout, WriteTimeout, ConnectTimeout or PoolTimeout). More details on the timeouts of the underlying library are available here: https://www.python-httpx.org/advanced/timeouts.
 
     This might be due to the time the host on which ANTA is run takes to reach the target devices (for instance if going through firewalls, NATs, ...) or when a lot of tests are being run at the same time on a device (eAPI has a queue mechanism to avoid exhausting EOS resources because of a high number of simultaneous eAPI requests).
 
@@ -105,4 +126,4 @@ toc_depth: 4
 
 # Still facing issues?
 
-If you've tried the above solutions and continue to experience problems, please follow the [troubleshooting](../troubleshooting) instructions and report the issue in our [GitHub repository](https://github.com/arista-netdevops-community/anta).
+If you've tried the above solutions and continue to experience problems, please follow the [troubleshooting](troubleshooting.md) instructions and report the issue in our [GitHub repository](https://github.com/arista-netdevops-community/anta).

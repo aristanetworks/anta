@@ -12,19 +12,19 @@ from collections import defaultdict
 from typing import TYPE_CHECKING, Any, Literal
 
 import asyncssh
+import httpcore
 from aiocache import Cache
 from aiocache.plugins import HitMissRatioPlugin
 from asyncssh import SSHClientConnection, SSHClientConnectionOptions
-from httpx import ConnectError, HTTPError
+from httpx import ConnectError, HTTPError, TimeoutException
 
 from anta import __DEBUG__, aioeapi
-from anta.logger import exc_to_str
+from anta.logger import anta_log_exception, exc_to_str
+from anta.models import AntaCommand
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
     from pathlib import Path
-
-    from anta.models import AntaCommand
 
 logger = logging.getLogger(__name__)
 
@@ -172,14 +172,6 @@ class AntaDevice(ABC):
         """
         await asyncio.gather(*(self.collect(command=command) for command in commands))
 
-    def supports(self, command: AntaCommand) -> bool:
-        """Return True if the command is supported on the device hardware platform, False otherwise."""
-        unsupported = any("not supported on this hardware platform" in e for e in command.errors)
-        logger.debug(command)
-        if unsupported:
-            logger.debug("%s is not supported on %s", command.command, self.hw_model)
-        return not unsupported
-
     @abstractmethod
     async def refresh(self) -> None:
         """Update attributes of an AntaDevice instance.
@@ -246,12 +238,12 @@ class AsyncEOSDevice(AntaDevice):
             username: Username to connect to eAPI and SSH.
             password: Password to connect to eAPI and SSH.
             name: Device name.
-            enable: Device needs privileged access.
+            enable: Collect commands using privileged mode.
             enable_password: Password used to gain privileged access on EOS.
             port: eAPI port. Defaults to 80 is proto is 'http' or 443 if proto is 'https'.
             ssh_port: SSH port.
             tags: Tags for this device.
-            timeout: Timeout value in seconds for outgoing connections.
+            timeout: Timeout value in seconds for outgoing API calls.
             insecure: Disable SSH Host Key validation.
             proto: eAPI protocol. Value can be 'http' or 'https'.
             disable_cache: Disable caching for all commands for this device.
@@ -307,7 +299,7 @@ class AsyncEOSDevice(AntaDevice):
         """
         return (self._session.host, self._session.port)
 
-    async def _collect(self, command: AntaCommand) -> None:
+    async def _collect(self, command: AntaCommand) -> None:  # noqa: C901  function is too complex - because of many required except blocks
         """Collect device command output from EOS using aio-eapi.
 
         Supports outformat `json` and `text` as output structure.
@@ -316,8 +308,7 @@ class AsyncEOSDevice(AntaDevice):
 
         Args:
         ----
-            command: the command to collect
-
+            command: the AntaCommand to collect.
         """
         commands: list[dict[str, Any]] = []
         if self.enable and self._enable_password is not None:
@@ -330,27 +321,53 @@ class AsyncEOSDevice(AntaDevice):
         elif self.enable:
             # No password
             commands.append({"cmd": "enable"})
-        if command.revision:
-            commands.append({"cmd": command.command, "revision": command.revision})
-        else:
-            commands.append({"cmd": command.command})
+        commands += [{"cmd": command.command, "revision": command.revision}] if command.revision else [{"cmd": command.command}]
         try:
             response: list[dict[str, Any]] = await self._session.cli(
                 commands=commands,
                 ofmt=command.ofmt,
                 version=command.version,
             )
-        except aioeapi.EapiCommandError as e:
-            command.errors = e.errors
-            if self.supports(command):
-                logger.error("Command '%s' failed on %s", command.command, self.name)
-        except (HTTPError, ConnectError) as e:
-            command.errors = [str(e)]
-            logger.error("Cannot connect to device %s", self.name)
-        else:
-            # selecting only our command output
+            # Do not keep response of 'enable' command
             command.output = response[-1]
-            logger.debug("%s: %s", self.name, command)
+        except aioeapi.EapiCommandError as e:
+            # This block catches exceptions related to EOS issuing an error.
+            command.errors = e.errors
+            if command.requires_privileges:
+                logger.error(
+                    "Command '%s' requires privileged mode on %s. Verify user permissions and if the `enable` option is required.", command.command, self.name
+                )
+            if command.supported:
+                logger.error("Command '%s' failed on %s: %s", command.command, self.name, e.errors[0] if len(e.errors) == 1 else e.errors)
+            else:
+                logger.debug("Command '%s' is not supported on '%s' (%s)", command.command, self.name, self.hw_model)
+        except TimeoutException as e:
+            # This block catches Timeout exceptions.
+            command.errors = [exc_to_str(e)]
+            timeouts = self._session.timeout.as_dict()
+            logger.error(
+                "%s occurred while sending a command to %s. Consider increasing the timeout.\nCurrent timeouts: Connect: %s | Read: %s | Write: %s | Pool: %s",
+                exc_to_str(e),
+                self.name,
+                timeouts["connect"],
+                timeouts["read"],
+                timeouts["write"],
+                timeouts["pool"],
+            )
+        except (ConnectError, OSError) as e:
+            # This block catches OSError and socket issues related exceptions.
+            command.errors = [exc_to_str(e)]
+            if (isinstance(exc := e.__cause__, httpcore.ConnectError) and isinstance(os_error := exc.__context__, OSError)) or isinstance(os_error := e, OSError):  # pylint: disable=no-member
+                if isinstance(os_error.__cause__, OSError):
+                    os_error = os_error.__cause__
+                logger.error("A local OS error occurred while connecting to %s: %s.", self.name, os_error)
+            else:
+                anta_log_exception(e, f"An error occurred while issuing an eAPI request to {self.name}", logger)
+        except HTTPError as e:
+            # This block catches most of the httpx Exceptions and logs a general message.
+            command.errors = [exc_to_str(e)]
+            anta_log_exception(e, f"An error occurred while issuing an eAPI request to {self.name}", logger)
+        logger.debug("%s: %s", self.name, command)
 
     async def refresh(self) -> None:
         """Update attributes of an AsyncEOSDevice instance.
@@ -363,22 +380,14 @@ class AsyncEOSDevice(AntaDevice):
         logger.debug("Refreshing device %s", self.name)
         self.is_online = await self._session.check_connection()
         if self.is_online:
-            show_version = "show version"
-            hw_model_key = "modelName"
-            try:
-                response = await self._session.cli(command=show_version)
-            except aioeapi.EapiCommandError as e:
-                logger.warning("Cannot get hardware information from device %s: %s", self.name, e.errmsg)
-
-            except (HTTPError, ConnectError) as e:
-                logger.warning("Cannot get hardware information from device %s: %s", self.name, exc_to_str(e))
-
+            show_version = AntaCommand(command="show version")
+            await self._collect(show_version)
+            if not show_version.collected:
+                logger.warning("Cannot get hardware information from device %s", self.name)
             else:
-                if hw_model_key in response:
-                    self.hw_model = response[hw_model_key]
-                else:
-                    logger.warning("Cannot get hardware information from device %s: cannot parse '%s'", self.name, show_version)
-
+                self.hw_model = show_version.json_output.get("modelName", None)
+                if self.hw_model is None:
+                    logger.critical("Cannot parse 'show version' returned by device %s", self.name)
         else:
             logger.warning("Could not connect to device %s: cannot open eAPI port", self.name)
 

@@ -140,10 +140,10 @@ class AntaCommand(BaseModel):
         version: eAPI version - valid values are 1 or "latest".
         revision: eAPI revision of the command. Valid values are 1 to 99. Revision has precedence over version.
         ofmt: eAPI output - json or text.
-        output: Output of the command populated by the collect() function
-        template: AntaTemplate object used to render this command
-        params: Pydantic Model containing the variables values used to render the template
-        errors: If the command execution fails, eAPI returns a list of strings detailing the error
+        output: Output of the command. Only defined if there was no errors.
+        template: AntaTemplate object used to render this command.
+        errors: If the command execution fails, eAPI returns a list of strings detailing the error(s).
+        params: Pydantic Model containing the variables values used to render the template.
         use_cache: Enable or disable caching for this AntaCommand if the AntaDevice supports it.
 
     """
@@ -169,10 +169,10 @@ class AntaCommand(BaseModel):
     def json_output(self) -> dict[str, Any]:
         """Get the command output as JSON."""
         if self.output is None:
-            msg = f"There is no output for command {self.command}"
+            msg = f"There is no output for command '{self.command}'"
             raise RuntimeError(msg)
         if self.ofmt != "json" or not isinstance(self.output, dict):
-            msg = f"Output of command {self.command} is invalid"
+            msg = f"Output of command '{self.command}' is invalid"
             raise RuntimeError(msg)
         return dict(self.output)
 
@@ -180,17 +180,56 @@ class AntaCommand(BaseModel):
     def text_output(self) -> str:
         """Get the command output as a string."""
         if self.output is None:
-            msg = f"There is no output for command {self.command}"
+            msg = f"There is no output for command '{self.command}'"
             raise RuntimeError(msg)
         if self.ofmt != "text" or not isinstance(self.output, str):
-            msg = f"Output of command {self.command} is invalid"
+            msg = f"Output of command '{self.command}' is invalid"
             raise RuntimeError(msg)
         return str(self.output)
 
     @property
+    def error(self) -> bool:
+        """Return True if the command returned an error, False otherwise."""
+        return len(self.errors) > 0
+
+    @property
     def collected(self) -> bool:
-        """Return True if the command has been collected."""
-        return self.output is not None and not self.errors
+        """Return True if the command has been collected, False otherwise.
+
+        A command that has not been collected could have returned an error.
+        See error property.
+        """
+        return not self.error and self.output is not None
+
+    @property
+    def requires_privileges(self) -> bool:
+        """Return True if the command requires privileged mode, False otherwise.
+
+        Raises
+        ------
+            RuntimeError
+                If the command has not been collected and has not returned an error.
+                AntaDevice.collect() must be called before this property.
+        """
+        if not self.collected and not self.error:
+            msg = f"Command '{self.command}' has not been collected and has not returned an error. Call AntaDevice.collect()."
+            raise RuntimeError(msg)
+        return any("privileged mode required" in e for e in self.errors)
+
+    @property
+    def supported(self) -> bool:
+        """Return True if the command is supported on the device hardware platform, False otherwise.
+
+        Raises
+        ------
+            RuntimeError
+                If the command has not been collected and has not returned an error.
+                AntaDevice.collect() must be called before this property.
+        """
+        if not self.collected and not self.error:
+            msg = f"Command '{self.command}' has not been collected and has not returned an error. Call AntaDevice.collect()."
+            raise RuntimeError(msg)
+        return not any("not supported on this hardware platform" in e for e in self.errors)
 
 
 class AntaTemplateRenderError(RuntimeError):
@@ -445,7 +484,7 @@ class AntaTest(ABC):
     @property
     def failed_commands(self) -> list[AntaCommand]:
         """Returns a list of all the commands that have failed."""
-        return [command for command in self.instance_commands if command.errors]
+        return [command for command in self.instance_commands if command.error]
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render an AntaTemplate instance of this AntaTest using the provided AntaTest.Input instance at self.inputs.
@@ -539,9 +578,7 @@ class AntaTest(ABC):
                     return self.result
 
                 if cmds := self.failed_commands:
-                    self.logger.debug(self.device.supports)
-                    unsupported_commands = [f"Skipped because {c.command} is not supported on {self.device.hw_model}" for c in cmds if not self.device.supports(c)]
-                    self.logger.debug(unsupported_commands)
+                    unsupported_commands = [f"'{c.command}' is not supported on {self.device.hw_model}" for c in cmds if not c.supported]
                     if unsupported_commands:
                         msg = f"Test {self.name} has been skipped because it is not supported on {self.device.hw_model}: {GITHUB_SUGGESTION}"
                         self.logger.warning(msg)
