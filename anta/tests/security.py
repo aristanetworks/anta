@@ -687,22 +687,28 @@ class VerifyIPSecConnHealth(AntaTest):
 
         # Check if IP security connection is configured
         if not command_output:
-            self.result.is_failure("IPv4 security connection are not configured.")
+            self.result.is_failure("No IPv4 security connection configured.")
             return
 
-        # Iterate over all ip sec connection
-        for connection, conn_data in command_output.items():
+        # Iterate over all ipsec connections
+        for conn_data in command_output.values():
             state = next(iter(conn_data["pathDict"].values()))
             if state != "Established":
-                failure_conn.append(connection)
+                source = conn_data.get("saddr")
+                destination = conn_data.get("daddr")
+                vrf = "default" if conn_data.get("vrfName") == "null" else conn_data.get("vrfName")
+                failure_conn.append(f"source:{source} destination:{destination} vrf:{vrf}")
         if failure_conn:
             failure_msg = "\n".join(failure_conn)
-            self.result.is_failure(f"Following IPv4 security connections are not establised:\n{failure_msg}.")
+            self.result.is_failure(f"The following IPv4 security connections are not established:\n{failure_msg}.")
 
 
 class VerifySpecificIPSecConn(AntaTest):
     """
-    Verifies IPv4 security connections state for a peer.
+    Verifies the state of IPv4 security connections for a specified peer.
+
+    It optionally allows for the verification of a specific path for a peer by providing source and destination addresses.
+    If these addresses are not provided, it will verify all paths for the specified peer.
 
     Expected Results
     ----------------
@@ -744,7 +750,7 @@ class VerifySpecificIPSecConn(AntaTest):
             """IPv4 address of the peer."""
 
             vrf: str = "default"
-            """This is the optional VRF for the IP security peer. It defaults to `default` if not provided."""
+            """Optional VRF for the IP security peer."""
 
             connections: list[IPSecConn] | None = None
             """Optional list of IPv4 security connections of a peer."""
@@ -753,9 +759,9 @@ class VerifySpecificIPSecConn(AntaTest):
                 """Details of IPv4 security connections for a peer."""
 
                 source_address: IPv4Address
-                """Source address of the connection."""
+                """Source IPv4 address of the connection."""
                 destination_address: IPv4Address
-                """Destination address of the connection."""
+                """Destination IPv4 address of the connection."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each input IP Sec connection."""
@@ -767,38 +773,48 @@ class VerifySpecificIPSecConn(AntaTest):
         self.result.is_success()
         for command_output, input_peer in zip(self.instance_commands, self.inputs.ip_security_connections):
             conn_output = command_output.json_output["connections"]
-            peer = command_output.params["peer"]
-            connections = input_peer.connections
+            peer = command_output.params.peer
+            vrf = command_output.params.vrf
+            conn_input = input_peer.connections
 
             # Check if IPv4 security connection is configured
             if not conn_output:
-                self.result.is_failure(f"IPv4 security connections are not configured for peer `{peer}`.")
+                self.result.is_failure(f"No IPv4 security connection configured for peer `{peer}`.")
                 return
 
             # If connection details are not provided then check all connections of a peer
-            if connections is None:
-                for connection, conn_data in conn_output.items():
+            if conn_input is None:
+                for conn_data in conn_output.values():
                     state = next(iter(conn_data["pathDict"].values()))
                     if state != "Established":
+                        source = conn_data.get("saddr")
+                        destination = conn_data.get("daddr")
+                        vrf = "default" if conn_data.get("vrfName") == "null" else conn_data.get("vrfName")
                         self.result.is_failure(
-                            f"Expected state of IPv4 security connection `{connection}` for peer `{peer}` is `Established` " f"but found `{state}` instead."
+                            f"Expected state of IPv4 security connection `source:{source} destination:{destination} vrf:{vrf}` is `Established` "
+                            f"but found `{state}` instead."
                         )
                 continue
 
             # Create a dictionary of existing connections for faster lookup
             existing_connections = {
-                (conn_data.get("saddr"), conn_data.get("daddr")): next(iter(conn_data["pathDict"].values())) for conn_data in conn_output.values()
+                (conn_data.get("saddr"), conn_data.get("daddr"), "default" if conn_data.get("vrfName") == "null" else conn_data.get("vrfName")): next(
+                    iter(conn_data["pathDict"].values())
+                )
+                for conn_data in conn_output.values()
             }
-            for connection in connections:
-                source = str(connection.source_address)
-                destination = str(connection.destination_address)
+            for connection in conn_input:
+                source_input = str(connection.source_address)
+                destination_input = str(connection.destination_address)
 
-                if (source, destination) in existing_connections:
-                    existing_state = existing_connections[(source, destination)]
+                if (source_input, destination_input, vrf) in existing_connections:
+                    existing_state = existing_connections[(source_input, destination_input, vrf)]
                     if existing_state != "Established":
                         self.result.is_failure(
-                            f"Expected state of IPv4 security connection `{source}-{destination}` for peer `{peer}` is `Established` "
-                            f"but found `{existing_state}` instead."
+                            f"Expected state of IPv4 security connection `source:{source_input} destination:{destination_input} vrf:{vrf}` "
+                            f"for peer `{peer}` is `Established` but found `{existing_state}` instead."
                         )
                 else:
-                    self.result.is_failure(f"IPv4 security connection `{source}-{destination}` for peer `{peer}` is not found.")
+                    self.result.is_failure(
+                        f"IPv4 security connection `source:{source_input} destination:{destination_input} vrf:{vrf}` for peer `{peer}` is not found."
+                    )

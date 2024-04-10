@@ -921,7 +921,7 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyIPSecConnHealth,
         "eos_data": [{"connections": {}}],
         "inputs": {},
-        "expected": {"result": "failure", "messages": ["IPv4 security connection are not configured."]},
+        "expected": {"result": "failure", "messages": ["No IPv4 security connection configured."]},
     },
     {
         "name": "failure-not-established",
@@ -929,12 +929,8 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [
             {
                 "connections": {
-                    "default-172.18.3.2-172.18.5.2-srcUnused-0": {
-                        "pathDict": {"path9": "Idle"},
-                    },
-                    "default-100.64.3.2-100.64.5.2-srcUnused-0": {
-                        "pathDict": {"path10": "Idle"},
-                    },
+                    "default-172.18.3.2-172.18.5.2-srcUnused-0": {"pathDict": {"path9": "Idle"}, "saddr": "172.18.3.2", "daddr": "172.18.2.2", "vrfName": "null"},
+                    "Guest-100.64.3.2-100.64.5.2-srcUnused-0": {"pathDict": {"path10": "Idle"}, "saddr": "100.64.3.2", "daddr": "100.64.5.2", "vrfName": "Guest"},
                 }
             }
         ],
@@ -942,7 +938,9 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Following IPv4 security connections are not establised:\ndefault-172.18.3.2-172.18.5.2-srcUnused-0\ndefault-100.64.3.2-100.64.5.2-srcUnused-0."
+                "The following IPv4 security connections are not established:\n"
+                "source:172.18.3.2 destination:172.18.2.2 vrf:default\n"
+                "source:100.64.3.2 destination:100.64.5.2 vrf:Guest."
             ],
         },
     },
@@ -952,12 +950,18 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [
             {
                 "connections": {
-                    "default-172.18.3.2-172.18.2.2-srcUnused-0": {
+                    "Guest-172.18.3.2-172.18.2.2-srcUnused-0": {
                         "pathDict": {"path9": "Established"},
                         "saddr": "172.18.3.2",
                         "daddr": "172.18.2.2",
+                        "vrfName": "Guest",
                     },
-                    "default-100.64.3.2-100.64.2.2-srcUnused-0": {"pathDict": {"path10": "Established"}, "saddr": "100.64.3.2", "daddr": "100.64.2.2"},
+                    "Guest-100.64.3.2-100.64.2.2-srcUnused-0": {
+                        "pathDict": {"path10": "Established"},
+                        "saddr": "100.64.3.2",
+                        "daddr": "100.64.2.2",
+                        "vrfName": "Guest",
+                    },
                 }
             }
         ],
@@ -965,8 +969,8 @@ DATA: list[dict[str, Any]] = [
             "ip_security_connections": [
                 {
                     "peer": "10.255.0.1",
-                    "vrf": "default",
-                    "connection": [
+                    "vrf": "Guest",
+                    "connections": [
                         {"source_address": "100.64.3.2", "destination_address": "100.64.2.2"},
                         {"source_address": "172.18.3.2", "destination_address": "172.18.2.2"},
                     ],
@@ -985,6 +989,7 @@ DATA: list[dict[str, Any]] = [
                         "pathDict": {"path9": "Established"},
                         "saddr": "172.18.3.2",
                         "daddr": "172.18.2.2",
+                        "vrfName": "null",
                     },
                     "default-100.64.3.2-100.64.2.2-srcUnused-0": {"pathDict": {"path10": "Established"}, "saddr": "100.64.3.2", "daddr": "100.64.2.2"},
                 }
@@ -1007,12 +1012,13 @@ DATA: list[dict[str, Any]] = [
             {"connections": {}},
             {
                 "connections": {
-                    "default-172.18.3.2-172.18.2.2-srcUnused-0": {
+                    "DATA-172.18.3.2-172.18.2.2-srcUnused-0": {
                         "pathDict": {"path9": "Established"},
                         "saddr": "172.18.3.2",
                         "daddr": "172.18.2.2",
+                        "vrfName": "DATA",
                     },
-                    "default-100.64.3.2-100.64.2.2-srcUnused-0": {"pathDict": {"path10": "Established"}, "saddr": "100.64.3.2", "daddr": "100.64.2.2"},
+                    "DATA-100.64.3.2-100.64.2.2-srcUnused-0": {"pathDict": {"path10": "Established"}, "saddr": "100.64.3.2", "daddr": "100.64.2.2"},
                 }
             },
         ],
@@ -1024,7 +1030,7 @@ DATA: list[dict[str, Any]] = [
                 },
                 {
                     "peer": "10.255.0.2",
-                    "vrf": "default",
+                    "vrf": "DATA",
                     "connections": [
                         {"source_address": "100.64.3.2", "destination_address": "100.64.2.2"},
                         {"source_address": "172.18.3.2", "destination_address": "172.18.2.2"},
@@ -1032,7 +1038,7 @@ DATA: list[dict[str, Any]] = [
                 },
             ]
         },
-        "expected": {"result": "failure", "messages": ["IPv4 security connections are not configured for peer `10.255.0.1`."]},
+        "expected": {"result": "failure", "messages": ["No IPv4 security connection configured for peer `10.255.0.1`."]},
     },
     {
         "name": "failure-not-established",
@@ -1040,30 +1046,14 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [
             {
                 "connections": {
-                    "default-172.18.3.2-172.18.5.2-srcUnused-0": {
-                        "pathDict": {"path9": "Idle"},
-                        "saddr": "172.18.3.2",
-                        "daddr": "172.18.2.2",
-                    },
-                    "default-100.64.3.2-100.64.5.2-srcUnused-0": {
-                        "pathDict": {"path10": "Idle"},
-                        "saddr": "100.64.3.2",
-                        "daddr": "100.64.2.2",
-                    },
+                    "default-172.18.3.2-172.18.5.2-srcUnused-0": {"pathDict": {"path9": "Idle"}, "saddr": "172.18.3.2", "daddr": "172.18.2.2", "vrfName": "null"},
+                    "default-100.64.3.2-100.64.5.2-srcUnused-0": {"pathDict": {"path10": "Idle"}, "saddr": "100.64.2.2", "daddr": "100.64.1.2", "vrfName": "null"},
                 },
             },
             {
                 "connections": {
-                    "default-172.18.2.2-172.18.1.2-srcUnused-0": {
-                        "pathDict": {"path9": "Idle"},
-                        "saddr": "172.18.2.2",
-                        "daddr": "172.18.1.2",
-                    },
-                    "default-100.64.2.2-100.64.1.2-srcUnused-0": {
-                        "pathDict": {"path10": "Idle"},
-                        "saddr": "100.64.2.2",
-                        "daddr": "100.64.1.2",
-                    },
+                    "MGMT-172.18.2.2-172.18.1.2-srcUnused-0": {"pathDict": {"path9": "Idle"}, "saddr": "172.18.2.2", "daddr": "172.18.1.2", "vrfName": "MGMT"},
+                    "MGMT-100.64.2.2-100.64.1.2-srcUnused-0": {"pathDict": {"path10": "Idle"}, "saddr": "100.64.2.2", "daddr": "100.64.1.2", "vrfName": "MGMT"},
                 }
             },
         ],
@@ -1075,7 +1065,7 @@ DATA: list[dict[str, Any]] = [
                 },
                 {
                     "peer": "10.255.0.2",
-                    "vrf": "default",
+                    "vrf": "MGMT",
                     "connections": [
                         {"source_address": "100.64.2.2", "destination_address": "100.64.1.2"},
                         {"source_address": "172.18.2.2", "destination_address": "172.18.1.2"},
@@ -1086,12 +1076,12 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Expected state of IPv4 security connection `default-172.18.3.2-172.18.5.2-srcUnused-0` "
-                "for peer `10.255.0.1` is `Established` but found `Idle` instead.",
-                "Expected state of IPv4 security connection `default-100.64.3.2-100.64.5.2-srcUnused-0` "
-                "for peer `10.255.0.1` is `Established` but found `Idle` instead.",
-                "Expected state of IPv4 security connection `100.64.2.2-100.64.1.2` for peer `10.255.0.2` is `Established` but found `Idle` instead.",
-                "Expected state of IPv4 security connection `172.18.2.2-172.18.1.2` for peer `10.255.0.2` is `Established` but found `Idle` instead.",
+                "Expected state of IPv4 security connection `source:172.18.3.2 destination:172.18.2.2 vrf:default` is `Established` but found `Idle` instead.",
+                "Expected state of IPv4 security connection `source:100.64.2.2 destination:100.64.1.2 vrf:default` is `Established` but found `Idle` instead.",
+                "Expected state of IPv4 security connection `source:100.64.2.2 destination:100.64.1.2 vrf:MGMT` for peer `10.255.0.2` is `Established` "
+                "but found `Idle` instead.",
+                "Expected state of IPv4 security connection `source:172.18.2.2 destination:172.18.1.2 vrf:MGMT` for peer `10.255.0.2` is `Established` "
+                "but found `Idle` instead.",
             ],
         },
     },
@@ -1101,30 +1091,14 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [
             {
                 "connections": {
-                    "default-172.18.3.2-172.18.5.2-srcUnused-0": {
-                        "pathDict": {"path9": "Idle"},
-                        "saddr": "172.18.3.2",
-                        "daddr": "172.18.2.2",
-                    },
-                    "default-100.64.3.2-100.64.5.2-srcUnused-0": {
-                        "pathDict": {"path10": "Idle"},
-                        "saddr": "100.64.3.2",
-                        "daddr": "100.64.2.2",
-                    },
+                    "default-172.18.3.2-172.18.5.2-srcUnused-0": {"pathDict": {"path9": "Idle"}, "saddr": "172.18.3.2", "daddr": "172.18.2.2", "vrfName": "null"},
+                    "default-100.64.3.2-100.64.5.2-srcUnused-0": {"pathDict": {"path10": "Idle"}, "saddr": "100.64.3.2", "daddr": "100.64.2.2", "vrfName": "null"},
                 },
             },
             {
                 "connections": {
-                    "default-172.18.2.2-172.18.1.2-srcUnused-0": {
-                        "pathDict": {"path9": "Idle"},
-                        "saddr": "172.18.2.2",
-                        "daddr": "172.18.1.2",
-                    },
-                    "default-100.64.2.2-100.64.1.2-srcUnused-0": {
-                        "pathDict": {"path10": "Idle"},
-                        "saddr": "100.64.2.2",
-                        "daddr": "100.64.1.2",
-                    },
+                    "default-172.18.2.2-172.18.1.2-srcUnused-0": {"pathDict": {"path9": "Idle"}, "saddr": "172.18.2.2", "daddr": "172.18.1.2", "vrfName": "null"},
+                    "default-100.64.2.2-100.64.1.2-srcUnused-0": {"pathDict": {"path10": "Idle"}, "saddr": "100.64.2.2", "daddr": "100.64.1.2", "vrfName": "null"},
                 }
             },
         ],
@@ -1147,12 +1121,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Expected state of IPv4 security connection `default-172.18.3.2-172.18.5.2-srcUnused-0` "
-                "for peer `10.255.0.1` is `Established` but found `Idle` instead.",
-                "Expected state of IPv4 security connection `default-100.64.3.2-100.64.5.2-srcUnused-0` "
-                "for peer `10.255.0.1` is `Established` but found `Idle` instead.",
-                "IPv4 security connection `100.64.4.2-100.64.1.2` for peer `10.255.0.2` is not found.",
-                "IPv4 security connection `172.18.4.2-172.18.1.2` for peer `10.255.0.2` is not found.",
+                "Expected state of IPv4 security connection `source:172.18.3.2 destination:172.18.2.2 vrf:default` is `Established` but found `Idle` instead.",
+                "Expected state of IPv4 security connection `source:100.64.3.2 destination:100.64.2.2 vrf:default` is `Established` but found `Idle` instead.",
+                "IPv4 security connection `source:100.64.4.2 destination:100.64.1.2 vrf:default` for peer `10.255.0.2` is not found.",
+                "IPv4 security connection `source:172.18.4.2 destination:172.18.1.2 vrf:default` for peer `10.255.0.2` is not found.",
             ],
         },
     },
