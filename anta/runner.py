@@ -8,13 +8,14 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import os
 import resource
 from typing import TYPE_CHECKING
 
 from anta import GITHUB_SUGGESTION
 from anta.catalog import AntaCatalog, AntaTestDefinition
 from anta.device import AntaDevice
-from anta.logger import anta_log_exception
+from anta.logger import anta_log_exception, exc_to_str
 from anta.models import AntaTest
 
 if TYPE_CHECKING:
@@ -24,6 +25,16 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 AntaTestRunner = tuple[AntaTestDefinition, AntaDevice]
+
+# Environment variable to set ANTA's maximum number of open file descriptors.
+# Maximum number of file descriptor the ANTA process will be able to open.
+# This limit is independent from the system's hard limit, the lower will be used.
+DEFAULT_NOFILE = 16384
+try:
+    __NOFILE__ = int(os.environ.get("ANTA_NOFILE", DEFAULT_NOFILE))
+except ValueError as exception:
+    logger.warning("The ANTA_NOFILE environment variable value is invalid: %s\nDefault to %s.", exc_to_str(exception), DEFAULT_NOFILE)
+    __NOFILE__ = DEFAULT_NOFILE
 
 
 def log_cache_statistics(devices: list[AntaDevice]) -> None:
@@ -73,8 +84,9 @@ async def main(  # noqa: PLR0912 PLR0913
     """
     limits = resource.getrlimit(resource.RLIMIT_NOFILE)
     logger.debug("Initial limit numbers for open file descriptors for the current ANTA process: Soft Limit: %s | Hard Limit: %s", limits[0], limits[1])
-    logger.debug("Setting soft limit for open file descriptors for the current ANTA process to %s", limits[1])
-    resource.setrlimit(resource.RLIMIT_NOFILE, (limits[1], limits[1]))
+    nofile = __NOFILE__ if limits[1] > __NOFILE__ else limits[1]
+    logger.debug("Setting soft limit for open file descriptors for the current ANTA process to %s", nofile)
+    resource.setrlimit(resource.RLIMIT_NOFILE, (nofile, limits[1]))
     limits = resource.getrlimit(resource.RLIMIT_NOFILE)
 
     if not catalog.tests:

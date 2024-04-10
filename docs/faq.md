@@ -41,7 +41,7 @@ toc_depth: 4
     <user>	hard	nofile	<value>
     ```
     The `user` is the one with which the ANTA process is started.
-    The `value` is the new hard limit. The maximum value depends on the system. A hard limit of 32768 is a good standard configuration. After creating this file, log out the current session and log in again.
+    The `value` is the new hard limit. The maximum value depends on the system. A hard limit of 16384 should be sufficient for ANTA to run in most high scale scenarios. After creating this file, log out the current session and log in again.
 
 
 ## `Timeout` error in the logs
