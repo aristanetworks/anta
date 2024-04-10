@@ -28,6 +28,10 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+# Do not load the default keypairs multiple times due to a performance issue introduced in cryptography 37.0
+# https://github.com/pyca/cryptography/issues/7236#issuecomment-1131908472
+CLIENT_KEYS = asyncssh.public_key.load_default_keypairs()
+
 
 class AntaDevice(ABC):
     """Abstract class representing a device in ANTA.
@@ -270,7 +274,9 @@ class AsyncEOSDevice(AntaDevice):
         ssh_params: dict[str, Any] = {}
         if insecure:
             ssh_params["known_hosts"] = None
-        self._ssh_opts: SSHClientConnectionOptions = SSHClientConnectionOptions(host=host, port=ssh_port, username=username, password=password, **ssh_params)
+        self._ssh_opts: SSHClientConnectionOptions = SSHClientConnectionOptions(
+            host=host, port=ssh_port, username=username, password=password, client_keys=CLIENT_KEYS, **ssh_params
+        )
 
     def __rich_repr__(self) -> Iterator[tuple[str, Any]]:
         """Implement Rich Repr Protocol.
