@@ -929,7 +929,7 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [
             {
                 "connections": {
-                    "default-172.18.3.2-172.18.5.2-srcUnused-0": {"pathDict": {"path9": "Idle"}, "saddr": "172.18.3.2", "daddr": "172.18.2.2", "vrfName": "null"},
+                    "default-172.18.3.2-172.18.5.2-srcUnused-0": {"pathDict": {"path9": "Idle"}, "saddr": "172.18.3.2", "daddr": "172.18.2.2", "vrfName": None},
                     "Guest-100.64.3.2-100.64.5.2-srcUnused-0": {"pathDict": {"path10": "Idle"}, "saddr": "100.64.3.2", "daddr": "100.64.5.2", "vrfName": "Guest"},
                 }
             }
@@ -989,7 +989,7 @@ DATA: list[dict[str, Any]] = [
                         "pathDict": {"path9": "Established"},
                         "saddr": "172.18.3.2",
                         "daddr": "172.18.2.2",
-                        "vrfName": "null",
+                        "vrfName": None,
                     },
                     "default-100.64.3.2-100.64.2.2-srcUnused-0": {"pathDict": {"path10": "Established"}, "saddr": "100.64.3.2", "daddr": "100.64.2.2"},
                 }
@@ -1046,8 +1046,8 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [
             {
                 "connections": {
-                    "default-172.18.3.2-172.18.5.2-srcUnused-0": {"pathDict": {"path9": "Idle"}, "saddr": "172.18.3.2", "daddr": "172.18.2.2", "vrfName": "null"},
-                    "default-100.64.3.2-100.64.5.2-srcUnused-0": {"pathDict": {"path10": "Idle"}, "saddr": "100.64.2.2", "daddr": "100.64.1.2", "vrfName": "null"},
+                    "default-172.18.3.2-172.18.5.2-srcUnused-0": {"pathDict": {"path9": "Idle"}, "saddr": "172.18.3.2", "daddr": "172.18.2.2", "vrfName": None},
+                    "default-100.64.3.2-100.64.5.2-srcUnused-0": {"pathDict": {"path10": "Idle"}, "saddr": "100.64.2.2", "daddr": "100.64.1.2", "vrfName": None},
                 },
             },
             {
@@ -1091,14 +1091,14 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [
             {
                 "connections": {
-                    "default-172.18.3.2-172.18.5.2-srcUnused-0": {"pathDict": {"path9": "Idle"}, "saddr": "172.18.3.2", "daddr": "172.18.2.2", "vrfName": "null"},
-                    "default-100.64.3.2-100.64.5.2-srcUnused-0": {"pathDict": {"path10": "Idle"}, "saddr": "100.64.3.2", "daddr": "100.64.2.2", "vrfName": "null"},
+                    "default-172.18.3.2-172.18.5.2-srcUnused-0": {"pathDict": {"path9": "Idle"}, "saddr": "172.18.3.2", "daddr": "172.18.2.2", "vrfName": None},
+                    "default-100.64.3.2-100.64.5.2-srcUnused-0": {"pathDict": {"path10": "Idle"}, "saddr": "100.64.3.2", "daddr": "100.64.2.2", "vrfName": None},
                 },
             },
             {
                 "connections": {
-                    "default-172.18.2.2-172.18.1.2-srcUnused-0": {"pathDict": {"path9": "Idle"}, "saddr": "172.18.2.2", "daddr": "172.18.1.2", "vrfName": "null"},
-                    "default-100.64.2.2-100.64.1.2-srcUnused-0": {"pathDict": {"path10": "Idle"}, "saddr": "100.64.2.2", "daddr": "100.64.1.2", "vrfName": "null"},
+                    "default-172.18.2.2-172.18.1.2-srcUnused-0": {"pathDict": {"path9": "Idle"}, "saddr": "172.18.2.2", "daddr": "172.18.1.2", "vrfName": None},
+                    "default-100.64.2.2-100.64.1.2-srcUnused-0": {"pathDict": {"path10": "Idle"}, "saddr": "100.64.2.2", "daddr": "100.64.1.2", "vrfName": None},
                 }
             },
         ],

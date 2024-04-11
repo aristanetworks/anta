@@ -696,7 +696,7 @@ class VerifyIPSecConnHealth(AntaTest):
             if state != "Established":
                 source = conn_data.get("saddr")
                 destination = conn_data.get("daddr")
-                vrf = "default" if conn_data.get("vrfName") == "null" else conn_data.get("vrfName")
+                vrf = conn_data.get("vrfName") or "default"
                 failure_conn.append(f"source:{source} destination:{destination} vrf:{vrf}")
         if failure_conn:
             failure_msg = "\n".join(failure_conn)
@@ -789,7 +789,7 @@ class VerifySpecificIPSecConn(AntaTest):
                     if state != "Established":
                         source = conn_data.get("saddr")
                         destination = conn_data.get("daddr")
-                        vrf = "default" if conn_data.get("vrfName") == "null" else conn_data.get("vrfName")
+                        vrf = conn_data.get("vrfName") or "default"
                         self.result.is_failure(
                             f"Expected state of IPv4 security connection `source:{source} destination:{destination} vrf:{vrf}` is `Established` "
                             f"but found `{state}` instead."
@@ -798,9 +798,7 @@ class VerifySpecificIPSecConn(AntaTest):
 
             # Create a dictionary of existing connections for faster lookup
             existing_connections = {
-                (conn_data.get("saddr"), conn_data.get("daddr"), "default" if conn_data.get("vrfName") == "null" else conn_data.get("vrfName")): next(
-                    iter(conn_data["pathDict"].values())
-                )
+                (conn_data.get("saddr"), conn_data.get("daddr"), conn_data.get("vrfName") or "default"): next(iter(conn_data["pathDict"].values()))
                 for conn_data in conn_output.values()
             }
             for connection in conn_input:
