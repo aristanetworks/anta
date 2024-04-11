@@ -31,10 +31,9 @@ This command clears interface counters on EOS devices specified in your inventor
 ### Command overview
 
 ```bash
-anta exec clear-counters --help
 Usage: anta exec clear-counters [OPTIONS]
 
-  Clear counter statistics on EOS devices
+  Clear counter statistics on EOS devices.
 
 Options:
   -u, --username TEXT     Username to connect to EOS  [env var: ANTA_USERNAME;
@@ -50,16 +49,16 @@ Options:
                           a command to the device.  [env var: ANTA_ENABLE]
   -P, --prompt            Prompt for passwords if they are not provided.  [env
                           var: ANTA_PROMPT]
-  --timeout INTEGER       Global connection timeout  [env var: ANTA_TIMEOUT;
-                          default: 30]
-  --insecure              Disable SSH Host Key validation  [env var:
+  --timeout FLOAT         Global API timeout. This value will be used for all
+                          devices.  [env var: ANTA_TIMEOUT; default: 30.0]
+  --insecure              Disable SSH Host Key validation.  [env var:
                           ANTA_INSECURE]
-  --disable-cache         Disable cache globally  [env var:
+  --disable-cache         Disable cache globally.  [env var:
                           ANTA_DISABLE_CACHE]
-  -i, --inventory FILE    Path to the inventory YAML file  [env var:
+  -i, --inventory FILE    Path to the inventory YAML file.  [env var:
                           ANTA_INVENTORY; required]
-  -t, --tags TEXT         List of tags using comma as separator:
-                          tag1,tag2,tag3  [env var: ANTA_TAGS]
+  --tags TEXT             List of tags using comma as separator:
+                          tag1,tag2,tag3.  [env var: ANTA_TAGS]
   --help                  Show this message and exit.
 ```
 
@@ -84,10 +83,9 @@ This command collects all the commands specified in a commands-list file, which 
 ### Command overview
 
 ```bash
-anta exec snapshot --help
 Usage: anta exec snapshot [OPTIONS]
 
-  Collect commands output from devices in inventory
+  Collect commands output from devices in inventory.
 
 Options:
   -u, --username TEXT       Username to connect to EOS  [env var:
@@ -105,21 +103,22 @@ Options:
                             ANTA_ENABLE]
   -P, --prompt              Prompt for passwords if they are not provided.
                             [env var: ANTA_PROMPT]
-  --timeout INTEGER         Global connection timeout  [env var: ANTA_TIMEOUT;
-                            default: 30]
-  --insecure                Disable SSH Host Key validation  [env var:
+  --timeout FLOAT           Global API timeout. This value will be used for
+                            all devices.  [env var: ANTA_TIMEOUT; default:
+                            30.0]
+  --insecure                Disable SSH Host Key validation.  [env var:
                             ANTA_INSECURE]
-  --disable-cache           Disable cache globally  [env var:
+  --disable-cache           Disable cache globally.  [env var:
                             ANTA_DISABLE_CACHE]
-  -i, --inventory FILE      Path to the inventory YAML file  [env var:
+  -i, --inventory FILE      Path to the inventory YAML file.  [env var:
                             ANTA_INVENTORY; required]
-  -t, --tags TEXT           List of tags using comma as separator:
-                            tag1,tag2,tag3  [env var: ANTA_TAGS]
+  --tags TEXT               List of tags using comma as separator:
+                            tag1,tag2,tag3.  [env var: ANTA_TAGS]
   -c, --commands-list FILE  File with list of commands to collect  [env var:
                             ANTA_EXEC_SNAPSHOT_COMMANDS_LIST; required]
   -o, --output DIRECTORY    Directory to save commands output.  [env var:
                             ANTA_EXEC_SNAPSHOT_OUTPUT; default:
-                            anta_snapshot_2023-12-06_09_22_11]
+                            anta_snapshot_2024-04-09_15_56_19]
   --help                    Show this message and exit.
 ```
 
@@ -203,10 +202,9 @@ For Network Readiness for Use (NRFU) tests and to keep a comprehensive report of
 ### Command overview
 
 ```bash
-anta exec collect-tech-support --help
 Usage: anta exec collect-tech-support [OPTIONS]
 
-  Collect scheduled tech-support from EOS devices
+  Collect scheduled tech-support from EOS devices.
 
 Options:
   -u, --username TEXT     Username to connect to EOS  [env var: ANTA_USERNAME;
@@ -222,16 +220,16 @@ Options:
                           a command to the device.  [env var: ANTA_ENABLE]
   -P, --prompt            Prompt for passwords if they are not provided.  [env
                           var: ANTA_PROMPT]
-  --timeout INTEGER       Global connection timeout  [env var: ANTA_TIMEOUT;
-                          default: 30]
-  --insecure              Disable SSH Host Key validation  [env var:
+  --timeout FLOAT         Global API timeout. This value will be used for all
+                          devices.  [env var: ANTA_TIMEOUT; default: 30.0]
+  --insecure              Disable SSH Host Key validation.  [env var:
                           ANTA_INSECURE]
-  --disable-cache         Disable cache globally  [env var:
+  --disable-cache         Disable cache globally.  [env var:
                           ANTA_DISABLE_CACHE]
-  -i, --inventory FILE    Path to the inventory YAML file  [env var:
+  -i, --inventory FILE    Path to the inventory YAML file.  [env var:
                           ANTA_INVENTORY; required]
-  -t, --tags TEXT         List of tags using comma as separator:
-                          tag1,tag2,tag3  [env var: ANTA_TAGS]
+  --tags TEXT             List of tags using comma as separator:
+                          tag1,tag2,tag3.  [env var: ANTA_TAGS]
   -o, --output PATH       Path for test catalog  [default: ./tech-support]
   --latest INTEGER        Number of scheduled show-tech to retrieve
   --configure             Ensure devices have 'aaa authorization exec default

@@ -50,14 +50,21 @@ INIT_CATALOG_DATA: list[dict[str, Any]] = [
                 VerifyUptime,
                 VerifyUptime.Input(
                     minimum=10,
-                    filters=VerifyUptime.Input.Filters(tags=["fabric"]),
+                    filters=VerifyUptime.Input.Filters(tags={"fabric"}),
+                ),
+            ),
+            (
+                VerifyUptime,
+                VerifyUptime.Input(
+                    minimum=9,
+                    filters=VerifyUptime.Input.Filters(tags={"leaf"}),
                 ),
             ),
             (VerifyReloadCause, {"filters": {"tags": ["leaf", "spine"]}}),
             (VerifyCoredump, VerifyCoredump.Input()),
             (VerifyAgentLogs, AntaTest.Input()),
-            (VerifyCPUUtilization, VerifyCPUUtilization.Input(filters=VerifyCPUUtilization.Input.Filters(tags=["leaf"]))),
-            (VerifyMemoryUtilization, VerifyMemoryUtilization.Input(filters=VerifyMemoryUtilization.Input.Filters(tags=["testdevice"]))),
+            (VerifyCPUUtilization, VerifyCPUUtilization.Input(filters=VerifyCPUUtilization.Input.Filters(tags={"leaf"}))),
+            (VerifyMemoryUtilization, VerifyMemoryUtilization.Input(filters=VerifyMemoryUtilization.Input.Filters(tags={"testdevice"}))),
             (VerifyFileSystemUtilization, None),
             (VerifyNTP, {}),
             (VerifyMlagStatus, None),
@@ -199,8 +206,8 @@ class TestAntaCatalog:
     def test_from_dict(self, catalog_data: dict[str, Any]) -> None:
         """Instantiate AntaCatalog from a dict."""
         file = DATA_DIR / catalog_data["filename"]
-        with file.open(encoding="UTF-8") as f:
-            data = safe_load(f)
+        with file.open(encoding="UTF-8") as file:
+            data = safe_load(file)
             catalog: AntaCatalog = AntaCatalog.from_dict(data)
 
         assert len(catalog.tests) == len(catalog_data["tests"])
@@ -241,8 +248,8 @@ class TestAntaCatalog:
     def test_from_dict_fail(self, catalog_data: dict[str, Any]) -> None:
         """Errors when instantiating AntaCatalog from a list of tuples."""
         file = DATA_DIR / catalog_data["filename"]
-        with file.open(encoding="UTF-8") as f:
-            data = safe_load(f)
+        with file.open(encoding="UTF-8") as file:
+            data = safe_load(file)
         with pytest.raises((ValidationError, TypeError)) as exec_info:
             AntaCatalog.from_dict(data)
         if isinstance(exec_info.value, ValidationError):
@@ -280,5 +287,13 @@ class TestAntaCatalog:
     def test_get_tests_by_tags(self) -> None:
         """Test AntaCatalog.get_tests_by_tags()."""
         catalog: AntaCatalog = AntaCatalog.parse(str(DATA_DIR / "test_catalog_with_tags.yml"))
-        tests: list[AntaTestDefinition] = catalog.get_tests_by_tags(tags=["leaf"])
+        tests: list[AntaTestDefinition] = catalog.get_tests_by_tags(tags={"leaf"})
+        assert len(tests) == 3
+        tests = catalog.get_tests_by_tags(tags={"leaf"}, strict=True)
         assert len(tests) == 2
+
+    def test_get_tests_by_names(self) -> None:
+        """Test AntaCatalog.get_tests_by_tags()."""
+        catalog: AntaCatalog = AntaCatalog.parse(str(DATA_DIR / "test_catalog_with_tags.yml"))
+        tests: list[AntaTestDefinition] = catalog.get_tests_by_names(names={"VerifyUptime", "VerifyCoredump"})
+        assert len(tests) == 3

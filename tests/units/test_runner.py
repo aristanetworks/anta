@@ -63,12 +63,10 @@ async def test_runner_no_selected_device(caplog: pytest.LogCaptureFixture, test_
     manager = ResultManager()
     await main(manager, test_inventory, FAKE_CATALOG)
 
-    assert "No device in the established state 'True' was found. There is no device to run tests against, exiting" in [record.message for record in caplog.records]
+    assert "No reachable device was found." in [record.message for record in caplog.records]
 
     #  Reset logs and run with tags
     caplog.clear()
-    await main(manager, test_inventory, FAKE_CATALOG, tags=["toto"])
+    await main(manager, test_inventory, FAKE_CATALOG, tags={"toto"})
 
-    assert "No device in the established state 'True' matching the tags ['toto'] was found. There is no device to run tests against, exiting" in [
-        record.message for record in caplog.records
-    ]
+    assert "No reachable device matching the tags {'toto'} was found." in [record.message for record in caplog.records]

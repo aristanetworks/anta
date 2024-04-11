@@ -15,7 +15,7 @@ from pydantic import BaseModel, Field
 
 from anta.custom_types import BfdInterval, BfdMultiplier
 from anta.models import AntaCommand, AntaTest
-from anta.tools.get_value import get_value
+from anta.tools import get_value
 
 if TYPE_CHECKING:
     from anta.models import AntaTemplate

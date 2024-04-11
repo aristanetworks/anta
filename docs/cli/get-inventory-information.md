@@ -72,7 +72,6 @@ As most of ANTA's commands accommodate tag filtering, this particular command is
 ### Command overview
 
 ```bash
-anta get tags --help
 Usage: anta get tags [OPTIONS]
 
   Get list of configured tags in user inventory.
@@ -91,16 +90,16 @@ Options:
                           a command to the device.  [env var: ANTA_ENABLE]
   -P, --prompt            Prompt for passwords if they are not provided.  [env
                           var: ANTA_PROMPT]
-  --timeout INTEGER       Global connection timeout  [env var: ANTA_TIMEOUT;
-                          default: 30]
-  --insecure              Disable SSH Host Key validation  [env var:
+  --timeout FLOAT         Global API timeout. This value will be used for all
+                          devices.  [env var: ANTA_TIMEOUT; default: 30.0]
+  --insecure              Disable SSH Host Key validation.  [env var:
                           ANTA_INSECURE]
-  --disable-cache         Disable cache globally  [env var:
+  --disable-cache         Disable cache globally.  [env var:
                           ANTA_DISABLE_CACHE]
-  -i, --inventory FILE    Path to the inventory YAML file  [env var:
+  -i, --inventory FILE    Path to the inventory YAML file.  [env var:
                           ANTA_INVENTORY; required]
-  -t, --tags TEXT         List of tags using comma as separator:
-                          tag1,tag2,tag3  [env var: ANTA_TAGS]
+  --tags TEXT             List of tags using comma as separator:
+                          tag1,tag2,tag3.  [env var: ANTA_TAGS]
   --help                  Show this message and exit.
 ```
 
@@ -132,7 +131,6 @@ This command will list all devices available in the inventory. Using the `--tags
 ### Command overview
 
 ```bash
-anta get inventory --help
 Usage: anta get inventory [OPTIONS]
 
   Show inventory loaded in ANTA.
@@ -153,16 +151,17 @@ Options:
                                  var: ANTA_ENABLE]
   -P, --prompt                   Prompt for passwords if they are not
                                  provided.  [env var: ANTA_PROMPT]
-  --timeout INTEGER              Global connection timeout  [env var:
-                                 ANTA_TIMEOUT; default: 30]
-  --insecure                     Disable SSH Host Key validation  [env var:
+  --timeout FLOAT                Global API timeout. This value will be used
+                                 for all devices.  [env var: ANTA_TIMEOUT;
+                                 default: 30.0]
+  --insecure                     Disable SSH Host Key validation.  [env var:
                                  ANTA_INSECURE]
-  --disable-cache                Disable cache globally  [env var:
+  --disable-cache                Disable cache globally.  [env var:
                                  ANTA_DISABLE_CACHE]
-  -i, --inventory FILE           Path to the inventory YAML file  [env var:
+  -i, --inventory FILE           Path to the inventory YAML file.  [env var:
                                  ANTA_INVENTORY; required]
-  -t, --tags TEXT                List of tags using comma as separator:
-                                 tag1,tag2,tag3  [env var: ANTA_TAGS]
+  --tags TEXT                    List of tags using comma as separator:
+                                 tag1,tag2,tag3.  [env var: ANTA_TAGS]
   --connected / --not-connected  Display inventory after connection has been
                                  created
   --help                         Show this message and exit.

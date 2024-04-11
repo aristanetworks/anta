@@ -144,7 +144,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"vlans": [10, 20]},
         "expected": {
             "result": "failure",
-            "messages": ["The following VLAN(s) have interface(s) that are not in a fowarding state: [{'VLAN 10': ['Ethernet10']}, {'VLAN 20': ['Ethernet10']}]"],
+            "messages": ["The following VLAN(s) have interface(s) that are not in a forwarding state: [{'VLAN 10': ['Ethernet10']}, {'VLAN 20': ['Ethernet10']}]"],
         },
     },
     {

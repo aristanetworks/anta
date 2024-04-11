@@ -11,8 +11,7 @@ from typing import TYPE_CHECKING, ClassVar, Literal
 
 from anta.custom_types import Vlan
 from anta.models import AntaCommand, AntaTest
-from anta.tools.get_value import get_value
-from anta.tools.utils import get_failed_logs
+from anta.tools import get_failed_logs, get_value
 
 if TYPE_CHECKING:
     from anta.models import AntaTemplate

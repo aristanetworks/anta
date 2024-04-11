@@ -13,7 +13,7 @@ from pydantic import Field
 
 from anta.custom_types import Vlan
 from anta.models import AntaCommand, AntaTemplate, AntaTest
-from anta.tools.get_value import get_value
+from anta.tools import get_value
 
 
 class VerifySTPMode(AntaTest):
@@ -59,8 +59,7 @@ class VerifySTPMode(AntaTest):
         not_configured = []
         wrong_stp_mode = []
         for command in self.instance_commands:
-            if "vlan" in command.params:
-                vlan_id = command.params["vlan"]
+            vlan_id = command.params.vlan
             if not (
                 stp_mode := get_value(
                     command.json_output,
@@ -185,20 +184,19 @@ class VerifySTPForwardingPorts(AntaTest):
         not_configured = []
         not_forwarding = []
         for command in self.instance_commands:
-            if "vlan" in command.params:
-                vlan_id = command.params["vlan"]
+            vlan_id = command.params.vlan
             if not (topologies := get_value(command.json_output, "topologies")):
                 not_configured.append(vlan_id)
             else:
                 for value in topologies.values():
-                    if int(vlan_id) in value["vlans"]:
+                    if vlan_id and int(vlan_id) in value["vlans"]:
                         interfaces_not_forwarding = [interface for interface, state in value["interfaces"].items() if state["state"] != "forwarding"]
                 if interfaces_not_forwarding:
                     not_forwarding.append({f"VLAN {vlan_id}": interfaces_not_forwarding})
         if not_configured:
             self.result.is_failure(f"STP instance is not configured for the following VLAN(s): {not_configured}")
         if not_forwarding:
-            self.result.is_failure(f"The following VLAN(s) have interface(s) that are not in a fowarding state: {not_forwarding}")
+            self.result.is_failure(f"The following VLAN(s) have interface(s) that are not in a forwarding state: {not_forwarding}")
         if not not_configured and not interfaces_not_forwarding:
             self.result.is_success()
 

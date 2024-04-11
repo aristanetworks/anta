@@ -1,7 +1,7 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""generic test funciton used to generate unit tests for each AntaTest."""
+"""generic test function used to generate unit tests for each AntaTest."""
 
 from __future__ import annotations
 
