@@ -14,8 +14,7 @@ from pydantic import BaseModel
 
 from anta.custom_types import Port
 from anta.models import AntaCommand, AntaTemplate, AntaTest
-from anta.tools.get_value import get_value
-from anta.tools.utils import get_failed_logs
+from anta.tools import get_failed_logs, get_value
 
 
 class VerifyStunClient(AntaTest):
@@ -45,7 +44,7 @@ class VerifyStunClient(AntaTest):
     """
 
     name = "VerifyStunClient"
-    description = "Verifies the STUN client is configured with the specified IPv4 source address, public address, and port."
+    description = "Verifies the STUN client is configured with the specified IPv4 source address and port. Validate the public IP if provided."
     categories: ClassVar[list[str]] = ["stun"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show stun client translations {source_address} {port}")]
 
@@ -66,26 +65,26 @@ class VerifyStunClient(AntaTest):
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each STUN translations."""
-        return [template.render(source_address=client.source_address, public_address=client.public_address, port=client.port) for client in self.inputs.stun_clients]
+        return [template.render(source_address=client.source_address, port=client.port) for client in self.inputs.stun_clients]
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyStunClient."""
         self.result.is_success()
 
-        for command in self.instance_commands:
-            command_output = command.json_output["bindings"]
-            source_address = str(command.params["source_address"])
-            public_address = command.params["public_address"]
-            port = command.params["port"]
-            if not command_output:
+        for command, client_input in zip(self.instance_commands, self.inputs.stun_clients):
+            bindings = command.json_output["bindings"]
+            source_address = str(command.params.source_address)
+            port = command.params.port
+            if not bindings:
                 self.result.is_failure(f"STUN client transaction for source `{source_address}:{port}` is not found.")
                 continue
+            public_address = client_input.public_address
 
-            transaction_id = next(iter(command_output.keys()))
+            transaction_id = next(iter(bindings.keys()))
             actual_stun_data = {
-                "source ip": get_value(command_output, f"{transaction_id}.sourceAddress.ip"),
-                "source port": get_value(command_output, f"{transaction_id}.sourceAddress.port"),
+                "source ip": get_value(bindings, f"{transaction_id}.sourceAddress.ip"),
+                "source port": get_value(bindings, f"{transaction_id}.sourceAddress.port"),
             }
             expected_stun_data = {"source ip": source_address, "source port": port}
 
@@ -96,14 +95,13 @@ class VerifyStunClient(AntaTest):
                     self.result.is_failure(f"For STUN source address {source_address}:{failed_log}")
 
             else:
-                public_address = str(public_address)
                 actual_stun_data.update(
                     {
-                        "public ip": get_value(command_output, f"{transaction_id}.publicAddress.ip"),
-                        "public port": get_value(command_output, f"{transaction_id}.publicAddress.port"),
+                        "public ip": get_value(bindings, f"{transaction_id}.publicAddress.ip"),
+                        "public port": get_value(bindings, f"{transaction_id}.publicAddress.port"),
                     }
                 )
-                expected_stun_data.update({"public ip": public_address, "public port": port})
+                expected_stun_data.update({"public ip": str(public_address), "public port": port})
 
                 if actual_stun_data != expected_stun_data:
                     failed_log = get_failed_logs(expected_stun_data, actual_stun_data)

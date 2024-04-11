@@ -41,7 +41,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
-        "name": "success-without-public-ip",
+        "name": "success-without-input-public-ip",
         "test": VerifyStunClient,
         "eos_data": [
             {
