@@ -24,11 +24,13 @@ class VerifyInterfaceUtilization(AntaTest):
     """Verifies that the utilization of interfaces is below a certain threshold.
 
     Load interval (default to 5 minutes) is defined in device configuration.
+    This test has been implemented for full-duplex interfaces only.
 
     Expected Results
     ----------------
     * Success: The test will pass if all interfaces have a usage below the threshold.
     * Failure: The test will fail if one or more interfaces have a usage above the threshold.
+    * Error: The test will error out if the device has at least one non full-duplex interface.
 
     Examples
     --------
@@ -62,19 +64,16 @@ class VerifyInterfaceUtilization(AntaTest):
         interfaces = self.instance_commands[1].json_output
 
         for intf, rate in rates["interfaces"].items():
-            # Assuming the interface is full-duplex in the logic below
-            if "duplex" in interfaces["interfaces"][intf]:
-                if interfaces["interfaces"][intf]["duplex"] != duplex_full:
-                    self.result.is_error(f"Interface {intf} is not Full-Duplex, VerifyInterfaceUtilization has not been implemented in ANTA")
-                    return
-            elif "memberInterfaces" in interfaces["interfaces"][intf]:
-                # This is a Port-Channel
-                for member, stats in interfaces["interfaces"][intf]["memberInterfaces"].items():
-                    if stats["duplex"] != duplex_full:
-                        self.result.is_error(f"Member {member} of {intf} is not Full-Duplex, VerifyInterfaceUtilization has not been implemented in ANTA")
-                        return
+            # The utilization logic has been implemented for full-duplex interfaces only
+            if ((duplex := (interface := interfaces["interfaces"][intf]).get("duplex", None)) is not None and duplex != duplex_full) or (
+                (members := interface.get("memberInterfaces", None)) is not None and any(stats["duplex"] != duplex_full for stats in members.values())
+            ):
+                self.result.is_error(f"Interface {intf} or one of its member interfaces is not Full-Duplex. VerifyInterfaceUtilization has not been implemented.")
+                return
 
-            bandwidth = interfaces["interfaces"][intf]["bandwidth"]
+            if (bandwidth := interfaces["interfaces"][intf]["bandwidth"]) == 0:
+                self.logger.debug("Interface %s has been ignored due to null bandwidth value", intf)
+                continue
 
             for bps_rate in ("inBpsRate", "outBpsRate"):
                 usage = rate[bps_rate] / bandwidth * 100
