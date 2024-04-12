@@ -929,8 +929,13 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [
             {
                 "connections": {
-                    "default-172.18.3.2-172.18.5.2-srcUnused-0": {"pathDict": {"path9": "Idle"}, "saddr": "172.18.3.2", "daddr": "172.18.2.2", "vrfName": None},
-                    "Guest-100.64.3.2-100.64.5.2-srcUnused-0": {"pathDict": {"path10": "Idle"}, "saddr": "100.64.3.2", "daddr": "100.64.5.2", "vrfName": "Guest"},
+                    "default-172.18.3.2-172.18.5.2-srcUnused-0": {
+                        "pathDict": {"path9": "Idle"},
+                        "saddr": "172.18.3.2",
+                        "daddr": "172.18.2.2",
+                        "tunnelNs": "default",
+                    },
+                    "Guest-100.64.3.2-100.64.5.2-srcUnused-0": {"pathDict": {"path10": "Idle"}, "saddr": "100.64.3.2", "daddr": "100.64.5.2", "tunnelNs": "Guest"},
                 }
             }
         ],
@@ -954,13 +959,13 @@ DATA: list[dict[str, Any]] = [
                         "pathDict": {"path9": "Established"},
                         "saddr": "172.18.3.2",
                         "daddr": "172.18.2.2",
-                        "vrfName": "Guest",
+                        "tunnelNs": "Guest",
                     },
                     "Guest-100.64.3.2-100.64.2.2-srcUnused-0": {
                         "pathDict": {"path10": "Established"},
                         "saddr": "100.64.3.2",
                         "daddr": "100.64.2.2",
-                        "vrfName": "Guest",
+                        "tunnelNs": "Guest",
                     },
                 }
             }
@@ -989,7 +994,7 @@ DATA: list[dict[str, Any]] = [
                         "pathDict": {"path9": "Established"},
                         "saddr": "172.18.3.2",
                         "daddr": "172.18.2.2",
-                        "vrfName": None,
+                        "tunnelNs": "default",
                     },
                     "default-100.64.3.2-100.64.2.2-srcUnused-0": {"pathDict": {"path10": "Established"}, "saddr": "100.64.3.2", "daddr": "100.64.2.2"},
                 }
@@ -1016,9 +1021,14 @@ DATA: list[dict[str, Any]] = [
                         "pathDict": {"path9": "Established"},
                         "saddr": "172.18.3.2",
                         "daddr": "172.18.2.2",
-                        "vrfName": "DATA",
+                        "tunnelNs": "DATA",
                     },
-                    "DATA-100.64.3.2-100.64.2.2-srcUnused-0": {"pathDict": {"path10": "Established"}, "saddr": "100.64.3.2", "daddr": "100.64.2.2"},
+                    "DATA-100.64.3.2-100.64.2.2-srcUnused-0": {
+                        "pathDict": {"path10": "Established"},
+                        "saddr": "100.64.3.2",
+                        "daddr": "100.64.2.2",
+                        "tunnelNs": "DATA",
+                    },
                 }
             },
         ],
@@ -1046,14 +1056,24 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [
             {
                 "connections": {
-                    "default-172.18.3.2-172.18.5.2-srcUnused-0": {"pathDict": {"path9": "Idle"}, "saddr": "172.18.3.2", "daddr": "172.18.2.2", "vrfName": None},
-                    "default-100.64.3.2-100.64.5.2-srcUnused-0": {"pathDict": {"path10": "Idle"}, "saddr": "100.64.2.2", "daddr": "100.64.1.2", "vrfName": None},
+                    "default-172.18.3.2-172.18.5.2-srcUnused-0": {
+                        "pathDict": {"path9": "Idle"},
+                        "saddr": "172.18.3.2",
+                        "daddr": "172.18.2.2",
+                        "tunnelNs": "default",
+                    },
+                    "default-100.64.3.2-100.64.5.2-srcUnused-0": {
+                        "pathDict": {"path10": "Idle"},
+                        "saddr": "100.64.2.2",
+                        "daddr": "100.64.1.2",
+                        "tunnelNs": "default",
+                    },
                 },
             },
             {
                 "connections": {
-                    "MGMT-172.18.2.2-172.18.1.2-srcUnused-0": {"pathDict": {"path9": "Idle"}, "saddr": "172.18.2.2", "daddr": "172.18.1.2", "vrfName": "MGMT"},
-                    "MGMT-100.64.2.2-100.64.1.2-srcUnused-0": {"pathDict": {"path10": "Idle"}, "saddr": "100.64.2.2", "daddr": "100.64.1.2", "vrfName": "MGMT"},
+                    "MGMT-172.18.2.2-172.18.1.2-srcUnused-0": {"pathDict": {"path9": "Idle"}, "saddr": "172.18.2.2", "daddr": "172.18.1.2", "tunnelNs": "MGMT"},
+                    "MGMT-100.64.2.2-100.64.1.2-srcUnused-0": {"pathDict": {"path10": "Idle"}, "saddr": "100.64.2.2", "daddr": "100.64.1.2", "tunnelNs": "MGMT"},
                 }
             },
         ],
@@ -1076,8 +1096,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Expected state of IPv4 security connection `source:172.18.3.2 destination:172.18.2.2 vrf:default` is `Established` but found `Idle` instead.",
-                "Expected state of IPv4 security connection `source:100.64.2.2 destination:100.64.1.2 vrf:default` is `Established` but found `Idle` instead.",
+                "Expected state of IPv4 security connection `source:172.18.3.2 destination:172.18.2.2 vrf:default` for peer `10.255.0.1` is `Established` "
+                "but found `Idle` instead.",
+                "Expected state of IPv4 security connection `source:100.64.2.2 destination:100.64.1.2 vrf:default` for peer `10.255.0.1` is `Established` "
+                "but found `Idle` instead.",
                 "Expected state of IPv4 security connection `source:100.64.2.2 destination:100.64.1.2 vrf:MGMT` for peer `10.255.0.2` is `Established` "
                 "but found `Idle` instead.",
                 "Expected state of IPv4 security connection `source:172.18.2.2 destination:172.18.1.2 vrf:MGMT` for peer `10.255.0.2` is `Established` "
@@ -1091,14 +1113,34 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [
             {
                 "connections": {
-                    "default-172.18.3.2-172.18.5.2-srcUnused-0": {"pathDict": {"path9": "Idle"}, "saddr": "172.18.3.2", "daddr": "172.18.2.2", "vrfName": None},
-                    "default-100.64.3.2-100.64.5.2-srcUnused-0": {"pathDict": {"path10": "Idle"}, "saddr": "100.64.3.2", "daddr": "100.64.2.2", "vrfName": None},
+                    "default-172.18.3.2-172.18.5.2-srcUnused-0": {
+                        "pathDict": {"path9": "Idle"},
+                        "saddr": "172.18.3.2",
+                        "daddr": "172.18.2.2",
+                        "tunnelNs": "default",
+                    },
+                    "default-100.64.3.2-100.64.5.2-srcUnused-0": {
+                        "pathDict": {"path10": "Idle"},
+                        "saddr": "100.64.3.2",
+                        "daddr": "100.64.2.2",
+                        "tunnelNs": "default",
+                    },
                 },
             },
             {
                 "connections": {
-                    "default-172.18.2.2-172.18.1.2-srcUnused-0": {"pathDict": {"path9": "Idle"}, "saddr": "172.18.2.2", "daddr": "172.18.1.2", "vrfName": None},
-                    "default-100.64.2.2-100.64.1.2-srcUnused-0": {"pathDict": {"path10": "Idle"}, "saddr": "100.64.2.2", "daddr": "100.64.1.2", "vrfName": None},
+                    "default-172.18.2.2-172.18.1.2-srcUnused-0": {
+                        "pathDict": {"path9": "Idle"},
+                        "saddr": "172.18.2.2",
+                        "daddr": "172.18.1.2",
+                        "tunnelNs": "default",
+                    },
+                    "default-100.64.2.2-100.64.1.2-srcUnused-0": {
+                        "pathDict": {"path10": "Idle"},
+                        "saddr": "100.64.2.2",
+                        "daddr": "100.64.1.2",
+                        "tunnelNs": "default",
+                    },
                 }
             },
         ],
@@ -1121,8 +1163,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Expected state of IPv4 security connection `source:172.18.3.2 destination:172.18.2.2 vrf:default` is `Established` but found `Idle` instead.",
-                "Expected state of IPv4 security connection `source:100.64.3.2 destination:100.64.2.2 vrf:default` is `Established` but found `Idle` instead.",
+                "Expected state of IPv4 security connection `source:172.18.3.2 destination:172.18.2.2 vrf:default` for peer `10.255.0.1` is `Established` "
+                "but found `Idle` instead.",
+                "Expected state of IPv4 security connection `source:100.64.3.2 destination:100.64.2.2 vrf:default` for peer `10.255.0.1` is `Established` "
+                "but found `Idle` instead.",
                 "IPv4 security connection `source:100.64.4.2 destination:100.64.1.2 vrf:default` for peer `10.255.0.2` is not found.",
                 "IPv4 security connection `source:172.18.4.2 destination:172.18.1.2 vrf:default` for peer `10.255.0.2` is not found.",
             ],

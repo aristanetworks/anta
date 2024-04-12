@@ -696,7 +696,7 @@ class VerifyIPSecConnHealth(AntaTest):
             if state != "Established":
                 source = conn_data.get("saddr")
                 destination = conn_data.get("daddr")
-                vrf = conn_data.get("vrfName") or "default"
+                vrf = conn_data.get("tunnelNs")
                 failure_conn.append(f"source:{source} destination:{destination} vrf:{vrf}")
         if failure_conn:
             failure_msg = "\n".join(failure_conn)
@@ -780,7 +780,7 @@ class VerifySpecificIPSecConn(AntaTest):
             # Check if IPv4 security connection is configured
             if not conn_output:
                 self.result.is_failure(f"No IPv4 security connection configured for peer `{peer}`.")
-                return
+                continue
 
             # If connection details are not provided then check all connections of a peer
             if conn_input is None:
@@ -789,16 +789,16 @@ class VerifySpecificIPSecConn(AntaTest):
                     if state != "Established":
                         source = conn_data.get("saddr")
                         destination = conn_data.get("daddr")
-                        vrf = conn_data.get("vrfName") or "default"
+                        vrf = conn_data.get("tunnelNs")
                         self.result.is_failure(
-                            f"Expected state of IPv4 security connection `source:{source} destination:{destination} vrf:{vrf}` is `Established` "
+                            f"Expected state of IPv4 security connection `source:{source} destination:{destination} vrf:{vrf}` for peer `{peer}` is `Established` "
                             f"but found `{state}` instead."
                         )
                 continue
 
             # Create a dictionary of existing connections for faster lookup
             existing_connections = {
-                (conn_data.get("saddr"), conn_data.get("daddr"), conn_data.get("vrfName") or "default"): next(iter(conn_data["pathDict"].values()))
+                (conn_data.get("saddr"), conn_data.get("daddr"), conn_data.get("tunnelNs")): next(iter(conn_data["pathDict"].values()))
                 for conn_data in conn_output.values()
             }
             for connection in conn_input:
