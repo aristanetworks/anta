@@ -51,7 +51,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {
             "stun_clients": [
                 {"source_address": "100.64.3.2", "public_address": "192.64.3.2", "source_port": 4500, "public_port": 6006},
-                {"source_address": "172.18.3.2", "source_port": 4500},
+                {"source_address": "172.18.3.2"},
                 {"source_address": "172.18.4.2", "source_port": 4500, "public_address": "192.18.4.2"},
                 {"source_address": "172.18.6.2", "source_port": 4500, "public_port": 6006},
             ]

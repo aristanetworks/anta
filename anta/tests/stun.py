@@ -60,7 +60,7 @@ class VerifyStunClient(AntaTest):
 
             source_address: IPv4Address
             """IPv4 source address of STUN client."""
-            source_port: Port
+            source_port: Port = 4500
             """Source port number for STUN client."""
             public_address: IPv4Address | None = None
             """Optional IPv4 public address of STUN client."""
