@@ -199,6 +199,7 @@ nav:
     - Services: api/tests.services.md
     - SNMP: api/tests.snmp.md
     - STP: api/tests.stp.md
+    - STUN: api/tests.stun.md
     - Software: api/tests.software.md
     - System: api/tests.system.md
     - VXLAN: api/tests.vxlan.md

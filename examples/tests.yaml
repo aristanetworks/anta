@@ -358,6 +358,18 @@ anta.tests.stp:
         - 10
         - 20
 
+anta.tests.stun:
+  - VerifyStunClient:
+      stun_clients:
+        - source_address: 172.18.3.2
+          public_address: 172.18.3.21
+          source_port: 4500
+          public_port: 6006
+        - source_address: 100.64.3.2
+          public_address: 100.64.3.21
+          source_port: 4500
+          public_port: 6006
+
 anta.tests.system:
   - VerifyUptime:
       minimum: 86400
