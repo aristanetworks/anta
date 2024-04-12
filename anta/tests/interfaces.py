@@ -66,7 +66,7 @@ class VerifyInterfaceUtilization(AntaTest):
             if ((duplex := (interface := interfaces["interfaces"][intf]).get("duplex", None)) is not None and duplex != duplex_full) or (
                 (members := interface.get("memberInterfaces", None)) is not None and any(stats["duplex"] != duplex_full for stats in members.values())
             ):
-                self.result.is_error(f"Interface {members} or one of its member interfaces is not Full-Duplex. VerifyInterfaceUtilization has not been implemented.")
+                self.result.is_error(f"Interface {intf} or one of its member interfaces is not Full-Duplex. VerifyInterfaceUtilization has not been implemented.")
                 return
 
             if (bandwidth := interfaces["interfaces"][intf]["bandwidth"]) == 0:
