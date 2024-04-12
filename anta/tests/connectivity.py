@@ -133,38 +133,36 @@ class VerifyLLDPNeighbors(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyLLDPNeighbors."""
-        failure_type_map = {
-            "port_not_configured": "Port(s) not configured",
-            "no_lldp_neighbor": "No LLDP neighbor(s)",
-            "wrong_lldp_neighbor": "Wrong LLDP neighbor(s)",
-        }
         failures: dict[str, list[str]] = {}
 
         output = self.instance_commands[0].json_output["lldpNeighbors"]
 
         for neighbor in self.inputs.neighbors:
-            neighbor_found = False
             if neighbor.port not in output:
-                failures.setdefault("port_not_configured", []).append(neighbor.port)
+                failures.setdefault("Port(s) not configured", []).append(neighbor.port)
                 continue
 
             if len(lldp_neighbor_info := output[neighbor.port]["lldpNeighborInfo"]) == 0:
-                failures.setdefault("no_lldp_neighbor", []).append(neighbor.port)
+                failures.setdefault("No LLDP neighbor(s) on port(s)", []).append(neighbor.port)
                 continue
 
-            for info in lldp_neighbor_info:
-                if info["systemName"] == neighbor.neighbor_device and info["neighborInterfaceInfo"]["interfaceId_v2"] == neighbor.neighbor_port:
-                    neighbor_found = True
-                    break
-
-            if neighbor_found is False:
-                failures.setdefault("wrong_lldp_neighbor", []).append(neighbor.port)
+            if not any(
+                info["systemName"] == neighbor.neighbor_device and info["neighborInterfaceInfo"]["interfaceId_v2"] == neighbor.neighbor_port
+                for info in lldp_neighbor_info
+            ):
+                neighbors = "\n      ".join(
+                    [
+                        f"{neighbor[0]}_{neighbor[1]}"
+                        for neighbor in [(info["systemName"], info["neighborInterfaceInfo"]["interfaceId_v2"]) for info in lldp_neighbor_info]
+                    ]
+                )
+                failures.setdefault("Wrong LLDP neighbor(s) on port(s)", []).append(f"{neighbor.port}\n      {neighbors}")
 
         if not failures:
             self.result.is_success()
         else:
             failure_messages = []
             for failure_type, ports in failures.items():
-                ports_str = ", ".join(ports)
-                failure_messages.append(f"{failure_type_map[failure_type]}: {ports_str}")
+                ports_str = "\n   ".join(ports)
+                failure_messages.append(f"{failure_type}:\n   {ports_str}")
             self.result.is_failure("\n".join(failure_messages))
