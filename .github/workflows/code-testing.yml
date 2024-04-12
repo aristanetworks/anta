@@ -23,6 +23,8 @@ jobs:
               - 'anta/**'
               - 'tests/*'
               - 'tests/**'
+              # detect dependency changes
+              - 'pyproject.toml'
             core:
               - 'anta/*'
               - 'anta/reporter/*'
