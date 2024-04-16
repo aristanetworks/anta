@@ -14,9 +14,7 @@ from pydantic import BaseModel, Field
 
 from anta.custom_types import ErrDisableInterval, ErrDisableReasons
 from anta.models import AntaCommand, AntaTemplate, AntaTest
-from anta.tools.get_dict_superset import get_dict_superset
-from anta.tools.get_item import get_item
-from anta.tools.utils import get_failed_logs
+from anta.tools import get_dict_superset, get_failed_logs, get_item
 
 
 class VerifyHostname(AntaTest):
@@ -39,7 +37,7 @@ class VerifyHostname(AntaTest):
     name = "VerifyHostname"
     description = "Verifies the hostname of a device."
     categories: ClassVar[list[str]] = ["services"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show hostname")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show hostname", revision=1)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyHostname test."""
@@ -82,7 +80,7 @@ class VerifyDNSLookup(AntaTest):
     name = "VerifyDNSLookup"
     description = "Verifies the DNS name to IP address resolution."
     categories: ClassVar[list[str]] = ["services"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="bash timeout 10 nslookup {domain}")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="bash timeout 10 nslookup {domain}", revision=1)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyDNSLookup test."""
@@ -100,7 +98,7 @@ class VerifyDNSLookup(AntaTest):
         self.result.is_success()
         failed_domains = []
         for command in self.instance_commands:
-            domain = command.params["domain"]
+            domain = command.params.domain
             output = command.json_output["messages"][0]
             if f"Can't find {domain}: No answer" in output:
                 failed_domains.append(domain)
@@ -134,7 +132,7 @@ class VerifyDNSServers(AntaTest):
     name = "VerifyDNSServers"
     description = "Verifies if the DNS servers are correctly configured."
     categories: ClassVar[list[str]] = ["services"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip name-server")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip name-server", revision=1)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyDNSServers test."""

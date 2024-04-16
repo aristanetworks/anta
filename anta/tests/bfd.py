@@ -15,7 +15,7 @@ from pydantic import BaseModel, Field
 
 from anta.custom_types import BfdInterval, BfdMultiplier
 from anta.models import AntaCommand, AntaTest
-from anta.tools.get_value import get_value
+from anta.tools import get_value
 
 if TYPE_CHECKING:
     from anta.models import AntaTemplate
@@ -45,7 +45,7 @@ class VerifyBFDSpecificPeers(AntaTest):
     name = "VerifyBFDSpecificPeers"
     description = "Verifies the IPv4 BFD peer's sessions and remote disc in the specified VRF."
     categories: ClassVar[list[str]] = ["bfd"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bfd peers")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bfd peers", revision=4)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyBFDSpecificPeers test."""
@@ -126,7 +126,7 @@ class VerifyBFDPeersIntervals(AntaTest):
     name = "VerifyBFDPeersIntervals"
     description = "Verifies the timers of the IPv4 BFD peers in the specified VRF."
     categories: ClassVar[list[str]] = ["bfd"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bfd peers detail")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bfd peers detail", revision=4)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyBFDPeersIntervals test."""
@@ -224,7 +224,7 @@ class VerifyBFDPeersHealth(AntaTest):
     # revision 1 as later revision introduces additional nesting for type
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
         AntaCommand(command="show bfd peers", revision=1),
-        AntaCommand(command="show clock"),
+        AntaCommand(command="show clock", revision=1),
     ]
 
     class Input(AntaTest.Input):

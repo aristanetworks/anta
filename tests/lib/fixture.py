@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import logging
 import shutil
-from typing import TYPE_CHECKING, Any, Callable, Iterator
+from typing import TYPE_CHECKING, Any, Callable
 from unittest.mock import patch
 
 import pytest
@@ -22,6 +22,7 @@ from anta.result_manager.models import TestResult
 from tests.lib.utils import default_anta_env
 
 if TYPE_CHECKING:
+    from collections.abc import Iterator
     from pathlib import Path
 
     from anta.models import AntaCommand
@@ -129,7 +130,7 @@ def test_result_factory(device: AntaDevice) -> Callable[[int], TestResult]:
 
 @pytest.fixture()
 def list_result_factory(test_result_factory: Callable[[int], TestResult]) -> Callable[[int], list[TestResult]]:
-    """Return a list[TestResult] with 'size' TestResult instanciated using the test_result_factory fixture."""
+    """Return a list[TestResult] with 'size' TestResult instantiated using the test_result_factory fixture."""
     # pylint: disable=redefined-outer-name
 
     def _factory(size: int = 0) -> list[TestResult]:
@@ -147,7 +148,7 @@ def result_manager_factory(list_result_factory: Callable[[int], list[TestResult]
     def _factory(number: int = 0) -> ResultManager:
         """Create a factory for list[TestResult] entry of size entries."""
         result_manager = ResultManager()
-        result_manager.add_test_results(list_result_factory(number))
+        result_manager.results = list_result_factory(number)
         return result_manager
 
     return _factory
@@ -158,7 +159,7 @@ def result_manager_factory(list_result_factory: Callable[[int], list[TestResult]
 def temp_env(tmp_path: Path) -> dict[str, str | None]:
     """Fixture that create a temporary ANTA inventory.
 
-    The inventory can be overriden and returns the corresponding environment variables.
+    The inventory can be overridden and returns the corresponding environment variables.
     """
     env = default_anta_env()
     anta_inventory = str(env["ANTA_INVENTORY"])
@@ -231,8 +232,13 @@ def click_runner(capsys: pytest.CaptureFixture[str]) -> Iterator[CliRunner]:  # 
         return res
 
     # Patch aioeapi methods used by AsyncEOSDevice. See tests/units/test_device.py
-    with patch("aioeapi.device.Device.check_connection", return_value=True), patch("aioeapi.device.Device.cli", side_effect=cli), patch("asyncssh.connect"), patch(
-        "asyncssh.scp",
+    with (
+        patch("aioeapi.device.Device.check_connection", return_value=True),
+        patch("aioeapi.device.Device.cli", side_effect=cli),
+        patch("asyncssh.connect"),
+        patch(
+            "asyncssh.scp",
+        ),
     ):
         console._color_system = None  # pylint: disable=protected-access
         yield AntaCliRunner()

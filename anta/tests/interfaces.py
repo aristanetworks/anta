@@ -17,9 +17,7 @@ from pydantic_extra_types.mac_address import MacAddress
 from anta.custom_types import EthernetInterface, Interface, Percent, PositiveInteger
 from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTemplate, AntaTest
-from anta.tools.get_item import get_item
-from anta.tools.get_value import get_value
-from anta.tools.utils import custom_division, get_failed_logs
+from anta.tools import custom_division, get_failed_logs, get_item, get_value
 
 BPS_GBPS_CONVERSIONS = 1000000000
 
@@ -28,11 +26,13 @@ class VerifyInterfaceUtilization(AntaTest):
     """Verifies that the utilization of interfaces is below a certain threshold.
 
     Load interval (default to 5 minutes) is defined in device configuration.
+    This test has been implemented for full-duplex interfaces only.
 
     Expected Results
     ----------------
     * Success: The test will pass if all interfaces have a usage below the threshold.
     * Failure: The test will fail if one or more interfaces have a usage above the threshold.
+    * Error: The test will error out if the device has at least one non full-duplex interface.
 
     Examples
     --------
@@ -46,7 +46,10 @@ class VerifyInterfaceUtilization(AntaTest):
     name = "VerifyInterfaceUtilization"
     description = "Verifies that the utilization of interfaces is below a certain threshold."
     categories: ClassVar[list[str]] = ["interfaces"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces counters rates"), AntaCommand(command="show interfaces")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
+        AntaCommand(command="show interfaces counters rates", revision=1),
+        AntaCommand(command="show interfaces", revision=1),
+    ]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyInterfaceUtilization test."""
@@ -63,19 +66,16 @@ class VerifyInterfaceUtilization(AntaTest):
         interfaces = self.instance_commands[1].json_output
 
         for intf, rate in rates["interfaces"].items():
-            # Assuming the interface is full-duplex in the logic below
-            if "duplex" in interfaces["interfaces"][intf]:
-                if interfaces["interfaces"][intf]["duplex"] != duplex_full:
-                    self.result.is_error(f"Interface {intf} is not Full-Duplex, VerifyInterfaceUtilization has not been implemented in ANTA")
-                    return
-            elif "memberInterfaces" in interfaces["interfaces"][intf]:
-                # This is a Port-Channel
-                for member, stats in interfaces["interfaces"][intf]["memberInterfaces"].items():
-                    if stats["duplex"] != duplex_full:
-                        self.result.is_error(f"Member {member} of {intf} is not Full-Duplex, VerifyInterfaceUtilization has not been implemented in ANTA")
-                        return
+            # The utilization logic has been implemented for full-duplex interfaces only
+            if ((duplex := (interface := interfaces["interfaces"][intf]).get("duplex", None)) is not None and duplex != duplex_full) or (
+                (members := interface.get("memberInterfaces", None)) is not None and any(stats["duplex"] != duplex_full for stats in members.values())
+            ):
+                self.result.is_error(f"Interface {intf} or one of its member interfaces is not Full-Duplex. VerifyInterfaceUtilization has not been implemented.")
+                return
 
-            bandwidth = interfaces["interfaces"][intf]["bandwidth"]
+            if (bandwidth := interfaces["interfaces"][intf]["bandwidth"]) == 0:
+                self.logger.debug("Interface %s has been ignored due to null bandwidth value", intf)
+                continue
 
             for bps_rate in ("inBpsRate", "outBpsRate"):
                 usage = rate[bps_rate] / bandwidth * 100
@@ -107,7 +107,7 @@ class VerifyInterfaceErrors(AntaTest):
     name = "VerifyInterfaceErrors"
     description = "Verifies there are no interface error counters."
     categories: ClassVar[list[str]] = ["interfaces"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces counters errors")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces counters errors", revision=1)]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -142,7 +142,7 @@ class VerifyInterfaceDiscards(AntaTest):
     name = "VerifyInterfaceDiscards"
     description = "Verifies there are no interface discard counters."
     categories: ClassVar[list[str]] = ["interfaces"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces counters discards")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces counters discards", revision=1)]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -176,7 +176,7 @@ class VerifyInterfaceErrDisabled(AntaTest):
     name = "VerifyInterfaceErrDisabled"
     description = "Verifies there are no interfaces in the errdisabled state."
     categories: ClassVar[list[str]] = ["interfaces"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces status")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces status", revision=1)]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -221,7 +221,7 @@ class VerifyInterfacesStatus(AntaTest):
     name = "VerifyInterfacesStatus"
     description = "Verifies the status of the provided interfaces."
     categories: ClassVar[list[str]] = ["interfaces"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces description")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces description", revision=1)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyInterfacesStatus test."""
@@ -293,9 +293,9 @@ class VerifyStormControlDrops(AntaTest):
     name = "VerifyStormControlDrops"
     description = "Verifies there are no interface storm-control drop counters."
     categories: ClassVar[list[str]] = ["interfaces"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show storm-control")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show storm-control", revision=1)]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyStormControlDrops."""
@@ -331,9 +331,8 @@ class VerifyPortChannels(AntaTest):
     name = "VerifyPortChannels"
     description = "Verifies there are no inactive ports in all port channels."
     categories: ClassVar[list[str]] = ["interfaces"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show port-channel")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show port-channel", revision=1)]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyPortChannels."""
@@ -367,7 +366,7 @@ class VerifyIllegalLACP(AntaTest):
     name = "VerifyIllegalLACP"
     description = "Verifies there are no illegal LACP packets in all port channels."
     categories: ClassVar[list[str]] = ["interfaces"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show lacp counters all-ports")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show lacp counters all-ports", revision=1)]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -404,7 +403,7 @@ class VerifyLoopbackCount(AntaTest):
     name = "VerifyLoopbackCount"
     description = "Verifies the number of loopback interfaces and their status."
     categories: ClassVar[list[str]] = ["interfaces"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip interface brief")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip interface brief", revision=1)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyLoopbackCount test."""
@@ -453,7 +452,7 @@ class VerifySVI(AntaTest):
     name = "VerifySVI"
     description = "Verifies the status of all SVIs."
     categories: ClassVar[list[str]] = ["interfaces"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip interface brief")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip interface brief", revision=1)]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -498,7 +497,7 @@ class VerifyL3MTU(AntaTest):
     name = "VerifyL3MTU"
     description = "Verifies the global L3 MTU of all L3 interfaces."
     categories: ClassVar[list[str]] = ["interfaces"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces", revision=1)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyL3MTU test."""
@@ -556,7 +555,7 @@ class VerifyIPProxyARP(AntaTest):
     name = "VerifyIPProxyARP"
     description = "Verifies if Proxy ARP is enabled."
     categories: ClassVar[list[str]] = ["interfaces"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show ip interface {intf}")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show ip interface {intf}", revision=2)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyIPProxyARP test."""
@@ -573,8 +572,7 @@ class VerifyIPProxyARP(AntaTest):
         """Main test function for VerifyIPProxyARP."""
         disabled_intf = []
         for command in self.instance_commands:
-            if "intf" in command.params:
-                intf = command.params["intf"]
+            intf = command.params.intf
             if not command.json_output["interfaces"][intf]["proxyArp"]:
                 disabled_intf.append(intf)
         if disabled_intf:
@@ -611,7 +609,7 @@ class VerifyL2MTU(AntaTest):
     name = "VerifyL2MTU"
     description = "Verifies the global L2 MTU of all L2 interfaces."
     categories: ClassVar[list[str]] = ["interfaces"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces", revision=1)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyL2MTU test."""
@@ -673,7 +671,7 @@ class VerifyInterfaceIPv4(AntaTest):
     name = "VerifyInterfaceIPv4"
     description = "Verifies the interface IPv4 addresses."
     categories: ClassVar[list[str]] = ["interfaces"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show ip interface {interface}")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show ip interface {interface}", revision=2)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyInterfaceIPv4 test."""
@@ -693,17 +691,18 @@ class VerifyInterfaceIPv4(AntaTest):
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each interface in the input list."""
-        return [
-            template.render(interface=interface.name, primary_ip=interface.primary_ip, secondary_ips=interface.secondary_ips) for interface in self.inputs.interfaces
-        ]
+        return [template.render(interface=interface.name) for interface in self.inputs.interfaces]
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyInterfaceIPv4."""
         self.result.is_success()
         for command in self.instance_commands:
-            intf = command.params["interface"]
-            input_primary_ip = str(command.params["primary_ip"])
+            intf = command.params.interface
+            for interface in self.inputs.interfaces:
+                if interface.name == intf:
+                    input_interface_detail = interface
+            input_primary_ip = str(input_interface_detail.primary_ip)
             failed_messages = []
 
             # Check if the interface has an IP address configured
@@ -720,8 +719,8 @@ class VerifyInterfaceIPv4(AntaTest):
             if actual_primary_ip != input_primary_ip:
                 failed_messages.append(f"The expected primary IP address is `{input_primary_ip}`, but the actual primary IP address is `{actual_primary_ip}`.")
 
-            if command.params["secondary_ips"] is not None:
-                input_secondary_ips = sorted([str(network) for network in command.params["secondary_ips"]])
+            if (param_secondary_ips := input_interface_detail.secondary_ips) is not None:
+                input_secondary_ips = sorted([str(network) for network in param_secondary_ips])
                 secondary_ips = get_value(interface_output, "secondaryIpsOrderedList")
 
                 # Combine IP address and subnet for secondary IPs
@@ -763,7 +762,7 @@ class VerifyIpVirtualRouterMac(AntaTest):
     name = "VerifyIpVirtualRouterMac"
     description = "Verifies the IP virtual router MAC address."
     categories: ClassVar[list[str]] = ["interfaces"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip virtual-router")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip virtual-router", revision=2)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyIpVirtualRouterMac test."""
@@ -786,14 +785,15 @@ class VerifyIpVirtualRouterMac(AntaTest):
 class VerifyInterfacesSpeed(AntaTest):
     """Verifies the speed, lanes, auto-negotiation status, and mode as full duplex for interfaces.
 
-    - If speed is auto with a value (auto 10g) then verify auto-negotiation as success, mode as full duplex and speed/lanes as per input.
-    - If speed with lane (100g-8) then verify mode as full duplex and speed/lanes as per input.
+    - If the speed is set to auto with a value (e.g., 'auto 10g'), the class verifies that auto-negotiation is successful,
+      the mode is set to full duplex, and the speed/lanes match the input.
+    - If the speed is set with a lane value (e.g., '100g-8'), the class verifies that the mode is set to full duplex and
+      the speed/lanes match the input.
 
     Expected Results
     ----------------
-    * Success: The test will pass if an interface is configured with the correct speed, lanes, auto-negotiation and mode as full duplex.
-    * Failure: The test will fail if an interface is not found, the speed or lanes do not match with input,
-               auto-negotiation is not correct or mode is not full duplex.
+    * Success: The test will pass if an interface is configured correctly with the specified speed, lanes, auto-negotiation status, and mode.
+    * Failure: The test will fail if an interface is not found, or if the speed, lanes, auto-negotiation status, or mode do not match the input.
 
     Examples
     --------
@@ -829,13 +829,13 @@ class VerifyInterfacesSpeed(AntaTest):
             """Detail of an interface."""
 
             name: EthernetInterface
-            """Name of the interface."""
+            """The name of the interface."""
             auto: bool
-            """auto-negotiation check of an interface."""
+            """The auto-negotiation status of the interface."""
             speed: float = Field(ge=1, le=1000)
-            """Speed of an interface in Gigabits per second. The range is 1 to 1000."""
+            """The speed of the interface in Gigabits per second. Valid range is 1 to 1000."""
             lanes: None | int = Field(None, ge=1, le=8)
-            """Optional number of lanes in an interface. The range is 1 to 8."""
+            """The number of lanes in the interface. Valid range is 1 to 8. This field is optional."""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -875,8 +875,8 @@ class VerifyInterfacesSpeed(AntaTest):
 
             # Forming failure message
             if actual_interface_output != expected_interface_output:
-                # Convert speed to Gbps for readability
                 for output in [actual_interface_output, expected_interface_output]:
+                    # Convert speed to Gbps for readability
                     if output["speed"] is not None:
                         output["speed"] = f"{custom_division(output['speed'], BPS_GBPS_CONVERSIONS)}Gbps"
                 failed_log = get_failed_logs(expected_interface_output, actual_interface_output)

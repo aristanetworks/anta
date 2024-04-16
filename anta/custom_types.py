@@ -4,11 +4,10 @@
 """Module that provides predefined types for AntaTest.Input instances."""
 
 import re
-from typing import Literal
+from typing import Annotated, Literal
 
 from pydantic import Field
 from pydantic.functional_validators import AfterValidator, BeforeValidator
-from typing_extensions import Annotated
 
 
 def aaa_group_prefix(v: str) -> str:

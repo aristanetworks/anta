@@ -34,7 +34,7 @@ class VerifyZeroTouch(AntaTest):
     name = "VerifyZeroTouch"
     description = "Verifies ZeroTouch is disabled"
     categories: ClassVar[list[str]] = ["configuration"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show zerotouch")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show zerotouch", revision=1)]
 
     @AntaTest.anta_test
     def test(self) -> None:

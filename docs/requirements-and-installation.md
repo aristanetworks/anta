@@ -8,11 +8,11 @@
 
 ## Python version
 
-Python 3 (`>=3.8`) is required:
+Python 3 (`>=3.9`) is required:
 
 ```bash
 python --version
-Python 3.9.9
+Python 3.11.8
 ```
 
 ## Install ANTA package
@@ -61,12 +61,12 @@ which anta
 ```bash
 # Check ANTA version
 anta --version
-anta, version v0.13.0
+anta, version v0.14.0
 ```
 
 ## EOS Requirements
 
-To get ANTA working, the targetted Arista EOS devices must have the following configuration (assuming you connect to the device using Management interface in MGMT VRF):
+To get ANTA working, the targeted Arista EOS devices must have the following configuration (assuming you connect to the device using Management interface in MGMT VRF):
 
 ```eos
 configure

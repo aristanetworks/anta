@@ -1,7 +1,7 @@
 ---
 anta.tests.aaa:
   - VerifyTacacsSourceIntf:
-      intf: Management0
+      intf: Management1
       vrf: default
   - VerifyTacacsServers:
       servers:
@@ -79,10 +79,10 @@ anta.tests.configuration:
 anta.tests.connectivity:
   - VerifyReachability:
       hosts:
-        - source: Management0
+        - source: Management1
           destination: 1.1.1.1
           vrf: MGMT
-        - source: Management0
+        - source: Management1
           destination: 8.8.8.8
           vrf: MGMT
   - VerifyLLDPNeighbors:
@@ -149,8 +149,8 @@ anta.tests.interfaces:
           - Ethernet1: 2500
   - VerifyIPProxyARP:
       interfaces:
-        - Ethernet1
-        - Ethernet2
+        - Ethernet1/1
+        - Ethernet2/1
   - VerifyL2MTU:
       mtu: 1500
       ignored_interfaces:
@@ -160,7 +160,7 @@ anta.tests.interfaces:
         - Ethernet1/1: 1500
   - VerifyInterfaceIPv4:
       interfaces:
-        - name: Ethernet2
+        - name: Ethernet2/1
           primary_ip: 172.30.11.0/31
           secondary_ips:
             - 10.10.10.0/31
@@ -186,7 +186,7 @@ anta.tests.lanz:
 anta.tests.logging:
   - VerifyLoggingPersistent:
   - VerifyLoggingSourceIntf:
-      interface: Management0
+      interface: Management1
       vrf: default
   - VerifyLoggingHosts:
       hosts:
@@ -292,6 +292,17 @@ anta.tests.security:
               action: permit icmp any any
             - sequence: 20
               action: permit tcp any any range 5900 5910
+  - VerifyIPSecConnHealth:
+  - VerifySpecificIPSecConn:
+      ip_security_connections:
+        - peer: 10.255.0.1
+        - peer: 10.255.0.2
+          vrf: default
+          connections:
+            - source_address: 100.64.3.2
+              destination_address: 100.64.2.2
+            - source_address: 172.18.3.2
+              destination_address: 172.18.2.2
 
 anta.tests.services:
   - VerifyHostname:
@@ -358,6 +369,18 @@ anta.tests.stp:
       instances:
         - 10
         - 20
+
+anta.tests.stun:
+  - VerifyStunClient:
+      stun_clients:
+        - source_address: 172.18.3.2
+          public_address: 172.18.3.21
+          source_port: 4500
+          public_port: 6006
+        - source_address: 100.64.3.2
+          public_address: 100.64.3.21
+          source_port: 4500
+          public_port: 6006
 
 anta.tests.system:
   - VerifyUptime:
@@ -503,3 +526,4 @@ anta.tests.routing:
     - VerifyOSPFNeighborState:
     - VerifyOSPFNeighborCount:
         number: 3
+    - VerifyOSPFMaxLSA:

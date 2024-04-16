@@ -9,17 +9,9 @@ import importlib
 import logging
 from inspect import isclass
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Type, Union
+from typing import TYPE_CHECKING, Any, Optional, Union
 
-from pydantic import (
-    BaseModel,
-    ConfigDict,
-    RootModel,
-    ValidationError,
-    ValidationInfo,
-    field_validator,
-    model_validator,
-)
+from pydantic import BaseModel, ConfigDict, RootModel, ValidationError, ValidationInfo, field_validator, model_validator
 from pydantic.types import ImportString
 from pydantic_core import PydanticCustomError
 from yaml import YAMLError, safe_load
@@ -33,10 +25,10 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 # { <module_name> : [ { <test_class_name>: <input_as_dict_or_None> }, ... ] }
-RawCatalogInput = Dict[str, List[Dict[str, Optional[Dict[str, Any]]]]]
+RawCatalogInput = dict[str, list[dict[str, Optional[dict[str, Any]]]]]
 
 # [ ( <AntaTest class>, <input_as AntaTest.Input or dict or None > ), ... ]
-ListAntaTestTuples = List[Tuple[Type[AntaTest], Optional[Union[AntaTest.Input, Dict[str, Any]]]]]
+ListAntaTestTuples = list[tuple[type[AntaTest], Optional[Union[AntaTest.Input, dict[str, Any]]]]]
 
 
 class AntaTestDefinition(BaseModel):
@@ -101,7 +93,7 @@ class AntaTestDefinition(BaseModel):
                 f"{test_class.name} test inputs are not valid: {inputs_msg}\n",
                 {"errors": e.errors()},
             ) from e
-        msg = f"Coud not instantiate inputs as type {type(data).__name__} is not valid"
+        msg = f"Could not instantiate inputs as type {type(data).__name__} is not valid"
         raise ValueError(msg)
 
     @model_validator(mode="after")
@@ -116,7 +108,7 @@ class AntaTestDefinition(BaseModel):
         return self
 
 
-class AntaCatalogFile(RootModel[Dict[ImportString[Any], List[AntaTestDefinition]]]):  # pylint: disable=too-few-public-methods
+class AntaCatalogFile(RootModel[dict[ImportString[Any], list[AntaTestDefinition]]]):  # pylint: disable=too-few-public-methods
     """Represents an ANTA Test Catalog File.
 
     Example:
@@ -214,7 +206,7 @@ class AntaCatalogFile(RootModel[Dict[ImportString[Any], List[AntaTestDefinition]
 class AntaCatalog:
     """Class representing an ANTA Catalog.
 
-    It can be instantiated using its contructor or one of the static methods: `parse()`, `from_list()` or `from_dict()`
+    It can be instantiated using its constructor or one of the static methods: `parse()`, `from_list()` or `from_dict()`
     """
 
     def __init__(
@@ -336,11 +328,20 @@ class AntaCatalog:
             raise
         return AntaCatalog(tests)
 
-    def get_tests_by_tags(self, tags: list[str], *, strict: bool = False) -> list[AntaTestDefinition]:
+    def get_tests_by_tags(self, tags: set[str], *, strict: bool = False) -> list[AntaTestDefinition]:
         """Return all the tests that have matching tags in their input filters.
 
-        If strict=True, returns only tests that match all the tags provided as input.
+        If strict=True, return only tests that match all the tags provided as input.
         If strict=False, return all the tests that match at least one tag provided as input.
+
+        Args:
+        ----
+            tags: Tags of the tests to get.
+            strict: Specify if the returned tests must match all the tags provided.
+
+        Returns
+        -------
+            List of AntaTestDefinition that match the tags
         """
         result: list[AntaTestDefinition] = []
         for test in self.tests:
@@ -351,3 +352,16 @@ class AntaCatalog:
                 elif any(t in tags for t in f):
                     result.append(test)
         return result
+
+    def get_tests_by_names(self, names: set[str]) -> list[AntaTestDefinition]:
+        """Return all the tests that have matching a list of tests names.
+
+        Args:
+        ----
+            names: Names of the tests to get.
+
+        Returns
+        -------
+            List of AntaTestDefinition that match the names
+        """
+        return [test for test in self.tests if test.test.name in names]

@@ -74,7 +74,7 @@ async def test_clear_counters_utils(
     test_inventory: AntaInventory,
     inventory_state: dict[str, Any],
     per_device_command_output: dict[str, Any],
-    tags: list[str] | None,
+    tags: set[str] | None,
 ) -> None:
     """Test anta.cli.exec.utils.clear_counters_utils."""
 
@@ -90,15 +90,18 @@ async def test_clear_counters_utils(
         command.output = per_device_command_output.get(self.name, "")
 
     # Need to patch the child device class
-    with patch("anta.device.AsyncEOSDevice.collect", side_effect=dummy_collect, autospec=True) as mocked_collect, patch(
-        "anta.inventory.AntaInventory.connect_inventory",
-        side_effect=mock_connect_inventory,
-    ) as mocked_connect_inventory:
+    with (
+        patch("anta.device.AsyncEOSDevice.collect", side_effect=dummy_collect, autospec=True) as mocked_collect,
+        patch(
+            "anta.inventory.AntaInventory.connect_inventory",
+            side_effect=mock_connect_inventory,
+        ) as mocked_connect_inventory,
+    ):
         mocked_collect.side_effect = dummy_collect
         await clear_counters_utils(test_inventory, tags=tags)
 
     mocked_connect_inventory.assert_awaited_once()
-    devices_established = list(test_inventory.get_inventory(established_only=True, tags=tags).values())
+    devices_established = test_inventory.get_inventory(established_only=True, tags=tags).devices
     if devices_established:
         # Building the list of calls
         calls = []

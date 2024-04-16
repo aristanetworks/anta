@@ -21,7 +21,7 @@ DATA_DIR: Path = Path(__file__).parents[3].resolve() / "data"
 
 def test_get_cv_token() -> None:
     """Test anta.get.utils.get_cv_token."""
-    ip = "42.42.42.42"
+    ip_addr = "42.42.42.42"
     username = "ant"
     password = "formica"
 
@@ -29,7 +29,7 @@ def test_get_cv_token() -> None:
         mocked_ret = MagicMock(autospec=requests.Response)
         mocked_ret.json.return_value = {"sessionId": "simple"}
         patched_request.return_value = mocked_ret
-        res = get_cv_token(ip, username, password)
+        res = get_cv_token(ip_addr, username, password)
     patched_request.assert_called_once_with(
         "POST",
         "https://42.42.42.42/cvpservice/login/authenticate.do",

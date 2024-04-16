@@ -429,7 +429,7 @@ ANTATEST_DATA: list[dict[str, Any]] = [
             "__init__": {"result": "unset"},
             "test": {
                 "result": "skipped",
-                "messages": ["Skipped because show hardware counter drop is not supported on pytest"],
+                "messages": ["'show hardware counter drop' is not supported on pytest"],
             },
         },
     },
@@ -549,3 +549,61 @@ def test_blacklist(device: AntaDevice, data: str) -> None:
     # Run the test() method
     asyncio.run(test_instance.test())
     assert test_instance.result.result == "error"
+
+
+class TestAntaComamnd:
+    """Test for anta.models.AntaCommand."""
+
+    # ruff: noqa: B018
+    # pylint: disable=pointless-statement
+
+    def test_empty_output_access(self) -> None:
+        """Test for both json and text ofmt."""
+        json_cmd = AntaCommand(command="show dummy")
+        text_cmd = AntaCommand(command="show dummy", ofmt="text")
+        msg = "There is no output for command 'show dummy'"
+        with pytest.raises(RuntimeError, match=msg):
+            json_cmd.json_output
+        with pytest.raises(RuntimeError, match=msg):
+            text_cmd.text_output
+
+    def test_wrong_format_output_access(self) -> None:
+        """Test for both json and text ofmt."""
+        json_cmd = AntaCommand(command="show dummy", output={})
+        json_cmd_2 = AntaCommand(command="show dummy", output="not_json")
+        text_cmd = AntaCommand(command="show dummy", ofmt="text", output="blah")
+        text_cmd_2 = AntaCommand(command="show dummy", ofmt="text", output={"not_a": "string"})
+        msg = "Output of command 'show dummy' is invalid"
+        msg = "Output of command 'show dummy' is invalid"
+        with pytest.raises(RuntimeError, match=msg):
+            json_cmd.text_output
+        with pytest.raises(RuntimeError, match=msg):
+            text_cmd.json_output
+        with pytest.raises(RuntimeError, match=msg):
+            json_cmd_2.text_output
+        with pytest.raises(RuntimeError, match=msg):
+            text_cmd_2.json_output
+
+    def test_supported(self) -> None:
+        """Test if the supported property."""
+        command = AntaCommand(command="show hardware counter drop", errors=["Unavailable command (not supported on this hardware platform) (at token 2: 'counter')"])
+        assert command.supported is False
+        command = AntaCommand(
+            command="show hardware counter drop", output={"totalAdverseDrops": 0, "totalCongestionDrops": 0, "totalPacketProcessorDrops": 0, "dropEvents": {}}
+        )
+        assert command.supported is True
+
+    def test_requires_privileges(self) -> None:
+        """Test if the requires_privileges property."""
+        command = AntaCommand(command="show aaa methods accounting", errors=["Invalid input (privileged mode required)"])
+        assert command.requires_privileges is True
+        command = AntaCommand(
+            command="show aaa methods accounting",
+            output={
+                "commandsAcctMethods": {"privilege0-15": {"defaultMethods": [], "consoleMethods": []}},
+                "execAcctMethods": {"exec": {"defaultMethods": [], "consoleMethods": []}},
+                "systemAcctMethods": {"system": {"defaultMethods": [], "consoleMethods": []}},
+                "dot1xAcctMethods": {"dot1x": {"defaultMethods": [], "consoleMethods": []}},
+            },
+        )
+        assert command.requires_privileges is False

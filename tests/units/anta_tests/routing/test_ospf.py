@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from anta.tests.routing.ospf import VerifyOSPFNeighborCount, VerifyOSPFNeighborState
+from anta.tests.routing.ospf import VerifyOSPFMaxLSA, VerifyOSPFNeighborCount, VerifyOSPFNeighborState
 from tests.lib.anta import test  # noqa: F401; pylint: disable=W0611
 
 DATA: list[dict[str, Any]] = [
@@ -293,5 +293,119 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {"number": 3},
         "expected": {"result": "skipped", "messages": ["no OSPF neighbor found"]},
+    },
+    {
+        "name": "success",
+        "test": VerifyOSPFMaxLSA,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "instList": {
+                            "1": {
+                                "instanceId": 1,
+                                "maxLsaInformation": {
+                                    "maxLsa": 12000,
+                                    "maxLsaThreshold": 75,
+                                },
+                                "routerId": "1.1.1.1",
+                                "lsaInformation": {
+                                    "lsaArrivalInterval": 1000,
+                                    "lsaStartInterval": 1000,
+                                    "lsaHoldInterval": 5000,
+                                    "lsaMaxWaitInterval": 5000,
+                                    "numLsa": 9,
+                                },
+                            },
+                        },
+                    },
+                    "TEST": {
+                        "instList": {
+                            "10": {
+                                "instanceId": 10,
+                                "maxLsaInformation": {
+                                    "maxLsa": 1000,
+                                    "maxLsaThreshold": 75,
+                                },
+                                "routerId": "20.20.20.20",
+                                "lsaInformation": {
+                                    "lsaArrivalInterval": 1000,
+                                    "lsaStartInterval": 1000,
+                                    "lsaHoldInterval": 5000,
+                                    "lsaMaxWaitInterval": 5000,
+                                    "numLsa": 5,
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        ],
+        "inputs": None,
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure",
+        "test": VerifyOSPFMaxLSA,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "instList": {
+                            "1": {
+                                "instanceId": 1,
+                                "maxLsaInformation": {
+                                    "maxLsa": 12000,
+                                    "maxLsaThreshold": 75,
+                                },
+                                "routerId": "1.1.1.1",
+                                "lsaInformation": {
+                                    "lsaArrivalInterval": 1000,
+                                    "lsaStartInterval": 1000,
+                                    "lsaHoldInterval": 5000,
+                                    "lsaMaxWaitInterval": 5000,
+                                    "numLsa": 11500,
+                                },
+                            },
+                        },
+                    },
+                    "TEST": {
+                        "instList": {
+                            "10": {
+                                "instanceId": 10,
+                                "maxLsaInformation": {
+                                    "maxLsa": 1000,
+                                    "maxLsaThreshold": 75,
+                                },
+                                "routerId": "20.20.20.20",
+                                "lsaInformation": {
+                                    "lsaArrivalInterval": 1000,
+                                    "lsaStartInterval": 1000,
+                                    "lsaHoldInterval": 5000,
+                                    "lsaMaxWaitInterval": 5000,
+                                    "numLsa": 1500,
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        ],
+        "inputs": None,
+        "expected": {
+            "result": "failure",
+            "messages": ["OSPF Instances ['1', '10'] crossed the maximum LSA threshold."],
+        },
+    },
+    {
+        "name": "skipped",
+        "test": VerifyOSPFMaxLSA,
+        "eos_data": [
+            {
+                "vrfs": {},
+            },
+        ],
+        "inputs": None,
+        "expected": {"result": "skipped", "messages": ["No OSPF instance found."]},
     },
 ]

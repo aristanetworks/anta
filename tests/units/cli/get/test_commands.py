@@ -63,15 +63,20 @@ def test_from_cvp(
             raise CvpApiError(msg="mocked CvpApiError")
 
     # always get a token
-    with patch("anta.cli.get.commands.get_cv_token", return_value="dummy_token"), patch(
-        "cvprac.cvp_client.CvpClient.connect",
-        autospec=True,
-        side_effect=mock_cvp_connect,
-    ) as mocked_cvp_connect, patch("cvprac.cvp_client.CvpApi.get_inventory", autospec=True, return_value=[]) as mocked_get_inventory, patch(
-        "cvprac.cvp_client.CvpApi.get_devices_in_container",
-        autospec=True,
-        return_value=[],
-    ) as mocked_get_devices_in_container:
+    with (
+        patch("anta.cli.get.commands.get_cv_token", return_value="dummy_token"),
+        patch(
+            "cvprac.cvp_client.CvpClient.connect",
+            autospec=True,
+            side_effect=mock_cvp_connect,
+        ) as mocked_cvp_connect,
+        patch("cvprac.cvp_client.CvpApi.get_inventory", autospec=True, return_value=[]) as mocked_get_inventory,
+        patch(
+            "cvprac.cvp_client.CvpApi.get_devices_in_container",
+            autospec=True,
+            return_value=[],
+        ) as mocked_get_devices_in_container,
+    ):
         result = click_runner.invoke(anta, cli_args)
 
     if not cvp_connect_failure:
@@ -119,6 +124,7 @@ def test_from_ansible(
     expected_exit: int,
     expected_log: str | None,
 ) -> None:
+    # pylint: disable=too-many-arguments
     """Test `anta get from-ansible`.
 
     This test verifies:

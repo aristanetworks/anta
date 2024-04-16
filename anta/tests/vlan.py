@@ -11,8 +11,7 @@ from typing import TYPE_CHECKING, ClassVar, Literal
 
 from anta.custom_types import Vlan
 from anta.models import AntaCommand, AntaTest
-from anta.tools.get_value import get_value
-from anta.tools.utils import get_failed_logs
+from anta.tools import get_failed_logs, get_value
 
 if TYPE_CHECKING:
     from anta.models import AntaTemplate
@@ -42,7 +41,7 @@ class VerifyVlanInternalPolicy(AntaTest):
     name = "VerifyVlanInternalPolicy"
     description = "Verifies the VLAN internal allocation policy and the range of VLANs."
     categories: ClassVar[list[str]] = ["vlan"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show vlan internal allocation policy")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show vlan internal allocation policy", revision=1)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyVlanInternalPolicy test."""

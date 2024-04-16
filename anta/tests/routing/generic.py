@@ -131,7 +131,7 @@ class VerifyRoutingTableEntry(AntaTest):
     name = "VerifyRoutingTableEntry"
     description = "Verifies that the provided routes are present in the routing table of a specified VRF."
     categories: ClassVar[list[str]] = ["routing"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show ip route vrf {vrf} {route}")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show ip route vrf {vrf} {route}", revision=4)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyRoutingTableEntry test."""
@@ -151,10 +151,9 @@ class VerifyRoutingTableEntry(AntaTest):
         missing_routes = []
 
         for command in self.instance_commands:
-            if "vrf" in command.params and "route" in command.params:
-                vrf, route = command.params["vrf"], command.params["route"]
-                if len(routes := command.json_output["vrfs"][vrf]["routes"]) == 0 or route != ip_interface(next(iter(routes))).ip:
-                    missing_routes.append(str(route))
+            vrf, route = command.params.vrf, command.params.route
+            if len(routes := command.json_output["vrfs"][vrf]["routes"]) == 0 or route != ip_interface(next(iter(routes))).ip:
+                missing_routes.append(str(route))
 
         if not missing_routes:
             self.result.is_success()
