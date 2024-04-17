@@ -1,64 +1,60 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""Tests for anta.cli.__init__."""
+"""Tests for anta.cli._main."""
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+import builtins
+import sys
+from typing import TYPE_CHECKING, Any
 from unittest.mock import patch
 
 import pytest
 
-from anta.cli import anta, cli
-from anta.cli.utils import ExitCode
-
 if TYPE_CHECKING:
-    from click.testing import CliRunner
+    from types import ModuleType
+
+builtins_import = __import__
 
 
-def test_anta(click_runner: CliRunner) -> None:
-    """Test anta main entrypoint."""
-    result = click_runner.invoke(anta)
-    assert result.exit_code == ExitCode.OK
-    assert "Usage" in result.output
+# Tried to achieve this with mock
+# http://materials-scientist.com/blog/2021/02/11/mocking-failing-module-import-python/
+def import_mock(name: str, *args: Any) -> ModuleType:  # noqa: ANN401
+    """mock."""
+    if name == "_main":
+        raise ImportError
+    return builtins_import(name, *args)
 
 
-def test_anta_help(click_runner: CliRunner) -> None:
-    """Test anta --help."""
-    result = click_runner.invoke(anta, ["--help"])
-    assert result.exit_code == ExitCode.OK
-    assert "Usage" in result.output
+def test_cli_error_missing(capsys: pytest.CaptureFixture) -> None:
+    """Test ANTA errors out when anta[cli] was not installed."""
+    # TODO: this works but it is breaking subsequent tests because we are messing up with imports
+    with patch.dict(sys.modules), patch.object(builtins, "__import__", import_mock):
+        del sys.modules["anta.cli"]
 
+        # Import outside toplevel
+        from anta.cli import cli  # pylint: disable=C0415
 
-def test_anta_exec_help(click_runner: CliRunner) -> None:
-    """Test anta exec --help."""
-    result = click_runner.invoke(anta, ["exec", "--help"])
-    assert result.exit_code == ExitCode.OK
-    assert "Usage: anta exec" in result.output
+        with pytest.raises(SystemExit) as e_info:
+            cli()
 
+        captured = capsys.readouterr()
+        assert "The ANTA command line client could not run because the required dependencies were not installed." in captured.out
+        assert "Make sure you've installed everything with: pip install 'anta[cli]'" in captured.out
+        assert e_info.value.code == 1
 
-def test_anta_debug_help(click_runner: CliRunner) -> None:
-    """Test anta debug --help."""
-    result = click_runner.invoke(anta, ["debug", "--help"])
-    assert result.exit_code == ExitCode.OK
-    assert "Usage: anta debug" in result.output
+        # setting ANTA_DEBUG
+        with pytest.raises(SystemExit) as e_info, patch("anta.cli.__DEBUG__", new=True):
+            cli()
 
+        captured = capsys.readouterr()
+        assert "The ANTA command line client could not run because the required dependencies were not installed." in captured.out
+        assert "Make sure you've installed everything with: pip install 'anta[cli]'" in captured.out
+        assert "The caught exception was:" in captured.out
+        assert e_info.value.code == 1
 
-def test_anta_get_help(click_runner: CliRunner) -> None:
-    """Test anta get --help."""
-    result = click_runner.invoke(anta, ["get", "--help"])
-    assert result.exit_code == ExitCode.OK
-    assert "Usage: anta get" in result.output
-
-
-def test_uncaught_failure_anta(caplog: pytest.LogCaptureFixture) -> None:
-    """Test uncaught failure when running ANTA cli."""
-    with (
-        pytest.raises(SystemExit) as e_info,
-        patch("anta.cli.anta", side_effect=ZeroDivisionError()),
-    ):
-        cli()
-    assert "CRITICAL" in caplog.text
-    assert "Uncaught Exception when running ANTA CLI" in caplog.text
-    assert e_info.value.code == 1
+    # TODO: this does not work
+    for key in list(sys.modules.keys()):
+        if key.startswith(("anta", "test")):
+            del sys.modules[key]
