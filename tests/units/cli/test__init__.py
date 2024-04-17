@@ -21,7 +21,7 @@ builtins_import = __import__
 # Tried to achieve this with mock
 # http://materials-scientist.com/blog/2021/02/11/mocking-failing-module-import-python/
 def import_mock(name: str, *args: Any) -> ModuleType:  # noqa: ANN401
-    """mock."""
+    """Mock."""
     if name == "_main":
         raise ImportError
     return builtins_import(name, *args)
