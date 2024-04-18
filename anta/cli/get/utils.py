@@ -79,7 +79,7 @@ def inventory_output_options(f: Callable[..., Any]) -> Callable[..., Any]:
 
 def get_cv_token(cvp_ip: str, cvp_username: str, cvp_password: str) -> str:
     """Generate AUTH token from CVP using password."""
-    # TODO: need to handle requests eror
+    # TODO: need to handle requests error
 
     # use CVP REST API to generate a token
     url = f"https://{cvp_ip}/cvpservice/login/authenticate.do"
@@ -108,7 +108,7 @@ def create_inventory_from_cvp(inv: list[dict[str, Any]], output: Path) -> None:
             AntaInventoryHost(
                 name=dev["hostname"],
                 host=dev["ipAddress"],
-                tags=[dev["containerName"].lower()],
+                tags={dev["containerName"].lower()},
             )
         )
     write_inventory_to_file(hosts, output)
@@ -154,6 +154,15 @@ def create_inventory_from_ansible(inventory: Path, output: Path, ansible_group: 
     try:
         with inventory.open(encoding="utf-8") as inv:
             ansible_inventory = yaml.safe_load(inv)
+    except yaml.constructor.ConstructorError as exc:
+        if exc.problem and "!vault" in exc.problem:
+            logger.error(
+                "`anta get from-ansible` does not support inline vaulted variables, comment them out to generate your inventory. "
+                "If the vaulted variable is necessary to build the inventory (e.g. `ansible_host`), it needs to be unvaulted for "
+                "`from-ansible` command to work."
+            )
+        msg = f"Could not parse {inventory}."
+        raise ValueError(msg) from exc
     except OSError as exc:
         msg = f"Could not parse {inventory}."
         raise ValueError(msg) from exc

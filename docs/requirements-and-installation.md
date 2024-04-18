@@ -61,12 +61,12 @@ which anta
 ```bash
 # Check ANTA version
 anta --version
-anta, version v0.13.0
+anta, version v0.14.0
 ```
 
 ## EOS Requirements
 
-To get ANTA working, the targetted Arista EOS devices must have the following configuration (assuming you connect to the device using Management interface in MGMT VRF):
+To get ANTA working, the targeted Arista EOS devices must have the following configuration (assuming you connect to the device using Management interface in MGMT VRF):
 
 ```eos
 configure

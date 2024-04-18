@@ -41,8 +41,8 @@ anta_inventory:
 The inventory file must start with the `anta_inventory` key then define one or multiple methods:
 
 - `hosts`: define each device individually
-- `networks`: scan a network for devices accesible via eAPI
-- `ranges`: scan a range for devices accesible via eAPI
+- `networks`: scan a network for devices accessible via eAPI
+- `ranges`: scan a range for devices accessible via eAPI
 
 A full description of the inventory model is available in [API documentation](api/inventory.models.input.md)
 

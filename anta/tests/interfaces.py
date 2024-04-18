@@ -17,19 +17,20 @@ from pydantic_extra_types.mac_address import MacAddress
 from anta.custom_types import Interface, Percent, PositiveInteger
 from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTemplate, AntaTest
-from anta.tools.get_item import get_item
-from anta.tools.get_value import get_value
+from anta.tools import get_item, get_value
 
 
 class VerifyInterfaceUtilization(AntaTest):
     """Verifies that the utilization of interfaces is below a certain threshold.
 
     Load interval (default to 5 minutes) is defined in device configuration.
+    This test has been implemented for full-duplex interfaces only.
 
     Expected Results
     ----------------
     * Success: The test will pass if all interfaces have a usage below the threshold.
     * Failure: The test will fail if one or more interfaces have a usage above the threshold.
+    * Error: The test will error out if the device has at least one non full-duplex interface.
 
     Examples
     --------
@@ -63,19 +64,16 @@ class VerifyInterfaceUtilization(AntaTest):
         interfaces = self.instance_commands[1].json_output
 
         for intf, rate in rates["interfaces"].items():
-            # Assuming the interface is full-duplex in the logic below
-            if "duplex" in interfaces["interfaces"][intf]:
-                if interfaces["interfaces"][intf]["duplex"] != duplex_full:
-                    self.result.is_error(f"Interface {intf} is not Full-Duplex, VerifyInterfaceUtilization has not been implemented in ANTA")
-                    return
-            elif "memberInterfaces" in interfaces["interfaces"][intf]:
-                # This is a Port-Channel
-                for member, stats in interfaces["interfaces"][intf]["memberInterfaces"].items():
-                    if stats["duplex"] != duplex_full:
-                        self.result.is_error(f"Member {member} of {intf} is not Full-Duplex, VerifyInterfaceUtilization has not been implemented in ANTA")
-                        return
+            # The utilization logic has been implemented for full-duplex interfaces only
+            if ((duplex := (interface := interfaces["interfaces"][intf]).get("duplex", None)) is not None and duplex != duplex_full) or (
+                (members := interface.get("memberInterfaces", None)) is not None and any(stats["duplex"] != duplex_full for stats in members.values())
+            ):
+                self.result.is_error(f"Interface {intf} or one of its member interfaces is not Full-Duplex. VerifyInterfaceUtilization has not been implemented.")
+                return
 
-            bandwidth = interfaces["interfaces"][intf]["bandwidth"]
+            if (bandwidth := interfaces["interfaces"][intf]["bandwidth"]) == 0:
+                self.logger.debug("Interface %s has been ignored due to null bandwidth value", intf)
+                continue
 
             for bps_rate in ("inBpsRate", "outBpsRate"):
                 usage = rate[bps_rate] / bandwidth * 100
@@ -572,8 +570,7 @@ class VerifyIPProxyARP(AntaTest):
         """Main test function for VerifyIPProxyARP."""
         disabled_intf = []
         for command in self.instance_commands:
-            if "intf" in command.params:
-                intf = command.params["intf"]
+            intf = command.params.intf
             if not command.json_output["interfaces"][intf]["proxyArp"]:
                 disabled_intf.append(intf)
         if disabled_intf:
@@ -692,17 +689,18 @@ class VerifyInterfaceIPv4(AntaTest):
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each interface in the input list."""
-        return [
-            template.render(interface=interface.name, primary_ip=interface.primary_ip, secondary_ips=interface.secondary_ips) for interface in self.inputs.interfaces
-        ]
+        return [template.render(interface=interface.name) for interface in self.inputs.interfaces]
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyInterfaceIPv4."""
         self.result.is_success()
         for command in self.instance_commands:
-            intf = command.params["interface"]
-            input_primary_ip = str(command.params["primary_ip"])
+            intf = command.params.interface
+            for interface in self.inputs.interfaces:
+                if interface.name == intf:
+                    input_interface_detail = interface
+            input_primary_ip = str(input_interface_detail.primary_ip)
             failed_messages = []
 
             # Check if the interface has an IP address configured
@@ -719,8 +717,8 @@ class VerifyInterfaceIPv4(AntaTest):
             if actual_primary_ip != input_primary_ip:
                 failed_messages.append(f"The expected primary IP address is `{input_primary_ip}`, but the actual primary IP address is `{actual_primary_ip}`.")
 
-            if command.params["secondary_ips"] is not None:
-                input_secondary_ips = sorted([str(network) for network in command.params["secondary_ips"]])
+            if (param_secondary_ips := input_interface_detail.secondary_ips) is not None:
+                input_secondary_ips = sorted([str(network) for network in param_secondary_ips])
                 secondary_ips = get_value(interface_output, "secondaryIpsOrderedList")
 
                 # Combine IP address and subnet for secondary IPs

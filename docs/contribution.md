@@ -10,9 +10,9 @@ Contribution model is based on a fork-model. Don't push to arista-netdevops-comm
 
 To help development, open your PR as soon as possible even in draft mode. It helps other to know on what you are working on and avoid duplicate PRs.
 
-## Create a development environement
+## Create a development environment
 
-Run the following commands to create an ANTA development environement:
+Run the following commands to create an ANTA development environment:
 
 ```bash
 # Clone repository
@@ -26,10 +26,10 @@ $ pip install -e .[dev]
 $ pip list -e
 Package Version Editable project location
 ------- ------- -------------------------
-anta    0.13.0   /mnt/lab/projects/anta
+anta    0.14.0   /mnt/lab/projects/anta
 ```
 
-Then, [`tox`](https://tox.wiki/) is configued with few environments to run CI locally:
+Then, [`tox`](https://tox.wiki/) is configured with few environments to run CI locally:
 
 ```bash
 $ tox list -d

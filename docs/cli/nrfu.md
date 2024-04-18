@@ -13,51 +13,10 @@ ANTA provides a set of commands for performing NRFU tests on devices. These comm
 - [JSON view](#performing-nrfu-with-json-rendering)
 - [Custom template view](#performing-nrfu-with-custom-reports)
 
-### NRFU Command overview
+## NRFU Command overview
 
 ```bash
-anta nrfu --help
-Usage: anta nrfu [OPTIONS] COMMAND [ARGS]...
-
-  Run NRFU against inventory devices
-
-Options:
-  -u, --username TEXT     Username to connect to EOS  [env var: ANTA_USERNAME;
-                          required]
-  -p, --password TEXT     Password to connect to EOS that must be provided. It
-                          can be prompted using '--prompt' option.  [env var:
-                          ANTA_PASSWORD]
-  --enable-password TEXT  Password to access EOS Privileged EXEC mode. It can
-                          be prompted using '--prompt' option. Requires '--
-                          enable' option.  [env var: ANTA_ENABLE_PASSWORD]
-  --enable                Some commands may require EOS Privileged EXEC mode.
-                          This option tries to access this mode before sending
-                          a command to the device.  [env var: ANTA_ENABLE]
-  -P, --prompt            Prompt for passwords if they are not provided.  [env
-                          var: ANTA_PROMPT]
-  --timeout INTEGER       Global connection timeout  [env var: ANTA_TIMEOUT;
-                          default: 30]
-  --insecure              Disable SSH Host Key validation  [env var:
-                          ANTA_INSECURE]
-  --disable-cache         Disable cache globally  [env var:
-                          ANTA_DISABLE_CACHE]
-  -i, --inventory FILE    Path to the inventory YAML file  [env var:
-                          ANTA_INVENTORY; required]
-  -t, --tags TEXT         List of tags using comma as separator:
-                          tag1,tag2,tag3  [env var: ANTA_TAGS]
-  -c, --catalog FILE      Path to the test catalog YAML file  [env var:
-                          ANTA_CATALOG; required]
-  --ignore-status         Always exit with success  [env var:
-                          ANTA_NRFU_IGNORE_STATUS]
-  --ignore-error          Only report failures and not errors  [env var:
-                          ANTA_NRFU_IGNORE_ERROR]
-  --help                  Show this message and exit.
-
-Commands:
-  json        ANTA command to check network state with JSON result
-  table       ANTA command to check network states with table result
-  text        ANTA command to check network states with text result
-  tpl-report  ANTA command to check network state with templated report
+--8<-- "anta_nrfu_help.txt"
 ```
 
 > `username`, `password`, `enable-password`, `enable`, `timeout` and `insecure` values are the same for all devices
@@ -67,7 +26,7 @@ All commands under the `anta nrfu` namespace require a catalog yaml file specifi
 !!! info
     Issuing the command `anta nrfu` will run `anta nrfu table` without any option.
 
-## Tag management
+### Tag management
 
 The `--tags` option can be used to target specific devices in your inventory and run only tests configured with this specific tags from your catalog. The default tag is set to `all` and is implicit. Expected behaviour is provided below:
 
@@ -80,6 +39,14 @@ The `--tags` option can be used to target specific devices in your inventory and
 !!! info
     [More examples](tag-management.md) available on this dedicated page.
 
+### Device and test filtering
+
+Options `--device` and `--test` can be used to target one or multiple devices and/or tests to run in your environment. The options can be repeated. Example: `anta nrfu --device leaf1a --device leaf1b --test VerifyUptime --test VerifyReloadCause`.
+
+### Hide results
+
+Option `--hide` can be used to hide test results in the output based on their status. The option can be repeated. Example: `anta nrfu --hide error --hide skipped`.
+
 ## Performing NRFU with text rendering
 
 The `text` subcommand provides a straightforward text report for each test executed on all devices in your inventory.
@@ -87,25 +54,18 @@ The `text` subcommand provides a straightforward text report for each test execu
 ### Command overview
 
 ```bash
-anta nrfu text --help
 Usage: anta nrfu text [OPTIONS]
 
-  ANTA command to check network states with text result
+  ANTA command to check network states with text result.
 
 Options:
-  -s, --search TEXT  Regular expression to search in both name and test
-  --skip-error       Hide tests in errors due to connectivity issue
-  --help             Show this message and exit.
+  --help  Show this message and exit.
 ```
-
-The `--search` option permits filtering based on a regular expression pattern in both the hostname and the test name.
-
-The `--skip-error` option can be used to exclude tests that failed due to connectivity issues or unsupported commands.
 
 ### Example
 
 ```bash
-anta nrfu text --tags LEAF --search DC1-LEAF1A
+anta nrfu --device DC1-LEAF1A text
 ```
 [![anta nrfu text results](../imgs/anta-nrfu-text-output.png){ loading=lazy width="1600" }](../imgs/anta-nrfu-text-output.png)
 
@@ -116,19 +76,14 @@ The `table` command under the `anta nrfu` namespace offers a clear and organized
 ### Command overview
 
 ```bash
-anta nrfu table --help
 Usage: anta nrfu table [OPTIONS]
 
-  ANTA command to check network states with table result
+  ANTA command to check network states with table result.
 
 Options:
-  -d, --device TEXT         Show a summary for this device
-  -t, --test TEXT           Show a summary for this test
-  --group-by [device|test]  Group result by test or host. default none
+  --group-by [device|test]  Group result by test or device.
   --help                    Show this message and exit.
 ```
-
-The `--device` and `--test` options show a summarized view of the test results for a specific host or test case, respectively.
 
 The `--group-by` option show a summarized view of the test results per host or per test.
 
@@ -154,12 +109,12 @@ anta nrfu table --group-by test
 To get more specific information, it is possible to filter on a single device or a single test:
 
 ```bash
-anta nrfu table --device spine1
+anta nrfu --device spine1 table
 ```
 [![anta nrfu table filter_host_output](../imgs/anta-nrfu-table-filter-host-output.png){ loading=lazy width="1600" }](../imgs/anta-nrfu-table-filter-host-output.png)
 
 ```bash
-anta nrfu table --test VerifyZeroTouch
+anta nrfu --test VerifyZeroTouch table
 ```
 [![anta nrfu table filter_test_output](../imgs/anta-nrfu-table-filter-test-output.png){ loading=lazy width="1600" }](../imgs/anta-nrfu-table-filter-test-output.png)
 
@@ -173,7 +128,7 @@ The JSON rendering command in NRFU testing is useful in generating a JSON output
 anta nrfu json --help
 Usage: anta nrfu json [OPTIONS]
 
-  ANTA command to check network state with JSON result
+  ANTA command to check network state with JSON result.
 
 Options:
   -o, --output FILE  Path to save report as a file  [env var:

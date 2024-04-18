@@ -21,7 +21,7 @@ DATA_DIR: Path = Path(__file__).parents[3].resolve() / "data"
 
 def test_get_cv_token() -> None:
     """Test anta.get.utils.get_cv_token."""
-    ip = "42.42.42.42"
+    ip_addr = "42.42.42.42"
     username = "ant"
     password = "formica"
 
@@ -29,7 +29,7 @@ def test_get_cv_token() -> None:
         mocked_ret = MagicMock(autospec=requests.Response)
         mocked_ret.json.return_value = {"sessionId": "simple"}
         patched_request.return_value = mocked_ret
-        res = get_cv_token(ip, username, password)
+        res = get_cv_token(ip_addr, username, password)
     patched_request.assert_called_once_with(
         "POST",
         "https://42.42.42.42/cvpservice/login/authenticate.do",
@@ -81,14 +81,15 @@ def test_create_inventory_from_cvp(tmp_path: Path, inventory: list[dict[str, Any
 
 
 @pytest.mark.parametrize(
-    ("inventory_filename", "ansible_group", "expected_raise", "expected_inv_length"),
+    ("inventory_filename", "ansible_group", "expected_raise", "expected_log", "expected_inv_length"),
     [
-        pytest.param("ansible_inventory.yml", None, nullcontext(), 7, id="no group"),
-        pytest.param("ansible_inventory.yml", "ATD_LEAFS", nullcontext(), 4, id="group found"),
+        pytest.param("ansible_inventory.yml", None, nullcontext(), None, 7, id="no group"),
+        pytest.param("ansible_inventory.yml", "ATD_LEAFS", nullcontext(), None, 4, id="group found"),
         pytest.param(
             "ansible_inventory.yml",
             "DUMMY",
             pytest.raises(ValueError, match="Group DUMMY not found in Ansible inventory"),
+            None,
             0,
             id="group not found",
         ),
@@ -96,6 +97,7 @@ def test_create_inventory_from_cvp(tmp_path: Path, inventory: list[dict[str, Any
             "empty_ansible_inventory.yml",
             None,
             pytest.raises(ValueError, match="Ansible inventory .* is empty"),
+            None,
             0,
             id="empty inventory",
         ),
@@ -103,19 +105,31 @@ def test_create_inventory_from_cvp(tmp_path: Path, inventory: list[dict[str, Any
             "wrong_ansible_inventory.yml",
             None,
             pytest.raises(ValueError, match="Could not parse"),
+            None,
             0,
             id="os error inventory",
+        ),
+        pytest.param(
+            "ansible_inventory_with_vault.yml",
+            None,
+            pytest.raises(ValueError, match="Could not parse"),
+            "`anta get from-ansible` does not support inline vaulted variables",
+            0,
+            id="Vault variable in inventory",
         ),
     ],
 )
 def test_create_inventory_from_ansible(
+    caplog: pytest.LogCaptureFixture,
     tmp_path: Path,
     inventory_filename: Path,
     ansible_group: str | None,
     expected_raise: AbstractContextManager[Exception],
+    expected_log: str | None,
     expected_inv_length: int,
 ) -> None:
     """Test anta.get.utils.create_inventory_from_ansible."""
+    # pylint: disable=R0913
     target_file = tmp_path / "inventory.yml"
     inventory_file_path = DATA_DIR / inventory_filename
 
@@ -130,3 +144,5 @@ def test_create_inventory_from_ansible(
         assert len(inv) == expected_inv_length
     if not isinstance(expected_raise, nullcontext):
         assert not target_file.exists()
+        if expected_log:
+            assert expected_log in caplog.text

@@ -6,12 +6,13 @@
 from __future__ import annotations
 
 import asyncio
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, get_args
 
 import click
 
 from anta.cli.nrfu import commands
 from anta.cli.utils import AliasedGroup, catalog_options, inventory_options
+from anta.custom_types import TestStatus
 from anta.models import AntaTest
 from anta.result_manager import ResultManager
 from anta.runner import main
@@ -52,14 +53,66 @@ class IgnoreRequiredWithHelp(AliasedGroup):
             return super().parse_args(ctx, args)
 
 
+HIDE_STATUS: list[str] = list(get_args(TestStatus))
+HIDE_STATUS.remove("unset")
+
+
 @click.group(invoke_without_command=True, cls=IgnoreRequiredWithHelp)
 @click.pass_context
 @inventory_options
 @catalog_options
-@click.option("--ignore-status", help="Always exit with success", show_envvar=True, is_flag=True, default=False)
-@click.option("--ignore-error", help="Only report failures and not errors", show_envvar=True, is_flag=True, default=False)
-def nrfu(ctx: click.Context, inventory: AntaInventory, tags: list[str] | None, catalog: AntaCatalog, *, ignore_status: bool, ignore_error: bool) -> None:
-    """Run ANTA tests on devices."""
+@click.option(
+    "--device",
+    "-d",
+    help="Run tests on a specific device. Can be provided multiple times.",
+    type=str,
+    multiple=True,
+    required=False,
+)
+@click.option(
+    "--test",
+    "-t",
+    help="Run a specific test. Can be provided multiple times.",
+    type=str,
+    multiple=True,
+    required=False,
+)
+@click.option(
+    "--ignore-status",
+    help="Exit code will always be 0.",
+    show_envvar=True,
+    is_flag=True,
+    default=False,
+)
+@click.option(
+    "--ignore-error",
+    help="Exit code will be 0 if all tests succeeded or 1 if any test failed.",
+    show_envvar=True,
+    is_flag=True,
+    default=False,
+)
+@click.option(
+    "--hide",
+    default=None,
+    type=click.Choice(HIDE_STATUS, case_sensitive=False),
+    multiple=True,
+    help="Group result by test or device.",
+    required=False,
+)
+# pylint: disable=too-many-arguments
+def nrfu(
+    ctx: click.Context,
+    inventory: AntaInventory,
+    tags: set[str] | None,
+    catalog: AntaCatalog,
+    device: tuple[str],
+    test: tuple[str],
+    hide: tuple[str],
+    *,
+    ignore_status: bool,
+    ignore_error: bool,
+) -> None:
+    """Run ANTA tests on selected inventory devices."""
     # If help is invoke somewhere, skip the command
     if ctx.obj.get("_anta_help"):
         return
@@ -68,9 +121,10 @@ def nrfu(ctx: click.Context, inventory: AntaInventory, tags: list[str] | None, c
     ctx.obj["result_manager"] = ResultManager()
     ctx.obj["ignore_status"] = ignore_status
     ctx.obj["ignore_error"] = ignore_error
+    ctx.obj["hide"] = set(hide) if hide else None
     print_settings(inventory, catalog)
     with anta_progress_bar() as AntaTest.progress:
-        asyncio.run(main(ctx.obj["result_manager"], inventory, catalog, tags=tags))
+        asyncio.run(main(ctx.obj["result_manager"], inventory, catalog, tags=tags, devices=set(device) if device else None, tests=set(test) if test else None))
     # Invoke `anta nrfu table` if no command is passed
     if ctx.invoked_subcommand is None:
         ctx.invoke(commands.table)

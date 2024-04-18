@@ -46,7 +46,7 @@ class AntaInventory(dict[str, AntaDevice]):
 
         Args:
         ----
-            inventory_disable_cache (bool): The value of disable_cache in the inventory
+            inventory_disable_cache: The value of disable_cache in the inventory
             kwargs: The kwargs to instantiate the device
 
         """
@@ -64,9 +64,9 @@ class AntaInventory(dict[str, AntaDevice]):
 
         Args:
         ----
-            inventory_input (AntaInventoryInput): AntaInventoryInput used to parse the devices
-            inventory (AntaInventory): AntaInventory to add the parsed devices to
-            **kwargs (dict[str, Any]): Additional keywork arguments to pass to the device constructor
+            inventory_input: AntaInventoryInput used to parse the devices
+            inventory: AntaInventory to add the parsed devices to
+            **kwargs: Additional keyword arguments to pass to the device constructor
 
         """
         if inventory_input.hosts is None:
@@ -93,9 +93,9 @@ class AntaInventory(dict[str, AntaDevice]):
 
         Args:
         ----
-            inventory_input (AntaInventoryInput): AntaInventoryInput used to parse the devices
-            inventory (AntaInventory): AntaInventory to add the parsed devices to
-            **kwargs (dict[str, Any]): Additional keywork arguments to pass to the device constructor
+            inventory_input: AntaInventoryInput used to parse the devices
+            inventory: AntaInventory to add the parsed devices to
+            **kwargs: Additional keyword arguments to pass to the device constructor
 
         Raises
         ------
@@ -126,9 +126,9 @@ class AntaInventory(dict[str, AntaDevice]):
 
         Args:
         ----
-            inventory_input (AntaInventoryInput): AntaInventoryInput used to parse the devices
-            inventory (AntaInventory): AntaInventory to add the parsed devices to
-            **kwargs (dict[str, Any]): Additional keywork arguments to pass to the device constructor
+            inventory_input: AntaInventoryInput used to parse the devices
+            inventory: AntaInventory to add the parsed devices to
+            **kwargs: Additional keyword arguments to pass to the device constructor
 
         Raises
         ------
@@ -177,14 +177,14 @@ class AntaInventory(dict[str, AntaDevice]):
 
         Args:
         ----
-            filename (str): Path to device inventory YAML file
-            username (str): Username to use to connect to devices
-            password (str): Password to use to connect to devices
-            enable (bool): Whether or not the commands need to be run in enable mode towards the devices
-            enable_password (str, optional): Enable password to use if required
-            timeout (float, optional): timeout in seconds for every API call.
-            insecure (bool): Disable SSH Host Key validation
-            disable_cache (bool): Disable cache globally
+            filename: Path to device inventory YAML file.
+            username: Username to use to connect to devices.
+            password: Password to use to connect to devices.
+            enable_password: Enable password to use if required.
+            timeout: Timeout value in seconds for outgoing API calls.
+            enable: Whether or not the commands need to be run in enable mode towards the devices.
+            insecure: Disable SSH Host Key validation.
+            disable_cache: Disable cache globally.
 
         Raises
         ------
@@ -238,6 +238,11 @@ class AntaInventory(dict[str, AntaDevice]):
 
         return inventory
 
+    @property
+    def devices(self) -> list[AntaDevice]:
+        """List of AntaDevice in this inventory."""
+        return list(self.values())
+
     ###########################################################################
     # Public methods
     ###########################################################################
@@ -246,29 +251,31 @@ class AntaInventory(dict[str, AntaDevice]):
     # GET methods
     ###########################################################################
 
-    def get_inventory(self, *, established_only: bool = False, tags: list[str] | None = None) -> AntaInventory:
+    def get_inventory(self, *, established_only: bool = False, tags: set[str] | None = None, devices: set[str] | None = None) -> AntaInventory:
         """Return a filtered inventory.
 
         Args:
         ----
-            established_only: Whether or not to include only established devices. Default False.
-            tags: List of tags to filter devices.
+            established_only: Whether or not to include only established devices.
+            tags: Tags to filter devices.
+            devices: Names to filter devices.
 
         Returns
         -------
-            AntaInventory: An inventory with filtered AntaDevice objects.
-
+            An inventory with filtered AntaDevice objects.
         """
 
         def _filter_devices(device: AntaDevice) -> bool:
-            """Select the devices based on the input tags and the requirement for an established connection."""
+            """Select the devices based on the inputs `tags`, `devices` and `established_only`."""
             if tags is not None and all(tag not in tags for tag in device.tags):
                 return False
-            return bool(not established_only or device.established)
+            if devices is None or device.name in devices:
+                return bool(not established_only or device.established)
+            return False
 
-        devices: list[AntaDevice] = list(filter(_filter_devices, self.values()))
+        filtered_devices: list[AntaDevice] = list(filter(_filter_devices, self.values()))
         result = AntaInventory()
-        for device in devices:
+        for device in filtered_devices:
             result.add_device(device)
         return result
 

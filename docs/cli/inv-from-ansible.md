@@ -14,16 +14,27 @@ In large setups, it might be beneficial to construct your inventory based on you
 $ anta get from-ansible --help
 Usage: anta get from-ansible [OPTIONS]
 
-  Build ANTA inventory from an ansible inventory YAML file
+  Build ANTA inventory from an ansible inventory YAML file.
+
+  NOTE: This command does not support inline vaulted variables. Make sure to
+  comment them out.
 
 Options:
-  -g, --ansible-group TEXT        Ansible group to filter
-  --ansible-inventory FILENAME
-                                  Path to your ansible inventory file to read
-  -o, --output FILENAME           Path to save inventory file
-  -d, --inventory-directory PATH  Directory to save inventory file
-  --help                          Show this message and exit.
+  -o, --output FILE         Path to save inventory file  [env var:
+                            ANTA_INVENTORY; required]
+  --overwrite               Do not prompt when overriding current inventory
+                            [env var: ANTA_GET_FROM_ANSIBLE_OVERWRITE]
+  -g, --ansible-group TEXT  Ansible group to filter
+  --ansible-inventory FILE  Path to your ansible inventory file to read
+                            [required]
+  --help                    Show this message and exit.
 ```
+
+!!! warning
+
+	`anta get from-ansible` does not support inline vaulted variables, comment them out to generate your inventory.
+	If the vaulted variable is necessary to build the inventory (e.g. `ansible_host`), it needs to be unvaulted for `from-ansible` command to work."
+
 
 The output is an inventory where the name of the container is added as a tag for each host:
 
@@ -39,7 +50,7 @@ anta_inventory:
 ```
 
 !!! warning
-    The current implementation only considers devices directly attached to a specific Ansible group and does not support inheritence when using the `--ansible-group` option.
+    The current implementation only considers devices directly attached to a specific Ansible group and does not support inheritance when using the `--ansible-group` option.
 
 By default, if user does not provide `--output` file, anta will save output to configured anta inventory (`anta --inventory`). If the output file has content, anta will ask user to overwrite when running in interactive console. This mechanism can be controlled by triggers in case of CI usage: `--overwrite` to force anta to overwrite file. If not set, anta will exit
 

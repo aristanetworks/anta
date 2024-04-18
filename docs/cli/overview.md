@@ -22,7 +22,7 @@ $ anta --help
 --8<-- "anta_help.txt"
 ```
 
-## ANTA environement variables
+## ANTA environment variables
 
 Certain parameters are required and can be either passed to the ANTA CLI or set as an environment variable (ENV VAR).
 
@@ -48,10 +48,10 @@ anta nrfu
 ```
 
 !!! note
-    All environement variables may not be needed for every commands.
-    Refer to `<command> --help` for the comprehensive environment varibles names.
+    All environment variables may not be needed for every commands.
+    Refer to `<command> --help` for the comprehensive environment variables names.
 
-Below are the environement variables usable with the `anta nrfu` command:
+Below are the environment variables usable with the `anta nrfu` command:
 
 | Variable Name | Purpose | Required |
 | ------------- | ------- |----------|

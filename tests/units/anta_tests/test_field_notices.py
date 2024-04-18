@@ -2,6 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Test inputs for anta.tests.field_notices."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -20,9 +21,7 @@ DATA: list[dict[str, Any]] = [
                 "modelName": "DCS-7280QRA-C36S",
                 "details": {
                     "deviations": [],
-                    "components": [
-                        {"name": "Aboot", "version": "Aboot-veos-8.0.0-3255441"}
-                    ],
+                    "components": [{"name": "Aboot", "version": "Aboot-veos-8.0.0-3255441"}],
                 },
             },
         ],
@@ -39,9 +38,7 @@ DATA: list[dict[str, Any]] = [
                 "modelName": "DCS-7280QRA-C36S",
                 "details": {
                     "deviations": [],
-                    "components": [
-                        {"name": "Aboot", "version": "Aboot-veos-4.0.1-3255441"}
-                    ],
+                    "components": [{"name": "Aboot", "version": "Aboot-veos-4.0.1-3255441"}],
                 },
             },
         ],
@@ -61,9 +58,7 @@ DATA: list[dict[str, Any]] = [
                 "modelName": "DCS-7280QRA-C36S",
                 "details": {
                     "deviations": [],
-                    "components": [
-                        {"name": "Aboot", "version": "Aboot-veos-4.1.0-3255441"}
-                    ],
+                    "components": [{"name": "Aboot", "version": "Aboot-veos-4.1.0-3255441"}],
                 },
             },
         ],
@@ -83,9 +78,7 @@ DATA: list[dict[str, Any]] = [
                 "modelName": "DCS-7280QRA-C36S",
                 "details": {
                     "deviations": [],
-                    "components": [
-                        {"name": "Aboot", "version": "Aboot-veos-6.0.1-3255441"}
-                    ],
+                    "components": [{"name": "Aboot", "version": "Aboot-veos-6.0.1-3255441"}],
                 },
             },
         ],
@@ -105,9 +98,7 @@ DATA: list[dict[str, Any]] = [
                 "modelName": "DCS-7280QRA-C36S",
                 "details": {
                     "deviations": [],
-                    "components": [
-                        {"name": "Aboot", "version": "Aboot-veos-6.1.1-3255441"}
-                    ],
+                    "components": [{"name": "Aboot", "version": "Aboot-veos-6.1.1-3255441"}],
                 },
             },
         ],
@@ -127,9 +118,7 @@ DATA: list[dict[str, Any]] = [
                 "modelName": "vEOS-lab",
                 "details": {
                     "deviations": [],
-                    "components": [
-                        {"name": "Aboot", "version": "Aboot-veos-8.0.0-3255441"}
-                    ],
+                    "components": [{"name": "Aboot", "version": "Aboot-veos-8.0.0-3255441"}],
                 },
             },
         ],

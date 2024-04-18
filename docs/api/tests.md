@@ -35,6 +35,7 @@ Here are the tests that we currently provide:
 - [SNMP](tests.snmp.md)
 - [Software](tests.software.md)
 - [STP](tests.stp.md)
+- [STUN](tests.stun.md)
 - [System](tests.system.md)
 - [VLAN](tests.vlan.md)
 - [VXLAN](tests.vxlan.md)

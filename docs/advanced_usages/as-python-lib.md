@@ -72,7 +72,6 @@ if __name__ == "__main__":
         filename="inv.yml",
         username="arista",
         password="@rista123",
-        timeout=15,
     )
 
     # Run the main coroutine
@@ -129,7 +128,6 @@ if __name__ == "__main__":
         filename="inv.yml",
         username="arista",
         password="@rista123",
-        timeout=15,
     )
 
     # Create a list of commands with json output
@@ -228,7 +226,7 @@ class VerifyTransceiversManufacturers(AntaTest):
         pass
 ```
 
-The test itself does not return any value, but the result is directly availble from your AntaTest object and exposes a `anta.result_manager.models.TestResult` object with result, name of the test and optional messages:
+The test itself does not return any value, but the result is directly available from your AntaTest object and exposes a `anta.result_manager.models.TestResult` object with result, name of the test and optional messages:
 
 
 - `name` (str): Device name where the test has run.
@@ -256,7 +254,7 @@ To make it easier to get data, ANTA defines 2 different classes to manage comman
 Represent a command with following information:
 
 - Command to run
-- Ouput format expected
+- Output format expected
 - eAPI version
 - Output of the command
 
@@ -272,7 +270,7 @@ cmd2 = AntaCommand(command="show running-config diffs", ofmt="text")
 !!! tip "Command revision and version"
     * Most of EOS commands return a JSON structure according to a model (some commands may not be modeled hence the necessity to use `text` outformat sometimes.
     * The model can change across time (adding feature, ... ) and when the model is changed in a non backward-compatible way, the __revision__ number is bumped. The initial model starts with __revision__ 1.
-    * A __revision__ applies to a particular CLI command whereas a __version__ is global to an eAPI call. The __version__ is internally translated to a specific __revision__ for each CLI command in the RPC call. The currently supported __version__ vaues  are `1` and `latest`.
+    * A __revision__ applies to a particular CLI command whereas a __version__ is global to an eAPI call. The __version__ is internally translated to a specific __revision__ for each CLI command in the RPC call. The currently supported __version__ values  are `1` and `latest`.
     * A __revision takes precedence over a version__ (e.g. if a command is run with version="latest" and revision=1, the first revision of the model is returned)
     * By default, eAPI returns the first revision of each model to ensure that when upgrading, integrations with existing tools are not broken. This is done by using by default `version=1` in eAPI calls.
 

@@ -215,6 +215,48 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
+        "name": "success-multiple-neighbors",
+        "test": VerifyLLDPNeighbors,
+        "inputs": {
+            "neighbors": [
+                {"port": "Ethernet1", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"},
+            ],
+        },
+        "eos_data": [
+            {
+                "lldpNeighbors": {
+                    "Ethernet1": {
+                        "lldpNeighborInfo": [
+                            {
+                                "chassisIdType": "macAddress",
+                                "chassisId": "001c.73a0.fc18",
+                                "systemName": "DC1-SPINE1",
+                                "neighborInterfaceInfo": {
+                                    "interfaceIdType": "interfaceName",
+                                    "interfaceId": '"Ethernet1"',
+                                    "interfaceId_v2": "Ethernet1",
+                                    "interfaceDescription": "P2P_LINK_TO_DC1-LEAF1A_Ethernet1",
+                                },
+                            },
+                            {
+                                "chassisIdType": "macAddress",
+                                "chassisId": "001c.73f7.d138",
+                                "systemName": "DC1-SPINE2",
+                                "neighborInterfaceInfo": {
+                                    "interfaceIdType": "interfaceName",
+                                    "interfaceId": '"Ethernet1"',
+                                    "interfaceId_v2": "Ethernet1",
+                                    "interfaceDescription": "P2P_LINK_TO_DC1-LEAF1A_Ethernet2",
+                                },
+                            },
+                        ],
+                    },
+                },
+            },
+        ],
+        "expected": {"result": "success"},
+    },
+    {
         "name": "failure-port-not-configured",
         "test": VerifyLLDPNeighbors,
         "inputs": {
@@ -244,7 +286,7 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "expected": {"result": "failure", "messages": ["The following port(s) have issues: {'port_not_configured': ['Ethernet2']}"]},
+        "expected": {"result": "failure", "messages": ["Port(s) not configured:\n   Ethernet2"]},
     },
     {
         "name": "failure-no-neighbor",
@@ -277,7 +319,7 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "expected": {"result": "failure", "messages": ["The following port(s) have issues: {'no_lldp_neighbor': ['Ethernet2']}"]},
+        "expected": {"result": "failure", "messages": ["No LLDP neighbor(s) on port(s):\n   Ethernet2"]},
     },
     {
         "name": "failure-wrong-neighbor",
@@ -324,7 +366,7 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "expected": {"result": "failure", "messages": ["The following port(s) have issues: {'wrong_lldp_neighbor': ['Ethernet2']}"]},
+        "expected": {"result": "failure", "messages": ["Wrong LLDP neighbor(s) on port(s):\n   Ethernet2\n      DC1-SPINE2_Ethernet2"]},
     },
     {
         "name": "failure-multiple",
@@ -361,8 +403,52 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "The following port(s) have issues: {'wrong_lldp_neighbor': ['Ethernet1'], 'no_lldp_neighbor': ['Ethernet2'], 'port_not_configured': ['Ethernet3']}",
+                "Wrong LLDP neighbor(s) on port(s):\n   Ethernet1\n      DC1-SPINE1_Ethernet2\n"
+                "No LLDP neighbor(s) on port(s):\n   Ethernet2\n"
+                "Port(s) not configured:\n   Ethernet3"
             ],
         },
+    },
+    {
+        "name": "failure-multiple-neighbors",
+        "test": VerifyLLDPNeighbors,
+        "inputs": {
+            "neighbors": [
+                {"port": "Ethernet1", "neighbor_device": "DC1-SPINE3", "neighbor_port": "Ethernet1"},
+            ],
+        },
+        "eos_data": [
+            {
+                "lldpNeighbors": {
+                    "Ethernet1": {
+                        "lldpNeighborInfo": [
+                            {
+                                "chassisIdType": "macAddress",
+                                "chassisId": "001c.73a0.fc18",
+                                "systemName": "DC1-SPINE1",
+                                "neighborInterfaceInfo": {
+                                    "interfaceIdType": "interfaceName",
+                                    "interfaceId": '"Ethernet1"',
+                                    "interfaceId_v2": "Ethernet1",
+                                    "interfaceDescription": "P2P_LINK_TO_DC1-LEAF1A_Ethernet1",
+                                },
+                            },
+                            {
+                                "chassisIdType": "macAddress",
+                                "chassisId": "001c.73f7.d138",
+                                "systemName": "DC1-SPINE2",
+                                "neighborInterfaceInfo": {
+                                    "interfaceIdType": "interfaceName",
+                                    "interfaceId": '"Ethernet1"',
+                                    "interfaceId_v2": "Ethernet1",
+                                    "interfaceDescription": "P2P_LINK_TO_DC1-LEAF1A_Ethernet2",
+                                },
+                            },
+                        ],
+                    },
+                },
+            },
+        ],
+        "expected": {"result": "failure", "messages": ["Wrong LLDP neighbor(s) on port(s):\n   Ethernet1\n      DC1-SPINE1_Ethernet1\n      DC1-SPINE2_Ethernet1"]},
     },
 ]
