@@ -68,8 +68,8 @@ def setup_logging(level: LogLevel = Log.INFO, file: Path | None = None) -> None:
 
     # Add RichHandler for stdout
     rich_handler = RichHandler(markup=True, rich_tracebacks=True, tracebacks_show_locals=False)
-    # In ANTA debug mode, show Python module in stdout
-    fmt_string = "[grey58]\\[%(name)s][/grey58] %(message)s" if __DEBUG__ else "%(message)s"
+    # Show Python module in stdout at DEBUG level
+    fmt_string = "[grey58]\\[%(name)s][/grey58] %(message)s" if loglevel == logging.DEBUG else "%(message)s"
     formatter = logging.Formatter(fmt=fmt_string, datefmt="[%X]")
     rich_handler.setFormatter(formatter)
     root.addHandler(rich_handler)
@@ -99,9 +99,9 @@ def anta_log_exception(exception: BaseException, message: str | None = None, cal
 
     Args:
     ----
-        exception (BaseException): The Exception being logged
-        message (str): An optional message
-        calling_logger (logging.Logger): A logger to which the exception should be logged. If not present, the logger in this file is used.
+        exception: The Exception being logged.
+        message: An optional message.
+        calling_logger: A logger to which the exception should be logged. If not present, the logger in this file is used.
 
     """
     if calling_logger is None:

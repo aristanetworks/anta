@@ -126,54 +126,11 @@ ANTA comes with a generic CLI entrypoint to run tests in your network. It requir
 This entrypoint has multiple options to manage test coverage and reporting.
 
 ```bash
-# Generic ANTA options
-$ anta
 --8<-- "anta_help.txt"
 ```
 
 ```bash
-# NRFU part of ANTA
-Usage: anta nrfu [OPTIONS] COMMAND [ARGS]...
-
-  Run ANTA tests on devices
-
-Options:
-  -u, --username TEXT     Username to connect to EOS  [env var: ANTA_USERNAME;
-                          required]
-  -p, --password TEXT     Password to connect to EOS that must be provided. It
-                          can be prompted using '--prompt' option.  [env var:
-                          ANTA_PASSWORD]
-  --enable-password TEXT  Password to access EOS Privileged EXEC mode. It can
-                          be prompted using '--prompt' option. Requires '--
-                          enable' option.  [env var: ANTA_ENABLE_PASSWORD]
-  --enable                Some commands may require EOS Privileged EXEC mode.
-                          This option tries to access this mode before sending
-                          a command to the device.  [env var: ANTA_ENABLE]
-  -P, --prompt            Prompt for passwords if they are not provided.  [env
-                          var: ANTA_PROMPT]
-  --timeout INTEGER       Global connection timeout  [env var: ANTA_TIMEOUT;
-                          default: 30]
-  --insecure              Disable SSH Host Key validation  [env var:
-                          ANTA_INSECURE]
-  --disable-cache         Disable cache globally  [env var:
-                          ANTA_DISABLE_CACHE]
-  -i, --inventory FILE    Path to the inventory YAML file  [env var:
-                          ANTA_INVENTORY; required]
-  -t, --tags TEXT         List of tags using comma as separator:
-                          tag1,tag2,tag3  [env var: ANTA_TAGS]
-  -c, --catalog FILE      Path to the test catalog YAML file  [env var:
-                          ANTA_CATALOG; required]
-  --ignore-status         Always exit with success  [env var:
-                          ANTA_NRFU_IGNORE_STATUS]
-  --ignore-error          Only report failures and not errors  [env var:
-                          ANTA_NRFU_IGNORE_ERROR]
-  --help                  Show this message and exit.
-
-Commands:
-  json        ANTA command to check network state with JSON result
-  table       ANTA command to check network states with table result
-  text        ANTA command to check network states with text result
-  tpl-report  ANTA command to check network state with templated report
+--8<-- "anta_nrfu_help.txt"
 ```
 
 To run the NRFU, you need to select an output format amongst ["json", "table", "text", "tpl-report"]. For a first usage, `table` is recommended.  By default all test results for all devices are rendered but it can be changed to a report per test case or per host

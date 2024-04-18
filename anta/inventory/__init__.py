@@ -46,7 +46,7 @@ class AntaInventory(dict[str, AntaDevice]):
 
         Args:
         ----
-            inventory_disable_cache (bool): The value of disable_cache in the inventory
+            inventory_disable_cache: The value of disable_cache in the inventory
             kwargs: The kwargs to instantiate the device
 
         """
@@ -64,9 +64,9 @@ class AntaInventory(dict[str, AntaDevice]):
 
         Args:
         ----
-            inventory_input (AntaInventoryInput): AntaInventoryInput used to parse the devices
-            inventory (AntaInventory): AntaInventory to add the parsed devices to
-            **kwargs (dict[str, Any]): Additional keyword arguments to pass to the device constructor
+            inventory_input: AntaInventoryInput used to parse the devices
+            inventory: AntaInventory to add the parsed devices to
+            **kwargs: Additional keyword arguments to pass to the device constructor
 
         """
         if inventory_input.hosts is None:
@@ -93,9 +93,9 @@ class AntaInventory(dict[str, AntaDevice]):
 
         Args:
         ----
-            inventory_input (AntaInventoryInput): AntaInventoryInput used to parse the devices
-            inventory (AntaInventory): AntaInventory to add the parsed devices to
-            **kwargs (dict[str, Any]): Additional keyword arguments to pass to the device constructor
+            inventory_input: AntaInventoryInput used to parse the devices
+            inventory: AntaInventory to add the parsed devices to
+            **kwargs: Additional keyword arguments to pass to the device constructor
 
         Raises
         ------
@@ -126,9 +126,9 @@ class AntaInventory(dict[str, AntaDevice]):
 
         Args:
         ----
-            inventory_input (AntaInventoryInput): AntaInventoryInput used to parse the devices
-            inventory (AntaInventory): AntaInventory to add the parsed devices to
-            **kwargs (dict[str, Any]): Additional keyword arguments to pass to the device constructor
+            inventory_input: AntaInventoryInput used to parse the devices
+            inventory: AntaInventory to add the parsed devices to
+            **kwargs: Additional keyword arguments to pass to the device constructor
 
         Raises
         ------
@@ -177,14 +177,14 @@ class AntaInventory(dict[str, AntaDevice]):
 
         Args:
         ----
-            filename (str): Path to device inventory YAML file
-            username (str): Username to use to connect to devices
-            password (str): Password to use to connect to devices
-            enable (bool): Whether or not the commands need to be run in enable mode towards the devices
-            enable_password (str, optional): Enable password to use if required
-            timeout (float, optional): timeout in seconds for every API call.
-            insecure (bool): Disable SSH Host Key validation
-            disable_cache (bool): Disable cache globally
+            filename: Path to device inventory YAML file.
+            username: Username to use to connect to devices.
+            password: Password to use to connect to devices.
+            enable_password: Enable password to use if required.
+            timeout: Timeout value in seconds for outgoing API calls.
+            enable: Whether or not the commands need to be run in enable mode towards the devices.
+            insecure: Disable SSH Host Key validation.
+            disable_cache: Disable cache globally.
 
         Raises
         ------

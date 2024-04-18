@@ -154,6 +154,15 @@ def create_inventory_from_ansible(inventory: Path, output: Path, ansible_group: 
     try:
         with inventory.open(encoding="utf-8") as inv:
             ansible_inventory = yaml.safe_load(inv)
+    except yaml.constructor.ConstructorError as exc:
+        if exc.problem and "!vault" in exc.problem:
+            logger.error(
+                "`anta get from-ansible` does not support inline vaulted variables, comment them out to generate your inventory. "
+                "If the vaulted variable is necessary to build the inventory (e.g. `ansible_host`), it needs to be unvaulted for "
+                "`from-ansible` command to work."
+            )
+        msg = f"Could not parse {inventory}."
+        raise ValueError(msg) from exc
     except OSError as exc:
         msg = f"Could not parse {inventory}."
         raise ValueError(msg) from exc

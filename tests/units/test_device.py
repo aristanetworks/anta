@@ -373,7 +373,7 @@ AIOEAPI_COLLECT_DATA: list[dict[str, Any]] = [
             "command": "show version",
             "patch_kwargs": {"side_effect": httpx.HTTPError(message="404")},
         },
-        "expected": {"output": None, "errors": ["404"]},
+        "expected": {"output": None, "errors": ["HTTPError: 404"]},
     },
     {
         "name": "httpx.ConnectError",
@@ -382,7 +382,7 @@ AIOEAPI_COLLECT_DATA: list[dict[str, Any]] = [
             "command": "show version",
             "patch_kwargs": {"side_effect": httpx.ConnectError(message="Cannot open port")},
         },
-        "expected": {"output": None, "errors": ["Cannot open port"]},
+        "expected": {"output": None, "errors": ["ConnectError: Cannot open port"]},
     },
 ]
 AIOEAPI_COPY_DATA: list[dict[str, Any]] = [
@@ -421,26 +421,28 @@ REFRESH_DATA: list[dict[str, Any]] = [
         "patch_kwargs": (
             {"return_value": True},
             {
-                "return_value": {
-                    "mfgName": "Arista",
-                    "modelName": "DCS-7280CR3-32P4-F",
-                    "hardwareRevision": "11.00",
-                    "serialNumber": "JPE19500066",
-                    "systemMacAddress": "fc:bd:67:3d:13:c5",
-                    "hwMacAddress": "fc:bd:67:3d:13:c5",
-                    "configMacAddress": "00:00:00:00:00:00",
-                    "version": "4.31.1F-34361447.fraserrel (engineering build)",
-                    "architecture": "x86_64",
-                    "internalVersion": "4.31.1F-34361447.fraserrel",
-                    "internalBuildId": "4940d112-a2fc-4970-8b5a-a16cd03fd08c",
-                    "imageFormatVersion": "3.0",
-                    "imageOptimization": "Default",
-                    "bootupTimestamp": 1700729434.5892005,
-                    "uptime": 20666.78,
-                    "memTotal": 8099732,
-                    "memFree": 4989568,
-                    "isIntlVersion": False,
-                },
+                "return_value": [
+                    {
+                        "mfgName": "Arista",
+                        "modelName": "DCS-7280CR3-32P4-F",
+                        "hardwareRevision": "11.00",
+                        "serialNumber": "JPE19500066",
+                        "systemMacAddress": "fc:bd:67:3d:13:c5",
+                        "hwMacAddress": "fc:bd:67:3d:13:c5",
+                        "configMacAddress": "00:00:00:00:00:00",
+                        "version": "4.31.1F-34361447.fraserrel (engineering build)",
+                        "architecture": "x86_64",
+                        "internalVersion": "4.31.1F-34361447.fraserrel",
+                        "internalBuildId": "4940d112-a2fc-4970-8b5a-a16cd03fd08c",
+                        "imageFormatVersion": "3.0",
+                        "imageOptimization": "Default",
+                        "bootupTimestamp": 1700729434.5892005,
+                        "uptime": 20666.78,
+                        "memTotal": 8099732,
+                        "memFree": 4989568,
+                        "isIntlVersion": False,
+                    }
+                ],
             },
         ),
         "expected": {"is_online": True, "established": True, "hw_model": "DCS-7280CR3-32P4-F"},
@@ -481,25 +483,27 @@ REFRESH_DATA: list[dict[str, Any]] = [
         "patch_kwargs": (
             {"return_value": True},
             {
-                "return_value": {
-                    "mfgName": "Arista",
-                    "hardwareRevision": "11.00",
-                    "serialNumber": "JPE19500066",
-                    "systemMacAddress": "fc:bd:67:3d:13:c5",
-                    "hwMacAddress": "fc:bd:67:3d:13:c5",
-                    "configMacAddress": "00:00:00:00:00:00",
-                    "version": "4.31.1F-34361447.fraserrel (engineering build)",
-                    "architecture": "x86_64",
-                    "internalVersion": "4.31.1F-34361447.fraserrel",
-                    "internalBuildId": "4940d112-a2fc-4970-8b5a-a16cd03fd08c",
-                    "imageFormatVersion": "3.0",
-                    "imageOptimization": "Default",
-                    "bootupTimestamp": 1700729434.5892005,
-                    "uptime": 20666.78,
-                    "memTotal": 8099732,
-                    "memFree": 4989568,
-                    "isIntlVersion": False,
-                },
+                "return_value": [
+                    {
+                        "mfgName": "Arista",
+                        "hardwareRevision": "11.00",
+                        "serialNumber": "JPE19500066",
+                        "systemMacAddress": "fc:bd:67:3d:13:c5",
+                        "hwMacAddress": "fc:bd:67:3d:13:c5",
+                        "configMacAddress": "00:00:00:00:00:00",
+                        "version": "4.31.1F-34361447.fraserrel (engineering build)",
+                        "architecture": "x86_64",
+                        "internalVersion": "4.31.1F-34361447.fraserrel",
+                        "internalBuildId": "4940d112-a2fc-4970-8b5a-a16cd03fd08c",
+                        "imageFormatVersion": "3.0",
+                        "imageOptimization": "Default",
+                        "bootupTimestamp": 1700729434.5892005,
+                        "uptime": 20666.78,
+                        "memTotal": 8099732,
+                        "memFree": 4989568,
+                        "isIntlVersion": False,
+                    }
+                ],
             },
         ),
         "expected": {"is_online": True, "established": False, "hw_model": None},
@@ -657,13 +661,6 @@ class TestAntaDevice:
         TODO add a test where cache has some value.
         """
         assert device.cache_statistics == expected
-
-    def test_supports(self, device: AntaDevice) -> None:
-        """Test if the supports() method."""
-        command = AntaCommand(command="show hardware counter drop", errors=["Unavailable command (not supported on this hardware platform) (at token 2: 'counter')"])
-        assert device.supports(command) is False
-        command = AntaCommand(command="show hardware counter drop")
-        assert device.supports(command) is True
 
 
 class TestAsyncEOSDevice:

@@ -71,6 +71,7 @@ HIDE_STATUS.remove("unset")
 )
 @click.option(
     "--test",
+    "-t",
     help="Run a specific test. Can be provided multiple times.",
     type=str,
     multiple=True,
