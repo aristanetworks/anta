@@ -121,10 +121,7 @@ class VerifyAVTSpecificPath(AntaTest):
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each input AVT path/peer."""
-        return [
-            template.render(vrf=path.vrf, avt_name=path.avt_name, destination=path.destination, next_hop=path.next_hop, direct_path=path.direct_path)
-            for path in self.inputs.avt_paths
-        ]
+        return [template.render(vrf=path.vrf, avt_name=path.avt_name, destination=path.destination) for path in self.inputs.avt_paths]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -133,11 +130,13 @@ class VerifyAVTSpecificPath(AntaTest):
         self.result.is_success()
 
         # Process each command in the instance
-        for command in self.instance_commands:
+        for command, input_avt in zip(self.instance_commands, self.inputs.avt_paths):
             # Extract the command output and parameters
+            vrf = command.params.vrf
+            avt_name = command.params.avt_name
+            peer = str(command.params.destination)
+
             command_output = command.json_output.get("vrfs", {})
-            vrf, avt_name, peer, nexthop, direct_path = map(command.params.get, ["vrf", "avt_name", "destination", "next_hop", "direct_path"])
-            peer, nexthop = map(str, [peer, nexthop])
 
             # If no AVT is configured, mark the test as failed and skip to the next command
             if not command_output:
@@ -146,6 +145,7 @@ class VerifyAVTSpecificPath(AntaTest):
 
             # Extract the AVT paths
             avt_paths = get_value(command_output, f"{vrf}.avts.{avt_name}.avtPaths")
+            next_hop, direct_path = str(input_avt.next_hop), input_avt.direct_path
             nexthop_path_found = False
 
             # Check each AVT path
@@ -153,7 +153,7 @@ class VerifyAVTSpecificPath(AntaTest):
                 # Extract the path status and type
 
                 # If the path does not match the expected next hop, skip to the next path
-                if path_data.get("nexthopAddr") != nexthop:
+                if path_data.get("nexthopAddr") != next_hop:
                     continue
                 valid = get_value(path_data, "flags.valid")
                 active = get_value(path_data, "flags.active")
@@ -177,7 +177,7 @@ class VerifyAVTSpecificPath(AntaTest):
 
             # If no matching next hop was found, mark the test as failed
             if not nexthop_path_found:
-                self.result.is_failure(f"No path found with next-hop address {nexthop} for AVT peer {peer} under topology {avt_name} in VRF {vrf}.")
+                self.result.is_failure(f"No path found with next-hop address {next_hop} for AVT peer {peer} under topology {avt_name} in VRF {vrf}.")
 
 
 class VerifyAVTRole(AntaTest):
@@ -279,8 +279,8 @@ class VerifyAVTPathReachability(AntaTest):
         for command in self.instance_commands:
             command_output = command.json_output
 
-            dst_ip = str(command.params["dst_ip"])
-            vrf = command.params["vrf"]
+            dst_ip = command.params.dst_ip
+            vrf = command.params.vrf
 
             # Check for any error messages
             if command_output.get("errorMessage"):
