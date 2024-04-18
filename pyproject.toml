@@ -27,6 +27,7 @@ dependencies = [
   "requests>=2.31.0",
   "asyncssh>=2.13.2",
   "Jinja2>=3.1.2",
+  "rich>=13.5.2,<14",
 ]
 keywords = ["test", "anta", "Arista", "network", "automation", "networking", "devops", "netdevops"]
 classifiers = [
@@ -53,7 +54,6 @@ requires-python = ">=3.9"
 cli = [
   "click~=8.1.6",
   "click-help-colors>=0.9",
-  "rich>=13.5.2,<14",
 ]
 dev = [
   "bumpver>=2023.1129",
@@ -236,7 +236,9 @@ python =
 
 [testenv]
 description = Run pytest with {basepython}
-extras = dev
+extras =
+  dev
+  cli
 # posargs allows to run only a specific test using
 # tox -e <env> -- path/to/my/test::test
 commands =
