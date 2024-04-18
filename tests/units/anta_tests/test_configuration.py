@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from anta.tests.configuration import VerifyRunningConfigDiffs, VerifyZeroTouch
+from anta.tests.configuration import VerifyRunningConfigDiffs, VerifyRunningConfigLines, VerifyZeroTouch
 from tests.lib.anta import test  # noqa: F401; pylint: disable=W0611
 
 DATA: list[dict[str, Any]] = [
@@ -32,5 +32,32 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {"result": "success"},
     },
-    {"name": "failure", "test": VerifyRunningConfigDiffs, "eos_data": ["blah blah"], "inputs": None, "expected": {"result": "failure", "messages": ["blah blah"]}},
+    {
+        "name": "failure",
+        "test": VerifyRunningConfigDiffs,
+        "eos_data": ["blah blah"],
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["blah blah"]},
+    },
+    {
+        "name": "success",
+        "test": VerifyRunningConfigLines,
+        "eos_data": ["blah blah"],
+        "inputs": {"regex_patterns": ["blah"]},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success",
+        "test": VerifyRunningConfigLines,
+        "eos_data": ["enable password something\nsome other line"],
+        "inputs": {"regex_patterns": ["^enable password .*$", "^.*other line$"]},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure",
+        "test": VerifyRunningConfigLines,
+        "eos_data": ["enable password something\nsome other line"],
+        "inputs": {"regex_patterns": ["bla", "bleh"]},
+        "expected": {"result": "failure", "messages": ["Following patterns were not found: 'bla','bleh'"]},
+    },
 ]
