@@ -30,7 +30,7 @@ def import_mock(name: str, *args: Any) -> ModuleType:  # noqa: ANN401
     return builtins_import(name, *args)
 
 
-def test_cli_error_missing(capsys: pytest.CaptureFixture) -> None:
+def test_cli_error_missing(capsys: pytest.CaptureFixture[Any]) -> None:
     """Test ANTA errors out when anta[cli] was not installed."""
     with patch.dict(sys.modules) as sys_modules, patch("builtins.__import__", import_mock):
         del sys_modules["anta.cli._main"]
