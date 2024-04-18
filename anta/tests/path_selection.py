@@ -13,7 +13,7 @@ from typing import ClassVar
 from pydantic import BaseModel
 
 from anta.models import AntaCommand, AntaTemplate, AntaTest
-from anta.tools.get_value import get_value
+from anta.tools import get_value
 
 
 class VerifyRouterPathsHealth(AntaTest):
@@ -127,8 +127,8 @@ class VerifySpecificRouterPath(AntaTest):
 
         # Check the state of each path
         for command in self.instance_commands:
-            peer = str(command.params["peer"])
-            path_group = command.params["group"]
+            peer = command.params.peer
+            path_group = command.params.group
             command_output = command.json_output.get("dpsPeers", [])
 
             # If the peer is not configured for the path group, the test fails
