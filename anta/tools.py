@@ -43,10 +43,10 @@ def custom_division(numerator: float, denominator: float) -> int | float:
 
     Custom division that returns an integer if the result is an integer, otherwise a float.
 
-    Args:
-    ----
-    numerator (float): The numerator.
-    denominator (float): The denominator.
+    Parameters
+    ----------
+    numerator: The numerator.
+    denominator: The denominator.
 
     Returns
     -------

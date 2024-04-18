@@ -853,15 +853,13 @@ class VerifyInterfacesSpeed(AntaTest):
                 continue
 
             auto_negotiation = interface_output.get("autoNegotiate")
-            duplex = interface_output.get("duplex")
-            actual_speed = interface_output.get("bandwidth")
             actual_lanes = interface_output.get("lanes")
 
             # Collecting actual interface details
             actual_interface_output = {
                 "auto negotiation": auto_negotiation if interface.auto is True else None,
-                "duplex mode": duplex,
-                "speed": actual_speed,
+                "duplex mode": interface_output.get("duplex"),
+                "speed": interface_output.get("bandwidth"),
                 "lanes": actual_lanes if interface.lanes is not None else None,
             }
 
@@ -870,7 +868,7 @@ class VerifyInterfacesSpeed(AntaTest):
                 "auto negotiation": "success" if interface.auto is True else None,
                 "duplex mode": "duplexFull",
                 "speed": interface.speed * BPS_GBPS_CONVERSIONS,
-                "lanes": interface.lanes if interface.lanes is not None else None,
+                "lanes": interface.lanes,
             }
 
             # Forming failure message
