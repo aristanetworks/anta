@@ -76,7 +76,11 @@ def from_cvp(ctx: click.Context, output: Path, host: str, username: str, passwor
     required=True,
 )
 def from_ansible(ctx: click.Context, output: Path, ansible_group: str, ansible_inventory: Path) -> None:
-    """Build ANTA inventory from an ansible inventory YAML file."""
+    """Build ANTA inventory from an ansible inventory YAML file.
+
+    NOTE: This command does not support inline vaulted variables. Make sure to comment them out.
+
+    """
     logger.info("Building inventory from ansible file '%s'", ansible_inventory)
     try:
         create_inventory_from_ansible(
