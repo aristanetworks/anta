@@ -7,13 +7,13 @@ from __future__ import annotations
 
 from typing import Any
 
-from anta.tests.path_selection import VerifyRouterPathsHealth, VerifySpecificRouterPath
+from anta.tests.path_selection import VerifyPathsHealth, VerifySpecificPath
 from tests.lib.anta import test  # noqa: F401; pylint: disable=W0611
 
 DATA: list[dict[str, Any]] = [
     {
         "name": "success",
-        "test": VerifyRouterPathsHealth,
+        "test": VerifyPathsHealth,
         "eos_data": [
             {
                 "dpsPeers": {
@@ -53,16 +53,16 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "failure-no-peer",
-        "test": VerifyRouterPathsHealth,
+        "test": VerifyPathsHealth,
         "eos_data": [
             {"dpsPeers": {}},
         ],
         "inputs": {},
-        "expected": {"result": "failure", "messages": ["No paths are configured for router path-selection."]},
+        "expected": {"result": "failure", "messages": ["No path configured for router path-selection."]},
     },
     {
         "name": "failure-not-established",
-        "test": VerifyRouterPathsHealth,
+        "test": VerifyPathsHealth,
         "eos_data": [
             {
                 "dpsPeers": {
@@ -101,15 +101,15 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Route state for peer 10.255.0.1 in group internet is `ipsecPending`.",
-                "Route state for peer 10.255.0.1 in group mpls is `ipsecPending`.",
-                "Route state for peer 10.255.0.2 in group mpls is `ipsecPending`.",
+                "Path state for peer 10.255.0.1 in path-group internet is `ipsecPending`.",
+                "Path state for peer 10.255.0.1 in path-group mpls is `ipsecPending`.",
+                "Path state for peer 10.255.0.2 in path-group mpls is `ipsecPending`.",
             ],
         },
     },
     {
         "name": "failure-inactive",
-        "test": VerifyRouterPathsHealth,
+        "test": VerifyPathsHealth,
         "eos_data": [
             {
                 "dpsPeers": {
@@ -148,90 +148,179 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Telemetry state for peer 10.255.0.1 in group internet is `inactive`.",
-                "Telemetry state for peer 10.255.0.1 in group mpls is `inactive`.",
-                "Telemetry state for peer 10.255.0.2 in group mpls is `inactive`.",
+                "Telemetry state for peer 10.255.0.1 in path-group internet is `inactive`.",
+                "Telemetry state for peer 10.255.0.1 in path-group mpls is `inactive`.",
+                "Telemetry state for peer 10.255.0.2 in path-group mpls is `inactive`.",
             ],
         },
     },
     {
         "name": "success",
-        "test": VerifySpecificRouterPath,
+        "test": VerifySpecificPath,
         "eos_data": [
             {
                 "dpsPeers": {
-                    "10.255.0.1": {"dpsGroups": {"internet": {"dpsPaths": {"path3": {"state": "ipsecEstablished", "dpsSessions": {"0": {"active": True}}}}}}}
+                    "10.255.0.1": {
+                        "dpsGroups": {
+                            "internet": {
+                                "dpsPaths": {
+                                    "path3": {
+                                        "state": "ipsecEstablished",
+                                        "source": "172.18.13.2",
+                                        "destination": "172.18.15.2",
+                                        "dpsSessions": {"0": {"active": True}},
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             },
-            {"dpsPeers": {"10.255.0.1": {"dpsGroups": {"mpls": {"dpsPaths": {"path4": {"state": "routeResolved", "dpsSessions": {"0": {"active": True}}}}}}}}},
             {
                 "dpsPeers": {
-                    "10.255.0.2": {"dpsGroups": {"internet": {"dpsPaths": {"path2": {"state": "ipsecEstablished", "dpsSessions": {"0": {"active": True}}}}}}}
+                    "10.255.0.2": {
+                        "dpsGroups": {
+                            "mpls": {
+                                "dpsPaths": {
+                                    "path2": {
+                                        "state": "ipsecEstablished",
+                                        "source": "172.18.3.2",
+                                        "destination": "172.18.5.2",
+                                        "dpsSessions": {"0": {"active": True}},
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             },
-            {"dpsPeers": {"10.255.0.2": {"dpsGroups": {"mpls": {"dpsPaths": {"path1": {"state": "routeResolved", "dpsSessions": {"0": {"active": True}}}}}}}}},
         ],
-        "inputs": {"paths": [{"peer": "10.255.0.1", "path_groups": ["internet", "mpls"]}, {"peer": "10.255.0.2", "path_groups": ["internet", "mpls"]}]},
+        "inputs": {
+            "paths": [
+                {"peer": "10.255.0.1", "path_group": "internet", "source_address": "172.18.3.2", "destination_address": "172.18.5.2"},
+                {"peer": "10.255.0.2", "path_group": "mpls", "source_address": "172.18.13.2", "destination_address": "172.18.15.2"},
+            ]
+        },
         "expected": {"result": "success"},
     },
     {
         "name": "failure-no-peer",
-        "test": VerifySpecificRouterPath,
+        "test": VerifySpecificPath,
         "eos_data": [
             {"dpsPeers": {}},
-            {"dpsPeers": {"10.255.0.1": {"dpsGroups": {"mpls": {"dpsPaths": {"path4": {"state": "ipsecEstablished", "dpsSessions": {"0": {"active": True}}}}}}}}},
-            {
-                "dpsPeers": {
-                    "10.255.0.2": {"dpsGroups": {"internet": {"dpsPaths": {"path2": {"state": "ipsecEstablished", "dpsSessions": {"0": {"active": True}}}}}}}
-                }
-            },
             {"dpsPeers": {}},
         ],
-        "inputs": {"paths": [{"peer": "10.255.0.1", "path_groups": ["internet", "mpls"]}, {"peer": "10.255.0.2", "path_groups": ["internet", "mpls"]}]},
+        "inputs": {
+            "paths": [
+                {"peer": "10.255.0.1", "path_group": "internet", "source_address": "172.18.3.2", "destination_address": "172.18.5.2"},
+                {"peer": "10.255.0.2", "path_group": "mpls", "source_address": "172.18.13.2", "destination_address": "172.18.15.2"},
+            ]
+        },
         "expected": {
             "result": "failure",
-            "messages": ["Peer `10.255.0.1` is not configured for path group `internet`.", "Peer `10.255.0.2` is not configured for path group `mpls`."],
+            "messages": [
+                "Path `peer: 10.255.0.1 source: 172.18.3.2 destination: 172.18.5.2` is not configured for path-group `internet`.",
+                "Path `peer: 10.255.0.2 source: 172.18.13.2 destination: 172.18.15.2` is not configured for path-group `mpls`.",
+            ],
         },
     },
     {
         "name": "failure-not-established",
-        "test": VerifySpecificRouterPath,
+        "test": VerifySpecificPath,
         "eos_data": [
             {
                 "dpsPeers": {
-                    "10.255.0.1": {"dpsGroups": {"internet": {"dpsPaths": {"path3": {"state": "ipsecEstablished", "dpsSessions": {"0": {"active": True}}}}}}}
+                    "10.255.0.1": {
+                        "dpsGroups": {
+                            "internet": {
+                                "dpsPaths": {
+                                    "path3": {"state": "ipsecPending", "source": "172.18.3.2", "destination": "172.18.5.2", "dpsSessions": {"0": {"active": True}}}
+                                }
+                            }
+                        }
+                    }
                 }
             },
-            {"dpsPeers": {"10.255.0.1": {"dpsGroups": {"mpls": {"dpsPaths": {"path4": {"state": "ipsecPending", "dpsSessions": {"0": {"active": False}}}}}}}}},
             {
                 "dpsPeers": {
-                    "10.255.0.2": {"dpsGroups": {"internet": {"dpsPaths": {"path2": {"state": "ipsecEstablished", "dpsSessions": {"0": {"active": True}}}}}}}
+                    "10.255.0.2": {
+                        "dpsGroups": {
+                            "mpls": {
+                                "dpsPaths": {
+                                    "path4": {
+                                        "state": "ipsecPending",
+                                        "source": "172.18.13.2",
+                                        "destination": "172.18.15.2",
+                                        "dpsSessions": {"0": {"active": False}},
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             },
-            {"dpsPeers": {"10.255.0.2": {"dpsGroups": {"mpls": {"dpsPaths": {"path1": {"state": "ipsecPending", "dpsSessions": {"0": {"active": False}}}}}}}}},
         ],
-        "inputs": {"paths": [{"peer": "10.255.0.1", "path_groups": ["internet", "mpls"]}, {"peer": "10.255.0.2", "path_groups": ["internet", "mpls"]}]},
+        "inputs": {
+            "paths": [
+                {"peer": "10.255.0.1", "path_group": "internet", "source_address": "172.18.3.2", "destination_address": "172.18.5.2"},
+                {"peer": "10.255.0.2", "path_group": "mpls", "source_address": "172.18.13.2", "destination_address": "172.18.15.2"},
+            ]
+        },
         "expected": {
             "result": "failure",
-            "messages": ["Route state for peer 10.255.0.1 in group mpls is `ipsecPending`.", "Route state for peer 10.255.0.2 in group mpls is `ipsecPending`."],
+            "messages": [
+                "Path state for `peer: 10.255.0.1 source: 172.18.3.2 destination: 172.18.5.2` in path-group internet is `ipsecPending`.",
+                "Path state for `peer: 10.255.0.2 source: 172.18.13.2 destination: 172.18.15.2` in path-group mpls is `ipsecPending`.",
+            ],
         },
     },
     {
         "name": "failure-inactive",
-        "test": VerifySpecificRouterPath,
+        "test": VerifySpecificPath,
         "eos_data": [
-            {"dpsPeers": {"10.255.0.1": {"dpsGroups": {"internet": {"dpsPaths": {"path3": {"state": "routeResolved", "dpsSessions": {"0": {"active": False}}}}}}}}},
-            {"dpsPeers": {"10.255.0.1": {"dpsGroups": {"mpls": {"dpsPaths": {"path4": {"state": "routeResolved", "dpsSessions": {"0": {"active": False}}}}}}}}},
-            {"dpsPeers": {"10.255.0.2": {"dpsGroups": {"internet": {"dpsPaths": {"path2": {"state": "routeResolved", "dpsSessions": {"0": {"active": True}}}}}}}}},
-            {"dpsPeers": {"10.255.0.2": {"dpsGroups": {"mpls": {"dpsPaths": {"path1": {"state": "routeResolved", "dpsSessions": {"0": {"active": False}}}}}}}}},
+            {
+                "dpsPeers": {
+                    "10.255.0.1": {
+                        "dpsGroups": {
+                            "internet": {
+                                "dpsPaths": {
+                                    "path3": {"state": "routeResolved", "source": "172.18.3.2", "destination": "172.18.5.2", "dpsSessions": {"0": {"active": False}}}
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "dpsPeers": {
+                    "10.255.0.2": {
+                        "dpsGroups": {
+                            "mpls": {
+                                "dpsPaths": {
+                                    "path4": {
+                                        "state": "routeResolved",
+                                        "source": "172.18.13.2",
+                                        "destination": "172.18.15.2",
+                                        "dpsSessions": {"0": {"active": False}},
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
         ],
-        "inputs": {"paths": [{"peer": "10.255.0.1", "path_groups": ["internet", "mpls"]}, {"peer": "10.255.0.2", "path_groups": ["internet", "mpls"]}]},
+        "inputs": {
+            "paths": [
+                {"peer": "10.255.0.1", "path_group": "internet", "source_address": "172.18.3.2", "destination_address": "172.18.5.2"},
+                {"peer": "10.255.0.2", "path_group": "mpls", "source_address": "172.18.13.2", "destination_address": "172.18.15.2"},
+            ]
+        },
         "expected": {
             "result": "failure",
             "messages": [
-                "Telemetry state for peer 10.255.0.1 in group internet is `inactive`.",
-                "Telemetry state for peer 10.255.0.1 in group mpls is `inactive`.",
-                "Telemetry state for peer 10.255.0.2 in group mpls is `inactive`.",
+                "Telemetry state for path `peer: 10.255.0.1 source: 172.18.3.2 destination: 172.18.5.2` in path-group internet is `inactive`.",
+                "Telemetry state for path `peer: 10.255.0.2 source: 172.18.13.2 destination: 172.18.15.2` in path-group mpls is `inactive`.",
             ],
         },
     },
