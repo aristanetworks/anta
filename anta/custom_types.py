@@ -81,6 +81,16 @@ def bgp_multiprotocol_capabilities_abbreviations(value: str) -> str:
     return value
 
 
+def validate_regex(value: str) -> str:
+    """Validate that the input value is a valid regex format."""
+    try:
+        re.compile(value)
+    except re.error as e:
+        msg = f"Invalid regex: {e}"
+        raise ValueError(msg) from e
+    return value
+
+
 # ANTA framework
 TestStatus = Literal["unset", "success", "failure", "error", "skipped"]
 
@@ -129,3 +139,4 @@ PositiveInteger = Annotated[int, Field(ge=0)]
 Revision = Annotated[int, Field(ge=1, le=99)]
 Hostname = Annotated[str, Field(pattern=r"^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$")]
 Port = Annotated[int, Field(ge=1, le=65535)]
+RegexString = Annotated[str, AfterValidator(validate_regex)]

@@ -10,6 +10,7 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING, ClassVar
 
+from anta.custom_types import RegexString
 from anta.models import AntaCommand, AntaTest
 
 if TYPE_CHECKING:
@@ -81,9 +82,11 @@ class VerifyRunningConfigDiffs(AntaTest):
 class VerifyRunningConfigLines(AntaTest):
     """Verifies the given regular expression patterns are present in the running-config.
 
-    **Since this uses regular expression searches on the whole running-config, it can
-    drastically impact performance and should only be used if no other tests is available for.**
-    If possible, try using another Anta test that is more specific.
+    !!! warning
+        Since this uses regular expression searches on the whole running-config, it can
+        drastically impact performance and should only be used if no other test is available.
+
+        If possible, try using another ANTA test that is more specific.
 
     Expected Results
     ----------------
@@ -109,7 +112,7 @@ class VerifyRunningConfigLines(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyRunningConfigLines test."""
 
-        regex_patterns: list[str]
+        regex_patterns: list[RegexString]
         """List of regular expressions."""
 
     @AntaTest.anta_test
