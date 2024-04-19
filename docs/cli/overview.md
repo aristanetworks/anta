@@ -12,9 +12,6 @@ ANTA can also be used as a Python library, allowing you to build your own tools 
 
 To start using the ANTA CLI, open your terminal and type `anta`.
 
-!!! warning
-    The ANTA CLI options have changed after version 0.11 and have moved away from the top level `anta` and are now required at their respective commands (e.g. `anta nrfu`). This breaking change occurs after users feedback on making the CLI more intuitive. This change should not affect user experience when using environment variables.
-
 ## Invoking ANTA CLI
 
 ```bash
