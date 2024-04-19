@@ -1955,6 +1955,20 @@
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#anta.custom_types.RegexString" class="md-nav__link">
+      <span class="md-ellipsis">
+        RegexString
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#anta.custom_types.Revision" class="md-nav__link">
       <span class="md-ellipsis">
         Revision
@@ -2098,6 +2112,20 @@
     <a href="#anta.custom_types.interface_case_sensitivity" class="md-nav__link">
       <span class="md-ellipsis">
         interface_case_sensitivity
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.custom_types.validate_regex" class="md-nav__link">
+      <span class="md-ellipsis">
+        validate_regex
       </span>
     </a>
 
@@ -2557,6 +2585,20 @@
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#anta.custom_types.RegexString" class="md-nav__link">
+      <span class="md-ellipsis">
+        RegexString
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#anta.custom_types.Revision" class="md-nav__link">
       <span class="md-ellipsis">
         Revision
@@ -2700,6 +2742,20 @@
     <a href="#anta.custom_types.interface_case_sensitivity" class="md-nav__link">
       <span class="md-ellipsis">
         interface_case_sensitivity
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.custom_types.validate_regex" class="md-nav__link">
+      <span class="md-ellipsis">
+        validate_regex
       </span>
     </a>
 
@@ -3075,6 +3131,27 @@
 
 <a href="#anta.custom_types.PositiveInteger" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">PositiveInteger</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">)]</span>
+</code></pre></div>
+
+  <div class="doc doc-contents ">
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="anta.custom_types.RegexString" class="doc doc-heading">
+          <span class="doc doc-object-name doc-attribute-name">RegexString</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+<a href="#anta.custom_types.RegexString" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">RegexString</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">AfterValidator</span><span class="p">(</span><span class="n">validate_regex</span><span class="p">)]</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">
@@ -3470,6 +3547,46 @@
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">isupper</span><span class="p">():</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}{</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="k">return</span> <span class="n">v</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="anta.custom_types.validate_regex" class="doc doc-heading">
+          <span class="doc doc-object-name doc-function-name">validate_regex</span>
+
+
+<a href="#anta.custom_types.validate_regex" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">validate_regex</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+        <p>Validate that the input value is a valid regex format.</p>
+
+          <details class="quote">
+            <summary>Source code in <code>anta/custom_types.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span>
+<span class="normal">90</span>
+<span class="normal">91</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">validate_regex</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate that the input value is a valid regex format.&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">re</span><span class="o">.</span><span class="n">error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Invalid regex: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+    <span class="k">return</span> <span class="n">value</span>
 </code></pre></div></td></tr></table></div>
           </details>
   </div>
