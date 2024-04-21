@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from anta.tests.routing.isis import VerifyISISNeighborState
+from anta.tests.routing.isis import VerifyISISNeighborCount, VerifyISISNeighborState
 from tests.lib.anta import test  # noqa: F401; pylint: disable=W0611
 
 DATA: list[dict[str, Any]] = [
@@ -153,5 +153,77 @@ DATA: list[dict[str, Any]] = [
             "result": "failure",
             "messages": ["Some neighbors are not correctly configured: [{'vrf': 'default', 'instance': 'CORE-ISIS', 'neighbor': 's1-p01', 'state': 'down'}]."],
         },
+    },
+    {
+        "name": "success only default vrf",
+        "test": VerifyISISNeighborCount,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "isisInstances": {
+                            "CORE-ISIS": {
+                                "interfaces": {
+                                    "Loopback0": {
+                                        "enabled": True,
+                                        "intfLevels": {
+                                            "2": {
+                                                "ipv4Metric": 10,
+                                                "sharedSecretProfile": "",
+                                                "isisAdjacencies": [],
+                                                "passive": True,
+                                                "v4Protection": "disabled",
+                                                "v6Protection": "disabled",
+                                            }
+                                        },
+                                        "areaProxyBoundary": False,
+                                    },
+                                    "Ethernet1": {
+                                        "intfLevels": {
+                                            "2": {
+                                                "ipv4Metric": 10,
+                                                "numAdjacencies": 1,
+                                                "linkId": "84",
+                                                "sharedSecretProfile": "",
+                                                "isisAdjacencies": [],
+                                                "passive": False,
+                                                "v4Protection": "link",
+                                                "v6Protection": "disabled",
+                                            }
+                                        },
+                                        "interfaceSpeed": 1000,
+                                        "areaProxyBoundary": False,
+                                    },
+                                    "Ethernet2": {
+                                        "enabled": True,
+                                        "intfLevels": {
+                                            "2": {
+                                                "ipv4Metric": 10,
+                                                "numAdjacencies": 1,
+                                                "linkId": "88",
+                                                "sharedSecretProfile": "",
+                                                "isisAdjacencies": [],
+                                                "passive": False,
+                                                "v4Protection": "link",
+                                                "v6Protection": "disabled",
+                                            }
+                                        },
+                                        "interfaceSpeed": 1000,
+                                        "areaProxyBoundary": False,
+                                    },
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+        ],
+        "inputs": {
+            "interfaces": [
+                {"name": "Ethernet1", "level": 2, "count": 1},
+                {"name": "Ethernet2", "level": 2, "count": 1},
+            ]
+        },
+        "expected": {"result": "success"},
     },
 ]
