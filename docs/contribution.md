@@ -21,6 +21,8 @@ $ cd anta
 
 # Install ANTA in editable mode and its development tools
 $ pip install -e .[dev]
+# To also install the CLI
+$ pip install -e .[dev,cli]
 
 # Verify installation
 $ pip list -e

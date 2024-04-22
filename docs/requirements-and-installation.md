@@ -22,10 +22,34 @@ This installation will deploy tests collection, scripts and all their Python req
 The ANTA package and the cli require some packages that are not part of the Python standard library. They are indicated in the [pyproject.toml](https://github.com/arista-netdevops-community/anta/blob/main/pyproject.toml) file, under dependencies.
 
 
-### Install from Pypi server
+### Install library from Pypi server
+
+!!! Note
+
+    This command alone **will not** install the ANTA CLI requirements.
 
 ```bash
 pip install anta
+```
+
+### Install ANTA CLI as an application with `pipx`
+
+[`pipx`](https://pipx.pypa.io/stable/) is a tool to install and run python applications in isolated environments. If you plan to use ANTA only as a CLI tool you can use `pipx` to install it. `pipx` installs ANTA in an isolated python environment and makes it available globally.
+
+!!! Info
+
+    Please take the time to read through the installation instructions of `pipx` before getting started.
+
+```
+pipx install anta[cli]
+```
+
+### Install CLI from Pypi server
+
+Alternatively, pip install with `cli` extra is enough to install the ANTA CLI.
+
+```bash
+pip install anta[cli]
 ```
 
 ### Install ANTA from github
@@ -33,13 +57,18 @@ pip install anta
 
 ```bash
 pip install git+https://github.com/arista-netdevops-community/anta.git
+pip install git+https://github.com/arista-netdevops-community/anta.git#egg=anta[cli]
 
 # You can even specify the branch, tag or commit:
 pip install git+https://github.com/arista-netdevops-community/anta.git@<cool-feature-branch>
-pip install git+https://github.com/arista-netdevops-community/anta.git@<cool-tag>
-pip install git+https://github.com/arista-netdevops-community/anta.git@<more-or-less-cool-hash>
-```
+pip install git+https://github.com/arista-netdevops-community/anta.git@<cool-feature-branch>#egg=anta[cli]
 
+pip install git+https://github.com/arista-netdevops-community/anta.git@<cool-tag>
+pip install git+https://github.com/arista-netdevops-community/anta.git@<cool-tag>#egg=anta[cli]
+
+pip install git+https://github.com/arista-netdevops-community/anta.git@<more-or-less-cool-hash>
+pip install git+https://github.com/arista-netdevops-community/anta.git@<more-or-less-cool-hash>#egg=anta[cli]
+```
 
 ### Check installation
 

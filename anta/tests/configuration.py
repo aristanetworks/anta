@@ -7,8 +7,10 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
+import re
 from typing import TYPE_CHECKING, ClassVar
 
+from anta.custom_types import RegexString
 from anta.models import AntaCommand, AntaTest
 
 if TYPE_CHECKING:
@@ -75,3 +77,57 @@ class VerifyRunningConfigDiffs(AntaTest):
             self.result.is_success()
         else:
             self.result.is_failure(command_output)
+
+
+class VerifyRunningConfigLines(AntaTest):
+    """Verifies the given regular expression patterns are present in the running-config.
+
+    !!! warning
+        Since this uses regular expression searches on the whole running-config, it can
+        drastically impact performance and should only be used if no other test is available.
+
+        If possible, try using another ANTA test that is more specific.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if all the patterns are found in the running-config.
+    * Failure: The test will fail if any of the patterns are NOT found in the running-config.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.configuration:
+      - VerifyRunningConfigLines:
+            regex_patterns:
+                - "^enable password.*$"
+                - "bla bla"
+    ```
+    """
+
+    name = "VerifyRunningConfigLines"
+    description = "Search the Running-Config for the given RegEx patterns."
+    categories: ClassVar[list[str]] = ["configuration"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show running-config", ofmt="text")]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyRunningConfigLines test."""
+
+        regex_patterns: list[RegexString]
+        """List of regular expressions."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyRunningConfigLines."""
+        failure_msgs = []
+        command_output = self.instance_commands[0].text_output
+
+        for pattern in self.inputs.regex_patterns:
+            re_search = re.compile(pattern, flags=re.MULTILINE)
+
+            if not re_search.search(command_output):
+                failure_msgs.append(f"'{pattern}'")
+
+        if not failure_msgs:
+            self.result.is_success()
+        else:
+            self.result.is_failure("Following patterns were not found: " + ",".join(failure_msgs))

@@ -19,14 +19,31 @@ ANTA is Python framework that automates tests for Arista devices.
     - Automate NRFU (Network Ready For Use) test on a preproduction network
     - Automate tests on a live network (periodically or on demand)
 - ANTA can be used with:
-    - The [ANTA CLI](cli/overview.md)
     - As a [Python library](advanced_usages/as-python-lib.md) in your own application
+    - The [ANTA CLI](cli/overview.md)
 
 ![anta nrfu](https://raw.githubusercontent.com/arista-netdevops-community/anta/main/docs/imgs/anta-nrfu.svg)
 
+## Install ANTA library
+
+The library will **NOT** install the necessary dependencies for the CLI.
+
 ```bash
-# Install ANTA CLI
-$ pip install anta
+# Install ANTA as a library
+pip install anta
+```
+
+## Install ANTA CLI
+
+If you plan to use ANTA only as a CLI tool you can use `pipx` to install it.
+[`pipx`](https://pipx.pypa.io/stable/)  is a tool to install and run python applications in isolated environments. Refer to `pipx` instructions to install on your system.
+`pipx` installs ANTA in an isolated python environment and makes it available globally.
+
+**This is not recommended if you plan to contribute to ANTA**
+
+```bash
+# Install ANTA CLI with pipx
+$ pipx install anta[cli]
 
 # Run ANTA CLI
 $ anta --help
@@ -52,8 +69,11 @@ Commands:
   nrfu   Run ANTA tests on devices
 ```
 
-> [!WARNING]
-> The ANTA CLI options have changed after version 0.11 and have moved away from the top level `anta` and are now required at their respective commands (e.g. `anta nrfu`). This breaking change occurs after users feedback on making the CLI more intuitive. This change should not affect user experience when using environment variables.
+You can also still choose to install it with directly with `pip`:
+
+```bash
+$ pip install anta[cli]
+```
 
 ## Documentation
 

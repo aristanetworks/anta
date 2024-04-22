@@ -27,6 +27,7 @@ Here are the tests that we currently provide:
 - [Multicast](tests.multicast.md)
 - [Profiles](tests.profiles.md)
 - [PTP](tests.ptp.md)
+- [Router Path Selection](tests.path_selection.md)
 - [Routing Generic](tests.routing.generic.md)
 - [Routing BGP](tests.routing.bgp.md)
 - [Routing OSPF](tests.routing.ospf.md)

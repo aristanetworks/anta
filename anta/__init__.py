@@ -17,7 +17,7 @@ __credits__ = [
     "Guillaume Mulocher",
     "Thomas Grimonet",
 ]
-__copyright__ = "Copyright 2022, Arista EMEA AS"
+__copyright__ = "Copyright 2022-2024, Arista Networks, Inc."
 
 # ANTA Debug Mode environment variable
 __DEBUG__ = bool(os.environ.get("ANTA_DEBUG", "").lower() == "true")

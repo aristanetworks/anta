@@ -192,6 +192,7 @@ nav:
     - Multicast: api/tests.multicast.md
     - Profiles: api/tests.profiles.md
     - PTP: api/tests.ptp.md
+    - Router Path Selection: api/tests.path_selection.md
     - Routing:
       - Generic: api/tests.routing.generic.md
       - BGP: api/tests.routing.bgp.md
