@@ -210,6 +210,15 @@ anta.tests.multicast:
   - VerifyIGMPSnoopingGlobal:
       enabled: True
 
+anta.tests.path_selection:
+  - VerifyPathsHealth:
+  - VerifySpecificPath:
+      paths:
+        - peer: 10.255.0.1
+          path_group: internet
+          source_address: 100.64.3.2
+          destination_address: 100.64.1.2
+
 anta.tests.profiles:
   - VerifyUnifiedForwardingTableMode:
       mode: 3
