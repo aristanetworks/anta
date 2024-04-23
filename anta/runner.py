@@ -125,7 +125,7 @@ def prepare_tests(
 
     Returns
     -------
-        defaultdict[AntaDevice, set[AntaTestDefinition]] | None: A mapping of devices to the tests to run or None if there are no tests to run.
+        A mapping of devices to the tests to run or None if there are no tests to run.
     """
     # Build indexes for the catalog. If `tests` is set, filter the indexes based on these tests
     catalog.build_indexes(filtered_tests=tests)
