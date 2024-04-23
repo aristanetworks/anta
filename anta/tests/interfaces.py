@@ -785,15 +785,13 @@ class VerifyIpVirtualRouterMac(AntaTest):
 class VerifyInterfacesSpeed(AntaTest):
     """Verifies the speed, lanes, auto-negotiation status, and mode as full duplex for interfaces.
 
-    - If the speed is set to auto with a value (e.g., 'auto 10g'), the class verifies that auto-negotiation is successful,
-      the mode is set to full duplex, and the speed/lanes match the input.
-    - If the speed is set with a lane value (e.g., '100g-8'), the class verifies that the mode is set to full duplex and
-      the speed/lanes match the input.
+    - If the auto-negotiation status is set to True, verifies that auto-negotiation is successful, the mode is full duplex and the speed/lanes match the input.
+    - If the auto-negotiation status is set to False, verifies that the mode is full duplex and the speed/lanes match the input.
 
     Expected Results
     ----------------
-    * Success: The test will pass if an interface is configured correctly with the specified speed, lanes, auto-negotiation status, and mode.
-    * Failure: The test will fail if an interface is not found, or if the speed, lanes, auto-negotiation status, or mode do not match the input.
+    * Success: The test will pass if an interface is configured correctly with the specified speed, lanes, auto-negotiation status, and mode as full duplex.
+    * Failure: The test will fail if an interface is not found, if the speed, lanes, and auto-negotiation status do not match the input, or mode is not full duplex.
 
     Examples
     --------
