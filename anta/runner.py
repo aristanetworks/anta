@@ -9,6 +9,7 @@ import asyncio
 import logging
 import os
 import resource
+from collections import defaultdict
 from typing import TYPE_CHECKING
 
 from anta import GITHUB_SUGGESTION
@@ -107,7 +108,7 @@ async def setup_inventory(inventory: AntaInventory, tags: set[str] | None, devic
 
 async def prepare_tests(
     inventory: AntaInventory, catalog: AntaCatalog, tests: set[str] | None, tags: set[str] | None
-) -> dict[AntaDevice, set[AntaTestDefinition]] | None:
+) -> defaultdict[AntaDevice, set[AntaTestDefinition]] | None:
     """Prepare the tests to run.
 
     Args:
@@ -119,27 +120,27 @@ async def prepare_tests(
 
     Returns
     -------
-        dict[AntaDevice, set[AntaTestDefinition]] | None: A mapping of devices to the tests to run or None if there are no tests to run.
+        defaultdict[AntaDevice, set[AntaTestDefinition]] | None: A mapping of devices to the tests to run or None if there are no tests to run.
     """
     # Build indexes for the catalog. If `tests` is set, filter the indexes based on these tests
     catalog.build_indexes(filtered_tests=tests)
 
     # Using a set to avoid inserting duplicate tests
-    device_to_tests: dict[AntaDevice, set[AntaTestDefinition]] = {}
+    device_to_tests: defaultdict[AntaDevice, set[AntaTestDefinition]] = defaultdict(set)
 
     # Create AntaTestRunner tuples from the tags
     for device in inventory.devices:
         if tags:
             # If there are CLI tags, only execute tests with matching tags
-            device_to_tests.setdefault(device, set()).update(catalog.get_tests_by_tags(tags))
+            device_to_tests[device].update(catalog.get_tests_by_tags(tags))
         else:
             # If there is no CLI tags, execute all tests that do not have any tags
-            device_to_tests.setdefault(device, set()).update(catalog.tag_to_tests[None])
+            device_to_tests[device].update(catalog.tag_to_tests[None])
 
             # Then add the tests with matching tags from device tags
-            device_to_tests.setdefault(device, set()).update(catalog.get_tests_by_tags(device.tags))
+            device_to_tests[device].update(catalog.get_tests_by_tags(device.tags))
 
-    if any(selected_tests for selected_tests in device_to_tests.values() if selected_tests):
+    if not any(selected_tests for selected_tests in device_to_tests.values() if selected_tests):
         msg = (
             f"There are no tests{f' matching the tags {tags} ' if tags else ' '}to run in the current test catalog and device inventory, please verify your inputs."
         )
