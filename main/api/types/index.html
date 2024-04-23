@@ -1880,6 +1880,20 @@
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#anta.custom_types.EthernetInterface" class="md-nav__link">
+      <span class="md-ellipsis">
+        EthernetInterface
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#anta.custom_types.Hostname" class="md-nav__link">
       <span class="md-ellipsis">
         Hostname
@@ -2510,6 +2524,20 @@
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#anta.custom_types.EthernetInterface" class="md-nav__link">
+      <span class="md-ellipsis">
+        EthernetInterface
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#anta.custom_types.Hostname" class="md-nav__link">
       <span class="md-ellipsis">
         Hostname
@@ -3007,6 +3035,27 @@
 
 <a href="#anta.custom_types.ErrDisableReasons" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">ErrDisableReasons</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;acl&#39;</span><span class="p">,</span> <span class="s1">&#39;arp-inspection&#39;</span><span class="p">,</span> <span class="s1">&#39;bpduguard&#39;</span><span class="p">,</span> <span class="s1">&#39;dot1x-session-replace&#39;</span><span class="p">,</span> <span class="s1">&#39;hitless-reload-down&#39;</span><span class="p">,</span> <span class="s1">&#39;lacp-rate-limit&#39;</span><span class="p">,</span> <span class="s1">&#39;link-flap&#39;</span><span class="p">,</span> <span class="s1">&#39;no-internal-vlan&#39;</span><span class="p">,</span> <span class="s1">&#39;portchannelguard&#39;</span><span class="p">,</span> <span class="s1">&#39;portsec&#39;</span><span class="p">,</span> <span class="s1">&#39;tapagg&#39;</span><span class="p">,</span> <span class="s1">&#39;uplink-failure-detection&#39;</span><span class="p">]</span>
+</code></pre></div>
+
+  <div class="doc doc-contents ">
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="anta.custom_types.EthernetInterface" class="doc doc-heading">
+          <span class="doc doc-object-name doc-attribute-name">EthernetInterface</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+<a href="#anta.custom_types.EthernetInterface" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">EthernetInterface</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="s1">&#39;^Ethernet[0-9]+(</span><span class="se">\\</span><span class="s1">/[0-9]+)*$&#39;</span><span class="p">),</span> <span class="n">BeforeValidator</span><span class="p">(</span><span class="n">interface_autocomplete</span><span class="p">),</span> <span class="n">BeforeValidator</span><span class="p">(</span><span class="n">interface_case_sensitivity</span><span class="p">)]</span>
 </code></pre></div>
 
   <div class="doc doc-contents ">
