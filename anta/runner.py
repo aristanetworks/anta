@@ -121,7 +121,7 @@ async def prepare_tests(
     -------
         dict[AntaDevice, set[AntaTestDefinition]] | None: A mapping of devices to the tests to run or None if there are no tests to run.
     """
-    # Build indexes for the catalog. If there are CLI provided tests, filter the indexes based on these tests
+    # Build indexes for the catalog. If `tests` is set, filter the indexes based on these tests
     catalog.build_indexes(filtered_tests=tests)
 
     # Using a set to avoid inserting duplicate tests
