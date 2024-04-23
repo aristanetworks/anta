@@ -6,6 +6,8 @@
 from __future__ import annotations
 
 import logging
+import resource
+from unittest.mock import patch
 
 import pytest
 
@@ -13,7 +15,7 @@ from anta import logger
 from anta.catalog import AntaCatalog
 from anta.inventory import AntaInventory
 from anta.result_manager import ResultManager
-from anta.runner import main
+from anta.runner import adjust_rlimit_nofile, main
 
 from .test_models import FakeTest
 
@@ -70,3 +72,67 @@ async def test_runner_no_selected_device(caplog: pytest.LogCaptureFixture, test_
     await main(manager, test_inventory, FAKE_CATALOG, tags={"toto"})
 
     assert "No reachable device matching the tags {'toto'} was found." in [record.message for record in caplog.records]
+
+
+def test_adjust_rlimit_nofile_valid_env(caplog: pytest.LogCaptureFixture) -> None:
+    """Test adjust_rlimit_nofile with valid environment variables."""
+    with (
+        caplog.at_level(logging.DEBUG),
+        patch.dict("os.environ", {"ANTA_NOFILE": "20480"}),
+        patch("anta.runner.resource.getrlimit") as getrlimit_mock,
+        patch("anta.runner.resource.setrlimit") as setrlimit_mock,
+    ):
+        # Simulate the default system limits
+        system_limits = (8192, 1048576)
+
+        # Setup getrlimit mock return value
+        getrlimit_mock.return_value = system_limits
+
+        # Simulate setrlimit behavior
+        def side_effect_setrlimit(resource_id: int, limits: tuple[int, int]) -> None:
+            _ = resource_id
+            getrlimit_mock.return_value = (limits[0], limits[1])
+
+        setrlimit_mock.side_effect = side_effect_setrlimit
+
+        result = adjust_rlimit_nofile()
+
+        # Assert the limits were updated as expected
+        assert result == (20480, 1048576)
+        assert "Initial limit numbers for open file descriptors for the current ANTA process: Soft Limit: 8192 | Hard Limit: 1048576" in caplog.text
+        assert "Setting soft limit for open file descriptors for the current ANTA process to 20480" in caplog.text
+
+        setrlimit_mock.assert_called_once_with(resource.RLIMIT_NOFILE, (20480, 1048576))
+
+
+def test_adjust_rlimit_nofile_invalid_env(caplog: pytest.LogCaptureFixture) -> None:
+    """Test adjust_rlimit_nofile with valid environment variables."""
+    with (
+        caplog.at_level(logging.DEBUG),
+        patch.dict("os.environ", {"ANTA_NOFILE": "invalid"}),
+        patch("anta.runner.resource.getrlimit") as getrlimit_mock,
+        patch("anta.runner.resource.setrlimit") as setrlimit_mock,
+    ):
+        # Simulate the default system limits
+        system_limits = (8192, 1048576)
+
+        # Setup getrlimit mock return value
+        getrlimit_mock.return_value = system_limits
+
+        # Simulate setrlimit behavior
+        def side_effect_setrlimit(resource_id: int, limits: tuple[int, int]) -> None:
+            _ = resource_id
+            getrlimit_mock.return_value = (limits[0], limits[1])
+
+        setrlimit_mock.side_effect = side_effect_setrlimit
+
+        result = adjust_rlimit_nofile()
+
+        # Assert the limits were updated as expected
+        assert result == (16384, 1048576)
+        assert "The ANTA_NOFILE environment variable value is invalid" in caplog.text
+        assert caplog.records[0].levelname == "WARNING"
+        assert "Initial limit numbers for open file descriptors for the current ANTA process: Soft Limit: 8192 | Hard Limit: 1048576" in caplog.text
+        assert "Setting soft limit for open file descriptors for the current ANTA process to 16384" in caplog.text
+
+        setrlimit_mock.assert_called_once_with(resource.RLIMIT_NOFILE, (16384, 1048576))
