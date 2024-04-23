@@ -60,11 +60,6 @@ anta.tests.avt:
           direct_path: False
   - VerifyAVTRole:
       role: edge
-  - VerifyAVTPathReachability:
-      avt_paths:
-        - avt_name: DEFAULT-AVT-POLICY-DEFAULT
-          dst_ip: 10.255.0.1
-          vrf: guest
 
 anta.tests.bfd:
   - VerifyBFDSpecificPeers:

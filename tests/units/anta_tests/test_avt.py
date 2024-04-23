@@ -1,13 +1,13 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""Tests for anta.tests.aaa.py."""
+"""Tests for anta.tests.avt.py."""
 
 from __future__ import annotations
 
 from typing import Any
 
-from anta.tests.avt import VerifyAVTPathHealth, VerifyAVTPathReachability, VerifyAVTRole, VerifyAVTSpecificPath
+from anta.tests.avt import VerifyAVTPathHealth, VerifyAVTRole, VerifyAVTSpecificPath
 from tests.lib.anta import test  # noqa: F401; pylint: disable=unused-import
 
 DATA: list[dict[str, Any]] = [
@@ -541,65 +541,5 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [{"role": "transit"}],
         "inputs": {"role": "edge"},
         "expected": {"result": "failure", "messages": ["Expected AVT role as `edge`, but found `transit` instead."]},
-    },
-    {
-        "name": "success",
-        "test": VerifyAVTPathReachability,
-        "eos_data": [
-            {
-                "summary": {
-                    "direct:3": {
-                        "lossRate": 0.0,
-                    }
-                }
-            },
-            {
-                "summary": {
-                    "multihop:1": {
-                        "lossRate": 0.0,
-                    },
-                    "multihop:2": {
-                        "lossRate": 0.0,
-                    },
-                }
-            },
-        ],
-        "inputs": {
-            "avt_paths": [
-                {"avt_name": "DEFAULT-AVT-POLICY-DEFAULT", "dst_ip": "10.255.0.1", "vrf": "guest"},
-                {"avt_name": "MGMT-AVT-POLICY-DEFAULT", "dst_ip": "10.255.0.11", "vrf": "MGMT"},
-            ]
-        },
-        "expected": {"result": "success"},
-    },
-    {
-        "name": "failure-packet-loss",
-        "test": VerifyAVTPathReachability,
-        "eos_data": [
-            {
-                "summary": {
-                    "direct:3": {
-                        "lossRate": 10.0,
-                    }
-                }
-            },
-            {
-                "summary": {
-                    "multihop:1": {
-                        "lossRate": 10.0,
-                    },
-                    "multihop:2": {
-                        "lossRate": 0.0,
-                    },
-                }
-            },
-        ],
-        "inputs": {
-            "avt_paths": [
-                {"avt_name": "DEFAULT-AVT-POLICY-DEFAULT", "dst_ip": "10.255.0.1", "vrf": "guest"},
-                {"avt_name": "MGMT-AVT-POLICY-DEFAULT", "dst_ip": "10.255.0.11", "vrf": "MGMT"},
-            ]
-        },
-        "expected": {"result": "failure", "messages": ["For destination `10.255.0.1` and path `direct:3` in vrf guest, packet loss was found: `10.0%`"]},
     },
 ]
