@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import logging
 import resource
+from pathlib import Path
 from unittest.mock import patch
 
 import pytest
@@ -15,10 +16,11 @@ from anta import logger
 from anta.catalog import AntaCatalog
 from anta.inventory import AntaInventory
 from anta.result_manager import ResultManager
-from anta.runner import adjust_rlimit_nofile, main
+from anta.runner import adjust_rlimit_nofile, main, prepare_tests
 
 from .test_models import FakeTest
 
+DATA_DIR: Path = Path(__file__).parent.parent.resolve() / "data"
 FAKE_CATALOG: AntaCatalog = AntaCatalog.from_list([(FakeTest, None)])
 
 
@@ -136,3 +138,50 @@ def test_adjust_rlimit_nofile_invalid_env(caplog: pytest.LogCaptureFixture) -> N
         assert "Setting soft limit for open file descriptors for the current ANTA process to 16384" in caplog.text
 
         setrlimit_mock.assert_called_once_with(resource.RLIMIT_NOFILE, (16384, 1048576))
+
+
+@pytest.mark.asyncio()
+@pytest.mark.parametrize(
+    ("tags", "expected_tests_count", "expected_devices_count"),
+    [
+        (None, 22, 3),
+        ({"leaf"}, 9, 3),
+        ({"invalid_tag"}, 0, 0),
+    ],
+    ids=["no_tags", "leaf_tag", "invalid_tag"],
+)
+async def test_prepare_tests(
+    caplog: pytest.LogCaptureFixture,
+    test_inventory: AntaInventory,
+    tags: set[str] | None,
+    expected_tests_count: int,
+    expected_devices_count: int,
+) -> None:
+    """Test the runner prepare_tests function."""
+    logger.setup_logging(logger.Log.INFO)
+    caplog.set_level(logging.INFO)
+
+    catalog: AntaCatalog = AntaCatalog.parse(str(DATA_DIR / "test_catalog_with_tags.yml"))
+    selected_tests = await prepare_tests(inventory=test_inventory, catalog=catalog, tags=tags, tests=None)
+
+    if selected_tests is None:
+        assert expected_tests_count == 0
+        expected_log = f"There are no tests matching the tags {tags} to run in the current test catalog and device inventory, please verify your inputs."
+        assert expected_log in caplog.text
+    else:
+        assert len(selected_tests) == expected_devices_count
+        assert sum(len(tests) for tests in selected_tests.values()) == expected_tests_count
+
+
+@pytest.mark.asyncio()
+async def test_prepare_tests_with_specific_tests(caplog: pytest.LogCaptureFixture, test_inventory: AntaInventory) -> None:
+    """Test the runner prepare_tests function with specific tests."""
+    logger.setup_logging(logger.Log.INFO)
+    caplog.set_level(logging.INFO)
+
+    catalog: AntaCatalog = AntaCatalog.parse(str(DATA_DIR / "test_catalog_with_tags.yml"))
+    selected_tests = await prepare_tests(inventory=test_inventory, catalog=catalog, tags=None, tests={"VerifyMlagStatus", "VerifyUptime"})
+
+    assert selected_tests is not None
+    assert len(selected_tests) == 3
+    assert sum(len(tests) for tests in selected_tests.values()) == 5
