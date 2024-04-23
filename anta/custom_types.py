@@ -105,6 +105,12 @@ Interface = Annotated[
     BeforeValidator(interface_autocomplete),
     BeforeValidator(interface_case_sensitivity),
 ]
+EthernetInterface = Annotated[
+    str,
+    Field(pattern=r"^Ethernet[0-9]+(\/[0-9]+)*$"),
+    BeforeValidator(interface_autocomplete),
+    BeforeValidator(interface_case_sensitivity),
+]
 VxlanSrcIntf = Annotated[
     str,
     Field(pattern=r"^(Loopback)([0-9]|[1-9][0-9]{1,2}|[1-7][0-9]{3}|8[01][0-9]{2}|819[01])$"),

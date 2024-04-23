@@ -14,10 +14,12 @@ from typing import Any, ClassVar, Literal
 from pydantic import BaseModel, Field
 from pydantic_extra_types.mac_address import MacAddress
 
-from anta.custom_types import Interface, Percent, PositiveInteger
+from anta.custom_types import EthernetInterface, Interface, Percent, PositiveInteger
 from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTemplate, AntaTest
-from anta.tools import get_item, get_value
+from anta.tools import custom_division, get_failed_logs, get_item, get_value
+
+BPS_GBPS_CONVERSIONS = 1000000000
 
 
 class VerifyInterfaceUtilization(AntaTest):
@@ -778,3 +780,100 @@ class VerifyIpVirtualRouterMac(AntaTest):
             self.result.is_failure(f"IP virtual router MAC address `{self.inputs.mac_address}` is not configured.")
         else:
             self.result.is_success()
+
+
+class VerifyInterfacesSpeed(AntaTest):
+    """Verifies the speed, lanes, auto-negotiation status, and mode as full duplex for interfaces.
+
+    - If the auto-negotiation status is set to True, verifies that auto-negotiation is successful, the mode is full duplex and the speed/lanes match the input.
+    - If the auto-negotiation status is set to False, verifies that the mode is full duplex and the speed/lanes match the input.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if an interface is configured correctly with the specified speed, lanes, auto-negotiation status, and mode as full duplex.
+    * Failure: The test will fail if an interface is not found, if the speed, lanes, and auto-negotiation status do not match the input, or mode is not full duplex.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.interfaces:
+      - VerifyInterfacesSpeed:
+          interfaces:
+            - name: Ethernet2
+              auto: False
+              speed: 10
+            - name: Eth3
+              auto: True
+              speed: 100
+              lanes: 1
+            - name: Eth2
+              auto: False
+              speed: 2.5
+    ```
+    """
+
+    name = "VerifyInterfacesSpeed"
+    description = "Verifies the speed, lanes, auto-negotiation status, and mode as full duplex for interfaces."
+    categories: ClassVar[list[str]] = ["interfaces"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces")]
+
+    class Input(AntaTest.Input):
+        """Inputs for the VerifyInterfacesSpeed test."""
+
+        interfaces: list[InterfaceDetail]
+        """List of interfaces to be tested"""
+
+        class InterfaceDetail(BaseModel):
+            """Detail of an interface."""
+
+            name: EthernetInterface
+            """The name of the interface."""
+            auto: bool
+            """The auto-negotiation status of the interface."""
+            speed: float = Field(ge=1, le=1000)
+            """The speed of the interface in Gigabits per second. Valid range is 1 to 1000."""
+            lanes: None | int = Field(None, ge=1, le=8)
+            """The number of lanes in the interface. Valid range is 1 to 8. This field is optional."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyInterfacesSpeed."""
+        self.result.is_success()
+        command_output = self.instance_commands[0].json_output
+
+        # Iterate over all the interfaces
+        for interface in self.inputs.interfaces:
+            intf = interface.name
+
+            # Check if interface exists
+            if not (interface_output := get_value(command_output, f"interfaces.{intf}")):
+                self.result.is_failure(f"Interface `{intf}` is not found.")
+                continue
+
+            auto_negotiation = interface_output.get("autoNegotiate")
+            actual_lanes = interface_output.get("lanes")
+
+            # Collecting actual interface details
+            actual_interface_output = {
+                "auto negotiation": auto_negotiation if interface.auto is True else None,
+                "duplex mode": interface_output.get("duplex"),
+                "speed": interface_output.get("bandwidth"),
+                "lanes": actual_lanes if interface.lanes is not None else None,
+            }
+
+            # Forming expected interface details
+            expected_interface_output = {
+                "auto negotiation": "success" if interface.auto is True else None,
+                "duplex mode": "duplexFull",
+                "speed": interface.speed * BPS_GBPS_CONVERSIONS,
+                "lanes": interface.lanes,
+            }
+
+            # Forming failure message
+            if actual_interface_output != expected_interface_output:
+                for output in [actual_interface_output, expected_interface_output]:
+                    # Convert speed to Gbps for readability
+                    if output["speed"] is not None:
+                        output["speed"] = f"{custom_division(output['speed'], BPS_GBPS_CONVERSIONS)}Gbps"
+                failed_log = get_failed_logs(expected_interface_output, actual_interface_output)
+                self.result.is_failure(f"For interface {intf}:{failed_log}\n")
