@@ -337,7 +337,7 @@ class AntaCatalog:
     def build_indexes(self, filtered_tests: set[str] | None = None) -> None:
         """Indexes tests by their tags for quick access during filtering operations.
 
-        If a filtered_tests set is provided, only the tests in this set will be indexed.
+        If a `filtered_tests` set is provided, only the tests in this set will be indexed.
 
         This method populates two attributes:
         - tag_to_tests: A dictionary mapping each tag to a set of tests that contain it.
@@ -365,9 +365,9 @@ class AntaCatalog:
 
         Args:
         ----
-            tags (set[str]): The tags to filter tests by. If empty, return all tests without tags.
-            strict (bool): If True, returns only tests that contain all specified tags (intersection).
-                            If False, returns tests that contain any of the specified tags (union).
+            tags: The tags to filter tests by. If empty, return all tests without tags.
+            strict: If True, returns only tests that contain all specified tags (intersection).
+                    If False, returns tests that contain any of the specified tags (union).
 
         Returns
         -------

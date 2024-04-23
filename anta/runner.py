@@ -127,19 +127,15 @@ async def prepare_tests(inventory: AntaInventory, catalog: AntaCatalog, tests: s
 
     # Create AntaTestRunner tuples from the tags
     for device in inventory.devices:
-        device_specific_tests = set()
         if tags:
             # If there are CLI tags, only execute tests with matching tags
-            device_specific_tests.update(catalog.get_tests_by_tags(tags))
+            selected_tests.update((test, device) for test in catalog.get_tests_by_tags(tags))
         else:
             # If there is no CLI tags, execute all tests that do not have any tags
-            device_specific_tests.update(catalog.tag_to_tests[None])
+            selected_tests.update((test, device) for test in catalog.tag_to_tests[None])
 
             # Then add the tests with matching tags from device tags
-            device_specific_tests.update(catalog.get_tests_by_tags(device.tags))
-
-        # Pair each test with the current device and add to the selected set
-        selected_tests.update((test, device) for test in device_specific_tests)
+            selected_tests.update((test, device) for test in catalog.get_tests_by_tags(device.tags))
 
     if not selected_tests:
         msg = (
@@ -172,9 +168,9 @@ async def main(  # noqa: PLR0913
         manager: ResultManager object to populate with the test results.
         inventory: AntaInventory object that includes the device(s).
         catalog: AntaCatalog object that includes the list of tests.
-        devices: Devices on which to run tests. None means all devices.
-        tests: Tests to run against devices. None means all tests.
-        tags: Tags to filter devices from the inventory.
+        devices: Devices on which to run tests. None means all devices. These may come from the `--device / -d` CLI option in NRFU.
+        tests: Tests to run against devices. None means all tests. These may come from the `--test / -t` CLI option in NRFU.
+        tags: Tags to filter devices from the inventory. These may come from the `--tags` CLI option in NRFU.
         established_only: Include only established device(s).
     """
     # Adjust the maximum number of open file descriptors for the ANTA process
@@ -208,24 +204,24 @@ async def main(  # noqa: PLR0913
         logger.warning(
             "The number of concurrent tests is higher than the open file descriptors limit for this ANTA process.\n"
             "Errors may occur while running the tests.\n"
-            "Please consult the ANTA FAQ.",
+            "Please consult the ANTA FAQ."
         )
 
     coros = []
-    try:
-        for test_definition, device in selected_tests:
+    for test_definition, device in selected_tests:
+        try:
             test_instance = test_definition.test(device=device, inputs=test_definition.inputs)
             coros.append(test_instance.test())
-    except Exception as e:  # pylint: disable=broad-exception-caught
-        # An AntaTest instance is potentially user-defined code.
-        # We need to catch everything and exit gracefully with an error message.
-        message = "\n".join(
-            [
-                f"There is an error when creating test {test_definition.test.__module__}.{test_definition.test.__name__}.",
-                f"If this is not a custom test implementation: {GITHUB_SUGGESTION}",
-            ],
-        )
-        anta_log_exception(e, message, logger)
+        except Exception as e:  # noqa: PERF203, pylint: disable=broad-exception-caught
+            # An AntaTest instance is potentially user-defined code.
+            # We need to catch everything and exit gracefully with an error message.
+            message = "\n".join(
+                [
+                    f"There is an error when creating test {test_definition.test.__module__}.{test_definition.test.__name__}.",
+                    f"If this is not a custom test implementation: {GITHUB_SUGGESTION}",
+                ],
+            )
+            anta_log_exception(e, message, logger)
 
     if AntaTest.progress is not None:
         AntaTest.nrfu_task = AntaTest.progress.add_task("Running NRFU Tests...", total=len(coros))
