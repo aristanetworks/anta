@@ -105,7 +105,9 @@ async def setup_inventory(inventory: AntaInventory, tags: set[str] | None, devic
     return selected_inventory
 
 
-async def prepare_tests(inventory: AntaInventory, catalog: AntaCatalog, tests: set[str] | None, tags: set[str] | None) -> set[AntaTestRunner] | None:
+async def prepare_tests(
+    inventory: AntaInventory, catalog: AntaCatalog, tests: set[str] | None, tags: set[str] | None
+) -> dict[AntaDevice, set[AntaTestDefinition]] | None:
     """Prepare the tests to run.
 
     Args:
@@ -117,34 +119,34 @@ async def prepare_tests(inventory: AntaInventory, catalog: AntaCatalog, tests: s
 
     Returns
     -------
-        set[AntaTestRunner] | None: The selected tests to run or None if there are no tests to run.
+        dict[AntaDevice, set[AntaTestDefinition]] | None: A mapping of devices to the tests to run or None if there are no tests to run.
     """
     # Build indexes for the catalog. If there are CLI provided tests, filter the indexes based on these tests
     catalog.build_indexes(filtered_tests=tests)
 
     # Using a set to avoid inserting duplicate tests
-    selected_tests: set[AntaTestRunner] = set()
+    device_to_tests: dict[AntaDevice, set[AntaTestDefinition]] = {}
 
     # Create AntaTestRunner tuples from the tags
     for device in inventory.devices:
         if tags:
             # If there are CLI tags, only execute tests with matching tags
-            selected_tests.update((test, device) for test in catalog.get_tests_by_tags(tags))
+            device_to_tests.setdefault(device, set()).update(catalog.get_tests_by_tags(tags))
         else:
             # If there is no CLI tags, execute all tests that do not have any tags
-            selected_tests.update((test, device) for test in catalog.tag_to_tests[None])
+            device_to_tests.setdefault(device, set()).update(catalog.tag_to_tests[None])
 
             # Then add the tests with matching tags from device tags
-            selected_tests.update((test, device) for test in catalog.get_tests_by_tags(device.tags))
+            device_to_tests.setdefault(device, set()).update(catalog.get_tests_by_tags(device.tags))
 
-    if not selected_tests:
+    if any(selected_tests for selected_tests in device_to_tests.values() if selected_tests):
         msg = (
             f"There are no tests{f' matching the tags {tags} ' if tags else ' '}to run in the current test catalog and device inventory, please verify your inputs."
         )
         logger.warning(msg)
         return None
 
-    return selected_tests
+    return device_to_tests
 
 
 async def main(  # noqa: PLR0913
@@ -208,20 +210,21 @@ async def main(  # noqa: PLR0913
         )
 
     coros = []
-    for test_definition, device in selected_tests:
-        try:
-            test_instance = test_definition.test(device=device, inputs=test_definition.inputs)
-            coros.append(test_instance.test())
-        except Exception as e:  # noqa: PERF203, pylint: disable=broad-exception-caught
-            # An AntaTest instance is potentially user-defined code.
-            # We need to catch everything and exit gracefully with an error message.
-            message = "\n".join(
-                [
-                    f"There is an error when creating test {test_definition.test.__module__}.{test_definition.test.__name__}.",
-                    f"If this is not a custom test implementation: {GITHUB_SUGGESTION}",
-                ],
-            )
-            anta_log_exception(e, message, logger)
+    for device, test_definitions in selected_tests.items():
+        for test in test_definitions:
+            try:
+                test_instance = test.test(device=device, inputs=test.inputs)
+                coros.append(test_instance.test())
+            except Exception as e:  # noqa: PERF203, pylint: disable=broad-exception-caught
+                # An AntaTest instance is potentially user-defined code.
+                # We need to catch everything and exit gracefully with an error message.
+                message = "\n".join(
+                    [
+                        f"There is an error when creating test {test.test.__module__}.{test.test.__name__}.",
+                        f"If this is not a custom test implementation: {GITHUB_SUGGESTION}",
+                    ],
+                )
+                anta_log_exception(e, message, logger)
 
     if AntaTest.progress is not None:
         AntaTest.nrfu_task = AntaTest.progress.add_task("Running NRFU Tests...", total=len(coros))
