@@ -284,16 +284,37 @@ class TestAntaCatalog:
             catalog.tests = catalog_data["tests"]
         assert catalog_data["error"] in str(exec_info)
 
+    def test_build_indexes_all(self) -> None:
+        """Test AntaCatalog.build_indexes()."""
+        catalog: AntaCatalog = AntaCatalog.parse(str(DATA_DIR / "test_catalog_with_tags.yml"))
+        catalog.build_indexes()
+        assert len(catalog.tests_without_tags) == 5
+        assert "leaf" in catalog.tag_to_tests
+        assert len(catalog.tag_to_tests["leaf"]) == 3
+        all_unique_tests = catalog.tests_without_tags
+        for tests in catalog.tag_to_tests.values():
+            all_unique_tests.update(tests)
+        assert len(all_unique_tests) == 11
+        assert catalog.indexes_built is True
+
+    def test_build_indexes_filtered(self) -> None:
+        """Test AntaCatalog.build_indexes()."""
+        catalog: AntaCatalog = AntaCatalog.parse(str(DATA_DIR / "test_catalog_with_tags.yml"))
+        catalog.build_indexes({"VerifyUptime", "VerifyCoredump", "VerifyL3MTU"})
+        assert "leaf" in catalog.tag_to_tests
+        assert len(catalog.tag_to_tests["leaf"]) == 1
+        assert len(catalog.tests_without_tags) == 1
+        all_unique_tests = catalog.tests_without_tags
+        for tests in catalog.tag_to_tests.values():
+            all_unique_tests.update(tests)
+        assert len(all_unique_tests) == 4
+        assert catalog.indexes_built is True
+
     def test_get_tests_by_tags(self) -> None:
         """Test AntaCatalog.get_tests_by_tags()."""
         catalog: AntaCatalog = AntaCatalog.parse(str(DATA_DIR / "test_catalog_with_tags.yml"))
-        tests: list[AntaTestDefinition] = catalog.get_tests_by_tags(tags={"leaf"})
+        catalog.build_indexes()
+        tests: set[AntaTestDefinition] = catalog.get_tests_by_tags(tags={"leaf"})
         assert len(tests) == 3
-        tests = catalog.get_tests_by_tags(tags={"leaf"}, strict=True)
-        assert len(tests) == 2
-
-    def test_get_tests_by_names(self) -> None:
-        """Test AntaCatalog.get_tests_by_tags()."""
-        catalog: AntaCatalog = AntaCatalog.parse(str(DATA_DIR / "test_catalog_with_tags.yml"))
-        tests: list[AntaTestDefinition] = catalog.get_tests_by_names(names={"VerifyUptime", "VerifyCoredump"})
-        assert len(tests) == 3
+        tests = catalog.get_tests_by_tags(tags={"leaf", "spine"}, strict=True)
+        assert len(tests) == 1
