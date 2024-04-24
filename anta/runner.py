@@ -145,7 +145,9 @@ async def prepare_tests(
             # Then add the tests with matching tags from device tags
             device_to_tests[device].update(catalog.get_tests_by_tags(device.tags))
 
-    if not any(selected_tests for selected_tests in device_to_tests.values() if selected_tests):
+        catalog.final_tests_count += len(device_to_tests[device])
+
+    if catalog.final_tests_count == 0:
         msg = (
             f"There are no tests{f' matching the tags {tags} ' if tags else ' '}to run in the current test catalog and device inventory, please verify your inputs."
         )
@@ -208,14 +210,14 @@ async def main(  # noqa: PLR0913
     run_info = (
         "--- ANTA NRFU Run Information ---\n"
         f"Number of devices: {len(inventory)} ({len(selected_inventory)} established)\n"
-        f"Total number of selected tests: {sum(len(tests) for tests in selected_tests.values())}\n"
+        f"Total number of selected tests: {catalog.final_tests_count}\n"
         f"Maximum number of open file descriptors for the current ANTA process: {limits[0]}\n"
         "---------------------------------"
     )
 
     logger.info(run_info)
 
-    if len(selected_tests) > limits[0]:
+    if catalog.final_tests_count > limits[0]:
         logger.warning(
             "The number of concurrent tests is higher than the open file descriptors limit for this ANTA process.\n"
             "Errors may occur while running the tests.\n"
