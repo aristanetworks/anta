@@ -591,7 +591,7 @@ class AntaTest(ABC):
 
             # TODO: find a correct way to time test execution
             # msg = f"Executing test {self.name} on device {self.device.name} took {t.time}"  # noqa: ERA001
-            self.logger.debug(msg)
+            # self.logger.debug(msg)  # noqa: ERA001
 
             AntaTest.update_progress()
             return self.result
