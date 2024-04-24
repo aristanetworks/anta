@@ -103,7 +103,7 @@ async def setup_inventory(inventory: AntaInventory, tags: set[str] | None, devic
         logger.warning(msg)
         return None
 
-    return selected_inventory
+    return inventory
 
 
 async def prepare_tests(
@@ -195,7 +195,7 @@ async def main(  # noqa: PLR0913
 
     run_info = (
         "--- ANTA NRFU Run Information ---\n"
-        f"Number of devices: {len(selected_inventory)} ({len(inventory)} established)\n"
+        f"Number of devices: {len(inventory)} ({len(selected_inventory)} established)\n"
         f"Total number of selected tests: {len(selected_tests)}\n"
         f"Maximum number of open file descriptors for the current ANTA process: {limits[0]}\n"
         "---------------------------------"
