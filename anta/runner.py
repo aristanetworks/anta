@@ -200,12 +200,10 @@ async def main(  # noqa: PLR0913
 
     tests_start_time = time.time()
     logger.info("Preparing the tests...")
-    # Prepare the tests
     selected_tests = await prepare_tests(selected_inventory, catalog, tests, tags)
     if selected_tests is None:
         return
-    msg = f"Preparing the tests completed in {format_td(time.time() - tests_start_time)}"
-    logger.info(msg)
+    logger.info("Preparing the tests completed in %s", format_td(time.time() - tests_start_time))
 
     run_info = (
         "--- ANTA NRFU Run Information ---\n"
@@ -241,8 +239,7 @@ async def main(  # noqa: PLR0913
                 )
                 anta_log_exception(e, message, logger)
 
-    msg = f"Preparing ANTA NRFU Run completed in {format_td(time.time() - prepare_start_time)}"
-    logger.info(msg)
+    logger.info("Preparing ANTA NRFU Run completed in %s", format_td(time.time() - prepare_start_time))
 
     run_start_time = time.time()
     if AntaTest.progress is not None:
@@ -253,7 +250,6 @@ async def main(  # noqa: PLR0913
     for r in test_results:
         manager.add(r)
 
-    msg = f"Running ANTA tests completed in {format_td(time.time() - run_start_time)}"
-    logger.info(msg)
+    logger.info("Running ANTA tests completed in %s", format_td(time.time() - run_start_time))
 
     log_cache_statistics(selected_inventory.devices)
