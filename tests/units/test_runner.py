@@ -51,8 +51,8 @@ async def test_runner_empty_inventory(caplog: pytest.LogCaptureFixture) -> None:
     manager = ResultManager()
     inventory = AntaInventory()
     await main(manager, inventory, FAKE_CATALOG)
-    assert len(caplog.record_tuples) == 1
-    assert "The inventory is empty, exiting" in caplog.records[0].message
+    assert len(caplog.record_tuples) == 2
+    assert "The inventory is empty, exiting" in caplog.records[1].message
 
 
 @pytest.mark.asyncio()
