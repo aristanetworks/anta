@@ -92,12 +92,9 @@ async def setup_inventory(inventory: AntaInventory, tags: set[str] | None, devic
     # Filter the inventory based on the CLI provided tags and devices if any
     selected_inventory = inventory.get_inventory(tags=tags, devices=devices) if tags or devices else inventory
 
-    with Catchtime() as t:
-        logger.info("Connecting to devices...")
+    with Catchtime(logger=logger, message="Connecting to devices"):
         # Connect to the devices
         await selected_inventory.connect_inventory()
-    msg = f"Connecting to devices completed in {t.time}"
-    logger.info(msg)
 
     # Remove devices that are unreachable
     selected_inventory = selected_inventory.get_inventory(established_only=established_only)
@@ -157,7 +154,7 @@ async def prepare_tests(
     return device_to_tests
 
 
-async def main(  # noqa: PLR0913
+async def main(  # noqa: PLR0913,C901
     manager: ResultManager,
     inventory: AntaInventory,
     catalog: AntaCatalog,
@@ -192,22 +189,16 @@ async def main(  # noqa: PLR0913
         logger.info("The list of tests is empty, exiting")
         return
 
-    logger.info("Preparing ANTA NRFU Run...")
-    with Catchtime() as prepare_t:
+    with Catchtime(logger=logger, message="Preparing ANTA NRFU Run"):
         # Setup the inventory
-        if not dry_run:
-            selected_inventory = await setup_inventory(inventory, tags, devices, established_only=established_only)
-        else:
-            selected_inventory = inventory
+        selected_inventory = inventory if dry_run else await setup_inventory(inventory, tags, devices, established_only=established_only)
         if selected_inventory is None:
             return
 
-        with Catchtime() as t:
-            logger.info("Preparing the tests...")
+        with Catchtime(logger=logger, message="Preparing the tests"):
             selected_tests = await prepare_tests(selected_inventory, catalog, tests, tags)
             if selected_tests is None:
                 return
-        logger.info("Preparing the tests completed in %s.", t.time)
 
         run_info = (
             "--- ANTA NRFU Run Information ---\n"
@@ -243,8 +234,6 @@ async def main(  # noqa: PLR0913
                     )
                     anta_log_exception(e, message, logger)
 
-    logger.info("Preparing ANTA NRFU Run completed in %s", prepare_t.time)
-
     if dry_run:
         logger.info("Dry-run mode, exiting before running the tests.")
         for coro in coros:
@@ -254,12 +243,10 @@ async def main(  # noqa: PLR0913
     if AntaTest.progress is not None:
         AntaTest.nrfu_task = AntaTest.progress.add_task("Running NRFU Tests...", total=len(coros))
 
-    with Catchtime() as run_t:
+    with Catchtime(logger=logger, message="Running ANTA tests"):
         logger.info("Running ANTA tests...")
         test_results = await asyncio.gather(*coros)
         for r in test_results:
             manager.add(r)
-
-    logger.info("Running ANTA tests completed in %s", run_t.time)
 
     log_cache_statistics(selected_inventory.devices)

@@ -6,7 +6,6 @@
 from __future__ import annotations
 
 import logging
-import os
 import resource
 from pathlib import Path
 from unittest.mock import patch
@@ -198,7 +197,8 @@ async def test_runner_dry_run(caplog: pytest.LogCaptureFixture, test_inventory: 
     logger.setup_logging(logger.Log.INFO)
     caplog.set_level(logging.INFO)
     manager = ResultManager()
-    catalog = AntaCatalog.parse(os.environ.get("ANTA_CATALOG"))
+    catalog_path = Path(__file__).parent.parent / "data" / "test_catalog.yml"
+    catalog = AntaCatalog.parse(catalog_path)
 
     await main(manager, test_inventory, catalog, dry_run=True)
 
