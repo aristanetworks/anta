@@ -92,8 +92,12 @@ async def setup_inventory(inventory: AntaInventory, tags: set[str] | None, devic
     # Filter the inventory based on the CLI provided tags and devices if any
     selected_inventory = inventory.get_inventory(tags=tags, devices=devices) if tags or devices else inventory
 
+    start_time = time.time()
+    logger.info("Connecting to devices...")
     # Connect to the devices
     await selected_inventory.connect_inventory()
+    msg = f"Connecting to devices completed in {format_td(time.time() - start_time)}"
+    logger.info(msg)
 
     # Remove devices that are unreachable
     selected_inventory = selected_inventory.get_inventory(established_only=established_only)
@@ -184,21 +188,21 @@ async def main(  # noqa: PLR0913
         logger.info("The list of tests is empty, exiting")
         return
 
-    logger.info("Building ANTA tests...")
-    start_time = time.time()
+    logger.info("Preparing ANTA NRFU Run...")
+    prepare_start_time = time.time()
 
     # Setup the inventory
     selected_inventory = await setup_inventory(inventory, tags, devices, established_only=established_only)
     if selected_inventory is None:
         return
 
+    tests_start_time = time.time()
+    logger.info("Preparing the tests...")
     # Prepare the tests
     selected_tests = await prepare_tests(selected_inventory, catalog, tests, tags)
     if selected_tests is None:
         return
-
-    build_duration = time.time() - start_time
-    msg = f"Building ANTA tests took {format_td(build_duration)}"
+    msg = f"Preparing the tests completed in {format_td(time.time() - tests_start_time)}"
     logger.info(msg)
 
     run_info = (
@@ -235,6 +239,10 @@ async def main(  # noqa: PLR0913
                 )
                 anta_log_exception(e, message, logger)
 
+    msg = f"Preparing ANTA NRFU Run completed in {format_td(time.time() - prepare_start_time)}"
+    logger.info(msg)
+
+    run_start_time = time.time()
     if AntaTest.progress is not None:
         AntaTest.nrfu_task = AntaTest.progress.add_task("Running NRFU Tests...", total=len(coros))
 
@@ -243,4 +251,7 @@ async def main(  # noqa: PLR0913
     for r in test_results:
         manager.add(r)
 
-    log_cache_statistics(inventory.devices)
+    msg = f"Running ANTA tests completed in {format_td(time.time() - run_start_time)}"
+    logger.info(msg)
+
+    log_cache_statistics(selected_inventory.devices)
