@@ -5,7 +5,17 @@
 
 from __future__ import annotations
 
-from typing import Any
+from time import perf_counter
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    import sys
+    from types import TracebackType
+
+    if sys.version_info >= (3, 11):
+        from typing import Self
+    else:
+        from typing_extensions import Self
 
 
 def get_failed_logs(expected_output: dict[Any, Any], actual_output: dict[Any, Any]) -> str:
@@ -249,3 +259,21 @@ def get_item(
     if required is True:
         raise ValueError(custom_error_msg or var_name)
     return default
+
+
+class Catchtime:
+    """A class working as a context to capture time differences."""
+
+    start: float
+    time: float
+    readout: str
+
+    def __enter__(self) -> Self:
+        """__enter__ method."""
+        self.start = perf_counter()
+        return self
+
+    def __exit__(self, exc_type: type[BaseException] | None, exc_val: BaseException | None, exc_tb: TracebackType | None) -> None:
+        """__exit__ method."""
+        self.time = perf_counter() - self.start
+        self.readout = f"Time: {self.time:.3f} seconds"
