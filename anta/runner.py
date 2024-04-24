@@ -108,7 +108,7 @@ async def setup_inventory(inventory: AntaInventory, tags: set[str] | None, devic
         logger.warning(msg)
         return None
 
-    return selected_inventory
+    return inventory
 
 
 def prepare_tests(
