@@ -5,13 +5,14 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING, Callable
 
 import pytest
 from rich.table import Table
 
 from anta import RICH_COLOR_PALETTE
-from anta.reporter import ReportTable
+from anta.reporter import ReportJinja, ReportTable
 
 if TYPE_CHECKING:
     from anta.custom_types import TestStatus
@@ -185,3 +186,14 @@ class TestReportTable:
         assert isinstance(res, Table)
         assert res.title == (title or "Summary per device")
         assert res.row_count == expected_length
+
+
+class TestReportJinja:
+    """Tests for ReportJinja class."""
+
+    # pylint: disable=too-few-public-methods
+
+    def test_fail__init__file_not_found(self) -> None:
+        """Test __init__ failure if file is not found."""
+        with pytest.raises(FileNotFoundError, match="template file is not found: /gnu/terry/pratchett"):
+            ReportJinja(Path("/gnu/terry/pratchett"))

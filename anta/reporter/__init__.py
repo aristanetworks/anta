@@ -215,11 +215,11 @@ class ReportJinja:
 
     def __init__(self, template_path: pathlib.Path) -> None:
         """Create a ReportJinja instance."""
-        if template_path.is_file():
-            self.tempalte_path = template_path
-        else:
+        if not template_path.is_file():
             msg = f"template file is not found: {template_path}"
             raise FileNotFoundError(msg)
+
+        self.template_path = template_path
 
     def render(self, data: list[dict[str, Any]], *, trim_blocks: bool = True, lstrip_blocks: bool = True) -> str:
         """Build a report based on a Jinja2 template.
@@ -250,7 +250,7 @@ class ReportJinja:
             Rendered template
 
         """
-        with self.tempalte_path.open(encoding="utf-8") as file_:
+        with self.template_path.open(encoding="utf-8") as file_:
             template = Template(file_.read(), trim_blocks=trim_blocks, lstrip_blocks=lstrip_blocks)
 
         return template.render({"data": data})

@@ -1355,6 +1355,14 @@ DATA: list[dict[str, Any]] = [
                         "lineProtocolStatus": "up",
                         "mtu": 65535,
                     },
+                    # Checking not loopbacks are skipped
+                    "Ethernet666": {
+                        "name": "Ethernet666",
+                        "interfaceStatus": "connected",
+                        "interfaceAddress": {"ipAddr": {"maskLen": 32, "address": "6.6.6.6"}},
+                        "ipv4Routable240": False,
+                        "lineProtocolStatus": "up",
+                    },
                 },
             },
         ],
