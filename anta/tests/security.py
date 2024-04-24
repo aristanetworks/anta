@@ -44,7 +44,11 @@ class VerifySSHStatus(AntaTest):
         """Main test function for VerifySSHStatus."""
         command_output = self.instance_commands[0].text_output
 
-        line = next(line for line in command_output.split("\n") if line.startswith("SSHD status"))
+        try:
+            line = next(line for line in command_output.split("\n") if line.startswith("SSHD status"))
+        except StopIteration:
+            self.result.is_error("Could not find SSH status in returned output.")
+            return
         status = line.split("is ")[1]
 
         if status == "disabled":

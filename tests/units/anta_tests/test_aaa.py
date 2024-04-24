@@ -272,6 +272,18 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
+        "name": "success-skipping-exec",
+        "test": VerifyAuthzMethods,
+        "eos_data": [
+            {
+                "commandsAuthzMethods": {"privilege0-15": {"methods": ["group tacacs+", "local"]}},
+                "execAuthzMethods": {"exec": {"methods": ["group tacacs+", "local"]}},
+            },
+        ],
+        "inputs": {"methods": ["tacacs+", "local"], "types": ["commands"]},
+        "expected": {"result": "success"},
+    },
+    {
         "name": "failure-commands",
         "test": VerifyAuthzMethods,
         "eos_data": [
