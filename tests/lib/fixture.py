@@ -5,15 +5,19 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
 import shutil
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable
 from unittest.mock import patch
 
 import pytest
+import pytest_asyncio
 from click.testing import CliRunner, Result
 
 from anta import aioeapi
+from anta.catalog import AntaCatalog
 from anta.cli.console import console
 from anta.device import AntaDevice, AsyncEOSDevice
 from anta.inventory import AntaInventory
@@ -23,7 +27,6 @@ from tests.lib.utils import default_anta_env
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
-    from pathlib import Path
 
     from anta.models import AntaCommand
 
@@ -79,9 +82,12 @@ def device(request: pytest.FixtureRequest) -> Iterator[AntaDevice]:
 
 
 @pytest.fixture()
-def test_inventory() -> AntaInventory:
+def test_inventory(request: pytest.FixtureRequest) -> AntaInventory:
     """Return the test_inventory."""
     env = default_anta_env()
+    if hasattr(request, "param"):
+        # Fixture is parametrized indirectly with a specific test inventory filename
+        env["ANTA_INVENTORY"] = str(Path(__file__).parent.parent / "data" / request.param)
     assert env["ANTA_INVENTORY"]
     assert env["ANTA_USERNAME"]
     assert env["ANTA_PASSWORD"] is not None
@@ -90,6 +96,17 @@ def test_inventory() -> AntaInventory:
         username=env["ANTA_USERNAME"],
         password=env["ANTA_PASSWORD"],
     )
+
+
+@pytest.fixture()
+def test_catalog(request: pytest.FixtureRequest) -> AntaCatalog:
+    """Return the test_catalog."""
+    env = default_anta_env()
+    if hasattr(request, "param"):
+        # Fixture is parametrized indirectly with a specific test inventory filename
+        env["ANTA_CATALOG"] = str(Path(__file__).parent.parent / "data" / request.param)
+    assert env["ANTA_CATALOG"]
+    return AntaCatalog.parse(filename=env["ANTA_CATALOG"])
 
 
 # tests.unit.test_device.py fixture
@@ -179,8 +196,8 @@ def click_runner(capsys: pytest.CaptureFixture[str]) -> Iterator[CliRunner]:  # 
 
         def invoke(
             self,
-            *args: Any,  # noqa: ANN401
-            **kwargs: Any,  # noqa: ANN401
+            *args: Any,
+            **kwargs: Any,
         ) -> Result:
             # Inject default env if not provided
             kwargs["env"] = kwargs["env"] if "env" in kwargs else default_anta_env()
@@ -201,7 +218,7 @@ def click_runner(capsys: pytest.CaptureFixture[str]) -> Iterator[CliRunner]:  # 
         commands: list[dict[str, Any]] | None = None,
         ofmt: str = "json",
         _version: int | str | None = "latest",
-        **_kwargs: Any,  # noqa: ANN401
+        **_kwargs: Any,
     ) -> dict[str, Any] | list[dict[str, Any]]:
         def get_output(command: str | dict[str, Any]) -> dict[str, Any]:
             if isinstance(command, dict):
@@ -242,3 +259,26 @@ def click_runner(capsys: pytest.CaptureFixture[str]) -> Iterator[CliRunner]:  # 
     ):
         console._color_system = None  # pylint: disable=protected-access
         yield AntaCliRunner()
+
+
+@pytest_asyncio.fixture()
+async def aio_benchmark(benchmark: Callable[..., Any]) -> Callable[..., Any]:
+    """Fixture to benchmark a coroutine function.
+
+    https://github.com/ionelmc/pytest-benchmark/issues/66#issuecomment-2058337929
+    """
+
+    async def run_async_coroutine(func: Any, *args: Any, **kwargs: Any) -> Any:
+        return await func(*args, **kwargs)
+
+    def _wrapper(func: Any, *args: Any, **kwargs: Any) -> Any:
+        if asyncio.iscoroutinefunction(func):
+
+            @benchmark
+            def _() -> asyncio.Future:
+                future = asyncio.ensure_future(run_async_coroutine(func, *args, **kwargs))
+                return asyncio.get_event_loop().run_until_complete(future)
+        else:
+            benchmark(func, *args, **kwargs)
+
+    return _wrapper

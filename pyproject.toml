@@ -63,6 +63,8 @@ dev = [
   "pre-commit>=3.3.3",
   "pylint-pydantic>=0.2.4",
   "pylint>=2.17.5",
+  "pytest-html",
+  "pytest-benchmark",
   "pytest-asyncio",
   "pytest-cov",
   "pytest",
@@ -375,6 +377,9 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.In
   "S105",    # Passwords are indeed hardcoded in tests
   "S106",    # Passwords are indeed hardcoded in tests
   "S108",    # Probable insecure usage of temporary file or directory
+]
+"tests/lib/fixture.py" = [
+  "ANN401",  # Ok to use Any type hint in decorators
 ]
 "tests/units/anta_tests/test_interfaces.py" = [
   "S104",  # False positive for 0.0.0.0 bindings in test inputs

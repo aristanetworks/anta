@@ -8,6 +8,7 @@ from __future__ import annotations
 import logging
 import resource
 from pathlib import Path
+from typing import TYPE_CHECKING
 from unittest.mock import patch
 
 import pytest
@@ -18,10 +19,29 @@ from anta.inventory import AntaInventory
 from anta.result_manager import ResultManager
 from anta.runner import adjust_rlimit_nofile, main, prepare_tests
 
-from .test_models import FakeTest
+if TYPE_CHECKING:
+    from typing import Any, Callable
 
 DATA_DIR: Path = Path(__file__).parent.parent.resolve() / "data"
-FAKE_CATALOG: AntaCatalog = AntaCatalog.from_list([(FakeTest, None)])
+
+@pytest.mark.parametrize(
+    ("test_inventory", "test_catalog"),
+    [
+        pytest.param("test_inventory_large.yml", "test_catalog_large.yml", id="large-50_devices-7688_tests"),
+        pytest.param("test_inventory_medium.yml", "test_catalog_medium.yml", id="medium-6_devices-228_tests"),
+        pytest.param("test_inventory.yml", "test_catalog.yml", id="small-3_devices-3_tests"),
+    ],
+    indirect=True,
+)
+def test_runner(caplog: pytest.LogCaptureFixture, test_inventory: AntaInventory, test_catalog: AntaCatalog, aio_benchmark: Callable[..., Any]) -> None:
+    """Test and benchmark ANTA runner.
+
+    caplog is the pytest fixture to capture logs.
+    """
+    logger.setup_logging(logger.Log.INFO)
+    caplog.set_level(logging.INFO)
+    manager = ResultManager()
+    aio_benchmark(main, manager, test_inventory, test_catalog)
 
 
 @pytest.mark.asyncio()
@@ -41,7 +61,7 @@ async def test_runner_empty_tests(caplog: pytest.LogCaptureFixture, test_invento
 
 
 @pytest.mark.asyncio()
-async def test_runner_empty_inventory(caplog: pytest.LogCaptureFixture) -> None:
+async def test_runner_empty_inventory(caplog: pytest.LogCaptureFixture, test_catalog: AntaCatalog) -> None:
     """Test that when the Inventory is empty, a log is raised.
 
     caplog is the pytest fixture to capture logs
@@ -50,14 +70,14 @@ async def test_runner_empty_inventory(caplog: pytest.LogCaptureFixture) -> None:
     caplog.set_level(logging.INFO)
     manager = ResultManager()
     inventory = AntaInventory()
-    await main(manager, inventory, FAKE_CATALOG)
-    assert len(caplog.record_tuples) == 3
-    assert "The inventory is empty, exiting" in caplog.records[1].message
+    await main(manager, inventory, test_catalog)
+    assert len(caplog.record_tuples) == 1
+    assert "The inventory is empty, exiting" in caplog.records[0].message
 
 
 @pytest.mark.asyncio()
-async def test_runner_no_selected_device(caplog: pytest.LogCaptureFixture, test_inventory: AntaInventory) -> None:
-    """Test that when the list of established device.
+async def test_runner_no_selected_device(caplog: pytest.LogCaptureFixture, test_inventory: AntaInventory, test_catalog: AntaCatalog) -> None:
+    """Test that when there is no reachable device, a log is raised.
 
     caplog is the pytest fixture to capture logs
     test_inventory is a fixture that gives a default inventory for tests
@@ -65,13 +85,13 @@ async def test_runner_no_selected_device(caplog: pytest.LogCaptureFixture, test_
     logger.setup_logging(logger.Log.INFO)
     caplog.set_level(logging.INFO)
     manager = ResultManager()
-    await main(manager, test_inventory, FAKE_CATALOG)
+    await main(manager, test_inventory, test_catalog)
 
     assert "No reachable device was found." in [record.message for record in caplog.records]
 
     #  Reset logs and run with tags
     caplog.clear()
-    await main(manager, test_inventory, FAKE_CATALOG, tags={"toto"})
+    await main(manager, test_inventory, test_catalog, tags={"toto"})
 
     assert "No reachable device matching the tags {'toto'} was found." in [record.message for record in caplog.records]
 
