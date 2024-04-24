@@ -32,6 +32,15 @@ def test_anta_nrfu(click_runner: CliRunner) -> None:
     assert "Tests catalog contains 1 tests" in result.output
 
 
+def test_anta_nrfu_dry_run(click_runner: CliRunner) -> None:
+    """Test anta nrfu --dry-run, catalog is given via env."""
+    result = click_runner.invoke(anta, ["nrfu", "--dry-run"])
+    assert result.exit_code == ExitCode.OK
+    assert "ANTA Inventory contains 3 devices" in result.output
+    assert "Tests catalog contains 1 tests" in result.output
+    assert "Dry-run" in result.output
+
+
 def test_anta_password_required(click_runner: CliRunner) -> None:
     """Test that password is provided."""
     env = default_anta_env()

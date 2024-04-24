@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import logging
+import os
 import resource
 from pathlib import Path
 from unittest.mock import patch
@@ -185,3 +186,23 @@ async def test_prepare_tests_with_specific_tests(caplog: pytest.LogCaptureFixtur
     assert selected_tests is not None
     assert len(selected_tests) == 3
     assert sum(len(tests) for tests in selected_tests.values()) == 5
+
+
+@pytest.mark.asyncio()
+async def test_runner_dry_run(caplog: pytest.LogCaptureFixture, test_inventory: AntaInventory) -> None:
+    """Test that when dry_run is True, no tests are run.
+
+    caplog is the pytest fixture to capture logs
+    test_inventory is a fixture that gives a default inventory for tests
+    """
+    logger.setup_logging(logger.Log.INFO)
+    caplog.set_level(logging.INFO)
+    manager = ResultManager()
+    catalog = AntaCatalog.parse(os.environ.get("ANTA_CATALOG"))
+
+    await main(manager, test_inventory, catalog, dry_run=True)
+
+    # TODO: this is a bit fragile with the number of logs as this will break every time
+    #       we add new log. #RefactorMe
+    assert len(caplog.record_tuples) == 7
+    assert "Dry-run" in caplog.records[6].message
