@@ -127,10 +127,12 @@ DATA: list[dict[str, Any]] = [
         "name": "success",
         "test": VerifyErrdisableRecovery,
         "eos_data": [
+            # Adding empty line on purpose to verify they are skipped
             """
                 Errdisable Reason              Timer Status   Timer Interval
                 ------------------------------ ----------------- --------------
                 acl                            Enabled                  300
+
                 bpduguard                      Enabled                  300
                 arp-inspection                 Enabled                  30
             """
