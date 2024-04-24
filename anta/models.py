@@ -20,7 +20,6 @@ from anta import GITHUB_SUGGESTION
 from anta.custom_types import Revision
 from anta.logger import anta_log_exception, exc_to_str
 from anta.result_manager.models import TestResult
-from anta.tools import Catchtime
 
 if TYPE_CHECKING:
     from collections.abc import Coroutine
