@@ -166,6 +166,7 @@ async def main(  # noqa: PLR0913
     tags: set[str] | None = None,
     *,
     established_only: bool = True,
+    dry_run: bool = False,
 ) -> None:
     # pylint: disable=too-many-arguments
     """Run ANTA.
@@ -182,6 +183,7 @@ async def main(  # noqa: PLR0913
         tests: Tests to run against devices. None means all tests. These may come from the `--test / -t` CLI option in NRFU.
         tags: Tags to filter devices from the inventory. These may come from the `--tags` CLI option in NRFU.
         established_only: Include only established device(s).
+        dry_run: Build the list of coroutine to run and stop before test execution.
     """
     # Adjust the maximum number of open file descriptors for the ANTA process
     limits = adjust_rlimit_nofile()
@@ -193,7 +195,10 @@ async def main(  # noqa: PLR0913
     logger.info("Preparing ANTA NRFU Run...")
     with Catchtime() as prepare_t:
         # Setup the inventory
-        selected_inventory = await setup_inventory(inventory, tags, devices, established_only=established_only)
+        if not dry_run:
+            selected_inventory = await setup_inventory(inventory, tags, devices, established_only=established_only)
+        else:
+            selected_inventory = inventory
         if selected_inventory is None:
             return
 
@@ -240,10 +245,16 @@ async def main(  # noqa: PLR0913
 
     logger.info("Preparing ANTA NRFU Run completed in %s", prepare_t.time)
 
-    with Catchtime() as run_t:
-        if AntaTest.progress is not None:
-            AntaTest.nrfu_task = AntaTest.progress.add_task("Running NRFU Tests...", total=len(coros))
+    if dry_run:
+        logger.info("Dry-run mode, exiting before running the tests.")
+        for coro in coros:
+            coro.close()
+        return
 
+    if AntaTest.progress is not None:
+        AntaTest.nrfu_task = AntaTest.progress.add_task("Running NRFU Tests...", total=len(coros))
+
+    with Catchtime() as run_t:
         logger.info("Running ANTA tests...")
         test_results = await asyncio.gather(*coros)
         for r in test_results:
