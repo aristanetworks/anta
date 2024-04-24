@@ -13,7 +13,7 @@ This section shows how to use ANTA with basic configuration. All examples are ba
 The easiest way to install ANTA package is to run Python (`>=3.9`) and its pip package to install:
 
 ```bash
-pip install anta
+pip install anta[cli]
 ```
 
 For more details about how to install package, please see the [requirements and installation](./requirements-and-installation.md) section.
