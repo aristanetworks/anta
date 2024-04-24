@@ -96,15 +96,15 @@ async def setup_inventory(inventory: AntaInventory, tags: set[str] | None, devic
     await selected_inventory.connect_inventory()
 
     # Remove devices that are unreachable
-    inventory = selected_inventory.get_inventory(established_only=established_only)
+    selected_inventory = selected_inventory.get_inventory(established_only=established_only)
 
     # If there are no devices in the inventory after filtering, exit
-    if not inventory.devices:
+    if not selected_inventory.devices:
         msg = f'No reachable device {f"matching the tags {tags} " if tags else ""}was found.{f" Selected devices: {devices} " if devices is not None else ""}'
         logger.warning(msg)
         return None
 
-    return inventory
+    return selected_inventory
 
 
 async def prepare_tests(
@@ -204,7 +204,7 @@ async def main(  # noqa: PLR0913
     run_info = (
         "--- ANTA NRFU Run Information ---\n"
         f"Number of devices: {len(inventory)} ({len(selected_inventory)} established)\n"
-        f"Total number of selected tests: {len(selected_tests)}\n"
+        f"Total number of selected tests: {sum(len(tests) for tests in selected_tests.values())}\n"
         f"Maximum number of open file descriptors for the current ANTA process: {limits[0]}\n"
         "---------------------------------"
     )
