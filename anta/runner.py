@@ -9,11 +9,12 @@ import asyncio
 import logging
 import os
 import resource
+import time
 from collections import defaultdict
 from typing import TYPE_CHECKING
 
 from anta import GITHUB_SUGGESTION
-from anta.logger import anta_log_exception, exc_to_str
+from anta.logger import anta_log_exception, exc_to_str, format_td
 from anta.models import AntaTest
 
 if TYPE_CHECKING:
@@ -183,6 +184,9 @@ async def main(  # noqa: PLR0913
         logger.info("The list of tests is empty, exiting")
         return
 
+    logger.info("Building ANTA tests...")
+    start_time = time.time()
+
     # Setup the inventory
     selected_inventory = await setup_inventory(inventory, tags, devices, established_only=established_only)
     if selected_inventory is None:
@@ -192,6 +196,10 @@ async def main(  # noqa: PLR0913
     selected_tests = await prepare_tests(selected_inventory, catalog, tests, tags)
     if selected_tests is None:
         return
+
+    build_duration = time.time() - start_time
+    msg = f"Building ANTA tests took {format_td(build_duration)}"
+    logger.info(msg)
 
     run_info = (
         "--- ANTA NRFU Run Information ---\n"

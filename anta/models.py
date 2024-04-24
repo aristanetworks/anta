@@ -11,7 +11,6 @@ import re
 import time
 from abc import ABC, abstractmethod
 from copy import deepcopy
-from datetime import timedelta
 from functools import wraps
 from string import Formatter
 from typing import TYPE_CHECKING, Any, Callable, ClassVar, Literal, TypeVar
@@ -20,7 +19,7 @@ from pydantic import BaseModel, ConfigDict, ValidationError, create_model
 
 from anta import GITHUB_SUGGESTION
 from anta.custom_types import Revision
-from anta.logger import anta_log_exception, exc_to_str
+from anta.logger import anta_log_exception, exc_to_str, format_td
 from anta.result_manager.models import TestResult
 
 if TYPE_CHECKING:
@@ -557,11 +556,6 @@ class AntaTest(ABC):
                 result: TestResult instance attribute populated with error status if any
 
             """
-
-            def format_td(seconds: float, digits: int = 3) -> str:
-                isec, fsec = divmod(round(seconds * 10**digits), 10**digits)
-                return f"{timedelta(seconds=isec)}.{fsec:0{digits}.0f}"
-
             start_time = time.time()
             if self.result.result != "unset":
                 return self.result
