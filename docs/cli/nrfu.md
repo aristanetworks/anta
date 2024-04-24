@@ -173,7 +173,7 @@ The `--output` option allows you to choose the path where the final report will 
 ```bash
 anta nrfu --tags LEAF tpl-report --template ./custom_template.j2
 ```
-[![anta nrfu json results](../imgs/anta-nrfu-tpl-report-output.png){ loading=lazy width="1600" }](../imgs/anta-nrfu-tpl-report-output.png)
+[![anta nrfu tpl_resultss](../imgs/anta-nrfu-tpl-report-output.png){ loading=lazy width="1600" }](../imgs/anta-nrfu-tpl-report-output.png)
 
 The template `./custom_template.j2` is a simple Jinja2 template:
 
@@ -200,3 +200,9 @@ cat nrfu-tpl-report.txt
 * VerifyMlagConfigSanity is [green]SUCCESS[/green] for DC1-LEAF1A
 * VerifyMlagReloadDelay is [green]SUCCESS[/green] for DC1-LEAF1A
 ```
+
+## Dry-run mode
+
+It is possible to run `anta nrfu --dry-run` to execute ANTA up to the point where it should communicate with the network to execute the tests. When using `--dry-run`, all inventory devices are assumed to be online. This can be useful to check how many tests would be run using the catalog and inventory.
+
+[![anta nrfu dry_run](../imgs/anta_nrfu___dry_run.svg){ loading=lazy width="1600" }](../imgs/anta_nrfu___dry_run.svg)

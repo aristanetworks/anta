@@ -144,6 +144,8 @@ def nrfu(
                 dry_run=dry_run,
             )
         )
+    if dry_run:
+        return
     # Invoke `anta nrfu table` if no command is passed
     if ctx.invoked_subcommand is None:
         ctx.invoke(commands.table)
