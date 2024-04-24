@@ -20,7 +20,6 @@ from anta import GITHUB_SUGGESTION
 from anta.custom_types import Revision
 from anta.logger import anta_log_exception, exc_to_str
 from anta.result_manager.models import TestResult
-from anta.tools import Catchtime
 
 if TYPE_CHECKING:
     from collections.abc import Coroutine
@@ -591,7 +590,7 @@ class AntaTest(ABC):
                 self.result.is_error(message=exc_to_str(e))
 
             # TODO: find a correct way to time test execution
-            # msg = f"Executing test {self.name} on device {self.device.name} took {t.time}"
+            # msg = f"Executing test {self.name} on device {self.device.name} took {t.time}"  # noqa: ERA001
             self.logger.debug(msg)
 
             AntaTest.update_progress()
