@@ -8,6 +8,8 @@ from __future__ import annotations
 from time import perf_counter
 from typing import TYPE_CHECKING, Any
 
+from anta.logger import format_td
+
 if TYPE_CHECKING:
     import sys
     from types import TracebackType
@@ -265,8 +267,8 @@ class Catchtime:
     """A class working as a context to capture time differences."""
 
     start: float
-    time: float
-    readout: str
+    raw_time: float
+    time: str
 
     def __enter__(self) -> Self:
         """__enter__ method."""
@@ -275,5 +277,5 @@ class Catchtime:
 
     def __exit__(self, exc_type: type[BaseException] | None, exc_val: BaseException | None, exc_tb: TracebackType | None) -> None:
         """__exit__ method."""
-        self.time = perf_counter() - self.start
-        self.readout = f"Time: {self.time:.3f} seconds"
+        self.raw_time = perf_counter() - self.start
+        self.time = format_td(self.raw_time, 3)

@@ -9,13 +9,13 @@ import asyncio
 import logging
 import os
 import resource
-import time
 from collections import defaultdict
 from typing import TYPE_CHECKING
 
 from anta import GITHUB_SUGGESTION
-from anta.logger import anta_log_exception, exc_to_str, format_td
+from anta.logger import anta_log_exception, exc_to_str
 from anta.models import AntaTest
+from anta.tools import Catchtime
 
 if TYPE_CHECKING:
     from anta.catalog import AntaCatalog, AntaTestDefinition
@@ -92,11 +92,11 @@ async def setup_inventory(inventory: AntaInventory, tags: set[str] | None, devic
     # Filter the inventory based on the CLI provided tags and devices if any
     selected_inventory = inventory.get_inventory(tags=tags, devices=devices) if tags or devices else inventory
 
-    start_time = time.time()
-    logger.info("Connecting to devices...")
-    # Connect to the devices
-    await selected_inventory.connect_inventory()
-    msg = f"Connecting to devices completed in {format_td(time.time() - start_time)}"
+    with Catchtime() as t:
+        logger.info("Connecting to devices...")
+        # Connect to the devices
+        await selected_inventory.connect_inventory()
+    msg = f"Connecting to devices completed in {t.time}"
     logger.info(msg)
 
     # Remove devices that are unreachable
@@ -191,65 +191,64 @@ async def main(  # noqa: PLR0913
         return
 
     logger.info("Preparing ANTA NRFU Run...")
-    prepare_start_time = time.time()
+    with Catchtime() as prepare_t:
+        # Setup the inventory
+        selected_inventory = await setup_inventory(inventory, tags, devices, established_only=established_only)
+        if selected_inventory is None:
+            return
 
-    # Setup the inventory
-    selected_inventory = await setup_inventory(inventory, tags, devices, established_only=established_only)
-    if selected_inventory is None:
-        return
+        with Catchtime() as t:
+            logger.info("Preparing the tests...")
+            selected_tests = await prepare_tests(selected_inventory, catalog, tests, tags)
+            if selected_tests is None:
+                return
+        logger.info("Preparing the tests completed in %s.", t.time)
 
-    tests_start_time = time.time()
-    logger.info("Preparing the tests...")
-    selected_tests = await prepare_tests(selected_inventory, catalog, tests, tags)
-    if selected_tests is None:
-        return
-    logger.info("Preparing the tests completed in %s", format_td(time.time() - tests_start_time))
-
-    run_info = (
-        "--- ANTA NRFU Run Information ---\n"
-        f"Number of devices: {len(inventory)} ({len(selected_inventory)} established)\n"
-        f"Total number of selected tests: {catalog.final_tests_count}\n"
-        f"Maximum number of open file descriptors for the current ANTA process: {limits[0]}\n"
-        "---------------------------------"
-    )
-
-    logger.info(run_info)
-
-    if catalog.final_tests_count > limits[0]:
-        logger.warning(
-            "The number of concurrent tests is higher than the open file descriptors limit for this ANTA process.\n"
-            "Errors may occur while running the tests.\n"
-            "Please consult the ANTA FAQ."
+        run_info = (
+            "--- ANTA NRFU Run Information ---\n"
+            f"Number of devices: {len(inventory)} ({len(selected_inventory)} established)\n"
+            f"Total number of selected tests: {catalog.final_tests_count}\n"
+            f"Maximum number of open file descriptors for the current ANTA process: {limits[0]}\n"
+            "---------------------------------"
         )
 
-    coros = []
-    for device, test_definitions in selected_tests.items():
-        for test in test_definitions:
-            try:
-                test_instance = test.test(device=device, inputs=test.inputs)
-                coros.append(test_instance.test())
-            except Exception as e:  # noqa: PERF203, pylint: disable=broad-exception-caught
-                # An AntaTest instance is potentially user-defined code.
-                # We need to catch everything and exit gracefully with an error message.
-                message = "\n".join(
-                    [
-                        f"There is an error when creating test {test.test.__module__}.{test.test.__name__}.",
-                        f"If this is not a custom test implementation: {GITHUB_SUGGESTION}",
-                    ],
-                )
-                anta_log_exception(e, message, logger)
+        logger.info(run_info)
 
-    logger.info("Preparing ANTA NRFU Run completed in %s", format_td(time.time() - prepare_start_time))
+        if catalog.final_tests_count > limits[0]:
+            logger.warning(
+                "The number of concurrent tests is higher than the open file descriptors limit for this ANTA process.\n"
+                "Errors may occur while running the tests.\n"
+                "Please consult the ANTA FAQ."
+            )
 
-    run_start_time = time.time()
-    if AntaTest.progress is not None:
-        AntaTest.nrfu_task = AntaTest.progress.add_task("Running NRFU Tests...", total=len(coros))
+        coros = []
+        for device, test_definitions in selected_tests.items():
+            for test in test_definitions:
+                try:
+                    test_instance = test.test(device=device, inputs=test.inputs)
+                    coros.append(test_instance.test())
+                except Exception as e:  # noqa: PERF203, pylint: disable=broad-exception-caught
+                    # An AntaTest instance is potentially user-defined code.
+                    # We need to catch everything and exit gracefully with an error message.
+                    message = "\n".join(
+                        [
+                            f"There is an error when creating test {test.test.__module__}.{test.test.__name__}.",
+                            f"If this is not a custom test implementation: {GITHUB_SUGGESTION}",
+                        ],
+                    )
+                    anta_log_exception(e, message, logger)
 
-    logger.info("Running ANTA tests...")
-    test_results = await asyncio.gather(*coros)
-    for r in test_results:
-        manager.add(r)
+    logger.info("Preparing ANTA NRFU Run completed in %s", prepare_t.time)
 
-    logger.info("Running ANTA tests completed in %s", format_td(time.time() - run_start_time))
+    with Catchtime() as run_t:
+        if AntaTest.progress is not None:
+            AntaTest.nrfu_task = AntaTest.progress.add_task("Running NRFU Tests...", total=len(coros))
+
+        logger.info("Running ANTA tests...")
+        test_results = await asyncio.gather(*coros)
+        for r in test_results:
+            manager.add(r)
+
+    logger.info("Running ANTA tests completed in %s", run_t.time)
 
     log_cache_statistics(selected_inventory.devices)

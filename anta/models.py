@@ -8,7 +8,6 @@ from __future__ import annotations
 import hashlib
 import logging
 import re
-import time
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from functools import wraps
@@ -19,8 +18,9 @@ from pydantic import BaseModel, ConfigDict, ValidationError, create_model
 
 from anta import GITHUB_SUGGESTION
 from anta.custom_types import Revision
-from anta.logger import anta_log_exception, exc_to_str, format_td
+from anta.logger import anta_log_exception, exc_to_str
 from anta.result_manager.models import TestResult
+from anta.tools import Catchtime
 
 if TYPE_CHECKING:
     from collections.abc import Coroutine
@@ -556,43 +556,42 @@ class AntaTest(ABC):
                 result: TestResult instance attribute populated with error status if any
 
             """
-            start_time = time.time()
-            if self.result.result != "unset":
-                return self.result
-
-            # Data
-            if eos_data is not None:
-                self.save_commands_data(eos_data)
-                self.logger.debug("Test %s initialized with input data %s", self.name, eos_data)
-
-            # If some data is missing, try to collect
-            if not self.collected:
-                await self.collect()
+            with Catchtime() as t:
                 if self.result.result != "unset":
                     return self.result
 
-                if cmds := self.failed_commands:
-                    unsupported_commands = [f"'{c.command}' is not supported on {self.device.hw_model}" for c in cmds if not c.supported]
-                    if unsupported_commands:
-                        msg = f"Test {self.name} has been skipped because it is not supported on {self.device.hw_model}: {GITHUB_SUGGESTION}"
-                        self.logger.warning(msg)
-                        self.result.is_skipped("\n".join(unsupported_commands))
+                # Data
+                if eos_data is not None:
+                    self.save_commands_data(eos_data)
+                    self.logger.debug("Test %s initialized with input data %s", self.name, eos_data)
+
+                # If some data is missing, try to collect
+                if not self.collected:
+                    await self.collect()
+                    if self.result.result != "unset":
                         return self.result
-                    self.result.is_error(message="\n".join([f"{c.command} has failed: {', '.join(c.errors)}" for c in cmds]))
-                    return self.result
 
-            try:
-                function(self, **kwargs)
-            except Exception as e:  # pylint: disable=broad-exception-caught
-                # test() is user-defined code.
-                # We need to catch everything if we want the AntaTest object
-                # to live until the reporting
-                message = f"Exception raised for test {self.name} (on device {self.device.name})"
-                anta_log_exception(e, message, self.logger)
-                self.result.is_error(message=exc_to_str(e))
+                    if cmds := self.failed_commands:
+                        unsupported_commands = [f"'{c.command}' is not supported on {self.device.hw_model}" for c in cmds if not c.supported]
+                        if unsupported_commands:
+                            msg = f"Test {self.name} has been skipped because it is not supported on {self.device.hw_model}: {GITHUB_SUGGESTION}"
+                            self.logger.warning(msg)
+                            self.result.is_skipped("\n".join(unsupported_commands))
+                            return self.result
+                        self.result.is_error(message="\n".join([f"{c.command} has failed: {', '.join(c.errors)}" for c in cmds]))
+                        return self.result
 
-            test_duration = time.time() - start_time
-            msg = f"Executing test {self.name} on device {self.device.name} took {format_td(test_duration)}"
+                try:
+                    function(self, **kwargs)
+                except Exception as e:  # pylint: disable=broad-exception-caught
+                    # test() is user-defined code.
+                    # We need to catch everything if we want the AntaTest object
+                    # to live until the reporting
+                    message = f"Exception raised for test {self.name} (on device {self.device.name})"
+                    anta_log_exception(e, message, self.logger)
+                    self.result.is_error(message=exc_to_str(e))
+
+            msg = f"Executing test {self.name} on device {self.device.name} took {t.time}"
             self.logger.debug(msg)
 
             AntaTest.update_progress()
