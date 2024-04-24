@@ -556,42 +556,42 @@ class AntaTest(ABC):
                 result: TestResult instance attribute populated with error status if any
 
             """
-            with Catchtime() as t:
+            if self.result.result != "unset":
+                return self.result
+
+            # Data
+            if eos_data is not None:
+                self.save_commands_data(eos_data)
+                self.logger.debug("Test %s initialized with input data %s", self.name, eos_data)
+
+            # If some data is missing, try to collect
+            if not self.collected:
+                await self.collect()
                 if self.result.result != "unset":
                     return self.result
 
-                # Data
-                if eos_data is not None:
-                    self.save_commands_data(eos_data)
-                    self.logger.debug("Test %s initialized with input data %s", self.name, eos_data)
-
-                # If some data is missing, try to collect
-                if not self.collected:
-                    await self.collect()
-                    if self.result.result != "unset":
+                if cmds := self.failed_commands:
+                    unsupported_commands = [f"'{c.command}' is not supported on {self.device.hw_model}" for c in cmds if not c.supported]
+                    if unsupported_commands:
+                        msg = f"Test {self.name} has been skipped because it is not supported on {self.device.hw_model}: {GITHUB_SUGGESTION}"
+                        self.logger.warning(msg)
+                        self.result.is_skipped("\n".join(unsupported_commands))
                         return self.result
+                    self.result.is_error(message="\n".join([f"{c.command} has failed: {', '.join(c.errors)}" for c in cmds]))
+                    return self.result
 
-                    if cmds := self.failed_commands:
-                        unsupported_commands = [f"'{c.command}' is not supported on {self.device.hw_model}" for c in cmds if not c.supported]
-                        if unsupported_commands:
-                            msg = f"Test {self.name} has been skipped because it is not supported on {self.device.hw_model}: {GITHUB_SUGGESTION}"
-                            self.logger.warning(msg)
-                            self.result.is_skipped("\n".join(unsupported_commands))
-                            return self.result
-                        self.result.is_error(message="\n".join([f"{c.command} has failed: {', '.join(c.errors)}" for c in cmds]))
-                        return self.result
+            try:
+                function(self, **kwargs)
+            except Exception as e:  # pylint: disable=broad-exception-caught
+                # test() is user-defined code.
+                # We need to catch everything if we want the AntaTest object
+                # to live until the reporting
+                message = f"Exception raised for test {self.name} (on device {self.device.name})"
+                anta_log_exception(e, message, self.logger)
+                self.result.is_error(message=exc_to_str(e))
 
-                try:
-                    function(self, **kwargs)
-                except Exception as e:  # pylint: disable=broad-exception-caught
-                    # test() is user-defined code.
-                    # We need to catch everything if we want the AntaTest object
-                    # to live until the reporting
-                    message = f"Exception raised for test {self.name} (on device {self.device.name})"
-                    anta_log_exception(e, message, self.logger)
-                    self.result.is_error(message=exc_to_str(e))
-
-            msg = f"Executing test {self.name} on device {self.device.name} took {t.time}"
+            # TODO: find a correct way to time test execution
+            # msg = f"Executing test {self.name} on device {self.device.name} took {t.time}"
             self.logger.debug(msg)
 
             AntaTest.update_progress()
