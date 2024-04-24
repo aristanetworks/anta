@@ -590,8 +590,6 @@ class AntaTest(ABC):
                 self.result.is_error(message=exc_to_str(e))
 
             # TODO: find a correct way to time test execution
-            self.logger.debug(msg)
-
             AntaTest.update_progress()
             return self.result
 
