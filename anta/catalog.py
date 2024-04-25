@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import importlib
 import logging
+from collections import defaultdict
 from inspect import isclass
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Optional, Union
@@ -232,6 +233,12 @@ class AntaCatalog:
             else:
                 self._filename = Path(filename)
 
+        # Default indexes for faster access
+        self.tag_to_tests: defaultdict[str | None, set[AntaTestDefinition]] = defaultdict(set)
+        self.tests_without_tags: set[AntaTestDefinition] = set()
+        self.indexes_built: bool = False
+        self.final_tests_count: int = 0
+
     @property
     def filename(self) -> Path | None:
         """Path of the file used to create this AntaCatalog instance."""
@@ -328,40 +335,59 @@ class AntaCatalog:
             raise
         return AntaCatalog(tests)
 
-    def get_tests_by_tags(self, tags: set[str], *, strict: bool = False) -> list[AntaTestDefinition]:
-        """Return all the tests that have matching tags in their input filters.
+    def build_indexes(self, filtered_tests: set[str] | None = None) -> None:
+        """Indexes tests by their tags for quick access during filtering operations.
 
-        If strict=True, return only tests that match all the tags provided as input.
-        If strict=False, return all the tests that match at least one tag provided as input.
+        If a `filtered_tests` set is provided, only the tests in this set will be indexed.
 
-        Args:
-        ----
-            tags: Tags of the tests to get.
-            strict: Specify if the returned tests must match all the tags provided.
+        This method populates two attributes:
+        - tag_to_tests: A dictionary mapping each tag to a set of tests that contain it.
+        - tests_without_tags: A set of tests that do not have any tags.
 
-        Returns
-        -------
-            List of AntaTestDefinition that match the tags
+        Once the indexes are built, the `indexes_built` attribute is set to True.
         """
-        result: list[AntaTestDefinition] = []
         for test in self.tests:
-            if test.inputs.filters and (f := test.inputs.filters.tags):
-                if strict:
-                    if all(t in tags for t in f):
-                        result.append(test)
-                elif any(t in tags for t in f):
-                    result.append(test)
-        return result
+            # Skip tests that are not in the specified filtered_tests set
+            if filtered_tests and test.test.name not in filtered_tests:
+                continue
 
-    def get_tests_by_names(self, names: set[str]) -> list[AntaTestDefinition]:
-        """Return all the tests that have matching a list of tests names.
+            # Indexing by tag
+            if test.inputs.filters and (test_tags := test.inputs.filters.tags):
+                for tag in test_tags:
+                    self.tag_to_tests[tag].add(test)
+            else:
+                self.tests_without_tags.add(test)
+
+        self.tag_to_tests[None] = self.tests_without_tags
+        self.indexes_built = True
+
+    def get_tests_by_tags(self, tags: set[str], *, strict: bool = False) -> set[AntaTestDefinition]:
+        """Return all tests that match a given set of tags, according to the specified strictness.
 
         Args:
         ----
-            names: Names of the tests to get.
+            tags: The tags to filter tests by. If empty, return all tests without tags.
+            strict: If True, returns only tests that contain all specified tags (intersection).
+                    If False, returns tests that contain any of the specified tags (union).
 
         Returns
         -------
-            List of AntaTestDefinition that match the names
+            set[AntaTestDefinition]: A set of tests that match the given tags.
+
+        Raises
+        ------
+            ValueError: If the indexes have not been built prior to method call.
         """
-        return [test for test in self.tests if test.test.name in names]
+        if not self.indexes_built:
+            msg = "Indexes have not been built yet. Call build_indexes() first."
+            raise ValueError(msg)
+        if not tags:
+            return self.tag_to_tests[None]
+
+        filtered_sets = [self.tag_to_tests[tag] for tag in tags if tag in self.tag_to_tests]
+        if not filtered_sets:
+            return set()
+
+        if strict:
+            return set.intersection(*filtered_sets)
+        return set.union(*filtered_sets)
