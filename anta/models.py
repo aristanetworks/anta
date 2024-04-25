@@ -75,15 +75,15 @@ class SingletonArgs(type):
         TODO
         """
         # pylint: disable=unused-argument
-        cls._init[cls] = dct.get("__init__")
+        cls._init[cls] = dct.get("__init__")  # type: ignore[assignment]
 
     def __call__(cls, *args: Any, **kwargs: Any) -> SingletonArgs:
         """__call__ function."""
         init = cls._init[cls]
-        key = (cls, inspect.Signature.bind(inspect.Signature(init), None, *args, **kwargs)) if init is not None else cls
-        if key not in cls.instances:
-            cls._instances[key] = super().__call__(*args, **kwargs)
-        return cls._instances[key]
+        key = (cls, inspect.Signature.bind(inspect.Signature(init), None, *args, **kwargs)) if init is not None else cls  # type: ignore[arg-type]
+        if key not in cls.instances:  # type: ignore[attr-defined]
+            cls._instances[key] = super().__call__(*args, **kwargs)  # type: ignore[index]
+        return cls._instances[key]  # type: ignore[index]
 
 
 class AntaTemplate:

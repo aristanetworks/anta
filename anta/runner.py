@@ -186,7 +186,8 @@ def get_coroutines(selected_tests: defaultdict[AntaDevice, set[AntaTestDefinitio
                 anta_log_exception(e, message, logger)
     return coros
 
-@cprofile
+
+@cprofile()
 async def main(  # noqa: PLR0913
     manager: ResultManager,
     inventory: AntaInventory,
