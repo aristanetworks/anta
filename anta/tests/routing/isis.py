@@ -92,6 +92,7 @@ def _get_full_isis_neighbors(isis_neighbor_json: dict[str, Any]) -> list[dict[st
 
 
 def _get_isis_neighbors_count(isis_neighbor_json: dict[str, Any]) -> list[dict[str, Any]]:
+    """Count number of IS-IS neighbor of the device."""
     return [
         {"vrf": vrf, "interface": interface, "mode": mode, "count": int(level_data["numAdjacencies"]), "level": int(level)}
         for vrf, vrf_data in isis_neighbor_json["vrfs"].items()
@@ -103,6 +104,7 @@ def _get_isis_neighbors_count(isis_neighbor_json: dict[str, Any]) -> list[dict[s
 
 
 def _get_interface_data(interface: str, vrf: str, command_output: dict[str, Any]) -> dict[str, Any] | None:
+    """Extract data related to an ISIS interface for testing."""
     if vrf in command_output["vrfs"]:
         path = f"vrfs.{vrf}"
         vrf_data = get_value(dictionary=command_output, key=path, default={})
