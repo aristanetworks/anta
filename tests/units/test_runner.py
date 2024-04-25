@@ -162,7 +162,7 @@ async def test_prepare_tests(
     caplog.set_level(logging.INFO)
 
     catalog: AntaCatalog = AntaCatalog.parse(str(DATA_DIR / "test_catalog_with_tags.yml"))
-    selected_tests = await prepare_tests(inventory=test_inventory, catalog=catalog, tags=tags, tests=None)
+    selected_tests = prepare_tests(inventory=test_inventory, catalog=catalog, tags=tags, tests=None)
 
     if selected_tests is None:
         assert expected_tests_count == 0
@@ -180,7 +180,7 @@ async def test_prepare_tests_with_specific_tests(caplog: pytest.LogCaptureFixtur
     caplog.set_level(logging.INFO)
 
     catalog: AntaCatalog = AntaCatalog.parse(str(DATA_DIR / "test_catalog_with_tags.yml"))
-    selected_tests = await prepare_tests(inventory=test_inventory, catalog=catalog, tags=None, tests={"VerifyMlagStatus", "VerifyUptime"})
+    selected_tests = prepare_tests(inventory=test_inventory, catalog=catalog, tags=None, tests={"VerifyMlagStatus", "VerifyUptime"})
 
     assert selected_tests is not None
     assert len(selected_tests) == 3
