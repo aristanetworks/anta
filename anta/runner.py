@@ -244,7 +244,6 @@ async def main(  # noqa: PLR0913,C901
         AntaTest.nrfu_task = AntaTest.progress.add_task("Running NRFU Tests...", total=len(coros))
 
     with Catchtime(logger=logger, message="Running ANTA tests"):
-        logger.info("Running ANTA tests...")
         test_results = await asyncio.gather(*coros)
         for r in test_results:
             manager.add(r)
