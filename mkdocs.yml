@@ -195,6 +195,7 @@ nav:
       - Generic: api/tests.routing.generic.md
       - BGP: api/tests.routing.bgp.md
       - OSPF: api/tests.routing.ospf.md
+      - ISIS: api/tests.routing.isis.md
     - Security: api/tests.security.md
     - Services: api/tests.services.md
     - SNMP: api/tests.snmp.md
