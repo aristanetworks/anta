@@ -77,6 +77,7 @@ class VerifyAVTSpecificPath(AntaTest):
     Expected Results
     ----------------
     * Success: The test will pass if the AVT path is active, valid, and matches the specified type (direct/multihop) for the given VRF.
+               If no path type is specified, both direct and multihop paths are considered.
     * Failure: The test will fail if the AVT path is not configured or if the AVT path is not active, valid, or does not match the specified type for the given VRF.
 
     Examples
@@ -86,9 +87,10 @@ class VerifyAVTSpecificPath(AntaTest):
       - VerifyAVTSpecificPath:
           avt_paths:
             - avt_name: CONTROL-PLANE-PROFILE
+              vrf: default
               destination: 10.101.255.2
               next_hop: 10.101.255.1
-              direct_path: False
+              path_type: direct
     ```
     """
 
@@ -116,8 +118,8 @@ class VerifyAVTSpecificPath(AntaTest):
             """The IPv4 address of the AVT peer."""
             next_hop: IPv4Address
             """The IPv4 address of the next hop for the AVT peer."""
-            direct_path: bool = True
-            """The type of the AVT path. True indicates a direct path and False indicates a multihop path."""
+            path_type: str | None = None
+            """The type of the AVT path. If not provided, both 'direct' and 'multihop' paths are considered."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each input AVT path/peer."""
@@ -140,44 +142,51 @@ class VerifyAVTSpecificPath(AntaTest):
 
             # If no AVT is configured, mark the test as failed and skip to the next command
             if not command_output:
-                self.result.is_failure(f"No AVT configuration found for peer {peer} under topology {avt_name} in VRF {vrf}.")
+                self.result.is_failure(f"AVT configuration for peer '{peer}' under topology '{avt_name}' in VRF '{vrf}' is not found.")
                 continue
 
             # Extract the AVT paths
             avt_paths = get_value(command_output, f"{vrf}.avts.{avt_name}.avtPaths")
-            next_hop, direct_path = str(input_avt.next_hop), input_avt.direct_path
-            nexthop_path_found = False
+            next_hop, input_path_type = str(input_avt.next_hop), input_avt.path_type
+
+            # Initialize flags for next-hop and path type
+            nexthop_path_found, path_type_found = False, False
 
             # Check each AVT path
             for path, path_data in avt_paths.items():
-                # Extract the path status and type
-
                 # If the path does not match the expected next hop, skip to the next path
                 if path_data.get("nexthopAddr") != next_hop:
                     continue
+
+                nexthop_path_found = True
+                actual_path = get_value(path_data, "flags.directPath")
+                path_type = "direct" if actual_path else "multihop"
+
+                # If the path type does not match the expected path type, skip to the next path
+                if path_type != input_path_type and input_path_type:
+                    continue
+
+                path_type_found = True
                 valid = get_value(path_data, "flags.valid")
                 active = get_value(path_data, "flags.active")
-                actual_path = get_value(path_data, "flags.directPath")
-                path_type = f"{'direct' if actual_path else 'multihop'}"
-                nexthop_path_found = True
+
                 # Construct the failure message prefix
-                failed_log = f"AVT path {path} for topology {avt_name} in VRF {vrf}"
+                failed_log = f"AVT path '{path}' for topology '{avt_name}' in VRF '{vrf}'"
 
                 # Check the path status and type against the expected values
-                path_match = actual_path == direct_path
-                if not all([valid, active, path_match]):
+                if not all([valid, active]):
                     failure_reasons = []
                     if not active:
                         failure_reasons.append("inactive")
                     if not valid:
                         failure_reasons.append("invalid")
-                    if not path_match:
-                        failure_reasons.append(path_type)
                     self.result.is_failure(f"{failed_log} is {', '.join(failure_reasons)}.")
 
-            # If no matching next hop was found, mark the test as failed
-            if not nexthop_path_found:
-                self.result.is_failure(f"No path found with next-hop address {next_hop} for AVT peer {peer} under topology {avt_name} in VRF {vrf}.")
+            # If no matching next hop or path type was found, mark the test as failed
+            if not nexthop_path_found or not path_type_found:
+                self.result.is_failure(
+                    f"No '{input_path_type}' path found with next-hop address '{next_hop}' for AVT peer '{peer}' under topology '{avt_name}' in VRF '{vrf}'."
+                )
 
 
 class VerifyAVTRole(AntaTest):

@@ -54,10 +54,11 @@ anta.tests.avt:
   - VerifyAVTPathHealth:
   - VerifyAVTSpecificPath:
       avt_paths:
-        - avt_name: MGMT-AVT-POLICY-CONTROL-PLANE
+        - avt_name: CONTROL-PLANE-PROFILE
+          vrf: default
           destination: 10.101.255.2
-          next_hop: 10.101.255.11
-          direct_path: False
+          next_hop: 10.101.255.1
+          path_type: direct
   - VerifyAVTRole:
       role: edge
 
