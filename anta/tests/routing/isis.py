@@ -7,12 +7,13 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from typing import Any, ClassVar
+from typing import Any, ClassVar, Literal
 
 from pydantic import BaseModel
 
 from anta.custom_types import Interface
 from anta.models import AntaCommand, AntaTemplate, AntaTest
+from anta.tools import get_value
 
 
 def _count_isis_neighbor(isis_neighbor_json: dict[str, Any]) -> int:
@@ -99,6 +100,16 @@ def _get_isis_neighbors_count(isis_neighbor_json: dict[str, Any]) -> list[dict[s
         for level, level_data in interface_data.get("intfLevels").items()
         if (mode := level_data["passive"]) is not True
     ]
+
+
+def _get_interface_data(interface: str, vrf: str, command_output: dict[str, Any]) -> dict[str, Any] | None:
+    if vrf in command_output["vrfs"]:
+        path = f"vrfs.{vrf}"
+        vrf_data = get_value(dictionary=command_output, key=path, default={})
+        for instance_data in vrf_data.get("isisInstances").values():
+            if interface in get_value(dictionary=instance_data, key="interfaces", default={}):
+                return next(ifl_data for ifl, ifl_data in get_value(dictionary=instance_data, key="interfaces", default={}).items() if ifl == interface)
+    return None
 
 
 class VerifyISISNeighborState(AntaTest):
@@ -204,3 +215,91 @@ class VerifyISISNeighborCount(AntaTest):
                     f"expected Level {interface.level}: count {interface.count}, "
                     f"got Level {eos_data[0]['level']}: count {eos_data[0]['count']}"
                 )
+
+
+class VerifyISISInterfaceMode(AntaTest):
+    """Verifies ISIS Interface are running in correct mode.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if all listed interfaces are running in correct mode.
+    * Failure: The test will fail if one of the listed interfaces is not running in correct mode.
+    * Skipped: The test will be skipped if no ISIS neighbor is found.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      isis:
+        - VerifyISISInterfaceMode:
+            interfaces:
+              - name: Loopback0
+                mode: passive
+                # vrf is set to default by default
+              - name: Ethernet2
+                mode: passive
+                level: 2
+                # vrf is set to default by default
+              - name: Ethernet1
+                mode: p2p
+                vrf: default
+                # level is set to 2 by default
+    ```
+    """
+
+    name = "VerifyISISInterfaceMode"
+    description = "Verifies interface mode for ISIS"
+    categories: ClassVar[list[str]] = ["isis"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show isis interface brief", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyISISNeighborCount test."""
+
+        interfaces: list[InterfaceState]
+        """list of interfaces with their information."""
+
+        class InterfaceState(BaseModel):
+            """Input model for the VerifyISISNeighborCount test."""
+
+            name: Interface
+            """Interface name to check."""
+            level: Literal[1, 2] = 2
+            """xxx."""
+            mode: Literal["p2p", "broadcast", "passive"]
+            """Number of IS-IS neighbors."""
+            vrf: str = "default"
+            """VRF where interface should be configured"""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyISISInterfaceMode."""
+        command_output = self.instance_commands[0].json_output
+        self.result.is_success()
+
+        if len(command_output["vrfs"]) == 0:
+            self.result.is_skipped("ISIS is not configured on device")
+
+        # Check for p2p interfaces
+        for interface in self.inputs.interfaces:
+            interface_data = _get_interface_data(
+                interface=interface.name,
+                vrf=interface.vrf,
+                command_output=command_output,
+            )
+            # Check for correct VRF
+            if interface_data is None:
+                self.result.is_failure(f"Interface {interface.name} not found in {interface.vrf}")
+            elif interface.mode == "p2p":
+                if interface_data is None or get_value(dictionary=interface_data, key="interfaceType", default="unset") != "point-to-point":
+                    self.result.is_failure(f"Interface {interface.name} in vrf {interface.vrf} is not running in p2p mode")
+
+            # Check for broadcast
+            elif interface.mode == "broadcast":
+                if interface_data is None or get_value(dictionary=interface_data, key="interfaceType", default="unset") != "broadcast":
+                    self.result.is_failure(f"Interface {interface.name} in vrf {interface.vrf} is not running in broadcast mode")
+
+            # Check for passive
+            elif interface.mode == "passive":
+                json_path = f"intfLevels.{interface.level}.passive"
+                if interface_data is None or get_value(dictionary=interface_data, key=json_path, default=False) is False:
+                    self.result.is_failure(f"Interface {interface.name} in vrf {interface.vrf} is not running in passive mode")
