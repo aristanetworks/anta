@@ -567,6 +567,7 @@ class AntaTest(ABC):
             if not self.collected:
                 await self.collect()
                 if self.result.result != "unset":
+                    AntaTest.update_progress()
                     return self.result
 
                 if cmds := self.failed_commands:
@@ -575,8 +576,9 @@ class AntaTest(ABC):
                         msg = f"Test {self.name} has been skipped because it is not supported on {self.device.hw_model}: {GITHUB_SUGGESTION}"
                         self.logger.warning(msg)
                         self.result.is_skipped("\n".join(unsupported_commands))
-                        return self.result
-                    self.result.is_error(message="\n".join([f"{c.command} has failed: {', '.join(c.errors)}" for c in cmds]))
+                    else:
+                        self.result.is_error(message="\n".join([f"{c.command} has failed: {', '.join(c.errors)}" for c in cmds]))
+                    AntaTest.update_progress()
                     return self.result
 
             try:
