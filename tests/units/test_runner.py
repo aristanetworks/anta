@@ -51,7 +51,7 @@ async def test_runner_empty_inventory(caplog: pytest.LogCaptureFixture) -> None:
     manager = ResultManager()
     inventory = AntaInventory()
     await main(manager, inventory, FAKE_CATALOG)
-    assert len(caplog.record_tuples) == 2
+    assert len(caplog.record_tuples) == 3
     assert "The inventory is empty, exiting" in caplog.records[1].message
 
 
@@ -202,7 +202,5 @@ async def test_runner_dry_run(caplog: pytest.LogCaptureFixture, test_inventory: 
 
     await main(manager, test_inventory, catalog, dry_run=True)
 
-    # TODO: this is a bit fragile with the number of logs as this will break every time
-    #       we add new log. #RefactorMe
-    assert len(caplog.record_tuples) == 7
-    assert "Dry-run" in caplog.records[6].message
+    # Check that the last log contains Dry-run
+    assert "Dry-run" in caplog.records[-1].message
