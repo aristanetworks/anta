@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import logging
 import traceback
+from datetime import timedelta
 from enum import Enum
 from typing import TYPE_CHECKING, Literal
 
@@ -85,6 +86,12 @@ def setup_logging(level: LogLevel = Log.INFO, file: Path | None = None) -> None:
 
     if __DEBUG__:
         logger.debug("ANTA Debug Mode enabled")
+
+
+def format_td(seconds: float, digits: int = 3) -> str:
+    """Return a formatted string from a float number representing seconds and a number of digits."""
+    isec, fsec = divmod(round(seconds * 10**digits), 10**digits)
+    return f"{timedelta(seconds=isec)}.{fsec:0{digits}.0f}"
 
 
 def exc_to_str(exception: BaseException) -> str:

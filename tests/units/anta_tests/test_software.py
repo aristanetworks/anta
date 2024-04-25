@@ -79,12 +79,23 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"versions": ["v1.17.1", "v1.18.1"]},
         "expected": {"result": "failure", "messages": ["device is running TerminAttr version v1.17.0 and is not in the allowed list: ['v1.17.1', 'v1.18.1']"]},
     },
+    # TODO: add a test with a real extension?
     {
         "name": "success-no-extensions",
         "test": VerifyEOSExtensions,
         "eos_data": [
             {"extensions": {}, "extensionStoredDir": "flash:", "warnings": ["No extensions are available"]},
             {"extensions": []},
+        ],
+        "inputs": None,
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-empty-extension",
+        "test": VerifyEOSExtensions,
+        "eos_data": [
+            {"extensions": {}, "extensionStoredDir": "flash:", "warnings": ["No extensions are available"]},
+            {"extensions": [""]},
         ],
         "inputs": None,
         "expected": {"result": "success"},

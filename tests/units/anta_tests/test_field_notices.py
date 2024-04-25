@@ -21,7 +21,7 @@ DATA: list[dict[str, Any]] = [
                 "modelName": "DCS-7280QRA-C36S",
                 "details": {
                     "deviations": [],
-                    "components": [{"name": "Aboot", "version": "Aboot-veos-8.0.0-3255441"}],
+                    "components": [{"name": "Aboot", "version": "Aboot-veos-8.0.0-3255441"}, {"name": "NotAboot", "version": "Aboot-veos-8.0.0-3255441"}],
                 },
             },
         ],

@@ -429,7 +429,7 @@ class VerifyLoopbackCount(AntaTest):
             self.result.is_failure()
             if loopback_count != self.inputs.number:
                 self.result.is_failure(f"Found {loopback_count} Loopbacks when expecting {self.inputs.number}")
-            elif len(down_loopback_interfaces) != 0:
+            elif len(down_loopback_interfaces) != 0:  # pragma: no branch
                 self.result.is_failure(f"The following Loopbacks are not up: {down_loopback_interfaces}")
 
 

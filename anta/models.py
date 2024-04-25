@@ -8,10 +8,8 @@ from __future__ import annotations
 import hashlib
 import logging
 import re
-import time
 from abc import ABC, abstractmethod
 from copy import deepcopy
-from datetime import timedelta
 from functools import wraps
 from string import Formatter
 from typing import TYPE_CHECKING, Any, Callable, ClassVar, Literal, TypeVar
@@ -557,12 +555,6 @@ class AntaTest(ABC):
                 result: TestResult instance attribute populated with error status if any
 
             """
-
-            def format_td(seconds: float, digits: int = 3) -> str:
-                isec, fsec = divmod(round(seconds * 10**digits), 10**digits)
-                return f"{timedelta(seconds=isec)}.{fsec:0{digits}.0f}"
-
-            start_time = time.time()
             if self.result.result != "unset":
                 return self.result
 
@@ -597,9 +589,9 @@ class AntaTest(ABC):
                 anta_log_exception(e, message, self.logger)
                 self.result.is_error(message=exc_to_str(e))
 
-            test_duration = time.time() - start_time
-            msg = f"Executing test {self.name} on device {self.device.name} took {format_td(test_duration)}"
-            self.logger.debug(msg)
+            # TODO: find a correct way to time test execution
+            # msg = f"Executing test {self.name} on device {self.device.name} took {t.time}"  # noqa: ERA001
+            # self.logger.debug(msg)  # noqa: ERA001
 
             AntaTest.update_progress()
             return self.result
