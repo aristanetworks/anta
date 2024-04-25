@@ -117,6 +117,14 @@ def test_create_inventory_from_cvp(tmp_path: Path, inventory: list[dict[str, Any
             0,
             id="Vault variable in inventory",
         ),
+        pytest.param(
+            "ansible_inventory_unknown_yaml_tag.yml",
+            None,
+            pytest.raises(ValueError, match="Could not parse"),
+            None,
+            0,
+            id="Unknown YAML tag in inventory",
+        ),
     ],
 )
 def test_create_inventory_from_ansible(

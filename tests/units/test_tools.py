@@ -11,7 +11,7 @@ from typing import Any
 
 import pytest
 
-from anta.tools import get_dict_superset, get_failed_logs, get_item, get_value
+from anta.tools import custom_division, get_dict_superset, get_failed_logs, get_item, get_value
 
 TEST_GET_FAILED_LOGS_DATA = [
     {"id": 1, "name": "Alice", "age": 30, "email": "alice@example.com"},
@@ -488,3 +488,17 @@ def test_get_item(
     # pylint: disable=too-many-arguments
     with expected_raise:
         assert get_item(list_of_dicts, key, value, default, var_name, custom_error_msg, required=required, case_sensitive=case_sensitive) == expected_result
+
+
+@pytest.mark.parametrize(
+    ("numerator", "denominator", "expected_result"),
+    [
+        pytest.param(4.0, 2.0, 2, id="int return for float input"),
+        pytest.param(4, 2, 2, id="int return for int input"),
+        pytest.param(5.0, 2.0, 2.5, id="float return for float input"),
+        pytest.param(5, 2, 2.5, id="float return for int input"),
+    ],
+)
+def test_custom_division(numerator: float, denominator: float, expected_result: str) -> None:
+    """Test custom_division."""
+    assert custom_division(numerator, denominator) == expected_result
