@@ -42,6 +42,10 @@ Options:
                                   ANTA_NRFU_IGNORE_ERROR]
   --hide [success|failure|error|skipped]
                                   Group result by test or device.
+  --dry-run                       Run anta nrfu command but stop before
+                                  starting to execute the tests. Considers all
+                                  devices as connected.  [env var:
+                                  ANTA_NRFU_DRY_RUN]
   --help                          Show this message and exit.
 
 Commands:
