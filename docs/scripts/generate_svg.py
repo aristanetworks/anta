@@ -13,6 +13,7 @@ python generate_svg.py anta ...
 # ruff: noqa: T201
 
 import io
+import logging
 import os
 import pathlib
 import sys
@@ -22,9 +23,16 @@ from importlib.metadata import entry_points
 from unittest.mock import patch
 
 from rich.console import Console
+from rich.logging import RichHandler
 
 from anta.cli.console import console
 from anta.cli.nrfu.utils import anta_progress_bar
+
+root = logging.getLogger()
+
+r = RichHandler(console=console)
+root.addHandler(r)
+
 
 OUTPUT_DIR = pathlib.Path(__file__).parent.parent / "imgs"
 
@@ -43,7 +51,7 @@ def custom_progress_bar() -> None:
 
 if __name__ == "__main__":
     # Sane rich size
-    os.environ["COLUMNS"] = "165"
+    os.environ["COLUMNS"] = "120"
 
     # stolen from https://github.com/ewels/rich-click/blob/main/src/rich_click/cli.py
     args = sys.argv[1:]
@@ -71,22 +79,24 @@ if __name__ == "__main__":
     # Console to captur everything
     new_console = Console(record=True)
 
-    # tweaks to record and redirect to a dummy file
     pipe = io.StringIO()
     console.record = True
     console.file = pipe
+    with redirect_stdout(io.StringIO()) as f:
+        # tweaks to record and redirect to a dummy file
 
-    # Redirect stdout of the program towards another StringIO to capture help
-    # that is not part or anta rich console
-    # redirect potential progress bar output to console by patching
-    with redirect_stdout(io.StringIO()) as f, patch("anta.cli.nrfu.commands.anta_progress_bar", custom_progress_bar), suppress(SystemExit):
-        function()
-    # print to our new console the output of anta console
-    new_console.print(console.export_text())
-    # print the content of the stdout to our new_console
-    new_console.print(f.getvalue())
+        console.print(f"ant@anthill$ {' '.join(sys.argv)}")
+
+        # Redirect stdout of the program towards another StringIO to capture help
+        # that is not part or anta rich console
+        # redirect potential progress bar output to console by patching
+        with patch("anta.cli.nrfu.anta_progress_bar", custom_progress_bar), suppress(SystemExit):
+            function()
+
+    if "--help" in args:
+        console.print(f.getvalue())
 
     filename = f"{'_'.join(x.replace('/', '_').replace('-', '_').replace('.', '_') for x in args)}.svg"
     filename = f"{OUTPUT_DIR}/{filename}"
     print(f"File saved at {filename}")
-    new_console.save_svg(filename, title=" ".join(args))
+    console.save_svg(filename, title=" ".join(args))

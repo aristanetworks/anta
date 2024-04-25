@@ -38,7 +38,7 @@ def print_settings(
     catalog: AntaCatalog,
 ) -> None:
     """Print ANTA settings before running tests."""
-    message = f"Running ANTA tests:\n- {inventory}\n- Tests catalog contains {len(catalog.tests)} tests"
+    message = f"- {inventory}\n- Tests catalog contains {len(catalog.tests)} tests"
     console.print(Panel.fit(message, style="cyan", title="[green]Settings"))
     console.print()
 
