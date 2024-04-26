@@ -215,6 +215,7 @@ class VerifyISISNeighborCount(AntaTest):
             eos_data = [ifl_data for ifl_data in isis_neighbor_count if ifl_data["interface"] == interface.name and ifl_data["level"] == interface.level]
             if not eos_data:
                 self.result.is_failure(f"No neighbor detected for interface {interface.name}")
+                return
             if eos_data[0]["count"] != interface.count:
                 self.result.is_failure(
                     f"Interface {interface.name}:"
