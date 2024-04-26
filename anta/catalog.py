@@ -195,6 +195,8 @@ class AntaCatalogFile(RootModel[dict[ImportString[Any], list[AntaTestDefinition]
         with provided value to validate test inputs.
         """
         if isinstance(data, dict):
+            if not data:
+                return data
             typed_data: dict[ModuleType, list[Any]] = AntaCatalogFile.flatten_modules(data)
             for module, tests in typed_data.items():
                 test_definitions: list[AntaTestDefinition] = []
@@ -221,7 +223,8 @@ class AntaCatalogFile(RootModel[dict[ImportString[Any], list[AntaTestDefinition]
                             raise ValueError(msg)
                         test_definitions.append(AntaTestDefinition(test=test, inputs=test_inputs))
                 typed_data[module] = test_definitions
-        return typed_data
+            return typed_data
+        return data
 
     def yaml(self) -> str:
         """Return a YAML representation string of this model.
@@ -337,7 +340,7 @@ class AntaCatalog:
             raise TypeError(msg)
 
         try:
-            catalog_data = AntaCatalogFile(**data)  # type: ignore[arg-type]
+            catalog_data = AntaCatalogFile(data)  # type: ignore[arg-type]
         except ValidationError as e:
             anta_log_exception(
                 e,

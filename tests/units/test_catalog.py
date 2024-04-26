@@ -76,6 +76,11 @@ INIT_CATALOG_DATA: list[dict[str, Any]] = [
         "filename": "test_empty_catalog.yml",
         "tests": [],
     },
+    {
+        "name": "test_empty_dict_catalog",
+        "filename": "test_empty_dict_catalog.yml",
+        "tests": [],
+    },
 ]
 CATALOG_PARSE_FAIL_DATA: list[dict[str, Any]] = [
     {
@@ -160,7 +165,6 @@ CATALOG_FROM_LIST_FAIL_DATA: list[dict[str, Any]] = [
         "error": "FakeTestWithInput test inputs are not valid: 1 validation error for Input\n\tstring\n\t  Input should be a valid string",
     },
 ]
-
 TESTS_SETTER_FAIL_DATA: list[dict[str, Any]] = [
     {
         "name": "not_a_list",
