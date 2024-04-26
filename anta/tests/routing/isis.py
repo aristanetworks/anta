@@ -220,7 +220,7 @@ class VerifyISISNeighborCount(AntaTest):
 
 
 class VerifyISISInterfaceMode(AntaTest):
-    """Verifies ISIS Interface are running in correct mode.
+    """Verifies ISIS Interfaces are running in correct mode.
 
     Expected Results
     ----------------
