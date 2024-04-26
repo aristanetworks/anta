@@ -13,7 +13,7 @@ from unittest.mock import ANY, patch
 import pytest
 from cvprac.cvp_client_errors import CvpApiError
 
-from anta.cli import anta
+from anta.cli._main import anta
 from anta.cli.utils import ExitCode
 
 if TYPE_CHECKING:
