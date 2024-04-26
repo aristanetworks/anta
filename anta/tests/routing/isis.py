@@ -62,12 +62,13 @@ def _get_not_full_isis_neighbors(isis_neighbor_json: dict[str, Any]) -> list[dic
     ]
 
 
-def _get_full_isis_neighbors(isis_neighbor_json: dict[str, Any]) -> list[dict[str, Any]]:
+def _get_full_isis_neighbors(isis_neighbor_json: dict[str, Any], neighbor_state: Literal["up", "down"] = "up") -> list[dict[str, Any]]:
     """Return the isis neighbors whose adjacency state is `up`.
 
     Args
     ----
       isis_neighbor_json: The JSON output of the `show isis neighbors` command.
+      neighbor_state: Value of the neihbor state we are looking for. Default up
 
     Returns
     -------
@@ -87,7 +88,7 @@ def _get_full_isis_neighbors(isis_neighbor_json: dict[str, Any]) -> list[dict[st
         for instance, instance_data in vrf_data.get("isisInstances").items()
         for neighbor, neighbor_data in instance_data.get("neighbors").items()
         for adjacency in neighbor_data.get("adjacencies")
-        if (state := adjacency["state"]) == "up"
+        if (state := adjacency["state"]) == neighbor_state
     ]
 
 
