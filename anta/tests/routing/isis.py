@@ -199,7 +199,7 @@ class VerifyISISNeighborCount(AntaTest):
             name: Interface
             """Interface name to check."""
             level: int = 2
-            """IS-IS level to check. Default is 2"""
+            """IS-IS level to check."""
             count: int
             """Number of IS-IS neighbors."""
 
