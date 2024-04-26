@@ -49,8 +49,7 @@ anta.tests.connectivity:
       source: 10.255.255.1
       vrf: default
     result_overwrite:
-      custom_field: 'Source: P2P Interface Ethernet1/1 (IP: 10.255.255.1) - Destination:
-        spine1 Ethernet1/1 (IP: 10.255.255.0)'
+      custom_field: 'Source: P2P Interface Ethernet1/1 (IP: 10.255.255.1) - Destination: spine1 Ethernet1/1 (IP: 10.255.255.0)'
 - VerifyReachability:
     filters:
       tags:
@@ -61,8 +60,7 @@ anta.tests.connectivity:
       source: 10.255.255.3
       vrf: default
     result_overwrite:
-      custom_field: 'Source: P2P Interface Ethernet2/1 (IP: 10.255.255.3) - Destination:
-        spine2 Ethernet1/1 (IP: 10.255.255.2)'
+      custom_field: 'Source: P2P Interface Ethernet2/1 (IP: 10.255.255.3) - Destination: spine2 Ethernet1/1 (IP: 10.255.255.2)'
 - VerifyReachability:
     filters:
       tags:
@@ -73,8 +71,7 @@ anta.tests.connectivity:
       source: 10.255.0.3
       vrf: default
     result_overwrite:
-      custom_field: 'Source: Loopback0 (IP: 10.255.0.3) - Destination: spine1
-        Loopback0 (IP: 10.255.0.1)'
+      custom_field: 'Source: Loopback0 (IP: 10.255.0.3) - Destination: spine1 Loopback0 (IP: 10.255.0.1)'
 - VerifyReachability:
     filters:
       tags:
@@ -85,8 +82,7 @@ anta.tests.connectivity:
       source: 10.255.0.3
       vrf: default
     result_overwrite:
-      custom_field: 'Source: Loopback0 (IP: 10.255.0.3) - Destination: spine2
-        Loopback0 (IP: 10.255.0.2)'
+      custom_field: 'Source: Loopback0 (IP: 10.255.0.3) - Destination: spine2 Loopback0 (IP: 10.255.0.2)'
 - VerifyReachability:
     filters:
       tags:
@@ -97,8 +93,7 @@ anta.tests.connectivity:
       source: 10.255.0.3
       vrf: default
     result_overwrite:
-      custom_field: 'Source: Loopback0 (IP: 10.255.0.3) - Destination: leaf1a
-        Loopback0 (IP: 10.255.0.3)'
+      custom_field: 'Source: Loopback0 (IP: 10.255.0.3) - Destination: leaf1a Loopback0 (IP: 10.255.0.3)'
 - VerifyReachability:
     filters:
       tags:
@@ -109,8 +104,7 @@ anta.tests.connectivity:
       source: 10.255.0.3
       vrf: default
     result_overwrite:
-      custom_field: 'Source: Loopback0 (IP: 10.255.0.3) - Destination: leaf1b
-        Loopback0 (IP: 10.255.0.4)'
+      custom_field: 'Source: Loopback0 (IP: 10.255.0.3) - Destination: leaf1b Loopback0 (IP: 10.255.0.4)'
 - VerifyReachability:
     filters:
       tags:
@@ -121,8 +115,7 @@ anta.tests.connectivity:
       source: 10.255.0.3
       vrf: default
     result_overwrite:
-      custom_field: 'Source: Loopback0 (IP: 10.255.0.3) - Destination: leaf2a
-        Loopback0 (IP: 10.255.0.5)'
+      custom_field: 'Source: Loopback0 (IP: 10.255.0.3) - Destination: leaf2a Loopback0 (IP: 10.255.0.5)'
 - VerifyReachability:
     filters:
       tags:
@@ -133,8 +126,7 @@ anta.tests.connectivity:
       source: 10.255.0.3
       vrf: default
     result_overwrite:
-      custom_field: 'Source: Loopback0 (IP: 10.255.0.3) - Destination: leaf2b
-        Loopback0 (IP: 10.255.0.6)'
+      custom_field: 'Source: Loopback0 (IP: 10.255.0.3) - Destination: leaf2b Loopback0 (IP: 10.255.0.6)'
 - VerifyLLDPNeighbors:
     filters:
       tags:
@@ -185,8 +177,7 @@ anta.tests.connectivity:
       source: 10.255.255.5
       vrf: default
     result_overwrite:
-      custom_field: 'Source: P2P Interface Ethernet1/1 (IP: 10.255.255.5) - Destination:
-        spine1 Ethernet2/1 (IP: 10.255.255.4)'
+      custom_field: 'Source: P2P Interface Ethernet1/1 (IP: 10.255.255.5) - Destination: spine1 Ethernet2/1 (IP: 10.255.255.4)'
 - VerifyReachability:
     filters:
       tags:
@@ -197,8 +188,7 @@ anta.tests.connectivity:
       source: 10.255.255.7
       vrf: default
     result_overwrite:
-      custom_field: 'Source: P2P Interface Ethernet2/1 (IP: 10.255.255.7) - Destination:
-        spine2 Ethernet2/1 (IP: 10.255.255.6)'
+      custom_field: 'Source: P2P Interface Ethernet2/1 (IP: 10.255.255.7) - Destination: spine2 Ethernet2/1 (IP: 10.255.255.6)'
 - VerifyReachability:
     filters:
       tags:
@@ -209,8 +199,7 @@ anta.tests.connectivity:
       source: 10.255.0.4
       vrf: default
     result_overwrite:
-      custom_field: 'Source: Loopback0 (IP: 10.255.0.4) - Destination: spine1
-        Loopback0 (IP: 10.255.0.1)'
+      custom_field: 'Source: Loopback0 (IP: 10.255.0.4) - Destination: spine1 Loopback0 (IP: 10.255.0.1)'
 - VerifyReachability:
     filters:
       tags:
@@ -221,8 +210,7 @@ anta.tests.connectivity:
       source: 10.255.0.4
       vrf: default
     result_overwrite:
-      custom_field: 'Source: Loopback0 (IP: 10.255.0.4) - Destination: spine2
-        Loopback0 (IP: 10.255.0.2)'
+      custom_field: 'Source: Loopback0 (IP: 10.255.0.4) - Destination: spine2 Loopback0 (IP: 10.255.0.2)'
 - VerifyReachability:
     filters:
       tags:
@@ -233,8 +221,7 @@ anta.tests.connectivity:
       source: 10.255.0.4
       vrf: default
     result_overwrite:
-      custom_field: 'Source: Loopback0 (IP: 10.255.0.4) - Destination: leaf1a
-        Loopback0 (IP: 10.255.0.3)'
+      custom_field: 'Source: Loopback0 (IP: 10.255.0.4) - Destination: leaf1a Loopback0 (IP: 10.255.0.3)'
 - VerifyReachability:
     filters:
       tags:
@@ -245,8 +232,7 @@ anta.tests.connectivity:
       source: 10.255.0.4
       vrf: default
     result_overwrite:
-      custom_field: 'Source: Loopback0 (IP: 10.255.0.4) - Destination: leaf1b
-        Loopback0 (IP: 10.255.0.4)'
+      custom_field: 'Source: Loopback0 (IP: 10.255.0.4) - Destination: leaf1b Loopback0 (IP: 10.255.0.4)'
 - VerifyReachability:
     filters:
       tags:
@@ -257,8 +243,7 @@ anta.tests.connectivity:
       source: 10.255.0.4
       vrf: default
     result_overwrite:
-      custom_field: 'Source: Loopback0 (IP: 10.255.0.4) - Destination: leaf2a
-        Loopback0 (IP: 10.255.0.5)'
+      custom_field: 'Source: Loopback0 (IP: 10.255.0.4) - Destination: leaf2a Loopback0 (IP: 10.255.0.5)'
 - VerifyReachability:
     filters:
       tags:
@@ -269,8 +254,7 @@ anta.tests.connectivity:
       source: 10.255.0.4
       vrf: default
     result_overwrite:
-      custom_field: 'Source: Loopback0 (IP: 10.255.0.4) - Destination: leaf2b
-        Loopback0 (IP: 10.255.0.6)'
+      custom_field: 'Source: Loopback0 (IP: 10.255.0.4) - Destination: leaf2b Loopback0 (IP: 10.255.0.6)'
 - VerifyLLDPNeighbors:
     filters:
       tags:
@@ -321,8 +305,7 @@ anta.tests.connectivity:
       source: 10.255.255.0
       vrf: default
     result_overwrite:
-      custom_field: 'Source: P2P Interface Ethernet1/1 (IP: 10.255.255.0) - Destination:
-        leaf1a Ethernet1/1 (IP: 10.255.255.1)'
+      custom_field: 'Source: P2P Interface Ethernet1/1 (IP: 10.255.255.0) - Destination: leaf1a Ethernet1/1 (IP: 10.255.255.1)'
 - VerifyReachability:
     filters:
       tags:
@@ -333,8 +316,7 @@ anta.tests.connectivity:
       source: 10.255.255.4
       vrf: default
     result_overwrite:
-      custom_field: 'Source: P2P Interface Ethernet2/1 (IP: 10.255.255.4) - Destination:
-        leaf1b Ethernet1/1 (IP: 10.255.255.5)'
+      custom_field: 'Source: P2P Interface Ethernet2/1 (IP: 10.255.255.4) - Destination: leaf1b Ethernet1/1 (IP: 10.255.255.5)'
 - VerifyReachability:
     filters:
       tags:
@@ -345,8 +327,7 @@ anta.tests.connectivity:
       source: 10.255.255.8
       vrf: default
     result_overwrite:
-      custom_field: 'Source: P2P Interface Ethernet3/1 (IP: 10.255.255.8) - Destination:
-        leaf2a Ethernet1/1 (IP: 10.255.255.9)'
+      custom_field: 'Source: P2P Interface Ethernet3/1 (IP: 10.255.255.8) - Destination: leaf2a Ethernet1/1 (IP: 10.255.255.9)'
 - VerifyReachability:
     filters:
       tags:
@@ -357,8 +338,7 @@ anta.tests.connectivity:
       source: 10.255.255.12
       vrf: default
     result_overwrite:
-      custom_field: 'Source: P2P Interface Ethernet4/1 (IP: 10.255.255.12) - Destination:
-        leaf2b Ethernet1/1 (IP: 10.255.255.13)'
+      custom_field: 'Source: P2P Interface Ethernet4/1 (IP: 10.255.255.12) - Destination: leaf2b Ethernet1/1 (IP: 10.255.255.13)'
 - VerifyLLDPNeighbors:
     filters:
       tags:
@@ -409,8 +389,7 @@ anta.tests.connectivity:
       source: 10.255.255.13
       vrf: default
     result_overwrite:
-      custom_field: 'Source: P2P Interface Ethernet1/1 (IP: 10.255.255.13) - Destination:
-        spine1 Ethernet4/1 (IP: 10.255.255.12)'
+      custom_field: 'Source: P2P Interface Ethernet1/1 (IP: 10.255.255.13) - Destination: spine1 Ethernet4/1 (IP: 10.255.255.12)'
 - VerifyReachability:
     filters:
       tags:
@@ -421,8 +400,7 @@ anta.tests.connectivity:
       source: 10.255.255.15
       vrf: default
     result_overwrite:
-      custom_field: 'Source: P2P Interface Ethernet2/1 (IP: 10.255.255.15) - Destination:
-        spine2 Ethernet4/1 (IP: 10.255.255.14)'
+      custom_field: 'Source: P2P Interface Ethernet2/1 (IP: 10.255.255.15) - Destination: spine2 Ethernet4/1 (IP: 10.255.255.14)'
 - VerifyReachability:
     filters:
       tags:
@@ -433,8 +411,7 @@ anta.tests.connectivity:
       source: 10.255.0.6
       vrf: default
     result_overwrite:
-      custom_field: 'Source: Loopback0 (IP: 10.255.0.6) - Destination: spine1
-        Loopback0 (IP: 10.255.0.1)'
+      custom_field: 'Source: Loopback0 (IP: 10.255.0.6) - Destination: spine1 Loopback0 (IP: 10.255.0.1)'
 - VerifyReachability:
     filters:
       tags:
@@ -445,8 +422,7 @@ anta.tests.connectivity:
       source: 10.255.0.6
       vrf: default
     result_overwrite:
-      custom_field: 'Source: Loopback0 (IP: 10.255.0.6) - Destination: spine2
-        Loopback0 (IP: 10.255.0.2)'
+      custom_field: 'Source: Loopback0 (IP: 10.255.0.6) - Destination: spine2 Loopback0 (IP: 10.255.0.2)'
 - VerifyReachability:
     filters:
       tags:
@@ -457,8 +433,7 @@ anta.tests.connectivity:
       source: 10.255.0.6
       vrf: default
     result_overwrite:
-      custom_field: 'Source: Loopback0 (IP: 10.255.0.6) - Destination: leaf1a
-        Loopback0 (IP: 10.255.0.3)'
+      custom_field: 'Source: Loopback0 (IP: 10.255.0.6) - Destination: leaf1a Loopback0 (IP: 10.255.0.3)'
 - VerifyReachability:
     filters:
       tags:
@@ -469,8 +444,7 @@ anta.tests.connectivity:
       source: 10.255.0.6
       vrf: default
     result_overwrite:
-      custom_field: 'Source: Loopback0 (IP: 10.255.0.6) - Destination: leaf1b
-        Loopback0 (IP: 10.255.0.4)'
+      custom_field: 'Source: Loopback0 (IP: 10.255.0.6) - Destination: leaf1b Loopback0 (IP: 10.255.0.4)'
 - VerifyReachability:
     filters:
       tags:
@@ -481,8 +455,7 @@ anta.tests.connectivity:
       source: 10.255.0.6
       vrf: default
     result_overwrite:
-      custom_field: 'Source: Loopback0 (IP: 10.255.0.6) - Destination: leaf2a
-        Loopback0 (IP: 10.255.0.5)'
+      custom_field: 'Source: Loopback0 (IP: 10.255.0.6) - Destination: leaf2a Loopback0 (IP: 10.255.0.5)'
 - VerifyReachability:
     filters:
       tags:
@@ -493,8 +466,7 @@ anta.tests.connectivity:
       source: 10.255.0.6
       vrf: default
     result_overwrite:
-      custom_field: 'Source: Loopback0 (IP: 10.255.0.6) - Destination: leaf2b
-        Loopback0 (IP: 10.255.0.6)'
+      custom_field: 'Source: Loopback0 (IP: 10.255.0.6) - Destination: leaf2b Loopback0 (IP: 10.255.0.6)'
 - VerifyLLDPNeighbors:
     filters:
       tags:
@@ -545,8 +517,7 @@ anta.tests.connectivity:
       source: 10.255.255.9
       vrf: default
     result_overwrite:
-      custom_field: 'Source: P2P Interface Ethernet1/1 (IP: 10.255.255.9) - Destination:
-        spine1 Ethernet3/1 (IP: 10.255.255.8)'
+      custom_field: 'Source: P2P Interface Ethernet1/1 (IP: 10.255.255.9) - Destination: spine1 Ethernet3/1 (IP: 10.255.255.8)'
 - VerifyReachability:
     filters:
       tags:
@@ -557,8 +528,7 @@ anta.tests.connectivity:
       source: 10.255.255.11
       vrf: default
     result_overwrite:
-      custom_field: 'Source: P2P Interface Ethernet2/1 (IP: 10.255.255.11) - Destination:
-        spine2 Ethernet3/1 (IP: 10.255.255.10)'
+      custom_field: 'Source: P2P Interface Ethernet2/1 (IP: 10.255.255.11) - Destination: spine2 Ethernet3/1 (IP: 10.255.255.10)'
 - VerifyReachability:
     filters:
       tags:
@@ -569,8 +539,7 @@ anta.tests.connectivity:
       source: 10.255.0.5
       vrf: default
     result_overwrite:
-      custom_field: 'Source: Loopback0 (IP: 10.255.0.5) - Destination: spine1
-        Loopback0 (IP: 10.255.0.1)'
+      custom_field: 'Source: Loopback0 (IP: 10.255.0.5) - Destination: spine1 Loopback0 (IP: 10.255.0.1)'
 - VerifyReachability:
     filters:
       tags:
@@ -581,8 +550,7 @@ anta.tests.connectivity:
       source: 10.255.0.5
       vrf: default
     result_overwrite:
-      custom_field: 'Source: Loopback0 (IP: 10.255.0.5) - Destination: spine2
-        Loopback0 (IP: 10.255.0.2)'
+      custom_field: 'Source: Loopback0 (IP: 10.255.0.5) - Destination: spine2 Loopback0 (IP: 10.255.0.2)'
 - VerifyReachability:
     filters:
       tags:
@@ -593,8 +561,7 @@ anta.tests.connectivity:
       source: 10.255.0.5
       vrf: default
     result_overwrite:
-      custom_field: 'Source: Loopback0 (IP: 10.255.0.5) - Destination: leaf1a
-        Loopback0 (IP: 10.255.0.3)'
+      custom_field: 'Source: Loopback0 (IP: 10.255.0.5) - Destination: leaf1a Loopback0 (IP: 10.255.0.3)'
 - VerifyReachability:
     filters:
       tags:
@@ -605,8 +572,7 @@ anta.tests.connectivity:
       source: 10.255.0.5
       vrf: default
     result_overwrite:
-      custom_field: 'Source: Loopback0 (IP: 10.255.0.5) - Destination: leaf1b
-        Loopback0 (IP: 10.255.0.4)'
+      custom_field: 'Source: Loopback0 (IP: 10.255.0.5) - Destination: leaf1b Loopback0 (IP: 10.255.0.4)'
 - VerifyReachability:
     filters:
       tags:
@@ -617,8 +583,7 @@ anta.tests.connectivity:
       source: 10.255.0.5
       vrf: default
     result_overwrite:
-      custom_field: 'Source: Loopback0 (IP: 10.255.0.5) - Destination: leaf2a
-        Loopback0 (IP: 10.255.0.5)'
+      custom_field: 'Source: Loopback0 (IP: 10.255.0.5) - Destination: leaf2a Loopback0 (IP: 10.255.0.5)'
 - VerifyReachability:
     filters:
       tags:
@@ -629,8 +594,7 @@ anta.tests.connectivity:
       source: 10.255.0.5
       vrf: default
     result_overwrite:
-      custom_field: 'Source: Loopback0 (IP: 10.255.0.5) - Destination: leaf2b
-        Loopback0 (IP: 10.255.0.6)'
+      custom_field: 'Source: Loopback0 (IP: 10.255.0.5) - Destination: leaf2b Loopback0 (IP: 10.255.0.6)'
 - VerifyLLDPNeighbors:
     filters:
       tags:
@@ -681,8 +645,7 @@ anta.tests.connectivity:
       source: 10.255.255.2
       vrf: default
     result_overwrite:
-      custom_field: 'Source: P2P Interface Ethernet1/1 (IP: 10.255.255.2) - Destination:
-        leaf1a Ethernet2/1 (IP: 10.255.255.3)'
+      custom_field: 'Source: P2P Interface Ethernet1/1 (IP: 10.255.255.2) - Destination: leaf1a Ethernet2/1 (IP: 10.255.255.3)'
 - VerifyReachability:
     filters:
       tags:
@@ -693,8 +656,7 @@ anta.tests.connectivity:
       source: 10.255.255.6
       vrf: default
     result_overwrite:
-      custom_field: 'Source: P2P Interface Ethernet2/1 (IP: 10.255.255.6) - Destination:
-        leaf1b Ethernet2/1 (IP: 10.255.255.7)'
+      custom_field: 'Source: P2P Interface Ethernet2/1 (IP: 10.255.255.6) - Destination: leaf1b Ethernet2/1 (IP: 10.255.255.7)'
 - VerifyReachability:
     filters:
       tags:
@@ -705,8 +667,7 @@ anta.tests.connectivity:
       source: 10.255.255.10
       vrf: default
     result_overwrite:
-      custom_field: 'Source: P2P Interface Ethernet3/1 (IP: 10.255.255.10) - Destination:
-        leaf2a Ethernet2/1 (IP: 10.255.255.11)'
+      custom_field: 'Source: P2P Interface Ethernet3/1 (IP: 10.255.255.10) - Destination: leaf2a Ethernet2/1 (IP: 10.255.255.11)'
 - VerifyReachability:
     filters:
       tags:
@@ -717,8 +678,7 @@ anta.tests.connectivity:
       source: 10.255.255.14
       vrf: default
     result_overwrite:
-      custom_field: 'Source: P2P Interface Ethernet4/1 (IP: 10.255.255.14) - Destination:
-        leaf2b Ethernet2/1 (IP: 10.255.255.15)'
+      custom_field: 'Source: P2P Interface Ethernet4/1 (IP: 10.255.255.14) - Destination: leaf2b Ethernet2/1 (IP: 10.255.255.15)'
 anta.tests.hardware:
 - VerifyEnvironmentPower:
     filters:
@@ -749,8 +709,7 @@ anta.tests.hardware:
     - Arastra, Inc.
     - Not Present
     result_overwrite:
-      custom_field: 'Accepted Manufacturers: ''Arista Networks'', ''Arastra, Inc.'',
-        ''Not Present'''
+      custom_field: 'Accepted Manufacturers: ''Arista Networks'', ''Arastra, Inc.'', ''Not Present'''
 - VerifyEnvironmentPower:
     filters:
       tags:
@@ -780,8 +739,7 @@ anta.tests.hardware:
     - Arastra, Inc.
     - Not Present
     result_overwrite:
-      custom_field: 'Accepted Manufacturers: ''Arista Networks'', ''Arastra, Inc.'',
-        ''Not Present'''
+      custom_field: 'Accepted Manufacturers: ''Arista Networks'', ''Arastra, Inc.'', ''Not Present'''
 - VerifyEnvironmentPower:
     filters:
       tags:
@@ -811,8 +769,7 @@ anta.tests.hardware:
     - Arastra, Inc.
     - Not Present
     result_overwrite:
-      custom_field: 'Accepted Manufacturers: ''Arista Networks'', ''Arastra, Inc.'',
-        ''Not Present'''
+      custom_field: 'Accepted Manufacturers: ''Arista Networks'', ''Arastra, Inc.'', ''Not Present'''
 - VerifyEnvironmentPower:
     filters:
       tags:
@@ -842,8 +799,7 @@ anta.tests.hardware:
     - Arastra, Inc.
     - Not Present
     result_overwrite:
-      custom_field: 'Accepted Manufacturers: ''Arista Networks'', ''Arastra, Inc.'',
-        ''Not Present'''
+      custom_field: 'Accepted Manufacturers: ''Arista Networks'', ''Arastra, Inc.'', ''Not Present'''
 - VerifyEnvironmentPower:
     filters:
       tags:
@@ -873,8 +829,7 @@ anta.tests.hardware:
     - Arastra, Inc.
     - Not Present
     result_overwrite:
-      custom_field: 'Accepted Manufacturers: ''Arista Networks'', ''Arastra, Inc.'',
-        ''Not Present'''
+      custom_field: 'Accepted Manufacturers: ''Arista Networks'', ''Arastra, Inc.'', ''Not Present'''
 - VerifyEnvironmentPower:
     filters:
       tags:
@@ -904,8 +859,7 @@ anta.tests.hardware:
     - Arastra, Inc.
     - Not Present
     result_overwrite:
-      custom_field: 'Accepted Manufacturers: ''Arista Networks'', ''Arastra, Inc.'',
-        ''Not Present'''
+      custom_field: 'Accepted Manufacturers: ''Arista Networks'', ''Arastra, Inc.'', ''Not Present'''
 anta.tests.interfaces:
 - VerifyInterfacesStatus:
     filters:
@@ -915,8 +869,7 @@ anta.tests.interfaces:
     - name: Ethernet3/1
       status: up
     result_overwrite:
-      custom_field: Interface Ethernet3/1 - MLAG_PEER_leaf1b_Ethernet3/1 =
-        'up'
+      custom_field: Interface Ethernet3/1 - MLAG_PEER_leaf1b_Ethernet3/1 = 'up'
 - VerifyInterfacesStatus:
     filters:
       tags:
@@ -925,8 +878,7 @@ anta.tests.interfaces:
     - name: Ethernet4/1
       status: up
     result_overwrite:
-      custom_field: Interface Ethernet4/1 - MLAG_PEER_leaf1b_Ethernet4/1 =
-        'up'
+      custom_field: Interface Ethernet4/1 - MLAG_PEER_leaf1b_Ethernet4/1 = 'up'
 - VerifyInterfacesStatus:
     filters:
       tags:
@@ -935,8 +887,7 @@ anta.tests.interfaces:
     - name: Ethernet1/1
       status: up
     result_overwrite:
-      custom_field: Interface Ethernet1/1 - P2P_LINK_TO_SPINE1_Ethernet1/1
-        = 'up'
+      custom_field: Interface Ethernet1/1 - P2P_LINK_TO_SPINE1_Ethernet1/1 = 'up'
 - VerifyInterfacesStatus:
     filters:
       tags:
@@ -945,8 +896,7 @@ anta.tests.interfaces:
     - name: Ethernet2/1
       status: up
     result_overwrite:
-      custom_field: Interface Ethernet2/1 - P2P_LINK_TO_SPINE2_Ethernet1/1
-        = 'up'
+      custom_field: Interface Ethernet2/1 - P2P_LINK_TO_SPINE2_Ethernet1/1 = 'up'
 - VerifyInterfacesStatus:
     filters:
       tags:
@@ -1009,8 +959,7 @@ anta.tests.interfaces:
     - name: Ethernet3/1
       status: up
     result_overwrite:
-      custom_field: Interface Ethernet3/1 - MLAG_PEER_leaf1a_Ethernet3/1 =
-        'up'
+      custom_field: Interface Ethernet3/1 - MLAG_PEER_leaf1a_Ethernet3/1 = 'up'
 - VerifyInterfacesStatus:
     filters:
       tags:
@@ -1019,8 +968,7 @@ anta.tests.interfaces:
     - name: Ethernet4/1
       status: up
     result_overwrite:
-      custom_field: Interface Ethernet4/1 - MLAG_PEER_leaf1a_Ethernet4/1 =
-        'up'
+      custom_field: Interface Ethernet4/1 - MLAG_PEER_leaf1a_Ethernet4/1 = 'up'
 - VerifyInterfacesStatus:
     filters:
       tags:
@@ -1029,8 +977,7 @@ anta.tests.interfaces:
     - name: Ethernet1/1
       status: up
     result_overwrite:
-      custom_field: Interface Ethernet1/1 - P2P_LINK_TO_SPINE1_Ethernet2/1
-        = 'up'
+      custom_field: Interface Ethernet1/1 - P2P_LINK_TO_SPINE1_Ethernet2/1 = 'up'
 - VerifyInterfacesStatus:
     filters:
       tags:
@@ -1039,8 +986,7 @@ anta.tests.interfaces:
     - name: Ethernet2/1
       status: up
     result_overwrite:
-      custom_field: Interface Ethernet2/1 - P2P_LINK_TO_SPINE2_Ethernet2/1
-        = 'up'
+      custom_field: Interface Ethernet2/1 - P2P_LINK_TO_SPINE2_Ethernet2/1 = 'up'
 - VerifyInterfacesStatus:
     filters:
       tags:
@@ -1103,8 +1049,7 @@ anta.tests.interfaces:
     - name: Ethernet1/1
       status: up
     result_overwrite:
-      custom_field: Interface Ethernet1/1 - P2P_LINK_TO_LEAF1A_Ethernet1/1
-        = 'up'
+      custom_field: Interface Ethernet1/1 - P2P_LINK_TO_LEAF1A_Ethernet1/1 = 'up'
 - VerifyInterfacesStatus:
     filters:
       tags:
@@ -1113,8 +1058,7 @@ anta.tests.interfaces:
     - name: Ethernet2/1
       status: up
     result_overwrite:
-      custom_field: Interface Ethernet2/1 - P2P_LINK_TO_LEAF1B_Ethernet1/1
-        = 'up'
+      custom_field: Interface Ethernet2/1 - P2P_LINK_TO_LEAF1B_Ethernet1/1 = 'up'
 - VerifyInterfacesStatus:
     filters:
       tags:
@@ -1123,8 +1067,7 @@ anta.tests.interfaces:
     - name: Ethernet3/1
       status: up
     result_overwrite:
-      custom_field: Interface Ethernet3/1 - P2P_LINK_TO_LEAF2A_Ethernet1/1
-        = 'up'
+      custom_field: Interface Ethernet3/1 - P2P_LINK_TO_LEAF2A_Ethernet1/1 = 'up'
 - VerifyInterfacesStatus:
     filters:
       tags:
@@ -1133,8 +1076,7 @@ anta.tests.interfaces:
     - name: Ethernet4/1
       status: up
     result_overwrite:
-      custom_field: Interface Ethernet4/1 - P2P_LINK_TO_LEAF2B_Ethernet1/1
-        = 'up'
+      custom_field: Interface Ethernet4/1 - P2P_LINK_TO_LEAF2B_Ethernet1/1 = 'up'
 - VerifyInterfacesStatus:
     filters:
       tags:
@@ -1152,8 +1094,7 @@ anta.tests.interfaces:
     - name: Ethernet3/1
       status: up
     result_overwrite:
-      custom_field: Interface Ethernet3/1 - MLAG_PEER_leaf2a_Ethernet3/1 =
-        'up'
+      custom_field: Interface Ethernet3/1 - MLAG_PEER_leaf2a_Ethernet3/1 = 'up'
 - VerifyInterfacesStatus:
     filters:
       tags:
@@ -1162,8 +1103,7 @@ anta.tests.interfaces:
     - name: Ethernet4/1
       status: up
     result_overwrite:
-      custom_field: Interface Ethernet4/1 - MLAG_PEER_leaf2a_Ethernet4/1 =
-        'up'
+      custom_field: Interface Ethernet4/1 - MLAG_PEER_leaf2a_Ethernet4/1 = 'up'
 - VerifyInterfacesStatus:
     filters:
       tags:
@@ -1172,8 +1112,7 @@ anta.tests.interfaces:
     - name: Ethernet1/1
       status: up
     result_overwrite:
-      custom_field: Interface Ethernet1/1 - P2P_LINK_TO_SPINE1_Ethernet4/1
-        = 'up'
+      custom_field: Interface Ethernet1/1 - P2P_LINK_TO_SPINE1_Ethernet4/1 = 'up'
 - VerifyInterfacesStatus:
     filters:
       tags:
@@ -1182,8 +1121,7 @@ anta.tests.interfaces:
     - name: Ethernet2/1
       status: up
     result_overwrite:
-      custom_field: Interface Ethernet2/1 - P2P_LINK_TO_SPINE2_Ethernet4/1
-        = 'up'
+      custom_field: Interface Ethernet2/1 - P2P_LINK_TO_SPINE2_Ethernet4/1 = 'up'
 - VerifyInterfacesStatus:
     filters:
       tags:
@@ -1246,8 +1184,7 @@ anta.tests.interfaces:
     - name: Ethernet3/1
       status: up
     result_overwrite:
-      custom_field: Interface Ethernet3/1 - MLAG_PEER_leaf2b_Ethernet3/1 =
-        'up'
+      custom_field: Interface Ethernet3/1 - MLAG_PEER_leaf2b_Ethernet3/1 = 'up'
 - VerifyInterfacesStatus:
     filters:
       tags:
@@ -1256,8 +1193,7 @@ anta.tests.interfaces:
     - name: Ethernet4/1
       status: up
     result_overwrite:
-      custom_field: Interface Ethernet4/1 - MLAG_PEER_leaf2b_Ethernet4/1 =
-        'up'
+      custom_field: Interface Ethernet4/1 - MLAG_PEER_leaf2b_Ethernet4/1 = 'up'
 - VerifyInterfacesStatus:
     filters:
       tags:
@@ -1266,8 +1202,7 @@ anta.tests.interfaces:
     - name: Ethernet1/1
       status: up
     result_overwrite:
-      custom_field: Interface Ethernet1/1 - P2P_LINK_TO_SPINE1_Ethernet3/1
-        = 'up'
+      custom_field: Interface Ethernet1/1 - P2P_LINK_TO_SPINE1_Ethernet3/1 = 'up'
 - VerifyInterfacesStatus:
     filters:
       tags:
@@ -1276,8 +1211,7 @@ anta.tests.interfaces:
     - name: Ethernet2/1
       status: up
     result_overwrite:
-      custom_field: Interface Ethernet2/1 - P2P_LINK_TO_SPINE2_Ethernet3/1
-        = 'up'
+      custom_field: Interface Ethernet2/1 - P2P_LINK_TO_SPINE2_Ethernet3/1 = 'up'
 - VerifyInterfacesStatus:
     filters:
       tags:
@@ -1340,8 +1274,7 @@ anta.tests.interfaces:
     - name: Ethernet1/1
       status: up
     result_overwrite:
-      custom_field: Interface Ethernet1/1 - P2P_LINK_TO_LEAF1A_Ethernet2/1
-        = 'up'
+      custom_field: Interface Ethernet1/1 - P2P_LINK_TO_LEAF1A_Ethernet2/1 = 'up'
 - VerifyInterfacesStatus:
     filters:
       tags:
@@ -1350,8 +1283,7 @@ anta.tests.interfaces:
     - name: Ethernet2/1
       status: up
     result_overwrite:
-      custom_field: Interface Ethernet2/1 - P2P_LINK_TO_LEAF1B_Ethernet2/1
-        = 'up'
+      custom_field: Interface Ethernet2/1 - P2P_LINK_TO_LEAF1B_Ethernet2/1 = 'up'
 - VerifyInterfacesStatus:
     filters:
       tags:
@@ -1360,8 +1292,7 @@ anta.tests.interfaces:
     - name: Ethernet3/1
       status: up
     result_overwrite:
-      custom_field: Interface Ethernet3/1 - P2P_LINK_TO_LEAF2A_Ethernet2/1
-        = 'up'
+      custom_field: Interface Ethernet3/1 - P2P_LINK_TO_LEAF2A_Ethernet2/1 = 'up'
 - VerifyInterfacesStatus:
     filters:
       tags:
@@ -1370,8 +1301,7 @@ anta.tests.interfaces:
     - name: Ethernet4/1
       status: up
     result_overwrite:
-      custom_field: Interface Ethernet4/1 - P2P_LINK_TO_LEAF2B_Ethernet2/1
-        = 'up'
+      custom_field: Interface Ethernet4/1 - P2P_LINK_TO_LEAF2B_Ethernet2/1 = 'up'
 - VerifyInterfacesStatus:
     filters:
       tags:

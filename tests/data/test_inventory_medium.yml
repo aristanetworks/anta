@@ -1,14 +1,14 @@
 anta_inventory:
   hosts:
-  - host: clab-evpn-vxlan-fabric-spine1
+  - host: localhost
     name: spine1
-  - host: clab-evpn-vxlan-fabric-spine2
+  - host: localhost
     name: spine2
-  - host: clab-evpn-vxlan-fabric-leaf1a
+  - host: localhost
     name: leaf1a
-  - host: clab-evpn-vxlan-fabric-leaf1b
+  - host: localhost
     name: leaf1b
-  - host: clab-evpn-vxlan-fabric-leaf2a
+  - host: localhost
     name: leaf2a
-  - host: clab-evpn-vxlan-fabric-leaf2b
+  - host: localhost
     name: leaf2b

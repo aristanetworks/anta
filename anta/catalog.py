@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import importlib
 import logging
+import math
 from collections import defaultdict
 from inspect import isclass
 from pathlib import Path
@@ -233,7 +234,7 @@ class AntaCatalogFile(RootModel[dict[ImportString[Any], list[AntaTestDefinition]
         # This could be improved.
         # https://github.com/pydantic/pydantic/issues/1043
         # Explore if this worth using this: https://github.com/NowanIlfideme/pydantic-yaml
-        return yaml.safe_dump(yaml.safe_load(self.model_dump_json(serialize_as_any=True, exclude_unset=True)))
+        return yaml.safe_dump(yaml.safe_load(self.model_dump_json(serialize_as_any=True, exclude_unset=True)), indent=2, width=math.inf)
 
 
 class AntaCatalog:
@@ -378,9 +379,7 @@ class AntaCatalog:
         -------
             A new AntaCatalog instance containing the tests of the two instances.
         """
-        tests = self.tests
-        tests.extend(catalog.tests)
-        return AntaCatalog(tests=tests)
+        return AntaCatalog(tests=self.tests + catalog.tests)
 
     def dump(self) -> AntaCatalogFile:
         """Return an AntaCatalogFile instance from this AntaCatalog instance.
@@ -391,8 +390,8 @@ class AntaCatalog:
         """
         root: dict[ImportString[Any], list[AntaTestDefinition]] = {}
         for test in self.tests:
-            module = test.test.module
-            root.setdefault(module, []).append(test)
+            # Cannot use AntaTest.module property as the class is not instantiated
+            root.setdefault(test.test.__module__, []).append(test)
         return AntaCatalogFile(root=root)
 
     def build_indexes(self, filtered_tests: set[str] | None = None) -> None:

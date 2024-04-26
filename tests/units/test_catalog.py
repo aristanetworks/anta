@@ -327,10 +327,14 @@ class TestAntaCatalog:
         assert len(catalog2.tests) == 1
         catalog3: AntaCatalog = AntaCatalog.parse(DATA_DIR / "test_catalog_medium.yml")
         assert len(catalog3.tests) == 228
-        catalog1.merge(catalog2)
-        assert len(catalog1.tests) == 2
-        catalog2.merge(catalog3)
-        assert len(catalog2.tests) == 229
+
+        assert len(catalog1.merge(catalog2).tests) == 2
+        assert len(catalog1.tests) == 1
+        assert len(catalog2.tests) == 1
+
+        assert len(catalog2.merge(catalog3).tests) == 229
+        assert len(catalog2.tests) == 1
+        assert len(catalog3.tests) == 228
 
     def test_dump(self) -> None:
         """Test AntaCatalog.dump()."""
