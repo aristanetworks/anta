@@ -12,7 +12,7 @@ import pytest
 from pydantic import ValidationError
 from yaml import safe_load
 
-from anta.catalog import AntaCatalog, AntaTestDefinition
+from anta.catalog import AntaCatalog, AntaCatalogFile, AntaTestDefinition
 from anta.models import AntaTest
 from anta.tests.interfaces import VerifyL3MTU
 from anta.tests.mlag import VerifyMlagStatus
@@ -318,3 +318,19 @@ class TestAntaCatalog:
         assert len(tests) == 3
         tests = catalog.get_tests_by_tags(tags={"leaf", "spine"}, strict=True)
         assert len(tests) == 1
+
+    def test_merge(self) -> None:
+        """Test AntaCatalog.merge()."""
+        catalog1: AntaCatalog = AntaCatalog.parse(str(DATA_DIR / "test_catalog.yml"))
+        assert len(catalog1.tests) == 1
+        catalog2: AntaCatalog = AntaCatalog.parse(str(DATA_DIR / "test_catalog.yml"))
+        assert len(catalog2.tests) == 1
+        catalog1.merge(catalog2)
+        assert len(catalog1.tests) == 2
+
+    def test_dump(self) -> None:
+        """Test AntaCatalog.merge()."""
+        catalog: AntaCatalog = AntaCatalog.parse(str(DATA_DIR / "test_catalog.yml"))
+        assert len(catalog.tests) == 1
+        file: AntaCatalogFile = catalog.dump()
+        assert sum(len(tests) for tests in file.root.values()) == 1
