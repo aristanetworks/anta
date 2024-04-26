@@ -12,7 +12,8 @@ from inspect import isclass
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Optional, Union
 
-from pydantic import BaseModel, ConfigDict, RootModel, ValidationError, ValidationInfo, field_validator, model_validator
+import yaml
+from pydantic import BaseModel, ConfigDict, RootModel, ValidationError, ValidationInfo, field_validator, model_serializer, model_validator
 from pydantic.types import ImportString
 from pydantic_core import PydanticCustomError
 from yaml import YAMLError, safe_load
@@ -43,6 +44,22 @@ class AntaTestDefinition(BaseModel):
 
     test: type[AntaTest]
     inputs: AntaTest.Input
+
+    @model_serializer()
+    def serialize_model(self) -> dict[str, AntaTest.Input]:
+        """Serialize the AntaTestDefinition model.
+
+        The dictionary representing the model will be look like:
+        ```
+        <AntaTest subclass name>:
+                <AntaTest.Input compliant dictionary>
+        ```
+
+        Returns
+        -------
+            A dictionary representing the model.
+        """
+        return {self.test.__name__: self.inputs}
 
     def __init__(self, **data: type[AntaTest] | AntaTest.Input | dict[str, Any] | None) -> None:
         """Inject test in the context to allow to instantiate Input in the BeforeValidator.
@@ -182,6 +199,9 @@ class AntaCatalogFile(RootModel[dict[ImportString[Any], list[AntaTestDefinition]
             for module, tests in typed_data.items():
                 test_definitions: list[AntaTestDefinition] = []
                 for test_definition in tests:
+                    if isinstance(test_definition, AntaTestDefinition):
+                        test_definitions.append(test_definition)
+                        continue
                     if not isinstance(test_definition, dict):
                         msg = f"Syntax error when parsing: {test_definition}\nIt must be a dictionary. Check the test catalog."
                         raise ValueError(msg)  # noqa: TRY004 pydantic catches ValueError or AssertionError, no TypeError
@@ -202,6 +222,19 @@ class AntaCatalogFile(RootModel[dict[ImportString[Any], list[AntaTestDefinition]
                         test_definitions.append(AntaTestDefinition(test=test, inputs=test_inputs))
                 typed_data[module] = test_definitions
         return typed_data
+
+    def yaml(self) -> str:
+        """Return a YAML representation string of this model.
+
+        Returns
+        -------
+            The YAML representation string of this model.
+        """
+        # TODO: Pydantic and YAML serialization/deserialization is not supported natively.
+        # This could be improved.
+        # https://github.com/pydantic/pydantic/issues/1043
+        # Explore if this worth using this: https://github.com/NowanIlfideme/pydantic-yaml
+        return yaml.safe_dump(yaml.safe_load(self.model_dump_json(serialize_as_any=True, exclude_unset=True)))
 
 
 class AntaCatalog:
@@ -334,6 +367,34 @@ class AntaCatalog:
             anta_log_exception(e, "Test catalog is invalid!", logger)
             raise
         return AntaCatalog(tests)
+
+    def merge(self, catalog: AntaCatalog) -> AntaCatalog:
+        """Merge two AntaCatalog instances.
+
+        Args:
+        ----
+            catalog: AntaCatalog instance to merge to this instance.
+
+        Returns
+        -------
+            A new AntaCatalog instance containing the tests of the two instances.
+        """
+        tests = self.tests
+        tests.extend(catalog.tests)
+        return AntaCatalog(tests=tests)
+
+    def dump(self) -> AntaCatalogFile:
+        """Return an AntaCatalogFile instance from this AntaCatalog instance.
+
+        Returns
+        -------
+            An AntaCatalogFile instance containing tests of this AntaCatalog instance.
+        """
+        root: dict[ImportString[Any], list[AntaTestDefinition]] = {}
+        for test in self.tests:
+            module = test.test.__module__
+            root.setdefault(module, []).append(test)
+        return AntaCatalogFile(root=root)
 
     def build_indexes(self, filtered_tests: set[str] | None = None) -> None:
         """Indexes tests by their tags for quick access during filtering operations.
