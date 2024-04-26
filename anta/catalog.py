@@ -391,7 +391,7 @@ class AntaCatalog:
         """
         root: dict[ImportString[Any], list[AntaTestDefinition]] = {}
         for test in self.tests:
-            module = test.test.__module__
+            module = test.test.module
             root.setdefault(module, []).append(test)
         return AntaCatalogFile(root=root)
 
