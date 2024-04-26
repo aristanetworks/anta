@@ -1,14 +1,14 @@
 anta_inventory:
   hosts:
   - host: clab-evpn-vxlan-fabric-spine1
-    name: mtache-spine1
+    name: spine1
   - host: clab-evpn-vxlan-fabric-spine2
-    name: mtache-spine2
+    name: spine2
   - host: clab-evpn-vxlan-fabric-leaf1a
-    name: mtache-leaf1a
+    name: leaf1a
   - host: clab-evpn-vxlan-fabric-leaf1b
-    name: mtache-leaf1b
+    name: leaf1b
   - host: clab-evpn-vxlan-fabric-leaf2a
-    name: mtache-leaf2a
+    name: leaf2a
   - host: clab-evpn-vxlan-fabric-leaf2b
-    name: mtache-leaf2b
+    name: leaf2b
