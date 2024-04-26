@@ -38,7 +38,7 @@ def _count_isis_neighbor(isis_neighbor_json: dict[str, Any]) -> int:
 def _get_not_full_isis_neighbors(isis_neighbor_json: dict[str, Any]) -> list[dict[str, Any]]:
     """Return the isis neighbors whose adjacency state is not `up`.
 
-    Args:
+    Args
     ----
       isis_neighbor_json: The JSON output of the `show isis neighbors` command.
 
