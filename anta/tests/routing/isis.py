@@ -151,7 +151,7 @@ class VerifyISISNeighborState(AntaTest):
         self.result.is_success()
         not_full_neighbors = _get_not_full_isis_neighbors(command_output)
         if not_full_neighbors:
-            self.result.is_failure(f"Some neighbors are not correctly configured: {not_full_neighbors}.")
+            self.result.is_failure(f"Some neighbors are not in the correct state (UP): {not_full_neighbors}.")
 
 
 class VerifyISISNeighborCount(AntaTest):
