@@ -105,12 +105,15 @@ def _get_isis_neighbors_count(isis_neighbor_json: dict[str, Any]) -> list[dict[s
 
 def _get_interface_data(interface: str, vrf: str, command_output: dict[str, Any]) -> dict[str, Any] | None:
     """Extract data related to an ISIS interface for testing."""
-    if vrf in command_output["vrfs"]:
-        path = f"vrfs.{vrf}"
-        vrf_data = get_value(dictionary=command_output, key=path, default={})
-        for instance_data in vrf_data.get("isisInstances").values():
-            if interface in get_value(dictionary=instance_data, key="interfaces", default={}):
-                return next(ifl_data for ifl, ifl_data in get_value(dictionary=instance_data, key="interfaces", default={}).items() if ifl == interface)
+    if (vrf_data := get_value(command_output, f"vrfs.{vrf}")) is None:
+        return None
+
+    for instance_data in vrf_data.get("isisInstances").values():
+        if (intf_dict := get_value(dictionary=instance_data, key="interfaces")) is not None:
+            try:
+                return next(ifl_data for ifl, ifl_data in intf_dict.items() if ifl == interface)
+            except StopIteration:
+                return None
     return None
 
 
@@ -266,8 +269,8 @@ class VerifyISISInterfaceMode(AntaTest):
             name: Interface
             """Interface name to check."""
             level: Literal[1, 2] = 2
-            """xxx."""
-            mode: Literal["p2p", "broadcast", "passive"]
+            """ISIS level configured for interface. Default is 2."""
+            mode: Literal["point-to-point", "broadcast", "passive"]
             """Number of IS-IS neighbors."""
             vrf: str = "default"
             """VRF where the interface should be configured"""
@@ -289,19 +292,15 @@ class VerifyISISInterfaceMode(AntaTest):
                 command_output=command_output,
             )
             # Check for correct VRF
-            if interface_data is None:
+            if interface_data is not None:
+                interface_type = get_value(dictionary=interface_data, key="interfaceType", default="unset")
+                # Check for interfaceType
+                if interface.mode == "point-to-point" and interface.mode != interface_type:
+                    self.result.is_failure(f"Interface {interface.name} in vrf {interface.vrf} is not running in {interface.mode} reporting {interface_type}")
+                # Check for passive
+                elif interface.mode == "passive":
+                    json_path = f"intfLevels.{interface.level}.passive"
+                    if interface_data is None or get_value(dictionary=interface_data, key=json_path, default=False) is False:
+                        self.result.is_failure(f"Interface {interface.name} in vrf {interface.vrf} is not running in passive mode")
+            else:
                 self.result.is_failure(f"Interface {interface.name} not found in {interface.vrf}")
-            elif interface.mode == "p2p":
-                if interface_data is None or get_value(dictionary=interface_data, key="interfaceType", default="unset") != "point-to-point":
-                    self.result.is_failure(f"Interface {interface.name} in vrf {interface.vrf} is not running in p2p mode")
-
-            # Check for broadcast
-            elif interface.mode == "broadcast":
-                if interface_data is None or get_value(dictionary=interface_data, key="interfaceType", default="unset") != "broadcast":
-                    self.result.is_failure(f"Interface {interface.name} in vrf {interface.vrf} is not running in broadcast mode")
-
-            # Check for passive
-            elif interface.mode == "passive":
-                json_path = f"intfLevels.{interface.level}.passive"
-                if interface_data is None or get_value(dictionary=interface_data, key=json_path, default=False) is False:
-                    self.result.is_failure(f"Interface {interface.name} in vrf {interface.vrf} is not running in passive mode")

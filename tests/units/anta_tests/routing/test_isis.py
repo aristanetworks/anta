@@ -303,7 +303,7 @@ DATA: list[dict[str, Any]] = [
             "interfaces": [
                 {"name": "Loopback0", "mode": "passive"},
                 {"name": "Ethernet2", "mode": "passive"},
-                {"name": "Ethernet1", "mode": "p2p", "vrf": "default"},
+                {"name": "Ethernet1", "mode": "point-to-point", "vrf": "default"},
             ]
         },
         "expected": {"result": "success"},
@@ -385,7 +385,7 @@ DATA: list[dict[str, Any]] = [
             "interfaces": [
                 {"name": "Loopback0", "mode": "passive"},
                 {"name": "Ethernet2", "mode": "passive"},
-                {"name": "Ethernet1", "mode": "p2p", "vrf": "default"},
+                {"name": "Ethernet1", "mode": "point-to-point", "vrf": "default"},
             ]
         },
         "expected": {
@@ -470,12 +470,12 @@ DATA: list[dict[str, Any]] = [
             "interfaces": [
                 {"name": "Loopback0", "mode": "passive"},
                 {"name": "Ethernet2", "mode": "passive"},
-                {"name": "Ethernet1", "mode": "p2p", "vrf": "default"},
+                {"name": "Ethernet1", "mode": "point-to-point", "vrf": "default"},
             ]
         },
         "expected": {
             "result": "failure",
-            "messages": ["Interface Ethernet1 in vrf default is not running in p2p mode"],
+            "messages": ["Interface Ethernet1 in vrf default is not running in point-to-point reporting broadcast"],
         },
     },
     {
@@ -555,7 +555,7 @@ DATA: list[dict[str, Any]] = [
             "interfaces": [
                 {"name": "Loopback0", "mode": "passive"},
                 {"name": "Ethernet2", "mode": "passive"},
-                {"name": "Ethernet1", "mode": "p2p", "vrf": "default"},
+                {"name": "Ethernet1", "mode": "point-to-point", "vrf": "default"},
             ]
         },
         "expected": {
