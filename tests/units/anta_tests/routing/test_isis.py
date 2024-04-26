@@ -151,7 +151,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": ["Some neighbors are not correctly configured: [{'vrf': 'default', 'instance': 'CORE-ISIS', 'neighbor': 's1-p01', 'state': 'down'}]."],
+            "messages": ["Some neighbors are not in the correct state (UP): [{'vrf': 'default', 'instance': 'CORE-ISIS', 'neighbor': 's1-p01', 'state': 'down'}]."],
         },
     },
     {
@@ -390,7 +390,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Interface Ethernet2 in vrf default is not running in passive mode"],
+            "messages": ["Interface Ethernet2 in VRF default is not running in passive mode"],
         },
     },
     {
@@ -475,7 +475,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Interface Ethernet1 in vrf default is not running in point-to-point reporting broadcast"],
+            "messages": ["Interface Ethernet1 in VRF default is not running in point-to-point reporting broadcast"],
         },
     },
     {
@@ -561,9 +561,9 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Interface Loopback0 not found in default",
-                "Interface Ethernet2 not found in default",
-                "Interface Ethernet1 not found in default",
+                "Interface Loopback0 not found in VRF default",
+                "Interface Ethernet2 not found in VRF default",
+                "Interface Ethernet1 not found in VRF default",
             ],
         },
     },

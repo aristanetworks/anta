@@ -284,7 +284,7 @@ class VerifyISISInterfaceMode(AntaTest):
         self.result.is_success()
 
         if len(command_output["vrfs"]) == 0:
-            self.result.is_skipped("IS-IS is not configured on device")
+            self.result.is_failure("IS-IS is not configured on device")
 
         # Check for p2p interfaces
         for interface in self.inputs.interfaces:
