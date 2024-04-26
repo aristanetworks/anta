@@ -100,9 +100,9 @@ class AntaTestDefinition(BaseModel):
             return data
         try:
             if data is None:
-                return test_class.Input()
+                data = test_class.Input()
             if isinstance(data, dict):
-                return test_class.Input(**data)
+                data = test_class.Input(**data)
         except ValidationError as e:
             inputs_msg = str(e).replace("\n", "\n\t")
             err_type = "wrong_test_inputs"
@@ -111,8 +111,7 @@ class AntaTestDefinition(BaseModel):
                 f"{test_class.name} test inputs are not valid: {inputs_msg}\n",
                 {"errors": e.errors()},
             ) from e
-        msg = f"Could not instantiate inputs as type {type(data).__name__} is not valid"
-        raise ValueError(msg)
+        return data
 
     @model_validator(mode="after")
     def check_inputs(self) -> AntaTestDefinition:
