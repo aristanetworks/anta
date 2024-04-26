@@ -270,7 +270,7 @@ class VerifyISISInterfaceMode(AntaTest):
             mode: Literal["p2p", "broadcast", "passive"]
             """Number of IS-IS neighbors."""
             vrf: str = "default"
-            """VRF where interface should be configured"""
+            """VRF where the interface should be configured"""
 
     @AntaTest.anta_test
     def test(self) -> None:
