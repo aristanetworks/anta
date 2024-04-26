@@ -76,9 +76,10 @@ class VerifyAVTSpecificPath(AntaTest):
 
     Expected Results
     ----------------
-    * Success: The test will pass if the AVT path is active, valid, and matches the specified type (direct/multihop) for the given VRF.
-               If no path type is specified, both direct and multihop paths are considered.
-    * Failure: The test will fail if the AVT path is not configured or if the AVT path is not active, valid, or does not match the specified type for the given VRF.
+    * Success: The test will pass if all AVT paths for the specified VRF are active, valid, and match the specified type (direct/multihop) if provided.
+               If multiple paths are configured, the test will pass only if all the paths are valid and active.
+    * Failure: The test will fail if no AVT paths are configured for the specified VRF, or if any configured path is not active, valid,
+               or does not match the specified type.
 
     Examples
     --------
@@ -149,8 +150,7 @@ class VerifyAVTSpecificPath(AntaTest):
             avt_paths = get_value(command_output, f"{vrf}.avts.{avt_name}.avtPaths")
             next_hop, input_path_type = str(input_avt.next_hop), input_avt.path_type
 
-            # Initialize flags for next-hop and path type
-            nexthop_path_found, path_type_found = False, False
+            nexthop_path_found = path_type_found = False
 
             # Check each AVT path
             for path, path_data in avt_paths.items():
@@ -159,27 +159,25 @@ class VerifyAVTSpecificPath(AntaTest):
                     continue
 
                 nexthop_path_found = True
-                actual_path = get_value(path_data, "flags.directPath")
-                path_type = "direct" if actual_path else "multihop"
+                path_type = "direct" if get_value(path_data, "flags.directPath") else "multihop"
 
                 # If the path type does not match the expected path type, skip to the next path
-                if path_type != input_path_type and input_path_type:
+                if input_path_type and path_type != input_path_type:
                     continue
 
                 path_type_found = True
                 valid = get_value(path_data, "flags.valid")
                 active = get_value(path_data, "flags.active")
 
-                # Construct the failure message prefix
-                failed_log = f"AVT path '{path}' for topology '{avt_name}' in VRF '{vrf}'"
-
                 # Check the path status and type against the expected values
                 if not all([valid, active]):
                     failure_reasons = []
-                    if not active:
+                    if not get_value(path_data, "flags.active"):
                         failure_reasons.append("inactive")
-                    if not valid:
+                    if not get_value(path_data, "flags.valid"):
                         failure_reasons.append("invalid")
+                    # Construct the failure message prefix
+                    failed_log = f"AVT path '{path}' for topology '{avt_name}' in VRF '{vrf}'"
                     self.result.is_failure(f"{failed_log} is {', '.join(failure_reasons)}.")
 
             # If no matching next hop or path type was found, mark the test as failed
