@@ -19,7 +19,7 @@ from anta.tools import get_value
 def _count_isis_neighbor(isis_neighbor_json: dict[str, Any]) -> int:
     """Count the number of isis neighbors.
 
-    Args:
+    Args
     ----
       isis_neighbor_json: The JSON output of the `show isis neighbors` command.
 
