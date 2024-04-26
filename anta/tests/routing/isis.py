@@ -225,7 +225,7 @@ class VerifyISISInterfaceMode(AntaTest):
     Expected Results
     ----------------
     * Success: The test will pass if all listed interfaces are running in correct mode.
-    * Failure: The test will fail if one of the listed interfaces is not running in correct mode.
+    * Failure: The test will fail if any of the listed interfaces is not running in correct mode.
     * Skipped: The test will be skipped if no ISIS neighbor is found.
 
     Examples
