@@ -1,7 +1,7 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""Module related to ISIS tests."""
+"""Module related to IS-IS tests."""
 
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
@@ -105,7 +105,7 @@ def _get_isis_neighbors_count(isis_neighbor_json: dict[str, Any]) -> list[dict[s
 
 
 def _get_interface_data(interface: str, vrf: str, command_output: dict[str, Any]) -> dict[str, Any] | None:
-    """Extract data related to an ISIS interface for testing."""
+    """Extract data related to an IS-IS interface for testing."""
     if (vrf_data := get_value(command_output, f"vrfs.{vrf}")) is None:
         return None
 
@@ -119,13 +119,13 @@ def _get_interface_data(interface: str, vrf: str, command_output: dict[str, Any]
 
 
 class VerifyISISNeighborState(AntaTest):
-    """Verifies all ISIS neighbors are in UP state.
+    """Verifies all IS-IS neighbors are in UP state.
 
     Expected Results
     ----------------
-    * Success: The test will pass if all ISIS neighbors are in UP state.
-    * Failure: The test will fail if some ISIS neighbors are not in UP state.
-    * Skipped: The test will be skipped if no ISIS neighbor is found.
+    * Success: The test will pass if all IS-IS neighbors are in UP state.
+    * Failure: The test will fail if some IS-IS neighbors are not in UP state.
+    * Skipped: The test will be skipped if no IS-IS neighbor is found.
 
     Examples
     --------
@@ -137,7 +137,7 @@ class VerifyISISNeighborState(AntaTest):
     """
 
     name = "VerifyISISNeighborState"
-    description = "Verifies all ISIS neighbors are in UP state."
+    description = "Verifies all IS-IS neighbors are in UP state."
     categories: ClassVar[list[str]] = ["isis"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show isis neighbors", revision=1)]
 
@@ -146,7 +146,7 @@ class VerifyISISNeighborState(AntaTest):
         """Main test function for VerifyISISNeighborState."""
         command_output = self.instance_commands[0].json_output
         if _count_isis_neighbor(command_output) == 0:
-            self.result.is_skipped("no isis neighbor found")
+            self.result.is_skipped("No IS-IS neighbor detected")
             return
         self.result.is_success()
         not_full_neighbors = _get_not_full_isis_neighbors(command_output)
@@ -161,7 +161,7 @@ class VerifyISISNeighborCount(AntaTest):
     ----------------
     * Success: The test will pass if the number of neighbors is correct.
     * Failure: The test will fail if the number of neighbors is incorrect.
-    * Skipped: The test will be skipped if no ISIS neighbor is found.
+    * Skipped: The test will be skipped if no IS-IS neighbor is found.
 
     Examples
     --------
@@ -183,7 +183,7 @@ class VerifyISISNeighborCount(AntaTest):
     """
 
     name = "VerifyISISNeighborCount"
-    description = "Verifies count of ISIS interface per level"
+    description = "Verifies count of IS-IS interface per level"
     categories: ClassVar[list[str]] = ["isis"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show isis interface brief", revision=1)]
 
@@ -255,7 +255,7 @@ class VerifyISISInterfaceMode(AntaTest):
     """
 
     name = "VerifyISISInterfaceMode"
-    description = "Verifies interface mode for ISIS"
+    description = "Verifies interface mode for IS-IS"
     categories: ClassVar[list[str]] = ["isis"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show isis interface brief", revision=1)]
 
@@ -284,7 +284,7 @@ class VerifyISISInterfaceMode(AntaTest):
         self.result.is_success()
 
         if len(command_output["vrfs"]) == 0:
-            self.result.is_skipped("ISIS is not configured on device")
+            self.result.is_skipped("IS-IS is not configured on device")
 
         # Check for p2p interfaces
         for interface in self.inputs.interfaces:
@@ -298,11 +298,11 @@ class VerifyISISInterfaceMode(AntaTest):
                 interface_type = get_value(dictionary=interface_data, key="interfaceType", default="unset")
                 # Check for interfaceType
                 if interface.mode == "point-to-point" and interface.mode != interface_type:
-                    self.result.is_failure(f"Interface {interface.name} in vrf {interface.vrf} is not running in {interface.mode} reporting {interface_type}")
+                    self.result.is_failure(f"Interface {interface.name} in VRF {interface.vrf} is not running in {interface.mode} reporting {interface_type}")
                 # Check for passive
                 elif interface.mode == "passive":
                     json_path = f"intfLevels.{interface.level}.passive"
                     if interface_data is None or get_value(dictionary=interface_data, key=json_path, default=False) is False:
-                        self.result.is_failure(f"Interface {interface.name} in vrf {interface.vrf} is not running in passive mode")
+                        self.result.is_failure(f"Interface {interface.name} in VRF {interface.vrf} is not running in passive mode")
             else:
-                self.result.is_failure(f"Interface {interface.name} not found in {interface.vrf}")
+                self.result.is_failure(f"Interface {interface.name} not found in VRF {interface.vrf}")
