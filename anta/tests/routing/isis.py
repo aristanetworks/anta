@@ -170,13 +170,13 @@ class VerifyISISNeighborCount(AntaTest):
       isis:
         - VerifyISISNeighborCount:
             interfaces:
-              - interface: Ethernet1
+              - name: Ethernet1
                 level: 1
                 count: 2
-              - interface: Ethernet2
+              - name: Ethernet2
                 level: 2
                 count: 1
-              - interface: Ethernet3
+              - name: Ethernet3
                 count: 2
                 # level is set to 2 by default
     ```
@@ -247,7 +247,7 @@ class VerifyISISInterfaceMode(AntaTest):
                 level: 2
                 # vrf is set to default by default
               - name: Ethernet1
-                mode: p2p
+                mode: point-to-point
                 vrf: default
                 # level is set to 2 by default
     ```
