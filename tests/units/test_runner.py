@@ -51,7 +51,7 @@ async def test_runner_empty_inventory(caplog: pytest.LogCaptureFixture) -> None:
     manager = ResultManager()
     inventory = AntaInventory()
     await main(manager, inventory, FAKE_CATALOG)
-    assert len(caplog.record_tuples) == 2
+    assert len(caplog.record_tuples) == 3
     assert "The inventory is empty, exiting" in caplog.records[1].message
 
 
@@ -162,7 +162,7 @@ async def test_prepare_tests(
     caplog.set_level(logging.INFO)
 
     catalog: AntaCatalog = AntaCatalog.parse(str(DATA_DIR / "test_catalog_with_tags.yml"))
-    selected_tests = await prepare_tests(inventory=test_inventory, catalog=catalog, tags=tags, tests=None)
+    selected_tests = prepare_tests(inventory=test_inventory, catalog=catalog, tags=tags, tests=None)
 
     if selected_tests is None:
         assert expected_tests_count == 0
@@ -180,8 +180,27 @@ async def test_prepare_tests_with_specific_tests(caplog: pytest.LogCaptureFixtur
     caplog.set_level(logging.INFO)
 
     catalog: AntaCatalog = AntaCatalog.parse(str(DATA_DIR / "test_catalog_with_tags.yml"))
-    selected_tests = await prepare_tests(inventory=test_inventory, catalog=catalog, tags=None, tests={"VerifyMlagStatus", "VerifyUptime"})
+    selected_tests = prepare_tests(inventory=test_inventory, catalog=catalog, tags=None, tests={"VerifyMlagStatus", "VerifyUptime"})
 
     assert selected_tests is not None
     assert len(selected_tests) == 3
     assert sum(len(tests) for tests in selected_tests.values()) == 5
+
+
+@pytest.mark.asyncio()
+async def test_runner_dry_run(caplog: pytest.LogCaptureFixture, test_inventory: AntaInventory) -> None:
+    """Test that when dry_run is True, no tests are run.
+
+    caplog is the pytest fixture to capture logs
+    test_inventory is a fixture that gives a default inventory for tests
+    """
+    logger.setup_logging(logger.Log.INFO)
+    caplog.set_level(logging.INFO)
+    manager = ResultManager()
+    catalog_path = Path(__file__).parent.parent / "data" / "test_catalog.yml"
+    catalog = AntaCatalog.parse(catalog_path)
+
+    await main(manager, test_inventory, catalog, dry_run=True)
+
+    # Check that the last log contains Dry-run
+    assert "Dry-run" in caplog.records[-1].message

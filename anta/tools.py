@@ -12,6 +12,7 @@ from anta.logger import format_td
 
 if TYPE_CHECKING:
     import sys
+    from logging import Logger
     from types import TracebackType
 
     if sys.version_info >= (3, 11):
@@ -270,12 +271,20 @@ class Catchtime:
     raw_time: float
     time: str
 
+    def __init__(self, logger: Logger | None = None, message: str | None = None) -> None:
+        self.logger = logger
+        self.message = message
+
     def __enter__(self) -> Self:
         """__enter__ method."""
         self.start = perf_counter()
+        if self.logger and self.message:
+            self.logger.info("%s ...", self.message)
         return self
 
     def __exit__(self, exc_type: type[BaseException] | None, exc_val: BaseException | None, exc_tb: TracebackType | None) -> None:
         """__exit__ method."""
         self.raw_time = perf_counter() - self.start
         self.time = format_td(self.raw_time, 3)
+        if self.logger and self.message:
+            self.logger.info("%s completed in: %s.", self.message, self.time)
