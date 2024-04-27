@@ -6,7 +6,6 @@
 from __future__ import annotations
 
 import hashlib
-import inspect
 import logging
 import re
 from abc import ABC, abstractmethod
@@ -58,40 +57,7 @@ class AntaParamsBaseModel(BaseModel):
                 return None
 
 
-class SingletonArgs(type):
-    """SingletonArgs class.
-
-    Used as metaclass for AntaTemplates to create only one instance of each AntaTemplate with a given set of input arguments.
-
-    https://gist.github.com/wowkin2/3af15bfbf197a14a2b0b2488a1e8c787
-    """
-
-    _instances: ClassVar[dict[tuple[SingletonArgs, frozenset[tuple[str, Any]]] | SingletonArgs, SingletonArgs]] = {}
-    _init: ClassVar[dict[SingletonArgs, Callable[..., Any]]] = {}
-
-    def __init__(cls, name: str, bases: list[type], dct: dict[str, Any]) -> None:  # noqa: ARG003
-        """Initialize the singleton.
-
-        TODO
-        """
-        # pylint: disable=unused-argument
-        cls._init[cls] = dct.get("__init__")  # type: ignore[assignment]
-
-    def __call__(cls, *args: Any, **kwargs: Any) -> SingletonArgs:
-        """__call__ function."""
-        if (init := cls._init[cls]) is not None:
-            init_signature = inspect.signature(init)
-            _args = frozenset(init_signature.bind(None, *args, **kwargs).arguments.items())
-            key = (cls, _args)
-        else:
-            key = cls
-
-        if key not in cls._instances:
-            cls._instances[key] = super().__call__(*args, **kwargs)
-        return cls._instances[key]
-
-
-class AntaTemplate(metaclass=SingletonArgs):
+class AntaTemplate:
     """Class to define a command template as Python f-string.
 
     Can render a command from parameters.
@@ -135,6 +101,13 @@ class AntaTemplate(metaclass=SingletonArgs):
             __base__=AntaParamsBaseModel,
             **fields,
         )
+
+    def __repr__(self) -> str:
+        """Return the representation of the class.
+
+        Copying pydantic model style, excluding `params_schema`
+        """
+        return " ".join(f"{a}={v!r}" for a, v in vars(self).items() if a != "params_schema")
 
     def render(self, **params: str | int | bool) -> AntaCommand:
         """Render an AntaCommand from an AntaTemplate instance.
