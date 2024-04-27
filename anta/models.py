@@ -66,8 +66,8 @@ class SingletonArgs(type):
     https://gist.github.com/wowkin2/3af15bfbf197a14a2b0b2488a1e8c787
     """
 
-    _instances: ClassVar[dict[str, SingletonArgs]] = {}
-    _init: ClassVar[dict[SingletonArgs, str]] = {}
+    _instances: ClassVar[dict[tuple[SingletonArgs, frozenset[tuple[str, Any]]] | SingletonArgs, SingletonArgs]] = {}
+    _init: ClassVar[dict[SingletonArgs, Callable[..., Any]]] = {}
 
     def __init__(cls, name: str, bases: list[type], dct: dict[str, Any]) -> None:  # noqa: ARG003
         """Initialize the singleton.
@@ -79,14 +79,19 @@ class SingletonArgs(type):
 
     def __call__(cls, *args: Any, **kwargs: Any) -> SingletonArgs:
         """__call__ function."""
-        init = cls._init[cls]
-        key = (cls, inspect.Signature.bind(inspect.Signature(init), None, *args, **kwargs)) if init is not None else cls  # type: ignore[arg-type]
-        if key not in cls.instances:  # type: ignore[attr-defined]
-            cls._instances[key] = super().__call__(*args, **kwargs)  # type: ignore[index]
-        return cls._instances[key]  # type: ignore[index]
+        if (init := cls._init[cls]) is not None:
+            init_signature = inspect.signature(init)
+            _args = frozenset(init_signature.bind(None, *args, **kwargs).arguments.items())
+            key = (cls, _args)
+        else:
+            key = cls
+
+        if key not in cls._instances:
+            cls._instances[key] = super().__call__(*args, **kwargs)
+        return cls._instances[key]
 
 
-class AntaTemplate:
+class AntaTemplate(metaclass=SingletonArgs):
     """Class to define a command template as Python f-string.
 
     Can render a command from parameters.
@@ -102,8 +107,6 @@ class AntaTemplate:
     """
 
     # pylint: disable=too-few-public-methods
-
-    __metaclass__ = SingletonArgs
 
     def __init__(  # noqa: PLR0913
         self,
