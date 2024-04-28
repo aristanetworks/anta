@@ -44,18 +44,6 @@ class AntaParamsBaseModel(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    # TODO: is this still needed?
-    if not TYPE_CHECKING:
-        # Following pydantic declaration and keeping __getattr__ only when TYPE_CHECKING is false.
-        # Disabling 1 Dynamically typed expressions (typing.Any) are disallowed in `__getattr__
-        # ruff: noqa: ANN401
-        def __getattr__(self, item: str) -> Any:
-            """For AntaParams if we try to access an attribute that is not present We want it to be None."""
-            try:
-                return super().__getattr__(item)
-            except AttributeError:
-                return None
-
 
 class AntaTemplate:
     """Class to define a command template as Python f-string.
@@ -69,7 +57,6 @@ class AntaTemplate:
         revision: Revision of the command. Valid values are 1 to 99. Revision has precedence over version.
         ofmt: eAPI output - json or text.
         use_cache: Enable or disable caching for this AntaTemplate if the AntaDevice supports it.
-
     """
 
     # pylint: disable=too-few-public-methods
@@ -90,14 +77,12 @@ class AntaTemplate:
         self.ofmt = ofmt
         self.use_cache = use_cache
 
-        # Create the model only once per Template in the Singleton instance
+        # Create a AntaTemplateParams model to elegantly store AntaTemplate variables
         field_names = [fname for _, fname, _, _ in Formatter().parse(self.template) if fname]
         # Extracting the type from the params based on the expected field_names from the template
-        # All strings for now..
         fields: dict[str, Any] = {key: (str | int | bool | Any, ...) for key in field_names}
-        # Accepting ParamsSchema as non lowercase variable
         self.params_schema = create_model(
-            "ParamsSchema",
+            "AntaParams",
             __base__=AntaParamsBaseModel,
             **fields,
         )
@@ -120,23 +105,28 @@ class AntaTemplate:
 
         Returns
         -------
-            command: The rendered AntaCommand.
-                     This AntaCommand instance have a template attribute that references this
-                     AntaTemplate instance.
+            The rendered AntaCommand.
+            This AntaCommand instance have a template attribute that references this
+            AntaTemplate instance.
 
+        Raises
+        ------
+            AntaTemplateRenderError
+                If a parameter is missing to render the AntaTemplate instance.
         """
         try:
-            return AntaCommand(
-                command=self.template.format(**params),
-                ofmt=self.ofmt,
-                version=self.version,
-                revision=self.revision,
-                template=self,
-                params=self.params_schema(**params),
-                use_cache=self.use_cache,
-            )
-        except KeyError as e:
+            command = self.template.format(**params)
+        except (KeyError, SyntaxError) as e:
             raise AntaTemplateRenderError(self, e.args[0]) from e
+        return AntaCommand(
+            command=command,
+            ofmt=self.ofmt,
+            version=self.version,
+            revision=self.revision,
+            template=self,
+            params=self.params_schema(**params),
+            use_cache=self.use_cache,
+        )
 
 
 class AntaCommand(BaseModel):
@@ -294,14 +284,13 @@ class AntaTest(ABC):
                         vrf: str = "default"
 
                 def render(self, template: AntaTemplate) -> list[AntaCommand]:
-                    return [template.render({"dst": host.dst, "src": host.src, "vrf": host.vrf}) for host in self.inputs.hosts]
+                    return [template.render(dst=host.dst, src=host.src, vrf=host.vrf) for host in self.inputs.hosts]
 
                 @AntaTest.anta_test
                 def test(self) -> None:
                     failures = []
                     for command in self.instance_commands:
-                        if command.params and ("src" and "dst") in command.params:
-                            src, dst = command.params["src"], command.params["dst"]
+                        src, dst = command.params.src, command.params.dst
                         if "2 received" not in command.json_output["messages"][0]:
                             failures.append((str(src), str(dst)))
                     if not failures:
@@ -309,13 +298,14 @@ class AntaTest(ABC):
                     else:
                         self.result.is_failure(f"Connectivity test failed for the following source-destination pairs: {failures}")
         ```
-    Attributes:
+
+    Attributes
+    ----------
         device: AntaDevice instance on which this test is run
         inputs: AntaTest.Input instance carrying the test inputs
         instance_commands: List of AntaCommand instances of this test
         result: TestResult instance representing the result of this test
         logger: Python logger for this test instance
-
     """
 
     # Mandatory class attributes
@@ -343,9 +333,10 @@ class AntaTest(ABC):
                     description: "Test with overwritten description"
                     custom_field: "Test run by John Doe"
             ```
-        Attributes:
-            result_overwrite: Define fields to overwrite in the TestResult object
 
+        Attributes
+        ----------
+            result_overwrite: Define fields to overwrite in the TestResult object
         """
 
         model_config = ConfigDict(extra="forbid")
@@ -381,7 +372,6 @@ class AntaTest(ABC):
             Attributes
             ----------
                 tags: Tag of devices on which to run the test.
-
             """
 
             model_config = ConfigDict(extra="forbid")
@@ -401,7 +391,6 @@ class AntaTest(ABC):
             inputs: dictionary of attributes used to instantiate the AntaTest.Input instance
             eos_data: Populate outputs of the test commands instead of collecting from devices.
                       This list must have the same length and order than the `instance_commands` instance attribute.
-
         """
         self.logger: logging.Logger = logging.getLogger(f"{self.__module__}.{self.__class__.__name__}")
         self.device: AntaDevice = device
