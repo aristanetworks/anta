@@ -9,7 +9,6 @@ import hashlib
 import logging
 import re
 from abc import ABC, abstractmethod
-from copy import deepcopy
 from functools import wraps
 from string import Formatter
 from typing import TYPE_CHECKING, Any, Callable, ClassVar, Literal, TypeVar
@@ -438,7 +437,7 @@ class AntaTest(ABC):
         if self.__class__.commands:
             for cmd in self.__class__.commands:
                 if isinstance(cmd, AntaCommand):
-                    self.instance_commands.append(deepcopy(cmd))
+                    self.instance_commands.append(cmd.model_copy())
                 elif isinstance(cmd, AntaTemplate):
                     try:
                         self.instance_commands.extend(self.render(cmd))
