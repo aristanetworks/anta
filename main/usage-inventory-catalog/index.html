@@ -544,6 +544,20 @@
   </li>
           
           
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#example-script-to-merge-catalogs" class="md-nav__link">
+      <span class="md-ellipsis">
+        Example script to merge catalogs
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
         </ul>
       </nav>
     
@@ -2320,6 +2334,20 @@
   </li>
           
           
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#example-script-to-merge-catalogs" class="md-nav__link">
+      <span class="md-ellipsis">
+        Example script to merge catalogs
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
         </ul>
       </nav>
     
@@ -2550,6 +2578,31 @@ So for instance, if my custom tests are defined in the <code>titom73.tests.syste
 │<span class="w"> </span>spine01<span class="w">   </span>│<span class="w"> </span>VerifyInterfaceUtilization<span class="w"> </span>│<span class="w"> </span>success<span class="w">     </span>│<span class="w">            </span>│<span class="w"> </span>Verifies<span class="w"> </span>interfaces<span class="w"> </span>utilization<span class="w"> </span>is<span class="w"> </span>below<span class="w"> </span><span class="m">75</span>%.<span class="w"> </span>│<span class="w"> </span>interfaces<span class="w">    </span>│
 └───────────┴────────────────────────────┴─────────────┴────────────┴───────────────────────────────────────────────┴───────────────┘
 </code></pre></div>
+<h5 id="example-script-to-merge-catalogs">Example script to merge catalogs<a class="headerlink" href="#example-script-to-merge-catalogs" title="Permanent link">&para;</a></h5>
+<p>The following script reads all the files in <code>intended/test_catalogs/</code> with names <code>&lt;device_name&gt;-catalog.yml</code> and merge them together inside one big catalog <code>anta-catalog.yml</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="ch">#!/usr/bin/env python</span>
+<span class="kn">from</span> <span class="nn">anta.catalog</span> <span class="kn">import</span> <span class="n">AntaCatalog</span>
+
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">anta.models</span> <span class="kn">import</span> <span class="n">AntaTest</span>
+
+
+<span class="n">CATALOG_SUFFIX</span> <span class="o">=</span> <span class="s1">&#39;-catalog.yml&#39;</span>
+<span class="n">CATALOG_DIR</span> <span class="o">=</span> <span class="s1">&#39;intended/test_catalogs/&#39;</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">catalog</span> <span class="o">=</span> <span class="n">AntaCatalog</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">Path</span><span class="p">(</span><span class="n">CATALOG_DIR</span><span class="p">)</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="o">+</span><span class="n">CATALOG_SUFFIX</span><span class="p">):</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">AntaCatalog</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">file</span><span class="p">)</span><span class="o">.</span><span class="n">removesuffix</span><span class="p">(</span><span class="n">CATALOG_SUFFIX</span><span class="p">)</span><span class="o">.</span><span class="n">removeprefix</span><span class="p">(</span><span class="n">CATALOG_DIR</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Merging test catalog for device </span><span class="si">{</span><span class="n">device</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># Apply filters to all tests for this device</span>
+        <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">tests</span><span class="p">:</span>
+            <span class="n">test</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">filters</span> <span class="o">=</span> <span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="o">.</span><span class="n">Filters</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="n">device</span><span class="p">])</span>
+        <span class="n">catalog</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s1">&#39;anta-catalog.yml&#39;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">catalog</span><span class="o">.</span><span class="n">dump</span><span class="p">()</span><span class="o">.</span><span class="n">yaml</span><span class="p">())</span>
+</code></pre></div>
 
 
 
@@ -2570,7 +2623,7 @@ So for instance, if my custom tests are defined in the <code>titom73.tests.syste
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">April 3, 2024</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">April 29, 2024</span>
   </span>
 
     
