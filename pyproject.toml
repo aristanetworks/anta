@@ -415,8 +415,9 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.In
   "PLR0913",     # Ok to have more than 5 arguments in the AntaInventory class
 ]
 "docs/s*s/anta_runner.py" = [  # This is an example script and linked in  snippets
-  "S108",  # Probable insecure usage of temporary file or directory
-  "S105",  # Possible hardcoded password
+  "S108",   # Probable insecure usage of temporary file or directory
+  "S105",   # Possible hardcoded password
+  "INP001", # Implicit packages
 ]
 
 ################################
