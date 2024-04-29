@@ -50,6 +50,18 @@ anta.tests.aaa:
         - commands
         - dot1x
 
+anta.tests.avt:
+  - VerifyAVTPathHealth:
+  - VerifyAVTSpecificPath:
+      avt_paths:
+        - avt_name: CONTROL-PLANE-PROFILE
+          vrf: default
+          destination: 10.101.255.2
+          next_hop: 10.101.255.1
+          path_type: direct
+  - VerifyAVTRole:
+      role: edge
+
 anta.tests.bfd:
   - VerifyBFDSpecificPeers:
       bfd_peers:
