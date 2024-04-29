@@ -101,9 +101,9 @@ class AntaTestDefinition(BaseModel):
             return data
         try:
             if data is None:
-                data = test_class.Input()
+                return test_class.Input()
             if isinstance(data, dict):
-                data = test_class.Input(**data)
+                return test_class.Input(**data)
         except ValidationError as e:
             inputs_msg = str(e).replace("\n", "\n\t")
             err_type = "wrong_test_inputs"
