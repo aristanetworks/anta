@@ -12,7 +12,7 @@ import pytest
 from pydantic import ValidationError
 from yaml import safe_load
 
-from anta.catalog import AntaCatalog, AntaTestDefinition
+from anta.catalog import AntaCatalog, AntaCatalogFile, AntaTestDefinition
 from anta.models import AntaTest
 from anta.tests.interfaces import VerifyL3MTU
 from anta.tests.mlag import VerifyMlagStatus
@@ -74,6 +74,11 @@ INIT_CATALOG_DATA: list[dict[str, Any]] = [
     {
         "name": "test_empty_catalog",
         "filename": "test_empty_catalog.yml",
+        "tests": [],
+    },
+    {
+        "name": "test_empty_dict_catalog",
+        "filename": "test_empty_dict_catalog.yml",
         "tests": [],
     },
 ]
@@ -160,7 +165,6 @@ CATALOG_FROM_LIST_FAIL_DATA: list[dict[str, Any]] = [
         "error": "FakeTestWithInput test inputs are not valid: 1 validation error for Input\n\tstring\n\t  Input should be a valid string",
     },
 ]
-
 TESTS_SETTER_FAIL_DATA: list[dict[str, Any]] = [
     {
         "name": "not_a_list",
@@ -181,7 +185,7 @@ class TestAntaCatalog:
     @pytest.mark.parametrize("catalog_data", INIT_CATALOG_DATA, ids=generate_test_ids_list(INIT_CATALOG_DATA))
     def test_parse(self, catalog_data: dict[str, Any]) -> None:
         """Instantiate AntaCatalog from a file."""
-        catalog: AntaCatalog = AntaCatalog.parse(str(DATA_DIR / catalog_data["filename"]))
+        catalog: AntaCatalog = AntaCatalog.parse(DATA_DIR / catalog_data["filename"])
 
         assert len(catalog.tests) == len(catalog_data["tests"])
         for test_id, (test, inputs_data) in enumerate(catalog_data["tests"]):
@@ -221,7 +225,7 @@ class TestAntaCatalog:
     def test_parse_fail(self, catalog_data: dict[str, Any]) -> None:
         """Errors when instantiating AntaCatalog from a file."""
         with pytest.raises((ValidationError, TypeError)) as exec_info:
-            AntaCatalog.parse(str(DATA_DIR / catalog_data["filename"]))
+            AntaCatalog.parse(DATA_DIR / catalog_data["filename"])
         if isinstance(exec_info.value, ValidationError):
             assert catalog_data["error"] in exec_info.value.errors()[0]["msg"]
         else:
@@ -230,7 +234,7 @@ class TestAntaCatalog:
     def test_parse_fail_parsing(self, caplog: pytest.LogCaptureFixture) -> None:
         """Errors when instantiating AntaCatalog from a file."""
         with pytest.raises(FileNotFoundError) as exec_info:
-            AntaCatalog.parse(str(DATA_DIR / "catalog_does_not_exist.yml"))
+            AntaCatalog.parse(DATA_DIR / "catalog_does_not_exist.yml")
         assert "No such file or directory" in str(exec_info)
         assert len(caplog.record_tuples) >= 1
         _, _, message = caplog.record_tuples[0]
@@ -286,7 +290,7 @@ class TestAntaCatalog:
 
     def test_build_indexes_all(self) -> None:
         """Test AntaCatalog.build_indexes()."""
-        catalog: AntaCatalog = AntaCatalog.parse(str(DATA_DIR / "test_catalog_with_tags.yml"))
+        catalog: AntaCatalog = AntaCatalog.parse(DATA_DIR / "test_catalog_with_tags.yml")
         catalog.build_indexes()
         assert len(catalog.tests_without_tags) == 5
         assert "leaf" in catalog.tag_to_tests
@@ -299,7 +303,7 @@ class TestAntaCatalog:
 
     def test_build_indexes_filtered(self) -> None:
         """Test AntaCatalog.build_indexes()."""
-        catalog: AntaCatalog = AntaCatalog.parse(str(DATA_DIR / "test_catalog_with_tags.yml"))
+        catalog: AntaCatalog = AntaCatalog.parse(DATA_DIR / "test_catalog_with_tags.yml")
         catalog.build_indexes({"VerifyUptime", "VerifyCoredump", "VerifyL3MTU"})
         assert "leaf" in catalog.tag_to_tests
         assert len(catalog.tag_to_tests["leaf"]) == 1
@@ -312,9 +316,51 @@ class TestAntaCatalog:
 
     def test_get_tests_by_tags(self) -> None:
         """Test AntaCatalog.get_tests_by_tags()."""
-        catalog: AntaCatalog = AntaCatalog.parse(str(DATA_DIR / "test_catalog_with_tags.yml"))
+        catalog: AntaCatalog = AntaCatalog.parse(DATA_DIR / "test_catalog_with_tags.yml")
         catalog.build_indexes()
         tests: set[AntaTestDefinition] = catalog.get_tests_by_tags(tags={"leaf"})
         assert len(tests) == 3
         tests = catalog.get_tests_by_tags(tags={"leaf", "spine"}, strict=True)
         assert len(tests) == 1
+
+    def test_merge(self) -> None:
+        """Test AntaCatalog.merge()."""
+        catalog1: AntaCatalog = AntaCatalog.parse(DATA_DIR / "test_catalog.yml")
+        assert len(catalog1.tests) == 1
+        catalog2: AntaCatalog = AntaCatalog.parse(DATA_DIR / "test_catalog.yml")
+        assert len(catalog2.tests) == 1
+        catalog3: AntaCatalog = AntaCatalog.parse(DATA_DIR / "test_catalog_medium.yml")
+        assert len(catalog3.tests) == 228
+
+        assert len(catalog1.merge(catalog2).tests) == 2
+        assert len(catalog1.tests) == 1
+        assert len(catalog2.tests) == 1
+
+        assert len(catalog2.merge(catalog3).tests) == 229
+        assert len(catalog2.tests) == 1
+        assert len(catalog3.tests) == 228
+
+    def test_dump(self) -> None:
+        """Test AntaCatalog.dump()."""
+        catalog: AntaCatalog = AntaCatalog.parse(DATA_DIR / "test_catalog.yml")
+        assert len(catalog.tests) == 1
+        file: AntaCatalogFile = catalog.dump()
+        assert sum(len(tests) for tests in file.root.values()) == 1
+
+        catalog = AntaCatalog.parse(DATA_DIR / "test_catalog_medium.yml")
+        assert len(catalog.tests) == 228
+        file = catalog.dump()
+        assert sum(len(tests) for tests in file.root.values()) == 228
+
+
+class TestAntaCatalogFile:  # pylint: disable=too-few-public-methods
+    """Test for anta.catalog.AntaCatalogFile."""
+
+    def test_yaml(self) -> None:
+        """Test AntaCatalogFile.yaml()."""
+        file = DATA_DIR / "test_catalog_medium.yml"
+        catalog = AntaCatalog.parse(file)
+        assert len(catalog.tests) == 228
+        catalog_yaml_str = catalog.dump().yaml()
+        with file.open(encoding="UTF-8") as f:
+            assert catalog_yaml_str == f.read()

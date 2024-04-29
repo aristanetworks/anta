@@ -386,7 +386,7 @@ class AntaTest(ABC):
             eos_data: Populate outputs of the test commands instead of collecting from devices.
                       This list must have the same length and order than the `instance_commands` instance attribute.
         """
-        self.logger: logging.Logger = logging.getLogger(f"{self.__module__}.{self.__class__.__name__}")
+        self.logger: logging.Logger = logging.getLogger(f"{self.module}.{self.__class__.__name__}")
         self.device: AntaDevice = device
         self.inputs: AntaTest.Input
         self.instance_commands: list[AntaCommand] = []
@@ -415,7 +415,7 @@ class AntaTest(ABC):
             elif isinstance(inputs, dict):
                 self.inputs = self.Input(**inputs)
         except ValidationError as e:
-            message = f"{self.__module__}.{self.__class__.__name__}: Inputs are not valid\n{e}"
+            message = f"{self.module}.{self.name}: Inputs are not valid\n{e}"
             self.logger.error(message)
             self.result.is_error(message=message)
             return
@@ -452,7 +452,7 @@ class AntaTest(ABC):
                         # render() is user-defined code.
                         # We need to catch everything if we want the AntaTest object
                         # to live until the reporting
-                        message = f"Exception in {self.__module__}.{self.__class__.__name__}.render()"
+                        message = f"Exception in {self.module}.{self.__class__.__name__}.render()"
                         anta_log_exception(e, message, self.logger)
                         self.result.is_error(message=f"{message}: {exc_to_str(e)}")
                         return
@@ -481,13 +481,18 @@ class AntaTest(ABC):
                 raise NotImplementedError(msg)
 
     @property
+    def module(self) -> str:
+        """Return the Python module in which this AntaTest class is defined."""
+        return self.__module__
+
+    @property
     def collected(self) -> bool:
-        """Returns True if all commands for this test have been collected."""
+        """Return True if all commands for this test have been collected."""
         return all(command.collected for command in self.instance_commands)
 
     @property
     def failed_commands(self) -> list[AntaCommand]:
-        """Returns a list of all the commands that have failed."""
+        """Return a list of all the commands that have failed."""
         return [command for command in self.instance_commands if command.error]
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
@@ -497,7 +502,7 @@ class AntaTest(ABC):
         no AntaTemplate for this test.
         """
         _ = template
-        msg = f"AntaTemplate are provided but render() method has not been implemented for {self.__module__}.{self.name}"
+        msg = f"AntaTemplate are provided but render() method has not been implemented for {self.module}.{self.__class__.__name__}"
         raise NotImplementedError(msg)
 
     @property

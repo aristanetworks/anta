@@ -536,3 +536,29 @@ anta.tests.routing:
     - VerifyOSPFNeighborCount:
         number: 3
     - VerifyOSPFMaxLSA:
+  isis:
+    - VerifyISISNeighborState:
+    - VerifyISISNeighborCount:
+        interfaces:
+          - name: Ethernet1
+            level: 1
+            count: 2
+          - name: Ethernet2
+            level: 2
+            count: 1
+          - name: Ethernet3
+            count: 2
+            # level is set to 2 by default
+    - VerifyISISInterfaceMode:
+        interfaces:
+          - name: Loopback0
+            mode: passive
+            # vrf is set to default by default
+          - name: Ethernet2
+            mode: passive
+            level: 2
+            # vrf is set to default by default
+          - name: Ethernet1
+            mode: point-to-point
+            vrf: default
+            # level is set to 2 by default
