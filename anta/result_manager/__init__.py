@@ -48,19 +48,25 @@ class ResultManager:
             manager.results
             [
                 TestResult(
-                    host=IPv4Address('192.168.0.10'),
-                    test='VerifyNTP',
-                    result='failure',
-                    message="device is not running NTP correctly"
+                    name="pf1",
+                    test="VerifyZeroTouch",
+                    categories=["configuration"],
+                    description="Verifies ZeroTouch is disabled",
+                    result="success",
+                    messages=[],
+                    custom_field=None,
                 ),
                 TestResult(
-                    host=IPv4Address('192.168.0.10'),
-                    test='VerifyEOSVersion',
-                    result='success',
-                    message=None
+                    name="pf1",
+                    test='VerifyNTP',
+                    categories=["software"],
+                    categories=['system'],
+                    description='Verifies if NTP is synchronised.',
+                    result='failure',
+                    messages=["The device is not synchronized with the configured NTP server(s): 'NTP is disabled.'"],
+                    custom_field=None,
                 ),
             ]
-
     """
 
     def __init__(self) -> None:
