@@ -15,7 +15,7 @@ from typing import TYPE_CHECKING, Any
 from anta import GITHUB_SUGGESTION
 from anta.logger import anta_log_exception, exc_to_str
 from anta.models import AntaTest
-from anta.tools import Catchtime
+from anta.tools import Catchtime, cprofile
 
 if TYPE_CHECKING:
     from collections.abc import Coroutine
@@ -125,7 +125,7 @@ def prepare_tests(
 
     Returns
     -------
-        defaultdict[AntaDevice, set[AntaTestDefinition]] | None: A mapping of devices to the tests to run or None if there are no tests to run.
+        A mapping of devices to the tests to run or None if there are no tests to run.
     """
     # Build indexes for the catalog. If `tests` is set, filter the indexes based on these tests
     catalog.build_indexes(filtered_tests=tests)
@@ -187,6 +187,7 @@ def get_coroutines(selected_tests: defaultdict[AntaDevice, set[AntaTestDefinitio
     return coros
 
 
+@cprofile()
 async def main(  # noqa: PLR0913
     manager: ResultManager,
     inventory: AntaInventory,

@@ -5,8 +5,12 @@
 
 from __future__ import annotations
 
+import cProfile
+import os
+import pstats
+from functools import wraps
 from time import perf_counter
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Callable, TypeVar, cast
 
 from anta.logger import format_td
 
@@ -19,6 +23,8 @@ if TYPE_CHECKING:
         from typing import Self
     else:
         from typing_extensions import Self
+
+F = TypeVar("F", bound=Callable[..., Any])
 
 
 def get_failed_logs(expected_output: dict[Any, Any], actual_output: dict[Any, Any]) -> str:
@@ -288,3 +294,55 @@ class Catchtime:
         self.time = format_td(self.raw_time, 3)
         if self.logger and self.message:
             self.logger.info("%s completed in: %s.", self.message, self.time)
+
+
+def cprofile(sort_by: str = "cumtime") -> Callable[[F], F]:
+    """Profile a function with cProfile.
+
+    profile is conditionally enabled based on the presence of ANTA_CPROFILE environment variable.
+    Expect to decorate an async function.
+
+    Args:
+    ----
+        sort_by (str): The criterion to sort the profiling results. Default is 'cumtime'.
+
+    Returns
+    -------
+        Callable: The decorated function with conditional profiling.
+    """
+
+    def decorator(func: F) -> F:
+        @wraps(func)
+        async def wrapper(*args: Any, **kwargs: Any) -> Any:
+            """Enable cProfile or not.
+
+            If `ANTA_CPROFILE` is set, cProfile is enabled and dumps the stats to the file.
+
+            Args:
+            ----
+                *args: Arbitrary positional arguments.
+                **kwargs: Arbitrary keyword arguments.
+
+            Returns
+            -------
+                The result of the function call.
+            """
+            cprofile_file = os.environ.get("ANTA_CPROFILE")
+
+            if cprofile_file is not None:
+                profiler = cProfile.Profile()
+                profiler.enable()
+
+            try:
+                result = await func(*args, **kwargs)
+            finally:
+                if cprofile_file is not None:
+                    profiler.disable()
+                    stats = pstats.Stats(profiler).sort_stats(sort_by)
+                    stats.dump_stats(cprofile_file)
+
+            return result
+
+        return cast(F, wrapper)
+
+    return decorator
