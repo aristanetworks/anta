@@ -244,3 +244,32 @@ Once you run `anta nrfu table`, you will see following output:
 │ spine01   │ VerifyInterfaceUtilization │ success     │            │ Verifies interfaces utilization is below 75%. │ interfaces    │
 └───────────┴────────────────────────────┴─────────────┴────────────┴───────────────────────────────────────────────┴───────────────┘
 ```
+
+### Example script to merge catalogs
+
+The following script reads all the files in `intended/test_catalogs/` with names `<device_name>-catalog.yml` and merge them together inside one big catalog `anta-catalog.yml`.
+
+```python
+#!/usr/bin/env python
+from anta.catalog import AntaCatalog
+
+from pathlib import Path
+from anta.models import AntaTest
+
+
+CATALOG_SUFFIX = '-catalog.yml'
+CATALOG_DIR = 'intended/test_catalogs/'
+
+if __name__ == "__main__":
+    catalog = AntaCatalog()
+    for file in Path(CATALOG_DIR).glob('*'+CATALOG_SUFFIX):
+        c = AntaCatalog.parse(file)
+        device = str(file).removesuffix(CATALOG_SUFFIX).removeprefix(CATALOG_DIR)
+        print(f"Merging test catalog for device {device}")
+        # Apply filters to all tests for this device
+        for test in c.tests:
+            test.inputs.filters = AntaTest.Input.Filters(tags=[device])
+        catalog.merge(c)
+    with open(Path('anta-catalog.yml'), "w") as f:
+        f.write(catalog.dump().yaml())
+```
