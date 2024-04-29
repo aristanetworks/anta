@@ -121,7 +121,7 @@ anta.tests.configuration:
 
 ## Test your network
 
-### Basic usage
+### Basic usage in a python script
 
 ```python
 --8<-- "anta_runner.py"
