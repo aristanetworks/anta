@@ -121,6 +121,14 @@ anta.tests.configuration:
 
 ## Test your network
 
+### Basic usage
+
+```python
+--8<-- "anta_runner.py"
+```
+
+### CLI
+
 ANTA comes with a generic CLI entrypoint to run tests in your network. It requires an inventory file as well as a test catalog.
 
 This entrypoint has multiple options to manage test coverage and reporting.
@@ -135,7 +143,7 @@ This entrypoint has multiple options to manage test coverage and reporting.
 
 To run the NRFU, you need to select an output format amongst ["json", "table", "text", "tpl-report"]. For a first usage, `table` is recommended.  By default all test results for all devices are rendered but it can be changed to a report per test case or per host
 
-### Default report using table
+#### Default report using table
 
 ```bash
 anta nrfu \
@@ -176,7 +184,7 @@ anta nrfu \
 └───────────┴──────────────────────────┴─────────────┴──────────────────┴──────────────────────────────────────────────────────────────────────┴───────────────┘
 ```
 
-### Report in text mode
+#### Report in text mode
 
 ```bash
 $ anta nrfu \
@@ -206,7 +214,7 @@ leaf01 :: VerifyMlagConfigSanity :: SKIPPED (MLAG is disabled)
 [...]
 ```
 
-### Report in JSON format
+#### Report in JSON format
 
 ```bash
 $ anta nrfu \
