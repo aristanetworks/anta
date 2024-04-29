@@ -12,6 +12,7 @@ from typing import TYPE_CHECKING, Any, Callable
 import click
 
 from anta.cli.utils import ExitCode, inventory_options
+from anta.logger import anta_log_exception
 
 if TYPE_CHECKING:
     from anta.inventory import AntaInventory
@@ -54,8 +55,8 @@ def debug_options(f: Callable[..., Any]) -> Callable[..., Any]:
         try:
             d = inventory[device]
         except KeyError as e:
-            message = f"Device {device} does not exist in Inventory"
-            logger.error(e, message)
+            message = f"Device '{device}' does not exist in Inventory"
+            anta_log_exception(e, message)
             ctx.exit(ExitCode.USAGE_ERROR)
         return f(*args, device=d, **kwargs)
 
