@@ -256,23 +256,19 @@ class VerifyBGPPeerCount(AntaTest):
 
         failures: dict[tuple[str, Any], dict[str, Any]] = {}
 
-        for command in self.instance_commands:
+        for command, af_input in zip(self.instance_commands, self.inputs.address_families):
             num_peers = None
             peer_count = 0
             command_output = command.json_output
 
-            afi = command.params.afi
-            safi = command.params.safi
-            afi_vrf = command.params.vrf or "default"
+            afi = af_input.afi
+            safi = af_input.safi
+            afi_vrf = af_input.vrf
+            num_peers = af_input.num_peers
 
             # Swapping AFI and SAFI in case of SR-TE
             if afi == "sr-te":
                 afi, safi = safi, afi
-
-            for input_entry in self.inputs.address_families:
-                if input_entry.afi == afi and input_entry.safi == safi and input_entry.vrf == afi_vrf:
-                    num_peers = input_entry.num_peers
-                    break
 
             if not (vrfs := command_output.get("vrfs")):
                 _add_bgp_failures(failures=failures, afi=afi, safi=safi, vrf=afi_vrf, issue="Not Configured")
@@ -400,12 +396,12 @@ class VerifyBGPPeersHealth(AntaTest):
             command_output = command.json_output
 
             afi = command.params.afi
-            safi = command.params.safi
+            safi = getattr(command.params, "safi", None)
+            afi_vrf = getattr(command.params, "vrf", "default")
 
             # Swapping AFI and SAFI in case of SR-TE
             if afi == "sr-te":
                 afi, safi = safi, afi
-            afi_vrf = command.params.vrf or "default"
 
             if not (vrfs := command_output.get("vrfs")):
                 _add_bgp_failures(failures=failures, afi=afi, safi=safi, vrf=afi_vrf, issue="Not Configured")
@@ -547,21 +543,17 @@ class VerifyBGPSpecificPeers(AntaTest):
 
         failures: dict[tuple[str, Any], dict[str, Any]] = {}
 
-        for command in self.instance_commands:
+        for command, af_input in zip(self.instance_commands, self.inputs.address_families):
             command_output = command.json_output
 
-            afi = command.params.afi
-            safi = command.params.safi
-            afi_vrf = command.params.vrf or "default"
+            afi = af_input.afi
+            safi = af_input.safi
+            afi_vrf = af_input.vrf
+            afi_peers = af_input.peers
 
             # Swapping AFI and SAFI in case of SR-TE
             if afi == "sr-te":
                 afi, safi = safi, afi
-
-            for input_entry in self.inputs.address_families:
-                if input_entry.afi == afi and input_entry.safi == safi and input_entry.vrf == afi_vrf:
-                    afi_peers = input_entry.peers
-                    break
 
             if not (vrfs := command_output.get("vrfs")):
                 _add_bgp_failures(failures=failures, afi=afi, safi=safi, vrf=afi_vrf, issue="Not Configured")

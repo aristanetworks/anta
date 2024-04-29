@@ -24,6 +24,14 @@ def test_anta_nrfu_help(click_runner: CliRunner) -> None:
     assert "Usage: anta nrfu" in result.output
 
 
+def test_anta_nrfu_wrong_subcommand(click_runner: CliRunner) -> None:
+    """Test anta nrfu toast."""
+    result = click_runner.invoke(anta, ["nrfu", "oook"])
+    assert result.exit_code == ExitCode.USAGE_ERROR
+    assert "Usage: anta nrfu" in result.output
+    assert "No such command 'oook'." in result.output
+
+
 def test_anta_nrfu(click_runner: CliRunner) -> None:
     """Test anta nrfu, catalog is given via env."""
     result = click_runner.invoke(anta, ["nrfu"])
