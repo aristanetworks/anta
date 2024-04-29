@@ -80,7 +80,7 @@ class AntaTemplate:
         # Create a AntaTemplateParams model to elegantly store AntaTemplate variables
         field_names = [fname for _, fname, _, _ in Formatter().parse(self.template) if fname]
         # Extracting the type from the params based on the expected field_names from the template
-        fields: dict[str, Any] = {key: (str | int | bool | Any, ...) for key in field_names}
+        fields: dict[str, Any] = {key: (Any, ...) for key in field_names}
         self.params_schema = create_model(
             "AntaParams",
             __base__=AntaParamsBaseModel,
