@@ -422,7 +422,6 @@ ANTATEST_DATA: list[dict[str, Any]] = [
                     "Exception in tests.units.test_models.FakeTestWithTemplateBadRender3.render(): ValidationError: 1 validation error for AntaParams\n"
                     "extra\n"
                     "  Extra inputs are not permitted [type=extra_forbidden, input_value='blah', input_type=str]\n"
-                    "    For further information visit https://errors.pydantic.dev/2.7/v/extra_forbidden"
                 ],
             },
             "test": {"result": "error"},
