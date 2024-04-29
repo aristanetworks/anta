@@ -782,6 +782,8 @@
       
         
       
+        
+      
     
     
     
@@ -843,6 +845,27 @@
   
   <span class="md-ellipsis">
     AAA
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tests.avt/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Adaptive Virtual Topology
   </span>
   
 
@@ -1170,10 +1193,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_17" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_18" >
         
           
-          <label class="md-nav__link" for="__nav_7_17" id="__nav_7_17_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7_18" id="__nav_7_18_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -1184,8 +1207,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_17_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_7_17">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_18_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_18">
             <span class="md-nav__icon md-icon"></span>
             Routing
           </label>
@@ -3582,7 +3605,9 @@ custom_field: a free string that will be included in the TestResult object</p>
 <span class="normal">609</span>
 <span class="normal">610</span>
 <span class="normal">611</span>
-<span class="normal">612</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">612</span>
+<span class="normal">613</span>
+<span class="normal">614</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">anta_test</span><span class="p">(</span><span class="n">function</span><span class="p">:</span> <span class="n">F</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Coroutine</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TestResult</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Decorate the `test()` method in child classes.</span>
 
@@ -3626,6 +3651,7 @@ custom_field: a free string that will be included in the TestResult object</p>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">collected</span><span class="p">:</span>
             <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">result</span> <span class="o">!=</span> <span class="s2">&quot;unset&quot;</span><span class="p">:</span>
+                <span class="n">AntaTest</span><span class="o">.</span><span class="n">update_progress</span><span class="p">()</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span>
 
             <span class="k">if</span> <span class="n">cmds</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">failed_commands</span><span class="p">:</span>
@@ -3634,8 +3660,9 @@ custom_field: a free string that will be included in the TestResult object</p>
                     <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Test </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> has been skipped because it is not supported on </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">hw_model</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">GITHUB_SUGGESTION</span><span class="si">}</span><span class="s2">&quot;</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">unsupported_commands</span><span class="p">))</span>
-                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_error</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">command</span><span class="si">}</span><span class="s2"> has failed: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">errors</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cmds</span><span class="p">]))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_error</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">command</span><span class="si">}</span><span class="s2"> has failed: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">errors</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cmds</span><span class="p">]))</span>
+                <span class="n">AntaTest</span><span class="o">.</span><span class="n">update_progress</span><span class="p">()</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span>
 
         <span class="k">try</span><span class="p">:</span>
@@ -3837,9 +3864,7 @@ It must set the correct status of the <code>result</code> instance attribute wit
 </details>
           <details class="quote">
             <summary>Source code in <code>anta/models.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">620</span>
-<span class="normal">621</span>
-<span class="normal">622</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">622</span>
 <span class="normal">623</span>
 <span class="normal">624</span>
 <span class="normal">625</span>
@@ -3856,7 +3881,9 @@ It must set the correct status of the <code>result</code> instance attribute wit
 <span class="normal">636</span>
 <span class="normal">637</span>
 <span class="normal">638</span>
-<span class="normal">639</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
+<span class="normal">639</span>
+<span class="normal">640</span>
+<span class="normal">641</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
 <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Coroutine</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TestResult</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Core of the test logic.</span>
 
