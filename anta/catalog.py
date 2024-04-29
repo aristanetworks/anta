@@ -112,7 +112,8 @@ class AntaTestDefinition(BaseModel):
                 f"{test_class.name} test inputs are not valid: {inputs_msg}\n",
                 {"errors": e.errors()},
             ) from e
-        return data
+        msg = f"Could not instantiate inputs as type {type(data).__name__} is not valid"
+        raise ValueError(msg)
 
     @model_validator(mode="after")
     def check_inputs(self) -> AntaTestDefinition:
