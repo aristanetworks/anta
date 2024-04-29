@@ -25,6 +25,7 @@ if TYPE_CHECKING:
         pytest.param("show version", None, "1", None, "dummy", False, id="version"),
         pytest.param("show version", None, None, 3, "dummy", False, id="revision"),
         pytest.param("undefined", None, None, None, "dummy", True, id="command fails"),
+        pytest.param("undefined", None, None, None, "doesnotexist", True, id="Device does not exist"),
     ],
 )
 def test_run_cmd(
