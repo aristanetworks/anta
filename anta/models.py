@@ -39,12 +39,6 @@ BLACKLIST_REGEX = [r"^reload.*", r"^conf\w*\s*(terminal|session)*", r"^wr\w*\s*\
 logger = logging.getLogger(__name__)
 
 
-class AntaParamsBaseModel(BaseModel):
-    """Extends BaseModel and overwrite __getattr__ to return None on missing attribute."""
-
-    model_config = ConfigDict(extra="forbid")
-
-
 class AntaTemplate:
     """Class to define a command template as Python f-string.
 
@@ -83,7 +77,7 @@ class AntaTemplate:
         fields: dict[str, Any] = {key: (Any, ...) for key in field_names}
         self.params_schema = create_model(
             "AntaParams",
-            __base__=AntaParamsBaseModel,
+            __config__=ConfigDict(extra="forbid"),
             **fields,
         )
 
@@ -166,7 +160,7 @@ class AntaCommand(BaseModel):
     output: dict[str, Any] | str | None = None
     template: AntaTemplate | None = None
     errors: list[str] = []
-    params: AntaParamsBaseModel = AntaParamsBaseModel()
+    params: BaseModel | None = None
     use_cache: bool = True
 
     @property
