@@ -35,7 +35,7 @@ def build_test_id(val: dict[str, Any]) -> str:
         ...
     }
     """
-    return f"{val['test'].__module__}.{val['test'].__name__}-{val['name']}"
+    return f"{val['test'].module}.{val['test'].__name__}-{val['name']}"
 
 
 def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
