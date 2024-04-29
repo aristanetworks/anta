@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import sys
 from pathlib import Path
 
 from anta.catalog import AntaCatalog
@@ -28,17 +29,25 @@ LOGGER = logging.getLogger()
 
 
 # NOTE: The inventory and catalog files are not delivered with this script
-USERNAME = "anta"
-PASSWORD = "formica"
+USERNAME = "admin"
+PASSWORD = "admin"
 CATALOG_PATH = Path("/tmp/anta_catalog.yml")
 INVENTORY_PATH = Path("/tmp/anta_inventory.yml")
 
 # Load catalog file
-catalog = AntaCatalog.parse(CATALOG_PATH)
+try:
+    catalog = AntaCatalog.parse(CATALOG_PATH)
+except Exception:
+    LOGGER.exception("[bold magenta][ANTA RUNNER SCRIPT][/] Catalog failed to load!")
+    sys.exit(1)
 LOGGER.info("[bold magenta][ANTA RUNNER SCRIPT][/] Catalog loaded!")
 
 # Load inventory
-inventory = AntaInventory.parse(INVENTORY_PATH, username=USERNAME, password=PASSWORD)
+try:
+    inventory = AntaInventory.parse(INVENTORY_PATH, username=USERNAME, password=PASSWORD)
+except Exception:
+    LOGGER.exception("[bold magenta][ANTA RUNNER SCRIPT][/] Inventory failed to load!")
+    sys.exit(1)
 LOGGER.info("[bold magenta][ANTA RUNNER SCRIPT][/] Inventory loaded!")
 
 # Create result manager object
@@ -53,6 +62,5 @@ with anta_progress_bar() as AntaTest.progress:
 LOGGER.info("[bold magenta][ANTA RUNNER SCRIPT][/] ANTA run completed!")
 
 # Manipulate the test result object
-
-for test in manager.get_tests():
-    LOGGER.info(test.name, test.result.status)
+for test_result in manager.results:
+    LOGGER.info("[bold magenta][ANTA RUNNER SCRIPT][/] %s:%s:%s", test_result.name, test_result.test, test_result.result)

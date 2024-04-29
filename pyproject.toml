@@ -451,4 +451,5 @@ extension-pkg-whitelist="pydantic"
 ignore-paths = [
   "^tests/units/anta_tests/.*/data.py$",
   "^tests/units/anta_tests/routing/.*/data.py$",
+  "^docs/scripts/anta_runner.py",
 ]
