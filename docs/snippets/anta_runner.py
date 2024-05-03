@@ -1,1 +1,1 @@
-../scripts/anta_runner.py
+anta_runner.py
