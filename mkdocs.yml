@@ -148,7 +148,9 @@ markdown_extensions:
       baselevel: 3
   - pymdownx.highlight
   - pymdownx.snippets:
-      base_path: docs/snippets
+      base_path:
+        - docs/snippets
+        - examples
   - pymdownx.superfences
   - pymdownx.superfences
   - pymdownx.tabbed:
