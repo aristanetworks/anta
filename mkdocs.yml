@@ -148,7 +148,9 @@ markdown_extensions:
       baselevel: 3
   - pymdownx.highlight
   - pymdownx.snippets:
-      base_path: docs/snippets
+      base_path:
+        - docs/snippets
+        - examples
   - pymdownx.superfences
   - pymdownx.superfences
   - pymdownx.tabbed:
@@ -208,11 +210,11 @@ nav:
     - VXLAN: api/tests.vxlan.md
     - VLAN: api/tests.vlan.md
   - API Documentation:
+    - Device: api/device.md
     - Inventory:
       - Inventory module: api/inventory.md
       - Inventory models: api/inventory.models.input.md
     - Test Catalog: api/catalog.md
-    - Device: api/device.md
     - Test:
       - Test models: api/models.md
       - Input Types:  api/types.md
@@ -220,6 +222,7 @@ nav:
       - Result Manager module: api/result_manager.md
       - Result Manager models: api/result_manager_models.md
     - Report Manager: api/report_manager.md
+    - Runner: api/runner.md
   - Troubleshooting: troubleshooting.md
   - Contributions: contribution.md
   - FAQ: faq.md

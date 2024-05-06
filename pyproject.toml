@@ -312,7 +312,7 @@ exclude = [
     "site-packages",
     "venv",
     ".github",
-    "aioeapi.py" # Remove this when https://github.com/jeremyschulman/aio-eapi/pull/13 is merged
+    "aioeapi.py", # Remove this when https://github.com/jeremyschulman/aio-eapi/pull/13 is merged
 ]
 
 line-length = 165
@@ -414,6 +414,11 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.In
 "anta/inventory/__init__.py" = [
   "PLR0913",     # Ok to have more than 5 arguments in the AntaInventory class
 ]
+"examples/anta_runner.py" = [  # This is an example script and linked in  snippets
+  "S108",   # Probable insecure usage of temporary file or directory
+  "S105",   # Possible hardcoded password
+  "INP001", # Implicit packages
+]
 
 ################################
 # Pylint
@@ -447,4 +452,5 @@ extension-pkg-whitelist="pydantic"
 ignore-paths = [
   "^tests/units/anta_tests/.*/data.py$",
   "^tests/units/anta_tests/routing/.*/data.py$",
+  "^docs/scripts/anta_runner.py",
 ]
