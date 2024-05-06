@@ -32,6 +32,9 @@ The ANTA package and the cli require some packages that are not part of the Pyth
 pip install anta
 ```
 
+!!! warning
+    AVD and ANTA version requirements are currently strict. Check ANTA's page on AVD's `eos_validate` Role for details.
+
 ### Install ANTA CLI as an application with `pipx`
 
 [`pipx`](https://pipx.pypa.io/stable/) is a tool to install and run python applications in isolated environments. If you plan to use ANTA only as a CLI tool you can use `pipx` to install it. `pipx` installs ANTA in an isolated python environment and makes it available globally.
