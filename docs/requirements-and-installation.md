@@ -24,25 +24,28 @@ The ANTA package and the cli require some packages that are not part of the Pyth
 
 ### Install library from Pypi server
 
-!!! Note
-
-    This command alone **will not** install the ANTA CLI requirements.
-
 ```bash
 pip install anta
 ```
+
+!!! Warning
+
+    * This command alone **will not** install the ANTA CLI requirements.
+    * When using ANTA mode in [AVD](https://avd.arista.com) `eos_validate` role, (currently in preview), ensure you install the documented supported ANTA version for your AVD version.</br>
+        The latest documented version can be found at: https://avd.arista.com/stable/roles/eos_validate_state/ANTA-Preview.html
 
 ### Install ANTA CLI as an application with `pipx`
 
 [`pipx`](https://pipx.pypa.io/stable/) is a tool to install and run python applications in isolated environments. If you plan to use ANTA only as a CLI tool you can use `pipx` to install it. `pipx` installs ANTA in an isolated python environment and makes it available globally.
 
+```
+pipx install anta[cli]
+```
+
 !!! Info
 
     Please take the time to read through the installation instructions of `pipx` before getting started.
 
-```
-pipx install anta[cli]
-```
 
 ### Install CLI from Pypi server
 
@@ -95,7 +98,7 @@ anta, version v0.14.0
 
 ## EOS Requirements
 
-To get ANTA working, the targeted Arista EOS devices must have the following configuration (assuming you connect to the device using Management interface in MGMT VRF):
+To get ANTA working, the targeted Arista EOS devices must have eAPI enabled. They need to use the following configuration (assuming you connect to the device using Management interface in MGMT VRF):
 
 ```eos
 configure
