@@ -2,11 +2,15 @@
   --md-hue: 210;
 }
 
+#page {
+  counter-reset: heading;
+}
+
 :root {
   /* Color schema based on Arista Color Schema */
   /* Default color shades */
   --md-default-fg-color:               #000000;
-  --md-default-fg-color--light:        #a1a0a0;
+  --md-default-fg-color--light:        #444343;
   --md-default-fg-color--lighter:      #FFFFFF;
   --md-default-fg-color--lightest:     #FFFFFF;
   --md-default-bg-color:               #FFFFFF;
@@ -49,6 +53,9 @@
 
 [data-md-color-scheme="slate"] {
 
+  /* Default color shades */
+  --md-default-fg-color--light: #949393;
+
   /* Link color */
   --md-typeset-a-color:                #75aaf8;
   --md-typeset-a-color-fg:             #FFFFFF;
@@ -76,6 +83,7 @@
 }
 
 @media only screen {
+
   .md-typeset a:hover {
     background-color: var(--md-typeset-a-color-bg);
     color: var(--md-typeset-a-color-fg);
@@ -102,13 +110,47 @@
     color: var(--md-default-fg-color--light);
   }
 
-  .md-typeset h4 h5 h6 {
-      font-size: 1.5rem;
+  /* .md-typeset h3:before {
+    content: counter(heading)". ";
+    counter-increment: heading;
+  }
+
+  .md-typeset h4:before {
+    content: counter(heading + 1)"." counter(subheading)". ";
+    counter-increment: subheading;
+  } */
+
+  .md-typeset h3 {
+    font-size: 1.5rem;
+    margin: 1em 0;
+    /* font-weight: 700; */
+    letter-spacing: -.01em;
+    line-height: 3em;
+    color: var(--md-default-fg-color--light);
+    text-transform: uppercase;
+  }
+
+  .md-typeset h4 {
+    font-size: 1.5rem;
+    margin: 1em 0;
+    /* font-weight: 700; */
+    letter-spacing: -.01em;
+    line-height: 2em;
+    color: var(--md-default-fg-color--light);
+    text-transform: uppercase;
+  }
+
+    .md-typeset h5,
+    .md-typeset h6 {
+      font-size: 0.9rem;
       margin: 1em 0;
       /* font-weight: 700; */
       letter-spacing: -.01em;
-      line-height: 3em;
-  }
+      /* line-height: 2em; */
+      color: var(--md-default-fg-color--light);
+      font-style: italic;
+      text-transform: capitalize;
+    }
 
   .md-typeset table:not([class]) th {
     min-width: 5rem;
