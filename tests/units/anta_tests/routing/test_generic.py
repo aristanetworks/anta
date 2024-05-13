@@ -99,18 +99,6 @@ DATA: list[dict[str, Any]] = [
                                 "metric": 0,
                                 "vias": [{"nexthopAddr": "10.1.255.4", "interface": "Ethernet1"}],
                             },
-                        },
-                    },
-                },
-            },
-            {
-                "vrfs": {
-                    "default": {
-                        "routingDisabled": False,
-                        "allRoutesProgrammedHardware": True,
-                        "allRoutesProgrammedKernel": True,
-                        "defaultRouteState": "notSet",
-                        "routes": {
                             "10.1.0.2/32": {
                                 "hardwareProgrammed": True,
                                 "routeType": "eBGP",
@@ -134,17 +122,6 @@ DATA: list[dict[str, Any]] = [
         "name": "failure-missing-route",
         "test": VerifyRoutingTableEntry,
         "eos_data": [
-            {
-                "vrfs": {
-                    "default": {
-                        "routingDisabled": False,
-                        "allRoutesProgrammedHardware": True,
-                        "allRoutesProgrammedKernel": True,
-                        "defaultRouteState": "notSet",
-                        "routes": {},
-                    },
-                },
-            },
             {
                 "vrfs": {
                     "default": {
@@ -195,18 +172,6 @@ DATA: list[dict[str, Any]] = [
                                 "metric": 0,
                                 "vias": [{"nexthopAddr": "10.1.255.4", "interface": "Ethernet1"}],
                             },
-                        },
-                    },
-                },
-            },
-            {
-                "vrfs": {
-                    "default": {
-                        "routingDisabled": False,
-                        "allRoutesProgrammedHardware": True,
-                        "allRoutesProgrammedKernel": True,
-                        "defaultRouteState": "notSet",
-                        "routes": {
                             "10.1.0.55/32": {
                                 "hardwareProgrammed": True,
                                 "routeType": "eBGP",
