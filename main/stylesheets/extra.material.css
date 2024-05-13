@@ -2,11 +2,15 @@
   --md-hue: 210;
 }
 
+#page {
+  counter-reset: heading;
+}
+
 :root {
   /* Color schema based on Arista Color Schema */
   /* Default color shades */
   --md-default-fg-color:               #000000;
-  --md-default-fg-color--light:        #a1a0a0;
+  --md-default-fg-color--light:        #444343;
   --md-default-fg-color--lighter:      #FFFFFF;
   --md-default-fg-color--lightest:     #FFFFFF;
   --md-default-bg-color:               #FFFFFF;
@@ -49,6 +53,9 @@
 
 [data-md-color-scheme="slate"] {
 
+  /* Default color shades */
+  --md-default-fg-color--light: #949393;
+
   /* Link color */
   --md-typeset-a-color:                #75aaf8;
   --md-typeset-a-color-fg:             #FFFFFF;
@@ -76,6 +83,7 @@
 }
 
 @media only screen {
+
   .md-typeset a:hover {
     background-color: var(--md-typeset-a-color-bg);
     color: var(--md-typeset-a-color-fg);
@@ -102,12 +110,56 @@
     color: var(--md-default-fg-color--light);
   }
 
-  .md-typeset h4 h5 h6 {
-      font-size: 1.5rem;
-      margin: 1em 0;
-      /* font-weight: 700; */
-      letter-spacing: -.01em;
-      line-height: 3em;
+  .md-typeset h2 {
+    line-height: 2em;
+    font-size: 1.5rem;
+    margin: 1em 0;
+    /* font-weight: 700; */
+    letter-spacing: -.01em;
+    color: var(--md-default-fg-color--light);
+    text-transform: uppercase;
+    font-style: normal;
+    font-weight: bolder;
+  }
+
+  .md-typeset h3 {
+    line-height: 1em;
+    font-size: 1.3rem;
+    margin: 1em 0;
+    /* font-weight: 700; */
+    letter-spacing: -.01em;
+    color: var(--md-default-fg-color--light);
+    text-transform: uppercase;
+    font-style: normal;
+    font-weight: bold;
+  }
+
+  .md-typeset h4::before {
+    content: ">> ";
+  }
+
+  .md-typeset h4 {
+    font-size: 1.1rem;
+    margin: 1em 0;
+    font-weight: 700;
+    letter-spacing: -.01em;
+    line-height: 1em;
+    color: var(--md-default-fg-color--light);
+    font-style: italic;
+    text-transform: capitalize;
+  }
+
+  .md-typeset h5,
+  .md-typeset h6 {
+    font-size: 0.9rem;
+    margin: 1em 0;
+    /* font-weight: 700; */
+    letter-spacing: -.01em;
+    /* line-height: 2em; */
+    color: var(--md-default-fg-color--light);
+    font-style: italic;
+    text-transform: capitalize;
+    text-decoration: underline;
   }
 
   .md-typeset table:not([class]) th {

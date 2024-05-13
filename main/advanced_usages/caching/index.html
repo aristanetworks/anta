@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.21">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.22">
     
     
       
@@ -28,7 +28,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.66ac8b77.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.732c4fb1.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
@@ -2204,7 +2204,7 @@
   -->
 
 <p>ANTA is a streamlined Python framework designed for efficient interaction with network devices. This section outlines how ANTA incorporates caching mechanisms to collect command outputs from network devices.</p>
-<h4 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h4>
+<h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h2>
 <p>By default, ANTA utilizes <a href="https://github.com/aio-libs/aiocache">aiocache</a>&rsquo;s memory cache backend, also called <a href="https://aiocache.aio-libs.org/en/v0.12.2/caches.html#simplememorycache"><code>SimpleMemoryCache</code></a>. This library aims for simplicity and supports asynchronous operations to go along with Python <code>asyncio</code> used in ANTA.</p>
 <p>The <code>_init_cache()</code> method of the <a href="../as-python-lib/#antadevice-abstract-class">AntaDevice</a> abstract class initializes the cache. Child classes can override this method to tweak the cache configuration:</p>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">_init_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -2215,14 +2215,14 @@
     <span class="bp">self</span><span class="o">.</span><span class="n">cache_locks</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">)</span>
 </code></pre></div>
 <p>The cache is also configured with <code>aiocache</code>&rsquo;s <a href="https://aiocache.aio-libs.org/en/v0.12.2/plugins.html#hitmissratioplugin"><code>HitMissRatioPlugin</code></a> plugin to calculate the ratio of hits the cache has and give useful statistics for logging purposes in ANTA.</p>
-<h4 id="cache-key-design">Cache key design<a class="headerlink" href="#cache-key-design" title="Permanent link">&para;</a></h4>
+<h2 id="cache-key-design">Cache key design<a class="headerlink" href="#cache-key-design" title="Permanent link">&para;</a></h2>
 <p>The cache is initialized per <code>AntaDevice</code> and uses the following cache key design:</p>
 <p><code>&lt;device_name&gt;:&lt;uid&gt;</code></p>
 <p>The <code>uid</code> is an attribute of <a href="../as-python-lib/#antacommand-class">AntaCommand</a>, which is a unique identifier generated from the command, version, revision and output format.</p>
 <p>Each UID has its own asyncio lock. This design allows coroutines that need to access the cache for different UIDs to do so concurrently. The locks are managed by the <code>self.cache_locks</code> dictionary.</p>
-<h4 id="mechanisms">Mechanisms<a class="headerlink" href="#mechanisms" title="Permanent link">&para;</a></h4>
+<h2 id="mechanisms">Mechanisms<a class="headerlink" href="#mechanisms" title="Permanent link">&para;</a></h2>
 <p>By default, once the cache is initialized, it is used in the <code>collect()</code> method of <code>AntaDevice</code>. The <code>collect()</code> method prioritizes retrieving the output of the command from the cache. If the output is not in the cache, the private <code>_collect()</code> method will retrieve and then store it for future access.</p>
-<h4 id="how-to-disable-caching">How to disable caching<a class="headerlink" href="#how-to-disable-caching" title="Permanent link">&para;</a></h4>
+<h2 id="how-to-disable-caching">How to disable caching<a class="headerlink" href="#how-to-disable-caching" title="Permanent link">&para;</a></h2>
 <p>Caching is enabled by default in ANTA following the previous configuration and mechanisms.</p>
 <p>There might be scenarios where caching is not wanted. You can disable caching in multiple ways in ANTA:</p>
 <ol>
@@ -2257,7 +2257,7 @@
 <p>For tests developers, caching can be disabled for a specific <a href="../as-python-lib/#antacommand-class"><code>AntaCommand</code></a> or <a href="../as-python-lib/#antatemplate-class"><code>AntaTemplate</code></a> by setting the <code>use_cache</code> attribute to <code>False</code>. That means the command output will always be collected on the device and therefore, never use caching.</p>
 </li>
 </ol>
-<h5 id="disable-caching-in-a-child-class-of-antadevice">Disable caching in a child class of <code>AntaDevice</code><a class="headerlink" href="#disable-caching-in-a-child-class-of-antadevice" title="Permanent link">&para;</a></h5>
+<h3 id="disable-caching-in-a-child-class-of-antadevice">Disable caching in a child class of <code>AntaDevice</code><a class="headerlink" href="#disable-caching-in-a-child-class-of-antadevice" title="Permanent link">&para;</a></h3>
 <p>Since caching is implemented at the <code>AntaDevice</code> abstract class level, all subclasses will inherit that default behavior. As a result, if you need to disable caching in any custom implementation of <code>AntaDevice</code> outside of the ANTA framework, you must initialize <code>AntaDevice</code> with <code>disable_cache</code> set to <code>True</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">AnsibleEOSDevice</span><span class="p">(</span><span class="n">AntaDevice</span><span class="p">):</span>
 <span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2385,7 +2385,7 @@
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable"], "provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.a7c05c9e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.5cfa9459.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
       

@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.21">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.22">
     
     
       
@@ -28,7 +28,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.66ac8b77.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.732c4fb1.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
@@ -2535,7 +2535,7 @@
 <p>This documentation applies for both creating tests in ANTA or creating your own test package.</p>
 </div>
 <p>ANTA is not only a Python library with a CLI and a collection of built-in tests, it is also a framework you can extend by building your own tests.</p>
-<h4 id="generic-approach">Generic approach<a class="headerlink" href="#generic-approach" title="Permanent link">&para;</a></h4>
+<h2 id="generic-approach">Generic approach<a class="headerlink" href="#generic-approach" title="Permanent link">&para;</a></h2>
 <p>A test is a Python class where a test function is defined and will be run by the framework.</p>
 <p>ANTA provides an abstract class <a href="../../api/models/#anta.models.AntaTest">AntaTest</a>. This class does the heavy lifting and provide the logic to define, collect and test data. The code below is an example of a simple test in ANTA, which is an <a href="../../api/models/#anta.models.AntaTest">AntaTest</a> subclass:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">anta.models</span> <span class="kn">import</span> <span class="n">AntaTest</span><span class="p">,</span> <span class="n">AntaCommand</span>
@@ -2575,8 +2575,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Device temperature exceeds acceptable limits. Current system status: &#39;</span><span class="si">{</span><span class="n">temperature_status</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
 </code></pre></div>
 <p><a href="../../api/models/#anta.models.AntaTest">AntaTest</a> also provide more advanced capabilities like <a href="../../api/models/#anta.models.AntaCommand">AntaCommand</a> templating using the <a href="../../api/models/#anta.models.AntaTemplate">AntaTemplate</a> class or test inputs definition and validation using <a href="../../api/models/#anta.models.AntaTest.Input">AntaTest.Input</a> <a href="https://docs.pydantic.dev/latest/">pydantic</a> model. This will be discussed in the sections below.</p>
-<h4 id="antatest-structure"><a href="../../api/models/#anta.models.AntaTest">AntaTest</a> structure<a class="headerlink" href="#antatest-structure" title="Permanent link">&para;</a></h4>
-<h5 id="class-attributes">Class Attributes<a class="headerlink" href="#class-attributes" title="Permanent link">&para;</a></h5>
+<h2 id="antatest-structure"><a href="../../api/models/#anta.models.AntaTest">AntaTest</a> structure<a class="headerlink" href="#antatest-structure" title="Permanent link">&para;</a></h2>
+<h3 id="class-attributes">Class Attributes<a class="headerlink" href="#class-attributes" title="Permanent link">&para;</a></h3>
 <ul>
 <li><code>name</code> (<code>str</code>): Name of the test. Used during reporting.</li>
 <li><code>description</code> (<code>str</code>): A human readable description of your test.</li>
@@ -2587,7 +2587,7 @@
 <p class="admonition-title">Info</p>
 <p>All these class attributes are mandatory. If any attribute is missing, a <code>NotImplementedError</code> exception will be raised during class instantiation.</p>
 </div>
-<h5 id="instance-attributes">Instance Attributes<a class="headerlink" href="#instance-attributes" title="Permanent link">&para;</a></h5>
+<h3 id="instance-attributes">Instance Attributes<a class="headerlink" href="#instance-attributes" title="Permanent link">&para;</a></h3>
 <div class="admonition info">
 <p class="admonition-title">Info</p>
 <p>You can access an instance attribute in your code using the <code>self</code> reference. E.g. you can access the test input values using <code>self.inputs</code>.</p>
@@ -2663,10 +2663,10 @@ logger: Python logger for this test instance</p>
 <p class="admonition-title">AntaDevice object</p>
 <p>Even if <code>device</code> is not a private attribute, you should not need to access this object in your code.</p>
 </div>
-<h5 id="test-inputs">Test Inputs<a class="headerlink" href="#test-inputs" title="Permanent link">&para;</a></h5>
+<h3 id="test-inputs">Test Inputs<a class="headerlink" href="#test-inputs" title="Permanent link">&para;</a></h3>
 <p><a href="../../api/models/#anta.models.AntaTest.Input">AntaTest.Input</a> is a <a href="https://docs.pydantic.dev/latest/usage/models/">pydantic model</a> that allow test developers to define their test inputs. <a href="https://docs.pydantic.dev/latest/">pydantic</a> provides out of the box <a href="https://docs.pydantic.dev/latest/usage/models/#error-handling">error handling</a> for test input validation based on the type hints defined by the test developer.</p>
 <p>The base definition of <a href="../../api/models/#anta.models.AntaTest.Input">AntaTest.Input</a> provides common test inputs for all <a href="../../api/models/#anta.models.AntaTest">AntaTest</a> instances:</p>
-<h6 id="input-model"><a href="../../api/models/#anta.models.AntaTest.Input">Input</a> model<a class="headerlink" href="#input-model" title="Permanent link">&para;</a></h6>
+<h4 id="input-model"><a href="../../api/models/#anta.models.AntaTest.Input">Input</a> model<a class="headerlink" href="#input-model" title="Permanent link">&para;</a></h4>
 
 
 <div class="doc doc-object doc-class">
@@ -2726,7 +2726,7 @@ logger: Python logger for this test instance</p>
   </div>
 
 
-</div><h6 id="resultoverwrite-model"><a href="../../api/models/#anta.models.AntaTest.Input.ResultOverwrite">ResultOverwrite</a> model<a class="headerlink" href="#resultoverwrite-model" title="Permanent link">&para;</a></h6>
+</div><h4 id="resultoverwrite-model"><a href="../../api/models/#anta.models.AntaTest.Input.ResultOverwrite">ResultOverwrite</a> model<a class="headerlink" href="#resultoverwrite-model" title="Permanent link">&para;</a></h4>
 
 
 <div class="doc doc-object doc-class">
@@ -2791,12 +2791,12 @@ custom_field: a free string that will be included in the TestResult object</p>
 <p class="admonition-title">Note</p>
 <p>The pydantic model is configured using the <a href="https://docs.pydantic.dev/latest/usage/model_config/#extra-attributes"><code>extra=forbid</code></a> that will fail input validation if extra fields are provided.</p>
 </div>
-<h5 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h5>
+<h3 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h3>
 <ul>
 <li><a href="../../api/models/#anta.models.AntaTest.test">test(self) -&gt; None</a>: This is an abstract method that <strong>must</strong> be implemented. It contains the test logic that can access the collected command outputs using the <code>instance_commands</code> instance attribute, access the test inputs using the <code>inputs</code> instance attribute and <strong>must</strong> set the <code>result</code> instance attribute accordingly. It must be implemented using the <code>AntaTest.anta_test</code> decorator that provides logging and will collect commands before executing the <code>test()</code> method.</li>
 <li><a href="../../api/models/#anta.models.AntaTest.render">render(self, template: AntaTemplate) -&gt; list[AntaCommand]</a>: This method only needs to be implemented if <a href="../../api/models/#anta.models.AntaTemplate">AntaTemplate</a> instances are present in the <code>commands</code> class attribute. It will be called for every <a href="../../api/models/#anta.models.AntaTemplate">AntaTemplate</a> occurrence and <strong>must</strong> return a list of <a href="../../api/models/#anta.models.AntaCommand">AntaCommand</a> using the <a href="../../api/models/#anta.models.AntaTemplate.render">AntaTemplate.render()</a> method. It can access test inputs using the <code>inputs</code> instance attribute.</li>
 </ul>
-<h4 id="test-execution">Test execution<a class="headerlink" href="#test-execution" title="Permanent link">&para;</a></h4>
+<h2 id="test-execution">Test execution<a class="headerlink" href="#test-execution" title="Permanent link">&para;</a></h2>
 <p>Below is a high level description of the test execution flow in ANTA:</p>
 <ol>
 <li>
@@ -2815,9 +2815,9 @@ custom_field: a free string that will be included in the TestResult object</p>
 <p>The <a href="../../api/models/#anta.models.AntaTest.test">test()</a> method is executed.</p>
 </li>
 </ol>
-<h4 id="writing-an-antatest-subclass">Writing an AntaTest subclass<a class="headerlink" href="#writing-an-antatest-subclass" title="Permanent link">&para;</a></h4>
+<h2 id="writing-an-antatest-subclass">Writing an AntaTest subclass<a class="headerlink" href="#writing-an-antatest-subclass" title="Permanent link">&para;</a></h2>
 <p>In this section, we will go into all the details of writing an <a href="../../api/models/#anta.models.AntaTest">AntaTest</a> subclass.</p>
-<h5 id="class-definition">Class definition<a class="headerlink" href="#class-definition" title="Permanent link">&para;</a></h5>
+<h3 id="class-definition">Class definition<a class="headerlink" href="#class-definition" title="Permanent link">&para;</a></h3>
 <p>Import <a href="../../api/models/#anta.models.AntaTest">anta.models.AntaTest</a> and define your own class.
 Define the mandatory class attributes using <a href="../../api/models/#anta.models.AntaCommand">anta.models.AntaCommand</a>, <a href="../../api/models/#anta.models.AntaTemplate">anta.models.AntaTemplate</a> or both.</p>
 <div class="admonition info">
@@ -2852,7 +2852,7 @@ Define the mandatory class attributes using <a href="../../api/models/#anta.mode
         <span class="p">)</span>
     <span class="p">]</span>
 </code></pre></div>
-<h5 id="inputs-definition">Inputs definition<a class="headerlink" href="#inputs-definition" title="Permanent link">&para;</a></h5>
+<h3 id="inputs-definition">Inputs definition<a class="headerlink" href="#inputs-definition" title="Permanent link">&para;</a></h3>
 <p>If the user needs to provide inputs for your test, you need to define a <a href="https://docs.pydantic.dev/latest/usage/models/">pydantic model</a> that defines the schema of the test inputs:</p>
 <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="err">&lt;</span><span class="nc">YourTestName</span><span class="o">&gt;</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies ...</span>
@@ -2883,7 +2883,7 @@ You can also leverage <a href="../../api/types/">anta.custom_types</a> that prov
 <p class="admonition-title">Note</p>
 <p>All the <code>pydantic</code> features are supported. For instance you can define <a href="https://docs.pydantic.dev/latest/usage/validators/">validators</a> for complex input validation.</p>
 </div>
-<h5 id="template-rendering">Template rendering<a class="headerlink" href="#template-rendering" title="Permanent link">&para;</a></h5>
+<h3 id="template-rendering">Template rendering<a class="headerlink" href="#template-rendering" title="Permanent link">&para;</a></h3>
 <p>Define the <code>render()</code> method if you have <a href="../../api/models/#anta.models.AntaTemplate">AntaTemplate</a> instances in your <code>commands</code> class attribute:</p>
 <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="err">&lt;</span><span class="nc">YourTestName</span><span class="o">&gt;</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
     <span class="o">...</span>
@@ -2891,7 +2891,7 @@ You can also leverage <a href="../../api/types/">anta.custom_types</a> that prov
         <span class="k">return</span> <span class="p">[</span><span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">&lt;</span><span class="n">template</span> <span class="n">param</span><span class="o">&gt;=</span><span class="n">input_value</span><span class="p">)</span> <span class="k">for</span> <span class="n">input_value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.&lt;</span><span class="n">input_field</span><span class="o">&gt;</span><span class="p">]</span>
 </code></pre></div>
 <p>You can access test inputs and render as many <a href="../../api/models/#anta.models.AntaCommand">AntaCommand</a> as desired.</p>
-<h5 id="test-definition">Test definition<a class="headerlink" href="#test-definition" title="Permanent link">&para;</a></h5>
+<h3 id="test-definition">Test definition<a class="headerlink" href="#test-definition" title="Permanent link">&para;</a></h3>
 <p>Implement the <code>test()</code> method with your test logic:</p>
 <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="err">&lt;</span><span class="nc">YourTestName</span><span class="o">&gt;</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
     <span class="o">...</span>
@@ -2937,7 +2937,7 @@ You can also leverage <a href="../../api/types/">anta.custom_types</a> that prov
 <div class="highlight"><pre><span></span><code>$<span class="w"> </span><span class="nv">ANTA_DEBUG</span><span class="o">=</span><span class="nb">true</span><span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> </span>--catalog<span class="w"> </span>test_custom.yml<span class="w"> </span>text
 </code></pre></div></p>
 </div>
-<h5 id="test-decorators">Test decorators<a class="headerlink" href="#test-decorators" title="Permanent link">&para;</a></h5>
+<h3 id="test-decorators">Test decorators<a class="headerlink" href="#test-decorators" title="Permanent link">&para;</a></h3>
 <p>In addition to the required <code>AntaTest.anta_tests</code> decorator, ANTA offers a set of optional decorators for further test customization:</p>
 <ul>
 <li><code>anta.decorators.deprecated_test</code>: Use this to log a message of WARNING severity when a test is deprecated.</li>
@@ -2952,7 +2952,7 @@ You can also leverage <a href="../../api/types/">anta.custom_types</a> that prov
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">pass</span>
 </code></pre></div>
-<h4 id="access-your-custom-tests-in-the-test-catalog">Access your custom tests in the test catalog<a class="headerlink" href="#access-your-custom-tests-in-the-test-catalog" title="Permanent link">&para;</a></h4>
+<h2 id="access-your-custom-tests-in-the-test-catalog">Access your custom tests in the test catalog<a class="headerlink" href="#access-your-custom-tests-in-the-test-catalog" title="Permanent link">&para;</a></h2>
 <div class="admonition warning">
 <p>This section is required only if you are not merging your development into ANTA. Otherwise, just follow <a href="../../contribution/">contribution guide</a>.</p>
 </div>
@@ -3091,7 +3091,7 @@ leaf04<span class="w"> </span>::<span class="w"> </span>verify_dynamic_vlan<span
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable"], "provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.a7c05c9e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.5cfa9459.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
       

@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.21">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.22">
     
     
       
@@ -28,7 +28,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.66ac8b77.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.732c4fb1.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
@@ -2320,7 +2320,7 @@
 <p class="admonition-title">Tip</p>
 <p>If you are unfamiliar with asyncio, refer to the Python documentation relevant to your Python version - <a href="https://docs.python.org/3/library/asyncio.html">https://docs.python.org/3/library/asyncio.html</a></p>
 </div>
-<h4 id="antadevice-abstract-class"><a href="../../api/device/#anta.device.AntaDevice">AntaDevice</a> Abstract Class<a class="headerlink" href="#antadevice-abstract-class" title="Permanent link">&para;</a></h4>
+<h2 id="antadevice-abstract-class"><a href="../../api/device/#anta.device.AntaDevice">AntaDevice</a> Abstract Class<a class="headerlink" href="#antadevice-abstract-class" title="Permanent link">&para;</a></h2>
 <p>A device is represented in ANTA as a instance of a subclass of the <a href="../../api/device/### ::: anta.device.AntaDevice">AntaDevice</a> abstract class.
 There are few abstract methods that needs to be implemented by child classes:</p>
 <ul>
@@ -2328,7 +2328,7 @@ There are few abstract methods that needs to be implemented by child classes:</p
 <li>The <a href="../../api/device/#anta.device.AntaDevice.refresh">refresh()</a> coroutine is in charge of updating attributes of the <a href="../../api/device/### ::: anta.device.AntaDevice">AntaDevice</a> instance. These attributes are used by <a href="../../api/inventory/#anta.inventory.AntaInventory">AntaInventory</a> to filter out unreachable devices or by <a href="../../api/models/#anta.models.AntaTest">AntaTest</a> to skip devices based on their hardware models.</li>
 </ul>
 <p>The <a href="../../api/device/#anta.device.AntaDevice.copy">copy()</a> coroutine is used to copy files to and from the device. It does not need to be implemented if tests are not using it.</p>
-<h5 id="asynceosdevice-class"><a href="../../api/device/#anta.device.AsyncEOSDevice">AsyncEOSDevice</a> Class<a class="headerlink" href="#asynceosdevice-class" title="Permanent link">&para;</a></h5>
+<h3 id="asynceosdevice-class"><a href="../../api/device/#anta.device.AsyncEOSDevice">AsyncEOSDevice</a> Class<a class="headerlink" href="#asynceosdevice-class" title="Permanent link">&para;</a></h3>
 <p>The <a href="../../api/device/#anta.device.AsyncEOSDevice">AsyncEOSDevice</a> class is an implementation of <a href="../../api/device/#anta.device.AntaDevice">AntaDevice</a> for Arista EOS.
 It uses the <a href="https://github.com/jeremyschulman/aio-eapi">aio-eapi</a> eAPI client and the <a href="https://github.com/ronf/asyncssh">AsyncSSH</a> library.</p>
 <ul>
@@ -2336,7 +2336,7 @@ It uses the <a href="https://github.com/jeremyschulman/aio-eapi">aio-eapi</a> eA
 <li>The <a href="../../api/device/#anta.device.AsyncEOSDevice.refresh">refresh()</a> coroutine tries to open a TCP connection on the eAPI port and update the <code>is_online</code> attribute accordingly. If the TCP connection succeeds, it sends a <code>show version</code> command to gather the hardware model of the device and updates the <code>established</code> and <code>hw_model</code> attributes.</li>
 <li>The <a href="../../api/device/#anta.device.AsyncEOSDevice.copy">copy()</a> coroutine copies files to and from the device using the SCP protocol.</li>
 </ul>
-<h4 id="antainventory-class"><a href="../../api/inventory/#anta.inventory.AntaInventory">AntaInventory</a> Class<a class="headerlink" href="#antainventory-class" title="Permanent link">&para;</a></h4>
+<h2 id="antainventory-class"><a href="../../api/inventory/#anta.inventory.AntaInventory">AntaInventory</a> Class<a class="headerlink" href="#antainventory-class" title="Permanent link">&para;</a></h2>
 <p>The <a href="../../api/inventory/#anta.inventory.AntaInventory">AntaInventory</a> class is a subclass of the standard Python type <a href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a>. The keys of this dictionary are the device names, the values are <a href="../../api/device/#anta.device.AntaDevice">AntaDevice</a> instances.</p>
 <p><a href="../../api/inventory/#anta.inventory.AntaInventory">AntaInventory</a> provides methods to interact with the ANTA inventory:</p>
 <ul>
@@ -2439,9 +2439,9 @@ It uses the <a href="https://github.com/jeremyschulman/aio-eapi">aio-eapi</a> eA
 
     <span class="n">pprint</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
 </code></pre></div></p>
-<h4 id="use-tests-from-anta">Use tests from ANTA<a class="headerlink" href="#use-tests-from-anta" title="Permanent link">&para;</a></h4>
+<h2 id="use-tests-from-anta">Use tests from ANTA<a class="headerlink" href="#use-tests-from-anta" title="Permanent link">&para;</a></h2>
 <p>All the test classes inherit from the same abstract Base Class AntaTest. The Class definition indicates which commands are required for the test and the user should focus only on writing the <code>test</code> function with optional keywords argument. The instance of the class upon creation instantiates a TestResult object that can be accessed later on to check the status of the test ([unset, skipped, success, failure, error]).</p>
-<h5 id="test-structure">Test structure<a class="headerlink" href="#test-structure" title="Permanent link">&para;</a></h5>
+<h3 id="test-structure">Test structure<a class="headerlink" href="#test-structure" title="Permanent link">&para;</a></h3>
 <p>All tests are built on a class named <code>AntaTest</code> which provides a complete toolset for a test:</p>
 <ul>
 <li>Object creation</li>
@@ -2530,9 +2530,9 @@ In some cases a test would rely on some additional inputs from the user, for ins
 <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">test</span><span class="o">.</span><span class="n">test</span><span class="p">())</span>
 <span class="k">assert</span> <span class="n">test</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;success&quot;</span>
 </code></pre></div>
-<h5 id="classes-for-commands">Classes for commands<a class="headerlink" href="#classes-for-commands" title="Permanent link">&para;</a></h5>
+<h3 id="classes-for-commands">Classes for commands<a class="headerlink" href="#classes-for-commands" title="Permanent link">&para;</a></h3>
 <p>To make it easier to get data, ANTA defines 2 different classes to manage commands to send to devices:</p>
-<h6 id="antacommand-class"><a href="../../api/models/#anta.models.AntaCommand">AntaCommand</a> Class<a class="headerlink" href="#antacommand-class" title="Permanent link">&para;</a></h6>
+<h4 id="antacommand-class"><a href="../../api/models/#anta.models.AntaCommand">AntaCommand</a> Class<a class="headerlink" href="#antacommand-class" title="Permanent link">&para;</a></h4>
 <p>Represent a command with following information:</p>
 <ul>
 <li>Command to run</li>
@@ -2561,7 +2561,7 @@ In some cases a test would rely on some additional inputs from the user, for ins
 commands = [AntaCommand(command=&quot;show bfd peers&quot;, revision=1)]
 </code></pre></div>
 </div>
-<h6 id="antatemplate-class"><a href="../../api/models/#anta.models.AntaTemplate">AntaTemplate</a> Class<a class="headerlink" href="#antatemplate-class" title="Permanent link">&para;</a></h6>
+<h4 id="antatemplate-class"><a href="../../api/models/#anta.models.AntaTemplate">AntaTemplate</a> Class<a class="headerlink" href="#antatemplate-class" title="Permanent link">&para;</a></h4>
 <p>Because some command can require more dynamic than just a command with no parameter provided by user, ANTA supports command template: you define a template in your test class and user provide parameters when creating test object.</p>
 <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">RunArbitraryTemplateCommand</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2703,7 +2703,7 @@ commands = [AntaCommand(command=&quot;show bfd peers&quot;, revision=1)]
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable"], "provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.a7c05c9e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.5cfa9459.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
       
