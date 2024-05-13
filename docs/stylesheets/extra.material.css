@@ -110,47 +110,57 @@
     color: var(--md-default-fg-color--light);
   }
 
-  /* .md-typeset h3:before {
-    content: counter(heading)". ";
-    counter-increment: heading;
-  }
-
-  .md-typeset h4:before {
-    content: counter(heading + 1)"." counter(subheading)". ";
-    counter-increment: subheading;
-  } */
-
-  .md-typeset h3 {
+  .md-typeset h2 {
+    line-height: 2em;
     font-size: 1.5rem;
     margin: 1em 0;
     /* font-weight: 700; */
     letter-spacing: -.01em;
-    line-height: 3em;
     color: var(--md-default-fg-color--light);
     text-transform: uppercase;
+    font-style: normal;
+    font-weight: bolder;
+  }
+
+  .md-typeset h3 {
+    line-height: 1em;
+    font-size: 1.3rem;
+    margin: 1em 0;
+    /* font-weight: 700; */
+    letter-spacing: -.01em;
+    color: var(--md-default-fg-color--light);
+    text-transform: uppercase;
+    font-style: normal;
+    font-weight: bold;
+  }
+
+  .md-typeset h4::before {
+    content: ">> ";
   }
 
   .md-typeset h4 {
-    font-size: 1.5rem;
+    font-size: 1.1rem;
+    margin: 1em 0;
+    font-weight: 700;
+    letter-spacing: -.01em;
+    line-height: 1em;
+    color: var(--md-default-fg-color--light);
+    font-style: italic;
+    text-transform: capitalize;
+  }
+
+  .md-typeset h5,
+  .md-typeset h6 {
+    font-size: 0.9rem;
     margin: 1em 0;
     /* font-weight: 700; */
     letter-spacing: -.01em;
-    line-height: 2em;
+    /* line-height: 2em; */
     color: var(--md-default-fg-color--light);
-    text-transform: uppercase;
+    font-style: italic;
+    text-transform: capitalize;
+    text-decoration: underline;
   }
-
-    .md-typeset h5,
-    .md-typeset h6 {
-      font-size: 0.9rem;
-      margin: 1em 0;
-      /* font-weight: 700; */
-      letter-spacing: -.01em;
-      /* line-height: 2em; */
-      color: var(--md-default-fg-color--light);
-      font-style: italic;
-      text-transform: capitalize;
-    }
 
   .md-typeset table:not([class]) th {
     min-width: 5rem;
