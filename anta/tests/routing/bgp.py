@@ -405,7 +405,8 @@ class VerifyBGPPeersHealth(AntaTest):
             # Swapping AFI and SAFI in case of SR-TE
             if afi == "sr-te":
                 afi, safi = safi, afi
-            afi_vrf = command.params.vrf or "default"
+
+            afi_vrf = command.params.vrf if hasattr(command.params, "vrf") else "default"
 
             if not (vrfs := command_output.get("vrfs")):
                 _add_bgp_failures(failures=failures, afi=afi, safi=safi, vrf=afi_vrf, issue="Not Configured")
@@ -551,8 +552,8 @@ class VerifyBGPSpecificPeers(AntaTest):
             command_output = command.json_output
 
             afi = command.params.afi
-            safi = command.params.safi
-            afi_vrf = command.params.vrf or "default"
+            safi = command.params.safi if hasattr(command.params, "safi") else None
+            afi_vrf = command.params.vrf if hasattr(command.params, "vrf") else "default"
 
             # Swapping AFI and SAFI in case of SR-TE
             if afi == "sr-te":
