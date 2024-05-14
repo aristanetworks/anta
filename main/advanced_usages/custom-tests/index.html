@@ -2575,7 +2575,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Device temperature exceeds acceptable limits. Current system status: &#39;</span><span class="si">{</span><span class="n">temperature_status</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
 </code></pre></div>
 <p><a href="../../api/models/#anta.models.AntaTest">AntaTest</a> also provide more advanced capabilities like <a href="../../api/models/#anta.models.AntaCommand">AntaCommand</a> templating using the <a href="../../api/models/#anta.models.AntaTemplate">AntaTemplate</a> class or test inputs definition and validation using <a href="../../api/models/#anta.models.AntaTest.Input">AntaTest.Input</a> <a href="https://docs.pydantic.dev/latest/">pydantic</a> model. This will be discussed in the sections below.</p>
-<h2 id="antatest-structure"><a href="../../api/models/#anta.models.AntaTest">AntaTest</a> structure<a class="headerlink" href="#antatest-structure" title="Permanent link">&para;</a></h2>
+<h2 id="antatest-structure">AntaTest structure<a class="headerlink" href="#antatest-structure" title="Permanent link">&para;</a></h2>
+<p>Full AntaTest API documentation is available in the <a href="../../api/models/#anta.models.AntaTest">API documentation section</a></p>
 <h3 id="class-attributes">Class Attributes<a class="headerlink" href="#class-attributes" title="Permanent link">&para;</a></h3>
 <ul>
 <li><code>name</code> (<code>str</code>): Name of the test. Used during reporting.</li>
@@ -2666,7 +2667,8 @@ logger: Python logger for this test instance</p>
 <h3 id="test-inputs">Test Inputs<a class="headerlink" href="#test-inputs" title="Permanent link">&para;</a></h3>
 <p><a href="../../api/models/#anta.models.AntaTest.Input">AntaTest.Input</a> is a <a href="https://docs.pydantic.dev/latest/usage/models/">pydantic model</a> that allow test developers to define their test inputs. <a href="https://docs.pydantic.dev/latest/">pydantic</a> provides out of the box <a href="https://docs.pydantic.dev/latest/usage/models/#error-handling">error handling</a> for test input validation based on the type hints defined by the test developer.</p>
 <p>The base definition of <a href="../../api/models/#anta.models.AntaTest.Input">AntaTest.Input</a> provides common test inputs for all <a href="../../api/models/#anta.models.AntaTest">AntaTest</a> instances:</p>
-<h4 id="input-model"><a href="../../api/models/#anta.models.AntaTest.Input">Input</a> model<a class="headerlink" href="#input-model" title="Permanent link">&para;</a></h4>
+<h4 id="input-model">Input model<a class="headerlink" href="#input-model" title="Permanent link">&para;</a></h4>
+<p>Full <code>Input</code> model documentation is available in <a href="../../api/models/#anta.models.AntaTest.Input">API documentation section</a></p>
 
 
 <div class="doc doc-object doc-class">
@@ -2726,7 +2728,8 @@ logger: Python logger for this test instance</p>
   </div>
 
 
-</div><h4 id="resultoverwrite-model"><a href="../../api/models/#anta.models.AntaTest.Input.ResultOverwrite">ResultOverwrite</a> model<a class="headerlink" href="#resultoverwrite-model" title="Permanent link">&para;</a></h4>
+</div><h4 id="resultoverwrite-model">ResultOverwrite model<a class="headerlink" href="#resultoverwrite-model" title="Permanent link">&para;</a></h4>
+<p>Full <code>ResultOverwrite</code> model documentation is available in <a href="../../api/models/#anta.models.AntaTest.Input.ResultOverwrite">API documentation section</a></p>
 
 
 <div class="doc doc-object doc-class">
@@ -2992,7 +2995,7 @@ leaf04<span class="w"> </span>::<span class="w"> </span>verify_dynamic_vlan<span
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">April 3, 2024</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 14, 2024</span>
   </span>
 
     

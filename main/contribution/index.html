@@ -2512,18 +2512,19 @@ Success:<span class="w"> </span>no<span class="w"> </span>issues<span class="w">
 <p>All submodule should have its own pytest section under <code>tests/units/anta_tests/&lt;submodule-name&gt;.py</code>.</p>
 <h3 id="how-to-write-a-unit-test-for-an-antatest-subclass">How to write a unit test for an AntaTest subclass<a class="headerlink" href="#how-to-write-a-unit-test-for-an-antatest-subclass" title="Permanent link">&para;</a></h3>
 <p>The Python modules in the <code>tests/units/anta_tests</code> folder  define test parameters for AntaTest subclasses unit tests.
-A generic test function is written for all unit tests in <code>tests.lib.anta</code> module.
-The <code>pytest_generate_tests</code> function definition in <code>conftest.py</code> is called during test collection.
-The <code>pytest_generate_tests</code> function will parametrize the generic test function based on the <code>DATA</code> data structure defined in <code>tests.units.anta_tests</code> modules.
-See <a href="https://docs.pytest.org/en/7.3.x/how-to/parametrize.html#basic-pytest-generate-tests-example">https://docs.pytest.org/en/7.3.x/how-to/parametrize.html#basic-pytest-generate-tests-example</a></p>
-<p>The <code>DATA</code> structure is a list of dictionaries used to parametrize the test.
-The list elements have the following keys:
-- <code>name</code> (str): Test name as displayed by Pytest.
-- <code>test</code> (AntaTest): An AntaTest subclass imported in the test module - e.g. VerifyUptime.
-- <code>eos_data</code> (list[dict]): List of data mocking EOS returned data to be passed to the test.
-- <code>inputs</code> (dict): Dictionary to instantiate the <code>test</code> inputs as defined in the class from <code>test</code>.
-- <code>expected</code> (dict): Expected test result structure, a dictionary containing a key
-    <code>result</code> containing one of the allowed status (<code>Literal['success', 'failure', 'unset', 'skipped', 'error']</code>) and optionally a key <code>messages</code> which is a list(str) and each message is expected to  be a substring of one of the actual messages in the TestResult object.</p>
+A generic test function is written for all unit tests in <code>tests.lib.anta</code> module.</p>
+<p>The <code>pytest_generate_tests</code> function definition in <code>conftest.py</code> is called during test collection.</p>
+<p>The <code>pytest_generate_tests</code> function will parametrize the generic test function based on the <code>DATA</code> data structure defined in <code>tests.units.anta_tests</code> modules.</p>
+<p>See <a href="https://docs.pytest.org/en/7.3.x/how-to/parametrize.html#basic-pytest-generate-tests-example">https://docs.pytest.org/en/7.3.x/how-to/parametrize.html#basic-pytest-generate-tests-example</a></p>
+<p>The <code>DATA</code> structure is a list of dictionaries used to parametrize the test. The list elements have the following keys:</p>
+<ul>
+<li><code>name</code> (str): Test name as displayed by Pytest.</li>
+<li><code>test</code> (AntaTest): An AntaTest subclass imported in the test module - e.g. VerifyUptime.</li>
+<li><code>eos_data</code> (list[dict]): List of data mocking EOS returned data to be passed to the test.</li>
+<li><code>inputs</code> (dict): Dictionary to instantiate the <code>test</code> inputs as defined in the class from <code>test</code>.</li>
+<li><code>expected</code> (dict): Expected test result structure, a dictionary containing a key
+    <code>result</code> containing one of the allowed status (<code>Literal['success', 'failure', 'unset', 'skipped', 'error']</code>) and optionally a key <code>messages</code> which is a list(str) and each message is expected to  be a substring of one of the actual messages in the TestResult object.</li>
+</ul>
 <p>In order for your unit tests to be correctly collected, you need to import the generic test function even if not used in the Python module.</p>
 <p>Test example for <code>anta.tests.system.VerifyUptime</code> AntaTest.</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># Import the generic test function</span>
@@ -2628,7 +2629,7 @@ test.py:1:0:<span class="w"> </span>W0611:<span class="w"> </span>Unused<span cl
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">April 22, 2024</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 14, 2024</span>
   </span>
 
     
