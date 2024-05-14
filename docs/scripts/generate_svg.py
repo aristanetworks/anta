@@ -72,6 +72,8 @@ if __name__ == "__main__":
         print("Usage: python generate_svg.py anta <options>")
         sys.exit(1)
 
+    # possibly-used-before-assignment - prog / function_name -> not understanding sys.exit here...
+    # pylint: disable=E0606
     sys.argv = [prog, *args[1:]]
     module = import_module(module_path)
     function = getattr(module, function_name)

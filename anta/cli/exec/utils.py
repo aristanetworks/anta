@@ -72,6 +72,9 @@ async def collect_commands(
         elif c.ofmt == "text":
             outfile = outdir / f"{safe_command}.log"
             content = c.text_output
+        else:
+            logger.error("Command outformat is not in ['json', 'text'] for command '%s'", command)
+            return
         with outfile.open(mode="w", encoding="UTF-8") as f:
             f.write(content)
         logger.info("Collected command '%s' from device %s (%s)", command, dev.name, dev.hw_model)
