@@ -97,13 +97,13 @@ The `pytest_generate_tests` function definition in `conftest.py` is called durin
 The `pytest_generate_tests` function will parametrize the generic test function based on the `DATA` data structure defined in `tests.units.anta_tests` modules.
 See https://docs.pytest.org/en/7.3.x/how-to/parametrize.html#basic-pytest-generate-tests-example
 
-The `DATA` structure is a list of dictionaries used to parametrize the test.
-The list elements have the following keys:
-- `name` (str): Test name as displayed by Pytest.
-- `test` (AntaTest): An AntaTest subclass imported in the test module - e.g. VerifyUptime.
-- `eos_data` (list[dict]): List of data mocking EOS returned data to be passed to the test.
-- `inputs` (dict): Dictionary to instantiate the `test` inputs as defined in the class from `test`.
-- `expected` (dict): Expected test result structure, a dictionary containing a key
+The `DATA` structure is a list of dictionaries used to parametrize the test. The list elements have the following keys:
+
+  - `name` (str): Test name as displayed by Pytest.
+  - `test` (AntaTest): An AntaTest subclass imported in the test module - e.g. VerifyUptime.
+  - `eos_data` (list[dict]): List of data mocking EOS returned data to be passed to the test.
+  - `inputs` (dict): Dictionary to instantiate the `test` inputs as defined in the class from `test`.
+  - `expected` (dict): Expected test result structure, a dictionary containing a key
     `result` containing one of the allowed status (`Literal['success', 'failure', 'unset', 'skipped', 'error']`) and optionally a key `messages` which is a list(str) and each message is expected to  be a substring of one of the actual messages in the TestResult object.
 
 
