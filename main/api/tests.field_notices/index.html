@@ -2290,7 +2290,12 @@
 <span class="normal">117</span>
 <span class="normal">118</span>
 <span class="normal">119</span>
-<span class="normal">120</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyFieldNotice44Resolution</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyFieldNotice44Resolution</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies if the device is using an Aboot version that fixes the bug discussed in the Field Notice 44.</span>
 
 <span class="sd">    Aboot manages system settings prior to EOS initialization.</span>
@@ -2379,6 +2384,11 @@
         <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;details&quot;</span><span class="p">][</span><span class="s2">&quot;components&quot;</span><span class="p">]:</span>
             <span class="k">if</span> <span class="n">component</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Aboot&quot;</span><span class="p">:</span>
                 <span class="n">aboot_version</span> <span class="o">=</span> <span class="n">component</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
+                <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;Aboot component not found&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="n">incorrect_aboot_version</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">aboot_version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;4.0.&quot;</span><span class="p">)</span>
@@ -2451,12 +2461,7 @@
   </div>
 	<details class="quote">
 	<summary>Source code in <code>anta/tests/field_notices.py</code></summary>
-	<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span>
-<span class="normal">128</span>
+	<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">128</span>
 <span class="normal">129</span>
 <span class="normal">130</span>
 <span class="normal">131</span>
@@ -2523,7 +2528,12 @@
 <span class="normal">192</span>
 <span class="normal">193</span>
 <span class="normal">194</span>
-<span class="normal">195</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyFieldNotice72Resolution</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyFieldNotice72Resolution</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies if the device is potentially exposed to Field Notice 72, and if the issue has been mitigated.</span>
 
 <span class="sd">    Reference: https://www.arista.com/en/support/advisories-notices/field-notice/17410-field-notice-0072</span>
