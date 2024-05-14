@@ -93,8 +93,11 @@ All submodule should have its own pytest section under `tests/units/anta_tests/<
 
 The Python modules in the `tests/units/anta_tests` folder  define test parameters for AntaTest subclasses unit tests.
 A generic test function is written for all unit tests in `tests.lib.anta` module.
+
 The `pytest_generate_tests` function definition in `conftest.py` is called during test collection.
+
 The `pytest_generate_tests` function will parametrize the generic test function based on the `DATA` data structure defined in `tests.units.anta_tests` modules.
+
 See https://docs.pytest.org/en/7.3.x/how-to/parametrize.html#basic-pytest-generate-tests-example
 
 The `DATA` structure is a list of dictionaries used to parametrize the test. The list elements have the following keys:
