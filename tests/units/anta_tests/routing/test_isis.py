@@ -7,7 +7,13 @@ from __future__ import annotations
 
 from typing import Any
 
-from anta.tests.routing.isis import VerifyISISInterfaceMode, VerifyISISNeighborCount, VerifyISISNeighborState, VerifyISISSegmentRoutingAdjacencySegments
+from anta.tests.routing.isis import (
+    VerifyISISInterfaceMode,
+    VerifyISISNeighborCount,
+    VerifyISISNeighborState,
+    VerifyISISSegmentRoutingAdjacencySegments,
+    VerifyISISSegmentRoutingDataplane,
+)
 from tests.lib.anta import test  # noqa: F401; pylint: disable=W0611
 
 true: bool = True
@@ -728,7 +734,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Your segment has not been found: interface='Ethernet3' level=2 sid_origin='dynamic' address='10.0.1.2'."],
+            "messages": ["Your segment has not been found: interface='Ethernet3' level=2 sid_origin='dynamic' address=IPv4Address('10.0.1.2')."],
         },
     },
     {
@@ -895,6 +901,156 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": ["Instance CORE-ISIS2 is not found in vrf default."],
+        },
+    },
+    {
+        "test": VerifyISISSegmentRoutingDataplane,
+        "name": "Check VerifyISISSegmentRoutingDataplane is running successfully",
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "isisInstances": {
+                            "CORE-ISIS": {
+                                "dataPlane": "MPLS",
+                                "routerId": "1.0.0.11",
+                                "systemId": "0168.0000.0011",
+                                "hostname": "s1-pe01",
+                            }
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {
+            "instances": [
+                {
+                    "name": "CORE-ISIS",
+                    "vrf": "default",
+                    "dataplane": "MPLS",
+                },
+            ]
+        },
+        "expected": {
+            "result": "success",
+            "messages": [],
+        },
+    },
+    {
+        "test": VerifyISISSegmentRoutingDataplane,
+        "name": "Check VerifyISISSegmentRoutingDataplane is failing with incorrect dataplane",
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "isisInstances": {
+                            "CORE-ISIS": {
+                                "dataPlane": "MPLS",
+                                "routerId": "1.0.0.11",
+                                "systemId": "0168.0000.0011",
+                                "hostname": "s1-pe01",
+                            }
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {
+            "instances": [
+                {
+                    "name": "CORE-ISIS",
+                    "vrf": "default",
+                    "dataplane": "unset",
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": ["ISIS instance CORE-ISIS is not running dataplane unset (MPLS)"],
+        },
+    },
+    {
+        "test": VerifyISISSegmentRoutingDataplane,
+        "name": "Check VerifyISISSegmentRoutingDataplane is failing for unknown instance",
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "isisInstances": {
+                            "CORE-ISIS": {
+                                "dataPlane": "MPLS",
+                                "routerId": "1.0.0.11",
+                                "systemId": "0168.0000.0011",
+                                "hostname": "s1-pe01",
+                            }
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {
+            "instances": [
+                {
+                    "name": "CORE-ISIS2",
+                    "vrf": "default",
+                    "dataplane": "unset",
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": ["Instance CORE-ISIS2 is not found in vrf default."],
+        },
+    },
+    {
+        "test": VerifyISISSegmentRoutingDataplane,
+        "name": "Check VerifyISISSegmentRoutingDataplane is failing for unknown VRF",
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "isisInstances": {
+                            "CORE-ISIS": {
+                                "dataPlane": "MPLS",
+                                "routerId": "1.0.0.11",
+                                "systemId": "0168.0000.0011",
+                                "hostname": "s1-pe01",
+                            }
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {
+            "instances": [
+                {
+                    "name": "CORE-ISIS",
+                    "vrf": "wrong_vrf",
+                    "dataplane": "unset",
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": ["VRF wrong_vrf is not configured to run segment routing."],
+        },
+    },
+    {
+        "test": VerifyISISSegmentRoutingDataplane,
+        "name": "Check VerifyISISSegmentRoutingDataplane is skipped",
+        "eos_data": [{"vrfs": {}}],
+        "inputs": {
+            "instances": [
+                {
+                    "name": "CORE-ISIS",
+                    "vrf": "wrong_vrf",
+                    "dataplane": "unset",
+                },
+            ]
+        },
+        "expected": {
+            "result": "skipped",
+            "messages": ["IS-IS-SR is not running on device"],
         },
     },
 ]
