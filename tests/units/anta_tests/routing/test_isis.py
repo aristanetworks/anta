@@ -13,6 +13,7 @@ from anta.tests.routing.isis import (
     VerifyISISNeighborState,
     VerifyISISSegmentRoutingAdjacencySegments,
     VerifyISISSegmentRoutingDataplane,
+    VerifyISISSegmentRoutingTunnels,
 )
 from tests.lib.anta import test  # noqa: F401; pylint: disable=W0611
 
@@ -1051,6 +1052,573 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "skipped",
             "messages": ["IS-IS-SR is not running on device"],
+        },
+    },
+    {
+        "test": VerifyISISSegmentRoutingTunnels,
+        "name": "runs successfully",
+        "eos_data": [
+            {
+                "entries": {
+                    "3": {
+                        "endpoint": "1.0.0.122/32",
+                        "vias": [
+                            {
+                                "type": "ip",
+                                "nexthop": "10.0.1.1",
+                                "interface": "Ethernet1",
+                                "labels": ["900021"],
+                            },
+                            {
+                                "type": "ip",
+                                "nexthop": "10.0.1.3",
+                                "interface": "Ethernet2",
+                                "labels": ["900021"],
+                            },
+                        ],
+                    },
+                    "31": {
+                        "endpoint": "1.0.0.13/32",
+                        "vias": [
+                            {
+                                "type": "ip",
+                                "nexthop": "10.0.1.1",
+                                "interface": "Ethernet1",
+                                "labels": ["900021"],
+                            },
+                            {
+                                "type": "ip",
+                                "nexthop": "10.0.1.3",
+                                "interface": "Ethernet2",
+                                "labels": ["900021"],
+                            },
+                        ],
+                    },
+                    "32": {
+                        "endpoint": "1.0.0.122/32",
+                        "vias": [
+                            {
+                                "type": "ip",
+                                "nexthop": "10.0.1.1",
+                                "interface": "Ethernet1",
+                                "labels": ["900021"],
+                            },
+                            {
+                                "type": "ip",
+                                "nexthop": "10.0.1.3",
+                                "interface": "Ethernet2",
+                                "labels": ["900021"],
+                            },
+                        ],
+                    },
+                    "2": {
+                        "endpoint": "1.0.0.111/32",
+                        "vias": [
+                            {
+                                "type": "tunnel",
+                                "tunnelId": {"type": "TI-LFA", "index": 4},
+                                "labels": ["3"],
+                            }
+                        ],
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "entries": [
+                {"endpoint": "1.0.0.122/32"},
+                {"endpoint": "1.0.0.13/32", "vias": [{"type": "ip"}]},
+                {
+                    "endpoint": "1.0.0.111/32",
+                    "vias": [{"type": "tunnel", "tunnel_id": "ti-lfa"}],
+                },
+                {
+                    "endpoint": "1.0.0.122/32",
+                    "vias": [
+                        {"type": "ip", "interface": "Ethernet1", "nexthop": "10.0.1.1"},
+                        {"type": "ip", "interface": "Ethernet2", "nexthop": "10.0.1.3"},
+                    ],
+                },
+            ]
+        },
+        "expected": {
+            "result": "success",
+            "messages": [],
+        },
+    },
+    {
+        "test": VerifyISISSegmentRoutingTunnels,
+        "name": "is skipped if not entry founf in EOS",
+        "eos_data": [{"entries": {}}],
+        "inputs": {
+            "entries": [
+                {"endpoint": "1.0.0.122/32"},
+            ]
+        },
+        "expected": {
+            "result": "skipped",
+            "messages": ["IS-IS-SR is not running on device."],
+        },
+    },
+    {
+        "test": VerifyISISSegmentRoutingTunnels,
+        "name": "runs successfully",
+        "eos_data": [
+            {
+                "entries": {
+                    "2": {
+                        "endpoint": "1.0.0.111/32",
+                        "vias": [
+                            {
+                                "type": "tunnel",
+                                "tunnelId": {"type": "TI-LFA", "index": 4},
+                                "labels": ["3"],
+                            }
+                        ],
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "entries": [
+                {"endpoint": "1.0.0.122/32"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": ["Tunnel to endpoint=IPv4Network('1.0.0.122/32') vias=None is not found."],
+        },
+    },
+    {
+        "test": VerifyISISSegmentRoutingTunnels,
+        "name": "fails with incorrect tunnel type",
+        "eos_data": [
+            {
+                "entries": {
+                    "3": {
+                        "endpoint": "1.0.0.122/32",
+                        "vias": [
+                            {
+                                "type": "ip",
+                                "nexthop": "10.0.1.1",
+                                "interface": "Ethernet1",
+                                "labels": ["900021"],
+                            },
+                            {
+                                "type": "ip",
+                                "nexthop": "10.0.1.3",
+                                "interface": "Ethernet2",
+                                "labels": ["900021"],
+                            },
+                        ],
+                    },
+                    "31": {
+                        "endpoint": "1.0.0.13/32",
+                        "vias": [
+                            {
+                                "type": "ip",
+                                "nexthop": "10.0.1.1",
+                                "interface": "Ethernet1",
+                                "labels": ["900021"],
+                            },
+                            {
+                                "type": "ip",
+                                "nexthop": "10.0.1.3",
+                                "interface": "Ethernet2",
+                                "labels": ["900021"],
+                            },
+                        ],
+                    },
+                    "32": {
+                        "endpoint": "1.0.0.122/32",
+                        "vias": [
+                            {
+                                "type": "ip",
+                                "nexthop": "10.0.1.1",
+                                "interface": "Ethernet1",
+                                "labels": ["900021"],
+                            },
+                            {
+                                "type": "ip",
+                                "nexthop": "10.0.1.3",
+                                "interface": "Ethernet2",
+                                "labels": ["900021"],
+                            },
+                        ],
+                    },
+                    "2": {
+                        "endpoint": "1.0.0.111/32",
+                        "vias": [
+                            {
+                                "type": "tunnel",
+                                "tunnelId": {"type": "TI-LFA", "index": 4},
+                                "labels": ["3"],
+                            }
+                        ],
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "entries": [
+                {"endpoint": "1.0.0.122/32"},
+                {"endpoint": "1.0.0.13/32", "vias": [{"type": "tunnel"}]},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": ["Tunnel to 1.0.0.13/32 is incorrect: incorrect tunnel type"],
+        },
+    },
+    {
+        "test": VerifyISISSegmentRoutingTunnels,
+        "name": "fails with incorrect nexthop",
+        "eos_data": [
+            {
+                "entries": {
+                    "3": {
+                        "endpoint": "1.0.0.122/32",
+                        "vias": [
+                            {
+                                "type": "ip",
+                                "nexthop": "10.0.1.1",
+                                "interface": "Ethernet1",
+                                "labels": ["900021"],
+                            },
+                            {
+                                "type": "ip",
+                                "nexthop": "10.0.1.3",
+                                "interface": "Ethernet2",
+                                "labels": ["900021"],
+                            },
+                        ],
+                    },
+                    "31": {
+                        "endpoint": "1.0.0.13/32",
+                        "vias": [
+                            {
+                                "type": "ip",
+                                "nexthop": "10.0.1.1",
+                                "interface": "Ethernet1",
+                                "labels": ["900021"],
+                            },
+                            {
+                                "type": "ip",
+                                "nexthop": "10.0.1.3",
+                                "interface": "Ethernet2",
+                                "labels": ["900021"],
+                            },
+                        ],
+                    },
+                    "32": {
+                        "endpoint": "1.0.0.122/32",
+                        "vias": [
+                            {
+                                "type": "ip",
+                                "nexthop": "10.0.1.1",
+                                "interface": "Ethernet1",
+                                "labels": ["900021"],
+                            },
+                            {
+                                "type": "ip",
+                                "nexthop": "10.0.1.3",
+                                "interface": "Ethernet2",
+                                "labels": ["900021"],
+                            },
+                        ],
+                    },
+                    "2": {
+                        "endpoint": "1.0.0.111/32",
+                        "vias": [
+                            {
+                                "type": "tunnel",
+                                "tunnelId": {"type": "TI-LFA", "index": 4},
+                                "labels": ["3"],
+                            }
+                        ],
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "entries": [
+                {"endpoint": "1.0.0.122/32"},
+                {"endpoint": "1.0.0.13/32", "vias": [{"type": "ip"}]},
+                {
+                    "endpoint": "1.0.0.122/32",
+                    "vias": [
+                        {"type": "ip", "interface": "Ethernet1", "nexthop": "10.0.1.2"},
+                        {"type": "ip", "interface": "Ethernet2", "nexthop": "10.0.1.3"},
+                    ],
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": ["Tunnel to 1.0.0.122/32 is incorrect: incorrect nexthop"],
+        },
+    },
+    {
+        "test": VerifyISISSegmentRoutingTunnels,
+        "name": "fails with incorrect nexthop",
+        "eos_data": [
+            {
+                "entries": {
+                    "3": {
+                        "endpoint": "1.0.0.122/32",
+                        "vias": [
+                            {
+                                "type": "ip",
+                                "nexthop": "10.0.1.1",
+                                "interface": "Ethernet1",
+                                "labels": ["900021"],
+                            },
+                            {
+                                "type": "ip",
+                                "nexthop": "10.0.1.3",
+                                "interface": "Ethernet2",
+                                "labels": ["900021"],
+                            },
+                        ],
+                    },
+                    "31": {
+                        "endpoint": "1.0.0.13/32",
+                        "vias": [
+                            {
+                                "type": "ip",
+                                "nexthop": "10.0.1.1",
+                                "interface": "Ethernet1",
+                                "labels": ["900021"],
+                            },
+                            {
+                                "type": "ip",
+                                "nexthop": "10.0.1.3",
+                                "interface": "Ethernet2",
+                                "labels": ["900021"],
+                            },
+                        ],
+                    },
+                    "32": {
+                        "endpoint": "1.0.0.122/32",
+                        "vias": [
+                            {
+                                "type": "ip",
+                                "nexthop": "10.0.1.1",
+                                "interface": "Ethernet1",
+                                "labels": ["900021"],
+                            },
+                            {
+                                "type": "ip",
+                                "nexthop": "10.0.1.3",
+                                "interface": "Ethernet2",
+                                "labels": ["900021"],
+                            },
+                        ],
+                    },
+                    "2": {
+                        "endpoint": "1.0.0.111/32",
+                        "vias": [
+                            {
+                                "type": "tunnel",
+                                "tunnelId": {"type": "TI-LFA", "index": 4},
+                                "labels": ["3"],
+                            }
+                        ],
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "entries": [
+                {"endpoint": "1.0.0.122/32"},
+                {"endpoint": "1.0.0.13/32", "vias": [{"type": "ip"}]},
+                {
+                    "endpoint": "1.0.0.122/32",
+                    "vias": [
+                        {"type": "ip", "interface": "Ethernet4", "nexthop": "10.0.1.1"},
+                        {"type": "ip", "interface": "Ethernet2", "nexthop": "10.0.1.3"},
+                    ],
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": ["Tunnel to 1.0.0.122/32 is incorrect: incorrect interface"],
+        },
+    },
+    {
+        "test": VerifyISISSegmentRoutingTunnels,
+        "name": "fails with incorrect interface",
+        "eos_data": [
+            {
+                "entries": {
+                    "3": {
+                        "endpoint": "1.0.0.122/32",
+                        "vias": [
+                            {
+                                "type": "ip",
+                                "nexthop": "10.0.1.1",
+                                "interface": "Ethernet1",
+                                "labels": ["900021"],
+                            },
+                            {
+                                "type": "ip",
+                                "nexthop": "10.0.1.3",
+                                "interface": "Ethernet2",
+                                "labels": ["900021"],
+                            },
+                        ],
+                    },
+                    "31": {
+                        "endpoint": "1.0.0.13/32",
+                        "vias": [
+                            {
+                                "type": "ip",
+                                "nexthop": "10.0.1.1",
+                                "interface": "Ethernet1",
+                                "labels": ["900021"],
+                            },
+                            {
+                                "type": "ip",
+                                "nexthop": "10.0.1.3",
+                                "interface": "Ethernet2",
+                                "labels": ["900021"],
+                            },
+                        ],
+                    },
+                    "32": {
+                        "endpoint": "1.0.0.122/32",
+                        "vias": [
+                            {
+                                "type": "ip",
+                                "nexthop": "10.0.1.1",
+                                "interface": "Ethernet1",
+                                "labels": ["900021"],
+                            },
+                            {
+                                "type": "ip",
+                                "nexthop": "10.0.1.3",
+                                "interface": "Ethernet2",
+                                "labels": ["900021"],
+                            },
+                        ],
+                    },
+                    "2": {
+                        "endpoint": "1.0.0.111/32",
+                        "vias": [
+                            {
+                                "type": "tunnel",
+                                "tunnelId": {"type": "TI-LFA", "index": 4},
+                                "labels": ["3"],
+                            }
+                        ],
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "entries": [
+                {"endpoint": "1.0.0.122/32"},
+                {"endpoint": "1.0.0.13/32", "vias": [{"type": "ip"}]},
+                {
+                    "endpoint": "1.0.0.122/32",
+                    "vias": [
+                        {"type": "ip", "interface": "Ethernet1", "nexthop": "10.0.1.2"},
+                        {"type": "ip", "interface": "Ethernet2", "nexthop": "10.0.1.3"},
+                    ],
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": ["Tunnel to 1.0.0.122/32 is incorrect: incorrect nexthop"],
+        },
+    },
+    {
+        "test": VerifyISISSegmentRoutingTunnels,
+        "name": "fails with incorrect tunnel ID type",
+        "eos_data": [
+            {
+                "entries": {
+                    "3": {
+                        "endpoint": "1.0.0.122/32",
+                        "vias": [
+                            {
+                                "type": "ip",
+                                "nexthop": "10.0.1.1",
+                                "interface": "Ethernet1",
+                                "labels": ["900021"],
+                            },
+                            {
+                                "type": "ip",
+                                "nexthop": "10.0.1.3",
+                                "interface": "Ethernet2",
+                                "labels": ["900021"],
+                            },
+                        ],
+                    },
+                    "31": {
+                        "endpoint": "1.0.0.13/32",
+                        "vias": [
+                            {
+                                "type": "ip",
+                                "nexthop": "10.0.1.1",
+                                "interface": "Ethernet1",
+                                "labels": ["900021"],
+                            },
+                            {
+                                "type": "ip",
+                                "nexthop": "10.0.1.3",
+                                "interface": "Ethernet2",
+                                "labels": ["900021"],
+                            },
+                        ],
+                    },
+                    "32": {
+                        "endpoint": "1.0.0.122/32",
+                        "vias": [
+                            {
+                                "type": "ip",
+                                "nexthop": "10.0.1.1",
+                                "interface": "Ethernet1",
+                                "labels": ["900021"],
+                            },
+                            {
+                                "type": "ip",
+                                "nexthop": "10.0.1.3",
+                                "interface": "Ethernet2",
+                                "labels": ["900021"],
+                            },
+                        ],
+                    },
+                    "2": {
+                        "endpoint": "1.0.0.111/32",
+                        "vias": [
+                            {
+                                "type": "tunnel",
+                                "tunnelId": {"type": "TI-LFA", "index": 4},
+                                "labels": ["3"],
+                            }
+                        ],
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "entries": [
+                {"endpoint": "1.0.0.122/32"},
+                {"endpoint": "1.0.0.13/32", "vias": [{"type": "ip"}]},
+                {
+                    "endpoint": "1.0.0.111/32",
+                    "vias": [
+                        {"type": "tunnel", "tunnel_id": "unset"},
+                    ],
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": ["Tunnel to 1.0.0.111/32 is incorrect: incorrect tunnel ID"],
         },
     },
 ]

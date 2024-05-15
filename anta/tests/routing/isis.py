@@ -7,7 +7,7 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from ipaddress import IPv4Address
+from ipaddress import IPv4Address, IPv4Network
 from typing import Any, ClassVar, Literal
 
 from pydantic import BaseModel
@@ -515,6 +515,149 @@ class VerifyISISSegmentRoutingDataplane(AntaTest):
                 eos_dataplane = get_value(dictionary=command_output, key=f"vrfs.{instance.vrf}.isisInstances.{instance.name}.dataPlane", default=None)
                 if instance.dataplane.upper() != eos_dataplane:
                     failure_message.append(f"ISIS instance {instance.name} is not running dataplane {instance.dataplane} ({eos_dataplane})")
+
+        if failure_message:
+            self.result.is_failure("\n".join(failure_message))
+
+
+class VerifyISISSegmentRoutingTunnels(AntaTest):
+    """
+    Verify ISIS-SR tunnels computed by device.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if all listed tunnels are computed on device.
+    * Failure: The test will fail if one of the listed tunnels is missing.
+    * Skipped: The test will be skipped if ISIS-SR is not configured.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+    isis:
+        - VerifyISISSegmentRoutingTunnels:
+            entries:
+            # Check only endpoint
+            - endpoint: 1.0.0.122/32
+            # Check endpoint and via TI-LFA
+            - endpoint: 1.0.0.13/32
+              vias:
+                - type: tunnel
+                  tunnel_id: ti-lfa
+            # Check endpoint and via IP routers
+            - endpoint: 1.0.0.14/32
+              vias:
+                - type: ip
+                  nexthop: 1.1.1.1
+    ```
+    """
+
+    name = "VerifyISISSegmentRoutingTunnels"
+    description = "Verify ISIS-SR tunnels computed by device"
+    categories: ClassVar[list[str]] = ["isis", "segment-routing"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show isis segment-routing tunnel", ofmt="json")]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyISISSegmentRoutingTunnels test."""
+
+        entries: list[Entry]
+
+        class Entry(BaseModel):
+            """Definition of a tunnel entry."""
+
+            endpoint: IPv4Network
+            vias: list[Vias] | None = None
+
+            class Vias(BaseModel):
+                """Definition of a tunnel path."""
+
+                nexthop: IPv4Address | None = None
+                type: Literal["ip", "tunnel"] | None = None
+                interface: Interface | None = None
+                tunnel_id: Literal["TI-LFA", "ti-lfa", "unset"] | None = None
+
+    def _eos_entry_lookup(self, search_value: IPv4Network, entries: dict[str, Any], search_key: str = "endpoint") -> dict[str, Any] | None:
+        return next(
+            (entry_value for entry_id, entry_value in entries.items() if str(entry_value[search_key]) == str(search_value)),
+            None,
+        )
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        # pylint: disable=R0912
+        """Main test function for VerifyISISSegmentRoutingTunnels."""
+        command_output = self.instance_commands[0].json_output
+        self.result.is_success()
+
+        # initiate defaults
+        failure_message = []
+
+        if len(command_output["entries"]) == 0:
+            self.result.is_skipped("IS-IS-SR is not running on device.")
+            return
+
+        for input_entry in self.inputs.entries:
+            eos_entry = self._eos_entry_lookup(search_value=input_entry.endpoint, entries=command_output["entries"])
+            if eos_entry is None:
+                failure_message.append(f"Tunnel to {input_entry} is not found.")
+            elif input_entry.vias is not None:
+                failure_src = []
+                for via_input in input_entry.vias:
+                    # Check for optional tunnel type
+                    if via_input.type is not None:
+                        found = any(
+                            via_input.type
+                            == get_value(
+                                dictionary=eos_via,
+                                key="type",
+                                default="undefined",
+                            )
+                            for eos_via in eos_entry["vias"]
+                        )
+                        if not found:
+                            failure_src.append("incorrect tunnel type")
+                    # Check for optional tunnel nexthop
+                    if via_input.nexthop is not None:
+                        found = any(
+                            str(via_input.nexthop)
+                            == get_value(
+                                dictionary=eos_via,
+                                key="nexthop",
+                                default="undefined",
+                            )
+                            for eos_via in eos_entry["vias"]
+                        )
+                        if not found:
+                            failure_src.append("incorrect nexthop")
+                    # Check for optional tunnel egress interface
+                    if via_input.interface is not None:
+                        found = any(
+                            via_input.interface
+                            == get_value(
+                                dictionary=eos_via,
+                                key="interface",
+                                default="undefined",
+                            )
+                            for eos_via in eos_entry["vias"]
+                        )
+                        if not found:
+                            failure_src.append("incorrect interface")
+                    # Check for optional tunnel ID (for TI-LFA only)
+                    if via_input.tunnel_id is not None:
+                        found = any(
+                            via_input.tunnel_id.upper()
+                            == get_value(
+                                dictionary=eos_via,
+                                key="tunnelId.type",
+                                default="undefined",
+                            ).upper()
+                            for eos_via in eos_entry["vias"]
+                        )
+                        if not found:
+                            failure_src.append("incorrect tunnel ID")
+
+                if failure_src:
+                    failure_message.append(f"Tunnel to {input_entry.endpoint!s} is incorrect: {', '.join(failure_src)}")
 
         if failure_message:
             self.result.is_failure("\n".join(failure_message))
