@@ -1,4 +1,4 @@
-"""aioeapi.SessionConfig definition."""
+"""asynceapi.SessionConfig definition."""
 
 # -----------------------------------------------------------------------------
 # System Imports

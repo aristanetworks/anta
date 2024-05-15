@@ -103,7 +103,7 @@ anta = "anta.cli:cli"
 # Tools
 ################################
 [tool.setuptools.packages.find]
-include = ["anta*", "aioeapi*"]
+include = ["anta*", "asynceapi*"]
 namespaces = false
 
 ################################

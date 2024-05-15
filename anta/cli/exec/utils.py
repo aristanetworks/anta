@@ -17,9 +17,9 @@ from typing import TYPE_CHECKING, Literal
 from click.exceptions import UsageError
 from httpx import ConnectError, HTTPError
 
-from aioeapi import EapiCommandError
 from anta.device import AntaDevice, AsyncEOSDevice
 from anta.models import AntaCommand
+from asynceapi import EapiCommandError
 
 if TYPE_CHECKING:
     from anta.inventory import AntaInventory

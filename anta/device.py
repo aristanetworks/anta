@@ -18,7 +18,7 @@ from aiocache.plugins import HitMissRatioPlugin
 from asyncssh import SSHClientConnection, SSHClientConnectionOptions
 from httpx import ConnectError, HTTPError, TimeoutException
 
-import aioeapi
+import asynceapi
 from anta import __DEBUG__
 from anta.logger import anta_log_exception, exc_to_str
 from anta.models import AntaCommand
@@ -271,7 +271,7 @@ class AsyncEOSDevice(AntaDevice):
             raise ValueError(message)
         self.enable = enable
         self._enable_password = enable_password
-        self._session: aioeapi.Device = aioeapi.Device(host=host, port=port, username=username, password=password, proto=proto, timeout=timeout)
+        self._session: asynceapi.Device = asynceapi.Device(host=host, port=port, username=username, password=password, proto=proto, timeout=timeout)
         ssh_params: dict[str, Any] = {}
         if insecure:
             ssh_params["known_hosts"] = None
@@ -339,7 +339,7 @@ class AsyncEOSDevice(AntaDevice):
             )  # type: ignore[assignment] # multiple commands returns a list
             # Do not keep response of 'enable' command
             command.output = response[-1]
-        except aioeapi.EapiCommandError as e:
+        except asynceapi.EapiCommandError as e:
             # This block catches exceptions related to EOS issuing an error.
             command.errors = e.errors
             if command.requires_privileges:
