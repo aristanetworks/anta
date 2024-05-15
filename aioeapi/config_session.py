@@ -189,7 +189,7 @@ class SessionConfig:
         # prepare the initial set of command to enter the config session and
         # rollback clean if the `replace` argument is True.
 
-        commands = [self._cli_config_session]
+        commands: list[str | dict[str, Any]] = [self._cli_config_session]
         if replace:
             commands.append(self.CLI_CFG_FACTORY_RESET)
 
@@ -244,7 +244,7 @@ class SessionConfig:
         ----------
             * https://www.gnu.org/software/diffutils/manual/diffutils.txt
         """
-        return await self._cli(f"show session-config named {self.name} diffs", ofmt="text")# type: ignore[return-value] # text outformat returns str
+        return await self._cli(f"show session-config named {self.name} diffs", ofmt="text")  # type: ignore[return-value] # text outformat returns str
 
     async def load_file(self, filename: str, *, replace: bool = False) -> None:
         """
@@ -268,12 +268,12 @@ class SessionConfig:
             If there are any issues with loading the configuration file then a
             RuntimeError is raised with the error messages content.
         """
-        commands = [self._cli_config_session]
+        commands: list[str | dict[str, Any]] = [self._cli_config_session]
         if replace:
             commands.append(self.CLI_CFG_FACTORY_RESET)
 
         commands.append(f"copy {filename} session-config")
-        res: list[dict[str, Any]] = await self._cli(commands=commands) # type: ignore[assignment] # JSON outformat of multiple commands returns list[dict[str, Any]]
+        res: list[dict[str, Any]] = await self._cli(commands=commands)  # type: ignore[assignment] # JSON outformat of multiple commands returns list[dict[str, Any]]
         checks_re = re.compile(r"error|abort|invalid", flags=re.I)
         messages = res[-1]["messages"]
 

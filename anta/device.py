@@ -18,7 +18,8 @@ from aiocache.plugins import HitMissRatioPlugin
 from asyncssh import SSHClientConnection, SSHClientConnectionOptions
 from httpx import ConnectError, HTTPError, TimeoutException
 
-from anta import __DEBUG__, aioeapi
+import aioeapi
+from anta import __DEBUG__
 from anta.logger import anta_log_exception, exc_to_str
 from anta.models import AntaCommand
 
@@ -316,7 +317,7 @@ class AsyncEOSDevice(AntaDevice):
         ----
             command: the AntaCommand to collect.
         """
-        commands: list[dict[str, Any]] = []
+        commands: list[dict[str, str | int]] = []
         if self.enable and self._enable_password is not None:
             commands.append(
                 {
@@ -329,11 +330,11 @@ class AsyncEOSDevice(AntaDevice):
             commands.append({"cmd": "enable"})
         commands += [{"cmd": command.command, "revision": command.revision}] if command.revision else [{"cmd": command.command}]
         try:
-            response: list[dict[str, Any]] = await self._session.cli(
+            response: list[dict[str, Any] | str] = await self._session.cli(
                 commands=commands,
                 ofmt=command.ofmt,
                 version=command.version,
-            )
+            )  # type: ignore[assignment] # multiple commands returns a list
             # Do not keep response of 'enable' command
             command.output = response[-1]
         except aioeapi.EapiCommandError as e:

@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 from socket import getservbyname
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 # -----------------------------------------------------------------------------
 # Public Imports
@@ -19,6 +19,9 @@ import httpx
 from .aio_portcheck import port_check_url
 from .config_session import SessionConfig
 from .errors import EapiCommandError
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 # -----------------------------------------------------------------------------
 # Exports
@@ -110,8 +113,8 @@ class Device(httpx.AsyncClient):
 
     async def cli(  # noqa: PLR0913
         self,
-        command: str | None = None,
-        commands: list[str] | None = None,
+        command: str | dict[str, Any] | None = None,
+        commands: Sequence[str | dict[str, Any]] | None = None,
         ofmt: str | None = None,
         version: int | str | None = "latest",
         *,
@@ -184,7 +187,7 @@ class Device(httpx.AsyncClient):
 
     def _jsonrpc_command(  # noqa: PLR0913
         self,
-        commands: list[str] | None = None,
+        commands: Sequence[str | dict[str, Any]] | None = None,
         ofmt: str | None = None,
         version: int | str | None = "latest",
         *,

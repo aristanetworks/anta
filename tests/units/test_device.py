@@ -15,7 +15,7 @@ import pytest
 from asyncssh import SSHClientConnection, SSHClientConnectionOptions
 from rich import print as rprint
 
-from anta import aioeapi
+import aioeapi
 from anta.device import AntaDevice, AsyncEOSDevice
 from anta.models import AntaCommand
 from tests.lib.fixture import COMMAND_OUTPUT
@@ -705,9 +705,9 @@ class TestAsyncEOSDevice:
         """Test AsyncEOSDevice.refresh()."""
         with patch.object(async_device._session, "check_connection", **patch_kwargs[0]), patch.object(async_device._session, "cli", **patch_kwargs[1]):
             await async_device.refresh()
-            async_device._session.check_connection.assert_called_once()
+            async_device._session.check_connection.assert_called_once()  # type: ignore[attr-defined] # aioeapi.Device.check_connection is patched
             if expected["is_online"]:
-                async_device._session.cli.assert_called_once()
+                async_device._session.cli.assert_called_once()  # type: ignore[attr-defined] # aioeapi.Device.cli is patched
             assert async_device.is_online == expected["is_online"]
             assert async_device.established == expected["established"]
             assert async_device.hw_model == expected["hw_model"]
@@ -740,7 +740,7 @@ class TestAsyncEOSDevice:
                 commands.append({"cmd": cmd.command, "revision": cmd.revision})
             else:
                 commands.append({"cmd": cmd.command})
-            async_device._session.cli.assert_called_once_with(commands=commands, ofmt=cmd.ofmt, version=cmd.version)
+            async_device._session.cli.assert_called_once_with(commands=commands, ofmt=cmd.ofmt, version=cmd.version)  # type: ignore[attr-defined] # aioeapi.Device.cli is patched # pylint: disable=line-too-long
             assert cmd.output == expected["output"]
             assert cmd.errors == expected["errors"]
 

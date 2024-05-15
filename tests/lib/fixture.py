@@ -13,7 +13,7 @@ from unittest.mock import patch
 import pytest
 from click.testing import CliRunner, Result
 
-from anta import aioeapi
+import aioeapi
 from anta.cli.console import console
 from anta.device import AntaDevice, AsyncEOSDevice
 from anta.inventory import AntaInventory
