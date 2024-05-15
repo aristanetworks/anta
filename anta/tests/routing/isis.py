@@ -7,6 +7,7 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
+from ipaddress import IPv4Address
 from typing import Any, ClassVar, Literal
 
 from pydantic import BaseModel
@@ -373,13 +374,13 @@ class VerifyISISSegmentRoutingAdjacencySegments(AntaTest):
             class Segment(BaseModel):
                 """Segment model definition."""
 
-                interface: str
+                interface: Interface
                 """Interface name to check."""
                 level: Literal[1, 2] = 2
                 """ISIS level configured for interface. Default is 2."""
                 sid_origin: Literal["dynamic"] = "dynamic"
                 """Adjacency type"""
-                address: Any
+                address: IPv4Address
                 """IP address of remote end of segment."""
 
     @AntaTest.anta_test
