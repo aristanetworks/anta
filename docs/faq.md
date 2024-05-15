@@ -1,5 +1,5 @@
 ---
-toc_depth: 4
+toc_depth: 2
 ---
 <!--
   ~ Copyright (c) 2023-2024 Arista Networks, Inc.
@@ -7,7 +7,7 @@ toc_depth: 4
   ~ that can be found in the LICENSE file.
   -->
 <style>
-  h4 {
+  .md-typeset h2 {
     visibility: hidden;
     font-size: 0em;
     height: 0em;

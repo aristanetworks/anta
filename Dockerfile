@@ -3,7 +3,7 @@ ARG IMG_OPTION=alpine
 
 ### BUILDER
 
-FROM python:${PYTHON_VER}-${IMG_OPTION} as BUILDER
+FROM python:${PYTHON_VER}-${IMG_OPTION} AS BUILDER
 
 RUN pip install --upgrade pip
 
@@ -19,7 +19,7 @@ RUN pip --no-cache-dir install --user .
 
 ### BASE
 
-FROM python:${PYTHON_VER}-${IMG_OPTION} as BASE
+FROM python:${PYTHON_VER}-${IMG_OPTION} AS BASE
 
 # Opencontainer labels
 # Labels version and revision will be updating

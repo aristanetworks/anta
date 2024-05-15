@@ -230,8 +230,6 @@
   .md-typeset table:not([class]) th {
       min-width: 5rem;
       padding: .6rem .8rem;
-      /* color: var(--md-primary-fg-color--light); */
-      bg: var(--md-footer-fg-color--lighter);
   }
 
   .md-footer-copyright {
@@ -247,7 +245,6 @@
     margin-left: auto;
     margin-right: auto;
     border-radius: 1%;
-    /* width: 50%; */
   }
 }
 
