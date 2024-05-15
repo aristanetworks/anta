@@ -24,7 +24,7 @@ def interface_autocomplete(v: str) -> str:
          - `po` will be changed to `Port-Channel`
     - `lo` will be changed to `Loopback`
     """
-    intf_id_re = re.compile(r"d+(\/d+)*(\.d+)?")
+    intf_id_re = re.compile(r"\d+(\/\d+)*(\.\d+)?")
     m = intf_id_re.search(v)
     if m is None:
         msg = f"Could not parse interface ID in interface '{v}'"
