@@ -106,11 +106,11 @@ async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, *, con
                 cmd += f" | head -{latest}"
             command = AntaCommand(command=cmd, ofmt="text")
             await device.collect(command=command)
-            if command.collected and command.text_output:
-                filenames = [Path(f"{EOS_SCHEDULED_TECH_SUPPORT}/{f}") for f in command.text_output.splitlines()]
-            else:
+            if not (command.collected and command.text_output):
                 logger.error("Unable to get tech-support filenames on %s: verify that %s is not empty", device.name, EOS_SCHEDULED_TECH_SUPPORT)
                 return
+
+            filenames = [Path(f"{EOS_SCHEDULED_TECH_SUPPORT}/{f}") for f in command.text_output.splitlines()]
 
             # Create directories
             outdir = Path() / root_dir / f"{device.name.lower()}"
@@ -122,31 +122,32 @@ async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, *, con
 
             if command.collected and not command.text_output:
                 logger.debug("'aaa authorization exec default local' is not configured on device %s", device.name)
-                if configure:
-                    commands = []
-                    # TODO: @mtache - add `config` field to `AntaCommand` object to handle this use case.
-                    # Otherwise mypy complains about enable as it is only implemented for AsyncEOSDevice
-                    # TODO: Should enable be also included in AntaDevice?
-                    if not isinstance(device, AsyncEOSDevice):
-                        msg = "anta exec collect-tech-support is only supported with AsyncEOSDevice for now."
-                        raise UsageError(msg)
-                    if device.enable and device._enable_password is not None:  # pylint: disable=protected-access
-                        commands.append({"cmd": "enable", "input": device._enable_password})  # pylint: disable=protected-access
-                    elif device.enable:
-                        commands.append({"cmd": "enable"})
-                    commands.extend(
-                        [
-                            {"cmd": "configure terminal"},
-                            {"cmd": "aaa authorization exec default local"},
-                        ],
-                    )
-                    logger.warning("Configuring 'aaa authorization exec default local' on device %s", device.name)
-                    command = AntaCommand(command="show running-config | include aaa authorization exec default local", ofmt="text")
-                    await device._session.cli(commands=commands)  # pylint: disable=protected-access
-                    logger.info("Configured 'aaa authorization exec default local' on device %s", device.name)
-                else:
+                if not configure:
                     logger.error("Unable to collect tech-support on %s: configuration 'aaa authorization exec default local' is not present", device.name)
                     return
+
+                commands = []
+                # TODO: @mtache - add `config` field to `AntaCommand` object to handle this use case.
+                # Otherwise mypy complains about enable as it is only implemented for AsyncEOSDevice
+                # TODO: Should enable be also included in AntaDevice?
+                if not isinstance(device, AsyncEOSDevice):
+                    msg = "anta exec collect-tech-support is only supported with AsyncEOSDevice for now."
+                    raise UsageError(msg)
+                if device.enable and device._enable_password is not None:  # pylint: disable=protected-access
+                    commands.append({"cmd": "enable", "input": device._enable_password})  # pylint: disable=protected-access
+                elif device.enable:
+                    commands.append({"cmd": "enable"})
+                commands.extend(
+                    [
+                        {"cmd": "configure terminal"},
+                        {"cmd": "aaa authorization exec default local"},
+                    ],
+                )
+                logger.warning("Configuring 'aaa authorization exec default local' on device %s", device.name)
+                command = AntaCommand(command="show running-config | include aaa authorization exec default local", ofmt="text")
+                await device._session.cli(commands=commands)  # pylint: disable=protected-access
+                logger.info("Configured 'aaa authorization exec default local' on device %s", device.name)
+
             logger.debug("'aaa authorization exec default local' is already configured on device %s", device.name)
 
             await device.copy(sources=filenames, destination=outdir, direction="from")
