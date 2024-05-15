@@ -1,25 +1,24 @@
+"""aioeapi.Device definition."""
 # -----------------------------------------------------------------------------
 # System Imports
 # -----------------------------------------------------------------------------
 
 from __future__ import annotations
 
-from typing import Optional, Union, AnyStr
 from socket import getservbyname
+from typing import Any
 
 # -----------------------------------------------------------------------------
 # Public Imports
 # -----------------------------------------------------------------------------
-
 import httpx
 
 # -----------------------------------------------------------------------------
 # Private Imports
 # -----------------------------------------------------------------------------
-
 from .aio_portcheck import port_check_url
-from .errors import EapiCommandError
 from .config_session import SessionConfig
+from .errors import EapiCommandError
 
 # -----------------------------------------------------------------------------
 # Exports
@@ -38,8 +37,9 @@ __all__ = ["Device"]
 
 class Device(httpx.AsyncClient):
     """
-    The Device class represents the async JSON-RPC client that communicates with
-    an Arista EOS device.  This class inherits directly from the
+    Represent the async JSON-RPC client that communicates with an Arista EOS device.
+
+    This class inherits directly from the
     httpx.AsyncClient, so any initialization options can be passed directly.
     """
 
@@ -47,50 +47,41 @@ class Device(httpx.AsyncClient):
     EAPI_OFMT_OPTIONS = ("json", "text")
     EAPI_DEFAULT_OFMT = "json"
 
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
-        host: Optional[str] = None,
-        username: Optional[str] = None,
-        password: Optional[str] = None,
-        proto: Optional[str] = "https",
-        port=None,
-        **kwargs,
-    ):
+        host: str | None = None,
+        username: str | None = None,
+        password: str | None = None,
+        proto: str = "https",
+        port: str | int | None = None,
+        **kwargs: Any,  # noqa: ANN401
+    ) -> None:
         """
-        Initializes the Device class.  As a subclass to httpx.AsyncClient, the
-        Caller can provide any of those initializers.  Specific paramertes for
-        Device class are all optional and described below.
+        Initialize the Device class.
+
+        As a subclass to httpx.AsyncClient, the caller can provide any of those initializers.
+        Specific parameters for Device class are all optional and described below.
 
         Parameters
         ----------
-        host: Optional[str]
-            The EOS target device, either hostname (DNS) or ipaddress.
-
-        username: Optional[str]
-            The login user-name; requires the password parameter.
-
-        password: Optional[str]
-            The login password; requires the username parameter.
-
-        proto: Optional[str]
-            The protocol, http or https, to communicate eAPI with the device.
-
-        port: Optional[Union[str,int]]
-            If not provided, the proto value is used to look up the associated
-            port (http=80, https=443).  If provided, overrides the port used to
-            communite with the device.
+            host: The EOS target device, either hostname (DNS) or ipaddress.
+            username: The login user-name; requires the password parameter.
+            password: The login password; requires the username parameter.
+            proto: The protocol, http or https, to communicate eAPI with the device.
+            port: If not provided, the proto value is used to look up the associated
+                  port (http=80, https=443). If provided, overrides the port used to
+                  communite with the device.
 
         Other Parameters
         ----------------
-        base_url: str
-            If provided, the complete URL to the device eAPI endpoint.
+            base_url: str
+                If provided, the complete URL to the device eAPI endpoint.
 
-        auth:
-            If provided, used as the httpx authorization initializer value. If
-            not provided, then username+password is assumed by the Caller and
-            used to create a BasicAuth instance.
+            auth:
+                If provided, used as the httpx authorization initializer value. If
+                not provided, then username+password is assumed by the Caller and
+                used to create a BasicAuth instance.
         """
-
         self.port = port or getservbyname(proto)
         self.host = host
         kwargs.setdefault("base_url", httpx.URL(f"{proto}://{self.host}:{self.port}"))
@@ -101,46 +92,51 @@ class Device(httpx.AsyncClient):
 
         kwargs.setdefault("auth", self.auth)
 
-        super(Device, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.headers["Content-Type"] = "application/json-rpc"
 
     async def check_connection(self) -> bool:
         """
-        This function checks the target device to ensure that the eAPI port is
-        open and accepting connections.  It is recommended that a Caller checks
-        the connection before involing cli commands, but this step is not
-        required.
+        Check the target device to ensure that the eAPI port is open and accepting connections.
+
+        It is recommended that a Caller checks the connection before involing cli commands,
+        but this step is not required.
 
         Returns
         -------
-        True when the device eAPI is accessible, False otherwise.
+            True when the device eAPI is accessible, False otherwise.
         """
         return await port_check_url(self.base_url)
 
-    async def cli(
+    async def cli(  # noqa: PLR0913
         self,
-        command: Optional[AnyStr] = None,
-        commands: Optional[list[AnyStr]] = None,
-        ofmt: Optional[str] = None,
-        suppress_error: Optional[bool] = False,
-        version: Optional[Union[int, str]] = "latest",
-        **kwargs,
-    ):
+        command: str | None = None,
+        commands: list[str] | None = None,
+        ofmt: str | None = None,
+        version: int | str | None = "latest",
+        *,
+        suppress_error: bool = False,
+        auto_complete: bool = False,
+        expand_aliases: bool = False,
+        req_id: int | str | None = None,
+    ) -> list[dict[str, Any] | str] | dict[str, Any] | str | None:
         """
         Execute one or more CLI commands.
 
         Parameters
         ----------
-        command: str
+        command:
             A single command to execute; results in a single output response
-
-        commands: List[str]
+        commands:
             A list of commands to execute; results in a list of output responses
-
-        ofmt: str
+        ofmt:
             Either 'json' or 'text'; indicates the output fromat for the CLI commands.
-
-        suppress_error: Optional[bool] = False
+        version:
+            By default the eAPI will use "version 1" for all API object models.
+            This driver will, by default, always set version to "latest" so
+            that the behavior matches the CLI of the device.  The caller can
+            override the "latest" behavior by explicity setting the version.
+        suppress_error:
             When not False, then if the execution of the command would-have
             raised an EapiCommandError, rather than raising this exception this
             routine will return the value None.
@@ -149,24 +145,13 @@ class Device(httpx.AsyncClient):
             EapiCommandError, now response would be set to None instead.
 
                 response = dev.cli(..., suppress_error=True)
-
-        version: Optional[int | string]
-            By default the eAPI will use "version 1" for all API object models.
-            This driver will, by default, always set version to "latest" so
-            that the behavior matches the CLI of the device.  The caller can
-            override the "latest" behavior by explicity setting the version.
-
-
-        Other Parameters
-        ----------------
-        autoComplete: Optional[bool] = False
+        auto_complete:
             Enabled/disables the command auto-compelete feature of the EAPI.  Per the
             documentation:
                 Allows users to use shorthand commands in eAPI calls. With this
                 parameter included a user can send 'sh ver' via eAPI to get the
                 output of 'show version'.
-
-        expandAliases: Optional[bool] = False
+        expand_aliases:
             Enables/disables the command use of User defined alias.  Per the
             documentation:
                 Allowed users to provide the expandAliases parameter to eAPI
@@ -174,33 +159,41 @@ class Device(httpx.AsyncClient):
                 For example if an alias is configured as 'sv' for 'show version'
                 then an API call with sv and the expandAliases parameter will
                 return the output of show version.
+        req_id:
+            A unique identifier that will be echoed back by the switch. May be a string or number.
 
         Returns
         -------
-        One or List of output respones, per the description above.
+            One or List of output respones, per the description above.
         """
         if not any((command, commands)):
-            raise RuntimeError("Required 'command' or 'commands'")
+            msg = "Required 'command' or 'commands'"
+            raise RuntimeError(msg)
 
-        jsonrpc = self.jsoncrpc_command(
-            commands=[command] if command else commands,
-            ofmt=ofmt,
-            version=version,
-            **kwargs,
+        jsonrpc = self._jsonrpc_command(
+            commands=[command] if command else commands, ofmt=ofmt, version=version, auto_complete=auto_complete, expand_aliases=expand_aliases, req_id=req_id
         )
 
         try:
             res = await self.jsonrpc_exec(jsonrpc)
             return res[0] if command else res
-        except EapiCommandError as eapi_error:
+        except EapiCommandError:
             if suppress_error:
                 return None
-            raise eapi_error
+            raise
 
-    def jsoncrpc_command(self, commands, ofmt, version, **kwargs) -> dict:
-        """Used to create the JSON-RPC command dictionary object"""
-
-        cmd = {
+    def _jsonrpc_command(  # noqa: PLR0913
+        self,
+        commands: list[str] | None = None,
+        ofmt: str | None = None,
+        version: int | str | None = "latest",
+        *,
+        auto_complete: bool = False,
+        expand_aliases: bool = False,
+        req_id: int | str | None = None,
+    ) -> dict[str, Any]:
+        """Create the JSON-RPC command dictionary object."""
+        cmd: dict[str, Any] = {
             "jsonrpc": "2.0",
             "method": "runCmds",
             "params": {
@@ -208,34 +201,34 @@ class Device(httpx.AsyncClient):
                 "cmds": commands,
                 "format": ofmt or self.EAPI_DEFAULT_OFMT,
             },
-            "id": str(kwargs.get("req_id") or id(self)),
+            "id": req_id or id(self),
         }
-        if "autoComplete" in kwargs:
-            cmd["params"]["autoComplete"] = kwargs["autoComplete"]
+        if auto_complete is not None:
+            cmd["params"].update({"autoComplete": auto_complete})
 
-        if "expandAliases" in kwargs:
-            cmd["params"]["expandAliases"] = kwargs["expandAliases"]
+        if expand_aliases is not None:
+            cmd["params"].update({"expandAliases": expand_aliases})
 
         return cmd
 
-    async def jsonrpc_exec(self, jsonrpc: dict) -> list[dict | AnyStr]:
+    async def jsonrpc_exec(self, jsonrpc: dict[str, Any]) -> list[dict[str, Any] | str]:
         """
         Execute the JSON-RPC dictionary object.
 
         Parameters
         ----------
-        jsonrpc: dict
-            The JSON-RPC as created by the `meth`:jsonrpc_command().
+            jsonrpc:
+                The JSON-RPC as created by the `meth`:_jsonrpc_command().
 
         Raises
         ------
-        EapiCommandError
-            In the event that a command resulted in an error response.
+            EapiCommandError
+                In the event that a command resulted in an error response.
 
         Returns
         -------
-        The list of command results; either dict or text depending on the
-        JSON-RPC format pameter.
+            The list of command results; either dict or text depending on the
+            JSON-RPC format parameter.
         """
         res = await self.post("/command-api", json=jsonrpc)
         res.raise_for_status()
@@ -282,12 +275,10 @@ class Device(httpx.AsyncClient):
 
     def config_session(self, name: str) -> SessionConfig:
         """
-        Factory method that returns a SessionConfig instance bound to this
-        device with the given session name.
+        return a SessionConfig instance bound to this device with the given session name.
 
         Parameters
         ----------
-        name:
-            The config-session name
+            name: The config-session name
         """
         return SessionConfig(self, name)

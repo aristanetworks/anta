@@ -1,25 +1,27 @@
+"""aioeapi module exceptions."""
+
 from __future__ import annotations
 
-import httpx
-
 from typing import Any
+
+import httpx
 
 
 class EapiCommandError(RuntimeError):
     """
-    Exception class for EAPI command errors
+    Exception class for EAPI command errors.
 
     Attributes
     ----------
-    failed: str - the failed command
-    errmsg: str - a description of the failure reason
-    errors: list[str] - the command failure details
-    passed: list[dict] - a list of command results of the commands that passed
-    not_exec: list[str] - a list of commands that were not executed
+        failed: the failed command
+        errmsg: a description of the failure reason
+        errors: the command failure details
+        passed: a list of command results of the commands that passed
+        not_exec: a list of commands that were not executed
     """
 
-    def __init__(self, failed: str, errors: list[str], errmsg: str, passed: list[str | dict[str, Any]], not_exec: list[dict[str, Any]]):
-        """Initializer for the EapiCommandError exception"""
+    def __init__(self, failed: str, errors: list[str], errmsg: str, passed: list[str | dict[str, Any]], not_exec: list[dict[str, Any]]) -> None:  # noqa: PLR0913
+        """Initialize for the EapiCommandError exception."""
         self.failed = failed
         self.errmsg = errmsg
         self.errors = errors
@@ -28,7 +30,7 @@ class EapiCommandError(RuntimeError):
         super().__init__()
 
     def __str__(self) -> str:
-        """returns the error message associated with the exception"""
+        """Return the error message associated with the exception."""
         return self.errmsg
 
 
