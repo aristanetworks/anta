@@ -7,8 +7,11 @@ from __future__ import annotations
 
 from typing import Any
 
-from anta.tests.routing.isis import VerifyISISInterfaceMode, VerifyISISNeighborCount, VerifyISISNeighborState
+from anta.tests.routing.isis import VerifyISISInterfaceMode, VerifyISISNeighborCount, VerifyISISNeighborState, VerifyISISSegmentRoutingAdjacencySegments
 from tests.lib.anta import test  # noqa: F401; pylint: disable=W0611
+
+true: bool = True
+false: bool = False
 
 DATA: list[dict[str, Any]] = [
     {
@@ -565,6 +568,333 @@ DATA: list[dict[str, Any]] = [
                 "Interface Ethernet2 not found in VRF default",
                 "Interface Ethernet1 not found in VRF default",
             ],
+        },
+    },
+    {
+        "test": VerifyISISSegmentRoutingAdjacencySegments,
+        "name": "Success of VerifyISISSegmentRoutingAdjacencySegments in default VRF.",
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "isisInstances": {
+                            "CORE-ISIS": {
+                                "dataPlane": "MPLS",
+                                "routerId": "1.0.0.11",
+                                "systemId": "0168.0000.0011",
+                                "hostname": "s1-pe01",
+                                "adjSidAllocationMode": "SrOnly",
+                                "adjSidPoolBase": 116384,
+                                "adjSidPoolSize": 16384,
+                                "adjacencySegments": [
+                                    {
+                                        "ipAddress": "10.0.1.3",
+                                        "localIntf": "Ethernet2",
+                                        "sid": 116384,
+                                        "lan": false,
+                                        "sidOrigin": "dynamic",
+                                        "protection": "unprotected",
+                                        "flags": {
+                                            "b": false,
+                                            "v": true,
+                                            "l": true,
+                                            "f": false,
+                                            "s": false,
+                                        },
+                                        "level": 2,
+                                    },
+                                    {
+                                        "ipAddress": "10.0.1.1",
+                                        "localIntf": "Ethernet1",
+                                        "sid": 116385,
+                                        "lan": false,
+                                        "sidOrigin": "dynamic",
+                                        "protection": "unprotected",
+                                        "flags": {
+                                            "b": false,
+                                            "v": true,
+                                            "l": true,
+                                            "f": false,
+                                            "s": false,
+                                        },
+                                        "level": 2,
+                                    },
+                                ],
+                                "receivedGlobalAdjacencySegments": [],
+                                "misconfiguredAdjacencySegments": [],
+                            }
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {
+            "instances": [
+                {
+                    "name": "CORE-ISIS",
+                    "vrf": "default",
+                    "segments": [
+                        {
+                            "interface": "Ethernet2",
+                            "address": "10.0.1.3",
+                            "sid_origin": "dynamic",
+                        }
+                    ],
+                }
+            ]
+        },
+        "expected": {
+            "result": "success",
+            "messages": [],
+        },
+    },
+    {
+        "test": VerifyISISSegmentRoutingAdjacencySegments,
+        "name": "Failure of VerifyISISSegmentRoutingAdjacencySegments in default VRF for incorrect segment definition.",
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "isisInstances": {
+                            "CORE-ISIS": {
+                                "dataPlane": "MPLS",
+                                "routerId": "1.0.0.11",
+                                "systemId": "0168.0000.0011",
+                                "hostname": "s1-pe01",
+                                "adjSidAllocationMode": "SrOnly",
+                                "adjSidPoolBase": 116384,
+                                "adjSidPoolSize": 16384,
+                                "adjacencySegments": [
+                                    {
+                                        "ipAddress": "10.0.1.3",
+                                        "localIntf": "Ethernet2",
+                                        "sid": 116384,
+                                        "lan": false,
+                                        "sidOrigin": "dynamic",
+                                        "protection": "unprotected",
+                                        "flags": {
+                                            "b": false,
+                                            "v": true,
+                                            "l": true,
+                                            "f": false,
+                                            "s": false,
+                                        },
+                                        "level": 2,
+                                    },
+                                    {
+                                        "ipAddress": "10.0.1.1",
+                                        "localIntf": "Ethernet1",
+                                        "sid": 116385,
+                                        "lan": false,
+                                        "sidOrigin": "dynamic",
+                                        "protection": "unprotected",
+                                        "flags": {
+                                            "b": false,
+                                            "v": true,
+                                            "l": true,
+                                            "f": false,
+                                            "s": false,
+                                        },
+                                        "level": 2,
+                                    },
+                                ],
+                                "receivedGlobalAdjacencySegments": [],
+                                "misconfiguredAdjacencySegments": [],
+                            }
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {
+            "instances": [
+                {
+                    "name": "CORE-ISIS",
+                    "vrf": "default",
+                    "segments": [
+                        {
+                            "interface": "Ethernet2",
+                            "address": "10.0.1.3",
+                            "sid_origin": "dynamic",
+                        },
+                        {
+                            "interface": "Ethernet3",
+                            "address": "10.0.1.2",
+                            "sid_origin": "dynamic",
+                        },
+                    ],
+                }
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": ["Your segment has not been found: interface='Ethernet3' level=2 sid_origin='dynamic' address='10.0.1.2'."],
+        },
+    },
+    {
+        "test": VerifyISISSegmentRoutingAdjacencySegments,
+        "name": "Failure of VerifyISISSegmentRoutingAdjacencySegments with incorrect VRF.",
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "isisInstances": {
+                            "CORE-ISIS": {
+                                "dataPlane": "MPLS",
+                                "routerId": "1.0.0.11",
+                                "systemId": "0168.0000.0011",
+                                "hostname": "s1-pe01",
+                                "adjSidAllocationMode": "SrOnly",
+                                "adjSidPoolBase": 116384,
+                                "adjSidPoolSize": 16384,
+                                "adjacencySegments": [
+                                    {
+                                        "ipAddress": "10.0.1.3",
+                                        "localIntf": "Ethernet2",
+                                        "sid": 116384,
+                                        "lan": false,
+                                        "sidOrigin": "dynamic",
+                                        "protection": "unprotected",
+                                        "flags": {
+                                            "b": false,
+                                            "v": true,
+                                            "l": true,
+                                            "f": false,
+                                            "s": false,
+                                        },
+                                        "level": 2,
+                                    },
+                                    {
+                                        "ipAddress": "10.0.1.1",
+                                        "localIntf": "Ethernet1",
+                                        "sid": 116385,
+                                        "lan": false,
+                                        "sidOrigin": "dynamic",
+                                        "protection": "unprotected",
+                                        "flags": {
+                                            "b": false,
+                                            "v": true,
+                                            "l": true,
+                                            "f": false,
+                                            "s": false,
+                                        },
+                                        "level": 2,
+                                    },
+                                ],
+                                "receivedGlobalAdjacencySegments": [],
+                                "misconfiguredAdjacencySegments": [],
+                            }
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {
+            "instances": [
+                {
+                    "name": "CORE-ISIS",
+                    "vrf": "custom",
+                    "segments": [
+                        {
+                            "interface": "Ethernet2",
+                            "address": "10.0.1.3",
+                            "sid_origin": "dynamic",
+                        },
+                        {
+                            "interface": "Ethernet3",
+                            "address": "10.0.1.2",
+                            "sid_origin": "dynamic",
+                        },
+                    ],
+                }
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": ["VRF custom is not configured to run segment routging."],
+        },
+    },
+    {
+        "test": VerifyISISSegmentRoutingAdjacencySegments,
+        "name": "Failure of VerifyISISSegmentRoutingAdjacencySegments with incorrect Instance.",
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "isisInstances": {
+                            "CORE-ISIS": {
+                                "dataPlane": "MPLS",
+                                "routerId": "1.0.0.11",
+                                "systemId": "0168.0000.0011",
+                                "hostname": "s1-pe01",
+                                "adjSidAllocationMode": "SrOnly",
+                                "adjSidPoolBase": 116384,
+                                "adjSidPoolSize": 16384,
+                                "adjacencySegments": [
+                                    {
+                                        "ipAddress": "10.0.1.3",
+                                        "localIntf": "Ethernet2",
+                                        "sid": 116384,
+                                        "lan": false,
+                                        "sidOrigin": "dynamic",
+                                        "protection": "unprotected",
+                                        "flags": {
+                                            "b": false,
+                                            "v": true,
+                                            "l": true,
+                                            "f": false,
+                                            "s": false,
+                                        },
+                                        "level": 2,
+                                    },
+                                    {
+                                        "ipAddress": "10.0.1.1",
+                                        "localIntf": "Ethernet1",
+                                        "sid": 116385,
+                                        "lan": false,
+                                        "sidOrigin": "dynamic",
+                                        "protection": "unprotected",
+                                        "flags": {
+                                            "b": false,
+                                            "v": true,
+                                            "l": true,
+                                            "f": false,
+                                            "s": false,
+                                        },
+                                        "level": 2,
+                                    },
+                                ],
+                                "receivedGlobalAdjacencySegments": [],
+                                "misconfiguredAdjacencySegments": [],
+                            }
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {
+            "instances": [
+                {
+                    "name": "CORE-ISIS2",
+                    "vrf": "default",
+                    "segments": [
+                        {
+                            "interface": "Ethernet2",
+                            "address": "10.0.1.3",
+                            "sid_origin": "dynamic",
+                        },
+                        {
+                            "interface": "Ethernet3",
+                            "address": "10.0.1.2",
+                            "sid_origin": "dynamic",
+                        },
+                    ],
+                }
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": ["Instance CORE-ISIS2 is not found in vrf default."],
         },
     },
 ]

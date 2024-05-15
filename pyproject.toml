@@ -401,6 +401,9 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.In
   "C901",     # TODO: test function is too complex, needs a refactor
   "PLR0911",  # TODO: Too many return statements, same as above needs a refactor
 ]
+"anta/tests/routing/isis.py" = [
+  "C901",     # TODO: test function is too complex, needs a refactor
+]
 "anta/decorators.py" = [
   "ANN401",  # Ok to use Any type hint in our decorators
 ]
