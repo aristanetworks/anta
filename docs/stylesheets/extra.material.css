@@ -134,12 +134,8 @@
     font-weight: bold;
   }
 
-  .md-typeset h4::before {
-    content: ">> ";
-  }
-
   .md-typeset h4 {
-    font-size: 1.1rem;
+    font-size: 0.9rem;
     margin: 1em 0;
     font-weight: 700;
     letter-spacing: -.01em;
