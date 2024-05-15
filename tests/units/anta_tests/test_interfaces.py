@@ -1742,7 +1742,7 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": {"mtu": 9214},
+        "inputs": {"mtu": 9214, "ignored_interfaces": ["Loopback", "Port-Channel", "Management", "Vxlan"], "specific_mtu": [{"Ethernet10": 9214}]},
         "expected": {"result": "success"},
     },
     {
