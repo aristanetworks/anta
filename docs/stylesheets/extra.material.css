@@ -117,7 +117,7 @@
     /* font-weight: 700; */
     letter-spacing: -.01em;
     color: var(--md-default-fg-color--light);
-    text-transform: uppercase;
+    text-transform: capitalize;
     font-style: normal;
     font-weight: bolder;
   }
@@ -129,7 +129,7 @@
     /* font-weight: 700; */
     letter-spacing: -.01em;
     color: var(--md-default-fg-color--light);
-    text-transform: uppercase;
+    text-transform: capitalize;
     font-style: normal;
     font-weight: bold;
   }
