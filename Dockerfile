@@ -25,7 +25,7 @@ RUN pip --no-cache-dir install "." &&\
 
 FROM python:${PYTHON_VER}-${IMG_OPTION} AS BASE
 
-# Ajoute un utilisateur système
+# Add a system user
 RUN adduser --system anta
 
 # Opencontainer labels
