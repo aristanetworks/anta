@@ -27,21 +27,9 @@ logger = logging.getLogger(__name__)
     help="Group result by test or device.",
     required=False,
 )
-@click.option(
-    "--save-to-csv",
-    type=click.Path(
-        file_okay=True,
-        dir_okay=False,
-        exists=False,
-        writable=True,
-        path_type=pathlib.Path,
-    ),
-    show_envvar=True,
-    required=False,
-    help="Path to save report as a CSV file",
-)
-def table(ctx: click.Context, group_by: Literal["device", "test"] | None, save_to_csv: pathlib.Path | None) -> None:
+def table(ctx: click.Context, group_by: Literal["device", "test"] | None) -> None:
     """ANTA command to check network states with table result."""
+    save_to_csv = ctx.obj["save_to_csv"]
     print_table(ctx, group_by=group_by, csv_file=save_to_csv)
     exit_with_code(ctx)
 
@@ -79,6 +67,7 @@ def json(ctx: click.Context, output: pathlib.Path | None) -> None:
 )
 def text(ctx: click.Context, save_to_csv: pathlib.Path | None) -> None:
     """ANTA command to check network states with text result."""
+    save_to_csv = ctx.obj["save_to_csv"]
     print_text(ctx, csv_file=save_to_csv)
     exit_with_code(ctx)
 

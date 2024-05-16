@@ -309,7 +309,7 @@ class ReportCsv:
         with pathlib.Path.open(csv_filename, "w", encoding="utf-8") as csvfile:
             spamwriter = csv.writer(
                 csvfile,
-                delimiter=";",
+                delimiter=",",
             )
             spamwriter.writerow(headers)
             for entry in results.results:
