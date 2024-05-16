@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.22">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.23">
     
     
       
@@ -28,7 +28,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.732c4fb1.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6543a935.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
@@ -2278,19 +2278,18 @@
 
 
 <h2 id="anta.runner" class="doc doc-heading">
-          <span class="doc doc-object-name doc-module-name">runner</span>
+            <span class="doc doc-object-name doc-module-name">runner</span>
 
 
 <a href="#anta.runner" class="headerlink" title="Permanent link">&para;</a></h2>
 
-  <div class="doc doc-contents first">
+    <div class="doc doc-contents first">
   
         <p>ANTA runner function.</p>
 
-  
+
 
   <div class="doc doc-children">
-
 
 
 
@@ -2303,48 +2302,46 @@
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="anta.runner.adjust_rlimit_nofile" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">adjust_rlimit_nofile</span>
+            <span class="doc doc-object-name doc-function-name">adjust_rlimit_nofile</span>
 
 
 <a href="#anta.runner.adjust_rlimit_nofile" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">adjust_rlimit_nofile</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Adjust the maximum number of open file descriptors for the ANTA process.</p>
 <p>The limit is set to the lower of the current hard limit and the value of the ANTA_NOFILE environment variable.</p>
 <p>If the <code>ANTA_NOFILE</code> environment variable is not set or is invalid, <code>DEFAULT_NOFILE</code> is used.</p>
 
 
-
-  <p><span class="doc-section-title">Returns:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td>
-                <code>    tuple[int, int]: The new soft and hard limits for open file descriptors.</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              
-            </div>
-          </td>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>    tuple[int, int]: The new soft and hard limits for open file descriptors.</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>anta/runner.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">34</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/runner.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">34</span>
 <span class="normal">35</span>
 <span class="normal">36</span>
 <span class="normal">37</span>
@@ -2390,27 +2387,26 @@
     <span class="n">resource</span><span class="o">.</span><span class="n">setrlimit</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">RLIMIT_NOFILE</span><span class="p">,</span> <span class="p">(</span><span class="n">nofile</span><span class="p">,</span> <span class="n">limits</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
     <span class="k">return</span> <span class="n">resource</span><span class="o">.</span><span class="n">getrlimit</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">RLIMIT_NOFILE</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="anta.runner.get_coroutines" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">get_coroutines</span>
+            <span class="doc doc-object-name doc-function-name">get_coroutines</span>
 
 
 <a href="#anta.runner.get_coroutines" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">get_coroutines</span><span class="p">(</span><span class="n">selected_tests</span><span class="p">:</span> <span class="n">defaultdict</span><span class="p">[</span><span class="n">AntaDevice</span><span class="p">,</span> <span class="nb">set</span><span class="p">[</span><span class="n">AntaTestDefinition</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Coroutine</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TestResult</span><span class="p">]]</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Get the coroutines for the ANTA run.</p>
+
 
 <details class="args:" open>
   <summary>Args:</summary>
@@ -2418,32 +2414,31 @@
 </code></pre></div>
 </details>
 
-
-  <p><span class="doc-section-title">Returns:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td>
-                <code>    The list of coroutines to run.</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              
-            </div>
-          </td>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>    The list of coroutines to run.</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>anta/runner.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">160</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/runner.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">160</span>
 <span class="normal">161</span>
 <span class="normal">162</span>
 <span class="normal">163</span>
@@ -2499,36 +2494,35 @@
                 <span class="n">anta_log_exception</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">coros</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="anta.runner.log_cache_statistics" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">log_cache_statistics</span>
+            <span class="doc doc-object-name doc-function-name">log_cache_statistics</span>
 
 
 <a href="#anta.runner.log_cache_statistics" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">log_cache_statistics</span><span class="p">(</span><span class="n">devices</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaDevice</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Log cache statistics for each device in the inventory.</p>
+
 
 <details class="args:" open>
   <summary>Args:</summary>
   <div class="codehilite"><pre><span></span><code><span class="n">devices</span><span class="o">:</span><span class="w"> </span><span class="n">List</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">devices</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">inventory</span><span class="o">.</span>
 </code></pre></div>
 </details>
-          <details class="quote">
-            <summary>Source code in <code>anta/runner.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">59</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/runner.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">59</span>
 <span class="normal">60</span>
 <span class="normal">61</span>
 <span class="normal">62</span>
@@ -2562,20 +2556,18 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Caching is not enabled on </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="anta.runner.main" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">main</span>
+            <span class="doc doc-object-name doc-function-name">main</span>
 
-  
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-async"><code>async</code></small>
   </span>
@@ -2584,11 +2576,12 @@
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">main</span><span class="p">(</span><span class="n">manager</span><span class="p">:</span> <span class="n">ResultManager</span><span class="p">,</span> <span class="n">inventory</span><span class="p">:</span> <span class="n">AntaInventory</span><span class="p">,</span> <span class="n">catalog</span><span class="p">:</span> <span class="n">AntaCatalog</span><span class="p">,</span> <span class="n">devices</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tests</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">established_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Run ANTA.</p>
 <p>Use this as an entrypoint to the test framework in your script.
 ResultManager object gets updated with the test results.</p>
+
 
 <details class="args:" open>
   <summary>Args:</summary>
@@ -2602,9 +2595,9 @@ ResultManager object gets updated with the test results.</p>
 <span class="n">dry_run</span><span class="o">:</span><span class="w"> </span><span class="n">Build</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">coroutine</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">run</span><span class="w"> </span><span class="n">and</span><span class="w"> </span><span class="n">stop</span><span class="w"> </span><span class="n">before</span><span class="w"> </span><span class="n">test</span><span class="w"> </span><span class="n">execution</span><span class="o">.</span>
 </code></pre></div>
 </details>
-          <details class="quote">
-            <summary>Source code in <code>anta/runner.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">190</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/runner.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">190</span>
 <span class="normal">191</span>
 <span class="normal">192</span>
 <span class="normal">193</span>
@@ -2766,27 +2759,26 @@ ResultManager object gets updated with the test results.</p>
 
     <span class="n">log_cache_statistics</span><span class="p">(</span><span class="n">selected_inventory</span><span class="o">.</span><span class="n">devices</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="anta.runner.prepare_tests" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">prepare_tests</span>
+            <span class="doc doc-object-name doc-function-name">prepare_tests</span>
 
 
 <a href="#anta.runner.prepare_tests" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">prepare_tests</span><span class="p">(</span><span class="n">inventory</span><span class="p">:</span> <span class="n">AntaInventory</span><span class="p">,</span> <span class="n">catalog</span><span class="p">:</span> <span class="n">AntaCatalog</span><span class="p">,</span> <span class="n">tests</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">defaultdict</span><span class="p">[</span><span class="n">AntaDevice</span><span class="p">,</span> <span class="nb">set</span><span class="p">[</span><span class="n">AntaTestDefinition</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Prepare the tests to run.</p>
+
 
 <details class="args:" open>
   <summary>Args:</summary>
@@ -2797,32 +2789,31 @@ ResultManager object gets updated with the test results.</p>
 </code></pre></div>
 </details>
 
-
-  <p><span class="doc-section-title">Returns:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td>
-                <code>    A mapping of devices to the tests to run or None if there are no tests to run.</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              
-            </div>
-          </td>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>    A mapping of devices to the tests to run or None if there are no tests to run.</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>anta/runner.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">114</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/runner.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">114</span>
 <span class="normal">115</span>
 <span class="normal">116</span>
 <span class="normal">117</span>
@@ -2910,20 +2901,18 @@ ResultManager object gets updated with the test results.</p>
 
     <span class="k">return</span> <span class="n">device_to_tests</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="anta.runner.setup_inventory" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">setup_inventory</span>
+            <span class="doc doc-object-name doc-function-name">setup_inventory</span>
 
-  
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-async"><code>async</code></small>
   </span>
@@ -2932,9 +2921,10 @@ ResultManager object gets updated with the test results.</p>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">setup_inventory</span><span class="p">(</span><span class="n">inventory</span><span class="p">:</span> <span class="n">AntaInventory</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">devices</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">established_only</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaInventory</span> <span class="o">|</span> <span class="kc">None</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Set up the inventory for the ANTA run.</p>
+
 
 <details class="args:" open>
   <summary>Args:</summary>
@@ -2944,32 +2934,31 @@ ResultManager object gets updated with the test results.</p>
 </code></pre></div>
 </details>
 
-
-  <p><span class="doc-section-title">Returns:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td>
-                <code>    AntaInventory | None: The filtered inventory or None if there are no devices to run tests on.</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              
-            </div>
-          </td>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>    AntaInventory | None: The filtered inventory or None if there are no devices to run tests on.</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>anta/runner.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 78</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/runner.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 78</span>
 <span class="normal"> 79</span>
 <span class="normal"> 80</span>
 <span class="normal"> 81</span>
@@ -3037,8 +3026,8 @@ ResultManager object gets updated with the test results.</p>
 
     <span class="k">return</span> <span class="n">selected_inventory</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
 
@@ -3046,7 +3035,7 @@ ResultManager object gets updated with the test results.</p>
 
   </div>
 
-  </div>
+    </div>
 
 </div>
 
@@ -3168,7 +3157,7 @@ ResultManager object gets updated with the test results.</p>
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable"], "provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.5cfa9459.min.js"></script>
+      <script src="../../assets/javascripts/bundle.ebd0bdb7.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
       

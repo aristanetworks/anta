@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.22">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.23">
     
     
       
@@ -28,7 +28,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.732c4fb1.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6543a935.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
@@ -2122,10 +2122,10 @@
 
 
 
-  <div class="doc doc-contents first">
+    <div class="doc doc-contents first">
   
 
-  
+
 
   <div class="doc doc-children">
 
@@ -2134,25 +2134,28 @@
 
 
 
+  
 
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.tests.field_notices.VerifyFieldNotice44Resolution" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyFieldNotice44Resolution</span>
+            <span class="doc doc-object-name doc-class-name">VerifyFieldNotice44Resolution</span>
 
 
 <a href="#anta.tests.field_notices.VerifyFieldNotice44Resolution" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
   
         <p>Verifies if the device is using an Aboot version that fixes the bug discussed in the Field Notice 44.</p>
 <p>Aboot manages system settings prior to EOS initialization.</p>
 <p>Reference: <a href="https://www.arista.com/en/support/advisories-notices/field-notice/8756-field-notice-44">https://www.arista.com/en/support/advisories-notices/field-notice/8756-field-notice-44</a></p>
+
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
@@ -2406,27 +2409,29 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;device is running incorrect version of aboot (</span><span class="si">{</span><span class="n">aboot_version</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
-  </div>
+    </div>
 
+</div>  
 
-</div>
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.tests.field_notices.VerifyFieldNotice72Resolution" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyFieldNotice72Resolution</span>
+            <span class="doc doc-object-name doc-class-name">VerifyFieldNotice72Resolution</span>
 
 
 <a href="#anta.tests.field_notices.VerifyFieldNotice72Resolution" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
   
         <p>Verifies if the device is potentially exposed to Field Notice 72, and if the issue has been mitigated.</p>
 <p>Reference: <a href="https://www.arista.com/en/support/advisories-notices/field-notice/17410-field-notice-0072">https://www.arista.com/en/support/advisories-notices/field-notice/17410-field-notice-0072</a></p>
+
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
@@ -2532,8 +2537,7 @@
 <span class="normal">196</span>
 <span class="normal">197</span>
 <span class="normal">198</span>
-<span class="normal">199</span>
-<span class="normal">200</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyFieldNotice72Resolution</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">199</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyFieldNotice72Resolution</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies if the device is potentially exposed to Field Notice 72, and if the issue has been mitigated.</span>
 
 <span class="sd">    Reference: https://www.arista.com/en/support/advisories-notices/field-notice/17410-field-notice-0072</span>
@@ -2605,11 +2609,9 @@
                 <span class="k">return</span>
         <span class="c1"># We should never hit this point</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_error</span><span class="p">(</span><span class="s2">&quot;Error in running test - FixedSystemvrm1 not found&quot;</span><span class="p">)</span>
-        <span class="k">return</span>
 </code></pre></div></td></tr></table></div>
   </details>
-  </div>
-
+    </div>
 
 </div>
 
@@ -2618,7 +2620,7 @@
 
   </div>
 
-  </div>
+    </div>
 
 </div>
 
@@ -2740,7 +2742,7 @@
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable"], "provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.5cfa9459.min.js"></script>
+      <script src="../../assets/javascripts/bundle.ebd0bdb7.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
       

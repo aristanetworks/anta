@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.22">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.23">
     
     
       
@@ -28,7 +28,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.732c4fb1.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6543a935.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
@@ -2595,26 +2595,29 @@
   ~ that can be found in the LICENSE file.
   -->
 
+  
 
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.catalog.AntaCatalog" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">AntaCatalog</span>
+            <span class="doc doc-object-name doc-class-name">AntaCatalog</span>
 
 
 <a href="#anta.catalog.AntaCatalog" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">AntaCatalog</span><span class="p">(</span><span class="n">tests</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaTestDefinition</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
 </code></pre></div>
 
-  <div class="doc doc-contents first">
+    <div class="doc doc-contents first">
 
   
         <p>Class representing an ANTA Catalog.</p>
 <p>It can be instantiated using its constructor or one of the static methods: <code>parse()</code>, <code>from_list()</code> or <code>from_dict()</code></p>
   
+
 
 <details class="args:" open>
   <summary>Args:</summary>
@@ -2622,9 +2625,9 @@
 <span class="n">filename</span><span class="p">:</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">path</span><span class="w"> </span><span class="n">from</span><span class="w"> </span><span class="n">which</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">catalog</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">loaded</span><span class="o">.</span>
 </code></pre></div>
 </details>
-                  <details class="quote">
-                  <summary>Source code in <code>anta/catalog.py</code></summary>
-                  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">250</span>
+                    <details class="quote">
+                    <summary>Source code in <code>anta/catalog.py</code></summary>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">250</span>
 <span class="normal">251</span>
 <span class="normal">252</span>
 <span class="normal">253</span>
@@ -2680,10 +2683,10 @@
     <span class="bp">self</span><span class="o">.</span><span class="n">indexes_built</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">final_tests_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
 </code></pre></div></td></tr></table></div>
-                </details>
+                  </details>
 
 
-    
+  
 
   <div class="doc doc-children">
 
@@ -2698,9 +2701,9 @@
 
 
 <h3 id="anta.catalog.AntaCatalog.filename" class="doc doc-heading">
-          <span class="doc doc-object-name doc-attribute-name">filename</span>
+            <span class="doc doc-object-name doc-attribute-name">filename</span>
 
-  
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -2709,10 +2712,10 @@
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">filename</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Path of the file used to create this AntaCatalog instance.</p>
-  </div>
+    </div>
 
 </div>
 
@@ -2721,9 +2724,9 @@
 
 
 <h3 id="anta.catalog.AntaCatalog.tests" class="doc doc-heading">
-          <span class="doc doc-object-name doc-attribute-name">tests</span>
+            <span class="doc doc-object-name doc-attribute-name">tests</span>
 
-  
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
       <small class="doc doc-label doc-label-writable"><code>writable</code></small>
@@ -2733,29 +2736,27 @@
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">tests</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaTestDefinition</span><span class="p">]</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>List of AntaTestDefinition in this catalog.</p>
-  </div>
+    </div>
 
 </div>
-
 
 
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="anta.catalog.AntaCatalog.build_indexes" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">build_indexes</span>
+            <span class="doc doc-object-name doc-function-name">build_indexes</span>
 
 
 <a href="#anta.catalog.AntaCatalog.build_indexes" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">build_indexes</span><span class="p">(</span><span class="n">filtered_tests</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Indexes tests by their tags for quick access during filtering operations.</p>
 <p>If a <code>filtered_tests</code> set is provided, only the tests in this set will be indexed.</p>
@@ -2764,9 +2765,9 @@
 - tests_without_tags: A set of tests that do not have any tags.</p>
 <p>Once the indexes are built, the <code>indexes_built</code> attribute is set to True.</p>
 
-          <details class="quote">
-            <summary>Source code in <code>anta/catalog.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">401</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/catalog.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">401</span>
 <span class="normal">402</span>
 <span class="normal">403</span>
 <span class="normal">404</span>
@@ -2816,55 +2817,52 @@
     <span class="bp">self</span><span class="o">.</span><span class="n">tag_to_tests</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tests_without_tags</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">indexes_built</span> <span class="o">=</span> <span class="kc">True</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="anta.catalog.AntaCatalog.dump" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">dump</span>
+            <span class="doc doc-object-name doc-function-name">dump</span>
 
 
 <a href="#anta.catalog.AntaCatalog.dump" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">dump</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AntaCatalogFile</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Return an AntaCatalogFile instance from this AntaCatalog instance.</p>
 
 
-
-  <p><span class="doc-section-title">Returns:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td>
-                <code>    An AntaCatalogFile instance containing tests of this AntaCatalog instance.</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              
-            </div>
-          </td>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>    An AntaCatalogFile instance containing tests of this AntaCatalog instance.</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>anta/catalog.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">388</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/catalog.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">388</span>
 <span class="normal">389</span>
 <span class="normal">390</span>
 <span class="normal">391</span>
@@ -2888,20 +2886,18 @@
         <span class="n">root</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">test</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="vm">__module__</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">AntaCatalogFile</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="anta.catalog.AntaCatalog.from_dict" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">from_dict</span>
+            <span class="doc doc-object-name doc-function-name">from_dict</span>
 
-  
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
   </span>
@@ -2910,12 +2906,13 @@
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">from_dict</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">RawCatalogInput</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaCatalog</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Create an AntaCatalog instance from a dictionary data structure.</p>
 <p>See RawCatalogInput type alias for details.
 It is the data structure returned by <code>yaml.load()</code> function of a valid
 YAML Test Catalog file.</p>
+
 
 <details class="args:" open>
   <summary>Args:</summary>
@@ -2923,9 +2920,9 @@ YAML Test Catalog file.</p>
 <span class="n">filename</span><span class="o">:</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="kd">set</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">AntaCatalog</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="n">attribute</span>
 </code></pre></div>
 </details>
-          <details class="quote">
-            <summary>Source code in <code>anta/catalog.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">320</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/catalog.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">320</span>
 <span class="normal">321</span>
 <span class="normal">322</span>
 <span class="normal">323</span>
@@ -2995,20 +2992,18 @@ YAML Test Catalog file.</p>
         <span class="n">tests</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">AntaCatalog</span><span class="p">(</span><span class="n">tests</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="anta.catalog.AntaCatalog.from_list" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">from_list</span>
+            <span class="doc doc-object-name doc-function-name">from_list</span>
 
-  
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
   </span>
@@ -3017,19 +3012,20 @@ YAML Test Catalog file.</p>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">from_list</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">ListAntaTestTuples</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaCatalog</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Create an AntaCatalog instance from a list data structure.</p>
 <p>See ListAntaTestTuples type alias for details.</p>
+
 
 <details class="args:" open>
   <summary>Args:</summary>
   <div class="codehilite"><pre><span></span><code><span class="n">data</span><span class="o">:</span><span class="w"> </span><span class="n">Python</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="n">used</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">instantiate</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">AntaCatalog</span><span class="w"> </span><span class="n">instance</span>
 </code></pre></div>
 </details>
-          <details class="quote">
-            <summary>Source code in <code>anta/catalog.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">356</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/catalog.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">356</span>
 <span class="normal">357</span>
 <span class="normal">358</span>
 <span class="normal">359</span>
@@ -3065,27 +3061,26 @@ YAML Test Catalog file.</p>
         <span class="k">raise</span>
     <span class="k">return</span> <span class="n">AntaCatalog</span><span class="p">(</span><span class="n">tests</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="anta.catalog.AntaCatalog.get_tests_by_tags" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">get_tests_by_tags</span>
+            <span class="doc doc-object-name doc-function-name">get_tests_by_tags</span>
 
 
 <a href="#anta.catalog.AntaCatalog.get_tests_by_tags" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">get_tests_by_tags</span><span class="p">(</span><span class="n">tags</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="n">AntaTestDefinition</span><span class="p">]</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Return all tests that match a given set of tags, according to the specified strictness.</p>
+
 
 <details class="args:" open>
   <summary>Args:</summary>
@@ -3095,56 +3090,54 @@ YAML Test Catalog file.</p>
 </code></pre></div>
 </details>
 
-
-  <p><span class="doc-section-title">Returns:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td>
-                <code>    set[AntaTestDefinition]: A set of tests that match the given tags.</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              
-            </div>
-          </td>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>    set[AntaTestDefinition]: A set of tests that match the given tags.</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
-
-  <p><span class="doc-section-title">Raises:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td>
-                <code>    ValueError: If the indexes have not been built prior to method call.</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              
-            </div>
-          </td>
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>    ValueError: If the indexes have not been built prior to method call.</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>anta/catalog.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">427</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/catalog.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">427</span>
 <span class="normal">428</span>
 <span class="normal">429</span>
 <span class="normal">430</span>
@@ -3204,27 +3197,26 @@ YAML Test Catalog file.</p>
         <span class="k">return</span> <span class="nb">set</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="o">*</span><span class="n">filtered_sets</span><span class="p">)</span>
     <span class="k">return</span> <span class="nb">set</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="o">*</span><span class="n">filtered_sets</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="anta.catalog.AntaCatalog.merge" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">merge</span>
+            <span class="doc doc-object-name doc-function-name">merge</span>
 
 
 <a href="#anta.catalog.AntaCatalog.merge" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">merge</span><span class="p">(</span><span class="n">catalog</span><span class="p">:</span> <span class="n">AntaCatalog</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaCatalog</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Merge two AntaCatalog instances.</p>
+
 
 <details class="args:" open>
   <summary>Args:</summary>
@@ -3232,32 +3224,31 @@ YAML Test Catalog file.</p>
 </code></pre></div>
 </details>
 
-
-  <p><span class="doc-section-title">Returns:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td>
-                <code>    A new AntaCatalog instance containing the tests of the two instances.</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              
-            </div>
-          </td>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>    A new AntaCatalog instance containing the tests of the two instances.</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>anta/catalog.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">375</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/catalog.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">375</span>
 <span class="normal">376</span>
 <span class="normal">377</span>
 <span class="normal">378</span>
@@ -3281,20 +3272,18 @@ YAML Test Catalog file.</p>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">AntaCatalog</span><span class="p">(</span><span class="n">tests</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tests</span> <span class="o">+</span> <span class="n">catalog</span><span class="o">.</span><span class="n">tests</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="anta.catalog.AntaCatalog.parse" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">parse</span>
+            <span class="doc doc-object-name doc-function-name">parse</span>
 
-  
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
   </span>
@@ -3303,18 +3292,19 @@ YAML Test Catalog file.</p>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">parse</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaCatalog</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Create an AntaCatalog instance from a test catalog file.</p>
+
 
 <details class="args:" open>
   <summary>Args:</summary>
   <div class="codehilite"><pre><span></span><code><span class="n">filename</span><span class="o">:</span><span class="w"> </span><span class="n">Path</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">test</span><span class="w"> </span><span class="n">catalog</span><span class="w"> </span><span class="n">YAML</span><span class="w"> </span><span class="n">file</span>
 </code></pre></div>
 </details>
-          <details class="quote">
-            <summary>Source code in <code>anta/catalog.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">300</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/catalog.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">300</span>
 <span class="normal">301</span>
 <span class="normal">302</span>
 <span class="normal">303</span>
@@ -3352,8 +3342,8 @@ YAML Test Catalog file.</p>
 
     <span class="k">return</span> <span class="n">AntaCatalog</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
 
@@ -3362,26 +3352,27 @@ YAML Test Catalog file.</p>
   </div>
 
 
-  </div>
+    </div>
 
+</div>  
 
-</div>
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.catalog.AntaTestDefinition" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">AntaTestDefinition</span>
+            <span class="doc doc-object-name doc-class-name">AntaTestDefinition</span>
 
 
 <a href="#anta.catalog.AntaTestDefinition" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">AntaTestDefinition</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">AntaTest</span><span class="p">]</span> <span class="o">|</span> <span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span>
 </code></pre></div>
 
-  <div class="doc doc-contents first">
-          <p class="doc doc-class-bases">
-            Bases: <code><span title="pydantic.BaseModel">BaseModel</span></code></p>
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="pydantic.BaseModel">BaseModel</span></code></p>
 
   
         <p>Define a test with its associated inputs.</p>
@@ -3390,9 +3381,9 @@ inputs: The associated AntaTest.Input subclass instance</p>
   
         <p><a href="https://docs.pydantic.dev/2.0/usage/validators/#using-validation-context-with-basemodel-initialization">https://docs.pydantic.dev/2.0/usage/validators/#using-validation-context-with-basemodel-initialization</a>.</p>
 
-                  <details class="quote">
-                  <summary>Source code in <code>anta/catalog.py</code></summary>
-                  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">65</span>
+                    <details class="quote">
+                    <summary>Source code in <code>anta/catalog.py</code></summary>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">65</span>
 <span class="normal">66</span>
 <span class="normal">67</span>
 <span class="normal">68</span>
@@ -3414,13 +3405,12 @@ inputs: The associated AntaTest.Input subclass instance</p>
     <span class="p">)</span>
     <span class="nb">super</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
-                </details>
+                  </details>
 
 
-    
+  
 
   <div class="doc doc-children">
-
 
 
 
@@ -3433,23 +3423,22 @@ inputs: The associated AntaTest.Input subclass instance</p>
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="anta.catalog.AntaTestDefinition.check_inputs" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">check_inputs</span>
+            <span class="doc doc-object-name doc-function-name">check_inputs</span>
 
 
 <a href="#anta.catalog.AntaTestDefinition.check_inputs" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">check_inputs</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AntaTestDefinition</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Check the <code>inputs</code> field typing.</p>
 <p>The <code>inputs</code> class attribute needs to be an instance of the AntaTest.Input subclass defined in the class <code>test</code>.</p>
 
-          <details class="quote">
-            <summary>Source code in <code>anta/catalog.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">118</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/catalog.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">118</span>
 <span class="normal">119</span>
 <span class="normal">120</span>
 <span class="normal">121</span>
@@ -3469,20 +3458,18 @@ inputs: The associated AntaTest.Input subclass instance</p>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>  <span class="c1"># noqa: TRY004 pydantic catches ValueError or AssertionError, no TypeError</span>
     <span class="k">return</span> <span class="bp">self</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="anta.catalog.AntaTestDefinition.instantiate_inputs" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">instantiate_inputs</span>
+            <span class="doc doc-object-name doc-function-name">instantiate_inputs</span>
 
-  
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
   </span>
@@ -3491,16 +3478,16 @@ inputs: The associated AntaTest.Input subclass instance</p>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">instantiate_inputs</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">ValidationInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Ensure the test inputs can be instantiated and thus are valid.</p>
 <p>If the test has no inputs, allow the user to omit providing the <code>inputs</code> field.
 If the test has inputs, allow the user to provide a valid dictionary of the input fields.
 This model validator will instantiate an Input class from the <code>test</code> class field.</p>
 
-          <details class="quote">
-            <summary>Source code in <code>anta/catalog.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 77</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/catalog.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 77</span>
 <span class="normal"> 78</span>
 <span class="normal"> 79</span>
 <span class="normal"> 80</span>
@@ -3580,25 +3567,23 @@ This model validator will instantiate an Input class from the <code>test</code> 
     <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Could not instantiate inputs as type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> is not valid&quot;</span>
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="anta.catalog.AntaTestDefinition.serialize_model" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">serialize_model</span>
+            <span class="doc doc-object-name doc-function-name">serialize_model</span>
 
 
 <a href="#anta.catalog.AntaTestDefinition.serialize_model" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">serialize_model</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">]</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Serialize the AntaTestDefinition model.</p>
 <p>The dictionary representing the model will be look like:
@@ -3607,32 +3592,31 @@ This model validator will instantiate an Input class from the <code>test</code> 
 </code></pre></div></p>
 
 
-
-  <p><span class="doc-section-title">Returns:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td>
-                <code>    A dictionary representing the model.</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              
-            </div>
-          </td>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>    A dictionary representing the model.</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>anta/catalog.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">49</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/catalog.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">49</span>
 <span class="normal">50</span>
 <span class="normal">51</span>
 <span class="normal">52</span>
@@ -3662,8 +3646,8 @@ This model validator will instantiate an Input class from the <code>test</code> 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
 
@@ -3672,28 +3656,30 @@ This model validator will instantiate an Input class from the <code>test</code> 
   </div>
 
 
-  </div>
+    </div>
 
+</div>  
 
-</div>
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.catalog.AntaCatalogFile" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">AntaCatalogFile</span>
+            <span class="doc doc-object-name doc-class-name">AntaCatalogFile</span>
 
 
 <a href="#anta.catalog.AntaCatalogFile" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents first">
-          <p class="doc doc-class-bases">
-            Bases: <code><span title="pydantic.RootModel">RootModel</span>[<a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a>[<span title="pydantic.types.ImportString">ImportString</span>[<a class="autorefs autorefs-external" title="typing.Any" href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>], <a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="anta.catalog.AntaTestDefinition" href="#anta.catalog.AntaTestDefinition">AntaTestDefinition</a>]]]</code></p>
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="pydantic.RootModel">RootModel</span>[<a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a>[<span title="pydantic.types.ImportString">ImportString</span>[<a class="autorefs autorefs-external" title="typing.Any" href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>], <a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="anta.catalog.AntaTestDefinition" href="#anta.catalog.AntaTestDefinition">AntaTestDefinition</a>]]]</code></p>
 
   
         <p>Represents an ANTA Test Catalog File.</p>
+
 
 <details class="example:" open>
   <summary>Example:</summary>
@@ -3707,10 +3693,9 @@ This model validator will instantiate an Input class from the <code>test</code> 
 </details>
   
 
-    
+  
 
   <div class="doc doc-children">
-
 
 
 
@@ -3723,11 +3708,10 @@ This model validator will instantiate an Input class from the <code>test</code> 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="anta.catalog.AntaCatalogFile.check_tests" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">check_tests</span>
+            <span class="doc doc-object-name doc-function-name">check_tests</span>
 
-  
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
   </span>
@@ -3736,16 +3720,16 @@ This model validator will instantiate an Input class from the <code>test</code> 
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">check_tests</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Allow the user to provide a Python data structure that only has string values.</p>
 <p>This validator will try to flatten and import Python modules, check if the tests classes
 are actually defined in their respective Python module and instantiate Input instances
 with provided value to validate test inputs.</p>
 
-          <details class="quote">
-            <summary>Source code in <code>anta/catalog.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">189</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/catalog.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">189</span>
 <span class="normal">190</span>
 <span class="normal">191</span>
 <span class="normal">192</span>
@@ -3825,20 +3809,18 @@ with provided value to validate test inputs.</p>
         <span class="k">return</span> <span class="n">typed_data</span>
     <span class="k">return</span> <span class="n">data</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="anta.catalog.AntaCatalogFile.flatten_modules" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">flatten_modules</span>
+            <span class="doc doc-object-name doc-function-name">flatten_modules</span>
 
-  
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
   </span>
@@ -3847,9 +3829,10 @@ with provided value to validate test inputs.</p>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">flatten_modules</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">package</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="n">ModuleType</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Allow the user to provide a data structure with nested Python modules.</p>
+
 
 <details class="example:" open>
   <summary>Example:</summary>
@@ -3863,9 +3846,9 @@ anta.tests.routing:
 `anta.tests.routing.generic` and `anta.tests.routing.bgp` are importable Python modules.
 </code></pre></div>
 </details>
-          <details class="quote">
-            <summary>Source code in <code>anta/catalog.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">146</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/catalog.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">146</span>
 <span class="normal">147</span>
 <span class="normal">148</span>
 <span class="normal">149</span>
@@ -3937,63 +3920,60 @@ anta.tests.routing:
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tests</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="c1"># This is an inner Python module</span>
             <span class="n">modules</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">AntaCatalogFile</span><span class="o">.</span><span class="n">flatten_modules</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">tests</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="n">module</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tests</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-                <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Syntax error when parsing: </span><span class="si">{</span><span class="n">tests</span><span class="si">}</span><span class="se">\n</span><span class="s2">It must be a list of ANTA tests. Check the test catalog.&quot;</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>  <span class="c1"># noqa: TRY004 pydantic catches ValueError or AssertionError, no TypeError</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tests</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="c1"># This is a list of AntaTestDefinition</span>
             <span class="n">modules</span><span class="p">[</span><span class="n">module</span><span class="p">]</span> <span class="o">=</span> <span class="n">tests</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Syntax error when parsing: </span><span class="si">{</span><span class="n">tests</span><span class="si">}</span><span class="se">\n</span><span class="s2">It must be a list of ANTA tests. Check the test catalog.&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>  <span class="c1"># noqa: TRY004 pydantic catches ValueError or AssertionError, no TypeError</span>
     <span class="k">return</span> <span class="n">modules</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="anta.catalog.AntaCatalogFile.yaml" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">yaml</span>
+            <span class="doc doc-object-name doc-function-name">yaml</span>
 
 
 <a href="#anta.catalog.AntaCatalogFile.yaml" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">yaml</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Return a YAML representation string of this model.</p>
 
 
-
-  <p><span class="doc-section-title">Returns:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td>
-                <code>    The YAML representation string of this model.</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              
-            </div>
-          </td>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>    The YAML representation string of this model.</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>anta/catalog.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">230</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/catalog.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">230</span>
 <span class="normal">231</span>
 <span class="normal">232</span>
 <span class="normal">233</span>
@@ -4017,8 +3997,8 @@ anta.tests.routing:
     <span class="c1"># Explore if this worth using this: https://github.com/NowanIlfideme/pydantic-yaml</span>
     <span class="k">return</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_dump</span><span class="p">(</span><span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_dump_json</span><span class="p">(</span><span class="n">serialize_as_any</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exclude_unset</span><span class="o">=</span><span class="kc">True</span><span class="p">)),</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">math</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
 
@@ -4027,8 +4007,7 @@ anta.tests.routing:
   </div>
 
 
-  </div>
-
+    </div>
 
 </div>
 
@@ -4150,7 +4129,7 @@ anta.tests.routing:
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable"], "provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.5cfa9459.min.js"></script>
+      <script src="../../assets/javascripts/bundle.ebd0bdb7.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
       

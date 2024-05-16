@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.22">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.23">
     
     
       
@@ -28,7 +28,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.732c4fb1.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6543a935.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
@@ -2370,10 +2370,10 @@
 
 
 
-  <div class="doc doc-contents first">
+    <div class="doc doc-contents first">
   
 
-  
+
 
   <div class="doc doc-children">
 
@@ -2382,23 +2382,26 @@
 
 
 
+  
 
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.tests.logging.VerifyLoggingAccounting" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyLoggingAccounting</span>
+            <span class="doc doc-object-name doc-class-name">VerifyLoggingAccounting</span>
 
 
 <a href="#anta.tests.logging.VerifyLoggingAccounting" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
   
         <p>Verifies if AAA accounting logs are generated.</p>
+
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
@@ -2494,26 +2497,28 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;AAA accounting logs are not generated&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
-  </div>
+    </div>
 
+</div>  
 
-</div>
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.tests.logging.VerifyLoggingErrors" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyLoggingErrors</span>
+            <span class="doc doc-object-name doc-class-name">VerifyLoggingErrors</span>
 
 
 <a href="#anta.tests.logging.VerifyLoggingErrors" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
   
         <p>Verifies there are no syslog messages with a severity of ERRORS or higher.</p>
+
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
@@ -2609,26 +2614,28 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;Device has reported syslog messages with a severity of ERRORS or higher&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
-  </div>
+    </div>
 
+</div>  
 
-</div>
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.tests.logging.VerifyLoggingHostname" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyLoggingHostname</span>
+            <span class="doc doc-object-name doc-class-name">VerifyLoggingHostname</span>
 
 
 <a href="#anta.tests.logging.VerifyLoggingHostname" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
   
         <p>Verifies if logs are generated with the device FQDN.</p>
+
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
@@ -2748,26 +2755,28 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;Logs are not generated with the device FQDN&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
-  </div>
+    </div>
 
+</div>  
 
-</div>
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.tests.logging.VerifyLoggingHosts" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyLoggingHosts</span>
+            <span class="doc doc-object-name doc-class-name">VerifyLoggingHosts</span>
 
 
 <a href="#anta.tests.logging.VerifyLoggingHosts" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
   
         <p>Verifies logging hosts (syslog servers) for a specified VRF.</p>
+
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
@@ -2945,26 +2954,28 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Syslog servers </span><span class="si">{</span><span class="n">not_configured</span><span class="si">}</span><span class="s2"> are not configured in VRF </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
-  </div>
+    </div>
 
+</div>  
 
-</div>
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.tests.logging.VerifyLoggingLogsGeneration" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyLoggingLogsGeneration</span>
+            <span class="doc doc-object-name doc-class-name">VerifyLoggingLogsGeneration</span>
 
 
 <a href="#anta.tests.logging.VerifyLoggingLogsGeneration" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
   
         <p>Verifies if logs are generated.</p>
+
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
@@ -3070,26 +3081,28 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;Logs are not generated&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
-  </div>
+    </div>
 
+</div>  
 
-</div>
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.tests.logging.VerifyLoggingPersistent" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyLoggingPersistent</span>
+            <span class="doc doc-object-name doc-class-name">VerifyLoggingPersistent</span>
 
 
 <a href="#anta.tests.logging.VerifyLoggingPersistent" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
   
         <p>Verifies if logging persistent is enabled and logs are saved in flash.</p>
+
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
@@ -3199,26 +3212,28 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;No persistent logs are saved in flash&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
-  </div>
+    </div>
 
+</div>  
 
-</div>
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.tests.logging.VerifyLoggingSourceIntf" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyLoggingSourceIntf</span>
+            <span class="doc doc-object-name doc-class-name">VerifyLoggingSourceIntf</span>
 
 
 <a href="#anta.tests.logging.VerifyLoggingSourceIntf" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
   
         <p>Verifies logging source-interface for a specified VRF.</p>
+
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
@@ -3380,26 +3395,28 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Source-interface &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">interface</span><span class="si">}</span><span class="s2">&#39; is not configured in VRF </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
-  </div>
+    </div>
 
+</div>  
 
-</div>
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.tests.logging.VerifyLoggingTimestamp" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyLoggingTimestamp</span>
+            <span class="doc doc-object-name doc-class-name">VerifyLoggingTimestamp</span>
 
 
 <a href="#anta.tests.logging.VerifyLoggingTimestamp" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
   
         <p>Verifies if logs are generated with the appropriate timestamp.</p>
+
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
@@ -3515,28 +3532,26 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;Logs are not generated with the appropriate timestamp format&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
-  </div>
-
+    </div>
 
 </div>
-
 
 
 <div class="doc doc-object doc-function">
 
 
-
 <h2 id="anta.tests.logging._get_logging_states" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">_get_logging_states</span>
+            <span class="doc doc-object-name doc-function-name">_get_logging_states</span>
 
 
 <a href="#anta.tests.logging._get_logging_states" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">_get_logging_states</span><span class="p">(</span><span class="n">logger</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">,</span> <span class="n">command_output</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Parse <code>show logging</code> output and gets operational logging states used in the tests in this module.</p>
+
 
 <details class="args:" open>
   <summary>Args:</summary>
@@ -3545,32 +3560,31 @@
 </code></pre></div>
 </details>
 
-
-  <p><span class="doc-section-title">Returns:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td>
-                <code>    str: The operational logging states.</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              
-            </div>
-          </td>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>    str: The operational logging states.</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>anta/tests/logging.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">25</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/tests/logging.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">25</span>
 <span class="normal">26</span>
 <span class="normal">27</span>
 <span class="normal">28</span>
@@ -3602,8 +3616,8 @@
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Device logging states:</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">log_states</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">log_states</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
 
@@ -3611,7 +3625,7 @@
 
   </div>
 
-  </div>
+    </div>
 
 </div>
 
@@ -3733,7 +3747,7 @@
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable"], "provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.5cfa9459.min.js"></script>
+      <script src="../../assets/javascripts/bundle.ebd0bdb7.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
       

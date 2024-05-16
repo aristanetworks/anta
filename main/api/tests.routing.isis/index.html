@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.22">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.23">
     
     
       
@@ -28,7 +28,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.732c4fb1.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6543a935.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
@@ -2428,10 +2428,10 @@
 
 
 
-  <div class="doc doc-contents first">
+    <div class="doc doc-contents first">
   
 
-  
+
 
   <div class="doc doc-children">
 
@@ -2440,23 +2440,26 @@
 
 
 
+  
 
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.tests.routing.isis.VerifyISISInterfaceMode" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyISISInterfaceMode</span>
+            <span class="doc doc-object-name doc-class-name">VerifyISISInterfaceMode</span>
 
 
 <a href="#anta.tests.routing.isis.VerifyISISInterfaceMode" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
   
         <p>Verifies ISIS Interfaces are running in correct mode.</p>
+
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
@@ -2774,26 +2777,28 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Interface </span><span class="si">{</span><span class="n">interface</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> not found in VRF </span><span class="si">{</span><span class="n">interface</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
-  </div>
+    </div>
 
+</div>  
 
-</div>
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.tests.routing.isis.VerifyISISNeighborCount" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyISISNeighborCount</span>
+            <span class="doc doc-object-name doc-class-name">VerifyISISNeighborCount</span>
 
 
 <a href="#anta.tests.routing.isis.VerifyISISNeighborCount" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
   
         <p>Verifies number of IS-IS neighbors per level and per interface.</p>
+
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
@@ -3067,26 +3072,28 @@
                 <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
-  </div>
+    </div>
 
+</div>  
 
-</div>
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.tests.routing.isis.VerifyISISNeighborState" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyISISNeighborState</span>
+            <span class="doc doc-object-name doc-class-name">VerifyISISNeighborState</span>
 
 
 <a href="#anta.tests.routing.isis.VerifyISISNeighborState" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
   
         <p>Verifies all IS-IS neighbors are in UP state.</p>
+
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
@@ -3192,60 +3199,57 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Some neighbors are not in the correct state (UP): </span><span class="si">{</span><span class="n">not_full_neighbors</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
-  </div>
-
+    </div>
 
 </div>
-
 
 
 <div class="doc doc-object doc-function">
 
 
-
 <h2 id="anta.tests.routing.isis._count_isis_neighbor" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">_count_isis_neighbor</span>
+            <span class="doc doc-object-name doc-function-name">_count_isis_neighbor</span>
 
 
 <a href="#anta.tests.routing.isis._count_isis_neighbor" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">_count_isis_neighbor</span><span class="p">(</span><span class="n">isis_neighbor_json</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Count the number of isis neighbors.</p>
+
 
 <details class="args" open>
   <summary>Args</summary>
   <p>isis_neighbor_json: The JSON output of the <code>show isis neighbors</code> command.</p>
 </details>
 
-
-  <p><span class="doc-section-title">Returns:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td>
-                <code>  int: The number of isis neighbors.</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              
-            </div>
-          </td>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>  int: The number of isis neighbors.</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>anta/tests/routing/isis.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">19</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/tests/routing/isis.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">19</span>
 <span class="normal">20</span>
 <span class="normal">21</span>
 <span class="normal">22</span>
@@ -3279,27 +3283,26 @@
             <span class="n">count</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">instance_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;neighbors&quot;</span><span class="p">,</span> <span class="p">{}))</span>
     <span class="k">return</span> <span class="n">count</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h2 id="anta.tests.routing.isis._get_full_isis_neighbors" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">_get_full_isis_neighbors</span>
+            <span class="doc doc-object-name doc-function-name">_get_full_isis_neighbors</span>
 
 
 <a href="#anta.tests.routing.isis._get_full_isis_neighbors" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">_get_full_isis_neighbors</span><span class="p">(</span><span class="n">isis_neighbor_json</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">neighbor_state</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;up&#39;</span><span class="p">,</span> <span class="s1">&#39;down&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;up&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Return the isis neighbors whose adjacency state is <code>up</code>.</p>
+
 
 <details class="args" open>
   <summary>Args</summary>
@@ -3307,32 +3310,31 @@
   neighbor_state: Value of the neihbor state we are looking for. Default up</p>
 </details>
 
-
-  <p><span class="doc-section-title">Returns:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td>
-                <code>  list[dict[str, Any]]: A list of isis neighbors whose adjacency state is not `UP`.</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              
-            </div>
-          </td>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>  list[dict[str, Any]]: A list of isis neighbors whose adjacency state is not `UP`.</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>anta/tests/routing/isis.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">65</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/tests/routing/isis.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">65</span>
 <span class="normal">66</span>
 <span class="normal">67</span>
 <span class="normal">68</span>
@@ -3388,31 +3390,29 @@
         <span class="k">if</span> <span class="p">(</span><span class="n">state</span> <span class="o">:=</span> <span class="n">adjacency</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="n">neighbor_state</span>
     <span class="p">]</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h2 id="anta.tests.routing.isis._get_interface_data" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">_get_interface_data</span>
+            <span class="doc doc-object-name doc-function-name">_get_interface_data</span>
 
 
 <a href="#anta.tests.routing.isis._get_interface_data" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">_get_interface_data</span><span class="p">(</span><span class="n">interface</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">vrf</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">command_output</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Extract data related to an IS-IS interface for testing.</p>
 
-          <details class="quote">
-            <summary>Source code in <code>anta/tests/routing/isis.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">107</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/tests/routing/isis.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">107</span>
 <span class="normal">108</span>
 <span class="normal">109</span>
 <span class="normal">110</span>
@@ -3436,31 +3436,29 @@
                 <span class="k">return</span> <span class="kc">None</span>
     <span class="k">return</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h2 id="anta.tests.routing.isis._get_isis_neighbors_count" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">_get_isis_neighbors_count</span>
+            <span class="doc doc-object-name doc-function-name">_get_isis_neighbors_count</span>
 
 
 <a href="#anta.tests.routing.isis._get_isis_neighbors_count" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">_get_isis_neighbors_count</span><span class="p">(</span><span class="n">isis_neighbor_json</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Count number of IS-IS neighbor of the device.</p>
 
-          <details class="quote">
-            <summary>Source code in <code>anta/tests/routing/isis.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 95</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/tests/routing/isis.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 95</span>
 <span class="normal"> 96</span>
 <span class="normal"> 97</span>
 <span class="normal"> 98</span>
@@ -3480,59 +3478,57 @@
         <span class="k">if</span> <span class="p">(</span><span class="n">mode</span> <span class="o">:=</span> <span class="n">level_data</span><span class="p">[</span><span class="s2">&quot;passive&quot;</span><span class="p">])</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span>
     <span class="p">]</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h2 id="anta.tests.routing.isis._get_not_full_isis_neighbors" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">_get_not_full_isis_neighbors</span>
+            <span class="doc doc-object-name doc-function-name">_get_not_full_isis_neighbors</span>
 
 
 <a href="#anta.tests.routing.isis._get_not_full_isis_neighbors" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">_get_not_full_isis_neighbors</span><span class="p">(</span><span class="n">isis_neighbor_json</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Return the isis neighbors whose adjacency state is not <code>up</code>.</p>
+
 
 <details class="args" open>
   <summary>Args</summary>
   <p>isis_neighbor_json: The JSON output of the <code>show isis neighbors</code> command.</p>
 </details>
 
-
-  <p><span class="doc-section-title">Returns:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td>
-                <code>  list[dict[str, Any]]: A list of isis neighbors whose adjacency state is not `UP`.</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              
-            </div>
-          </td>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>  list[dict[str, Any]]: A list of isis neighbors whose adjacency state is not `UP`.</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>anta/tests/routing/isis.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">38</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/tests/routing/isis.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">38</span>
 <span class="normal">39</span>
 <span class="normal">40</span>
 <span class="normal">41</span>
@@ -3582,8 +3578,8 @@
         <span class="k">if</span> <span class="p">(</span><span class="n">state</span> <span class="o">:=</span> <span class="n">adjacency</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">])</span> <span class="o">!=</span> <span class="s2">&quot;up&quot;</span>
     <span class="p">]</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
 
@@ -3591,7 +3587,7 @@
 
   </div>
 
-  </div>
+    </div>
 
 </div>
 
@@ -3713,7 +3709,7 @@
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable"], "provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.5cfa9459.min.js"></script>
+      <script src="../../assets/javascripts/bundle.ebd0bdb7.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
       

@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.22">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.23">
     
     
       
@@ -28,7 +28,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.732c4fb1.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6543a935.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
@@ -2306,10 +2306,10 @@
 
 
 
-  <div class="doc doc-contents first">
+    <div class="doc doc-contents first">
   
 
-  
+
 
   <div class="doc doc-children">
 
@@ -2318,23 +2318,26 @@
 
 
 
+  
 
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.tests.system.VerifyAgentLogs" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyAgentLogs</span>
+            <span class="doc doc-object-name doc-class-name">VerifyAgentLogs</span>
 
 
 <a href="#anta.tests.system.VerifyAgentLogs" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
   
         <p>Verifies that no agent crash reports are present on the device.</p>
+
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
@@ -2432,26 +2435,28 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Device has reported agent crashes:</span><span class="se">\n</span><span class="s2"> * </span><span class="si">{</span><span class="n">agents</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
-  </div>
+    </div>
 
+</div>  
 
-</div>
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.tests.system.VerifyCPUUtilization" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyCPUUtilization</span>
+            <span class="doc doc-object-name doc-class-name">VerifyCPUUtilization</span>
 
 
 <a href="#anta.tests.system.VerifyCPUUtilization" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
   
         <p>Verifies whether the CPU utilization is below 75%.</p>
+
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
@@ -2547,26 +2552,28 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Device has reported a high CPU utilization: </span><span class="si">{</span><span class="mi">100</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">command_output_data</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
-  </div>
+    </div>
 
+</div>  
 
-</div>
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.tests.system.VerifyCoredump" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyCoredump</span>
+            <span class="doc doc-object-name doc-class-name">VerifyCoredump</span>
 
 
 <a href="#anta.tests.system.VerifyCoredump" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
   
         <p>Verifies if there are core dump files in the /var/core directory.</p>
+
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
@@ -2575,6 +2582,7 @@
 <li>Failure: The test will fail if there are core dump(s) in /var/core.</li>
 </ul>
 </details>
+
 <details class="info" open>
   <summary>Info</summary>
   <ul>
@@ -2680,26 +2688,28 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Core dump(s) have been found: </span><span class="si">{</span><span class="n">core_files</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
-  </div>
+    </div>
 
+</div>  
 
-</div>
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.tests.system.VerifyFileSystemUtilization" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyFileSystemUtilization</span>
+            <span class="doc doc-object-name doc-class-name">VerifyFileSystemUtilization</span>
 
 
 <a href="#anta.tests.system.VerifyFileSystemUtilization" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
   
         <p>Verifies that no partition is utilizing more than 75% of its disk space.</p>
+
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
@@ -2793,26 +2803,28 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mount point </span><span class="si">{</span><span class="n">line</span><span class="si">}</span><span class="s2"> is higher than 75%: reported </span><span class="si">{</span><span class="n">percentage</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
-  </div>
+    </div>
 
+</div>  
 
-</div>
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.tests.system.VerifyMemoryUtilization" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyMemoryUtilization</span>
+            <span class="doc doc-object-name doc-class-name">VerifyMemoryUtilization</span>
 
 
 <a href="#anta.tests.system.VerifyMemoryUtilization" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
   
         <p>Verifies whether the memory utilization is below 75%.</p>
+
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
@@ -2908,26 +2920,28 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Device has reported a high memory usage: </span><span class="si">{</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">memory_usage</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
-  </div>
+    </div>
 
+</div>  
 
-</div>
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.tests.system.VerifyNTP" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyNTP</span>
+            <span class="doc doc-object-name doc-class-name">VerifyNTP</span>
 
 
 <a href="#anta.tests.system.VerifyNTP" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
   
         <p>Verifies that the Network Time Protocol (NTP) is synchronized.</p>
+
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
@@ -3023,26 +3037,28 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The device is not synchronized with the configured NTP server(s): &#39;</span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
-  </div>
+    </div>
 
+</div>  
 
-</div>
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.tests.system.VerifyReloadCause" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyReloadCause</span>
+            <span class="doc doc-object-name doc-class-name">VerifyReloadCause</span>
 
 
 <a href="#anta.tests.system.VerifyReloadCause" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
   
         <p>Verifies the last reload cause of the device.</p>
+
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
@@ -3163,26 +3179,28 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reload cause is: &#39;</span><span class="si">{</span><span class="n">command_output_data</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
-  </div>
+    </div>
 
+</div>  
 
-</div>
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.tests.system.VerifyUptime" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyUptime</span>
+            <span class="doc doc-object-name doc-class-name">VerifyUptime</span>
 
 
 <a href="#anta.tests.system.VerifyUptime" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
   
         <p>Verifies if the device uptime is higher than the provided minimum uptime value.</p>
+
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
@@ -3321,8 +3339,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Device uptime is </span><span class="si">{</span><span class="n">command_output</span><span class="p">[</span><span class="s1">&#39;upTime&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
-  </div>
-
+    </div>
 
 </div>
 
@@ -3331,7 +3348,7 @@
 
   </div>
 
-  </div>
+    </div>
 
 </div>
 
@@ -3453,7 +3470,7 @@
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable"], "provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.5cfa9459.min.js"></script>
+      <script src="../../assets/javascripts/bundle.ebd0bdb7.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
       

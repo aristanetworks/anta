@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.22">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.23">
     
     
       
@@ -28,7 +28,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.732c4fb1.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6543a935.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
@@ -2314,10 +2314,10 @@
 
 
 
-  <div class="doc doc-contents first">
+    <div class="doc doc-contents first">
   
 
-  
+
 
   <div class="doc doc-children">
 
@@ -2326,23 +2326,26 @@
 
 
 
+  
 
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.tests.vxlan.VerifyVxlan1ConnSettings" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyVxlan1ConnSettings</span>
+            <span class="doc doc-object-name doc-class-name">VerifyVxlan1ConnSettings</span>
 
 
 <a href="#anta.tests.vxlan.VerifyVxlan1ConnSettings" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
   
         <p>Verifies the interface vxlan1 source interface and UDP port.</p>
+
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
@@ -2529,31 +2532,34 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;UDP port is not correct. Expected `</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">udp_port</span><span class="si">}</span><span class="s2">` as UDP port but found `</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s2">` instead.&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
-  </div>
+    </div>
 
+</div>  
 
-</div>
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.tests.vxlan.VerifyVxlan1Interface" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyVxlan1Interface</span>
+            <span class="doc doc-object-name doc-class-name">VerifyVxlan1Interface</span>
 
 
 <a href="#anta.tests.vxlan.VerifyVxlan1Interface" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
   
         <p>Verifies if the Vxlan1 interface is configured and &lsquo;up/up&rsquo;.</p>
+
 
 <details class="warning" open>
   <summary>Warning</summary>
   <p>The name of this test has been updated from &lsquo;VerifyVxlan&rsquo; for better representation.</p>
 </details>
+
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
@@ -2673,26 +2679,28 @@
             <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
-  </div>
+    </div>
 
+</div>  
 
-</div>
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.tests.vxlan.VerifyVxlanConfigSanity" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyVxlanConfigSanity</span>
+            <span class="doc doc-object-name doc-class-name">VerifyVxlanConfigSanity</span>
 
 
 <a href="#anta.tests.vxlan.VerifyVxlanConfigSanity" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
   
         <p>Verifies that no issues are detected with the VXLAN configuration.</p>
+
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
@@ -2805,26 +2813,28 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
   </details>
-  </div>
+    </div>
 
+</div>  
 
-</div>
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.tests.vxlan.VerifyVxlanVniBinding" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyVxlanVniBinding</span>
+            <span class="doc doc-object-name doc-class-name">VerifyVxlanVniBinding</span>
 
 
 <a href="#anta.tests.vxlan.VerifyVxlanVniBinding" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
   
         <p>Verifies the VNI-VLAN bindings of the Vxlan1 interface.</p>
+
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
@@ -3016,26 +3026,28 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The following VNI(s) have the wrong VLAN binding: </span><span class="si">{</span><span class="n">wrong_binding</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
-  </div>
+    </div>
 
+</div>  
 
-</div>
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.tests.vxlan.VerifyVxlanVtep" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyVxlanVtep</span>
+            <span class="doc doc-object-name doc-class-name">VerifyVxlanVtep</span>
 
 
 <a href="#anta.tests.vxlan.VerifyVxlanVtep" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
   
         <p>Verifies the VTEP peers of the Vxlan1 interface.</p>
+
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
@@ -3205,8 +3217,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unexpected VTEP peer(s) on Vxlan1 interface: </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="n">difference2</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
-  </div>
-
+    </div>
 
 </div>
 
@@ -3215,7 +3226,7 @@
 
   </div>
 
-  </div>
+    </div>
 
 </div>
 
@@ -3337,7 +3348,7 @@
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable"], "provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.5cfa9459.min.js"></script>
+      <script src="../../assets/javascripts/bundle.ebd0bdb7.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
       

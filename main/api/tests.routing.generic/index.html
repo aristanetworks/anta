@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.22">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.23">
     
     
       
@@ -28,7 +28,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.732c4fb1.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6543a935.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
@@ -2268,10 +2268,10 @@
 
 
 
-  <div class="doc doc-contents first">
+    <div class="doc doc-contents first">
   
 
-  
+
 
   <div class="doc doc-children">
 
@@ -2280,23 +2280,26 @@
 
 
 
+  
 
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.tests.routing.generic.VerifyRoutingProtocolModel" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyRoutingProtocolModel</span>
+            <span class="doc doc-object-name doc-class-name">VerifyRoutingProtocolModel</span>
 
 
 <a href="#anta.tests.routing.generic.VerifyRoutingProtocolModel" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
   
         <p>Verifies the configured routing protocol model is the one we expect.</p>
+
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
@@ -2442,26 +2445,28 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;routing model is misconfigured: configured: </span><span class="si">{</span><span class="n">configured_model</span><span class="si">}</span><span class="s2"> - operating: </span><span class="si">{</span><span class="n">operating_model</span><span class="si">}</span><span class="s2"> - expected: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">model</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
-  </div>
+    </div>
 
+</div>  
 
-</div>
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.tests.routing.generic.VerifyRoutingTableEntry" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyRoutingTableEntry</span>
+            <span class="doc doc-object-name doc-class-name">VerifyRoutingTableEntry</span>
 
 
 <a href="#anta.tests.routing.generic.VerifyRoutingTableEntry" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
   
         <p>Verifies that the provided routes are present in the routing table of a specified VRF.</p>
+
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
@@ -2650,26 +2655,28 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The following route(s) are missing from the routing table of VRF </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">missing_routes</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
-  </div>
+    </div>
 
+</div>  
 
-</div>
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.tests.routing.generic.VerifyRoutingTableSize" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyRoutingTableSize</span>
+            <span class="doc doc-object-name doc-class-name">VerifyRoutingTableSize</span>
 
 
 <a href="#anta.tests.routing.generic.VerifyRoutingTableSize" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
   
         <p>Verifies the size of the IP routing table of the default VRF.</p>
+
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
@@ -2850,8 +2857,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;routing-table has </span><span class="si">{</span><span class="n">total_routes</span><span class="si">}</span><span class="s2"> routes and not between min (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">minimum</span><span class="si">}</span><span class="s2">) and maximum (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">maximum</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
-  </div>
-
+    </div>
 
 </div>
 
@@ -2860,7 +2866,7 @@
 
   </div>
 
-  </div>
+    </div>
 
 </div>
 
@@ -2982,7 +2988,7 @@
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable"], "provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.5cfa9459.min.js"></script>
+      <script src="../../assets/javascripts/bundle.ebd0bdb7.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
       

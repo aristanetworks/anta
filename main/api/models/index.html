@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.22">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.23">
     
     
       
@@ -28,7 +28,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.732c4fb1.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6543a935.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
@@ -2510,23 +2510,25 @@
 <h1 id="test-definition">Test definition<a class="headerlink" href="#test-definition" title="Permanent link">&para;</a></h1>
 <h2 id="uml-diagram">UML Diagram<a class="headerlink" href="#uml-diagram" title="Permanent link">&para;</a></h2>
 <p><img alt="" src="../../imgs/uml/anta.models.AntaTest.jpeg" /></p>
+  
 
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.models.AntaTest" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">AntaTest</span>
+            <span class="doc doc-object-name doc-class-name">AntaTest</span>
 
 
 <a href="#anta.models.AntaTest" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">AntaTest</span><span class="p">(</span><span class="n">device</span><span class="p">:</span> <span class="n">AntaDevice</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">eos_data</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
 </code></pre></div>
 
-  <div class="doc doc-contents first">
-          <p class="doc doc-class-bases">
-            Bases: <code><a class="autorefs autorefs-external" title="abc.ABC" href="https://docs.python.org/3/library/abc.html#abc.ABC">ABC</a></code></p>
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-external" title="abc.ABC" href="https://docs.python.org/3/library/abc.html#abc.ABC">ABC</a></code></p>
 
   
         <p>Abstract class defining a test in ANTA.</p>
@@ -2568,34 +2570,34 @@ writing a test as simple as possible.</p>
 </code></pre></div></p>
 </details>
 
-
-  <p><span class="doc-section-title">Attributes:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td><code><span title="anta.models.AntaTest.device">device</span></code></td>
-          <td>
-                <code>AntaDevice instance on which this test is run</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>inputs: AntaTest.Input instance carrying the test inputs
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="anta.models.AntaTest.device">device</span></code></td>
+            <td>
+                  <code>AntaDevice instance on which this test is run</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>inputs: AntaTest.Input instance carrying the test inputs
 instance_commands: List of AntaCommand instances of this test
 result: TestResult instance representing the result of this test
 logger: Python logger for this test instance</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
   
+
 
 <details class="args:" open>
   <summary>Args:</summary>
@@ -2605,9 +2607,9 @@ logger: Python logger for this test instance</p>
 <span class="w">          </span><span class="n">This</span><span class="w"> </span><span class="k">list</span><span class="w"> </span><span class="n">must</span><span class="w"> </span><span class="n">have</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">same</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="k">order</span><span class="w"> </span><span class="k">than</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n n-Quoted">`instance_commands`</span><span class="w"> </span><span class="k">instance</span><span class="w"> </span><span class="k">attribute</span><span class="p">.</span>
 </code></pre></div>
 </details>
-                  <details class="quote">
-                  <summary>Source code in <code>anta/models.py</code></summary>
-                  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">379</span>
+                    <details class="quote">
+                    <summary>Source code in <code>anta/models.py</code></summary>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">379</span>
 <span class="normal">380</span>
 <span class="normal">381</span>
 <span class="normal">382</span>
@@ -2663,10 +2665,10 @@ logger: Python logger for this test instance</p>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;unset&quot;</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_commands</span><span class="p">(</span><span class="n">eos_data</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-                </details>
+                  </details>
 
 
-    
+  
 
   <div class="doc doc-children">
 
@@ -2681,9 +2683,9 @@ logger: Python logger for this test instance</p>
 
 
 <h3 id="anta.models.AntaTest.blocked" class="doc doc-heading">
-          <span class="doc doc-object-name doc-attribute-name">blocked</span>
+            <span class="doc doc-object-name doc-attribute-name">blocked</span>
 
-  
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -2692,10 +2694,10 @@ logger: Python logger for this test instance</p>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">blocked</span><span class="p">:</span> <span class="nb">bool</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Check if CLI commands contain a blocked keyword.</p>
-  </div>
+    </div>
 
 </div>
 
@@ -2704,9 +2706,9 @@ logger: Python logger for this test instance</p>
 
 
 <h3 id="anta.models.AntaTest.collected" class="doc doc-heading">
-          <span class="doc doc-object-name doc-attribute-name">collected</span>
+            <span class="doc doc-object-name doc-attribute-name">collected</span>
 
-  
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -2715,10 +2717,10 @@ logger: Python logger for this test instance</p>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">collected</span><span class="p">:</span> <span class="nb">bool</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Return True if all commands for this test have been collected.</p>
-  </div>
+    </div>
 
 </div>
 
@@ -2727,9 +2729,9 @@ logger: Python logger for this test instance</p>
 
 
 <h3 id="anta.models.AntaTest.failed_commands" class="doc doc-heading">
-          <span class="doc doc-object-name doc-attribute-name">failed_commands</span>
+            <span class="doc doc-object-name doc-attribute-name">failed_commands</span>
 
-  
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -2738,10 +2740,10 @@ logger: Python logger for this test instance</p>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">failed_commands</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Return a list of all the commands that have failed.</p>
-  </div>
+    </div>
 
 </div>
 
@@ -2750,9 +2752,9 @@ logger: Python logger for this test instance</p>
 
 
 <h3 id="anta.models.AntaTest.module" class="doc doc-heading">
-          <span class="doc doc-object-name doc-attribute-name">module</span>
+            <span class="doc doc-object-name doc-attribute-name">module</span>
 
-  
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -2761,28 +2763,30 @@ logger: Python logger for this test instance</p>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">module</span><span class="p">:</span> <span class="nb">str</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Return the Python module in which this AntaTest class is defined.</p>
-  </div>
+    </div>
 
 </div>
+  
 
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h3 id="anta.models.AntaTest.Input" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">Input</span>
+            <span class="doc doc-object-name doc-class-name">Input</span>
 
 
 <a href="#anta.models.AntaTest.Input" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
-  <div class="doc doc-contents ">
-          <p class="doc doc-class-bases">
-            Bases: <code><span title="pydantic.BaseModel">BaseModel</span></code></p>
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="pydantic.BaseModel">BaseModel</span></code></p>
 
   
         <p>Class defining inputs for a test in ANTA.</p>
@@ -2802,34 +2806,33 @@ logger: Python logger for this test instance</p>
 </code></pre></div></p>
 </details>
 
-
-  <p><span class="doc-section-title">Attributes:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td><code><span title="anta.models.AntaTest.Input.result_overwrite">result_overwrite</span></code></td>
-          <td>
-                <code>Define fields to overwrite in the TestResult object</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              
-            </div>
-          </td>
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="anta.models.AntaTest.Input.result_overwrite">result_overwrite</span></code></td>
+            <td>
+                  <code>Define fields to overwrite in the TestResult object</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
   
 
-    
+  
 
   <div class="doc doc-children">
 
@@ -2838,55 +2841,56 @@ logger: Python logger for this test instance</p>
 
 
 
+  
 
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h4 id="anta.models.AntaTest.Input.Filters" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">Filters</span>
+            <span class="doc doc-object-name doc-class-name">Filters</span>
 
 
 <a href="#anta.models.AntaTest.Input.Filters" class="headerlink" title="Permanent link">&para;</a></h4>
 
 
-  <div class="doc doc-contents ">
-          <p class="doc doc-class-bases">
-            Bases: <code><span title="pydantic.BaseModel">BaseModel</span></code></p>
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="pydantic.BaseModel">BaseModel</span></code></p>
 
   
         <p>Runtime filters to map tests with list of tags or devices.</p>
 
 
-
-  <p><span class="doc-section-title">Attributes:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td><code><span title="anta.models.AntaTest.Input.Filters.tags">tags</span></code></td>
-          <td>
-                <code>Tag of devices on which to run the test.</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              
-            </div>
-          </td>
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="anta.models.AntaTest.Input.Filters.tags">tags</span></code></td>
+            <td>
+                  <code>Tag of devices on which to run the test.</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
   
 
-    
+  
 
   <div class="doc doc-children">
 
@@ -2903,59 +2907,59 @@ logger: Python logger for this test instance</p>
   </div>
 
 
-  </div>
+    </div>
 
+</div>  
 
-</div>
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h4 id="anta.models.AntaTest.Input.ResultOverwrite" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">ResultOverwrite</span>
+            <span class="doc doc-object-name doc-class-name">ResultOverwrite</span>
 
 
 <a href="#anta.models.AntaTest.Input.ResultOverwrite" class="headerlink" title="Permanent link">&para;</a></h4>
 
 
-  <div class="doc doc-contents ">
-          <p class="doc doc-class-bases">
-            Bases: <code><span title="pydantic.BaseModel">BaseModel</span></code></p>
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="pydantic.BaseModel">BaseModel</span></code></p>
 
   
         <p>Test inputs model to overwrite result fields.</p>
 
 
-
-  <p><span class="doc-section-title">Attributes:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td><code><span title="anta.models.AntaTest.Input.ResultOverwrite.description">description</span></code></td>
-          <td>
-                <code>overwrite TestResult.description</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>categories: overwrite TestResult.categories
-custom_field: a free string that will be included in the TestResult object</p>
-            </div>
-          </td>
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="anta.models.AntaTest.Input.ResultOverwrite.description">description</span></code></td>
+            <td>
+                  <code>overwrite TestResult.description</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>categories: overwrite TestResult.categories
+custom_field: a free string that will be included in the TestResult object</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
   
 
-    
+  
 
   <div class="doc doc-children">
 
@@ -2972,33 +2976,30 @@ custom_field: a free string that will be included in the TestResult object</p>
   </div>
 
 
-  </div>
-
+    </div>
 
 </div>
-
 
 
 <div class="doc doc-object doc-function">
 
 
-
 <h4 id="anta.models.AntaTest.Input.__hash__" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">__hash__</span>
+            <span class="doc doc-object-name doc-function-name">__hash__</span>
 
 
 <a href="#anta.models.AntaTest.Input.__hash__" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="fm">__hash__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Implement generic hashing for AntaTest.Input.</p>
 <p>This will work in most cases but this does not consider 2 lists with different ordering as equal.</p>
 
-          <details class="quote">
-            <summary>Source code in <code>anta/models.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">345</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/models.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">345</span>
 <span class="normal">346</span>
 <span class="normal">347</span>
 <span class="normal">348</span>
@@ -3010,8 +3011,8 @@ custom_field: a free string that will be included in the TestResult object</p>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_dump_json</span><span class="p">())</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
 
@@ -3020,21 +3021,18 @@ custom_field: a free string that will be included in the TestResult object</p>
   </div>
 
 
-  </div>
-
+    </div>
 
 </div>
-
 
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="anta.models.AntaTest.anta_test" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">anta_test</span>
+            <span class="doc doc-object-name doc-function-name">anta_test</span>
 
-  
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
   </span>
@@ -3043,7 +3041,7 @@ custom_field: a free string that will be included in the TestResult object</p>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">anta_test</span><span class="p">(</span><span class="n">function</span><span class="p">:</span> <span class="n">F</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Coroutine</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TestResult</span><span class="p">]]</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Decorate the <code>test()</code> method in child classes.</p>
 <p>This decorator implements (in this order):</p>
@@ -3054,9 +3052,9 @@ custom_field: a free string that will be included in the TestResult object</p>
 <li>Catches any exception in <code>test()</code> user code and set the <code>result</code> instance attribute</li>
 </ol>
 
-          <details class="quote">
-            <summary>Source code in <code>anta/models.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">542</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/models.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">542</span>
 <span class="normal">543</span>
 <span class="normal">544</span>
 <span class="normal">545</span>
@@ -3202,20 +3200,18 @@ custom_field: a free string that will be included in the TestResult object</p>
 
     <span class="k">return</span> <span class="n">wrapper</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="anta.models.AntaTest.collect" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">collect</span>
+            <span class="doc doc-object-name doc-function-name">collect</span>
 
-  
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-async"><code>async</code></small>
   </span>
@@ -3224,13 +3220,13 @@ custom_field: a free string that will be included in the TestResult object</p>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">collect</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Collect outputs of all commands of this test class from the device of this test instance.</p>
 
-          <details class="quote">
-            <summary>Source code in <code>anta/models.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">529</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/models.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">529</span>
 <span class="normal">530</span>
 <span class="normal">531</span>
 <span class="normal">532</span>
@@ -3254,33 +3250,31 @@ custom_field: a free string that will be included in the TestResult object</p>
         <span class="n">anta_log_exception</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_error</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">exc_to_str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="anta.models.AntaTest.render" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">render</span>
+            <span class="doc doc-object-name doc-function-name">render</span>
 
 
 <a href="#anta.models.AntaTest.render" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">render</span><span class="p">(</span><span class="n">template</span><span class="p">:</span> <span class="n">AntaTemplate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Render an AntaTemplate instance of this AntaTest using the provided AntaTest.Input instance at self.inputs.</p>
 <p>This is not an abstract method because it does not need to be implemented if there is
 no AntaTemplate for this test.</p>
 
-          <details class="quote">
-            <summary>Source code in <code>anta/models.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">503</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/models.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">503</span>
 <span class="normal">504</span>
 <span class="normal">505</span>
 <span class="normal">506</span>
@@ -3298,31 +3292,29 @@ no AntaTemplate for this test.</p>
     <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;AntaTemplate are provided but render() method has not been implemented for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">module</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="anta.models.AntaTest.save_commands_data" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">save_commands_data</span>
+            <span class="doc doc-object-name doc-function-name">save_commands_data</span>
 
 
 <a href="#anta.models.AntaTest.save_commands_data" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">save_commands_data</span><span class="p">(</span><span class="n">eos_data</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Populate output of all AntaCommand instances in <code>instance_commands</code>.</p>
 
-          <details class="quote">
-            <summary>Source code in <code>anta/models.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">469</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/models.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">469</span>
 <span class="normal">470</span>
 <span class="normal">471</span>
 <span class="normal">472</span>
@@ -3342,20 +3334,18 @@ no AntaTemplate for this test.</p>
     <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">eos_data</span> <span class="ow">or</span> <span class="p">[]):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">data</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="anta.models.AntaTest.test" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">test</span>
+            <span class="doc doc-object-name doc-function-name">test</span>
 
-  
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
   </span>
@@ -3364,7 +3354,7 @@ no AntaTemplate for this test.</p>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">test</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Coroutine</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TestResult</span><span class="p">]</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Core of the test logic.</p>
 <p>This is an abstractmethod that must be implemented by child classes.
@@ -3383,9 +3373,9 @@ It must set the correct status of the <code>result</code> instance attribute wit
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;Failure reason&quot;</span><span class="p">)</span>
 </code></pre></div></p>
 </details>
-          <details class="quote">
-            <summary>Source code in <code>anta/models.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">622</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/models.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">622</span>
 <span class="normal">623</span>
 <span class="normal">624</span>
 <span class="normal">625</span>
@@ -3425,8 +3415,8 @@ It must set the correct status of the <code>result</code> instance attribute wit
 
 <span class="sd">    &quot;&quot;&quot;</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
 
@@ -3435,29 +3425,30 @@ It must set the correct status of the <code>result</code> instance attribute wit
   </div>
 
 
-  </div>
-
+    </div>
 
 </div><h1 id="command-definition">Command definition<a class="headerlink" href="#command-definition" title="Permanent link">&para;</a></h1>
 <h2 id="uml-diagram_1">UML Diagram<a class="headerlink" href="#uml-diagram_1" title="Permanent link">&para;</a></h2>
 <p><img alt="" src="../../imgs/uml/anta.models.AntaCommand.jpeg" />
 </p>
+  
 
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.models.AntaCommand" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">AntaCommand</span>
+            <span class="doc doc-object-name doc-class-name">AntaCommand</span>
 
 
 <a href="#anta.models.AntaCommand" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents first">
-          <p class="doc doc-class-bases">
-            Bases: <code><span title="pydantic.BaseModel">BaseModel</span></code></p>
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="pydantic.BaseModel">BaseModel</span></code></p>
 
   
         <p>Class to define a command.</p>
@@ -3473,25 +3464,24 @@ translated to a specific <strong>revision</strong> for each CLI command in the R
 </div>
 
 
-
-  <p><span class="doc-section-title">Attributes:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td><code><span title="anta.models.AntaCommand.command">command</span></code></td>
-          <td>
-                <code>Device command</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>version: eAPI version - valid values are 1 or &ldquo;latest&rdquo;.
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="anta.models.AntaCommand.command">command</span></code></td>
+            <td>
+                  <code>Device command</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>version: eAPI version - valid values are 1 or &ldquo;latest&rdquo;.
 revision: eAPI revision of the command. Valid values are 1 to 99. Revision has precedence over version.
 ofmt: eAPI output - json or text.
 output: Output of the command. Only defined if there was no errors.
@@ -3499,15 +3489,15 @@ template: AntaTemplate object used to render this command.
 errors: If the command execution fails, eAPI returns a list of strings detailing the error(s).
 params: Pydantic Model containing the variables values used to render the template.
 use_cache: Enable or disable caching for this AntaCommand if the AntaDevice supports it.</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
   
 
-    
+  
 
   <div class="doc doc-children">
 
@@ -3522,9 +3512,9 @@ use_cache: Enable or disable caching for this AntaCommand if the AntaDevice supp
 
 
 <h3 id="anta.models.AntaCommand.collected" class="doc doc-heading">
-          <span class="doc doc-object-name doc-attribute-name">collected</span>
+            <span class="doc doc-object-name doc-attribute-name">collected</span>
 
-  
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -3533,12 +3523,12 @@ use_cache: Enable or disable caching for this AntaCommand if the AntaDevice supp
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">collected</span><span class="p">:</span> <span class="nb">bool</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Return True if the command has been collected, False otherwise.</p>
 <p>A command that has not been collected could have returned an error.
 See error property.</p>
-  </div>
+    </div>
 
 </div>
 
@@ -3547,9 +3537,9 @@ See error property.</p>
 
 
 <h3 id="anta.models.AntaCommand.error" class="doc doc-heading">
-          <span class="doc doc-object-name doc-attribute-name">error</span>
+            <span class="doc doc-object-name doc-attribute-name">error</span>
 
-  
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -3558,10 +3548,10 @@ See error property.</p>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">error</span><span class="p">:</span> <span class="nb">bool</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Return True if the command returned an error, False otherwise.</p>
-  </div>
+    </div>
 
 </div>
 
@@ -3570,9 +3560,9 @@ See error property.</p>
 
 
 <h3 id="anta.models.AntaCommand.json_output" class="doc doc-heading">
-          <span class="doc doc-object-name doc-attribute-name">json_output</span>
+            <span class="doc doc-object-name doc-attribute-name">json_output</span>
 
-  
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -3581,10 +3571,10 @@ See error property.</p>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">json_output</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Get the command output as JSON.</p>
-  </div>
+    </div>
 
 </div>
 
@@ -3593,9 +3583,9 @@ See error property.</p>
 
 
 <h3 id="anta.models.AntaCommand.requires_privileges" class="doc doc-heading">
-          <span class="doc doc-object-name doc-attribute-name">requires_privileges</span>
+            <span class="doc doc-object-name doc-attribute-name">requires_privileges</span>
 
-  
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -3604,35 +3594,34 @@ See error property.</p>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">requires_privileges</span><span class="p">:</span> <span class="nb">bool</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Return True if the command requires privileged mode, False otherwise.</p>
 
 
-
-  <p><span class="doc-section-title">Raises:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td>
-                <code>    RuntimeError</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>If the command has not been collected and has not returned an error.
-AntaDevice.collect() must be called before this property.</p>
-            </div>
-          </td>
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
-  </div>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>    RuntimeError</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the command has not been collected and has not returned an error.
+AntaDevice.collect() must be called before this property.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+    </div>
 
 </div>
 
@@ -3641,9 +3630,9 @@ AntaDevice.collect() must be called before this property.</p>
 
 
 <h3 id="anta.models.AntaCommand.supported" class="doc doc-heading">
-          <span class="doc doc-object-name doc-attribute-name">supported</span>
+            <span class="doc doc-object-name doc-attribute-name">supported</span>
 
-  
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -3652,35 +3641,34 @@ AntaDevice.collect() must be called before this property.</p>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">supported</span><span class="p">:</span> <span class="nb">bool</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Return True if the command is supported on the device hardware platform, False otherwise.</p>
 
 
-
-  <p><span class="doc-section-title">Raises:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td>
-                <code>    RuntimeError</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>If the command has not been collected and has not returned an error.
-AntaDevice.collect() must be called before this property.</p>
-            </div>
-          </td>
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
-  </div>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>    RuntimeError</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the command has not been collected and has not returned an error.
+AntaDevice.collect() must be called before this property.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+    </div>
 
 </div>
 
@@ -3689,9 +3677,9 @@ AntaDevice.collect() must be called before this property.</p>
 
 
 <h3 id="anta.models.AntaCommand.text_output" class="doc doc-heading">
-          <span class="doc doc-object-name doc-attribute-name">text_output</span>
+            <span class="doc doc-object-name doc-attribute-name">text_output</span>
 
-  
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -3700,10 +3688,10 @@ AntaDevice.collect() must be called before this property.</p>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">text_output</span><span class="p">:</span> <span class="nb">str</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Get the command output as a string.</p>
-  </div>
+    </div>
 
 </div>
 
@@ -3712,9 +3700,9 @@ AntaDevice.collect() must be called before this property.</p>
 
 
 <h3 id="anta.models.AntaCommand.uid" class="doc doc-heading">
-          <span class="doc doc-object-name doc-attribute-name">uid</span>
+            <span class="doc doc-object-name doc-attribute-name">uid</span>
 
-  
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -3723,10 +3711,10 @@ AntaDevice.collect() must be called before this property.</p>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">uid</span><span class="p">:</span> <span class="nb">str</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Generate a unique identifier for this command.</p>
-  </div>
+    </div>
 
 </div>
 
@@ -3737,8 +3725,7 @@ AntaDevice.collect() must be called before this property.</p>
   </div>
 
 
-  </div>
-
+    </div>
 
 </div><div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -3752,58 +3739,59 @@ AntaDevice.collect() must be called before this property.</p>
 <h1 id="template-definition">Template definition<a class="headerlink" href="#template-definition" title="Permanent link">&para;</a></h1>
 <h2 id="uml-diagram_2">UML Diagram<a class="headerlink" href="#uml-diagram_2" title="Permanent link">&para;</a></h2>
 <p><img alt="" src="../../imgs/uml/anta.models.AntaTemplate.jpeg" /></p>
+  
 
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.models.AntaTemplate" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">AntaTemplate</span>
+            <span class="doc doc-object-name doc-class-name">AntaTemplate</span>
 
 
 <a href="#anta.models.AntaTemplate" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">version</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;latest&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;latest&#39;</span><span class="p">,</span> <span class="n">revision</span><span class="p">:</span> <span class="n">Revision</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">ofmt</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;json&#39;</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;json&#39;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">use_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
 </code></pre></div>
 
-  <div class="doc doc-contents first">
+    <div class="doc doc-contents first">
 
   
         <p>Class to define a command template as Python f-string.</p>
 <p>Can render a command from parameters.</p>
 
 
-
-  <p><span class="doc-section-title">Attributes:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td><code><span title="anta.models.AntaTemplate.template">template</span></code></td>
-          <td>
-                <code>Python f-string. Example: &#39;show vlan {vlan_id}&#39;</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>version: eAPI version - valid values are 1 or &ldquo;latest&rdquo;.
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="anta.models.AntaTemplate.template">template</span></code></td>
+            <td>
+                  <code>Python f-string. Example: &#39;show vlan {vlan_id}&#39;</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>version: eAPI version - valid values are 1 or &ldquo;latest&rdquo;.
 revision: Revision of the command. Valid values are 1 to 99. Revision has precedence over version.
 ofmt: eAPI output - json or text.
 use_cache: Enable or disable caching for this AntaTemplate if the AntaDevice supports it.</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-                  <details class="quote">
-                  <summary>Source code in <code>anta/models.py</code></summary>
-                  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">63</span>
+                    <details class="quote">
+                    <summary>Source code in <code>anta/models.py</code></summary>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">63</span>
 <span class="normal">64</span>
 <span class="normal">65</span>
 <span class="normal">66</span>
@@ -3853,10 +3841,10 @@ use_cache: Enable or disable caching for this AntaTemplate if the AntaDevice sup
         <span class="o">**</span><span class="n">fields</span><span class="p">,</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-                </details>
+                  </details>
 
 
-    
+  
 
   <div class="doc doc-children">
 
@@ -3868,27 +3856,25 @@ use_cache: Enable or disable caching for this AntaTemplate if the AntaDevice sup
 
 
 
-
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="anta.models.AntaTemplate.__repr__" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">__repr__</span>
+            <span class="doc doc-object-name doc-function-name">__repr__</span>
 
 
 <a href="#anta.models.AntaTemplate.__repr__" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="fm">__repr__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Return the representation of the class.</p>
 <p>Copying pydantic model style, excluding <code>params_schema</code></p>
 
-          <details class="quote">
-            <summary>Source code in <code>anta/models.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">89</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/models.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">89</span>
 <span class="normal">90</span>
 <span class="normal">91</span>
 <span class="normal">92</span>
@@ -3900,28 +3886,27 @@ use_cache: Enable or disable caching for this AntaTemplate if the AntaDevice sup
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">a</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">v</span><span class="si">!r}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">a</span> <span class="o">!=</span> <span class="s2">&quot;params_schema&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="anta.models.AntaTemplate.render" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">render</span>
+            <span class="doc doc-object-name doc-function-name">render</span>
 
 
 <a href="#anta.models.AntaTemplate.render" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">render</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaCommand</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Render an AntaCommand from an AntaTemplate instance.</p>
 <p>Keep the parameters used in the AntaTemplate instance.</p>
+
 
 <details class="args:" open>
   <summary>Args:</summary>
@@ -3929,57 +3914,55 @@ use_cache: Enable or disable caching for this AntaTemplate if the AntaDevice sup
 </code></pre></div>
 </details>
 
-
-  <p><span class="doc-section-title">Returns:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td>
-                <code>    The rendered AntaCommand.</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>This AntaCommand instance have a template attribute that references this
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>    The rendered AntaCommand.</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>This AntaCommand instance have a template attribute that references this
 AntaTemplate instance.</p>
-            </div>
-          </td>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>    AntaTemplateRenderError</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If a parameter is missing to render the AntaTemplate instance.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-
-
-  <p><span class="doc-section-title">Raises:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td>
-                <code>    AntaTemplateRenderError</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>If a parameter is missing to render the AntaTemplate instance.</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-          <details class="quote">
-            <summary>Source code in <code>anta/models.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 96</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/models.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 96</span>
 <span class="normal"> 97</span>
 <span class="normal"> 98</span>
 <span class="normal"> 99</span>
@@ -4045,8 +4028,8 @@ AntaTemplate instance.</p>
         <span class="n">use_cache</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">use_cache</span><span class="p">,</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
 
@@ -4055,8 +4038,7 @@ AntaTemplate instance.</p>
   </div>
 
 
-  </div>
-
+    </div>
 
 </div>
 
@@ -4178,7 +4160,7 @@ AntaTemplate instance.</p>
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable"], "provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.5cfa9459.min.js"></script>
+      <script src="../../assets/javascripts/bundle.ebd0bdb7.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
       

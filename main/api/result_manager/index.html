@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.22">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.23">
     
     
       
@@ -28,7 +28,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.732c4fb1.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6543a935.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
@@ -2386,21 +2386,23 @@
 <h1 id="result-manager-definition">Result Manager definition<a class="headerlink" href="#result-manager-definition" title="Permanent link">&para;</a></h1>
 <h2 id="uml-diagram">UML Diagram<a class="headerlink" href="#uml-diagram" title="Permanent link">&para;</a></h2>
 <p><img alt="" src="../../imgs/uml/anta.result_manager.ResultManager.jpeg" /></p>
+  
 
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.result_manager.ResultManager" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">ResultManager</span>
+            <span class="doc doc-object-name doc-class-name">ResultManager</span>
 
 
 <a href="#anta.result_manager.ResultManager" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">ResultManager</span><span class="p">()</span>
 </code></pre></div>
 
-  <div class="doc doc-contents first">
+    <div class="doc doc-contents first">
 
   
         <p>Helper to manage Test Results and generate reports.</p>
@@ -2509,9 +2511,9 @@ table shows the updated status:</p>
 <p>If the status of the added test is error, the status is untouched and the
 error_status is set to True.</p>
 
-                  <details class="quote">
-                  <summary>Source code in <code>anta/result_manager/__init__.py</code></summary>
-                  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">72</span>
+                    <details class="quote">
+                    <summary>Source code in <code>anta/result_manager/__init__.py</code></summary>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">72</span>
 <span class="normal">73</span>
 <span class="normal">74</span>
 <span class="normal">75</span>
@@ -2559,10 +2561,10 @@ error_status is set to True.</p>
     <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="p">:</span> <span class="n">TestStatus</span> <span class="o">=</span> <span class="s2">&quot;unset&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">error_status</span> <span class="o">=</span> <span class="kc">False</span>
 </code></pre></div></td></tr></table></div>
-                </details>
+                  </details>
 
 
-    
+  
 
   <div class="doc doc-children">
 
@@ -2577,9 +2579,9 @@ error_status is set to True.</p>
 
 
 <h3 id="anta.result_manager.ResultManager.json" class="doc doc-heading">
-          <span class="doc doc-object-name doc-attribute-name">json</span>
+            <span class="doc doc-object-name doc-attribute-name">json</span>
 
-  
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -2588,10 +2590,10 @@ error_status is set to True.</p>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">json</span><span class="p">:</span> <span class="nb">str</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Get a JSON representation of the results.</p>
-  </div>
+    </div>
 
 </div>
 
@@ -2600,9 +2602,9 @@ error_status is set to True.</p>
 
 
 <h3 id="anta.result_manager.ResultManager.results" class="doc doc-heading">
-          <span class="doc doc-object-name doc-attribute-name">results</span>
+            <span class="doc doc-object-name doc-attribute-name">results</span>
 
-  
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
       <small class="doc doc-label doc-label-writable"><code>writable</code></small>
@@ -2612,40 +2614,39 @@ error_status is set to True.</p>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">results</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">TestResult</span><span class="p">]</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Get the list of TestResult.</p>
-  </div>
+    </div>
 
 </div>
-
 
 
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="anta.result_manager.ResultManager.add" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">add</span>
+            <span class="doc doc-object-name doc-function-name">add</span>
 
 
 <a href="#anta.result_manager.ResultManager.add" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">add</span><span class="p">(</span><span class="n">result</span><span class="p">:</span> <span class="n">TestResult</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Add a result to the ResultManager instance.</p>
+
 
 <details class="args:" open>
   <summary>Args:</summary>
   <div class="codehilite"><pre><span></span><code><span class="n">result</span><span class="o">:</span><span class="w"> </span><span class="n">TestResult</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">add</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">ResultManager</span><span class="w"> </span><span class="n">instance</span><span class="o">.</span>
 </code></pre></div>
 </details>
-          <details class="quote">
-            <summary>Source code in <code>anta/result_manager/__init__.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">119</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/result_manager/__init__.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">119</span>
 <span class="normal">120</span>
 <span class="normal">121</span>
 <span class="normal">122</span>
@@ -2687,27 +2688,26 @@ error_status is set to True.</p>
     <span class="bp">self</span><span class="o">.</span><span class="n">_result_entries</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
     <span class="n">_update_status</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">result</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="anta.result_manager.ResultManager.filter" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">filter</span>
+            <span class="doc doc-object-name doc-function-name">filter</span>
 
 
 <a href="#anta.result_manager.ResultManager.filter" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nb">filter</span><span class="p">(</span><span class="nf">hide</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="n">TestStatus</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">ResultManager</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Get a filtered ResultManager based on test status.</p>
+
 
 <details class="args:" open>
   <summary>Args:</summary>
@@ -2715,32 +2715,31 @@ error_status is set to True.</p>
 </code></pre></div>
 </details>
 
-
-  <p><span class="doc-section-title">Returns:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td>
-                <code>    A filtered `ResultManager`.</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              
-            </div>
-          </td>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>    A filtered `ResultManager`.</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>anta/result_manager/__init__.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">145</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/result_manager/__init__.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">145</span>
 <span class="normal">146</span>
 <span class="normal">147</span>
 <span class="normal">148</span>
@@ -2768,27 +2767,26 @@ error_status is set to True.</p>
     <span class="n">manager</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="n">test</span> <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result_entries</span> <span class="k">if</span> <span class="n">test</span><span class="o">.</span><span class="n">result</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">hide</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">manager</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="anta.result_manager.ResultManager.filter_by_devices" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">filter_by_devices</span>
+            <span class="doc doc-object-name doc-function-name">filter_by_devices</span>
 
 
 <a href="#anta.result_manager.ResultManager.filter_by_devices" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">filter_by_devices</span><span class="p">(</span><span class="n">devices</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">ResultManager</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Get a filtered ResultManager that only contains specific devices.</p>
+
 
 <details class="args:" open>
   <summary>Args:</summary>
@@ -2796,32 +2794,31 @@ error_status is set to True.</p>
 </code></pre></div>
 </details>
 
-
-  <p><span class="doc-section-title">Returns:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td>
-                <code>    A filtered `ResultManager`.</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              
-            </div>
-          </td>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>    A filtered `ResultManager`.</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>anta/result_manager/__init__.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">175</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/result_manager/__init__.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">175</span>
 <span class="normal">176</span>
 <span class="normal">177</span>
 <span class="normal">178</span>
@@ -2849,27 +2846,26 @@ error_status is set to True.</p>
     <span class="n">manager</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="n">result</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result_entries</span> <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">devices</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">manager</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="anta.result_manager.ResultManager.filter_by_tests" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">filter_by_tests</span>
+            <span class="doc doc-object-name doc-function-name">filter_by_tests</span>
 
 
 <a href="#anta.result_manager.ResultManager.filter_by_tests" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">filter_by_tests</span><span class="p">(</span><span class="n">tests</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">ResultManager</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Get a filtered ResultManager that only contains specific tests.</p>
+
 
 <details class="args:" open>
   <summary>Args:</summary>
@@ -2877,32 +2873,31 @@ error_status is set to True.</p>
 </code></pre></div>
 </details>
 
-
-  <p><span class="doc-section-title">Returns:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td>
-                <code>    A filtered `ResultManager`.</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              
-            </div>
-          </td>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>    A filtered `ResultManager`.</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>anta/result_manager/__init__.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">160</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/result_manager/__init__.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">160</span>
 <span class="normal">161</span>
 <span class="normal">162</span>
 <span class="normal">163</span>
@@ -2930,55 +2925,52 @@ error_status is set to True.</p>
     <span class="n">manager</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="n">result</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result_entries</span> <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">test</span> <span class="ow">in</span> <span class="n">tests</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">manager</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="anta.result_manager.ResultManager.get_devices" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">get_devices</span>
+            <span class="doc doc-object-name doc-function-name">get_devices</span>
 
 
 <a href="#anta.result_manager.ResultManager.get_devices" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">get_devices</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Get the set of all the device names.</p>
 
 
-
-  <p><span class="doc-section-title">Returns:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td>
-                <code>    Set of device names.</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              
-            </div>
-          </td>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>    Set of device names.</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>anta/result_manager/__init__.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">199</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/result_manager/__init__.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">199</span>
 <span class="normal">200</span>
 <span class="normal">201</span>
 <span class="normal">202</span>
@@ -2994,85 +2986,80 @@ error_status is set to True.</p>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result_entries</span><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="anta.result_manager.ResultManager.get_status" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">get_status</span>
+            <span class="doc doc-object-name doc-function-name">get_status</span>
 
 
 <a href="#anta.result_manager.ResultManager.get_status" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">get_status</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">ignore_error</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Return the current status including error_status if ignore_error is False.</p>
 
-          <details class="quote">
-            <summary>Source code in <code>anta/result_manager/__init__.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">141</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/result_manager/__init__.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">141</span>
 <span class="normal">142</span>
 <span class="normal">143</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">ignore_error</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the current status including error_status if ignore_error is False.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="s2">&quot;error&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">error_status</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">ignore_error</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="anta.result_manager.ResultManager.get_tests" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">get_tests</span>
+            <span class="doc doc-object-name doc-function-name">get_tests</span>
 
 
 <a href="#anta.result_manager.ResultManager.get_tests" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">get_tests</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Get the set of all the test names.</p>
 
 
-
-  <p><span class="doc-section-title">Returns:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td>
-                <code>    Set of test names.</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              
-            </div>
-          </td>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>    Set of test names.</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>anta/result_manager/__init__.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">190</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/result_manager/__init__.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">190</span>
 <span class="normal">191</span>
 <span class="normal">192</span>
 <span class="normal">193</span>
@@ -3088,8 +3075,8 @@ error_status is set to True.</p>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">test</span><span class="p">)</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result_entries</span><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
 
@@ -3098,8 +3085,7 @@ error_status is set to True.</p>
   </div>
 
 
-  </div>
-
+    </div>
 
 </div>
 
@@ -3221,7 +3207,7 @@ error_status is set to True.</p>
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable"], "provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.5cfa9459.min.js"></script>
+      <script src="../../assets/javascripts/bundle.ebd0bdb7.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
       

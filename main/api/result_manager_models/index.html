@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.22">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.23">
     
     
       
@@ -28,7 +28,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.732c4fb1.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6543a935.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
@@ -2246,63 +2246,63 @@
 <h1 id="test-result-model">Test Result model<a class="headerlink" href="#test-result-model" title="Permanent link">&para;</a></h1>
 <h2 id="uml-diagram">UML Diagram<a class="headerlink" href="#uml-diagram" title="Permanent link">&para;</a></h2>
 <p><img alt="" src="../../imgs/uml/anta.result_manager.models.TestResult.jpeg" /></p>
+  
 
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.result_manager.models.TestResult" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">TestResult</span>
+            <span class="doc doc-object-name doc-class-name">TestResult</span>
 
 
 <a href="#anta.result_manager.models.TestResult" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents first">
-          <p class="doc doc-class-bases">
-            Bases: <code><span title="pydantic.BaseModel">BaseModel</span></code></p>
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="pydantic.BaseModel">BaseModel</span></code></p>
 
   
         <p>Describe the result of a test from a single device.</p>
 
 
-
-  <p><span class="doc-section-title">Attributes:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td><code><span title="anta.result_manager.models.TestResult.name">name</span></code></td>
-          <td>
-                <code>Device name where the test has run.</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>test: Test name runs on the device.
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="anta.result_manager.models.TestResult.name">name</span></code></td>
+            <td>
+                  <code>Device name where the test has run.</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>test: Test name runs on the device.
 categories: List of categories the TestResult belongs to, by default the AntaTest categories.
 description: TestResult description, by default the AntaTest description.
 result: Result of the test. Can be one of &ldquo;unset&rdquo;, &ldquo;success&rdquo;, &ldquo;failure&rdquo;, &ldquo;error&rdquo; or &ldquo;skipped&rdquo;.
 messages: Message to report after the test if any.
 custom_field: Custom field to store a string for flexibility in integrating with ANTA</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
   
 
-    
+  
 
   <div class="doc doc-children">
-
 
 
 
@@ -2315,27 +2315,27 @@ custom_field: Custom field to store a string for flexibility in integrating with
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="anta.result_manager.models.TestResult.is_error" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">is_error</span>
+            <span class="doc doc-object-name doc-function-name">is_error</span>
 
 
 <a href="#anta.result_manager.models.TestResult.is_error" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">is_error</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Set status to error.</p>
+
 
 <details class="args:" open>
   <summary>Args:</summary>
   <div class="codehilite"><pre><span></span><code><span class="n">message</span><span class="o">:</span><span class="w"> </span><span class="n">Optional</span><span class="w"> </span><span class="n">message</span><span class="w"> </span><span class="n">related</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">test</span>
 </code></pre></div>
 </details>
-          <details class="quote">
-            <summary>Source code in <code>anta/result_manager/models.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">66</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/result_manager/models.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">66</span>
 <span class="normal">67</span>
 <span class="normal">68</span>
 <span class="normal">69</span>
@@ -2353,36 +2353,35 @@ custom_field: Custom field to store a string for flexibility in integrating with
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_set_status</span><span class="p">(</span><span class="s2">&quot;error&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="anta.result_manager.models.TestResult.is_failure" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">is_failure</span>
+            <span class="doc doc-object-name doc-function-name">is_failure</span>
 
 
 <a href="#anta.result_manager.models.TestResult.is_failure" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">is_failure</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Set status to failure.</p>
+
 
 <details class="args:" open>
   <summary>Args:</summary>
   <div class="codehilite"><pre><span></span><code><span class="n">message</span><span class="o">:</span><span class="w"> </span><span class="n">Optional</span><span class="w"> </span><span class="n">message</span><span class="w"> </span><span class="n">related</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">test</span>
 </code></pre></div>
 </details>
-          <details class="quote">
-            <summary>Source code in <code>anta/result_manager/models.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">46</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/result_manager/models.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">46</span>
 <span class="normal">47</span>
 <span class="normal">48</span>
 <span class="normal">49</span>
@@ -2400,36 +2399,35 @@ custom_field: Custom field to store a string for flexibility in integrating with
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_set_status</span><span class="p">(</span><span class="s2">&quot;failure&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="anta.result_manager.models.TestResult.is_skipped" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">is_skipped</span>
+            <span class="doc doc-object-name doc-function-name">is_skipped</span>
 
 
 <a href="#anta.result_manager.models.TestResult.is_skipped" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">is_skipped</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Set status to skipped.</p>
+
 
 <details class="args:" open>
   <summary>Args:</summary>
   <div class="codehilite"><pre><span></span><code><span class="n">message</span><span class="o">:</span><span class="w"> </span><span class="n">Optional</span><span class="w"> </span><span class="n">message</span><span class="w"> </span><span class="n">related</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">test</span>
 </code></pre></div>
 </details>
-          <details class="quote">
-            <summary>Source code in <code>anta/result_manager/models.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">56</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/result_manager/models.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">56</span>
 <span class="normal">57</span>
 <span class="normal">58</span>
 <span class="normal">59</span>
@@ -2447,36 +2445,35 @@ custom_field: Custom field to store a string for flexibility in integrating with
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_set_status</span><span class="p">(</span><span class="s2">&quot;skipped&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="anta.result_manager.models.TestResult.is_success" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">is_success</span>
+            <span class="doc doc-object-name doc-function-name">is_success</span>
 
 
 <a href="#anta.result_manager.models.TestResult.is_success" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">is_success</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Set status to success.</p>
+
 
 <details class="args:" open>
   <summary>Args:</summary>
   <div class="codehilite"><pre><span></span><code><span class="n">message</span><span class="o">:</span><span class="w"> </span><span class="n">Optional</span><span class="w"> </span><span class="n">message</span><span class="w"> </span><span class="n">related</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">test</span>
 </code></pre></div>
 </details>
-          <details class="quote">
-            <summary>Source code in <code>anta/result_manager/models.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">36</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/result_manager/models.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">36</span>
 <span class="normal">37</span>
 <span class="normal">38</span>
 <span class="normal">39</span>
@@ -2494,8 +2491,8 @@ custom_field: Custom field to store a string for flexibility in integrating with
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_set_status</span><span class="p">(</span><span class="s2">&quot;success&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
 
@@ -2504,8 +2501,7 @@ custom_field: Custom field to store a string for flexibility in integrating with
   </div>
 
 
-  </div>
-
+    </div>
 
 </div>
 
@@ -2627,7 +2623,7 @@ custom_field: Custom field to store a string for flexibility in integrating with
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable"], "provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.5cfa9459.min.js"></script>
+      <script src="../../assets/javascripts/bundle.ebd0bdb7.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
       

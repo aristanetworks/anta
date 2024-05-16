@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.22">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.23">
     
     
       
@@ -28,7 +28,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.732c4fb1.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6543a935.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
@@ -3292,10 +3292,10 @@
 
 
 
-  <div class="doc doc-contents first">
+    <div class="doc doc-contents first">
   
 
-  
+
 
   <div class="doc doc-children">
 
@@ -3304,23 +3304,26 @@
 
 
 
+  
 
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.tests.routing.bgp.VerifyBGPAdvCommunities" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyBGPAdvCommunities</span>
+            <span class="doc doc-object-name doc-class-name">VerifyBGPAdvCommunities</span>
 
 
 <a href="#anta.tests.routing.bgp.VerifyBGPAdvCommunities" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
   
         <p>Verifies if the advertised communities of BGP peers are standard, extended, and large in the specified VRF.</p>
+
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
@@ -3580,27 +3583,29 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Following BGP peers are not configured or advertised communities are not standard, extended, and large:</span><span class="se">\n</span><span class="si">{</span><span class="n">failures</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
-  </div>
+    </div>
 
+</div>  
 
-</div>
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.tests.routing.bgp.VerifyBGPExchangedRoutes" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyBGPExchangedRoutes</span>
+            <span class="doc doc-object-name doc-class-name">VerifyBGPExchangedRoutes</span>
 
 
 <a href="#anta.tests.routing.bgp.VerifyBGPExchangedRoutes" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
   
         <p>Verifies if the BGP peers have correctly advertised and received routes.</p>
 <p>The route type should be &lsquo;valid&rsquo; and &lsquo;active&rsquo; for a specified VRF.</p>
+
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
@@ -3951,26 +3956,28 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Following BGP peers are not found or routes are not exchanged properly:</span><span class="se">\n</span><span class="si">{</span><span class="n">failures</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
-  </div>
+    </div>
 
+</div>  
 
-</div>
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.tests.routing.bgp.VerifyBGPPeerASNCap" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyBGPPeerASNCap</span>
+            <span class="doc doc-object-name doc-class-name">VerifyBGPPeerASNCap</span>
 
 
 <a href="#anta.tests.routing.bgp.VerifyBGPPeerASNCap" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
   
         <p>Verifies the four octet asn capabilities of a BGP peer in a specified VRF.</p>
+
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
@@ -4238,29 +4245,31 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Following BGP peer four octet asn capabilities are not found or not ok:</span><span class="se">\n</span><span class="si">{</span><span class="n">failures</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
-  </div>
+    </div>
 
+</div>  
 
-</div>
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.tests.routing.bgp.VerifyBGPPeerCount" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyBGPPeerCount</span>
+            <span class="doc doc-object-name doc-class-name">VerifyBGPPeerCount</span>
 
 
 <a href="#anta.tests.routing.bgp.VerifyBGPPeerCount" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
   
         <p>Verifies the count of BGP peers for a given address family.</p>
 <p>It supports multiple types of Address Families Identifiers (AFI) and Subsequent Address Family Identifiers (SAFI).</p>
 <p>For SR-TE SAFI, the EOS command supports sr-te first then ipv4/ipv6 (AFI) which is handled automatically in this test.</p>
 <p>Please refer to the Input class attributes below for details.</p>
+
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
@@ -4710,26 +4719,28 @@ If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, `vrf` must be `default`
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failures: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">failures</span><span class="o">.</span><span class="n">values</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
-  </div>
+    </div>
 
+</div>  
 
-</div>
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.tests.routing.bgp.VerifyBGPPeerMD5Auth" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyBGPPeerMD5Auth</span>
+            <span class="doc doc-object-name doc-class-name">VerifyBGPPeerMD5Auth</span>
 
 
 <a href="#anta.tests.routing.bgp.VerifyBGPPeerMD5Auth" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
   
         <p>Verifies the MD5 authentication and state of IPv4 BGP peers in a specified VRF.</p>
+
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
@@ -4993,26 +5004,28 @@ If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, `vrf` must be `default`
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Following BGP peers are not configured, not established or MD5 authentication is not enabled:</span><span class="se">\n</span><span class="si">{</span><span class="n">failures</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
-  </div>
+    </div>
 
+</div>  
 
-</div>
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.tests.routing.bgp.VerifyBGPPeerMPCaps" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyBGPPeerMPCaps</span>
+            <span class="doc doc-object-name doc-class-name">VerifyBGPPeerMPCaps</span>
 
 
 <a href="#anta.tests.routing.bgp.VerifyBGPPeerMPCaps" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
   
         <p>Verifies the multiprotocol capabilities of a BGP peer in a specified VRF.</p>
+
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
@@ -5312,26 +5325,28 @@ If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, `vrf` must be `default`
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Following BGP peer multiprotocol capabilities are not found or not ok:</span><span class="se">\n</span><span class="si">{</span><span class="n">failures</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
-  </div>
+    </div>
 
+</div>  
 
-</div>
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.tests.routing.bgp.VerifyBGPPeerRouteRefreshCap" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyBGPPeerRouteRefreshCap</span>
+            <span class="doc doc-object-name doc-class-name">VerifyBGPPeerRouteRefreshCap</span>
 
 
 <a href="#anta.tests.routing.bgp.VerifyBGPPeerRouteRefreshCap" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
   
         <p>Verifies the route refresh capabilities of a BGP peer in a specified VRF.</p>
+
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
@@ -5599,23 +5614,24 @@ If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, `vrf` must be `default`
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Following BGP peer route refresh capabilities are not found or not ok:</span><span class="se">\n</span><span class="si">{</span><span class="n">failures</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
-  </div>
+    </div>
 
+</div>  
 
-</div>
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.tests.routing.bgp.VerifyBGPPeersHealth" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyBGPPeersHealth</span>
+            <span class="doc doc-object-name doc-class-name">VerifyBGPPeersHealth</span>
 
 
 <a href="#anta.tests.routing.bgp.VerifyBGPPeersHealth" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
   
         <p>Verifies the health of BGP peers.</p>
@@ -5623,6 +5639,7 @@ If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, `vrf` must be `default`
 <p>It supports multiple types of Address Families Identifiers (AFI) and Subsequent Address Family Identifiers (SAFI).</p>
 <p>For SR-TE SAFI, the EOS command supports sr-te first then ipv4/ipv6 (AFI) which is handled automatically in this test.</p>
 <p>Please refer to the Input class attributes below for details.</p>
+
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
@@ -6035,23 +6052,24 @@ If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, `vrf` must be `default`
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failures: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">failures</span><span class="o">.</span><span class="n">values</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
-  </div>
+    </div>
 
+</div>  
 
-</div>
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.tests.routing.bgp.VerifyBGPSpecificPeers" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyBGPSpecificPeers</span>
+            <span class="doc doc-object-name doc-class-name">VerifyBGPSpecificPeers</span>
 
 
 <a href="#anta.tests.routing.bgp.VerifyBGPSpecificPeers" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
   
         <p>Verifies the health of specific BGP peer(s).</p>
@@ -6059,6 +6077,7 @@ If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, `vrf` must be `default`
 <p>It supports multiple types of Address Families Identifiers (AFI) and Subsequent Address Family Identifiers (SAFI).</p>
 <p>For SR-TE SAFI, the EOS command supports sr-te first then ipv4/ipv6 (AFI) which is handled automatically in this test.</p>
 <p>Please refer to the Input class attributes below for details.</p>
+
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
@@ -6517,26 +6536,28 @@ If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, `vrf` must be `default`
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failures: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">failures</span><span class="o">.</span><span class="n">values</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
-  </div>
+    </div>
 
+</div>  
 
-</div>
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.tests.routing.bgp.VerifyBGPTimers" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyBGPTimers</span>
+            <span class="doc doc-object-name doc-class-name">VerifyBGPTimers</span>
 
 
 <a href="#anta.tests.routing.bgp.VerifyBGPTimers" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
   
         <p>Verifies if the BGP peers are configured with the correct hold and keep-alive timers in the specified VRF.</p>
+
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
@@ -6840,26 +6861,28 @@ If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, `vrf` must be `default`
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Following BGP peers are not configured or hold and keep-alive timers are not correct:</span><span class="se">\n</span><span class="si">{</span><span class="n">failures</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
-  </div>
+    </div>
 
+</div>  
 
-</div>
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.tests.routing.bgp.VerifyEVPNType2Route" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyEVPNType2Route</span>
+            <span class="doc doc-object-name doc-class-name">VerifyEVPNType2Route</span>
 
 
 <a href="#anta.tests.routing.bgp.VerifyEVPNType2Route" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
   
         <p>Verifies the EVPN Type-2 routes for a given IPv4 or MAC address and VNI.</p>
+
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
@@ -7127,29 +7150,27 @@ If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, `vrf` must be `default`
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The following EVPN Type-2 routes do not have at least one valid and active path: </span><span class="si">{</span><span class="n">bad_evpn_routes</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
-  </div>
-
+    </div>
 
 </div>
-
 
 
 <div class="doc doc-object doc-function">
 
 
-
 <h2 id="anta.tests.routing.bgp._add_bgp_failures" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">_add_bgp_failures</span>
+            <span class="doc doc-object-name doc-function-name">_add_bgp_failures</span>
 
 
 <a href="#anta.tests.routing.bgp._add_bgp_failures" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">_add_bgp_failures</span><span class="p">(</span><span class="n">failures</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">],</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="n">afi</span><span class="p">:</span> <span class="n">Afi</span><span class="p">,</span> <span class="n">safi</span><span class="p">:</span> <span class="n">Safi</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">vrf</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">issue</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Add a BGP failure entry to the given <code>failures</code> dictionary.</p>
 <p>Note: This function modifies <code>failures</code> in-place.</p>
+
 
 <details class="args:" open>
   <summary>Args:</summary>
@@ -7160,6 +7181,7 @@ If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, `vrf` must be `default`
 <span class="n">issue</span><span class="o">:</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="n">description</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">issue</span><span class="o">.</span><span class="w"> </span><span class="n">Can</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">any</span><span class="w"> </span><span class="n">type</span><span class="o">.</span>
 </code></pre></div>
 </details>
+
 <details class="example:" open>
   <summary>Example:</summary>
   <p>The <code>failures</code> dictionary will have the following structure:
@@ -7180,9 +7202,9 @@ If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, `vrf` must be `default`
         }
     }</p>
 </details>
-          <details class="quote">
-            <summary>Source code in <code>anta/tests/routing/bgp.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">22</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/tests/routing/bgp.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">22</span>
 <span class="normal">23</span>
 <span class="normal">24</span>
 <span class="normal">25</span>
@@ -7260,29 +7282,28 @@ If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, `vrf` must be `default`
 
     <span class="n">failure_entry</span><span class="p">[</span><span class="s2">&quot;vrfs&quot;</span><span class="p">][</span><span class="n">vrf</span><span class="p">]</span> <span class="o">=</span> <span class="n">issue</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h2 id="anta.tests.routing.bgp._add_bgp_routes_failure" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">_add_bgp_routes_failure</span>
+            <span class="doc doc-object-name doc-function-name">_add_bgp_routes_failure</span>
 
 
 <a href="#anta.tests.routing.bgp._add_bgp_routes_failure" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">_add_bgp_routes_failure</span><span class="p">(</span><span class="n">bgp_routes</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">bgp_output</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">peer</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">vrf</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">route_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;advertised_routes&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]]]</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Identify missing BGP routes and invalid or inactive route entries.</p>
 <p>This function checks the BGP output from the device against the expected routes.</p>
 <p>It identifies any missing routes as well as any routes that are invalid or inactive. The results are returned in a dictionary.</p>
+
 
 <details class="args:" open>
   <summary>Args:</summary>
@@ -7294,32 +7315,31 @@ If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, `vrf` must be `default`
 </code></pre></div>
 </details>
 
-
-  <p><span class="doc-section-title">Returns:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td>
-                <code>    dict[str, dict[str, dict[str, dict[str, list[str]]]]]: A dictionary containing the missing routes and invalid or inactive routes.</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              
-            </div>
-          </td>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>    dict[str, dict[str, dict[str, dict[str, list[str]]]]]: A dictionary containing the missing routes and invalid or inactive routes.</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>anta/tests/routing/bgp.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 98</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/tests/routing/bgp.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 98</span>
 <span class="normal"> 99</span>
 <span class="normal">100</span>
 <span class="normal">101</span>
@@ -7413,27 +7433,26 @@ If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, `vrf` must be `default`
 
     <span class="k">return</span> <span class="n">failure_routes</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h2 id="anta.tests.routing.bgp._check_peer_issues" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">_check_peer_issues</span>
+            <span class="doc doc-object-name doc-function-name">_check_peer_issues</span>
 
 
 <a href="#anta.tests.routing.bgp._check_peer_issues" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">_check_peer_issues</span><span class="p">(</span><span class="n">peer_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Check for issues in BGP peer data.</p>
+
 
 <details class="args:" open>
   <summary>Args:</summary>
@@ -7441,52 +7460,51 @@ If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, `vrf` must be `default`
 </code></pre></div>
 </details>
 
-
-  <p><span class="doc-section-title">Returns:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td>
-                <code>    dict: Dictionary with keys indicating issues or an empty dictionary if no issues.</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              
-            </div>
-          </td>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>    dict: Dictionary with keys indicating issues or an empty dictionary if no issues.</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
-
-  <p><span class="doc-section-title">Raises:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td>
-                <code>    ValueError: If any of the required keys (&#34;peerState&#34;, &#34;inMsgQueue&#34;, &#34;outMsgQueue&#34;) are missing in `peer_data`, i.e. invalid BGP peer data.</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              
-            </div>
-          </td>
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>    ValueError: If any of the required keys (&#34;peerState&#34;, &#34;inMsgQueue&#34;, &#34;outMsgQueue&#34;) are missing in `peer_data`, i.e. invalid BGP peer data.</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
 
 <details class="example:" open>
   <summary>Example:</summary>
@@ -7495,9 +7513,9 @@ If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, `vrf` must be `default`
 {}
 </code></pre></div>
 </details>
-          <details class="quote">
-            <summary>Source code in <code>anta/tests/routing/bgp.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">63</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/tests/routing/bgp.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">63</span>
 <span class="normal">64</span>
 <span class="normal">65</span>
 <span class="normal">66</span>
@@ -7563,8 +7581,8 @@ If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, `vrf` must be `default`
 
     <span class="k">return</span> <span class="p">{}</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
 
@@ -7572,7 +7590,7 @@ If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, `vrf` must be `default`
 
   </div>
 
-  </div>
+    </div>
 
 </div>
 
@@ -7694,7 +7712,7 @@ If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, `vrf` must be `default`
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable"], "provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.5cfa9459.min.js"></script>
+      <script src="../../assets/javascripts/bundle.ebd0bdb7.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
       

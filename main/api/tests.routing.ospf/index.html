@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.22">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.23">
     
     
       
@@ -28,7 +28,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.732c4fb1.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6543a935.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
@@ -2260,10 +2260,10 @@
 
 
 
-  <div class="doc doc-contents first">
+    <div class="doc doc-contents first">
   
 
-  
+
 
   <div class="doc doc-children">
 
@@ -2272,23 +2272,26 @@
 
 
 
+  
 
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.tests.routing.ospf.VerifyOSPFMaxLSA" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyOSPFMaxLSA</span>
+            <span class="doc doc-object-name doc-class-name">VerifyOSPFMaxLSA</span>
 
 
 <a href="#anta.tests.routing.ospf.VerifyOSPFMaxLSA" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
   
         <p>Verifies LSAs present in the OSPF link state database did not cross the maximum LSA Threshold.</p>
+
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
@@ -2404,26 +2407,28 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;OSPF Instances </span><span class="si">{</span><span class="n">exceeded_instances</span><span class="si">}</span><span class="s2"> crossed the maximum LSA threshold.&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
-  </div>
+    </div>
 
+</div>  
 
-</div>
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.tests.routing.ospf.VerifyOSPFNeighborCount" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyOSPFNeighborCount</span>
+            <span class="doc doc-object-name doc-class-name">VerifyOSPFNeighborCount</span>
 
 
 <a href="#anta.tests.routing.ospf.VerifyOSPFNeighborCount" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
   
         <p>Verifies the number of OSPF neighbors in FULL state is the one we expect.</p>
+
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
@@ -2578,26 +2583,28 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Some neighbors are not correctly configured: </span><span class="si">{</span><span class="n">not_full_neighbors</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
-  </div>
+    </div>
 
+</div>  
 
-</div>
+  
 
 <div class="doc doc-object doc-class">
 
 
 
 <h2 id="anta.tests.routing.ospf.VerifyOSPFNeighborState" class="doc doc-heading">
-          <span class="doc doc-object-name doc-class-name">VerifyOSPFNeighborState</span>
+            <span class="doc doc-object-name doc-class-name">VerifyOSPFNeighborState</span>
 
 
 <a href="#anta.tests.routing.ospf.VerifyOSPFNeighborState" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
   
         <p>Verifies all OSPF neighbors are in FULL state.</p>
+
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
@@ -2703,60 +2710,57 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Some neighbors are not correctly configured: </span><span class="si">{</span><span class="n">not_full_neighbors</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
-  </div>
-
+    </div>
 
 </div>
-
 
 
 <div class="doc doc-object doc-function">
 
 
-
 <h2 id="anta.tests.routing.ospf._count_ospf_neighbor" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">_count_ospf_neighbor</span>
+            <span class="doc doc-object-name doc-function-name">_count_ospf_neighbor</span>
 
 
 <a href="#anta.tests.routing.ospf._count_ospf_neighbor" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">_count_ospf_neighbor</span><span class="p">(</span><span class="n">ospf_neighbor_json</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Count the number of OSPF neighbors.</p>
+
 
 <details class="args:" open>
   <summary>Args:</summary>
   <p>ospf_neighbor_json: The JSON output of the <code>show ip ospf neighbor</code> command.</p>
 </details>
 
-
-  <p><span class="doc-section-title">Returns:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td>
-                <code>  int: The number of OSPF neighbors.</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              
-            </div>
-          </td>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>  int: The number of OSPF neighbors.</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>anta/tests/routing/ospf.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">18</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/tests/routing/ospf.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">18</span>
 <span class="normal">19</span>
 <span class="normal">20</span>
 <span class="normal">21</span>
@@ -2790,59 +2794,57 @@
             <span class="n">count</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">instance_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ospfNeighborEntries&quot;</span><span class="p">,</span> <span class="p">[]))</span>
     <span class="k">return</span> <span class="n">count</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h2 id="anta.tests.routing.ospf._get_not_full_ospf_neighbors" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">_get_not_full_ospf_neighbors</span>
+            <span class="doc doc-object-name doc-function-name">_get_not_full_ospf_neighbors</span>
 
 
 <a href="#anta.tests.routing.ospf._get_not_full_ospf_neighbors" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">_get_not_full_ospf_neighbors</span><span class="p">(</span><span class="n">ospf_neighbor_json</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Return the OSPF neighbors whose adjacency state is not <code>full</code>.</p>
+
 
 <details class="args:" open>
   <summary>Args:</summary>
   <p>ospf_neighbor_json: The JSON output of the <code>show ip ospf neighbor</code> command.</p>
 </details>
 
-
-  <p><span class="doc-section-title">Returns:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td>
-                <code>  list[dict[str, Any]]: A list of OSPF neighbors whose adjacency state is not `full`.</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              
-            </div>
-          </td>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>  list[dict[str, Any]]: A list of OSPF neighbors whose adjacency state is not `full`.</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>anta/tests/routing/ospf.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">37</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/tests/routing/ospf.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">37</span>
 <span class="normal">38</span>
 <span class="normal">39</span>
 <span class="normal">40</span>
@@ -2890,59 +2892,57 @@
         <span class="k">if</span> <span class="p">(</span><span class="n">state</span> <span class="o">:=</span> <span class="n">neighbor_data</span><span class="p">[</span><span class="s2">&quot;adjacencyState&quot;</span><span class="p">])</span> <span class="o">!=</span> <span class="s2">&quot;full&quot;</span>
     <span class="p">]</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h2 id="anta.tests.routing.ospf._get_ospf_max_lsa_info" class="doc doc-heading">
-          <span class="doc doc-object-name doc-function-name">_get_ospf_max_lsa_info</span>
+            <span class="doc doc-object-name doc-function-name">_get_ospf_max_lsa_info</span>
 
 
 <a href="#anta.tests.routing.ospf._get_ospf_max_lsa_info" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">_get_ospf_max_lsa_info</span><span class="p">(</span><span class="n">ospf_process_json</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span>
 </code></pre></div>
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
   
         <p>Return information about OSPF instances and their LSAs.</p>
+
 
 <details class="args:" open>
   <summary>Args:</summary>
   <p>ospf_process_json: OSPF process information in JSON format.</p>
 </details>
 
-
-  <p><span class="doc-section-title">Returns:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td>
-                <code>  list[dict[str, Any]]: A list of dictionaries containing OSPF LSAs information.</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              
-            </div>
-          </td>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>  list[dict[str, Any]]: A list of dictionaries containing OSPF LSAs information.</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>anta/tests/routing/ospf.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">63</span>
+            <details class="quote">
+              <summary>Source code in <code>anta/tests/routing/ospf.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">63</span>
 <span class="normal">64</span>
 <span class="normal">65</span>
 <span class="normal">66</span>
@@ -2988,8 +2988,8 @@
         <span class="k">for</span> <span class="n">instance</span><span class="p">,</span> <span class="n">instance_data</span> <span class="ow">in</span> <span class="n">vrf_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;instList&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
     <span class="p">]</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
 
@@ -2997,7 +2997,7 @@
 
   </div>
 
-  </div>
+    </div>
 
 </div>
 
@@ -3119,7 +3119,7 @@
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable"], "provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.5cfa9459.min.js"></script>
+      <script src="../../assets/javascripts/bundle.ebd0bdb7.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
       
