@@ -79,7 +79,7 @@ HIDE_STATUS.remove("unset")
     required=False,
 )
 @click.option(
-    "--save-to-csv",
+    "--csv-output",
     type=click.Path(
         file_okay=True,
         dir_okay=False,
@@ -127,7 +127,7 @@ def nrfu(
     inventory: AntaInventory,
     tags: set[str] | None,
     catalog: AntaCatalog,
-    save_to_csv: pathlib.Path | None,
+    csv_output: pathlib.Path | None,
     device: tuple[str],
     test: tuple[str],
     hide: tuple[str],
@@ -142,7 +142,7 @@ def nrfu(
         return
     # We use ctx.obj to pass stuff to the next Click functions
     ctx.ensure_object(dict)
-    ctx.obj["save_to_csv"] = save_to_csv
+    ctx.obj["csv_output"] = csv_output
     ctx.obj["result_manager"] = ResultManager()
     ctx.obj["ignore_status"] = ignore_status
     ctx.obj["ignore_error"] = ignore_error
