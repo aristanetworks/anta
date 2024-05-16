@@ -42,11 +42,11 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "failure", "messages": ["The device is not configured as a PTP Boundary Clock: 'ptpDisabled'"]},
     },
     {
-        "name": "error",
+        "name": "skipped",
         "test": VerifyPtpModeStatus,
         "eos_data": [{"ptpIntfSummaries": {}}],
         "inputs": None,
-        "expected": {"result": "error", "messages": ["'ptpMode' variable is not present in the command output"]},
+        "expected": {"result": "skipped", "messages": ["PTP is not configured"]},
     },
     {
         "name": "success",
@@ -104,11 +104,11 @@ DATA: list[dict[str, Any]] = [
         },
     },
     {
-        "name": "error",
+        "name": "skipped",
         "test": VerifyPtpGMStatus,
         "eos_data": [{"ptpIntfSummaries": {}}],
         "inputs": {"gmid": "0xec:46:70:ff:fe:00:ff:a8"},
-        "expected": {"result": "error", "messages": ["'ptpClockSummary' variable is not present in the command output"]},
+        "expected": {"result": "skipped", "messages": ["PTP is not configured"]},
     },
     {
         "name": "success",
@@ -161,14 +161,14 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "failure", "messages": ["The device lock is more than 60s old: 157s"]},
     },
     {
-        "name": "error",
+        "name": "skipped",
         "test": VerifyPtpLockStatus,
         "eos_data": [{"ptpIntfSummaries": {}}],
         "inputs": None,
         "expected": {
-            "result": "error",
+            "result": "skipped",
             "messages": [
-                "'ptpClockSummary' variable is not present in the command output",
+                "PTP is not configured",
             ],
         },
     },
