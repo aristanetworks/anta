@@ -50,8 +50,7 @@ LABEL   "org.opencontainers.image.title"="anta" \
 # Copy artifacts from builder
 COPY --from=BUILDER /opt/venv /opt/venv
 
-# Définit l'utilisateur et le PATH
-# USER anta
+# Define PATH and default user
 ENV PATH="/opt/venv/bin:$PATH"
 
 USER anta
