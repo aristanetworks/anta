@@ -129,6 +129,26 @@ DATA: list[dict[str, Any]] = [
         },
     },
     {
+        "name": "failure-no-aboot-component",
+        "test": VerifyFieldNotice44Resolution,
+        "eos_data": [
+            {
+                "imageFormatVersion": "1.0",
+                "uptime": 1109144.35,
+                "modelName": "DCS-7280QRA-C36S",
+                "details": {
+                    "deviations": [],
+                    "components": [{"name": "NotAboot", "version": "Aboot-veos-4.0.1-3255441"}],
+                },
+            },
+        ],
+        "inputs": None,
+        "expected": {
+            "result": "failure",
+            "messages": ["Aboot component not found"],
+        },
+    },
+    {
         "name": "success-JPE",
         "test": VerifyFieldNotice72Resolution,
         "eos_data": [

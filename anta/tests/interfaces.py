@@ -14,6 +14,7 @@ from typing import Any, ClassVar, Literal
 from pydantic import BaseModel, Field
 from pydantic_extra_types.mac_address import MacAddress
 
+from anta import GITHUB_SUGGESTION
 from anta.custom_types import EthernetInterface, Interface, Percent, PositiveInteger
 from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTemplate, AntaTest
@@ -702,6 +703,11 @@ class VerifyInterfaceIPv4(AntaTest):
             for interface in self.inputs.interfaces:
                 if interface.name == intf:
                     input_interface_detail = interface
+                    break
+            else:
+                self.result.is_error(f"Could not find `{intf}` in the input interfaces. {GITHUB_SUGGESTION}")
+                continue
+
             input_primary_ip = str(input_interface_detail.primary_ip)
             failed_messages = []
 

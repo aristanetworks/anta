@@ -3,7 +3,7 @@ ARG IMG_OPTION=alpine
 
 ### BUILDER
 
-FROM python:${PYTHON_VER}-${IMG_OPTION} as BUILDER
+FROM python:${PYTHON_VER}-${IMG_OPTION} AS BUILDER
 
 RUN pip install --upgrade pip
 
@@ -23,7 +23,7 @@ RUN pip --no-cache-dir install "." &&\
 
 ### BASE
 
-FROM python:${PYTHON_VER}-${IMG_OPTION} as BASE
+FROM python:${PYTHON_VER}-${IMG_OPTION} AS BASE
 
 # Ajoute un utilisateur système
 RUN adduser --system anta

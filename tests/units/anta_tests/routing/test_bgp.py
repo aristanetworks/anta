@@ -30,6 +30,7 @@ DATA: list[dict[str, Any]] = [
         "name": "success",
         "test": VerifyBGPPeerCount,
         "eos_data": [
+            # Need to order the output as the commands would be sorted after template rendering.
             {
                 "vrfs": {
                     "default": {
@@ -120,9 +121,10 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "address_families": [
+                # evpn first to make sure that the correct mapping output to input is kept.
+                {"afi": "evpn", "num_peers": 2},
                 {"afi": "ipv4", "safi": "unicast", "vrf": "default", "num_peers": 2},
                 {"afi": "ipv4", "safi": "sr-te", "vrf": "MGMT", "num_peers": 1},
-                {"afi": "evpn", "num_peers": 2},
                 {"afi": "link-state", "num_peers": 2},
                 {"afi": "path-selection", "num_peers": 2},
             ]
@@ -652,9 +654,10 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "address_families": [
+                # Path selection first to make sure input to output mapping is correct.
+                {"afi": "path-selection"},
                 {"afi": "ipv4", "safi": "unicast", "vrf": "default"},
                 {"afi": "ipv4", "safi": "sr-te", "vrf": "MGMT"},
-                {"afi": "path-selection"},
                 {"afi": "link-state"},
             ]
         },
@@ -1081,6 +1084,8 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "address_families": [
+                # Path selection first to make sure input to output mapping is correct.
+                {"afi": "path-selection", "peers": ["10.1.255.20", "10.1.255.22"]},
                 {
                     "afi": "ipv4",
                     "safi": "unicast",
@@ -1093,7 +1098,6 @@ DATA: list[dict[str, Any]] = [
                     "vrf": "MGMT",
                     "peers": ["10.1.255.10", "10.1.255.12"],
                 },
-                {"afi": "path-selection", "peers": ["10.1.255.20", "10.1.255.22"]},
                 {"afi": "link-state", "peers": ["10.1.255.30", "10.1.255.32"]},
             ]
         },

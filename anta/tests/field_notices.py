@@ -103,6 +103,11 @@ class VerifyFieldNotice44Resolution(AntaTest):
         for component in command_output["details"]["components"]:
             if component["name"] == "Aboot":
                 aboot_version = component["version"].split("-")[2]
+                break
+        else:
+            self.result.is_failure("Aboot component not found")
+            return
+
         self.result.is_success()
         incorrect_aboot_version = (
             aboot_version.startswith("4.0.")
@@ -192,4 +197,3 @@ class VerifyFieldNotice72Resolution(AntaTest):
                 return
         # We should never hit this point
         self.result.is_error("Error in running test - FixedSystemvrm1 not found")
-        return

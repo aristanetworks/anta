@@ -12,7 +12,6 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable
 
 import click
-from pydantic import ValidationError
 from yaml import YAMLError
 
 from anta.catalog import AntaCatalog
@@ -254,7 +253,7 @@ def inventory_options(f: Callable[..., Any]) -> Callable[..., Any]:
                 insecure=insecure,
                 disable_cache=disable_cache,
             )
-        except (ValidationError, TypeError, ValueError, YAMLError, OSError, InventoryIncorrectSchemaError, InventoryRootKeyError):
+        except (TypeError, ValueError, YAMLError, OSError, InventoryIncorrectSchemaError, InventoryRootKeyError):
             ctx.exit(ExitCode.USAGE_ERROR)
         return f(*args, inventory=i, tags=tags, **kwargs)
 
@@ -292,7 +291,7 @@ def catalog_options(f: Callable[..., Any]) -> Callable[..., Any]:
             return f(*args, catalog=None, **kwargs)
         try:
             c = AntaCatalog.parse(catalog)
-        except (ValidationError, TypeError, ValueError, YAMLError, OSError):
+        except (TypeError, ValueError, YAMLError, OSError):
             ctx.exit(ExitCode.USAGE_ERROR)
         return f(*args, catalog=c, **kwargs)
 
