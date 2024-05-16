@@ -10,16 +10,23 @@ RUN pip install --upgrade pip
 WORKDIR /local
 COPY . /local
 
-ENV PYTHONPATH=/local
-ENV PATH=$PATH:/root/.local/bin
+RUN python -m venv /opt/venv
 
-RUN pip --no-cache-dir install --user .
+
+ENV PATH="/opt/venv/bin:$PATH"
+
+RUN apk add --no-cache build-base # Add build-base package
+RUN pip --no-cache-dir install "." &&\
+    pip --no-cache-dir install ".[cli]"
 
 # ----------------------------------- #
 
 ### BASE
 
 FROM python:${PYTHON_VER}-${IMG_OPTION} as BASE
+
+# Ajoute un utilisateur système
+RUN adduser --system anta
 
 # Opencontainer labels
 # Labels version and revision will be updating
@@ -40,7 +47,14 @@ LABEL   "org.opencontainers.image.title"="anta" \
         "org.opencontainers.image.revision"="dev" \
         "org.opencontainers.image.version"="dev"
 
-COPY --from=BUILDER /root/.local/ /root/.local
-ENV PATH=$PATH:/root/.local/bin
+# Copie les fichiers nécessaires depuis l'image BUILDER
+COPY --from=BUILDER /opt/venv /opt/venv
 
-ENTRYPOINT [ "/root/.local/bin/anta" ]
+# Définit l'utilisateur et le PATH
+# USER anta
+ENV PATH="/opt/venv/bin:$PATH"
+
+USER anta
+
+# Définition du point d'entrée
+ENTRYPOINT [ "/opt/venv/bin/anta" ]
