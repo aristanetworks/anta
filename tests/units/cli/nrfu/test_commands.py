@@ -80,7 +80,7 @@ def test_anta_nrfu_json(click_runner: CliRunner) -> None:
     result = click_runner.invoke(anta, ["nrfu", "json"])
     assert result.exit_code == ExitCode.OK
     assert "JSON results" in result.output
-    match = re.search(r"\[\n  {[\s\S]+  }\n\]", result.output)
+    match = re.search(r"\[\n {2}{[\s\S]+ {2}}\n\]", result.output)
     assert match is not None
     result_list = json.loads(match.group())
     for res in result_list:

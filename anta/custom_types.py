@@ -24,7 +24,7 @@ def interface_autocomplete(v: str) -> str:
          - `po` will be changed to `Port-Channel`
     - `lo` will be changed to `Loopback`
     """
-    intf_id_re = re.compile(r"[0-9]+(\/[0-9]+)*(\.[0-9]+)?")
+    intf_id_re = re.compile(r"\d+(\/\d+)*(\.\d+)?")
     m = intf_id_re.search(v)
     if m is None:
         msg = f"Could not parse interface ID in interface '{v}'"
@@ -33,11 +33,7 @@ def interface_autocomplete(v: str) -> str:
 
     alias_map = {"et": "Ethernet", "eth": "Ethernet", "po": "Port-Channel", "lo": "Loopback"}
 
-    for alias, full_name in alias_map.items():
-        if v.lower().startswith(alias):
-            return f"{full_name}{intf_id}"
-
-    return v
+    return next((f"{full_name}{intf_id}" for alias, full_name in alias_map.items() if v.lower().startswith(alias)), v)
 
 
 def interface_case_sensitivity(v: str) -> str:
