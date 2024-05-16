@@ -47,7 +47,7 @@ LABEL   "org.opencontainers.image.title"="anta" \
         "org.opencontainers.image.revision"="dev" \
         "org.opencontainers.image.version"="dev"
 
-# Copie les fichiers nécessaires depuis l'image BUILDER
+# Copy artifacts from builder
 COPY --from=BUILDER /opt/venv /opt/venv
 
 # Définit l'utilisateur et le PATH
