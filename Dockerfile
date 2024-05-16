@@ -56,5 +56,4 @@ ENV PATH="/opt/venv/bin:$PATH"
 
 USER anta
 
-# Définition du point d'entrée
 ENTRYPOINT [ "/opt/venv/bin/anta" ]
