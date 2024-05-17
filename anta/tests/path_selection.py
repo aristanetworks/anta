@@ -12,6 +12,7 @@ from typing import ClassVar
 
 from pydantic import BaseModel
 
+from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_value
 
@@ -42,6 +43,7 @@ class VerifyPathsHealth(AntaTest):
     categories: ClassVar[list[str]] = ["path-selection"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show path-selection paths", revision=1)]
 
+    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyPathsHealth."""
@@ -130,6 +132,7 @@ class VerifySpecificPath(AntaTest):
             template.render(peer=path.peer, group=path.path_group, source=path.source_address, destination=path.destination_address) for path in self.inputs.paths
         ]
 
+    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifySpecificPath."""
