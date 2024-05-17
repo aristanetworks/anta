@@ -18,6 +18,7 @@ from aioeapi import EapiCommandError
 from click.exceptions import UsageError
 from httpx import ConnectError, HTTPError
 
+from anta.custom_types import REGEXP_PATH_MARKERS
 from anta.device import AntaDevice, AsyncEOSDevice
 from anta.models import AntaCommand
 
@@ -60,7 +61,7 @@ async def collect_commands(
     async def collect(dev: AntaDevice, command: str, outformat: Literal["json", "text"]) -> None:
         outdir = Path() / root_dir / dev.name / outformat
         outdir.mkdir(parents=True, exist_ok=True)
-        safe_command = re.sub(r"[\\\/\s]", "_", command)
+        safe_command = re.sub(rf"{REGEXP_PATH_MARKERS}", "_", command)
         c = AntaCommand(command=command, ofmt=outformat)
         await dev.collect(c)
         if not c.collected:
