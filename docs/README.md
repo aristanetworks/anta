@@ -6,7 +6,9 @@
 
 # Arista Network Test Automation (ANTA) Framework
 
-<img src="imgs/anta-logo-space-600x600.png" alt="Anta Logo" class="img_center" width="300px">
+</p>
+  <img src="imgs/anta-logo-space-600x600.png" alt="Anta Logo" class="img_center" width="300px">
+</p>
 
 | **Code**       | [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff) [![Numpy](https://img.shields.io/badge/Docstring_format-numpy-blue)](https://numpydoc.readthedocs.io/en/latest/format.html) |
 | :------------: | :-------|
