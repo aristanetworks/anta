@@ -156,22 +156,34 @@ def test_regexp_type_hostname() -> None:
     assert re.match(REGEXP_TYPE_HOSTNAME, "hostname..com") is None
 
 
-def test_regexp_eos_blacklist_cmds() -> None:
+@pytest.mark.parametrize(
+    ("test_string", "expected"),
+    [
+        ("reload", True),  # matches "^reload.*"
+        ("reload now", True),  # matches "^reload.*"
+        ("configure terminal", True),  # matches "^conf\w*\s*(terminal|session)*"
+        ("conf t", True),  # matches "^conf\w*\s*(terminal|session)*"
+        ("write memory", True),  # matches "^wr\w*\s*\w+"
+        ("wr mem", True),  # matches "^wr\w*\s*\w+"
+        ("show running-config", False),  # does not match any regex
+        ("no shutdown", False),  # does not match any regex
+        ("", False),  # empty string does not match any regex
+    ],
+)
+def test_regexp_eos_blacklist_cmds(test_string: str, expected: bool) -> None:
     """Test REGEXP_EOS_BLACKLIST_CMDS."""
-    # Test strings that should match the pattern
-    for pattern in REGEXP_EOS_BLACKLIST_CMDS:
-        assert re.match(pattern, "reload") is not None
-        assert re.match(pattern, "reload something") is not None
-        assert re.match(pattern, "config terminal") is not None
-        assert re.match(pattern, "config session") is not None
-        assert re.match(pattern, "write memory") is not None
 
-    # Test strings that should not match the pattern
-    for pattern in REGEXP_EOS_BLACKLIST_CMDS:
-        assert re.match(pattern, "load") is None
-        assert re.match(pattern, "terminal") is None
-        assert re.match(pattern, "session") is None
-        assert re.match(pattern, "memory") is None
+    def matches_any_regex(string: str, regex_list: list[str]) -> bool:
+        """
+        Check if a string matches at least one regular expression in a list.
+
+        :param string: The string to check.
+        :param regex_list: A list of regular expressions.
+        :return: True if the string matches at least one regular expression, False otherwise.
+        """
+        return any(re.match(regex, string) for regex in regex_list)
+
+    assert matches_any_regex(test_string, REGEXP_EOS_BLACKLIST_CMDS) == expected
 
 
 # ------------------------------------------------------------------------------
