@@ -28,7 +28,7 @@ class SessionConfig:
     """
     Send configuration to a device using the EOS session mechanism.
 
-    This is the preferred way of managing configuraiton changes.
+    This is the preferred way of managing configuration changes.
 
     Notes
     -----
