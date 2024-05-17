@@ -16,7 +16,7 @@ from typing import TYPE_CHECKING, Any, Callable, ClassVar, Literal, TypeVar
 from pydantic import BaseModel, ConfigDict, ValidationError, create_model
 
 from anta import GITHUB_SUGGESTION
-from anta.custom_types import Revision
+from anta.custom_types import REGEXP_EOS_BLACKLIST_CMDS, Revision
 from anta.logger import anta_log_exception, exc_to_str
 from anta.result_manager.models import TestResult
 
@@ -31,9 +31,6 @@ F = TypeVar("F", bound=Callable[..., Any])
 # Proper way to type input class - revisit this later if we get any issue @gmuloc
 # This would imply overhead to define classes
 # https://stackoverflow.com/questions/74103528/type-hinting-an-instance-of-a-nested-class
-
-# TODO: make this configurable - with an env var maybe?
-BLACKLIST_REGEX = [r"^reload.*", r"^conf\w*\s*(terminal|session)*", r"^wr\w*\s*\w+"]
 
 logger = logging.getLogger(__name__)
 
@@ -515,12 +512,12 @@ class AntaTest(ABC):
         """Check if CLI commands contain a blocked keyword."""
         state = False
         for command in self.instance_commands:
-            for pattern in BLACKLIST_REGEX:
+            for pattern in REGEXP_EOS_BLACKLIST_CMDS:
                 if re.match(pattern, command.command):
                     self.logger.error(
                         "Command <%s> is blocked for security reason matching %s",
                         command.command,
-                        BLACKLIST_REGEX,
+                        REGEXP_EOS_BLACKLIST_CMDS,
                     )
                     self.result.is_error(f"<{command.command}> is blocked for security reason")
                     state = True

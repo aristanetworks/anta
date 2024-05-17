@@ -176,12 +176,12 @@ class AntaCatalogFile(RootModel[dict[ImportString[Any], list[AntaTestDefinition]
             if isinstance(tests, dict):
                 # This is an inner Python module
                 modules.update(AntaCatalogFile.flatten_modules(data=tests, package=module.__name__))
-            else:
-                if not isinstance(tests, list):
-                    msg = f"Syntax error when parsing: {tests}\nIt must be a list of ANTA tests. Check the test catalog."
-                    raise ValueError(msg)  # noqa: TRY004 pydantic catches ValueError or AssertionError, no TypeError
+            elif isinstance(tests, list):
                 # This is a list of AntaTestDefinition
                 modules[module] = tests
+            else:
+                msg = f"Syntax error when parsing: {tests}\nIt must be a list of ANTA tests. Check the test catalog."
+                raise ValueError(msg)  # noqa: TRY004 pydantic catches ValueError or AssertionError, no TypeError
         return modules
 
     # ANN401 - Any ok for this validator as we are validating the received data
