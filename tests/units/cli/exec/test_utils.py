@@ -11,7 +11,7 @@ from unittest.mock import call, patch
 import pytest
 
 from anta.cli.exec.utils import (
-    clear_counters_utils,
+    clear_counters,
 )
 from anta.models import AntaCommand
 
@@ -69,14 +69,14 @@ if TYPE_CHECKING:
         ),
     ],
 )
-async def test_clear_counters_utils(
+async def test_clear_counters(
     caplog: pytest.LogCaptureFixture,
     test_inventory: AntaInventory,
     inventory_state: dict[str, Any],
     per_device_command_output: dict[str, Any],
     tags: set[str] | None,
 ) -> None:
-    """Test anta.cli.exec.utils.clear_counters_utils."""
+    """Test anta.cli.exec.utils.clear_counters."""
 
     async def mock_connect_inventory() -> None:
         """Mock connect_inventory coroutine."""
@@ -97,7 +97,7 @@ async def test_clear_counters_utils(
             side_effect=mock_connect_inventory,
         ) as mocked_connect_inventory,
     ):
-        await clear_counters_utils(test_inventory, tags=tags)
+        await clear_counters(test_inventory, tags=tags)
 
     mocked_connect_inventory.assert_awaited_once()
     devices_established = test_inventory.get_inventory(established_only=True, tags=tags).devices
