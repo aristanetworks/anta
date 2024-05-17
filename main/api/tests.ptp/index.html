@@ -2273,7 +2273,7 @@
   <ul>
 <li>Success: The test will pass if the device is locked to the provided Grandmaster.</li>
 <li>Failure: The test will fail if the device is not locked to the provided Grandmaster.</li>
-<li>Error: The test will error if the &lsquo;gmClockIdentity&rsquo; variable is not present in the command output.</li>
+<li>Skipped: The test will be skipped if PTP is not configured on the device.</li>
 </ul>
 </details>
 
@@ -2388,7 +2388,7 @@
 <span class="sd">    ----------------</span>
 <span class="sd">    * Success: The test will pass if the device is locked to the provided Grandmaster.</span>
 <span class="sd">    * Failure: The test will fail if the device is not locked to the provided Grandmaster.</span>
-<span class="sd">    * Error: The test will error if the &#39;gmClockIdentity&#39; variable is not present in the command output.</span>
+<span class="sd">    * Skipped: The test will be skipped if PTP is not configured on the device.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -2417,7 +2417,7 @@
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
 
         <span class="k">if</span> <span class="p">(</span><span class="n">ptp_clock_summary</span> <span class="o">:=</span> <span class="n">command_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ptpClockSummary&quot;</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_error</span><span class="p">(</span><span class="s2">&quot;&#39;ptpClockSummary&#39; variable is not present in the command output&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;PTP is not configured&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="k">if</span> <span class="n">ptp_clock_summary</span><span class="p">[</span><span class="s2">&quot;gmClockIdentity&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">gmid</span><span class="p">:</span>
@@ -2456,7 +2456,7 @@
   <ul>
 <li>Success: The test will pass if the device was locked to the upstream GM in the last minute.</li>
 <li>Failure: The test will fail if the device was not locked to the upstream GM in the last minute.</li>
-<li>Error: The test will error if the &lsquo;lastSyncTime&rsquo; variable is not present in the command output.</li>
+<li>Skipped: The test will be skipped if PTP is not configured on the device.</li>
 </ul>
 </details>
 
@@ -2530,7 +2530,7 @@
 <span class="sd">    ----------------</span>
 <span class="sd">    * Success: The test will pass if the device was locked to the upstream GM in the last minute.</span>
 <span class="sd">    * Failure: The test will fail if the device was not locked to the upstream GM in the last minute.</span>
-<span class="sd">    * Error: The test will error if the &#39;lastSyncTime&#39; variable is not present in the command output.</span>
+<span class="sd">    * Skipped: The test will be skipped if PTP is not configured on the device.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -2553,7 +2553,7 @@
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
 
         <span class="k">if</span> <span class="p">(</span><span class="n">ptp_clock_summary</span> <span class="o">:=</span> <span class="n">command_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ptpClockSummary&quot;</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_error</span><span class="p">(</span><span class="s2">&quot;&#39;ptpClockSummary&#39; variable is not present in the command output&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;PTP is not configured&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="n">time_difference</span> <span class="o">=</span> <span class="n">ptp_clock_summary</span><span class="p">[</span><span class="s2">&quot;currentPtpSystemTime&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">ptp_clock_summary</span><span class="p">[</span><span class="s2">&quot;lastSyncTime&quot;</span><span class="p">]</span>
@@ -2592,7 +2592,7 @@
   <ul>
 <li>Success: The test will pass if the device is a BC.</li>
 <li>Failure: The test will fail if the device is not a BC.</li>
-<li>Error: The test will error if the &lsquo;ptpMode&rsquo; variable is not present in the command output.</li>
+<li>Skipped: The test will be skipped if PTP is not configured on the device.</li>
 </ul>
 </details>
 
@@ -2663,7 +2663,7 @@
 <span class="sd">    ----------------</span>
 <span class="sd">    * Success: The test will pass if the device is a BC.</span>
 <span class="sd">    * Failure: The test will fail if the device is not a BC.</span>
-<span class="sd">    * Error: The test will error if the &#39;ptpMode&#39; variable is not present in the command output.</span>
+<span class="sd">    * Skipped: The test will be skipped if PTP is not configured on the device.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -2685,7 +2685,7 @@
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
 
         <span class="k">if</span> <span class="p">(</span><span class="n">ptp_mode</span> <span class="o">:=</span> <span class="n">command_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ptpMode&quot;</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_error</span><span class="p">(</span><span class="s2">&quot;&#39;ptpMode&#39; variable is not present in the command output&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;PTP is not configured&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="k">if</span> <span class="n">ptp_mode</span> <span class="o">!=</span> <span class="s2">&quot;ptpBoundaryClock&quot;</span><span class="p">:</span>
@@ -2722,7 +2722,7 @@
   <ul>
 <li>Success: The test will pass if the PTP timing offset is within &plusmn; 1000ns from the master clock.</li>
 <li>Failure: The test will fail if the PTP timing offset is greater than &plusmn; 1000ns from the master clock.</li>
-<li>Skipped: The test will be skipped if PTP is not configured.</li>
+<li>Skipped: The test will be skipped if PTP is not configured on the device.</li>
 </ul>
 </details>
 
@@ -2799,7 +2799,7 @@
 <span class="sd">    ----------------</span>
 <span class="sd">    * Success: The test will pass if the PTP timing offset is within +/- 1000ns from the master clock.</span>
 <span class="sd">    * Failure: The test will fail if the PTP timing offset is greater than +/- 1000ns from the master clock.</span>
-<span class="sd">    * Skipped: The test will be skipped if PTP is not configured.</span>
+<span class="sd">    * Skipped: The test will be skipped if PTP is not configured on the device.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
