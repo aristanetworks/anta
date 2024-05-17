@@ -85,19 +85,18 @@ async def test_clear_counters_utils(
             device.established = inventory_state[name].get("established", device.is_online)
             device.hw_model = inventory_state[name].get("hw_model", "dummy")
 
-    async def dummy_collect(self: AntaDevice, command: AntaCommand) -> None:
+    async def collect(self: AntaDevice, command: AntaCommand, *args: Any, **kwargs: Any) -> None:  # noqa: ARG001, ANN401 #pylint: disable=unused-argument
         """Mock collect coroutine."""
         command.output = per_device_command_output.get(self.name, "")
 
     # Need to patch the child device class
     with (
-        patch("anta.device.AsyncEOSDevice.collect", side_effect=dummy_collect, autospec=True) as mocked_collect,
+        patch("anta.device.AsyncEOSDevice.collect", side_effect=collect, autospec=True) as mocked_collect,
         patch(
             "anta.inventory.AntaInventory.connect_inventory",
             side_effect=mock_connect_inventory,
         ) as mocked_connect_inventory,
     ):
-        mocked_collect.side_effect = dummy_collect
         await clear_counters_utils(test_inventory, tags=tags)
 
     mocked_connect_inventory.assert_awaited_once()
@@ -117,6 +116,7 @@ async def test_clear_counters_utils(
                         output=per_device_command_output.get(device.name, ""),
                         errors=[],
                     ),
+                    collection_id=None,
                 ),
             )
             if device.hw_model not in ["cEOSLab", "vEOS-lab"]:
@@ -130,6 +130,7 @@ async def test_clear_counters_utils(
                             ofmt="json",
                             output=per_device_command_output.get(device.name, ""),
                         ),
+                        collection_id=None,
                     ),
                 )
         mocked_collect.assert_has_awaits(calls)
