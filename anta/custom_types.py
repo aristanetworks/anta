@@ -9,6 +9,31 @@ from typing import Annotated, Literal
 from pydantic import Field
 from pydantic.functional_validators import AfterValidator, BeforeValidator
 
+# Regular Expression definition
+# TODO: make this configurable - with an env var maybe?
+REGEXP_EOS_BLACKLIST_CMDS = [r"^reload.*", r"^conf\w*\s*(terminal|session)*", r"^wr\w*\s*\w+"]
+"""List of regular expressions to blacklist from eos commands."""
+REGEXP_PATH_MARKERS = r"[\\\/\s]"
+"""Match directory path from string."""
+REGEXP_INTERFACE_ID = r"\d+(\/\d+)*(\.\d+)?"
+"""Match Interface ID lilke 1/1.1."""
+REGEXP_TYPE_EOS_INTERFACE = r"^(Dps|Ethernet|Fabric|Loopback|Management|Port-Channel|Tunnel|Vlan|Vxlan)[0-9]+(\/[0-9]+)*(\.[0-9]+)?$"
+"""Match EOS interface types like Ethernet1/1, Vlan1, Loopback1, etc."""
+REGEXP_TYPE_VXLAN_SRC_INTERFACE = r"^(Loopback)([0-9]|[1-9][0-9]{1,2}|[1-7][0-9]{3}|8[01][0-9]{2}|819[01])$"
+"""Match Vxlan source interface like Loopback10."""
+REGEXP_TYPE_HOSTNAME = r"^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$"
+"""Match hostname like `my-hostname`, `my-hostname-1`, `my-hostname-1-2`."""
+
+# Regexp BGP AFI/SAFI
+REGEXP_BGP_L2VPN_AFI = r"\b(l2[\s\-]?vpn[\s\-]?evpn)\b"
+"""Match L2VPN EVPN AFI."""
+REGEXP_BGP_IPV4_MPLS_LABELS = r"\b(ipv4[\s\-]?mpls[\s\-]?label(s)?)\b"
+"""Match IPv4 MPLS Labels."""
+REGEX_BGP_IPV4_MPLS_VPN = r"\b(ipv4[\s\-]?mpls[\s\-]?vpn)\b"
+"""Match IPv4 MPLS VPN."""
+REGEX_BGP_IPV4_UNICAST = r"\b(ipv4[\s\-]?uni[\s\-]?cast)\b"
+"""Match IPv4 Unicast."""
+
 
 def aaa_group_prefix(v: str) -> str:
     """Prefix the AAA method with 'group' if it is known."""
@@ -24,7 +49,7 @@ def interface_autocomplete(v: str) -> str:
          - `po` will be changed to `Port-Channel`
     - `lo` will be changed to `Loopback`
     """
-    intf_id_re = re.compile(r"\d+(\/\d+)*(\.\d+)?")
+    intf_id_re = re.compile(REGEXP_INTERFACE_ID)
     m = intf_id_re.search(v)
     if m is None:
         msg = f"Could not parse interface ID in interface '{v}'"
@@ -46,7 +71,7 @@ def interface_case_sensitivity(v: str) -> str:
          - loopback -> Loopback
 
     """
-    if isinstance(v, str) and len(v) > 0 and not v[0].isupper():
+    if isinstance(v, str) and v != "" and not v[0].isupper():
         return f"{v[0].upper()}{v[1:]}"
     return v
 
@@ -63,10 +88,10 @@ def bgp_multiprotocol_capabilities_abbreviations(value: str) -> str:
 
     """
     patterns = {
-        r"\b(l2[\s\-]?vpn[\s\-]?evpn)\b": "l2VpnEvpn",
-        r"\bipv4[\s_-]?mpls[\s_-]?label(s)?\b": "ipv4MplsLabels",
-        r"\bipv4[\s_-]?mpls[\s_-]?vpn\b": "ipv4MplsVpn",
-        r"\bipv4[\s_-]?uni[\s_-]?cast\b": "ipv4Unicast",
+        REGEXP_BGP_L2VPN_AFI: "l2VpnEvpn",
+        REGEXP_BGP_IPV4_MPLS_LABELS: "ipv4MplsLabels",
+        REGEX_BGP_IPV4_MPLS_VPN: "ipv4MplsVpn",
+        REGEX_BGP_IPV4_UNICAST: "ipv4Unicast",
     }
 
     for pattern, replacement in patterns.items():
@@ -97,7 +122,7 @@ MlagPriority = Annotated[int, Field(ge=1, le=32767)]
 Vni = Annotated[int, Field(ge=1, le=16777215)]
 Interface = Annotated[
     str,
-    Field(pattern=r"^(Dps|Ethernet|Fabric|Loopback|Management|Port-Channel|Tunnel|Vlan|Vxlan)[0-9]+(\/[0-9]+)*(\.[0-9]+)?$"),
+    Field(pattern=REGEXP_TYPE_EOS_INTERFACE),
     BeforeValidator(interface_autocomplete),
     BeforeValidator(interface_case_sensitivity),
 ]
@@ -109,7 +134,7 @@ EthernetInterface = Annotated[
 ]
 VxlanSrcIntf = Annotated[
     str,
-    Field(pattern=r"^(Loopback)([0-9]|[1-9][0-9]{1,2}|[1-7][0-9]{3}|8[01][0-9]{2}|819[01])$"),
+    Field(pattern=REGEXP_TYPE_VXLAN_SRC_INTERFACE),
     BeforeValidator(interface_autocomplete),
     BeforeValidator(interface_case_sensitivity),
 ]
@@ -139,6 +164,6 @@ ErrDisableInterval = Annotated[int, Field(ge=30, le=86400)]
 Percent = Annotated[float, Field(ge=0.0, le=100.0)]
 PositiveInteger = Annotated[int, Field(ge=0)]
 Revision = Annotated[int, Field(ge=1, le=99)]
-Hostname = Annotated[str, Field(pattern=r"^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$")]
+Hostname = Annotated[str, Field(pattern=REGEXP_TYPE_HOSTNAME)]
 Port = Annotated[int, Field(ge=1, le=65535)]
 RegexString = Annotated[str, AfterValidator(validate_regex)]
