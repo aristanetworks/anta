@@ -133,7 +133,7 @@ class AntaDevice(ABC):
         Args:
         ----
             command: The command to collect.
-            collection_id: An identifier that will used to build the eAPI request ID.
+            collection_id: An identifier used to build the eAPI request ID.
         """
 
     async def collect(self, command: AntaCommand, *, collection_id: str | None = None) -> None:
@@ -150,7 +150,7 @@ class AntaDevice(ABC):
         Args:
         ----
             command: The command to collect.
-            collection_id: An identifier that will used to build the eAPI request ID.
+            collection_id: An identifier used to build the eAPI request ID.
         """
         # Need to ignore pylint no-member as Cache is a proxy class and pylint is not smart enough
         # https://github.com/pylint-dev/pylint/issues/7258
@@ -173,7 +173,7 @@ class AntaDevice(ABC):
         Args:
         ----
             commands: The commands to collect.
-            collection_id: An identifier that will used to build the eAPI request ID.
+            collection_id: An identifier used to build the eAPI request ID.
         """
         await asyncio.gather(*(self.collect(command=command, collection_id=collection_id) for command in commands))
 
@@ -316,7 +316,7 @@ class AsyncEOSDevice(AntaDevice):
         Args:
         ----
             command: The command to collect.
-            collection_id: An identifier that will used to build the eAPI request ID.
+            collection_id: An identifier used to build the eAPI request ID.
         """
         commands: list[dict[str, str | int]] = []
         if self.enable and self._enable_password is not None:
