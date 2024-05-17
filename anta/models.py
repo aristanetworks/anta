@@ -527,7 +527,7 @@ class AntaTest(ABC):
         """Collect outputs of all commands of this test class from the device of this test instance."""
         try:
             if self.blocked is False:
-                await self.device.collect_commands(self.instance_commands)
+                await self.device.collect_commands(self.instance_commands, collection_id=self.name)
         except Exception as e:  # pylint: disable=broad-exception-caught
             # device._collect() is user-defined code.
             # We need to catch everything if we want the AntaTest object
