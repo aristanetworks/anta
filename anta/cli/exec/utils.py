@@ -60,7 +60,7 @@ async def collect_commands(
     async def collect(dev: AntaDevice, command: str, outformat: Literal["json", "text"]) -> None:
         outdir = Path() / root_dir / dev.name / outformat
         outdir.mkdir(parents=True, exist_ok=True)
-        safe_command = re.sub(r"(/|\|$)", "_", command)
+        safe_command = re.sub(r"[\\\/\s]", "_", command)
         c = AntaCommand(command=command, ofmt=outformat)
         await dev.collect(c)
         if not c.collected:
