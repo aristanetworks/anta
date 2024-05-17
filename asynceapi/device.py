@@ -1,3 +1,7 @@
+# Copyright (c) 2024 Arista Networks, Inc.
+# Use of this source code is governed by the Apache License 2.0
+# that can be found in the LICENSE file.
+# Initially written by Jeremy Schulman at https://github.com/jeremyschulman/aio-eapi
 """asynceapi.Device definition."""
 # -----------------------------------------------------------------------------
 # System Imports
@@ -50,7 +54,7 @@ class Device(httpx.AsyncClient):
     EAPI_OFMT_OPTIONS = ("json", "text")
     EAPI_DEFAULT_OFMT = "json"
 
-    def __init__(  # noqa: PLR0913
+    def __init__(  # noqa: PLR0913  # pylint: disable=too-many-arguments
         self,
         host: str | None = None,
         username: str | None = None,
@@ -102,7 +106,7 @@ class Device(httpx.AsyncClient):
         """
         Check the target device to ensure that the eAPI port is open and accepting connections.
 
-        It is recommended that a Caller checks the connection before involing cli commands,
+        It is recommended that a Caller checks the connection before involving cli commands,
         but this step is not required.
 
         Returns
@@ -111,7 +115,7 @@ class Device(httpx.AsyncClient):
         """
         return await port_check_url(self.base_url)
 
-    async def cli(  # noqa: PLR0913
+    async def cli(  # noqa: PLR0913  # pylint: disable=too-many-arguments
         self,
         command: str | dict[str, Any] | None = None,
         commands: Sequence[str | dict[str, Any]] | None = None,
@@ -133,12 +137,12 @@ class Device(httpx.AsyncClient):
         commands:
             A list of commands to execute; results in a list of output responses
         ofmt:
-            Either 'json' or 'text'; indicates the output fromat for the CLI commands.
+            Either 'json' or 'text'; indicates the output format for the CLI commands.
         version:
             By default the eAPI will use "version 1" for all API object models.
             This driver will, by default, always set version to "latest" so
             that the behavior matches the CLI of the device.  The caller can
-            override the "latest" behavior by explicity setting the version.
+            override the "latest" behavior by explicitly setting the version.
         suppress_error:
             When not False, then if the execution of the command would-have
             raised an EapiCommandError, rather than raising this exception this
@@ -167,7 +171,7 @@ class Device(httpx.AsyncClient):
 
         Returns
         -------
-            One or List of output respones, per the description above.
+            One or List of output responses, per the description above.
         """
         if not any((command, commands)):
             msg = "Required 'command' or 'commands'"
@@ -185,7 +189,7 @@ class Device(httpx.AsyncClient):
                 return None
             raise
 
-    def _jsonrpc_command(  # noqa: PLR0913
+    def _jsonrpc_command(  # noqa: PLR0913  # pylint: disable=too-many-arguments
         self,
         commands: Sequence[str | dict[str, Any]] | None = None,
         ofmt: str | None = None,

@@ -1,3 +1,7 @@
+# Copyright (c) 2024 Arista Networks, Inc.
+# Use of this source code is governed by the Apache License 2.0
+# that can be found in the LICENSE file.
+# Initially written by Jeremy Schulman at https://github.com/jeremyschulman/aio-eapi
 """Utility function to check if a port is open."""
 # -----------------------------------------------------------------------------
 # System Imports
@@ -33,7 +37,7 @@ async def port_check_url(url: URL, timeout: int = 5) -> bool:
     """
     Open the port designated by the URL given the timeout in seconds.
 
-    If the port is avaialble then return True; False otherwise.
+    If the port is available then return True; False otherwise.
 
     Parameters
     ----------
@@ -51,5 +55,4 @@ async def port_check_url(url: URL, timeout: int = 5) -> bool:
 
     except TimeoutError:
         return False
-    else:
-        return True
+    return True

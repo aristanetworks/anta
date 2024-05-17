@@ -1,3 +1,7 @@
+# Copyright (c) 2024 Arista Networks, Inc.
+# Use of this source code is governed by the Apache License 2.0
+# that can be found in the LICENSE file.
+# Initially written by Jeremy Schulman at https://github.com/jeremyschulman/aio-eapi
 """asynceapi.SessionConfig definition."""
 
 # -----------------------------------------------------------------------------
@@ -125,7 +129,7 @@ class SessionConfig:
             Dict instance of the session status. If the session does not exist,
             then this method will return None.
 
-            The native eAPI results from JSON output, see exmaple:
+            The native eAPI results from JSON output, see example:
 
         Examples
         --------
@@ -256,7 +260,7 @@ class SessionConfig:
         ----------
             filename:
                 The name of the configuration file.  The caller is required to
-                specify the filesystem, for exmaple, the
+                specify the filesystem, for example, the
                 filename="flash:thisfile.cfg"
 
             replace:
