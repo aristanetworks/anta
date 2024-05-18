@@ -14,12 +14,13 @@ import re
 from pathlib import Path
 from typing import TYPE_CHECKING, Literal
 
-from aioeapi import EapiCommandError
 from click.exceptions import UsageError
 from httpx import ConnectError, HTTPError
 
+from anta.custom_types import REGEXP_PATH_MARKERS
 from anta.device import AntaDevice, AsyncEOSDevice
 from anta.models import AntaCommand
+from asynceapi import EapiCommandError
 
 if TYPE_CHECKING:
     from anta.inventory import AntaInventory
@@ -29,7 +30,7 @@ INVALID_CHAR = "`~!@#$/"
 logger = logging.getLogger(__name__)
 
 
-async def clear_counters_utils(anta_inventory: AntaInventory, tags: set[str] | None = None) -> None:
+async def clear_counters(anta_inventory: AntaInventory, tags: set[str] | None = None) -> None:
     """Clear counters."""
 
     async def clear(dev: AntaDevice) -> None:
@@ -60,7 +61,7 @@ async def collect_commands(
     async def collect(dev: AntaDevice, command: str, outformat: Literal["json", "text"]) -> None:
         outdir = Path() / root_dir / dev.name / outformat
         outdir.mkdir(parents=True, exist_ok=True)
-        safe_command = re.sub(r"(/|\|$)", "_", command)
+        safe_command = re.sub(rf"{REGEXP_PATH_MARKERS}", "_", command)
         c = AntaCommand(command=command, ofmt=outformat)
         await dev.collect(c)
         if not c.collected:
@@ -94,7 +95,7 @@ async def collect_commands(
             logger.error("Error when collecting commands: %s", str(r))
 
 
-async def collect_scheduled_show_tech(inv: AntaInventory, root_dir: Path, *, configure: bool, tags: set[str] | None = None, latest: int | None = None) -> None:
+async def collect_show_tech(inv: AntaInventory, root_dir: Path, *, configure: bool, tags: set[str] | None = None, latest: int | None = None) -> None:
     """Collect scheduled show-tech on devices."""
 
     async def collect(device: AntaDevice) -> None:

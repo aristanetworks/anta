@@ -16,7 +16,7 @@ import click
 from yaml import safe_load
 
 from anta.cli.console import console
-from anta.cli.exec.utils import clear_counters_utils, collect_commands, collect_scheduled_show_tech
+from anta.cli.exec import utils
 from anta.cli.utils import inventory_options
 
 if TYPE_CHECKING:
@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 @inventory_options
 def clear_counters(inventory: AntaInventory, tags: set[str] | None) -> None:
     """Clear counter statistics on EOS devices."""
-    asyncio.run(clear_counters_utils(inventory, tags=tags))
+    asyncio.run(utils.clear_counters(inventory, tags=tags))
 
 
 @click.command()
@@ -62,7 +62,7 @@ def snapshot(inventory: AntaInventory, tags: set[str] | None, commands_list: Pat
     except FileNotFoundError:
         logger.error("Error reading %s", commands_list)
         sys.exit(1)
-    asyncio.run(collect_commands(inventory, eos_commands, output, tags=tags))
+    asyncio.run(utils.collect_commands(inventory, eos_commands, output, tags=tags))
 
 
 @click.command()
@@ -98,4 +98,4 @@ def collect_tech_support(
     configure: bool,
 ) -> None:
     """Collect scheduled tech-support from EOS devices."""
-    asyncio.run(collect_scheduled_show_tech(inventory, output, configure=configure, tags=tags, latest=latest))
+    asyncio.run(utils.collect_show_tech(inventory, output, configure=configure, tags=tags, latest=latest))

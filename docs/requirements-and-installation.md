@@ -93,7 +93,7 @@ which anta
 ```bash
 # Check ANTA version
 anta --version
-anta, version v0.14.0
+anta, version v0.15.0
 ```
 
 ## EOS Requirements
