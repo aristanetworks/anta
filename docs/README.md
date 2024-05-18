@@ -6,25 +6,39 @@
 
 # Arista Network Test Automation (ANTA) Framework
 
-</p>
-  <img src="imgs/anta-logo-space-600x600.png" alt="Anta Logo" class="img_center" width="300px">
-</p>
-
 | **Code**       | [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff) [![Numpy](https://img.shields.io/badge/Docstring_format-numpy-blue)](https://numpydoc.readthedocs.io/en/latest/format.html) |
 | :------------: | :-------|
 | **License**    | [![License](https://img.shields.io/badge/license-Apache%202.0-brightgreen.svg)](https://github.com/arista-netdevops-community/anta/blob/main/LICENSE) |
 | **GitHub**     | [![CI](https://github.com/arista-netdevops-community/anta/actions/workflows/code-testing.yml/badge.svg)](https://github.com/arista-netdevops-community/anta/actions/workflows/code-testing.yml) ![Coverage](https://raw.githubusercontent.com/arista-netdevops-community/anta/coverage-badge/latest-release-coverage.svg) ![Commit](https://img.shields.io/github/last-commit/arista-netdevops-community/anta) ![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/m/arista-netdevops-community/anta) [![Github release](https://img.shields.io/github/release/arista-netdevops-community/anta.svg)](https://github.com/arista-netdevops-community/anta/releases/) [![Contributors](https://img.shields.io/github/contributors/arista-netdevops-community/anta)](https://github.com/arista-netdevops-community/anta/graphs/contributors) |
 | **PyPi**       | ![PyPi Version](https://img.shields.io/pypi/v/anta) ![Python Versions](https://img.shields.io/pypi/pyversions/anta) ![Python format](https://img.shields.io/pypi/format/anta) ![PyPI - Downloads](https://img.shields.io/pypi/dm/anta) |
 
-ANTA is Python framework that automates tests for Arista devices.
 
-- ANTA provides a [set of tests](api/tests.md) to validate the state of your network
-- ANTA can be used to:
-    - Automate NRFU (Network Ready For Use) test on a preproduction network
-    - Automate tests on a live network (periodically or on demand)
-- ANTA can be used with:
-    - As a [Python library](advanced_usages/as-python-lib.md) in your own application
-    - The [ANTA CLI](cli/overview.md)
+<div style="display: flex;">
+  <div style="flex: 1;">
+<p>ANTA is Python framework that automates tests for Arista devices.</p>
+<ul>
+    <li>ANTA provides a <a href="api/tests.md">set of tests</a> to validate the state of your network
+        <ul>
+            <li>ANTA can be used to:
+                <ul>
+                    <li>Automate NRFU (Network Ready For Use) test on a preproduction network</li>
+                    <li>Automate tests on a live network (periodically or on demand)</li>
+                </ul>
+            </li>
+            <li>ANTA can be used with:
+                <ul>
+                    <li>As a <a href="advanced_usages/as-python-lib.md">Python library</a> in your own application</li>
+                    <li>The <a href="cli/overview.md">ANTA CLI</a></li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+</ul>
+  </div>
+  <div style="flex: 1; text-align: right;">
+    <img src="imgs/anta-logo-space-600x600.png" alt="Anta Logo" width="300px" style="margin-right: 300px;">
+  </div>
+</div>
 
 ![anta nrfu](https://raw.githubusercontent.com/arista-netdevops-community/anta/main/docs/imgs/anta-nrfu.svg)
 
