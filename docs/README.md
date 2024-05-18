@@ -36,7 +36,7 @@
 </ul>
   </div>
   <div style="flex: 1; text-align: right;">
-    <img src="imgs/anta-logo-space-600x600.png" alt="Anta Logo" width="300px" style="margin-right: 300px;">
+    <img src="imgs/anta-logo-space-600x600.png" alt="Anta Logo" width="300px" style="margin-right: 200px; margin-left: 100px;">
   </div>
 </div>
 
