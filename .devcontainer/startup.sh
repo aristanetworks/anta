@@ -9,5 +9,8 @@ pip install --upgrade pip
 echo "Installing ANTA package from git"
 pip install -e .
 
+echo "Installing ANTA CLI package from git"
+pip install -e ".[cli]"
+
 echo "Installing development tools"
 pip install -e ".[dev]"

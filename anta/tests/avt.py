@@ -12,6 +12,7 @@ from typing import ClassVar
 
 from pydantic import BaseModel
 
+from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_value
 
@@ -38,6 +39,7 @@ class VerifyAVTPathHealth(AntaTest):
     categories: ClassVar[list[str]] = ["avt"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show adaptive-virtual-topology path")]
 
+    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyAVTPathHealth."""
@@ -126,6 +128,7 @@ class VerifyAVTSpecificPath(AntaTest):
         """Render the template for each input AVT path/peer."""
         return [template.render(vrf=path.vrf, avt_name=path.avt_name, destination=path.destination) for path in self.inputs.avt_paths]
 
+    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyAVTSpecificPath."""
@@ -216,6 +219,7 @@ class VerifyAVTRole(AntaTest):
         role: str
         """Expected AVT role of the device."""
 
+    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyAVTRole."""
