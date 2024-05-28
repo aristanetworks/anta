@@ -57,7 +57,7 @@ cli = [
 ]
 dev = [
   "bumpver>=2023.1129",
-  "codespell~=2.2.6",
+  "codespell>=2.2.6,<2.4.0",
   "mypy-extensions~=1.0",
   "mypy~=1.10",
   "pre-commit>=3.3.3",
