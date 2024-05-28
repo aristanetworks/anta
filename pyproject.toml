@@ -9,6 +9,7 @@ version = "v0.15.0"
 readme = "docs/README.md"
 authors = [{ name = "Khelil Sator", email = "ksator@arista.com" }]
 maintainers = [
+  { name = "Arista Networks ANTA maintainers", email = "ansible@arista.com" },
   { name = "Khelil Sator", email = "ksator@arista.com" },
   { name = "Matthieu Tâche", email = "mtache@arista.com" },
   { name = "Thomas Grimonet", email = "tgrimonet@arista.com" },
