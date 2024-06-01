@@ -12,6 +12,10 @@
 | **GitHub**     | [![CI](https://github.com/arista-netdevops-community/anta/actions/workflows/code-testing.yml/badge.svg)](https://github.com/arista-netdevops-community/anta/actions/workflows/code-testing.yml) ![Coverage](https://raw.githubusercontent.com/arista-netdevops-community/anta/coverage-badge/latest-release-coverage.svg) ![Commit](https://img.shields.io/github/last-commit/arista-netdevops-community/anta) ![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/m/arista-netdevops-community/anta) [![Github release](https://img.shields.io/github/release/arista-netdevops-community/anta.svg)](https://github.com/arista-netdevops-community/anta/releases/) [![Contributors](https://img.shields.io/github/contributors/arista-netdevops-community/anta)](https://github.com/arista-netdevops-community/anta/graphs/contributors) |
 | **PyPi**       | ![PyPi Version](https://img.shields.io/pypi/v/anta) ![Python Versions](https://img.shields.io/pypi/pyversions/anta) ![Python format](https://img.shields.io/pypi/format/anta) ![PyPI - Downloads](https://img.shields.io/pypi/dm/anta) |
 
+| :point_up:    | Because ANTA is movin to a new house in aristanetworks organization, website is also transitioning to a new address<br/>Please update your bookmark to use [anta.arista.com](https://anta.arista.com) |
+|---------------|:------------------------------------------------------------------------------------------------------------------------|
+
+
 ANTA is Python framework that automates tests for Arista devices.
 
 - ANTA provides a [set of tests](api/tests.md) to validate the state of your network
