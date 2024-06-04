@@ -52,7 +52,7 @@ repos:
       name: Run Ruff formatter
 
   - repo: https://github.com/pycqa/pylint
-    rev: "v3.2.0"
+    rev: "v3.2.2"
     hooks:
       - id: pylint
         name: Check code style with pylint
@@ -67,6 +67,7 @@ repos:
           - types-PyYAML
           - types-requests
           - types-pyOpenSSL
+          - pylint_pydantic
           - pytest
 
   - repo: https://github.com/codespell-project/codespell
