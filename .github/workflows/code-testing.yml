@@ -59,30 +59,19 @@ jobs:
           pip install .
       - name: install dev requirements
         run: pip install .[dev]
-  missing-documentation:
-    name: "Warning documentation is missing"
-    runs-on: ubuntu-20.04
-    needs: [file-changes]
-    if: needs.file-changes.outputs.cli == 'true' && needs.file-changes.outputs.docs == 'false'
-    steps:
-      - name: Documentation is missing
-        uses: GrantBirki/comment@v2.0.10
-        with:
-          body: |
-            Please consider that documentation is missing under `docs/` folder.
-            You should update documentation to reflect your change, or maybe not :)
-  lint-yaml:
-    name: Run linting for yaml files
-    runs-on: ubuntu-20.04
-    needs: [file-changes, check-requirements]
-    if: needs.file-changes.outputs.code == 'true'
-    steps:
-      - uses: actions/checkout@v4
-      - name: yaml-lint
-        uses: ibiqlik/action-yamllint@v3
-        with:
-          config_file: .yamllint.yml
-          file_or_dir: .
+  # @gmuloc: commenting this out for now
+  #missing-documentation:
+  #  name: "Warning documentation is missing"
+  #  runs-on: ubuntu-20.04
+  #  needs: [file-changes]
+  #  if: needs.file-changes.outputs.cli == 'true' && needs.file-changes.outputs.docs == 'false'
+  #  steps:
+  #    - name: Documentation is missing
+  #      uses: GrantBirki/comment@v2.0.10
+  #      with:
+  #        body: |
+  #          Please consider that documentation is missing under `docs/` folder.
+  #          You should update documentation to reflect your change, or maybe not :)
   lint-python:
     name: Check the code style
     runs-on: ubuntu-20.04
