@@ -128,7 +128,7 @@ def _get_adjacency_segment_data_by_neighbor(neighbor: str, instance: str, vrf: s
     isis_instance = get_value(dictionary=command_output, key=search_path, default=None)
 
     return next(
-        (Segment_data for Segment_data in isis_instance if neighbor == Segment_data["ipAddress"]),
+        (segment_data for segment_data in isis_instance if neighbor == segment_data["ipAddress"]),
         None,
     )
 
@@ -354,7 +354,7 @@ class VerifyISISSegmentRoutingAdjacencySegments(AntaTest):
     """
 
     name = "VerifyISISSegmentRoutingAdjacencySegments"
-    description = "Verify "
+    description = "Verify expected Adjacency segments are correctly visible for each interface."
     categories: ClassVar[list[str]] = ["isis", "segment-routing"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show isis segment-routing adjacency-segments", ofmt="json")]
 
