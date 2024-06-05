@@ -3,9 +3,13 @@
 # that can be found in the LICENSE file.
 """Tests for anta.tests.routing.ospf.py."""
 
+# pylint: disable=too-many-lines
+
 from __future__ import annotations
 
 from typing import Any
+
+import pytest
 
 from anta.tests.routing.isis import (
     VerifyISISInterfaceMode,
@@ -14,11 +18,9 @@ from anta.tests.routing.isis import (
     VerifyISISSegmentRoutingAdjacencySegments,
     VerifyISISSegmentRoutingDataplane,
     VerifyISISSegmentRoutingTunnels,
+    _get_interface_data,
 )
 from tests.lib.anta import test  # noqa: F401; pylint: disable=W0611
-
-true: bool = True
-false: bool = False
 
 DATA: list[dict[str, Any]] = [
     {
@@ -165,6 +167,18 @@ DATA: list[dict[str, Any]] = [
         },
     },
     {
+        "name": "skipped - no neighbor",
+        "test": VerifyISISNeighborState,
+        "eos_data": [
+            {"vrfs": {"default": {"isisInstances": {"CORE-ISIS": {"neighbors": {}}}}}},
+        ],
+        "inputs": None,
+        "expected": {
+            "result": "skipped",
+            "messages": ["No IS-IS neighbor detected"],
+        },
+    },
+    {
         "name": "success only default vrf",
         "test": VerifyISISNeighborCount,
         "eos_data": [
@@ -235,6 +249,108 @@ DATA: list[dict[str, Any]] = [
             ]
         },
         "expected": {"result": "success"},
+    },
+    {
+        "name": "skipped - no neighbor",
+        "test": VerifyISISNeighborCount,
+        "eos_data": [
+            {"vrfs": {"default": {"isisInstances": {"CORE-ISIS": {"interfaces": {}}}}}},
+        ],
+        "inputs": {
+            "interfaces": [
+                {"name": "Ethernet1", "level": 2, "count": 1},
+            ]
+        },
+        "expected": {
+            "result": "skipped",
+            "messages": ["No IS-IS neighbor detected"],
+        },
+    },
+    {
+        "name": "failure - missing interface",
+        "test": VerifyISISNeighborCount,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "isisInstances": {
+                            "CORE-ISIS": {
+                                "interfaces": {
+                                    "Ethernet1": {
+                                        "intfLevels": {
+                                            "2": {
+                                                "ipv4Metric": 10,
+                                                "numAdjacencies": 0,
+                                                "linkId": "84",
+                                                "sharedSecretProfile": "",
+                                                "isisAdjacencies": [],
+                                                "passive": False,
+                                                "v4Protection": "link",
+                                                "v6Protection": "disabled",
+                                            }
+                                        },
+                                        "interfaceSpeed": 1000,
+                                        "areaProxyBoundary": False,
+                                    },
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+        ],
+        "inputs": {
+            "interfaces": [
+                {"name": "Ethernet2", "level": 2, "count": 1},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": ["No neighbor detected for interface Ethernet2"],
+        },
+    },
+    {
+        "name": "failure - wrong count",
+        "test": VerifyISISNeighborCount,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "isisInstances": {
+                            "CORE-ISIS": {
+                                "interfaces": {
+                                    "Ethernet1": {
+                                        "intfLevels": {
+                                            "2": {
+                                                "ipv4Metric": 10,
+                                                "numAdjacencies": 3,
+                                                "linkId": "84",
+                                                "sharedSecretProfile": "",
+                                                "isisAdjacencies": [],
+                                                "passive": False,
+                                                "v4Protection": "link",
+                                                "v6Protection": "disabled",
+                                            }
+                                        },
+                                        "interfaceSpeed": 1000,
+                                        "areaProxyBoundary": False,
+                                    },
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+        ],
+        "inputs": {
+            "interfaces": [
+                {"name": "Ethernet1", "level": 2, "count": 1},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": ["Interface Ethernet1: expected Level 2: count 1, got Level 2: count 3"],
+        },
     },
     {
         "name": "success VerifyISISInterfaceMode only default vrf",
@@ -578,6 +694,40 @@ DATA: list[dict[str, Any]] = [
         },
     },
     {
+        "name": "skipped VerifyISISInterfaceMode no vrf",
+        "test": VerifyISISInterfaceMode,
+        "eos_data": [{"vrfs": {}}],
+        "inputs": {
+            "interfaces": [
+                {"name": "Loopback0", "mode": "passive"},
+                {"name": "Ethernet2", "mode": "passive"},
+                {"name": "Ethernet1", "mode": "point-to-point", "vrf": "default"},
+            ]
+        },
+        "expected": {"result": "skipped", "messages": ["IS-IS is not configured on device"]},
+    },
+    {
+        "name": "Skipped of VerifyISISSegmentRoutingAdjacencySegments no VRF.",
+        "test": VerifyISISSegmentRoutingAdjacencySegments,
+        "eos_data": [{"vrfs": {}}],
+        "inputs": {
+            "instances": [
+                {
+                    "name": "CORE-ISIS",
+                    "vrf": "default",
+                    "segments": [
+                        {
+                            "interface": "Ethernet2",
+                            "address": "10.0.1.3",
+                            "sid_origin": "dynamic",
+                        }
+                    ],
+                }
+            ]
+        },
+        "expected": {"result": "skipped", "messages": ["IS-IS is not configured on device"]},
+    },
+    {
         "test": VerifyISISSegmentRoutingAdjacencySegments,
         "name": "Success of VerifyISISSegmentRoutingAdjacencySegments in default VRF.",
         "eos_data": [
@@ -598,15 +748,15 @@ DATA: list[dict[str, Any]] = [
                                         "ipAddress": "10.0.1.3",
                                         "localIntf": "Ethernet2",
                                         "sid": 116384,
-                                        "lan": false,
+                                        "lan": False,
                                         "sidOrigin": "dynamic",
                                         "protection": "unprotected",
                                         "flags": {
-                                            "b": false,
-                                            "v": true,
-                                            "l": true,
-                                            "f": false,
-                                            "s": false,
+                                            "b": False,
+                                            "v": True,
+                                            "l": True,
+                                            "f": False,
+                                            "s": False,
                                         },
                                         "level": 2,
                                     },
@@ -614,15 +764,15 @@ DATA: list[dict[str, Any]] = [
                                         "ipAddress": "10.0.1.1",
                                         "localIntf": "Ethernet1",
                                         "sid": 116385,
-                                        "lan": false,
+                                        "lan": False,
                                         "sidOrigin": "dynamic",
                                         "protection": "unprotected",
                                         "flags": {
-                                            "b": false,
-                                            "v": true,
-                                            "l": true,
-                                            "f": false,
-                                            "s": false,
+                                            "b": False,
+                                            "v": True,
+                                            "l": True,
+                                            "f": False,
+                                            "s": False,
                                         },
                                         "level": 2,
                                     },
@@ -676,15 +826,15 @@ DATA: list[dict[str, Any]] = [
                                         "ipAddress": "10.0.1.3",
                                         "localIntf": "Ethernet2",
                                         "sid": 116384,
-                                        "lan": false,
+                                        "lan": False,
                                         "sidOrigin": "dynamic",
                                         "protection": "unprotected",
                                         "flags": {
-                                            "b": false,
-                                            "v": true,
-                                            "l": true,
-                                            "f": false,
-                                            "s": false,
+                                            "b": False,
+                                            "v": True,
+                                            "l": True,
+                                            "f": False,
+                                            "s": False,
                                         },
                                         "level": 2,
                                     },
@@ -692,15 +842,15 @@ DATA: list[dict[str, Any]] = [
                                         "ipAddress": "10.0.1.1",
                                         "localIntf": "Ethernet1",
                                         "sid": 116385,
-                                        "lan": false,
+                                        "lan": False,
                                         "sidOrigin": "dynamic",
                                         "protection": "unprotected",
                                         "flags": {
-                                            "b": false,
-                                            "v": true,
-                                            "l": true,
-                                            "f": false,
-                                            "s": false,
+                                            "b": False,
+                                            "v": True,
+                                            "l": True,
+                                            "f": False,
+                                            "s": False,
                                         },
                                         "level": 2,
                                     },
@@ -759,15 +909,15 @@ DATA: list[dict[str, Any]] = [
                                         "ipAddress": "10.0.1.3",
                                         "localIntf": "Ethernet2",
                                         "sid": 116384,
-                                        "lan": false,
+                                        "lan": False,
                                         "sidOrigin": "dynamic",
                                         "protection": "unprotected",
                                         "flags": {
-                                            "b": false,
-                                            "v": true,
-                                            "l": true,
-                                            "f": false,
-                                            "s": false,
+                                            "b": False,
+                                            "v": True,
+                                            "l": True,
+                                            "f": False,
+                                            "s": False,
                                         },
                                         "level": 2,
                                     },
@@ -775,15 +925,15 @@ DATA: list[dict[str, Any]] = [
                                         "ipAddress": "10.0.1.1",
                                         "localIntf": "Ethernet1",
                                         "sid": 116385,
-                                        "lan": false,
+                                        "lan": False,
                                         "sidOrigin": "dynamic",
                                         "protection": "unprotected",
                                         "flags": {
-                                            "b": false,
-                                            "v": true,
-                                            "l": true,
-                                            "f": false,
-                                            "s": false,
+                                            "b": False,
+                                            "v": True,
+                                            "l": True,
+                                            "f": False,
+                                            "s": False,
                                         },
                                         "level": 2,
                                     },
@@ -842,15 +992,15 @@ DATA: list[dict[str, Any]] = [
                                         "ipAddress": "10.0.1.3",
                                         "localIntf": "Ethernet2",
                                         "sid": 116384,
-                                        "lan": false,
+                                        "lan": False,
                                         "sidOrigin": "dynamic",
                                         "protection": "unprotected",
                                         "flags": {
-                                            "b": false,
-                                            "v": true,
-                                            "l": true,
-                                            "f": false,
-                                            "s": false,
+                                            "b": False,
+                                            "v": True,
+                                            "l": True,
+                                            "f": False,
+                                            "s": False,
                                         },
                                         "level": 2,
                                     },
@@ -858,15 +1008,15 @@ DATA: list[dict[str, Any]] = [
                                         "ipAddress": "10.0.1.1",
                                         "localIntf": "Ethernet1",
                                         "sid": 116385,
-                                        "lan": false,
+                                        "lan": False,
                                         "sidOrigin": "dynamic",
                                         "protection": "unprotected",
                                         "flags": {
-                                            "b": false,
-                                            "v": true,
-                                            "l": true,
-                                            "f": false,
-                                            "s": false,
+                                            "b": False,
+                                            "v": True,
+                                            "l": True,
+                                            "f": False,
+                                            "s": False,
                                         },
                                         "level": 2,
                                     },
@@ -902,6 +1052,75 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": ["Instance CORE-ISIS2 is not found in vrf default."],
+        },
+    },
+    {
+        "test": VerifyISISSegmentRoutingAdjacencySegments,
+        "name": "Failure of VerifyISISSegmentRoutingAdjacencySegments with incorrect segment info.",
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "isisInstances": {
+                            "CORE-ISIS": {
+                                "dataPlane": "MPLS",
+                                "routerId": "1.0.0.11",
+                                "systemId": "0168.0000.0011",
+                                "hostname": "s1-pe01",
+                                "adjSidAllocationMode": "SrOnly",
+                                "adjSidPoolBase": 116384,
+                                "adjSidPoolSize": 16384,
+                                "adjacencySegments": [
+                                    {
+                                        "ipAddress": "10.0.1.3",
+                                        "localIntf": "Ethernet2",
+                                        "sid": 116384,
+                                        "lan": False,
+                                        "sidOrigin": "dynamic",
+                                        "protection": "unprotected",
+                                        "flags": {
+                                            "b": False,
+                                            "v": True,
+                                            "l": True,
+                                            "f": False,
+                                            "s": False,
+                                        },
+                                        "level": 2,
+                                    },
+                                ],
+                                "receivedGlobalAdjacencySegments": [],
+                                "misconfiguredAdjacencySegments": [],
+                            }
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {
+            "instances": [
+                {
+                    "name": "CORE-ISIS",
+                    "vrf": "default",
+                    "segments": [
+                        {
+                            "interface": "Ethernet2",
+                            "address": "10.0.1.3",
+                            "sid_origin": "dynamic",
+                            "level": 1,  # Wrong level
+                        },
+                    ],
+                }
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                (
+                    "Your segment is not correct: Expected: interface='Ethernet2' level=1 sid_origin='dynamic' address=IPv4Address('10.0.1.3') - "
+                    "Found: {'ipAddress': '10.0.1.3', 'localIntf': 'Ethernet2', 'sid': 116384, 'lan': False, 'sidOrigin': 'dynamic', 'protection': "
+                    "'unprotected', 'flags': {'b': False, 'v': True, 'l': True, 'f': False, 's': False}, 'level': 2}."
+                )
+            ],
         },
     },
     {
@@ -1135,7 +1354,7 @@ DATA: list[dict[str, Any]] = [
                 {
                     "endpoint": "1.0.0.122/32",
                     "vias": [
-                        {"type": "ip", "interface": "Ethernet1", "nexthop": "10.0.1.1"},
+                        {"interface": "Ethernet1", "nexthop": "10.0.1.1"},  # Testing empty type
                         {"type": "ip", "interface": "Ethernet2", "nexthop": "10.0.1.3"},
                     ],
                 },
@@ -1622,3 +1841,78 @@ DATA: list[dict[str, Any]] = [
         },
     },
 ]
+
+
+COMMAND_OUTPUT = {
+    "vrfs": {
+        "default": {
+            "isisInstances": {
+                "CORE-ISIS": {
+                    "interfaces": {
+                        "Loopback0": {
+                            "enabled": True,
+                            "intfLevels": {
+                                "2": {
+                                    "ipv4Metric": 10,
+                                    "sharedSecretProfile": "",
+                                    "isisAdjacencies": [],
+                                    "passive": True,
+                                    "v4Protection": "disabled",
+                                    "v6Protection": "disabled",
+                                }
+                            },
+                            "areaProxyBoundary": False,
+                        },
+                        "Ethernet1": {
+                            "intfLevels": {
+                                "2": {
+                                    "ipv4Metric": 10,
+                                    "numAdjacencies": 1,
+                                    "linkId": "84",
+                                    "sharedSecretProfile": "",
+                                    "isisAdjacencies": [],
+                                    "passive": False,
+                                    "v4Protection": "link",
+                                    "v6Protection": "disabled",
+                                }
+                            },
+                            "interfaceSpeed": 1000,
+                            "areaProxyBoundary": False,
+                        },
+                    }
+                }
+            }
+        },
+        "EMPTY": {"isisInstances": {}},
+        "NO_INTERFACES": {"isisInstances": {"CORE-ISIS": {}}},
+    }
+}
+EXPECTED_LOOPBACK_0_OUTPUT = {
+    "enabled": True,
+    "intfLevels": {
+        "2": {
+            "ipv4Metric": 10,
+            "sharedSecretProfile": "",
+            "isisAdjacencies": [],
+            "passive": True,
+            "v4Protection": "disabled",
+            "v6Protection": "disabled",
+        }
+    },
+    "areaProxyBoundary": False,
+}
+
+
+@pytest.mark.parametrize(
+    ("interface", "vrf", "expected_value"),
+    [
+        pytest.param("Loopback0", "WRONG_VRF", None, id="VRF_not_found"),
+        pytest.param("Loopback0", "EMPTY", None, id="VRF_no_ISIS_instances"),
+        pytest.param("Loopback0", "NO_INTERFACES", None, id="ISIS_instance_no_interfaces"),
+        pytest.param("Loopback42", "default", None, id="interface_not_found"),
+        pytest.param("Loopback0", "default", EXPECTED_LOOPBACK_0_OUTPUT, id="interface_found"),
+    ],
+)
+def test__get_interface_data(interface: str, vrf: str, expected_value: dict[str, Any] | None) -> None:
+    """Test anta.tests.routing.isis._get_interface_data."""
+    assert _get_interface_data(interface, vrf, COMMAND_OUTPUT) == expected_value

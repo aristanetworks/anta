@@ -226,14 +226,15 @@ class VerifyISISNeighborCount(AntaTest):
         isis_neighbor_count = _get_isis_neighbors_count(command_output)
         if len(isis_neighbor_count) == 0:
             self.result.is_skipped("No IS-IS neighbor detected")
+            return
         for interface in self.inputs.interfaces:
             eos_data = [ifl_data for ifl_data in isis_neighbor_count if ifl_data["interface"] == interface.name and ifl_data["level"] == interface.level]
             if not eos_data:
                 self.result.is_failure(f"No neighbor detected for interface {interface.name}")
-                return
+                continue
             if eos_data[0]["count"] != interface.count:
                 self.result.is_failure(
-                    f"Interface {interface.name}:"
+                    f"Interface {interface.name}: "
                     f"expected Level {interface.level}: count {interface.count}, "
                     f"got Level {eos_data[0]['level']}: count {eos_data[0]['count']}"
                 )
@@ -299,7 +300,8 @@ class VerifyISISInterfaceMode(AntaTest):
         self.result.is_success()
 
         if len(command_output["vrfs"]) == 0:
-            self.result.is_failure("IS-IS is not configured on device")
+            self.result.is_skipped("IS-IS is not configured on device")
+            return
 
         # Check for p2p interfaces
         for interface in self.inputs.interfaces:
