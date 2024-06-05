@@ -96,7 +96,7 @@ doc = [
 [project.urls]
 Homepage = "https://anta.arista.com"
 "Bug Tracker" = "https://github.com/aristanetworks/anta/issues"
-Contributing = "https://www.anta.ninja/main/contribution/"
+Contributing = "https://anta.arista.com/main/contribution/"
 
 [project.scripts]
 anta = "anta.cli:cli"
