@@ -7,12 +7,14 @@ build-backend = "setuptools.build_meta"
 name = "anta"
 version = "v0.15.0"
 readme = "docs/README.md"
-authors = [{ name = "Khelil Sator", email = "ksator@arista.com" }]
+authors = [{ name = "Arista Networks ANTA maintainers", email = "anta-dev@arista.com" }]
 maintainers = [
+  { name = "Arista Networks ANTA maintainers", email = "anta-dev@arista.com" },
   { name = "Khelil Sator", email = "ksator@arista.com" },
   { name = "Matthieu Tâche", email = "mtache@arista.com" },
   { name = "Thomas Grimonet", email = "tgrimonet@arista.com" },
   { name = "Guillaume Mulocher", email = "gmulocher@arista.com" },
+  { name = "Carl Baillargeon", email = "carl.baillargeon@arista.com" },
 ]
 description = "Arista Network Test Automation (ANTA) Framework"
 license = { file = "LICENSE" }
@@ -92,9 +94,9 @@ doc = [
 ]
 
 [project.urls]
-Homepage = "https://www.anta.ninja"
-"Bug Tracker" = "https://github.com/arista-netdevops-community/anta/issues"
-Contributing = "https://www.anta.ninja/main/contribution/"
+Homepage = "https://anta.arista.com"
+"Bug Tracker" = "https://github.com/aristanetworks/anta/issues"
+Contributing = "https://anta.arista.com/main/contribution/"
 
 [project.scripts]
 anta = "anta.cli:cli"
