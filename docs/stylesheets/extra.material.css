@@ -61,6 +61,12 @@
   --md-code-border-color:              #aec6db4f;
 }
 
+.md-banner {
+  background-color: #f5c842;
+  color: #000000;
+
+}
+
 @media only screen and (min-width: 76.25em) {
   .md-main__inner, .md-header__inner {
     max-width: 85%;
