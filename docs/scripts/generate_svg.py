@@ -56,7 +56,8 @@ if __name__ == "__main__":
     # stolen from https://github.com/ewels/rich-click/blob/main/src/rich_click/cli.py
     args = sys.argv[1:]
     script_name = args[0]
-    scripts = {script.name: script for script in entry_points().get("console_scripts")}
+    console_scripts = entry_points(group="console_scripts")
+    scripts = {script.name: script for script in console_scripts}
 
     if script_name in scripts:
         # A VALID SCRIPT WAS passed

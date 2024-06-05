@@ -51,11 +51,10 @@ repos:
     - id: ruff-format
       name: Run Ruff formatter
 
-  - repo: local  # as per https://pylint.pycqa.org/en/latest/user_guide/installation/pre-commit-integration.html
+  - repo: https://github.com/pycqa/pylint
+    rev: "v3.2.2"
     hooks:
       - id: pylint
-        entry: pylint
-        language: python
         name: Check code style with pylint
         description: This hook runs pylint.
         types: [python]
@@ -63,6 +62,13 @@ repos:
           - -rn                      # Only display messages
           - -sn                      # Don't display the score
           - --rcfile=pyproject.toml  # Link to config file
+        additional_dependencies:
+          - anta[cli]
+          - types-PyYAML
+          - types-requests
+          - types-pyOpenSSL
+          - pylint_pydantic
+          - pytest
 
   - repo: https://github.com/codespell-project/codespell
     rev: v2.3.0
