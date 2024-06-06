@@ -83,7 +83,7 @@ This is to be executed at the top of the repo
     git push origin HEAD
     gh pr create --title 'bump: ANTA vx.x.x'
     ```
-9. Merge PR after review and wait for [workflow](https://github.com/arista-netdevops-community/anta/actions/workflows/release.yml) to be executed.
+9. Merge PR after review and wait for [workflow](https://github.com/aristanetworks/anta/actions/workflows/release.yml) to be executed.
 
    ```bash
    gh pr merge --squash

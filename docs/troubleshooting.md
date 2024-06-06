@@ -24,8 +24,8 @@ flowchart LR
     F -- No ----> G((Add a comment on the <br />issue indicating you<br >are hitting this and<br />describing your setup<br /> and adding your logs.))
 
     click B "../faq" "FAQ"
-    click E "https://github.com/arista-netdevops-community/anta/issues"
-    click H "https://github.com/arista-netdevops-community/anta/issues"
+    click E "https://github.com/aristanetworks/anta/issues"
+    click H "https://github.com/aristanetworks/anta/issues"
 	style A stroke:#f00,stroke-width:2px
 ```
 
