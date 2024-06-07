@@ -50,17 +50,11 @@ def from_cvp(ctx: click.Context, output: Path, host: str, username: str, passwor
     TODO - handle get_inventory and get_devices_in_container failure
     """
     logger.info("Getting authentication token for user '%s' from CloudVision instance '%s'", username, host)
-    is_cvaas = False
-    # TODO: This is not nice handling of authentication failure nor CVaaS detection
-    try:
-        token = get_cv_token(cvp_ip=host, cvp_username=username, cvp_password=password, verify_cert=not ignore_cert)
-    except Exception:
-        token = password
-        is_cvaas = True
+    token = get_cv_token(cvp_ip=host, cvp_username=username, cvp_password=password, verify_cert=not ignore_cert)
 
     clnt = CvpClient()
     try:
-        clnt.connect(nodes=[host], username="", password="", api_token=token, is_cvaas=is_cvaas)
+        clnt.connect(nodes=[host], username="", password="", api_token=token)
     except CvpApiError as error:
         logger.error("Error connecting to CloudVision: %s", error)
         ctx.exit(ExitCode.USAGE_ERROR)
