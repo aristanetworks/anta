@@ -47,7 +47,9 @@ def from_cvp(ctx: click.Context, output: Path, host: str, username: str, passwor
     # pylint: disable=too-many-arguments
     """Build ANTA inventory from Cloudvision.
 
-    TODO - handle get_inventory and get_devices_in_container failure
+    NOTE - CVaaS connection via token is not supported today in the code.
+
+    TODO - handle get_cv_token, get_inventory and get_devices_in_container failures.
     """
     logger.info("Getting authentication token for user '%s' from CloudVision instance '%s'", username, host)
     token = get_cv_token(cvp_ip=host, cvp_username=username, cvp_password=password, verify_cert=not ignore_cert)
