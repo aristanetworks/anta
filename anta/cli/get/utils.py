@@ -93,6 +93,10 @@ def get_cv_token(cvp_ip: str, cvp_username: str, cvp_password: str, *, verify_ce
     -------
         token(str): The token to use in further API calls to CloudVision.
 
+    Raises
+    ------
+        requests.ssl.SSLError: If the certificate verification fails
+
     """
     # use CVP REST API to generate a token
     url = f"https://{cvp_ip}/cvpservice/login/authenticate.do"

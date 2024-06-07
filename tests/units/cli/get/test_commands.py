@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING
 from unittest.mock import ANY, patch
 
 import pytest
+import requests
 from cvprac.cvp_client_errors import CvpApiError
 
 from anta.cli._main import anta
@@ -24,12 +25,13 @@ DATA_DIR: Path = Path(__file__).parents[3].resolve() / "data"
 
 
 @pytest.mark.parametrize(
-    ("cvp_container", "verify_cert", "cvp_connect_failure"),
+    ("cvp_container", "verify_cert", "cv_token_failure", "cvp_connect_failure"),
     [
-        pytest.param(None, True, False, id="all devices - verify cert"),
-        pytest.param(None, False, False, id="all devices - do not verify cert"),
-        pytest.param("custom_container", False, False, id="custom container"),
-        pytest.param(None, False, True, id="cvp connect failure"),
+        pytest.param(None, True, False, False, id="all devices - verify cert"),
+        pytest.param(None, True, True, False, id="all devices - fail SSL check"),
+        pytest.param(None, False, False, False, id="all devices - do not verify cert"),
+        pytest.param("custom_container", False, False, False, id="custom container"),
+        pytest.param(None, False, False, True, id="cvp connect failure"),
     ],
 )
 def test_from_cvp(
@@ -37,8 +39,11 @@ def test_from_cvp(
     click_runner: CliRunner,
     cvp_container: str | None,
     verify_cert: bool,
+    cv_token_failure: bool,
     cvp_connect_failure: bool,
 ) -> None:
+    # pylint: disable=too-many-arguments
+    # ruff: noqa: C901
     """Test `anta get from-cvp`.
 
     This test verifies that username and password are NOT mandatory to run this command
@@ -62,13 +67,17 @@ def test_from_cvp(
     if not verify_cert:
         cli_args.extend(["--ignore-cert"])
 
+    def mock_get_cv_token(*_args: str, **_kwargs: str) -> None:
+        if cv_token_failure:
+            raise requests.exceptions.SSLError
+
     def mock_cvp_connect(_self: CvpClient, *_args: str, **_kwargs: str) -> None:
         if cvp_connect_failure:
             raise CvpApiError(msg="mocked CvpApiError")
 
     # always get a token
     with (
-        patch("anta.cli.get.commands.get_cv_token", return_value="dummy_token"),
+        patch("anta.cli.get.commands.get_cv_token", autospec=True, side_effect=mock_get_cv_token),
         patch(
             "cvprac.cvp_client.CvpClient.connect",
             autospec=True,
@@ -83,20 +92,27 @@ def test_from_cvp(
     ):
         result = click_runner.invoke(anta, cli_args)
 
-    if not cvp_connect_failure:
+    if not cvp_connect_failure and not cv_token_failure:
         assert output.exists()
 
+    if cv_token_failure:
+        assert "Authentication to Cloudvison failed" in result.output
+        assert result.exit_code == ExitCode.USAGE_ERROR
+        return
+
     mocked_cvp_connect.assert_called_once()
-    if not cvp_connect_failure:
-        assert "Connected to CloudVision" in result.output
-        if cvp_container is not None:
-            mocked_get_devices_in_container.assert_called_once_with(ANY, cvp_container)
-        else:
-            mocked_get_inventory.assert_called_once()
-        assert result.exit_code == ExitCode.OK
-    else:
+
+    if cvp_connect_failure:
         assert "Error connecting to CloudVision" in result.output
         assert result.exit_code == ExitCode.USAGE_ERROR
+        return
+
+    assert "Connected to CloudVision" in result.output
+    if cvp_container is not None:
+        mocked_get_devices_in_container.assert_called_once_with(ANY, cvp_container)
+    else:
+        mocked_get_inventory.assert_called_once()
+    assert result.exit_code == ExitCode.OK
 
 
 @pytest.mark.parametrize(

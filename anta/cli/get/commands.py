@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 import click
+import requests
 from cvprac.cvp_client import CvpClient
 from cvprac.cvp_client_errors import CvpApiError
 from rich.pretty import pretty_repr
@@ -52,7 +53,11 @@ def from_cvp(ctx: click.Context, output: Path, host: str, username: str, passwor
     TODO - handle get_cv_token, get_inventory and get_devices_in_container failures.
     """
     logger.info("Getting authentication token for user '%s' from CloudVision instance '%s'", username, host)
-    token = get_cv_token(cvp_ip=host, cvp_username=username, cvp_password=password, verify_cert=not ignore_cert)
+    try:
+        token = get_cv_token(cvp_ip=host, cvp_username=username, cvp_password=password, verify_cert=not ignore_cert)
+    except requests.exceptions.SSLError as error:
+        logger.error("Authentication to Cloudvison failed: %s.", error)
+        ctx.exit(ExitCode.USAGE_ERROR)
 
     clnt = CvpClient()
     try:
