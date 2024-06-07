@@ -39,7 +39,7 @@ logger = logging.getLogger(__name__)
 @click.option("--container", "-c", help="CloudVision container where devices are configured", type=str)
 @click.option(
     "--ignore-cert",
-    help="By default connection to CV will use HTTPS certificate, set this flag to disable it",
+    help="Ignore verifying the SSL certificate when connecting to CloudVision",
     show_envvar=True,
     is_flag=True,
     default=False,
