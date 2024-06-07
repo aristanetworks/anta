@@ -56,7 +56,7 @@ def from_cvp(ctx: click.Context, output: Path, host: str, username: str, passwor
     try:
         token = get_cv_token(cvp_ip=host, cvp_username=username, cvp_password=password, verify_cert=not ignore_cert)
     except requests.exceptions.SSLError as error:
-        logger.error("Authentication to Cloudvison failed: %s.", error)
+        logger.error("Authentication to CloudVison failed: %s.", error)
         ctx.exit(ExitCode.USAGE_ERROR)
 
     clnt = CvpClient()
