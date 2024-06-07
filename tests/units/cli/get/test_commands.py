@@ -96,7 +96,7 @@ def test_from_cvp(
         assert output.exists()
 
     if cv_token_failure:
-        assert "Authentication to Cloudvison failed" in result.output
+        assert "Authentication to CloudVison failed" in result.output
         assert result.exit_code == ExitCode.USAGE_ERROR
         return
 
