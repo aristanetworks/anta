@@ -36,14 +36,21 @@ logger = logging.getLogger(__name__)
 @click.option("--username", "-u", help="CloudVision username", type=str, required=True)
 @click.option("--password", "-p", help="CloudVision password", type=str, required=True)
 @click.option("--container", "-c", help="CloudVision container where devices are configured", type=str)
-def from_cvp(ctx: click.Context, output: Path, host: str, username: str, password: str, container: str | None) -> None:
+@click.option(
+    "--ignore-cert",
+    help="By default connection to CV will use HTTPS certificate, set this flag to disable it",
+    show_envvar=True,
+    is_flag=True,
+    default=False,
+)
+def from_cvp(ctx: click.Context, output: Path, host: str, username: str, password: str, container: str | None, *, ignore_cert: bool) -> None:
     # pylint: disable=too-many-arguments
     """Build ANTA inventory from Cloudvision.
 
     TODO - handle get_inventory and get_devices_in_container failure
     """
     logger.info("Getting authentication token for user '%s' from CloudVision instance '%s'", username, host)
-    token = get_cv_token(cvp_ip=host, cvp_username=username, cvp_password=password)
+    token = get_cv_token(cvp_ip=host, cvp_username=username, cvp_password=password, verify_cert=not ignore_cert)
 
     clnt = CvpClient()
     try:

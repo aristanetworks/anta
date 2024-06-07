@@ -77,16 +77,29 @@ def inventory_output_options(f: Callable[..., Any]) -> Callable[..., Any]:
     return wrapper
 
 
-def get_cv_token(cvp_ip: str, cvp_username: str, cvp_password: str) -> str:
-    """Generate AUTH token from CVP using password."""
-    # TODO: need to handle requests error
+def get_cv_token(cvp_ip: str, cvp_username: str, cvp_password: str, *, verify_cert: bool) -> str:
+    """Generate AUTH token from CVP using password.
 
+    TODO: need to handle requests error
+
+    Args:
+    ----
+        cvp_ip: IP address of CloudVision.
+        cvp_username: Username to connect to CloudVision.
+        cvp_password: Password to connect to CloudVision.
+        verify_cert: Enable or disable certificate verification when connecting to CloudVision.
+
+    Returns
+    -------
+        token(str): The token to use in further API calls to CloudVision.
+
+    """
     # use CVP REST API to generate a token
     url = f"https://{cvp_ip}/cvpservice/login/authenticate.do"
     payload = json.dumps({"userId": cvp_username, "password": cvp_password})
     headers = {"Content-Type": "application/json", "Accept": "application/json"}
 
-    response = requests.request("POST", url, headers=headers, data=payload, verify=False, timeout=10)
+    response = requests.request("POST", url, headers=headers, data=payload, verify=verify_cert, timeout=10)
     return response.json()["sessionId"]
 
 

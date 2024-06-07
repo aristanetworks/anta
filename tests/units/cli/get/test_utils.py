@@ -19,7 +19,14 @@ from anta.inventory import AntaInventory
 DATA_DIR: Path = Path(__file__).parents[3].resolve() / "data"
 
 
-def test_get_cv_token() -> None:
+@pytest.mark.parametrize(
+    "verify_cert",
+    [
+        pytest.param(True, id="Verify cert enabled"),
+        pytest.param(False, id="Verify cert disabled"),
+    ],
+)
+def test_get_cv_token(verify_cert: bool) -> None:
     """Test anta.get.utils.get_cv_token."""
     ip_addr = "42.42.42.42"
     username = "ant"
@@ -29,13 +36,13 @@ def test_get_cv_token() -> None:
         mocked_ret = MagicMock(autospec=requests.Response)
         mocked_ret.json.return_value = {"sessionId": "simple"}
         patched_request.return_value = mocked_ret
-        res = get_cv_token(ip_addr, username, password)
+        res = get_cv_token(ip_addr, username, password, verify_cert=verify_cert)
     patched_request.assert_called_once_with(
         "POST",
         "https://42.42.42.42/cvpservice/login/authenticate.do",
         headers={"Content-Type": "application/json", "Accept": "application/json"},
         data='{"userId": "ant", "password": "formica"}',
-        verify=False,
+        verify=verify_cert,
         timeout=10,
     )
     assert res == "simple"

@@ -24,17 +24,19 @@ DATA_DIR: Path = Path(__file__).parents[3].resolve() / "data"
 
 
 @pytest.mark.parametrize(
-    ("cvp_container", "cvp_connect_failure"),
+    ("cvp_container", "verify_cert", "cvp_connect_failure"),
     [
-        pytest.param(None, False, id="all devices"),
-        pytest.param("custom_container", False, id="custom container"),
-        pytest.param(None, True, id="cvp connect failure"),
+        pytest.param(None, True, False, id="all devices - verify cert"),
+        pytest.param(None, False, False, id="all devices - do not verify cert"),
+        pytest.param("custom_container", False, False, id="custom container"),
+        pytest.param(None, False, True, id="cvp connect failure"),
     ],
 )
 def test_from_cvp(
     tmp_path: Path,
     click_runner: CliRunner,
     cvp_container: str | None,
+    verify_cert: bool,
     cvp_connect_failure: bool,
 ) -> None:
     """Test `anta get from-cvp`.
@@ -57,6 +59,8 @@ def test_from_cvp(
 
     if cvp_container is not None:
         cli_args.extend(["--container", cvp_container])
+    if not verify_cert:
+        cli_args.extend(["--ignore-cert"])
 
     def mock_cvp_connect(_self: CvpClient, *_args: str, **_kwargs: str) -> None:
         if cvp_connect_failure:
