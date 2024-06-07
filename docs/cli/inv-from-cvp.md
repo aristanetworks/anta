@@ -16,7 +16,7 @@ In large setups, it might be beneficial to construct your inventory based on Clo
 ```bash
 Usage: anta get from-cvp [OPTIONS]
 
-  Build ANTA inventory from Cloudvision.
+  Build ANTA inventory from CloudVision.
 
   NOTE: Only username/password authentication is supported for on-premises CloudVision instances.
   Token authentication for both on-premises and CloudVision as a Service (CVaaS) is not supported.
