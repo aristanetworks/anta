@@ -6,7 +6,7 @@
 
 # How to contribute to ANTA
 
-Contribution model is based on a fork-model. Don't push to arista-netdevops-community/anta directly. Always do a branch in your forked repository and create a PR.
+Contribution model is based on a fork-model. Don't push to aristanetworks/anta directly. Always do a branch in your forked repository and create a PR.
 
 To help development, open your PR as soon as possible even in draft mode. It helps other to know on what you are working on and avoid duplicate PRs.
 
@@ -16,7 +16,7 @@ Run the following commands to create an ANTA development environment:
 
 ```bash
 # Clone repository
-$ git clone https://github.com/arista-netdevops-community/anta.git
+$ git clone https://github.com/aristanetworks/anta.git
 $ cd anta
 
 # Install ANTA in editable mode and its development tools
@@ -229,4 +229,4 @@ muffet -c 2 --color=always http://127.0.0.1:8000 -e fonts.gstatic.com -b 8192
 
 ## Continuous Integration
 
-GitHub actions is used to test git pushes and pull requests. The workflows are defined in this [directory](https://github.com/arista-netdevops-community/anta/tree/main/.github/workflows). We can view the results [here](https://github.com/arista-netdevops-community/anta/actions).
+GitHub actions is used to test git pushes and pull requests. The workflows are defined in this [directory](https://github.com/aristanetworks/anta/tree/main/.github/workflows). We can view the results [here](https://github.com/aristanetworks/anta/actions).
