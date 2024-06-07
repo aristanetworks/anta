@@ -129,7 +129,7 @@ anta.tests:
           custom_field: "Test run by John Doe"
 ```
 
-[This test catalog example](https://github.com/arista-netdevops-community/anta/blob/main/examples/tests.yaml) is maintained with all the tests defined in the `anta.tests` Python module.
+[This test catalog example](https://github.com/aristanetworks/anta/blob/main/examples/tests.yaml) is maintained with all the tests defined in the `anta.tests` Python module.
 
 ### Test tags
 

@@ -126,4 +126,4 @@ toc_depth: 2
 
 # Still facing issues?
 
-If you've tried the above solutions and continue to experience problems, please follow the [troubleshooting](troubleshooting.md) instructions and report the issue in our [GitHub repository](https://github.com/arista-netdevops-community/anta).
+If you've tried the above solutions and continue to experience problems, please follow the [troubleshooting](troubleshooting.md) instructions and report the issue in our [GitHub repository](https://github.com/aristanetworks/anta).
