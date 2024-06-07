@@ -107,7 +107,7 @@ def write_inventory_to_file(hosts: list[AntaInventoryHost], output: Path) -> Non
     """Write a file inventory from pydantic models."""
     i = AntaInventoryInput(hosts=hosts)
     with output.open(mode="w", encoding="UTF-8") as out_fd:
-        out_fd.write(yaml.dump({AntaInventory.INVENTORY_ROOT_KEY: i.model_dump(exclude_unset=True)}))
+        out_fd.write(yaml.dump({AntaInventory.INVENTORY_ROOT_KEY: yaml.safe_load(i.yaml())}))
     logger.info("ANTA inventory file has been created: '%s'", output)
 
 
