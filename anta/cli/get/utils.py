@@ -78,7 +78,7 @@ def inventory_output_options(f: Callable[..., Any]) -> Callable[..., Any]:
 
 
 def get_cv_token(cvp_ip: str, cvp_username: str, cvp_password: str, *, verify_cert: bool) -> str:
-    """Generate AUTH token from CVP using password.
+    """Generate the authentication token from CloudVision using username and password.
 
     TODO: need to handle requests error
 

@@ -9,7 +9,7 @@
 In large setups, it might be beneficial to construct your inventory based on CloudVision. The `from-cvp` entrypoint of the `get` command enables the user to create an ANTA inventory from CloudVision.
 
 !!! info
-    The current implementation only work towards a local CloudVision instance, not for CVaaS.
+    The current implementation only works with on-premises CloudVision instances, not with CloudVision as a Service (CVaaS).
 
 ### Command overview
 
@@ -18,10 +18,8 @@ Usage: anta get from-cvp [OPTIONS]
 
   Build ANTA inventory from Cloudvision.
 
-  NOTE - CVaaS connection via token is not supported today in the code.
-
-  TODO - handle get_cv_token, get_inventory and get_devices_in_container
-  failures.
+  NOTE: Only username/password authentication is supported for on-premises CloudVision instances.
+  Token authentication for both on-premises and CloudVision as a Service (CVaaS) is not supported.
 
 Options:
   -o, --output FILE     Path to save inventory file  [env var: ANTA_INVENTORY;

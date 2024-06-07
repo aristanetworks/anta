@@ -46,12 +46,12 @@ logger = logging.getLogger(__name__)
 )
 def from_cvp(ctx: click.Context, output: Path, host: str, username: str, password: str, container: str | None, *, ignore_cert: bool) -> None:
     # pylint: disable=too-many-arguments
-    """Build ANTA inventory from Cloudvision.
+    """Build ANTA inventory from CloudVision.
 
-    NOTE - CVaaS connection via token is not supported today in the code.
-
-    TODO - handle get_cv_token, get_inventory and get_devices_in_container failures.
+    NOTE: Only username/password authentication is supported for on-premises CloudVision instances.
+    Token authentication for both on-premises and CloudVision as a Service (CVaaS) is not supported.
     """
+    # TODO: - Handle get_cv_token, get_inventory and get_devices_in_container failures.
     logger.info("Getting authentication token for user '%s' from CloudVision instance '%s'", username, host)
     try:
         token = get_cv_token(cvp_ip=host, cvp_username=username, cvp_password=password, verify_cert=not ignore_cert)
