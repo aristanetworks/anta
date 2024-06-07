@@ -6,7 +6,7 @@
 
 # How to contribute to ANTA
 
-Contribution model is based on a fork-model. Don't push to arista-netdevops-community/anta directly. Always do a branch in your forked repository and create a PR.
+Contribution model is based on a fork-model. Don't push to aristanetworks/anta directly. Always do a branch in your forked repository and create a PR.
 
 To help development, open your PR as soon as possible even in draft mode. It helps other to know on what you are working on and avoid duplicate PRs.
 
@@ -16,7 +16,7 @@ Run the following commands to create an ANTA development environment:
 
 ```bash
 # Clone repository
-$ git clone https://github.com/arista-netdevops-community/anta.git
+$ git clone https://github.com/aristanetworks/anta.git
 $ cd anta
 
 # Install ANTA in editable mode and its development tools
@@ -28,7 +28,7 @@ $ pip install -e .[dev,cli]
 $ pip list -e
 Package Version Editable project location
 ------- ------- -------------------------
-anta    0.14.0   /mnt/lab/projects/anta
+anta    0.15.0   /mnt/lab/projects/anta
 ```
 
 Then, [`tox`](https://tox.wiki/) is configured with few environments to run CI locally:
@@ -93,17 +93,20 @@ All submodule should have its own pytest section under `tests/units/anta_tests/<
 
 The Python modules in the `tests/units/anta_tests` folder  define test parameters for AntaTest subclasses unit tests.
 A generic test function is written for all unit tests in `tests.lib.anta` module.
+
 The `pytest_generate_tests` function definition in `conftest.py` is called during test collection.
+
 The `pytest_generate_tests` function will parametrize the generic test function based on the `DATA` data structure defined in `tests.units.anta_tests` modules.
+
 See https://docs.pytest.org/en/7.3.x/how-to/parametrize.html#basic-pytest-generate-tests-example
 
-The `DATA` structure is a list of dictionaries used to parametrize the test.
-The list elements have the following keys:
-- `name` (str): Test name as displayed by Pytest.
-- `test` (AntaTest): An AntaTest subclass imported in the test module - e.g. VerifyUptime.
-- `eos_data` (list[dict]): List of data mocking EOS returned data to be passed to the test.
-- `inputs` (dict): Dictionary to instantiate the `test` inputs as defined in the class from `test`.
-- `expected` (dict): Expected test result structure, a dictionary containing a key
+The `DATA` structure is a list of dictionaries used to parametrize the test. The list elements have the following keys:
+
+  - `name` (str): Test name as displayed by Pytest.
+  - `test` (AntaTest): An AntaTest subclass imported in the test module - e.g. VerifyUptime.
+  - `eos_data` (list[dict]): List of data mocking EOS returned data to be passed to the test.
+  - `inputs` (dict): Dictionary to instantiate the `test` inputs as defined in the class from `test`.
+  - `expected` (dict): Expected test result structure, a dictionary containing a key
     `result` containing one of the allowed status (`Literal['success', 'failure', 'unset', 'skipped', 'error']`) and optionally a key `messages` which is a list(str) and each message is expected to  be a substring of one of the actual messages in the TestResult object.
 
 
@@ -226,4 +229,4 @@ muffet -c 2 --color=always http://127.0.0.1:8000 -e fonts.gstatic.com -b 8192
 
 ## Continuous Integration
 
-GitHub actions is used to test git pushes and pull requests. The workflows are defined in this [directory](https://github.com/arista-netdevops-community/anta/tree/main/.github/workflows). We can view the results [here](https://github.com/arista-netdevops-community/anta/actions).
+GitHub actions is used to test git pushes and pull requests. The workflows are defined in this [directory](https://github.com/aristanetworks/anta/tree/main/.github/workflows). We can view the results [here](https://github.com/aristanetworks/anta/actions).

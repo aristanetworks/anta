@@ -48,7 +48,7 @@ def debug_options(f: Callable[..., Any]) -> Callable[..., Any]:
         device: str,
         **kwargs: Any,
     ) -> Any:
-        # TODO: @gmuloc - tags come from context https://github.com/arista-netdevops-community/anta/issues/584
+        # TODO: @gmuloc - tags come from context https://github.com/aristanetworks/anta/issues/584
         # pylint: disable=unused-argument
         # ruff: noqa: ARG001
         if (d := inventory.get(device)) is None:

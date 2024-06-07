@@ -55,7 +55,9 @@ class VerifyTemperature(AntaTest):
 
 [AntaTest](../api/models.md#anta.models.AntaTest) also provide more advanced capabilities like [AntaCommand](../api/models.md#anta.models.AntaCommand) templating using the [AntaTemplate](../api/models.md#anta.models.AntaTemplate) class or test inputs definition and validation using [AntaTest.Input](../api/models.md#anta.models.AntaTest.Input) [pydantic](https://docs.pydantic.dev/latest/) model. This will be discussed in the sections below.
 
-## [AntaTest](../api/models.md#anta.models.AntaTest) structure
+## AntaTest structure
+
+Full AntaTest API documentation is available in the [API documentation section](../api/models.md#anta.models.AntaTest)
 
 ### Class Attributes
 
@@ -98,7 +100,9 @@ class VerifyTemperature(AntaTest):
 
 The base definition of [AntaTest.Input](../api/models.md#anta.models.AntaTest.Input) provides common test inputs for all [AntaTest](../api/models.md#anta.models.AntaTest) instances:
 
-#### [Input](../api/models.md#anta.models.AntaTest.Input) model
+#### Input model
+
+Full `Input` model documentation is available in [API documentation section](../api/models.md#anta.models.AntaTest.Input)
 
 ::: anta.models.AntaTest.Input
     options:
@@ -114,7 +118,9 @@ The base definition of [AntaTest.Input](../api/models.md#anta.models.AntaTest.In
         show_root_toc_entry: false
         heading_level: 10
 
-#### [ResultOverwrite](../api/models.md#anta.models.AntaTest.Input.ResultOverwrite) model
+#### ResultOverwrite model
+
+Full `ResultOverwrite` model documentation is available in [API documentation section](../api/models.md#anta.models.AntaTest.Input.ResultOverwrite)
 
 ::: anta.models.AntaTest.Input.ResultOverwrite
     options:

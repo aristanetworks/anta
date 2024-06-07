@@ -6,7 +6,7 @@ copyright: Copyright &copy; 2019 - 2024 Arista Networks
 
 # Repository
 repo_name: ANTA on Github
-repo_url: https://github.com/arista-netdevops-community/anta
+repo_url: https://github.com/aristanetworks/anta
 
 # Configuration
 use_directory_urls: true
@@ -57,9 +57,9 @@ theme:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/arista-netdevops-community/anta
+      link: https://github.com/aristanetworks/anta
     - icon: fontawesome/brands/docker
-      link: https://github.com/arista-netdevops-community/anta/pkgs/container/anta
+      link: https://github.com/aristanetworks/anta/pkgs/container/anta
     - icon: fontawesome/brands/python
       link: https://pypi.org/project/anta/
   version:

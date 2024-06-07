@@ -21,7 +21,17 @@
 				"ms-python.pylint",
 				"LittleFoxTeam.vscode-python-test-adapter",
 				"njqdev.vscode-python-typehint",
-				"hbenl.vscode-test-explorer"
+				"hbenl.vscode-test-explorer",
+				"codezombiech.gitignore",
+				"ms-python.isort",
+				"eriklynd.json-tools",
+				"ms-python.vscode-pylance",
+				"tuxtina.json2yaml",
+				"christian-kohler.path-intellisense",
+				"ms-python.vscode-pylance",
+				"njqdev.vscode-python-typehint",
+				"LittleFoxTeam.vscode-python-test-adapter",
+				"donjayamanne.python-environment-manager"
 			]
 		}
 	},

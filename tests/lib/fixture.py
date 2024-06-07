@@ -13,7 +13,7 @@ from unittest.mock import patch
 import pytest
 from click.testing import CliRunner, Result
 
-from anta import aioeapi
+import asynceapi
 from anta.cli.console import console
 from anta.device import AntaDevice, AsyncEOSDevice
 from anta.inventory import AntaInventory
@@ -33,7 +33,7 @@ DEVICE_HW_MODEL = "pytest"
 DEVICE_NAME = "pytest"
 COMMAND_OUTPUT = "retrieved"
 
-MOCK_CLI_JSON: dict[str, aioeapi.EapiCommandError | dict[str, Any]] = {
+MOCK_CLI_JSON: dict[str, asynceapi.EapiCommandError | dict[str, Any]] = {
     "show version": {
         "modelName": "DCS-7280CR3-32P4-F",
         "version": "4.31.1F",
@@ -41,7 +41,7 @@ MOCK_CLI_JSON: dict[str, aioeapi.EapiCommandError | dict[str, Any]] = {
     "enable": {},
     "clear counters": {},
     "clear hardware counter drop": {},
-    "undefined": aioeapi.EapiCommandError(
+    "undefined": asynceapi.EapiCommandError(
         passed=[],
         failed="show version",
         errors=["Authorization denied for command 'show version'"],
@@ -50,7 +50,7 @@ MOCK_CLI_JSON: dict[str, aioeapi.EapiCommandError | dict[str, Any]] = {
     ),
 }
 
-MOCK_CLI_TEXT: dict[str, aioeapi.EapiCommandError | str] = {
+MOCK_CLI_TEXT: dict[str, asynceapi.EapiCommandError | str] = {
     "show version": "Arista cEOSLab",
     "bash timeout 10 ls -1t /mnt/flash/schedule/tech-support": "dummy_tech-support_2023-12-01.1115.log.gz\ndummy_tech-support_2023-12-01.1015.log.gz",
     "bash timeout 10 ls -1t /mnt/flash/schedule/tech-support | head -1": "dummy_tech-support_2023-12-01.1115.log.gz",
@@ -62,7 +62,7 @@ MOCK_CLI_TEXT: dict[str, aioeapi.EapiCommandError | str] = {
 def device(request: pytest.FixtureRequest) -> Iterator[AntaDevice]:
     """Return an AntaDevice instance with mocked abstract method."""
 
-    def _collect(command: AntaCommand) -> None:
+    def _collect(command: AntaCommand, *args: Any, **kwargs: Any) -> None:  # noqa: ARG001, ANN401 #pylint: disable=unused-argument
         command.output = COMMAND_OUTPUT
 
     kwargs = {"name": DEVICE_NAME, "hw_model": DEVICE_HW_MODEL}
@@ -214,7 +214,7 @@ def click_runner(capsys: pytest.CaptureFixture[str]) -> Iterator[CliRunner]:  # 
             for mock_cmd, output in mock_cli.items():
                 if command == mock_cmd:
                     logger.info("Mocking command %s", mock_cmd)
-                    if isinstance(output, aioeapi.EapiCommandError):
+                    if isinstance(output, asynceapi.EapiCommandError):
                         raise output
                     return output
             message = f"Command '{command}' is not mocked"
@@ -231,10 +231,10 @@ def click_runner(capsys: pytest.CaptureFixture[str]) -> Iterator[CliRunner]:  # 
         logger.debug("Mock output %s", res)
         return res
 
-    # Patch aioeapi methods used by AsyncEOSDevice. See tests/units/test_device.py
+    # Patch asynceapi methods used by AsyncEOSDevice. See tests/units/test_device.py
     with (
-        patch("aioeapi.device.Device.check_connection", return_value=True),
-        patch("aioeapi.device.Device.cli", side_effect=cli),
+        patch("asynceapi.device.Device.check_connection", return_value=True),
+        patch("asynceapi.device.Device.cli", side_effect=cli),
         patch("asyncssh.connect"),
         patch(
             "asyncssh.scp",

@@ -24,8 +24,8 @@ flowchart LR
     F -- No ----> G((Add a comment on the <br />issue indicating you<br >are hitting this and<br />describing your setup<br /> and adding your logs.))
 
     click B "../faq" "FAQ"
-    click E "https://github.com/arista-netdevops-community/anta/issues"
-    click H "https://github.com/arista-netdevops-community/anta/issues"
+    click E "https://github.com/aristanetworks/anta/issues"
+    click H "https://github.com/aristanetworks/anta/issues"
 	style A stroke:#f00,stroke-width:2px
 ```
 
@@ -76,4 +76,15 @@ Example:
 
 ```bash
 ANTA_DEBUG=true anta -l DEBUG --log-file anta.log nrfu --enable --username username --password arista --inventory inventory.yml -c nrfu.yml text
+```
+
+### Troubleshooting on EOS
+
+ANTA is using a specific ID in eAPI requests towards EOS. This allows for easier eAPI requests debugging on the device using EOS configuration `trace CapiApp setting UwsgiRequestContext/4,CapiUwsgiServer/4` to set up CapiApp agent logs.
+
+Then, you can view agent logs using:
+```bash
+bash tail -f /var/log/agents/CapiApp-*
+
+2024-05-15 15:32:54.056166  1429 UwsgiRequestContext  4 request content b'{"jsonrpc": "2.0", "method": "runCmds", "params": {"version": "latest", "cmds": [{"cmd": "show ip route vrf default 10.255.0.3", "revision": 4}], "format": "json", "autoComplete": false, "expandAliases": false}, "id": "ANTA-VerifyRoutingTableEntry-132366530677328"}'
 ```

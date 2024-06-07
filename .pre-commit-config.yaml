@@ -1,7 +1,7 @@
 ---
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
-files: ^(anta|docs|scripts|tests)/
+files: ^(anta|docs|scripts|tests|asynceapi)/
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -51,11 +51,10 @@ repos:
     - id: ruff-format
       name: Run Ruff formatter
 
-  - repo: local  # as per https://pylint.pycqa.org/en/latest/user_guide/installation/pre-commit-integration.html
+  - repo: https://github.com/pycqa/pylint
+    rev: "v3.2.2"
     hooks:
       - id: pylint
-        entry: pylint
-        language: python
         name: Check code style with pylint
         description: This hook runs pylint.
         types: [python]
@@ -63,9 +62,16 @@ repos:
           - -rn                      # Only display messages
           - -sn                      # Don't display the score
           - --rcfile=pyproject.toml  # Link to config file
+        additional_dependencies:
+          - anta[cli]
+          - types-PyYAML
+          - types-requests
+          - types-pyOpenSSL
+          - pylint_pydantic
+          - pytest
 
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.2.6
+    rev: v2.3.0
     hooks:
       - id: codespell
         name: Checks for common misspellings in text files.

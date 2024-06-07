@@ -129,7 +129,7 @@ anta.tests:
           custom_field: "Test run by John Doe"
 ```
 
-[This test catalog example](https://github.com/arista-netdevops-community/anta/blob/main/examples/tests.yaml) is maintained with all the tests defined in the `anta.tests` Python module.
+[This test catalog example](https://github.com/aristanetworks/anta/blob/main/examples/tests.yaml) is maintained with all the tests defined in the `anta.tests` Python module.
 
 ### Test tags
 
@@ -269,7 +269,7 @@ if __name__ == "__main__":
         # Apply filters to all tests for this device
         for test in c.tests:
             test.inputs.filters = AntaTest.Input.Filters(tags=[device])
-        catalog.merge(c)
+        catalog = catalog.merge(c)
     with open(Path('anta-catalog.yml'), "w") as f:
         f.write(catalog.dump().yaml())
 ```

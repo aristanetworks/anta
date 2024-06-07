@@ -44,7 +44,10 @@ def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
     It will parametrize test cases based on the `DATA` data structure defined in `tests.units.anta_tests` modules.
     See `tests/units/anta_tests/README.md` for more information on how to use it.
     Test IDs are generated using the `build_test_id` function above.
+
+    Checking that only the function "test" is parametrized with data to allow for writing tests for helper functions
+    in each module.
     """
-    if "tests.units.anta_tests" in metafunc.module.__package__:
+    if "tests.units.anta_tests" in metafunc.module.__package__ and metafunc.function.__name__ == "test":
         # This is a unit test for an AntaTest subclass
         metafunc.parametrize("data", metafunc.module.DATA, ids=build_test_id)

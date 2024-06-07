@@ -646,7 +646,6 @@ class TestAntaComamnd:
         text_cmd = AntaCommand(command="show dummy", ofmt="text", output="blah")
         text_cmd_2 = AntaCommand(command="show dummy", ofmt="text", output={"not_a": "string"})
         msg = "Output of command 'show dummy' is invalid"
-        msg = "Output of command 'show dummy' is invalid"
         with pytest.raises(RuntimeError, match=msg):
             json_cmd.text_output
         with pytest.raises(RuntimeError, match=msg):

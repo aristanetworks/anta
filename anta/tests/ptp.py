@@ -23,7 +23,7 @@ class VerifyPtpModeStatus(AntaTest):
     ----------------
     * Success: The test will pass if the device is a BC.
     * Failure: The test will fail if the device is not a BC.
-    * Error: The test will error if the 'ptpMode' variable is not present in the command output.
+    * Skipped: The test will be skipped if PTP is not configured on the device.
 
     Examples
     --------
@@ -45,7 +45,7 @@ class VerifyPtpModeStatus(AntaTest):
         command_output = self.instance_commands[0].json_output
 
         if (ptp_mode := command_output.get("ptpMode")) is None:
-            self.result.is_error("'ptpMode' variable is not present in the command output")
+            self.result.is_skipped("PTP is not configured")
             return
 
         if ptp_mode != "ptpBoundaryClock":
@@ -63,7 +63,7 @@ class VerifyPtpGMStatus(AntaTest):
     ----------------
     * Success: The test will pass if the device is locked to the provided Grandmaster.
     * Failure: The test will fail if the device is not locked to the provided Grandmaster.
-    * Error: The test will error if the 'gmClockIdentity' variable is not present in the command output.
+    * Skipped: The test will be skipped if PTP is not configured on the device.
 
     Examples
     --------
@@ -92,7 +92,7 @@ class VerifyPtpGMStatus(AntaTest):
         command_output = self.instance_commands[0].json_output
 
         if (ptp_clock_summary := command_output.get("ptpClockSummary")) is None:
-            self.result.is_error("'ptpClockSummary' variable is not present in the command output")
+            self.result.is_skipped("PTP is not configured")
             return
 
         if ptp_clock_summary["gmClockIdentity"] != self.inputs.gmid:
@@ -110,7 +110,7 @@ class VerifyPtpLockStatus(AntaTest):
     ----------------
     * Success: The test will pass if the device was locked to the upstream GM in the last minute.
     * Failure: The test will fail if the device was not locked to the upstream GM in the last minute.
-    * Error: The test will error if the 'lastSyncTime' variable is not present in the command output.
+    * Skipped: The test will be skipped if PTP is not configured on the device.
 
     Examples
     --------
@@ -133,7 +133,7 @@ class VerifyPtpLockStatus(AntaTest):
         command_output = self.instance_commands[0].json_output
 
         if (ptp_clock_summary := command_output.get("ptpClockSummary")) is None:
-            self.result.is_error("'ptpClockSummary' variable is not present in the command output")
+            self.result.is_skipped("PTP is not configured")
             return
 
         time_difference = ptp_clock_summary["currentPtpSystemTime"] - ptp_clock_summary["lastSyncTime"]
@@ -151,7 +151,7 @@ class VerifyPtpOffset(AntaTest):
     ----------------
     * Success: The test will pass if the PTP timing offset is within +/- 1000ns from the master clock.
     * Failure: The test will fail if the PTP timing offset is greater than +/- 1000ns from the master clock.
-    * Skipped: The test will be skipped if PTP is not configured.
+    * Skipped: The test will be skipped if PTP is not configured on the device.
 
     Examples
     --------
