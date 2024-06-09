@@ -112,6 +112,13 @@ plugins:
   - git-revision-date-localized:
       type: date
   - mike:
+  - glightbox:
+      background: white
+      shadow: true
+      touchNavigation: true
+      loop: false
+      effect: fade
+      slide_effect: slide
 
 markdown_extensions:
   - attr_list
