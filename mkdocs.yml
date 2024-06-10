@@ -113,12 +113,13 @@ plugins:
       type: date
   - mike:
   - glightbox:
-      background: white
+      background: none
       shadow: true
       touchNavigation: true
       loop: false
       effect: fade
       slide_effect: slide
+      width: 90vw
 
 markdown_extensions:
   - attr_list

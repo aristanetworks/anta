@@ -173,7 +173,7 @@ The `--output` option allows you to choose the path where the final report will 
 ```bash
 anta nrfu --tags LEAF tpl-report --template ./custom_template.j2
 ```
-![$1anta nrfu tpl_resultss](../imgs/anta-nrfu-tpl-report-output.png){ loading=lazy width="1600" }
+![$1anta nrfu tpl_results](../imgs/anta-nrfu-tpl-report-output.png){ loading=lazy width="1600" }
 
 The template `./custom_template.j2` is a simple Jinja2 template:
 
