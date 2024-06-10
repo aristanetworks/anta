@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 import click
+import requests
 from cvprac.cvp_client import CvpClient
 from cvprac.cvp_client_errors import CvpApiError
 from rich.pretty import pretty_repr
@@ -36,14 +37,27 @@ logger = logging.getLogger(__name__)
 @click.option("--username", "-u", help="CloudVision username", type=str, required=True)
 @click.option("--password", "-p", help="CloudVision password", type=str, required=True)
 @click.option("--container", "-c", help="CloudVision container where devices are configured", type=str)
-def from_cvp(ctx: click.Context, output: Path, host: str, username: str, password: str, container: str | None) -> None:
+@click.option(
+    "--ignore-cert",
+    help="Ignore verifying the SSL certificate when connecting to CloudVision",
+    show_envvar=True,
+    is_flag=True,
+    default=False,
+)
+def from_cvp(ctx: click.Context, output: Path, host: str, username: str, password: str, container: str | None, *, ignore_cert: bool) -> None:
     # pylint: disable=too-many-arguments
-    """Build ANTA inventory from Cloudvision.
+    """Build ANTA inventory from CloudVision.
 
-    TODO - handle get_inventory and get_devices_in_container failure
+    NOTE: Only username/password authentication is supported for on-premises CloudVision instances.
+    Token authentication for both on-premises and CloudVision as a Service (CVaaS) is not supported.
     """
+    # TODO: - Handle get_cv_token, get_inventory and get_devices_in_container failures.
     logger.info("Getting authentication token for user '%s' from CloudVision instance '%s'", username, host)
-    token = get_cv_token(cvp_ip=host, cvp_username=username, cvp_password=password)
+    try:
+        token = get_cv_token(cvp_ip=host, cvp_username=username, cvp_password=password, verify_cert=not ignore_cert)
+    except requests.exceptions.SSLError as error:
+        logger.error("Authentication to CloudVison failed: %s.", error)
+        ctx.exit(ExitCode.USAGE_ERROR)
 
     clnt = CvpClient()
     try:

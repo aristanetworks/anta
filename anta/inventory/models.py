@@ -6,7 +6,9 @@
 from __future__ import annotations
 
 import logging
+import math
 
+import yaml
 from pydantic import BaseModel, ConfigDict, IPvAnyAddress, IPvAnyNetwork
 
 from anta.custom_types import Hostname, Port
@@ -82,3 +84,16 @@ class AntaInventoryInput(BaseModel):
     networks: list[AntaInventoryNetwork] | None = None
     hosts: list[AntaInventoryHost] | None = None
     ranges: list[AntaInventoryRange] | None = None
+
+    def yaml(self) -> str:
+        """Return a YAML representation string of this model.
+
+        Returns
+        -------
+            The YAML representation string of this model.
+        """
+        # TODO: Pydantic and YAML serialization/deserialization is not supported natively.
+        # This could be improved.
+        # https://github.com/pydantic/pydantic/issues/1043
+        # Explore if this worth using this: https://github.com/NowanIlfideme/pydantic-yaml
+        return yaml.safe_dump(yaml.safe_load(self.model_dump_json(serialize_as_any=True, exclude_unset=True)), indent=2, width=math.inf)
