@@ -61,7 +61,16 @@
     
     
     
-  </head>
+   <link href="../../assets/stylesheets/glightbox.min.css" rel="stylesheet"/><style>
+    html.glightbox-open { overflow: initial; height: 100%; }
+    .gslide-title { margin-top: 0px; user-select: text; }
+    .gslide-desc { color: #666; user-select: text; }
+    .gslide-image img { background: none; }
+    .gscrollbar-fixer { padding-right: 15px; }
+    .gdesc-inner { font-size: 0.75rem; }
+    body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color);}
+    body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color);}
+    body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color);}</style> <script src="../../assets/javascripts/glightbox.min.js"></script></head>
   
   
     
@@ -2395,7 +2404,7 @@ ANTA code has moved to a new house in aristanetworks organization and so has the
 
 <h1 id="result-manager-definition">Result Manager definition<a class="headerlink" href="#result-manager-definition" title="Permanent link">&para;</a></h1>
 <h2 id="uml-diagram">UML Diagram<a class="headerlink" href="#uml-diagram" title="Permanent link">&para;</a></h2>
-<p><img alt="" src="../../imgs/uml/anta.result_manager.ResultManager.jpeg" /></p>
+<p><a class="glightbox" href="../../imgs/uml/anta.result_manager.ResultManager.jpeg" data-type="image" data-width="90vw" data-height="auto" data-desc-position="bottom"><img alt="" src="../../imgs/uml/anta.result_manager.ResultManager.jpeg" /></a></p>
   
 
   
@@ -3224,5 +3233,7 @@ error_status is set to True.</p>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
       
     
-  </body>
+  <script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "fade", "closeEffect": "fade", "slideEffect": "slide"});
+document$.subscribe(() => { lightbox.reload() });
+</script></body>
 </html>
