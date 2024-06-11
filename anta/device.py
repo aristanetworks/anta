@@ -5,27 +5,31 @@
 
 from __future__ import annotations
 
-import asyncio
 import logging
 from abc import ABC, abstractmethod
+from asyncio import Lock
 from collections import defaultdict
 from typing import TYPE_CHECKING, Any, Literal
+from uuid import uuid4
 
 import asyncssh
 import httpcore
 from aiocache import Cache
 from aiocache.plugins import HitMissRatioPlugin
+from asynceapi import Device, EapiCommandError
 from asyncssh import SSHClientConnection, SSHClientConnectionOptions
 from httpx import ConnectError, HTTPError, TimeoutException
 
-import asynceapi
-from anta import __DEBUG__
+from anta import __DEBUG__, GITHUB_SUGGESTION
 from anta.logger import anta_log_exception, exc_to_str
 from anta.models import AntaCommand
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
     from pathlib import Path
+
+    from anta.catalog import AntaTestDefinition
+    from anta.result_manager.models import TestResult
 
 logger = logging.getLogger(__name__)
 
@@ -70,7 +74,7 @@ class AntaDevice(ABC):
         self.is_online: bool = False
         self.established: bool = False
         self.cache: Cache | None = None
-        self.cache_locks: defaultdict[str, asyncio.Lock] | None = None
+        self.cache_locks: defaultdict[str, Lock] | None = None
 
         # Initialize cache if not disabled
         if not disable_cache:
@@ -92,7 +96,7 @@ class AntaDevice(ABC):
     def _init_cache(self) -> None:
         """Initialize cache for the device, can be overridden by subclasses to manipulate how it works."""
         self.cache = Cache(cache_class=Cache.MEMORY, ttl=60, namespace=self.name, plugins=[HitMissRatioPlugin()])
-        self.cache_locks = defaultdict(asyncio.Lock)
+        self.cache_locks = defaultdict(Lock)
 
     @property
     def cache_statistics(self) -> dict[str, Any] | None:
@@ -117,7 +121,7 @@ class AntaDevice(ABC):
         yield "disable_cache", self.cache is None
 
     @abstractmethod
-    async def _collect(self, command: AntaCommand, *, collection_id: str | None = None) -> None:
+    async def _collect(self, anta_commands: list[AntaCommand], *, req_format: Literal["json", "text"] = "json", req_id: str | None = None) -> None:
         """Collect device command output.
 
         This abstract coroutine can be used to implement any command collection method
@@ -136,38 +140,39 @@ class AntaDevice(ABC):
             collection_id: An identifier used to build the eAPI request ID.
         """
 
-    async def collect(self, command: AntaCommand, *, collection_id: str | None = None) -> None:
-        """Collect the output for a specified command.
+    def create_eapi_request_manager(self, test_definitions: set[AntaTestDefinition], *, batch_size: int) -> EapiRequestManager:
+        """"""
+        request_manager = EapiRequestManager(self, test_definitions)
+        request_manager.build_requests(batch_size)
 
-        When caching is activated on both the device and the command,
-        this method prioritizes retrieving the output from the cache. In cases where the output isn't cached yet,
-        it will be freshly collected and then stored in the cache for future access.
-        The method employs asynchronous locks based on the command's UID to guarantee exclusive access to the cache.
+        return request_manager
 
-        When caching is NOT enabled, either at the device or command level, the method directly collects the output
-        via the private `_collect` method without interacting with the cache.
+    async def run(self, request_manager: EapiRequestManager, *, req_id: str):
+        """"""
+        # Collect the command outputs from the device
+        anta_commands = request_manager.get_commands(req_id)
+        try:
+            await self.collect_commands(anta_commands, req_format="json", req_id=req_id)
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            # Since device._collect() is potentially user-defined code, we need to catch all exceptions
+            # and report the errors for every impacted test in the request.
+            message = f"Exception raised while collecting commands on device {self.name}"
+            anta_log_exception(e, message, logger)
+            for impacted_test in request_manager.requests[req_id]:
+                impacted_test.result.is_error(message=exc_to_str(e))
 
-        Args:
-        ----
-            command: The command to collect.
-            collection_id: An identifier used to build the eAPI request ID.
-        """
-        # Need to ignore pylint no-member as Cache is a proxy class and pylint is not smart enough
-        # https://github.com/pylint-dev/pylint/issues/7258
-        if self.cache is not None and self.cache_locks is not None and command.use_cache:
-            async with self.cache_locks[command.uid]:
-                cached_output = await self.cache.get(command.uid)  # pylint: disable=no-member
+        # Once all the command outputs from a request have been collected, run the validation tests
+        return self.validate_commands(request_manager, req_id=req_id)
 
-                if cached_output is not None:
-                    logger.debug("Cache hit for %s on %s", command.command, self.name)
-                    command.output = cached_output
-                else:
-                    await self._collect(command=command, collection_id=collection_id)
-                    await self.cache.set(command.uid, command.output)  # pylint: disable=no-member
-        else:
-            await self._collect(command=command, collection_id=collection_id)
+    def validate_commands(self, request_manager: EapiRequestManager, *, req_id: str) -> list[TestResult]:
+        """"""
 
-    async def collect_commands(self, commands: list[AntaCommand], *, collection_id: str | None = None) -> None:
+        test_instances = request_manager.requests[req_id]
+        # Each test() method of an AntaTest instance handles exceptions and return a TestResult object
+        return [test_instance.test() for test_instance in test_instances]
+
+
+    async def collect_commands(self, anta_commands: list[AntaCommand], *, req_format: Literal["text", "json"] = "json", req_id: str) -> None:
         """Collect multiple commands.
 
         Args:
@@ -175,7 +180,31 @@ class AntaDevice(ABC):
             commands: The commands to collect.
             collection_id: An identifier used to build the eAPI request ID.
         """
-        await asyncio.gather(*(self.collect(command=command, collection_id=collection_id) for command in commands))
+        commands_to_collect = []
+
+        for command in anta_commands:
+            if self.cache is not None and self.cache_locks is not None and command.use_cache:
+                async with self.cache_locks[command.uid]:
+                    # Need to disable pylint no-member as Cache is a proxy class and pylint is not smart enough
+                    # https://github.com/pylint-dev/pylint/issues/7258
+                    cached_output = await self.cache.get(command.uid)  # pylint: disable=no-member
+
+                    if cached_output is not None:
+                        logger.debug("Cache hit for %s on %s", command.command, self.name)
+                        command.output = cached_output
+                    else:
+                        commands_to_collect.append(command)
+            else:
+                commands_to_collect.append(command)
+
+        # Collect the batch of commands that are not cached
+        if commands_to_collect:
+            await self._collect(commands_to_collect, req_format=req_format, req_id=req_id)
+            # Cache the outputs of the collected commands
+            for command in commands_to_collect:
+                if self.cache is not None and self.cache_locks is not None and command.use_cache:
+                    async with self.cache_locks[command.uid]:
+                        await self.cache.set(command.uid, command.output)  # pylint: disable=no-member
 
     @abstractmethod
     async def refresh(self) -> None:
@@ -271,7 +300,7 @@ class AsyncEOSDevice(AntaDevice):
             raise ValueError(message)
         self.enable = enable
         self._enable_password = enable_password
-        self._session: asynceapi.Device = asynceapi.Device(host=host, port=port, username=username, password=password, proto=proto, timeout=timeout)
+        self._session: Device = Device(host=host, port=port, username=username, password=password, proto=proto, timeout=timeout)
         ssh_params: dict[str, Any] = {}
         if insecure:
             ssh_params["known_hosts"] = None
@@ -306,7 +335,77 @@ class AsyncEOSDevice(AntaDevice):
         """
         return (self._session.host, self._session.port)
 
-    async def _collect(self, command: AntaCommand, *, collection_id: str | None = None) -> None:  # noqa: C901  function is too complex - because of many required except blocks #pylint: disable=line-too-long
+    async def _handle_eapi_command_error(self, exception: EapiCommandError, anta_commands: list[AntaCommand], *, req_format: str, req_id: str) -> None:
+        """Handle EapiCommandError exceptions."""
+        # Populate the output attribute of the AntaCommand objects with the commands that passed
+        passed_outputs = exception.passed[1:] if self.enable else exception.passed
+        for anta_command, output in zip(anta_commands, passed_outputs):
+            anta_command.output = output
+
+        # Populate the errors attribute of the AntaCommand object of the command that failed
+        err_at = exception.err_at - 1 if self.enable else exception.err_at
+        anta_command = anta_commands[err_at]
+        anta_command.errors = exception.errors
+        if anta_command.requires_privileges:
+            logger.error(
+                "Command '%s' requires privileged mode on %s. Verify user permissions and if the `enable` option is required.",
+                anta_command.command,
+                self.name,
+            )
+
+        if anta_command.supported:
+            error_message = exception.errors[0] if len(exception.errors) == 1 else exception.errors
+            logger.error(
+                "Command '%s' failed on %s: %s",
+                anta_command.command,
+                self.name,
+                error_message,
+            )
+        else:
+            logger.error("Command '%s' is not supported on %s (%s).", anta_command.command, self.name, self.hw_model)
+
+        # Collect the commands that were not executed
+        await self._collect(anta_commands=anta_commands[err_at + 1:], req_format=req_format, req_id=req_id)
+
+    def _handle_timeout_exception(self, exception: TimeoutException, anta_commands: list[AntaCommand]) -> None:
+        """Handle TimeoutException exceptions."""
+        # Populate the errors attribute of all the AntaCommand objects of the request since it failed
+        for anta_command in anta_commands:
+            anta_command.errors = [exc_to_str(exception)]
+
+        timeouts = self._session.timeout.as_dict()
+        logger.error(
+            "%s occurred while sending commands to %s. Consider increasing the timeout.\nCurrent timeouts: Connect: %s | Read: %s | Write: %s | Pool: %s",
+            exc_to_str(exception),
+            self.name,
+            timeouts["connect"],
+            timeouts["read"],
+            timeouts["write"],
+            timeouts["pool"],
+        )
+
+    def _handle_connect_os_error(self, exception: ConnectError | OSError, anta_commands: list[AntaCommand]) -> None:
+        """Handle HTTPX ConnectError and OSError exceptions."""
+        # Populate the errors attribute of all the AntaCommand objects of the request since it failed
+        for anta_command in anta_commands:
+            anta_command.errors = [exc_to_str(exception)]
+
+        if (isinstance(exc := exception.__cause__, httpcore.ConnectError) and isinstance(os_error := exc.__context__, OSError)) or isinstance(os_error := exception, OSError):
+            if isinstance(os_error.__cause__, OSError):
+                os_error = os_error.__cause__
+            logger.error("A local OS error occurred while connecting to %s: %s.", self.name, os_error)
+        else:
+            anta_log_exception(exception, f"An error occurred while issuing an eAPI request to {self.name}", logger)
+
+    def _handle_http_error(self, exception: HTTPError, anta_commands: list[AntaCommand]) -> None:
+        """Handle HTTPError exceptions."""
+        # Populate the errors attribute of all the AntaCommand objects of the request since it failed
+        for anta_command in anta_commands:
+            anta_command.errors = [exc_to_str(exception)]
+
+        anta_log_exception(exception, f"An error occurred while issuing an eAPI request to {self.name}", logger)
+
+    async def _collect(self, anta_commands: list[AntaCommand], *, req_format: Literal["json", "text"] = "json", req_id: str) -> None:
         """Collect device command output from EOS using aio-eapi.
 
         Supports outformat `json` and `text` as output structure.
@@ -318,65 +417,45 @@ class AsyncEOSDevice(AntaDevice):
             command: The command to collect.
             collection_id: An identifier used to build the eAPI request ID.
         """
-        commands: list[dict[str, str | int]] = []
+        # NOTE: `asynceapi` EapiCommandError exception only supports complex commands (dict) and not simple commands (str)
+        commands = [
+            {"cmd": anta_command.command, "revision": anta_command.revision}
+            if anta_command.revision else {"cmd": anta_command.command}
+            for anta_command in anta_commands
+        ]
+
         if self.enable and self._enable_password is not None:
-            commands.append(
-                {
-                    "cmd": "enable",
-                    "input": str(self._enable_password),
-                },
-            )
+            commands.insert(0, {"cmd": "enable", "input": str(self._enable_password)})
         elif self.enable:
             # No password
-            commands.append({"cmd": "enable"})
-        commands += [{"cmd": command.command, "revision": command.revision}] if command.revision else [{"cmd": command.command}]
+            commands.insert(0, {"cmd": "enable"})
+
         try:
-            response: list[dict[str, Any] | str] = await self._session.cli(
+            response = await self._session.cli(
                 commands=commands,
-                ofmt=command.ofmt,
-                version=command.version,
-                req_id=f"ANTA-{collection_id}-{id(command)}" if collection_id else f"ANTA-{id(command)}",
-            )  # type: ignore[assignment] # multiple commands returns a list
-            # Do not keep response of 'enable' command
-            command.output = response[-1]
-        except asynceapi.EapiCommandError as e:
-            # This block catches exceptions related to EOS issuing an error.
-            command.errors = e.errors
-            if command.requires_privileges:
-                logger.error(
-                    "Command '%s' requires privileged mode on %s. Verify user permissions and if the `enable` option is required.", command.command, self.name
-                )
-            if command.supported:
-                logger.error("Command '%s' failed on %s: %s", command.command, self.name, e.errors[0] if len(e.errors) == 1 else e.errors)
-            else:
-                logger.debug("Command '%s' is not supported on '%s' (%s)", command.command, self.name, self.hw_model)
-        except TimeoutException as e:
-            # This block catches Timeout exceptions.
-            command.errors = [exc_to_str(e)]
-            timeouts = self._session.timeout.as_dict()
-            logger.error(
-                "%s occurred while sending a command to %s. Consider increasing the timeout.\nCurrent timeouts: Connect: %s | Read: %s | Write: %s | Pool: %s",
-                exc_to_str(e),
-                self.name,
-                timeouts["connect"],
-                timeouts["read"],
-                timeouts["write"],
-                timeouts["pool"],
+                ofmt=req_format,
+                req_id=f"ANTA-{req_id}",
             )
-        except (ConnectError, OSError) as e:
-            # This block catches OSError and socket issues related exceptions.
-            command.errors = [exc_to_str(e)]
-            if (isinstance(exc := e.__cause__, httpcore.ConnectError) and isinstance(os_error := exc.__context__, OSError)) or isinstance(os_error := e, OSError):  # pylint: disable=no-member
-                if isinstance(os_error.__cause__, OSError):
-                    os_error = os_error.__cause__
-                logger.error("A local OS error occurred while connecting to %s: %s.", self.name, os_error)
-            else:
-                anta_log_exception(e, f"An error occurred while issuing an eAPI request to {self.name}", logger)
+            # If enable was used, exclude the first element from the response
+            if self.enable:
+                response = response[1:]
+
+            # Populate the output attribute of the AntaCommand objects
+            for anta_command, command_output in zip(anta_commands, response):
+                anta_command.output = command_output
+
+        except EapiCommandError as e:
+            # This block catches exceptions related to EOS issuing an error.
+            await self._handle_eapi_command_error(e, anta_commands, req_format=req_format, req_id=req_id)
+        except TimeoutException as e:
+            # This block catches exceptions related to the timeout of the request.
+            self._handle_timeout_exception(e, anta_commands)
+        except ConnectError as e:
+            # This block catches exceptions related to the connection to the device.
+            self._handle_connect_os_error(e, anta_commands)
         except HTTPError as e:
-            # This block catches most of the httpx Exceptions and logs a general message.
-            command.errors = [exc_to_str(e)]
-            anta_log_exception(e, f"An error occurred while issuing an eAPI request to {self.name}", logger)
-        logger.debug("%s: %s", self.name, command)
+            # This block catches exceptions related to the HTTP connection.
+            self._handle_http_error(e, anta_commands)
 
     async def refresh(self) -> None:
         """Update attributes of an AsyncEOSDevice instance.
@@ -389,8 +468,8 @@ class AsyncEOSDevice(AntaDevice):
         logger.debug("Refreshing device %s", self.name)
         self.is_online = await self._session.check_connection()
         if self.is_online:
-            show_version = AntaCommand(command="show version")
-            await self._collect(show_version)
+            show_version = AntaCommand(command="show version", revision=1)
+            await self._collect([show_version], req_format="json", req_id="Refresh")
             if not show_version.collected:
                 logger.warning("Cannot get hardware information from device %s", self.name)
             else:
@@ -441,3 +520,81 @@ class AsyncEOSDevice(AntaDevice):
 
                 return
             await asyncssh.scp(src, dst)
+
+class EapiRequestManager:
+    """"""
+    def __init__(self, device: AntaDevice, anta_test_definitions: set[AntaTestDefinition]) -> None:
+        """
+        Initialize the EAPIRequestManager object.
+
+        Parameters:
+        - device: AntaDevice instance
+        - anta_test_definitions: Set of AntaTestDefinition instances to be prepared
+        """
+        self.device = device
+        self.anta_test_definitions = anta_test_definitions
+        self.requests = {}
+        self.commands_per_request = {}
+        self.current_batch = []
+        self.current_batch_commands = []
+        self.current_batch_size = 0
+
+    def get_commands(self, req_id: str) -> list[AntaCommand]:
+        """Get the list of AntaCommand for the specified request ID."""
+        if req_id not in self.commands_per_request:
+            msg = f"Request ID {req_id} not found in the commands per request mapping."
+            raise ValueError(msg)
+
+        return self.commands_per_request[req_id]
+
+    def generate_request_id(self) -> str:
+        """Generate a unique request ID using the device name and a UUID."""
+        return str(uuid4())
+
+    def add_new_request(self):
+        """Add the current batch as a new request and reset the batch."""
+        request_id = self.generate_request_id()
+        self.requests[request_id] = self.current_batch
+        self.commands_per_request[request_id] = self.current_batch_commands
+
+        # Reset the current batch and its attributes
+        self.current_batch = []
+        self.current_batch_commands = []
+        self.current_batch_size = 0
+
+    def build_requests(self, batch_size: int):
+        """Prepare the requests based on the selected tests and batch size."""
+        for anta_test_definition in self.anta_test_definitions:
+            try:
+                # Instantiate the test class to build the instance commands
+                test_instance = anta_test_definition.test(device=self.device, inputs=anta_test_definition.inputs)
+            except Exception as e:  # pylint: disable=broad-exception-caught
+                # Since an AntaTest instance is potentially user-defined code, we need to catch all exceptions
+                # and exit gracefully with an error message.
+                message = "\n".join(
+                    [
+                        f"There is an error when creating test {anta_test_definition.test.module}.{anta_test_definition.test.__name__}.",
+                        f"If this is not a custom test implementation: {GITHUB_SUGGESTION}",
+                    ],
+                )
+                anta_log_exception(e, message, logger)
+                continue
+
+            # Don't add blocked tests to the batch
+            if test_instance.blocked:
+                continue
+
+            num_commands = len(test_instance.instance_commands)
+
+            # If adding this test instance exceeds the batch size, start a new request
+            if self.current_batch_size + num_commands > batch_size:
+                self.add_new_request()
+
+            # Add the test instance and its commands to the current batch
+            self.current_batch.append(test_instance)
+            self.current_batch_commands.extend(test_instance.instance_commands)
+            self.current_batch_size += num_commands
+
+        # Add the last batch
+        if self.current_batch:
+            self.add_new_request()

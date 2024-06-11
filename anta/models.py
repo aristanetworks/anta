@@ -9,6 +9,7 @@ import hashlib
 import logging
 import re
 from abc import ABC, abstractmethod
+from enum import Enum
 from functools import wraps
 from string import Formatter
 from typing import TYPE_CHECKING, Any, Callable, ClassVar, Literal, TypeVar
@@ -124,6 +125,16 @@ class AntaTemplate:
             use_cache=self.use_cache,
         )
 
+class CommandWeight(Enum):
+    """Enum to define the weight of a command.
+
+    The weight of a command is used to specify the computational resources
+    and time required to execute the command on EOS.
+    """
+
+    LIGHT = "light"
+    MEDIUM = "medium"
+    HEAVY = "heavy"
 
 class AntaCommand(BaseModel):
     """Class to define a command.
@@ -164,6 +175,7 @@ class AntaCommand(BaseModel):
     errors: list[str] = []
     params: AntaParamsBaseModel = AntaParamsBaseModel()
     use_cache: bool = True
+    weight: CommandWeight = CommandWeight.LIGHT
 
     @property
     def uid(self) -> str:
@@ -523,18 +535,6 @@ class AntaTest(ABC):
                     state = True
         return state
 
-    async def collect(self) -> None:
-        """Collect outputs of all commands of this test class from the device of this test instance."""
-        try:
-            if self.blocked is False:
-                await self.device.collect_commands(self.instance_commands, collection_id=self.name)
-        except Exception as e:  # pylint: disable=broad-exception-caught
-            # device._collect() is user-defined code.
-            # We need to catch everything if we want the AntaTest object
-            # to live until the reporting
-            message = f"Exception raised while collecting commands for test {self.name} (on device {self.device.name})"
-            anta_log_exception(e, message, self.logger)
-            self.result.is_error(message=exc_to_str(e))
 
     @staticmethod
     def anta_test(function: F) -> Callable[..., Coroutine[Any, Any, TestResult]]:
@@ -549,7 +549,7 @@ class AntaTest(ABC):
         """
 
         @wraps(function)
-        async def wrapper(
+        def wrapper(
             self: AntaTest,
             eos_data: list[dict[Any, Any] | str] | None = None,
             **kwargs: dict[str, Any],
@@ -578,7 +578,6 @@ class AntaTest(ABC):
 
             # If some data is missing, try to collect
             if not self.collected:
-                await self.collect()
                 if self.result.result != "unset":
                     AntaTest.update_progress()
                     return self.result

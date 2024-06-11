@@ -275,6 +275,7 @@ class Device(httpx.AsyncClient):
         raise EapiCommandError(
             passed=[get_output(cmd_data[cmd_i]) for cmd_i, cmd in enumerate(commands[:err_at])],
             failed=commands[err_at]["cmd"],
+            err_at=err_at,
             errors=cmd_data[err_at]["errors"],
             errmsg=err_msg,
             not_exec=commands[err_at + 1 :],
