@@ -37,6 +37,7 @@ class IgnoreRequiredWithHelp(AliasedGroup):
         """Ignore MissingParameter exception when parsing arguments if `--help` is present for a subcommand."""
         # Adding a flag for potential callbacks
         ctx.ensure_object(dict)
+        ctx.obj["args"] = args
         if "--help" in args:
             ctx.obj["_anta_help"] = True
 
@@ -125,12 +126,19 @@ def nrfu(
     # If help is invoke somewhere, skip the command
     if ctx.obj.get("_anta_help"):
         return
+
+    # Validating subcommand before running the test
+    if (subcommand := ctx.invoked_subcommand) is not None:
+        subcommand_obj = getattr(commands, subcommand.replace("-", "_"))
+        subcommand_obj.make_context(subcommand, ctx.obj["args"][1:], parent=ctx)
+
     # We use ctx.obj to pass stuff to the next Click functions
     ctx.ensure_object(dict)
     ctx.obj["result_manager"] = ResultManager()
     ctx.obj["ignore_status"] = ignore_status
     ctx.obj["ignore_error"] = ignore_error
     ctx.obj["hide"] = set(hide) if hide else None
+
     print_settings(inventory, catalog)
     with anta_progress_bar() as AntaTest.progress:
         asyncio.run(
@@ -146,8 +154,9 @@ def nrfu(
         )
     if dry_run:
         return
+
     # Invoke `anta nrfu table` if no command is passed
-    if ctx.invoked_subcommand is None:
+    if not subcommand:
         ctx.invoke(commands.table)
 
 
