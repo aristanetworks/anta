@@ -5,7 +5,6 @@
 
 from __future__ import annotations
 
-import asyncio
 from typing import TYPE_CHECKING, get_args
 
 import click
@@ -13,11 +12,7 @@ import click
 from anta.cli.nrfu import commands
 from anta.cli.utils import AliasedGroup, catalog_options, inventory_options
 from anta.custom_types import TestStatus
-from anta.models import AntaTest
 from anta.result_manager import ResultManager
-from anta.runner import main
-
-from .utils import anta_progress_bar, print_settings
 
 if TYPE_CHECKING:
     from anta.catalog import AntaCatalog
@@ -127,36 +122,17 @@ def nrfu(
     if ctx.obj.get("_anta_help"):
         return
 
-    # Validating subcommand before running the test
-    if (subcommand := ctx.invoked_subcommand) is not None:
-        subcommand_obj = getattr(commands, subcommand.replace("-", "_"))
-        subcommand_obj.make_context(subcommand, ctx.obj["args"][1:], parent=ctx)
-
     # We use ctx.obj to pass stuff to the next Click functions
     ctx.ensure_object(dict)
     ctx.obj["result_manager"] = ResultManager()
     ctx.obj["ignore_status"] = ignore_status
     ctx.obj["ignore_error"] = ignore_error
     ctx.obj["hide"] = set(hide) if hide else None
-
-    print_settings(inventory, catalog)
-    with anta_progress_bar() as AntaTest.progress:
-        asyncio.run(
-            main(
-                ctx.obj["result_manager"],
-                inventory,
-                catalog,
-                tags=tags,
-                devices=set(device) if device else None,
-                tests=set(test) if test else None,
-                dry_run=dry_run,
-            )
-        )
-    if dry_run:
-        return
+    ctx.obj["catalog"] = catalog
+    ctx.obj["inventory"] = inventory
 
     # Invoke `anta nrfu table` if no command is passed
-    if not subcommand:
+    if not ctx.invoked_subcommand:
         ctx.invoke(commands.table)
 
 
