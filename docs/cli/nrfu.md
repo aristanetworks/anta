@@ -67,7 +67,7 @@ Options:
 ```bash
 anta nrfu --device DC1-LEAF1A text
 ```
-[![anta nrfu text results](../imgs/anta-nrfu-text-output.png){ loading=lazy width="1600" }](../imgs/anta-nrfu-text-output.png)
+![anta nrfu text results](../imgs/anta-nrfu-text-output.png){ loading=lazy width="1600" }
 
 ## Performing NRFU with table rendering
 
@@ -92,31 +92,31 @@ The `--group-by` option show a summarized view of the test results per host or p
 ```bash
 anta nrfu --tags LEAF table
 ```
-[![anta nrfu table results](../imgs/anta-nrfu-table-output.png){ loading=lazy width="1600" }](../imgs/anta-nrfu-table-output.png)
+![anta nrfu table results](../imgs/anta-nrfu-table-output.png){ loading=lazy width="1600" }
 
 For larger setups, you can also group the results by host or test to get a summarized view:
 
 ```bash
 anta nrfu table --group-by device
 ```
-[![anta nrfu table group_by_host_output](../imgs/anta-nrfu-table-group-by-host-output.png){ loading=lazy width="1600" }](../imgs/anta-nrfu-table-group-by-host-output.png)
+![$1anta nrfu table group_by_host_output](../imgs/anta-nrfu-table-group-by-host-output.png){ loading=lazy width="1600" }
 
 ```bash
 anta nrfu table --group-by test
 ```
-[![anta nrfu table group_by_test_output](../imgs/anta-nrfu-table-group-by-test-output.png){ loading=lazy width="1600" }](../imgs/anta-nrfu-table-group-by-test-output.png)
+![$1anta nrfu table group_by_test_output](../imgs/anta-nrfu-table-group-by-test-output.png){ loading=lazy width="1600" }
 
 To get more specific information, it is possible to filter on a single device or a single test:
 
 ```bash
 anta nrfu --device spine1 table
 ```
-[![anta nrfu table filter_host_output](../imgs/anta-nrfu-table-filter-host-output.png){ loading=lazy width="1600" }](../imgs/anta-nrfu-table-filter-host-output.png)
+![$1anta nrfu table filter_host_output](../imgs/anta-nrfu-table-filter-host-output.png){ loading=lazy width="1600" }
 
 ```bash
 anta nrfu --test VerifyZeroTouch table
 ```
-[![anta nrfu table filter_test_output](../imgs/anta-nrfu-table-filter-test-output.png){ loading=lazy width="1600" }](../imgs/anta-nrfu-table-filter-test-output.png)
+![$1anta nrfu table filter_test_output](../imgs/anta-nrfu-table-filter-test-output.png){ loading=lazy width="1600" }
 
 ## Performing NRFU with JSON rendering
 
@@ -143,7 +143,7 @@ The `--output` option allows you to save the JSON report as a file.
 ```bash
 anta nrfu --tags LEAF json
 ```
-[![anta nrfu json results](../imgs/anta-nrfu-json-output.png){ loading=lazy width="1600" }](../imgs/anta-nrfu-json-output.png)
+![$1anta nrfu json results](../imgs/anta-nrfu-json-output.png){ loading=lazy width="1600" }
 
 ## Performing NRFU with custom reports
 
@@ -173,7 +173,7 @@ The `--output` option allows you to choose the path where the final report will 
 ```bash
 anta nrfu --tags LEAF tpl-report --template ./custom_template.j2
 ```
-[![anta nrfu tpl_resultss](../imgs/anta-nrfu-tpl-report-output.png){ loading=lazy width="1600" }](../imgs/anta-nrfu-tpl-report-output.png)
+![$1anta nrfu tpl_results](../imgs/anta-nrfu-tpl-report-output.png){ loading=lazy width="1600" }
 
 The template `./custom_template.j2` is a simple Jinja2 template:
 
@@ -205,4 +205,4 @@ cat nrfu-tpl-report.txt
 
 It is possible to run `anta nrfu --dry-run` to execute ANTA up to the point where it should communicate with the network to execute the tests. When using `--dry-run`, all inventory devices are assumed to be online. This can be useful to check how many tests would be run using the catalog and inventory.
 
-[![anta nrfu dry_run](../imgs/anta_nrfu___dry_run.svg){ loading=lazy width="1600" }](../imgs/anta_nrfu___dry_run.svg)
+![$1anta nrfu dry_run](../imgs/anta_nrfu___dry_run.svg){ loading=lazy width="1600" }

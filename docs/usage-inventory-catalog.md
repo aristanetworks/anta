@@ -205,10 +205,10 @@ anta.tests.configuration:
 ### Catalog with custom tests
 
 In case you want to leverage your own tests collection, use your own Python package in the test catalog.
-So for instance, if my custom tests are defined in the `titom73.tests.system` Python module, the test catalog will be:
+So for instance, if my custom tests are defined in the `custom.tests.system` Python module, the test catalog will be:
 
 ```yaml
-titom73.tests.system:
+custom.tests.system:
   - VerifyPlatform:
     type: ['cEOS-LAB']
 ```

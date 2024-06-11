@@ -334,10 +334,10 @@ For that, you need to create your own Python package as described in this [hitch
 
 It is very similar to what is documented in [catalog section](../usage-inventory-catalog.md) but you have to use your own package name.2
 
-Let say the custom Python package is `anta_titom73` and the test is defined in `anta_titom73.dc_project` Python module, the test catalog would look like:
+Let say the custom Python package is `anta_custom` and the test is defined in `anta_custom.dc_project` Python module, the test catalog would look like:
 
 ```yaml
-anta_titom73.dc_project:
+anta_custom.dc_project:
   - VerifyFeatureX:
       minimum: 1
 ```
