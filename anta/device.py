@@ -18,7 +18,7 @@ from aiocache import Cache
 from aiocache.plugins import HitMissRatioPlugin
 from asynceapi import Device, EapiCommandError
 from asyncssh import SSHClientConnection, SSHClientConnectionOptions
-from httpx import ConnectError, HTTPError, TimeoutException
+from httpx import ConnectError, HTTPError, Limits, TimeoutException
 
 from anta import __DEBUG__, GITHUB_SUGGESTION
 from anta.logger import anta_log_exception, exc_to_str
@@ -152,6 +152,7 @@ class AntaDevice(ABC):
         # Collect the command outputs from the device
         anta_commands = request_manager.get_commands(req_id)
         try:
+            logger.debug("Collecting request ID: %s", req_id)
             await self.collect_commands(anta_commands, req_format="json", req_id=req_id)
         except Exception as e:  # pylint: disable=broad-exception-caught
             # Since device._collect() is potentially user-defined code, we need to catch all exceptions
@@ -162,7 +163,9 @@ class AntaDevice(ABC):
                 impacted_test.result.is_error(message=exc_to_str(e))
 
         # Once all the command outputs from a request have been collected, run the validation tests
-        return self.validate_commands(request_manager, req_id=req_id)
+        results = self.validate_commands(request_manager, req_id=req_id)
+        logger.debug("Finished validation commands of request ID: %s", req_id)
+        return results
 
     def validate_commands(self, request_manager: EapiRequestManager, *, req_id: str) -> list[TestResult]:
         """"""
@@ -180,8 +183,10 @@ class AntaDevice(ABC):
             commands: The commands to collect.
             collection_id: An identifier used to build the eAPI request ID.
         """
+        # TODO: Avoid querying the cache for the initial commands that are not cached.
         commands_to_collect = []
 
+        # TODO: Don't loop over commands if the cache is disabled
         for command in anta_commands:
             if self.cache is not None and self.cache_locks is not None and command.use_cache:
                 async with self.cache_locks[command.uid]:
@@ -300,7 +305,7 @@ class AsyncEOSDevice(AntaDevice):
             raise ValueError(message)
         self.enable = enable
         self._enable_password = enable_password
-        self._session: Device = Device(host=host, port=port, username=username, password=password, proto=proto, timeout=timeout)
+        self._session: Device = Device(host=host, port=port, username=username, password=password, proto=proto, timeout=timeout, limits=Limits(max_connections=7))
         ssh_params: dict[str, Any] = {}
         if insecure:
             ssh_params["known_hosts"] = None

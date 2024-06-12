@@ -221,10 +221,13 @@ async def main(  # noqa: PLR0913
             if selected_tests is None:
                 return
 
+        coroutines = get_coroutines(selected_tests)
+
         run_info = (
             "--- ANTA NRFU Run Information ---\n"
             f"Number of devices: {len(inventory)} ({len(selected_inventory)} established)\n"
             f"Total number of selected tests: {catalog.final_tests_count}\n"
+            f"Total number of coroutines: {len(coroutines)}\n"
             f"Maximum number of open file descriptors for the current ANTA process: {limits[0]}\n"
             "---------------------------------"
         )
@@ -237,8 +240,6 @@ async def main(  # noqa: PLR0913
                 "Errors may occur while running the tests.\n"
                 "Please consult the ANTA FAQ."
             )
-
-        coroutines = get_coroutines(selected_tests)
 
     if dry_run:
         logger.info("Dry-run mode, exiting before running the tests.")

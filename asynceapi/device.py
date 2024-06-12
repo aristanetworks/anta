@@ -244,7 +244,7 @@ class Device(httpx.AsyncClient):
         commands = jsonrpc["params"]["cmds"]
         ofmt = jsonrpc["params"]["format"]
 
-        get_output = (lambda _r: _r["output"]) if ofmt == "text" else (lambda _r: _r)
+        get_output = (lambda _r: _r["output"] if ofmt == "text" else (json.loads(_r) if isinstance(_r, str) else _r))
 
         # if there are no errors then return the list of command results.
         if (err_data := body.get("error")) is None:
