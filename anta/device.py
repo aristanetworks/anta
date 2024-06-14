@@ -20,6 +20,7 @@ from aiocache.plugins import HitMissRatioPlugin
 from asynceapi import Device, EapiCommandError
 from asyncssh import SSHClientConnection, SSHClientConnectionOptions
 from httpx import ConnectError, HTTPError, Limits, TimeoutException
+from typing_extensions import Self
 
 from anta import __DEBUG__
 from anta.logger import anta_log_exception, exc_to_str
@@ -28,6 +29,8 @@ from anta.models import AntaCommand
 if TYPE_CHECKING:
     from collections.abc import Iterator
     from pathlib import Path
+    from types import TracebackType
+    from anta.models import AntaTest
 
 logger = logging.getLogger(__name__)
 
@@ -514,10 +517,29 @@ class RequestManager:
         self.current_batch_size = 0
         self.lock = asyncio.Lock()
         self.pending_requests: dict[str, asyncio.Event] = {}
+        self.test_instances = set()
 
-    async def add_commands(self, commands: list[AntaCommand]) -> None:
+    async def __aenter__(self) -> Self:
+        """Enter the async context manager."""
+        return self
+
+    async def __aexit__(self, exc_type: type[BaseException] | None, exc: BaseException | None, tb: TracebackType | None) -> None:
+        """Exit the async context and send any remaining commands."""
+        async with self.lock:
+            if self.current_batch_commands:
+                logger.warning("Exiting RequestManager context with pending commands")
+                await self.send_eapi_request()
+            else:
+                logger.warning("Exiting RequestManager context with no pending commands")
+
+
+    async def add_commands(self, commands: list[AntaCommand], test_instance: AntaTest) -> None:
         """Add the commands to the current batch."""
         async with self.lock:
+            # Remove the test instance from the tracking set since its commands are being processed
+            if test_instance in self.test_instances:
+                self.test_instances.remove(test_instance)
+
             self.current_batch_commands.extend(commands)
             self.current_batch_size += len(commands)
 
@@ -525,9 +547,8 @@ class RequestManager:
             self.pending_requests[request_id] = asyncio.Event()
             self.current_batch_request_ids.add(request_id)
 
-            if self.current_batch_size >= self.batch_size:
-                logger.debug("Current batch size (%s) exceeded the batch size limit (%s)", self.current_batch_size, self.batch_size)
-                # Reset the current batch and send the request
+            # Send the request if the batch size is exceeded or there are no more test instances to process
+            if self.current_batch_size >= self.batch_size or not self.test_instances:
                 await self.send_eapi_request()
 
             return request_id
@@ -537,11 +558,14 @@ class RequestManager:
         eapi_request_id = self.generate_request_id()
         logger.debug("Sending eAPI request ID: %s", eapi_request_id)
 
+        current_batch_commands = self.current_batch_commands.copy()
+        current_batch_request_ids = self.current_batch_request_ids.copy()
+
         task = asyncio.create_task(
-            self.device.collect_commands(self.current_batch_commands, req_format="json", req_id=eapi_request_id),
+            self.device.collect_commands(current_batch_commands, req_format="json", req_id=eapi_request_id),
             name=f"Request ID {eapi_request_id} on {self.device.name}",
         )
-        task.add_done_callback(lambda t: self.on_request_complete(t, self.current_batch_request_ids))
+        task.add_done_callback(lambda t: self.on_request_complete(t, current_batch_request_ids))
 
         # Reset the current batch and its attributes
         self.current_batch_commands.clear()
@@ -557,7 +581,7 @@ class RequestManager:
             elif task.exception():
                 logger.error("%s failed: %s", task_name, task.exception())
             else:
-                logger.debug("%s succeeded with result: %s", task_name, task.result())
+                logger.debug("%s succeeded", task_name)
         except asyncio.CancelledError:
             logger.warning("%s was cancelled unexpectedly", task_name)
 
