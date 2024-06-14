@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 
     from rich.progress import Progress, TaskID
 
-    from anta.device import AntaDevice
+    from anta.device import AntaDevice, RequestManager
 
 F = TypeVar("F", bound=Callable[..., Any])
 # Proper way to type input class - revisit this later if we get any issue @gmuloc
@@ -388,6 +388,7 @@ class AntaTest(ABC):
     def __init__(
         self,
         device: AntaDevice,
+        request_manager: RequestManager,
         inputs: dict[str, Any] | AntaTest.Input | None = None,
         eos_data: list[dict[Any, Any] | str] | None = None,
     ) -> None:
@@ -402,6 +403,7 @@ class AntaTest(ABC):
         """
         self.logger: logging.Logger = logging.getLogger(f"{self.module}.{self.__class__.__name__}")
         self.device: AntaDevice = device
+        self.request_manager: RequestManager = request_manager
         self.inputs: AntaTest.Input
         self.instance_commands: list[AntaCommand] = []
         self.result: TestResult = TestResult(
@@ -535,6 +537,18 @@ class AntaTest(ABC):
                     state = True
         return state
 
+    async def send_commands(self) -> str:
+        """Collect outputs of all commands of this test class from the device of this test instance."""
+        try:
+            if self.blocked is False:
+                return await self.request_manager.add_commands(self.instance_commands)
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            # device._collect() is user-defined code.
+            # We need to catch everything if we want the AntaTest object
+            # to live until the reporting
+            message = f"Exception raised while collecting commands for test {self.name} (on device {self.device.name})"
+            anta_log_exception(e, message, self.logger)
+            self.result.is_error(message=exc_to_str(e))
 
     @staticmethod
     def anta_test(function: F) -> Callable[..., Coroutine[Any, Any, TestResult]]:
@@ -549,7 +563,7 @@ class AntaTest(ABC):
         """
 
         @wraps(function)
-        def wrapper(
+        async def wrapper(
             self: AntaTest,
             eos_data: list[dict[Any, Any] | str] | None = None,
             **kwargs: dict[str, Any],
@@ -576,12 +590,15 @@ class AntaTest(ABC):
                 self.save_commands_data(eos_data)
                 self.logger.debug("Test %s initialized with input data %s", self.name, eos_data)
 
-            # If some data is missing, try to collect
+            # If the commands have not been collected, send them to the request manager and wait for the results
             if not self.collected:
+                request_id = await self.send_commands()
+                await self.request_manager.wait_for_request(request_id)
                 if self.result.result != "unset":
                     AntaTest.update_progress()
                     return self.result
 
+                logger.debug("All commands have been collected for test %s", self.name)
                 if cmds := self.failed_commands:
                     unsupported_commands = [f"'{c.command}' is not supported on {self.device.hw_model}" for c in cmds if not c.supported]
                     if unsupported_commands:

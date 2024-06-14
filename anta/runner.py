@@ -10,10 +10,11 @@ import logging
 import os
 import resource
 from collections import defaultdict
-from itertools import chain
 from typing import TYPE_CHECKING, Any
 
-from anta.logger import exc_to_str
+from anta import GITHUB_SUGGESTION
+from anta.device import RequestManager
+from anta.logger import anta_log_exception, exc_to_str
 from anta.models import AntaTest
 from anta.tools import Catchtime, cprofile
 
@@ -168,10 +169,25 @@ def get_coroutines(selected_tests: defaultdict[AntaDevice, set[AntaTestDefinitio
     -------
         The list of coroutines to run.
     """
+    # FIXME: That could be a generator instead of a list
     coros = []
     for device, test_definitions in selected_tests.items():
-        request_manager = device.create_eapi_request_manager(test_definitions, batch_size=50)
-        coros.extend(device.run(request_manager, req_id=req_id) for req_id in request_manager.requests)
+        request_manager = RequestManager(device, batch_size=1)
+        for test in test_definitions:
+            try:
+                test_instance = test.test(device=device, request_manager=request_manager, inputs=test.inputs)
+                coros.append(test_instance.test())
+            except Exception as e:  # noqa: PERF203, pylint: disable=broad-exception-caught
+                # An AntaTest instance is potentially user-defined code.
+                # We need to catch everything and exit gracefully with an error message.
+                message = "\n".join(
+                    [
+                        f"There is an error when creating test {test.test.module}.{test.test.__name__}.",
+                        f"If this is not a custom test implementation: {GITHUB_SUGGESTION}",
+                    ],
+                )
+                anta_log_exception(e, message, logger)
+
     return coros
 
 @cprofile()
@@ -252,7 +268,7 @@ async def main(  # noqa: PLR0913
 
     with Catchtime(logger=logger, message="Running ANTA tests"):
         test_results = await asyncio.gather(*coroutines)
-        for result in chain.from_iterable(test_results):
+        for result in test_results:
             manager.add(result)
 
     log_cache_statistics(selected_inventory.devices)

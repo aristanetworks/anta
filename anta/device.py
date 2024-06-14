@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
 from abc import ABC, abstractmethod
 from asyncio import Lock
@@ -20,16 +21,13 @@ from asynceapi import Device, EapiCommandError
 from asyncssh import SSHClientConnection, SSHClientConnectionOptions
 from httpx import ConnectError, HTTPError, Limits, TimeoutException
 
-from anta import __DEBUG__, GITHUB_SUGGESTION
+from anta import __DEBUG__
 from anta.logger import anta_log_exception, exc_to_str
 from anta.models import AntaCommand
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
     from pathlib import Path
-
-    from anta.catalog import AntaTestDefinition
-    from anta.result_manager.models import TestResult
 
 logger = logging.getLogger(__name__)
 
@@ -140,41 +138,6 @@ class AntaDevice(ABC):
             collection_id: An identifier used to build the eAPI request ID.
         """
 
-    def create_eapi_request_manager(self, test_definitions: set[AntaTestDefinition], *, batch_size: int) -> EapiRequestManager:
-        """"""
-        request_manager = EapiRequestManager(self, test_definitions)
-        request_manager.build_requests(batch_size)
-
-        return request_manager
-
-    async def run(self, request_manager: EapiRequestManager, *, req_id: str):
-        """"""
-        # Collect the command outputs from the device
-        anta_commands = request_manager.get_commands(req_id)
-        try:
-            logger.debug("Collecting request ID: %s", req_id)
-            await self.collect_commands(anta_commands, req_format="json", req_id=req_id)
-        except Exception as e:  # pylint: disable=broad-exception-caught
-            # Since device._collect() is potentially user-defined code, we need to catch all exceptions
-            # and report the errors for every impacted test in the request.
-            message = f"Exception raised while collecting commands on device {self.name}"
-            anta_log_exception(e, message, logger)
-            for impacted_test in request_manager.requests[req_id]:
-                impacted_test.result.is_error(message=exc_to_str(e))
-
-        # Once all the command outputs from a request have been collected, run the validation tests
-        results = self.validate_commands(request_manager, req_id=req_id)
-        logger.debug("Finished validation commands of request ID: %s", req_id)
-        return results
-
-    def validate_commands(self, request_manager: EapiRequestManager, *, req_id: str) -> list[TestResult]:
-        """"""
-
-        test_instances = request_manager.requests[req_id]
-        # Each test() method of an AntaTest instance handles exceptions and return a TestResult object
-        return [test_instance.test() for test_instance in test_instances]
-
-
     async def collect_commands(self, anta_commands: list[AntaCommand], *, req_format: Literal["text", "json"] = "json", req_id: str) -> None:
         """Collect multiple commands.
 
@@ -183,10 +146,10 @@ class AntaDevice(ABC):
             commands: The commands to collect.
             collection_id: An identifier used to build the eAPI request ID.
         """
-        # TODO: Avoid querying the cache for the initial commands that are not cached.
+        # FIXME: Avoid querying the cache for the initial commands that are not cached.
         commands_to_collect = []
 
-        # TODO: Don't loop over commands if the cache is disabled
+        # FIXME: Don't loop over commands if the cache is disabled
         for command in anta_commands:
             if self.cache is not None and self.cache_locks is not None and command.use_cache:
                 async with self.cache_locks[command.uid]:
@@ -374,7 +337,7 @@ class AsyncEOSDevice(AntaDevice):
 
     def _handle_timeout_exception(self, exception: TimeoutException, anta_commands: list[AntaCommand]) -> None:
         """Handle TimeoutException exceptions."""
-        # Populate the errors attribute of all the AntaCommand objects of the request since it failed
+        # FIXME: Handle timeouts more gracefully
         for anta_command in anta_commands:
             anta_command.errors = [exc_to_str(exception)]
 
@@ -391,7 +354,7 @@ class AsyncEOSDevice(AntaDevice):
 
     def _handle_connect_os_error(self, exception: ConnectError | OSError, anta_commands: list[AntaCommand]) -> None:
         """Handle HTTPX ConnectError and OSError exceptions."""
-        # Populate the errors attribute of all the AntaCommand objects of the request since it failed
+        # FIXME: Handle connection errors more gracefully
         for anta_command in anta_commands:
             anta_command.errors = [exc_to_str(exception)]
 
@@ -404,7 +367,7 @@ class AsyncEOSDevice(AntaDevice):
 
     def _handle_http_error(self, exception: HTTPError, anta_commands: list[AntaCommand]) -> None:
         """Handle HTTPError exceptions."""
-        # Populate the errors attribute of all the AntaCommand objects of the request since it failed
+        # FIXME: Handle HTTP errors more gracefully
         for anta_command in anta_commands:
             anta_command.errors = [exc_to_str(exception)]
 
@@ -422,7 +385,6 @@ class AsyncEOSDevice(AntaDevice):
             command: The command to collect.
             collection_id: An identifier used to build the eAPI request ID.
         """
-        # NOTE: `asynceapi` EapiCommandError exception only supports complex commands (dict) and not simple commands (str)
         commands = [
             {"cmd": anta_command.command, "revision": anta_command.revision}
             if anta_command.revision else {"cmd": anta_command.command}
@@ -526,80 +488,87 @@ class AsyncEOSDevice(AntaDevice):
                 return
             await asyncssh.scp(src, dst)
 
-class EapiRequestManager:
-    """"""
-    def __init__(self, device: AntaDevice, anta_test_definitions: set[AntaTestDefinition]) -> None:
-        """
-        Initialize the EAPIRequestManager object.
+class RequestManager:
+    """Request Manager class to handle sending requests to a device.
 
-        Parameters:
-        - device: AntaDevice instance
-        - anta_test_definitions: Set of AntaTestDefinition instances to be prepared
+    # FIXME: Handle text output format
+    # FIXME: Handle the case where the last batch is less than the batch size
+    # FIXME: Handle different batch sizes for different tests
+    # TODO: Investigate if we should transform this class into an async context manager
+    # TODO: Investigate if asyncio.Condition is a better choice than asyncio.Event to signal request completion
+    """
+
+    def __init__(self, device: AntaDevice, batch_size: int) -> None:
+        """
+        Initialize the RequestManager object.
+
+        Arguments:
+        ----------
+            device: The device object to send the requests to.
+            batch_size: The maximum number of commands to send in a single request.
         """
         self.device = device
-        self.anta_test_definitions = anta_test_definitions
-        self.requests = {}
-        self.commands_per_request = {}
-        self.current_batch = []
+        self.batch_size = batch_size
         self.current_batch_commands = []
+        self.current_batch_request_ids = set()
         self.current_batch_size = 0
+        self.lock = asyncio.Lock()
+        self.pending_requests: dict[str, asyncio.Event] = {}
 
-    def get_commands(self, req_id: str) -> list[AntaCommand]:
-        """Get the list of AntaCommand for the specified request ID."""
-        if req_id not in self.commands_per_request:
-            msg = f"Request ID {req_id} not found in the commands per request mapping."
-            raise ValueError(msg)
+    async def add_commands(self, commands: list[AntaCommand]) -> None:
+        """Add the commands to the current batch."""
+        async with self.lock:
+            self.current_batch_commands.extend(commands)
+            self.current_batch_size += len(commands)
 
-        return self.commands_per_request[req_id]
+            request_id = self.generate_request_id()
+            self.pending_requests[request_id] = asyncio.Event()
+            self.current_batch_request_ids.add(request_id)
 
-    def generate_request_id(self) -> str:
-        """Generate a unique request ID using the device name and a UUID."""
-        return str(uuid4())
+            if self.current_batch_size >= self.batch_size:
+                logger.debug("Current batch size (%s) exceeded the batch size limit (%s)", self.current_batch_size, self.batch_size)
+                # Reset the current batch and send the request
+                await self.send_eapi_request()
 
-    def add_new_request(self):
-        """Add the current batch as a new request and reset the batch."""
-        request_id = self.generate_request_id()
-        self.requests[request_id] = self.current_batch
-        self.commands_per_request[request_id] = self.current_batch_commands
+            return request_id
+
+    async def send_eapi_request(self) -> None:
+        """Send the current batch as a request."""
+        eapi_request_id = self.generate_request_id()
+        logger.debug("Sending eAPI request ID: %s", eapi_request_id)
+
+        task = asyncio.create_task(
+            self.device.collect_commands(self.current_batch_commands, req_format="json", req_id=eapi_request_id),
+            name=f"Request ID {eapi_request_id} on {self.device.name}",
+        )
+        task.add_done_callback(lambda t: self.on_request_complete(t, self.current_batch_request_ids))
 
         # Reset the current batch and its attributes
-        self.current_batch = []
-        self.current_batch_commands = []
+        self.current_batch_commands.clear()
+        self.current_batch_request_ids.clear()
         self.current_batch_size = 0
 
-    def build_requests(self, batch_size: int):
-        """Prepare the requests based on the selected tests and batch size."""
-        for anta_test_definition in self.anta_test_definitions:
-            try:
-                # Instantiate the test class to build the instance commands
-                test_instance = anta_test_definition.test(device=self.device, inputs=anta_test_definition.inputs)
-            except Exception as e:  # pylint: disable=broad-exception-caught
-                # Since an AntaTest instance is potentially user-defined code, we need to catch all exceptions
-                # and exit gracefully with an error message.
-                message = "\n".join(
-                    [
-                        f"There is an error when creating test {anta_test_definition.test.module}.{anta_test_definition.test.__name__}.",
-                        f"If this is not a custom test implementation: {GITHUB_SUGGESTION}",
-                    ],
-                )
-                anta_log_exception(e, message, logger)
-                continue
+    def on_request_complete(self, task: asyncio.Task, request_ids: set[str]) -> None:
+        """Set the event when the request is complete."""
+        task_name = task.get_name()
+        try:
+            if task.cancelled():
+                logger.warning("%s was cancelled", task_name)
+            elif task.exception():
+                logger.error("%s failed: %s", task_name, task.exception())
+            else:
+                logger.debug("%s succeeded with result: %s", task_name, task.result())
+        except asyncio.CancelledError:
+            logger.warning("%s was cancelled unexpectedly", task_name)
 
-            # Don't add blocked tests to the batch
-            if test_instance.blocked:
-                continue
+        for request_id in request_ids:
+            self.pending_requests[request_id].set()
+            del self.pending_requests[request_id]
 
-            num_commands = len(test_instance.instance_commands)
+    def generate_request_id(self) -> str:
+        """Generate a unique request ID using a UUID."""
+        return str(uuid4())
 
-            # If adding this test instance exceeds the batch size, start a new request
-            if self.current_batch_size + num_commands > batch_size:
-                self.add_new_request()
-
-            # Add the test instance and its commands to the current batch
-            self.current_batch.append(test_instance)
-            self.current_batch_commands.extend(test_instance.instance_commands)
-            self.current_batch_size += num_commands
-
-        # Add the last batch
-        if self.current_batch:
-            self.add_new_request()
+    async def wait_for_request(self, request_id: str) -> None:
+        """Wait for a specific request to complete."""
+        await self.pending_requests[request_id].wait()

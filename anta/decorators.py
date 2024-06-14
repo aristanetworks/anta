@@ -88,7 +88,7 @@ def skip_on_platforms(platforms: list[str]) -> Callable[[F], F]:
         """
 
         @wraps(function)
-        def wrapper(*args: Any, **kwargs: Any) -> TestResult:
+        async def wrapper(*args: Any, **kwargs: Any) -> TestResult:
             """Check the device's hardware model and conditionally run or skip the test.
 
             This wrapper inspects the hardware model of the device the test is run on.
@@ -105,7 +105,7 @@ def skip_on_platforms(platforms: list[str]) -> Callable[[F], F]:
                 AntaTest.update_progress()
                 return anta_test.result
 
-            return function(*args, **kwargs)
+            return await function(*args, **kwargs)
 
         return cast(F, wrapper)
 

@@ -9,6 +9,7 @@
 
 from __future__ import annotations
 
+from json import loads
 from socket import getservbyname
 from typing import TYPE_CHECKING, Any
 
@@ -244,7 +245,9 @@ class Device(httpx.AsyncClient):
         commands = jsonrpc["params"]["cmds"]
         ofmt = jsonrpc["params"]["format"]
 
-        get_output = (lambda _r: _r["output"] if ofmt == "text" else (json.loads(_r) if isinstance(_r, str) else _r))
+        # Return the correct output format based on the requested ofmt.
+        def get_output(response: dict[str, Any]) -> str | dict[str, Any]:
+            return response["output"] if ofmt == "text" else loads(response) if isinstance(response, str) else response
 
         # if there are no errors then return the list of command results.
         if (err_data := body.get("error")) is None:
@@ -272,6 +275,8 @@ class Device(httpx.AsyncClient):
         err_at = len_data - 1
         err_msg = err_data["message"]
 
+        # FIXME: EapiCommandError exception only supports complex commands (dict) and not simple commands (str)
+        # https://github.com/aristanetworks/anta/issues/718
         raise EapiCommandError(
             passed=[get_output(cmd_data[cmd_i]) for cmd_i, cmd in enumerate(commands[:err_at])],
             failed=commands[err_at]["cmd"],
