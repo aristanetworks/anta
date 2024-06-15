@@ -593,6 +593,7 @@ class AntaTest(ABC):
 
             # If the commands have not been collected, send them to the request manager and wait for the results
             if not self.collected:
+                logger.debug("<%s>: Sending commands for test %s to the Result Manager", self.device.name, self.name)
                 request_id = await self.send_commands()
 
                 # Signal that this test coroutine has completed sending commands
@@ -602,11 +603,12 @@ class AntaTest(ABC):
 
                 # Wait for the request containing the commands to complete
                 await self.request_manager.wait_for_request(request_id)
+                logger.debug("<%s>: All commands have been collected for test %s", self.device.name, self.name)
+
                 if self.result.result != "unset":
                     AntaTest.update_progress()
                     return self.result
 
-                logger.debug("All commands have been collected for test %s", self.name)
                 if cmds := self.failed_commands:
                     unsupported_commands = [f"'{c.command}' is not supported on {self.device.hw_model}" for c in cmds if not c.supported]
                     if unsupported_commands:

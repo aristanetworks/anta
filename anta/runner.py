@@ -161,29 +161,34 @@ async def run_device_tests(device: AntaDevice, test_definitions: set[AntaTestDef
     tasks = []
     request_manager = RequestManager(device=device, batch_size=batch_size)
     for test in test_definitions:
+        full_name = f"{test.test.module}.{test.test.__name__}"
         try:
             test_instance = test.test(device=device, request_manager=request_manager, inputs=test.inputs)
-            tasks.append(asyncio.create_task(test_instance.test()))
+            task = asyncio.create_task(test_instance.test(), name=full_name)
+            logger.debug("Creating task: %s", task.get_name())
+            tasks.append(task)
         except Exception as e:  # noqa: PERF203, pylint: disable=broad-exception-caught
             # An AntaTest instance is potentially user-defined code.
             # We need to catch everything and exit gracefully with an error message.
             message = "\n".join(
                 [
-                    f"There is an error when creating test {test.test.module}.{test.test.__name__}.",
+                    f"There is an error when creating test {full_name}.",
                     f"If this is not a custom test implementation: {GITHUB_SUGGESTION}",
                 ],
             )
             anta_log_exception(e, message, logger)
 
     async with request_manager.condition:
-        logger.warning("Waiting for all tests to submit their commands to the Request Manager.")
+        logger.debug("<%s>: Waiting for all tests to submit their commands to the Request Manager", device.name)
         await request_manager.condition.wait_for(lambda: request_manager.completed_coroutines == len(tasks))
-        logger.warning("All tests for device %s have submitted their commands to the Request Manager.", device.name)
+        logger.debug("<%s>: All tests have submitted their commands to the Request Manager", device.name)
 
-    # Tell the RequestManager to send the requests to the device
+    # Tell the RequestManager to send all requests to the device
+    logger.debug("<%s>: Sending all eAPI requests to the device", device.name)
     await request_manager.send_eapi_requests()
 
     # Return the results of the tests
+    logger.debug("<%s>: All tests completed", device.name)
     return [task.result() for task in tasks]
 
 @cprofile()
@@ -233,13 +238,12 @@ async def main(  # noqa: PLR0913
             if selected_tests is None:
                 return
 
-        device_coroutines = [run_device_tests(device, test_definitions, batch_size=1) for device, test_definitions in selected_tests.items()]
+        device_coroutines = [run_device_tests(device, test_definitions, batch_size=250) for device, test_definitions in selected_tests.items()]
 
         run_info = (
             "--- ANTA NRFU Run Information ---\n"
             f"Number of devices: {len(inventory)} ({len(selected_inventory)} established)\n"
             f"Total number of selected tests: {catalog.final_tests_count}\n"
-            f"Total number of coroutines: {len(device_coroutines)}\n"
             f"Maximum number of open file descriptors for the current ANTA process: {limits[0]}\n"
             "---------------------------------"
         )

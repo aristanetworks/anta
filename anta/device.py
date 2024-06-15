@@ -564,6 +564,10 @@ class RequestManager:
 
     async def send_eapi_requests(self) -> None:
         """Send all the requests from the batches mapping."""
+        # Check if there are any commands left in the current batch
+        if self.current_batch_commands:
+            await self.add_batch()
+
         tasks = []
         for batch_id, commands in self.final_commands.items():
             eapi_request_id = self.generate_request_id()
