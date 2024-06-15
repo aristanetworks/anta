@@ -178,10 +178,8 @@ async def run_device_tests(device: AntaDevice, test_definitions: set[AntaTestDef
             )
             anta_log_exception(e, message, logger)
 
-    async with request_manager.condition:
-        logger.debug("<%s>: Waiting for all tests to submit their commands to the Request Manager", device.name)
-        await request_manager.condition.wait_for(lambda: request_manager.completed_coroutines == len(tasks))
-        logger.debug("<%s>: All tests have submitted their commands to the Request Manager", device.name)
+    # Wait until all commands from all tests are sent to the RequestManager
+    await request_manager.wait_for_commands(total_tasks=len(tasks))
 
     # Tell the RequestManager to send all requests to the device
     logger.debug("<%s>: Sending all eAPI requests to the device", device.name)

@@ -535,6 +535,13 @@ class RequestManager:
             else:
                 logger.warning("Exiting RequestManager context with no pending commands")
 
+    async def wait_for_commands(self, total_tasks: int) -> None:
+        """Wait until all commands from the coroutine tests are received."""
+        async with self.condition:
+            logger.debug("<%s>: Waiting for all tests to submit their commands to the Request Manager", self.device.name)
+            await self.condition.wait_for(lambda: self.completed_coroutines == total_tasks)
+            logger.debug("<%s>: All tests have submitted their commands to the Request Manager", self.device.name)
+
     async def add_commands(self, commands: list[AntaCommand]) -> None:
         """Add the commands to the current batch."""
         async with self.lock:
