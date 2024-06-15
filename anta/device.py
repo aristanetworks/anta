@@ -30,7 +30,6 @@ if TYPE_CHECKING:
     from collections.abc import Iterator
     from pathlib import Path
     from types import TracebackType
-    from anta.models import AntaTest
 
 logger = logging.getLogger(__name__)
 
@@ -497,6 +496,7 @@ class RequestManager:
     # FIXME: Handle text output format
     # FIXME: Handle the case where the last batch is less than the batch size
     # FIXME: Handle different batch sizes for different tests
+    # FIXME: Handle the case where a single test send more than one batch
     # TODO: Investigate if we should transform this class into an async context manager
     # TODO: Investigate if asyncio.Condition is a better choice than asyncio.Event to signal request completion
     """
@@ -512,12 +512,15 @@ class RequestManager:
         """
         self.device = device
         self.batch_size = batch_size
-        self.current_batch_commands = []
-        self.current_batch_request_ids = set()
+        self.condition = asyncio.Condition()
+        self.completed_coroutines = 0
+        self.current_batch_commands: list[AntaCommand] = []
+        self.current_batch_request_ids: set[str] = set()
         self.current_batch_size = 0
         self.lock = asyncio.Lock()
         self.pending_requests: dict[str, asyncio.Event] = {}
-        self.test_instances = set()
+        self.final_commands: dict[str, list[AntaCommand]] = {}
+        self.final_request_ids: dict[str, set[str]] = {}
 
     async def __aenter__(self) -> Self:
         """Enter the async context manager."""
@@ -532,14 +535,9 @@ class RequestManager:
             else:
                 logger.warning("Exiting RequestManager context with no pending commands")
 
-
-    async def add_commands(self, commands: list[AntaCommand], test_instance: AntaTest) -> None:
+    async def add_commands(self, commands: list[AntaCommand]) -> None:
         """Add the commands to the current batch."""
         async with self.lock:
-            # Remove the test instance from the tracking set since its commands are being processed
-            if test_instance in self.test_instances:
-                self.test_instances.remove(test_instance)
-
             self.current_batch_commands.extend(commands)
             self.current_batch_size += len(commands)
 
@@ -547,30 +545,36 @@ class RequestManager:
             self.pending_requests[request_id] = asyncio.Event()
             self.current_batch_request_ids.add(request_id)
 
-            # Send the request if the batch size is exceeded or there are no more test instances to process
-            if self.current_batch_size >= self.batch_size or not self.test_instances:
-                await self.send_eapi_request()
+            # Once the batch size is reached, add it to the batches list
+            if self.current_batch_size >= self.batch_size:
+                await self.add_batch()
 
             return request_id
 
-    async def send_eapi_request(self) -> None:
-        """Send the current batch as a request."""
-        eapi_request_id = self.generate_request_id()
-        logger.debug("Sending eAPI request ID: %s", eapi_request_id)
-
-        current_batch_commands = self.current_batch_commands.copy()
-        current_batch_request_ids = self.current_batch_request_ids.copy()
-
-        task = asyncio.create_task(
-            self.device.collect_commands(current_batch_commands, req_format="json", req_id=eapi_request_id),
-            name=f"Request ID {eapi_request_id} on {self.device.name}",
-        )
-        task.add_done_callback(lambda t: self.on_request_complete(t, current_batch_request_ids))
+    async def add_batch(self) -> None:
+        """Add the current batch to the batches list."""
+        batch_id = self.generate_request_id()
+        self.final_commands[batch_id] = self.current_batch_commands.copy()
+        self.final_request_ids[batch_id] = self.current_batch_request_ids.copy()
 
         # Reset the current batch and its attributes
         self.current_batch_commands.clear()
         self.current_batch_request_ids.clear()
         self.current_batch_size = 0
+
+    async def send_eapi_requests(self) -> None:
+        """Send all the requests from the batches mapping."""
+        tasks = []
+        for batch_id, commands in self.final_commands.items():
+            eapi_request_id = self.generate_request_id()
+
+            task = asyncio.create_task(
+                self.device.collect_commands(commands, req_format="json", req_id=eapi_request_id),
+                name=f"Request ID {eapi_request_id} on {self.device.name}",
+            )
+            task.add_done_callback(lambda t, i=batch_id: self.on_request_complete(t, self.final_request_ids[i]))
+            tasks.append(task)
+        await asyncio.gather(*tasks)
 
     def on_request_complete(self, task: asyncio.Task, request_ids: set[str]) -> None:
         """Set the event when the request is complete."""

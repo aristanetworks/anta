@@ -10,7 +10,8 @@ import logging
 import os
 import resource
 from collections import defaultdict
-from typing import TYPE_CHECKING, Any
+from itertools import chain
+from typing import TYPE_CHECKING
 
 from anta import GITHUB_SUGGESTION
 from anta.device import RequestManager
@@ -19,8 +20,6 @@ from anta.models import AntaTest
 from anta.tools import Catchtime, cprofile
 
 if TYPE_CHECKING:
-    from collections.abc import Coroutine
-
     from anta.catalog import AntaCatalog, AntaTestDefinition
     from anta.device import AntaDevice
     from anta.inventory import AntaInventory
@@ -159,28 +158,33 @@ def prepare_tests(
 
 async def run_device_tests(device: AntaDevice, test_definitions: set[AntaTestDefinition], batch_size: int) -> list[TestResult]:
     """Run tests for a specific device using the RequestManager."""
-    async with RequestManager(device, batch_size) as request_manager:
-        coros = []
-        for test in test_definitions:
-            try:
-                test_instance = test.test(device=device, request_manager=request_manager, inputs=test.inputs)
-                coros.append(test_instance.test())
+    tasks = []
+    request_manager = RequestManager(device=device, batch_size=batch_size)
+    for test in test_definitions:
+        try:
+            test_instance = test.test(device=device, request_manager=request_manager, inputs=test.inputs)
+            tasks.append(asyncio.create_task(test_instance.test()))
+        except Exception as e:  # noqa: PERF203, pylint: disable=broad-exception-caught
+            # An AntaTest instance is potentially user-defined code.
+            # We need to catch everything and exit gracefully with an error message.
+            message = "\n".join(
+                [
+                    f"There is an error when creating test {test.test.module}.{test.test.__name__}.",
+                    f"If this is not a custom test implementation: {GITHUB_SUGGESTION}",
+                ],
+            )
+            anta_log_exception(e, message, logger)
 
-                # Add the instance to the request manager to track it
-                request_manager.test_instances.add(test_instance)
-            except Exception as e:  # noqa: PERF203, pylint: disable=broad-exception-caught
-                # An AntaTest instance is potentially user-defined code.
-                # We need to catch everything and exit gracefully with an error message.
-                message = "\n".join(
-                    [
-                        f"There is an error when creating test {test.test.module}.{test.test.__name__}.",
-                        f"If this is not a custom test implementation: {GITHUB_SUGGESTION}",
-                    ],
-                )
-                anta_log_exception(e, message, logger)
-        results = await asyncio.gather(*coros)
-    return results
+    async with request_manager.condition:
+        logger.warning("Waiting for all tests to submit their commands to the Request Manager.")
+        await request_manager.condition.wait_for(lambda: request_manager.completed_coroutines == len(tasks))
+        logger.warning("All tests for device %s have submitted their commands to the Request Manager.", device.name)
 
+    # Tell the RequestManager to send the requests to the device
+    await request_manager.send_eapi_requests()
+
+    # Return the results of the tests
+    return [task.result() for task in tasks]
 
 @cprofile()
 async def main(  # noqa: PLR0913
@@ -229,7 +233,7 @@ async def main(  # noqa: PLR0913
             if selected_tests is None:
                 return
 
-        device_coroutines = [run_device_tests(device, test_definitions, batch_size=100) for device, test_definitions in selected_tests.items()]
+        device_coroutines = [run_device_tests(device, test_definitions, batch_size=1) for device, test_definitions in selected_tests.items()]
 
         run_info = (
             "--- ANTA NRFU Run Information ---\n"
@@ -259,8 +263,8 @@ async def main(  # noqa: PLR0913
         AntaTest.nrfu_task = AntaTest.progress.add_task("Running NRFU Tests...", total=catalog.final_tests_count)
 
     with Catchtime(logger=logger, message="Running ANTA tests"):
-        test_results = await asyncio.gather(*device_coroutines)
-        for r in test_results:
-            manager.add(r)
+        results = chain.from_iterable(await asyncio.gather(*device_coroutines))
+        for result in results:
+            manager.add(result)
 
     log_cache_statistics(selected_inventory.devices)

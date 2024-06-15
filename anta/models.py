@@ -22,6 +22,7 @@ from anta.logger import anta_log_exception, exc_to_str
 from anta.result_manager.models import TestResult
 
 if TYPE_CHECKING:
+    import asyncio
     from collections.abc import Coroutine
 
     from rich.progress import Progress, TaskID
@@ -541,7 +542,7 @@ class AntaTest(ABC):
         """Collect outputs of all commands of this test class from the device of this test instance."""
         try:
             if self.blocked is False:
-                return await self.request_manager.add_commands(self.instance_commands, test_instance=self)
+                return await self.request_manager.add_commands(self.instance_commands)
         except Exception as e:  # pylint: disable=broad-exception-caught
             # device._collect() is user-defined code.
             # We need to catch everything if we want the AntaTest object
@@ -593,6 +594,13 @@ class AntaTest(ABC):
             # If the commands have not been collected, send them to the request manager and wait for the results
             if not self.collected:
                 request_id = await self.send_commands()
+
+                # Signal that this test coroutine has completed sending commands
+                async with self.request_manager.condition:
+                    self.request_manager.completed_coroutines += 1
+                    self.request_manager.condition.notify()
+
+                # Wait for the request containing the commands to complete
                 await self.request_manager.wait_for_request(request_id)
                 if self.result.result != "unset":
                     AntaTest.update_progress()
