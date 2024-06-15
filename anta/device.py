@@ -8,7 +8,6 @@ from __future__ import annotations
 import asyncio
 import logging
 from abc import ABC, abstractmethod
-from asyncio import Lock
 from collections import defaultdict
 from typing import TYPE_CHECKING, Any, Literal
 from uuid import uuid4
@@ -20,7 +19,6 @@ from aiocache.plugins import HitMissRatioPlugin
 from asynceapi import Device, EapiCommandError
 from asyncssh import SSHClientConnection, SSHClientConnectionOptions
 from httpx import ConnectError, HTTPError, Limits, TimeoutException
-from typing_extensions import Self
 
 from anta import __DEBUG__
 from anta.logger import anta_log_exception, exc_to_str
@@ -29,7 +27,6 @@ from anta.models import AntaCommand
 if TYPE_CHECKING:
     from collections.abc import Iterator
     from pathlib import Path
-    from types import TracebackType
 
 logger = logging.getLogger(__name__)
 
@@ -74,7 +71,7 @@ class AntaDevice(ABC):
         self.is_online: bool = False
         self.established: bool = False
         self.cache: Cache | None = None
-        self.cache_locks: defaultdict[str, Lock] | None = None
+        self.cache_locks: defaultdict[str, asyncio.Lock] | None = None
 
         # Initialize cache if not disabled
         if not disable_cache:
@@ -96,7 +93,7 @@ class AntaDevice(ABC):
     def _init_cache(self) -> None:
         """Initialize cache for the device, can be overridden by subclasses to manipulate how it works."""
         self.cache = Cache(cache_class=Cache.MEMORY, ttl=60, namespace=self.name, plugins=[HitMissRatioPlugin()])
-        self.cache_locks = defaultdict(Lock)
+        self.cache_locks = defaultdict(asyncio.Lock)
 
     @property
     def cache_statistics(self) -> dict[str, Any] | None:
@@ -494,11 +491,9 @@ class RequestManager:
     """Request Manager class to handle sending requests to a device.
 
     # FIXME: Handle text output format
-    # FIXME: Handle the case where the last batch is less than the batch size
     # FIXME: Handle different batch sizes for different tests
     # FIXME: Handle the case where a single test send more than one batch
-    # TODO: Investigate if we should transform this class into an async context manager
-    # TODO: Investigate if asyncio.Condition is a better choice than asyncio.Event to signal request completion
+    # FIXME: Cleanup multiple attributes
     """
 
     def __init__(self, device: AntaDevice, batch_size: int) -> None:
@@ -521,19 +516,6 @@ class RequestManager:
         self.pending_requests: dict[str, asyncio.Event] = {}
         self.final_commands: dict[str, list[AntaCommand]] = {}
         self.final_request_ids: dict[str, set[str]] = {}
-
-    async def __aenter__(self) -> Self:
-        """Enter the async context manager."""
-        return self
-
-    async def __aexit__(self, exc_type: type[BaseException] | None, exc: BaseException | None, tb: TracebackType | None) -> None:
-        """Exit the async context and send any remaining commands."""
-        async with self.lock:
-            if self.current_batch_commands:
-                logger.warning("Exiting RequestManager context with pending commands")
-                await self.send_eapi_request()
-            else:
-                logger.warning("Exiting RequestManager context with no pending commands")
 
     async def wait_for_commands(self, total_tasks: int) -> None:
         """Wait until all commands from the coroutine tests are received."""
