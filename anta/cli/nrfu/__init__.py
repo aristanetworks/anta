@@ -130,6 +130,10 @@ def nrfu(
     ctx.obj["hide"] = set(hide) if hide else None
     ctx.obj["catalog"] = catalog
     ctx.obj["inventory"] = inventory
+    ctx.obj["tags"] = tags
+    ctx.obj["device"] = device
+    ctx.obj["test"] = test
+    ctx.obj["dry_run"] = dry_run
 
     # Invoke `anta nrfu table` if no command is passed
     if not ctx.invoked_subcommand:
