@@ -254,8 +254,8 @@ class AntaCatalog:
     ) -> None:
         """Instantiate an AntaCatalog instance.
 
-        Args:
-        ----
+        Parameters
+        ----------
             tests: A list of AntaTestDefinition instances.
             filename: The path from which the catalog is loaded.
 
@@ -301,8 +301,8 @@ class AntaCatalog:
     def parse(filename: str | Path) -> AntaCatalog:
         """Create an AntaCatalog instance from a test catalog file.
 
-        Args:
-        ----
+        Parameters
+        ----------
             filename: Path to test catalog YAML file
 
         """
@@ -325,8 +325,8 @@ class AntaCatalog:
         It is the data structure returned by `yaml.load()` function of a valid
         YAML Test Catalog file.
 
-        Args:
-        ----
+        Parameters
+        ----------
             data: Python dictionary used to instantiate the AntaCatalog instance
             filename: value to be set as AntaCatalog instance attribute
 
@@ -359,8 +359,8 @@ class AntaCatalog:
 
         See ListAntaTestTuples type alias for details.
 
-        Args:
-        ----
+        Parameters
+        ----------
             data: Python list used to instantiate the AntaCatalog instance
 
         """
@@ -375,8 +375,8 @@ class AntaCatalog:
     def merge(self, catalog: AntaCatalog) -> AntaCatalog:
         """Merge two AntaCatalog instances.
 
-        Args:
-        ----
+        Parameters
+        ----------
             catalog: AntaCatalog instance to merge to this instance.
 
         Returns
@@ -427,8 +427,8 @@ class AntaCatalog:
     def get_tests_by_tags(self, tags: set[str], *, strict: bool = False) -> set[AntaTestDefinition]:
         """Return all tests that match a given set of tags, according to the specified strictness.
 
-        Args:
-        ----
+        Parameters
+        ----------
             tags: The tags to filter tests by. If empty, return all tests without tags.
             strict: If True, returns only tests that contain all specified tags (intersection).
                     If False, returns tests that contain any of the specified tags (union).
