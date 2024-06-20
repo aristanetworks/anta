@@ -112,7 +112,7 @@ class AliasedGroup(click.Group):
         return cmd.name, cmd, args
 
 
-def inventory_options(f: Callable[..., Any]) -> Callable[..., Any]:
+def core_options(f: Callable[..., Any]) -> Callable[..., Any]:
     """Click common options when requiring an inventory to interact with devices."""
 
     @click.option(
@@ -190,22 +190,12 @@ def inventory_options(f: Callable[..., Any]) -> Callable[..., Any]:
         required=True,
         type=click.Path(file_okay=True, dir_okay=False, exists=True, readable=True, path_type=Path),
     )
-    @click.option(
-        "--tags",
-        help="List of tags using comma as separator: tag1,tag2,tag3.",
-        show_envvar=True,
-        envvar="ANTA_TAGS",
-        type=str,
-        required=False,
-        callback=parse_tags,
-    )
     @click.pass_context
     @functools.wraps(f)
     def wrapper(
         ctx: click.Context,
         *args: tuple[Any],
         inventory: Path,
-        tags: set[str] | None,
         username: str,
         password: str | None,
         enable_password: str | None,
@@ -219,7 +209,7 @@ def inventory_options(f: Callable[..., Any]) -> Callable[..., Any]:
         # pylint: disable=too-many-arguments
         # If help is invoke somewhere, do not parse inventory
         if ctx.obj.get("_anta_help"):
-            return f(*args, inventory=None, tags=tags, **kwargs)
+            return f(*args, inventory=None, **kwargs)
         if prompt:
             # User asked for a password prompt
             if password is None:
@@ -255,7 +245,37 @@ def inventory_options(f: Callable[..., Any]) -> Callable[..., Any]:
             )
         except (TypeError, ValueError, YAMLError, OSError, InventoryIncorrectSchemaError, InventoryRootKeyError):
             ctx.exit(ExitCode.USAGE_ERROR)
-        return f(*args, inventory=i, tags=tags, **kwargs)
+        return f(*args, inventory=i, **kwargs)
+
+    return wrapper
+
+
+def inventory_options(f: Callable[..., Any]) -> Callable[..., Any]:
+    """Click common options when requiring an inventory to interact with devices."""
+
+    @core_options
+    @click.option(
+        "--tags",
+        help="List of tags using comma as separator: tag1,tag2,tag3.",
+        show_envvar=True,
+        envvar="ANTA_TAGS",
+        type=str,
+        required=False,
+        callback=parse_tags,
+    )
+    @click.pass_context
+    @functools.wraps(f)
+    def wrapper(
+        ctx: click.Context,
+        *args: tuple[Any],
+        tags: set[str] | None,
+        **kwargs: dict[str, Any],
+    ) -> Any:
+        # pylint: disable=too-many-arguments
+        # If help is invoke somewhere, do not parse inventory
+        if ctx.obj.get("_anta_help"):
+            return f(*args, tags=tags, **kwargs)
+        return f(*args, tags=tags, **kwargs)
 
     return wrapper
 
