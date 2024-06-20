@@ -121,12 +121,6 @@ anta.tests.configuration:
 
 ## Test your network
 
-### Basic usage in a python script
-
-```python
---8<-- "anta_runner.py"
-```
-
 ### CLI
 
 ANTA comes with a generic CLI entrypoint to run tests in your network. It requires an inventory file as well as a test catalog.
@@ -264,3 +258,9 @@ $ anta nrfu \
 ```
 
 You can find more information under the __usage__ section of the website
+
+### Basic usage in a Python script
+
+```python
+--8<-- "anta_runner.py"
+```
