@@ -402,6 +402,7 @@ anta.tests.stun:
           public_address: 100.64.3.21
           source_port: 4500
           public_port: 6006
+  - VerifyStunServer:
 
 anta.tests.system:
   - VerifyUptime:

@@ -115,3 +115,42 @@ class VerifyStunClient(AntaTest):
             if actual_stun_data != expected_stun_data:
                 failed_log = get_failed_logs(expected_stun_data, actual_stun_data)
                 self.result.is_failure(f"For STUN source `{source_address}:{source_port}`:{failed_log}")
+
+
+class VerifyStunServer(AntaTest):
+    """
+    Verifies the STUN server status is enabled and running.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the STUN server status is enabled and running.
+    * Failure: The test will fail if the STUN server is disabled or not running.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.stun:
+      - VerifyStunServer:
+    ```
+    """
+
+    name = "VerifyStunServer"
+    description = "Verifies the STUN server status is enabled and running."
+    categories: ClassVar[list[str]] = ["stun"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show stun server status", revision=1)]
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyStunServer."""
+        command_output = self.instance_commands[0].json_output
+        status_disabled = not command_output.get("enabled")
+        not_running = command_output.get("pid") == 0
+
+        if status_disabled and not_running:
+            self.result.is_failure("STUN server status is disabled and not running.")
+        elif status_disabled:
+            self.result.is_failure("STUN server status is disabled.")
+        elif not_running:
+            self.result.is_failure("STUN server is not running.")
+        else:
+            self.result.is_success()
