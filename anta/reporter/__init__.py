@@ -30,8 +30,8 @@ class ReportTable:
     def _split_list_to_txt_list(self, usr_list: list[str], delimiter: str | None = None) -> str:
         """Split list to multi-lines string.
 
-        Args:
-        ----
+        Parameters
+        ----------
             usr_list (list[str]): List of string to concatenate
             delimiter (str, optional): A delimiter to use to start string. Defaults to None.
 
@@ -49,8 +49,8 @@ class ReportTable:
 
         First key is considered as header and is colored using RICH_COLOR_PALETTE.HEADER
 
-        Args:
-        ----
+        Parameters
+        ----------
             headers: List of headers.
             table: A rich Table instance.
 
@@ -72,8 +72,8 @@ class ReportTable:
     def _color_result(self, status: TestStatus) -> str:
         """Return a colored string based on the status value.
 
-        Args:
-        ----
+        Parameters
+        ----------
             status (TestStatus): status value to color.
 
         Returns
@@ -89,8 +89,8 @@ class ReportTable:
 
         Create table with full output: Host / Test / Status / Message
 
-        Args:
-        ----
+        Parameters
+        ----------
             manager: A ResultManager instance.
             title: Title for the report. Defaults to 'All tests results'.
 
@@ -123,8 +123,8 @@ class ReportTable:
 
         Create table with full output: Test | Number of success | Number of failure | Number of error | List of nodes in error or failure
 
-        Args:
-        ----
+        Parameters
+        ----------
             manager: A ResultManager instance.
             tests: List of test names to include. None to select all tests.
             title: Title of the report.
@@ -171,8 +171,8 @@ class ReportTable:
 
         Create table with full output: Host | Number of success | Number of failure | Number of error | List of nodes in error or failure
 
-        Args:
-        ----
+        Parameters
+        ----------
             manager: A ResultManager instance.
             devices: List of device names to include. None to select all devices.
             title: Title of the report.
@@ -239,8 +239,8 @@ class ReportJinja:
             }
         ]
 
-        Args:
-        ----
+        Parameters
+        ----------
             data: List of results from ResultManager.results
             trim_blocks: enable trim_blocks for J2 rendering.
             lstrip_blocks: enable lstrip_blocks for J2 rendering.

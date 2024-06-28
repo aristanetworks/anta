@@ -55,8 +55,8 @@ class AntaDevice(ABC):
     def __init__(self, name: str, tags: set[str] | None = None, *, disable_cache: bool = False) -> None:
         """Initialize an AntaDevice.
 
-        Args:
-        ----
+        Parameters
+        ----------
             name: Device name.
             tags: Tags for this device.
             disable_cache: Disable caching for all commands for this device.
@@ -130,8 +130,8 @@ class AntaDevice(ABC):
         exception and implement proper logging, the `output` attribute of the
         `AntaCommand` object passed as argument would be `None` in this case.
 
-        Args:
-        ----
+        Parameters
+        ----------
             command: The command to collect.
             collection_id: An identifier used to build the eAPI request ID.
         """
@@ -147,8 +147,8 @@ class AntaDevice(ABC):
         When caching is NOT enabled, either at the device or command level, the method directly collects the output
         via the private `_collect` method without interacting with the cache.
 
-        Args:
-        ----
+        Parameters
+        ----------
             command: The command to collect.
             collection_id: An identifier used to build the eAPI request ID.
         """
@@ -170,8 +170,8 @@ class AntaDevice(ABC):
     async def collect_commands(self, commands: list[AntaCommand], *, collection_id: str | None = None) -> None:
         """Collect multiple commands.
 
-        Args:
-        ----
+        Parameters
+        ----------
             commands: The commands to collect.
             collection_id: An identifier used to build the eAPI request ID.
         """
@@ -192,8 +192,8 @@ class AntaDevice(ABC):
 
         It is not mandatory to implement this for a valid AntaDevice subclass.
 
-        Args:
-        ----
+        Parameters
+        ----------
             sources: List of files to copy to or from the device.
             destination: Local or remote destination when copying the files. Can be a folder.
             direction: Defines if this coroutine copies files to or from the device.
@@ -237,8 +237,8 @@ class AsyncEOSDevice(AntaDevice):
     ) -> None:
         """Instantiate an AsyncEOSDevice.
 
-        Args:
-        ----
+        Parameters
+        ----------
             host: Device FQDN or IP.
             username: Username to connect to eAPI and SSH.
             password: Password to connect to eAPI and SSH.
@@ -313,8 +313,8 @@ class AsyncEOSDevice(AntaDevice):
         Gain privileged access using the `enable_password` attribute
         of the `AntaDevice` instance if populated.
 
-        Args:
-        ----
+        Parameters
+        ----------
             command: The command to collect.
             collection_id: An identifier used to build the eAPI request ID.
         """
@@ -405,8 +405,8 @@ class AsyncEOSDevice(AntaDevice):
     async def copy(self, sources: list[Path], destination: Path, direction: Literal["to", "from"] = "from") -> None:
         """Copy files to and from the device using asyncssh.scp().
 
-        Args:
-        ----
+        Parameters
+        ----------
             sources: List of files to copy to or from the device.
             destination: Local or remote destination when copying the files. Can be a folder.
             direction: Defines if this coroutine copies files to or from the device.

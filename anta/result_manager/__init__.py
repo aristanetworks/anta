@@ -119,8 +119,8 @@ class ResultManager:
     def add(self, result: TestResult) -> None:
         """Add a result to the ResultManager instance.
 
-        Args:
-        ----
+        Parameters
+        ----------
             result: TestResult to add to the ResultManager instance.
         """
 
@@ -145,8 +145,8 @@ class ResultManager:
     def filter(self, hide: set[TestStatus]) -> ResultManager:
         """Get a filtered ResultManager based on test status.
 
-        Args:
-        ----
+        Parameters
+        ----------
             hide: set of TestStatus literals to select tests to hide based on their status.
 
         Returns
@@ -160,8 +160,8 @@ class ResultManager:
     def filter_by_tests(self, tests: set[str]) -> ResultManager:
         """Get a filtered ResultManager that only contains specific tests.
 
-        Args:
-        ----
+        Parameters
+        ----------
             tests: Set of test names to filter the results.
 
         Returns
@@ -175,8 +175,8 @@ class ResultManager:
     def filter_by_devices(self, devices: set[str]) -> ResultManager:
         """Get a filtered ResultManager that only contains specific devices.
 
-        Args:
-        ----
+        Parameters
+        ----------
             devices: Set of device names to filter the results.
 
         Returns

@@ -60,8 +60,8 @@ def exit_with_code(ctx: click.Context) -> None:
         * 1 if status is `failure`
         * 2 if status is `error`.
 
-    Args:
-    ----
+    Parameters
+    ----------
         ctx: Click Context
 
     """
