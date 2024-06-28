@@ -13,7 +13,7 @@ import click
 
 from anta.cli.utils import exit_with_code
 
-from .utils import print_jinja, print_json, print_table, print_text
+from .utils import print_jinja, print_json, print_table, print_text, run_tests
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +32,7 @@ def table(
     group_by: Literal["device", "test"] | None,
 ) -> None:
     """ANTA command to check network states with table result."""
+    run_tests(ctx)
     print_table(ctx, group_by=group_by)
     exit_with_code(ctx)
 
@@ -48,6 +49,7 @@ def table(
 )
 def json(ctx: click.Context, output: pathlib.Path | None) -> None:
     """ANTA command to check network state with JSON result."""
+    run_tests(ctx)
     print_json(ctx, output=output)
     exit_with_code(ctx)
 
@@ -56,6 +58,7 @@ def json(ctx: click.Context, output: pathlib.Path | None) -> None:
 @click.pass_context
 def text(ctx: click.Context) -> None:
     """ANTA command to check network states with text result."""
+    run_tests(ctx)
     print_text(ctx)
     exit_with_code(ctx)
 
@@ -80,5 +83,6 @@ def text(ctx: click.Context) -> None:
 )
 def tpl_report(ctx: click.Context, template: pathlib.Path, output: pathlib.Path | None) -> None:
     """ANTA command to check network state with templated report."""
+    run_tests(ctx)
     print_jinja(results=ctx.obj["result_manager"], template=template, output=output)
     exit_with_code(ctx)
