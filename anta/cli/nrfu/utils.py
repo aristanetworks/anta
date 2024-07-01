@@ -14,7 +14,7 @@ from rich.panel import Panel
 from rich.progress import BarColumn, MofNCompleteColumn, Progress, SpinnerColumn, TextColumn, TimeElapsedColumn, TimeRemainingColumn
 
 from anta.cli.console import console
-from anta.reporter import ReportJinja, ReportTable
+from anta.reporter import ReportCsv, ReportJinja, ReportTable
 
 if TYPE_CHECKING:
     import pathlib
@@ -43,7 +43,7 @@ def print_settings(
     console.print()
 
 
-def print_table(ctx: click.Context, group_by: Literal["device", "test"] | None = None) -> None:
+def print_table(ctx: click.Context, group_by: Literal["device", "test"] | None = None, csv_file: pathlib.Path | None = None) -> None:
     """Print result in a table."""
     reporter = ReportTable()
     console.print()
@@ -55,6 +55,8 @@ def print_table(ctx: click.Context, group_by: Literal["device", "test"] | None =
         console.print(reporter.report_summary_tests(results))
     else:
         console.print(reporter.report_all(results))
+        if csv_file is not None:
+            ReportCsv().csv_report(results=results, csv_filename=csv_file)
 
 
 def print_json(ctx: click.Context, output: pathlib.Path | None = None) -> None:
@@ -68,12 +70,14 @@ def print_json(ctx: click.Context, output: pathlib.Path | None = None) -> None:
             fout.write(results.json)
 
 
-def print_text(ctx: click.Context) -> None:
+def print_text(ctx: click.Context, csv_file: pathlib.Path | None = None) -> None:
     """Print results as simple text."""
     console.print()
     for test in _get_result_manager(ctx).results:
         message = f" ({test.messages[0]!s})" if len(test.messages) > 0 else ""
         console.print(f"{test.name} :: {test.test} :: [{test.result}]{test.result.upper()}[/{test.result}]{message}", highlight=False)
+    if csv_file is not None:
+        ReportCsv().csv_report(results=_get_result_manager(ctx), csv_filename=csv_file)
 
 
 def print_jinja(results: ResultManager, template: pathlib.Path, output: pathlib.Path | None = None) -> None:

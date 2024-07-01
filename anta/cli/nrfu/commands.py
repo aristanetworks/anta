@@ -27,12 +27,10 @@ logger = logging.getLogger(__name__)
     help="Group result by test or device.",
     required=False,
 )
-def table(
-    ctx: click.Context,
-    group_by: Literal["device", "test"] | None,
-) -> None:
+def table(ctx: click.Context, group_by: Literal["device", "test"] | None) -> None:
     """ANTA command to check network states with table result."""
-    print_table(ctx, group_by=group_by)
+    csv_output = ctx.obj["csv_output"]
+    print_table(ctx, group_by=group_by, csv_file=csv_output)
     exit_with_code(ctx)
 
 
@@ -56,7 +54,8 @@ def json(ctx: click.Context, output: pathlib.Path | None) -> None:
 @click.pass_context
 def text(ctx: click.Context) -> None:
     """ANTA command to check network states with text result."""
-    print_text(ctx)
+    csv_output = ctx.obj["csv_output"]
+    print_text(ctx, csv_file=csv_output)
     exit_with_code(ctx)
 
 

@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import asyncio
+import pathlib
 from typing import TYPE_CHECKING, get_args
 
 import click
@@ -78,6 +79,19 @@ HIDE_STATUS.remove("unset")
     required=False,
 )
 @click.option(
+    "--csv-output",
+    type=click.Path(
+        file_okay=True,
+        dir_okay=False,
+        exists=False,
+        writable=True,
+        path_type=pathlib.Path,
+    ),
+    show_envvar=True,
+    required=False,
+    help="Path to save report as a CSV file. It only saves test results and not the output from --group-by option",
+)
+@click.option(
     "--ignore-status",
     help="Exit code will always be 0.",
     show_envvar=True,
@@ -113,6 +127,7 @@ def nrfu(
     inventory: AntaInventory,
     tags: set[str] | None,
     catalog: AntaCatalog,
+    csv_output: pathlib.Path | None,
     device: tuple[str],
     test: tuple[str],
     hide: tuple[str],
@@ -127,6 +142,7 @@ def nrfu(
         return
     # We use ctx.obj to pass stuff to the next Click functions
     ctx.ensure_object(dict)
+    ctx.obj["csv_output"] = csv_output
     ctx.obj["result_manager"] = ResultManager()
     ctx.obj["ignore_status"] = ignore_status
     ctx.obj["ignore_error"] = ignore_error
