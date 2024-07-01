@@ -11,9 +11,9 @@ A couple of things to check when hitting an issue with ANTA:
 ```mermaid
 flowchart LR
     A>Hitting an issue with ANTA] --> B{Is my issue <br >listed in the FAQ?}
-    B -- Yes --> C{Does the FAQ solution<<br />works for me?}
+    B -- Yes --> C{Does the FAQ solution<br />works for me?}
     C -- Yes --> V(((Victory)))
-    B -->|No| E{Is my problem<br />mentioned in one<<br />of the open issues?}
+    B -->|No| E{Is my problem<br />mentioned in one<br />of the open issues?}
     C -->|No| E
     E -- Yes --> F{Has the issue been<br />fixed in a newer<br />release or in main?}
     F -- Yes --> U[Upgrade]

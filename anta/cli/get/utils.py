@@ -77,16 +77,33 @@ def inventory_output_options(f: Callable[..., Any]) -> Callable[..., Any]:
     return wrapper
 
 
-def get_cv_token(cvp_ip: str, cvp_username: str, cvp_password: str) -> str:
-    """Generate AUTH token from CVP using password."""
-    # TODO: need to handle requests error
+def get_cv_token(cvp_ip: str, cvp_username: str, cvp_password: str, *, verify_cert: bool) -> str:
+    """Generate the authentication token from CloudVision using username and password.
 
+    TODO: need to handle requests error
+
+    Args:
+    ----
+        cvp_ip: IP address of CloudVision.
+        cvp_username: Username to connect to CloudVision.
+        cvp_password: Password to connect to CloudVision.
+        verify_cert: Enable or disable certificate verification when connecting to CloudVision.
+
+    Returns
+    -------
+        token(str): The token to use in further API calls to CloudVision.
+
+    Raises
+    ------
+        requests.ssl.SSLError: If the certificate verification fails
+
+    """
     # use CVP REST API to generate a token
     url = f"https://{cvp_ip}/cvpservice/login/authenticate.do"
     payload = json.dumps({"userId": cvp_username, "password": cvp_password})
     headers = {"Content-Type": "application/json", "Accept": "application/json"}
 
-    response = requests.request("POST", url, headers=headers, data=payload, verify=False, timeout=10)
+    response = requests.request("POST", url, headers=headers, data=payload, verify=verify_cert, timeout=10)
     return response.json()["sessionId"]
 
 
@@ -94,7 +111,7 @@ def write_inventory_to_file(hosts: list[AntaInventoryHost], output: Path) -> Non
     """Write a file inventory from pydantic models."""
     i = AntaInventoryInput(hosts=hosts)
     with output.open(mode="w", encoding="UTF-8") as out_fd:
-        out_fd.write(yaml.dump({AntaInventory.INVENTORY_ROOT_KEY: i.model_dump(exclude_unset=True)}))
+        out_fd.write(yaml.dump({AntaInventory.INVENTORY_ROOT_KEY: yaml.safe_load(i.yaml())}))
     logger.info("ANTA inventory file has been created: '%s'", output)
 
 
