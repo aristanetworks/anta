@@ -110,6 +110,21 @@ anta.tests.field_notices:
   - VerifyFieldNotice44Resolution:
   - VerifyFieldNotice72Resolution:
 
+anta.tests.flow_tracking:
+  - VerifyHardwareFlowTrackerStatus:
+      trackers:
+        - name: FLOW-TRACKER
+          record_export:
+            on_inactive_timeout: 700000
+            on_interval: 3000000
+          exporters:
+            - name: CV-TELEMETRY
+              local_interface: Loopback11
+              template_interval: 3600
+            - name: CVP-TELEMETRY
+              local_interface: Loopback01
+              template_interval: 36000000
+
 anta.tests.greent:
   - VerifyGreenT:
   - VerifyGreenTCounters:
