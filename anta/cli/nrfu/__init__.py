@@ -107,12 +107,21 @@ HIDE_STATUS.remove("unset")
     is_flag=True,
     default=False,
 )
+@click.option(
+    "--max-concurrency",
+    help="Maximum number of tests to run concurrently.",
+    type=int,
+    show_envvar=True,
+    default=50000,
+    show_default=True,
+)
 # pylint: disable=too-many-arguments
 def nrfu(
     ctx: click.Context,
     inventory: AntaInventory,
     tags: set[str] | None,
     catalog: AntaCatalog,
+    max_concurrency: int,
     device: tuple[str],
     test: tuple[str],
     hide: tuple[str],
@@ -138,6 +147,7 @@ def nrfu(
                 ctx.obj["result_manager"],
                 inventory,
                 catalog,
+                max_concurrency=max_concurrency,
                 tags=tags,
                 devices=set(device) if device else None,
                 tests=set(test) if test else None,
