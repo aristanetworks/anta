@@ -125,7 +125,7 @@ class ResultManager:
         """
 
         def _update_status(test_status: TestStatus) -> None:
-            result_validator = TypeAdapter(TestStatus)
+            result_validator: TypeAdapter[TestStatus] = TypeAdapter(TestStatus)
             result_validator.validate_python(test_status)
             if test_status == "error":
                 self.error_status = True
