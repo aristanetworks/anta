@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.27">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.28">
     
     
       
@@ -2684,7 +2684,7 @@ error_status is set to True.</p>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">_update_status</span><span class="p">(</span><span class="n">test_status</span><span class="p">:</span> <span class="n">TestStatus</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">result_validator</span> <span class="o">=</span> <span class="n">TypeAdapter</span><span class="p">(</span><span class="n">TestStatus</span><span class="p">)</span>
+        <span class="n">result_validator</span><span class="p">:</span> <span class="n">TypeAdapter</span><span class="p">[</span><span class="n">TestStatus</span><span class="p">]</span> <span class="o">=</span> <span class="n">TypeAdapter</span><span class="p">(</span><span class="n">TestStatus</span><span class="p">)</span>
         <span class="n">result_validator</span><span class="o">.</span><span class="n">validate_python</span><span class="p">(</span><span class="n">test_status</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">test_status</span> <span class="o">==</span> <span class="s2">&quot;error&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">error_status</span> <span class="o">=</span> <span class="kc">True</span>
@@ -3216,7 +3216,7 @@ error_status is set to True.</p>
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable"], "provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.ad660dcc.min.js"></script>
+      <script src="../../assets/javascripts/bundle.fe8b6f2b.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
       
