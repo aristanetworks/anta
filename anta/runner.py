@@ -156,7 +156,7 @@ def prepare_tests(
     return device_to_tests
 
 async def run_device_tests(device: AntaDevice, test_definitions: set[AntaTestDefinition], batch_size: int) -> list[TestResult]:
-    """Run tests for a specific device using the RequestManager."""
+    """Run tests for a specific device using the AntaTestManager."""
     manager = AntaTestManager(device=device, batch_size=batch_size)
     background_tasks = set()
     coros = []

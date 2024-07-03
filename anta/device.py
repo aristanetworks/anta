@@ -266,6 +266,7 @@ class AsyncEOSDevice(AntaDevice):
             raise ValueError(message)
         self.enable = enable
         self._enable_password = enable_password
+        # TODO: Move the max_connections setting change to a separate PR
         self._session: Device = Device(host=host, port=port, username=username, password=password, proto=proto, timeout=timeout, limits=Limits(max_connections=7))
         ssh_params: dict[str, Any] = {}
         if insecure:

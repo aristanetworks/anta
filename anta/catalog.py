@@ -373,6 +373,7 @@ class AntaCatalog:
             raise
         return AntaCatalog(tests)
 
+    # TODO: Move this change to a separate PR
     @staticmethod
     def merge(catalogs: list[AntaCatalog]) -> AntaCatalog:
         """Merge multiple AntaCatalog instances.

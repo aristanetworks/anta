@@ -592,12 +592,12 @@ class AntaTest(ABC):
                 self.save_commands_data(eos_data)
                 self.logger.debug("Test %s initialized with input data %s", self.name, eos_data)
 
-            # If the commands have not been collected, send them to the request manager and wait for the results
+            # If the commands have not been collected, send them to the test manager
             if not self.collected:
-                logger.debug("<%s>: Sending commands for test %s to the Test Manager", self.device.name, self.name)
+                logger.debug("<%s>: Sending commands for test %s to the test manager", self.device.name, self.name)
                 condition = await self.send_commands()
 
-                # Wait until all commands have been collected
+                # Grab the condition returned from the manager and wait until all commands have been collected
                 async with condition:
                     await condition.wait_for(lambda: self.collected or self.result.result != "unset")
                     logger.debug("<%s>: Condition has been met for test %s", self.device.name, self.name)
@@ -697,11 +697,12 @@ class AntaTestManager:
                 commands = await asyncio.wait_for(get_await, timeout=2.0)
                 logger.debug("%d commands retrieved from the queue: %s", len(commands), commands)
                 condition = await self.parse_commands(commands)
-                # TODO: Put more info (context) in the condition
+                # TODO: Put more info (context) in the condition for logging
                 await self.notif_queue.put(condition)
             except asyncio.TimeoutError:  # noqa: PERF203
-                logger.warning("Timeout expired. Tests are done submitting commands.")
-                # Send the last batch
+                logger.debug("Timeout expired. Tests are done submitting commands.")
+
+                # Send the last batch if there are any commands left
                 if self.current_batch_commands:
                     logger.debug("Sending the last batch of commands")
                     await self.send_eapi_request(self.current_batch_id, self.current_batch_commands.copy())
@@ -731,7 +732,7 @@ class AntaTestManager:
         return condition
 
     async def send_eapi_request(self, batch_id: int, commands: list[AntaCommand]) -> None:
-        """Send all the requests from the batches mapping."""
+        """Send an eAPI request."""
         eapi_request_id = f"Batch #{batch_id}"
 
         logger.debug("Sending eAPI requests for batch %s with commands: %s", batch_id, commands)
@@ -743,7 +744,7 @@ class AntaTestManager:
 
     async def on_request_complete(self, batch_id: int) -> None:
         """TODO: Add docstring."""
-        # Notify the tests that the request is complete
+        # Notify the tests that the request is complete. Multiple tests can be waiting on the same batch (condition)
         condition: asyncio.Condition = self.conditions[batch_id]
         async with condition:
             logger.debug("Notifying tests that the batch %s is complete. Condition: %s", batch_id, condition)
