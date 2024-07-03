@@ -19,15 +19,17 @@ class EapiCommandError(RuntimeError):
     ----------
         failed: the failed command
         errmsg: a description of the failure reason
+        err_at: the index of the command that failed
         errors: the command failure details
         passed: a list of command results of the commands that passed
         not_exec: a list of commands that were not executed
     """
 
-    def __init__(self, failed: str, errors: list[str], errmsg: str, passed: list[str | dict[str, Any]], not_exec: list[dict[str, Any]]) -> None:  # noqa: PLR0913  # pylint: disable=too-many-arguments
+    def __init__(self, failed: str, err_at: int, errors: list[str], errmsg: str, passed: list[str | dict[str, Any]], not_exec: list[dict[str, Any]]) -> None:  # noqa: PLR0913  # pylint: disable=too-many-arguments
         """Initialize for the EapiCommandError exception."""
         self.failed = failed
         self.errmsg = errmsg
+        self.err_at = err_at
         self.errors = errors
         self.passed = passed
         self.not_exec = not_exec

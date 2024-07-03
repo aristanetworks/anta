@@ -5,10 +5,12 @@
 
 from __future__ import annotations
 
+import asyncio
 import hashlib
 import logging
 import re
 from abc import ABC, abstractmethod
+from enum import Enum
 from functools import wraps
 from string import Formatter
 from typing import TYPE_CHECKING, Any, Callable, ClassVar, Literal, TypeVar
@@ -21,6 +23,7 @@ from anta.logger import anta_log_exception, exc_to_str
 from anta.result_manager.models import TestResult
 
 if TYPE_CHECKING:
+    import asyncio
     from collections.abc import Coroutine
 
     from rich.progress import Progress, TaskID
@@ -125,6 +128,18 @@ class AntaTemplate:
         )
 
 
+class CommandWeight(Enum):
+    """Enum to define the weight of a command.
+
+    The weight of a command is used to specify the computational resources
+    and time required to execute the command on EOS.
+    """
+
+    LIGHT = "light"
+    MEDIUM = "medium"
+    HEAVY = "heavy"
+
+
 class AntaCommand(BaseModel):
     """Class to define a command.
 
@@ -164,6 +179,7 @@ class AntaCommand(BaseModel):
     errors: list[str] = []
     params: AntaParamsBaseModel = AntaParamsBaseModel()
     use_cache: bool = True
+    weight: CommandWeight = CommandWeight.LIGHT
 
     @property
     def uid(self) -> str:
@@ -376,6 +392,7 @@ class AntaTest(ABC):
     def __init__(
         self,
         device: AntaDevice,
+        manager: AntaTestManager,
         inputs: dict[str, Any] | AntaTest.Input | None = None,
         eos_data: list[dict[Any, Any] | str] | None = None,
     ) -> None:
@@ -390,6 +407,7 @@ class AntaTest(ABC):
         """
         self.logger: logging.Logger = logging.getLogger(f"{self.module}.{self.__class__.__name__}")
         self.device: AntaDevice = device
+        self.manager: AntaTestManager = manager
         self.inputs: AntaTest.Input
         self.instance_commands: list[AntaCommand] = []
         self.result: TestResult = TestResult(
@@ -523,11 +541,11 @@ class AntaTest(ABC):
                     state = True
         return state
 
-    async def collect(self) -> None:
+    async def send_commands(self) -> asyncio.Condition:
         """Collect outputs of all commands of this test class from the device of this test instance."""
         try:
             if self.blocked is False:
-                await self.device.collect_commands(self.instance_commands, collection_id=self.name)
+                return await self.manager.put_commands(self.instance_commands)
         except Exception as e:  # pylint: disable=broad-exception-caught
             # device._collect() is user-defined code.
             # We need to catch everything if we want the AntaTest object
@@ -576,9 +594,16 @@ class AntaTest(ABC):
                 self.save_commands_data(eos_data)
                 self.logger.debug("Test %s initialized with input data %s", self.name, eos_data)
 
-            # If some data is missing, try to collect
+            # If the commands have not been collected, send them to the test manager
             if not self.collected:
-                await self.collect()
+                logger.debug("<%s>: Sending commands for test %s to the test manager", self.device.name, self.name)
+                condition = await self.send_commands()
+
+                # Grab the condition returned from the manager and wait until all commands have been collected
+                async with condition:
+                    await condition.wait_for(lambda: self.collected or self.result.result != "unset")
+                    logger.debug("<%s>: Condition has been met for test %s", self.device.name, self.name)
+
                 if self.result.result != "unset":
                     AntaTest.update_progress()
                     return self.result
@@ -636,3 +661,94 @@ class AntaTest(ABC):
             ```
 
         """
+
+
+class AntaTestManager:
+    """TODO: Add docstring.
+
+    # FIXME: Handle text output format
+    # FIXME: Handle different batch sizes for different tests
+    """
+
+    def __init__(self, device: AntaDevice, batch_size: int) -> None:
+        """TODO: Add docstring."""
+        self.device = device
+        self.batch_size = batch_size
+        self.command_queue = asyncio.Queue()
+        self.notif_queue = asyncio.Queue()
+        self.conditions: dict[str, asyncio.Condition] = {}
+        self.eapi_requests: set[asyncio.Task] = set()
+        self.current_batch_commands: list[AntaCommand] = []
+        self.current_batch_id = 1
+
+    async def put_commands(self, commands: list[AntaCommand]) -> asyncio.Condition:
+        """Put commands to the command queue."""
+        # TODO: Since multiple tests (coroutines) can put commands, we might need to lock this
+        logger.debug("Putting %d commands to the command queue", len(commands))
+        await self.command_queue.put(commands)
+        condition = await self.notif_queue.get()
+        logger.debug("Condition received from the notification queue: %s", condition)
+        return condition
+
+    async def get_commands(self) -> None:
+        """Get commands from the command queue."""
+        logger.debug("Commands consumer started")
+        while True:
+            try:
+                get_await = self.command_queue.get()
+                # Wait for all tests to submit their commands
+                commands = await asyncio.wait_for(get_await, timeout=2.0)
+                logger.debug("%d commands retrieved from the queue: %s", len(commands), commands)
+                condition = await self.parse_commands(commands)
+                # TODO: Put more info (context) in the condition for logging
+                await self.notif_queue.put(condition)
+            except asyncio.TimeoutError:  # noqa: PERF203
+                logger.debug("Timeout expired. Tests are done submitting commands.")
+
+                # Send the last batch if there are any commands left
+                if self.current_batch_commands:
+                    logger.debug("Sending the last batch of commands")
+                    await self.send_eapi_request(self.current_batch_id, self.current_batch_commands.copy())
+                break
+            except Exception:
+                logger.exception("An error occurred while retrieving commands from the queue.")
+
+    async def parse_commands(self, commands: list[AntaCommand]) -> asyncio.Condition:
+        """Parse the commands."""
+        if self.current_batch_id not in self.conditions:
+            self.conditions[self.current_batch_id] = asyncio.Condition()
+
+        condition = self.conditions[self.current_batch_id]
+        self.current_batch_commands.extend(commands)
+
+        # Once the batch size is reached, schedule the request
+        if len(self.current_batch_commands) >= self.batch_size:
+            logger.debug("Creating a new request task with batch ID %s", self.current_batch_id)
+            task = asyncio.create_task(self.send_eapi_request(self.current_batch_id, self.current_batch_commands.copy()))
+            self.eapi_requests.add(task)
+            task.add_done_callback(self.eapi_requests.discard)
+
+            # Increment the batch ID and reset commands for the next batch
+            self.current_batch_id += 1
+            self.current_batch_commands.clear()
+
+        return condition
+
+    async def send_eapi_request(self, batch_id: int, commands: list[AntaCommand]) -> None:
+        """Send an eAPI request."""
+        eapi_request_id = f"Batch #{batch_id}"
+
+        logger.debug("Sending eAPI requests for batch %s with commands: %s", batch_id, commands)
+        task = asyncio.create_task(
+            self.device.collect_commands(commands, req_format="json", req_id=eapi_request_id),
+            name=f"{eapi_request_id} on {self.device.name}",
+        )
+        task.add_done_callback(lambda _t: asyncio.create_task(self.on_request_complete(batch_id)))
+
+    async def on_request_complete(self, batch_id: int) -> None:
+        """TODO: Add docstring."""
+        # Notify the tests that the request is complete. Multiple tests can be waiting on the same batch (condition)
+        condition: asyncio.Condition = self.conditions[batch_id]
+        async with condition:
+            logger.debug("Notifying tests that the batch %s is complete. Condition: %s", batch_id, condition)
+            condition.notify_all()
