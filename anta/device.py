@@ -15,13 +15,13 @@ import asyncssh
 import httpcore
 from aiocache import Cache
 from aiocache.plugins import HitMissRatioPlugin
-from asynceapi import Device, EapiCommandError
 from asyncssh import SSHClientConnection, SSHClientConnectionOptions
 from httpx import ConnectError, HTTPError, Limits, TimeoutException
 
 from anta import __DEBUG__
 from anta.logger import anta_log_exception, exc_to_str
 from anta.models import AntaCommand
+from asynceapi import Device, EapiCommandError
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -332,7 +332,7 @@ class AsyncEOSDevice(AntaDevice):
             logger.error("Command '%s' is not supported on %s (%s).", anta_command.command, self.name, self.hw_model)
 
         # Collect the commands that were not executed
-        await self._collect(anta_commands=anta_commands[err_at + 1:], req_format=req_format, req_id=req_id)
+        await self._collect(anta_commands=anta_commands[err_at + 1 :], req_format=req_format, req_id=req_id)
 
     def _handle_timeout_exception(self, exception: TimeoutException, anta_commands: list[AntaCommand]) -> None:
         """Handle TimeoutException exceptions."""
@@ -357,7 +357,9 @@ class AsyncEOSDevice(AntaDevice):
         for anta_command in anta_commands:
             anta_command.errors = [exc_to_str(exception)]
 
-        if (isinstance(exc := exception.__cause__, httpcore.ConnectError) and isinstance(os_error := exc.__context__, OSError)) or isinstance(os_error := exception, OSError):
+        if (isinstance(exc := exception.__cause__, httpcore.ConnectError) and isinstance(os_error := exc.__context__, OSError)) or isinstance(
+            os_error := exception, OSError
+        ):
             if isinstance(os_error.__cause__, OSError):
                 os_error = os_error.__cause__
             logger.error("A local OS error occurred while connecting to %s: %s.", self.name, os_error)
@@ -385,8 +387,7 @@ class AsyncEOSDevice(AntaDevice):
             collection_id: An identifier used to build the eAPI request ID.
         """
         commands = [
-            {"cmd": anta_command.command, "revision": anta_command.revision}
-            if anta_command.revision else {"cmd": anta_command.command}
+            {"cmd": anta_command.command, "revision": anta_command.revision} if anta_command.revision else {"cmd": anta_command.command}
             for anta_command in anta_commands
         ]
 

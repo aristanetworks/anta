@@ -127,6 +127,7 @@ class AntaTemplate:
             use_cache=self.use_cache,
         )
 
+
 class CommandWeight(Enum):
     """Enum to define the weight of a command.
 
@@ -137,6 +138,7 @@ class CommandWeight(Enum):
     LIGHT = "light"
     MEDIUM = "medium"
     HEAVY = "heavy"
+
 
 class AntaCommand(BaseModel):
     """Class to define a command.
@@ -659,6 +661,7 @@ class AntaTest(ABC):
             ```
 
         """
+
 
 class AntaTestManager:
     """TODO: Add docstring.
