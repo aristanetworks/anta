@@ -14,9 +14,8 @@ from itertools import chain
 from typing import TYPE_CHECKING
 
 from anta import GITHUB_SUGGESTION
-from anta.device import RequestManager
 from anta.logger import anta_log_exception, exc_to_str
-from anta.models import AntaTest
+from anta.models import AntaTest, AntaTestManager
 from anta.tools import Catchtime, cprofile
 
 if TYPE_CHECKING:
@@ -158,36 +157,36 @@ def prepare_tests(
 
 async def run_device_tests(device: AntaDevice, test_definitions: set[AntaTestDefinition], batch_size: int) -> list[TestResult]:
     """Run tests for a specific device using the RequestManager."""
-    tasks = []
-    request_manager = RequestManager(device=device, batch_size=batch_size)
+    manager = AntaTestManager(device=device, batch_size=batch_size)
+    background_tasks = set()
+    coros = []
     for test in test_definitions:
-        full_name = f"{test.test.module}.{test.test.__name__}"
         try:
-            test_instance = test.test(device=device, request_manager=request_manager, inputs=test.inputs)
-            task = asyncio.create_task(test_instance.test(), name=full_name)
-            logger.debug("Creating task: %s", task.get_name())
-            tasks.append(task)
+            test_instance = test.test(device=device, manager=manager, inputs=test.inputs)
+            coros.append(test_instance.test())
         except Exception as e:  # noqa: PERF203, pylint: disable=broad-exception-caught
             # An AntaTest instance is potentially user-defined code.
             # We need to catch everything and exit gracefully with an error message.
             message = "\n".join(
                 [
-                    f"There is an error when creating test {full_name}.",
+                    f"There is an error when creating test {test.test.module}.{test.test.__name__}.",
                     f"If this is not a custom test implementation: {GITHUB_SUGGESTION}",
                 ],
             )
             anta_log_exception(e, message, logger)
 
-    # Wait until all commands from all tests are sent to the RequestManager
-    await request_manager.wait_for_commands(total_tasks=len(tasks))
+    # Start the command consumer
+    consumer_task = asyncio.create_task(manager.get_commands())
+    background_tasks.add(consumer_task)
+    consumer_task.add_done_callback(background_tasks.discard)
 
-    # Tell the RequestManager to send all requests to the device
-    logger.debug("<%s>: Sending all eAPI requests to the device", device.name)
-    await request_manager.send_eapi_requests()
+    # Launch all the tests and return the results
+    results = await asyncio.gather(*coros)
 
-    # Return the results of the tests
-    logger.debug("<%s>: All tests completed", device.name)
-    return [task.result() for task in tasks]
+    logger.debug("All results for %s have been collected", device.name)
+
+    return results
+
 
 @cprofile()
 async def main(  # noqa: PLR0913
@@ -236,7 +235,7 @@ async def main(  # noqa: PLR0913
             if selected_tests is None:
                 return
 
-        device_coroutines = [run_device_tests(device, test_definitions, batch_size=250) for device, test_definitions in selected_tests.items()]
+        device_coroutines = [run_device_tests(device, test_definitions, batch_size=100) for device, test_definitions in selected_tests.items()]
 
         run_info = (
             "--- ANTA NRFU Run Information ---\n"
