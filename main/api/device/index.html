@@ -2363,16 +2363,7 @@ cache_locks: Dictionary mapping keys to asyncio locks to guarantee exclusive acc
           </tr>
       </tbody>
     </table>
-  
 
-
-<details class="args:" open>
-  <summary>Args:</summary>
-  <div class="codehilite"><pre><span></span><code><span class="n">name</span><span class="o">:</span><span class="w"> </span><span class="n">Device</span><span class="w"> </span><span class="n">name</span><span class="o">.</span>
-<span class="n">tags</span><span class="o">:</span><span class="w"> </span><span class="n">Tags</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="k">this</span><span class="w"> </span><span class="n">device</span><span class="o">.</span>
-<span class="n">disable_cache</span><span class="o">:</span><span class="w"> </span><span class="n">Disable</span><span class="w"> </span><span class="n">caching</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">all</span><span class="w"> </span><span class="n">commands</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="k">this</span><span class="w"> </span><span class="n">device</span><span class="o">.</span>
-</code></pre></div>
-</details>
                     <details class="quote">
                     <summary>Source code in <code>anta/device.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">55</span>
@@ -2400,8 +2391,8 @@ cache_locks: Dictionary mapping keys to asyncio locks to guarantee exclusive acc
 <span class="normal">77</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">disable_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize an AntaDevice.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">    ----</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">        name: Device name.</span>
 <span class="sd">        tags: Tags for this device.</span>
 <span class="sd">        disable_cache: Disable caching for all commands for this device.</span>
@@ -2512,13 +2503,6 @@ The method employs asynchronous locks based on the command&rsquo;s UID to guaran
 <p>When caching is NOT enabled, either at the device or command level, the method directly collects the output
 via the private <code>_collect</code> method without interacting with the cache.</p>
 
-
-<details class="args:" open>
-  <summary>Args:</summary>
-  <div class="codehilite"><pre><span></span><code><span class="n">command</span><span class="o">:</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">command</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">collect</span><span class="o">.</span>
-<span class="n">collection_id</span><span class="o">:</span><span class="w"> </span><span class="n">An</span><span class="w"> </span><span class="n">identifier</span><span class="w"> </span><span class="n">used</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">build</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">eAPI</span><span class="w"> </span><span class="n">request</span><span class="w"> </span><span class="n">ID</span><span class="o">.</span>
-</code></pre></div>
-</details>
             <details class="quote">
               <summary>Source code in <code>anta/device.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">139</span>
@@ -2561,8 +2545,8 @@ via the private <code>_collect</code> method without interacting with the cache.
 <span class="sd">    When caching is NOT enabled, either at the device or command level, the method directly collects the output</span>
 <span class="sd">    via the private `_collect` method without interacting with the cache.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">    ----</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">        command: The command to collect.</span>
 <span class="sd">        collection_id: An identifier used to build the eAPI request ID.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2605,13 +2589,6 @@ via the private <code>_collect</code> method without interacting with the cache.
   
         <p>Collect multiple commands.</p>
 
-
-<details class="args:" open>
-  <summary>Args:</summary>
-  <div class="codehilite"><pre><span></span><code><span class="n">commands</span><span class="o">:</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">commands</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">collect</span><span class="o">.</span>
-<span class="n">collection_id</span><span class="o">:</span><span class="w"> </span><span class="n">An</span><span class="w"> </span><span class="n">identifier</span><span class="w"> </span><span class="n">used</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">build</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">eAPI</span><span class="w"> </span><span class="n">request</span><span class="w"> </span><span class="n">ID</span><span class="o">.</span>
-</code></pre></div>
-</details>
             <details class="quote">
               <summary>Source code in <code>anta/device.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">170</span>
@@ -2625,8 +2602,8 @@ via the private <code>_collect</code> method without interacting with the cache.
 <span class="normal">178</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">collect_commands</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">commands</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">collection_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Collect multiple commands.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">    ----</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">        commands: The commands to collect.</span>
 <span class="sd">        collection_id: An identifier used to build the eAPI request ID.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2657,14 +2634,6 @@ via the private <code>_collect</code> method without interacting with the cache.
         <p>Copy files to and from the device, usually through SCP.</p>
 <p>It is not mandatory to implement this for a valid AntaDevice subclass.</p>
 
-
-<details class="args:" open>
-  <summary>Args:</summary>
-  <div class="codehilite"><pre><span></span><code><span class="n">sources</span><span class="o">:</span><span class="w"> </span><span class="n">List</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">files</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">copy</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">or</span><span class="w"> </span><span class="n">from</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">device</span><span class="o">.</span>
-<span class="n">destination</span><span class="o">:</span><span class="w"> </span><span class="n">Local</span><span class="w"> </span><span class="n">or</span><span class="w"> </span><span class="n">remote</span><span class="w"> </span><span class="n">destination</span><span class="w"> </span><span class="n">when</span><span class="w"> </span><span class="n">copying</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">files</span><span class="o">.</span><span class="w"> </span><span class="n">Can</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">folder</span><span class="o">.</span>
-<span class="n">direction</span><span class="o">:</span><span class="w"> </span><span class="n">Defines</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="k">this</span><span class="w"> </span><span class="n">coroutine</span><span class="w"> </span><span class="n">copies</span><span class="w"> </span><span class="n">files</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">or</span><span class="w"> </span><span class="n">from</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">device</span><span class="o">.</span>
-</code></pre></div>
-</details>
             <details class="quote">
               <summary>Source code in <code>anta/device.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">190</span>
@@ -2686,8 +2655,8 @@ via the private <code>_collect</code> method without interacting with the cache.
 
 <span class="sd">    It is not mandatory to implement this for a valid AntaDevice subclass.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">    ----</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">        sources: List of files to copy to or from the device.</span>
 <span class="sd">        destination: Local or remote destination when copying the files. Can be a folder.</span>
 <span class="sd">        direction: Defines if this coroutine copies files to or from the device.</span>
@@ -2811,26 +2780,7 @@ tags: Tags for this device</p>
           </tr>
       </tbody>
     </table>
-  
 
-
-<details class="args:" open>
-  <summary>Args:</summary>
-  <div class="codehilite"><pre><span></span><code><span class="n">host</span><span class="o">:</span><span class="w"> </span><span class="n">Device</span><span class="w"> </span><span class="n">FQDN</span><span class="w"> </span><span class="n">or</span><span class="w"> </span><span class="n">IP</span><span class="o">.</span>
-<span class="n">username</span><span class="o">:</span><span class="w"> </span><span class="n">Username</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">connect</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">eAPI</span><span class="w"> </span><span class="n">and</span><span class="w"> </span><span class="n">SSH</span><span class="o">.</span>
-<span class="n">password</span><span class="o">:</span><span class="w"> </span><span class="n">Password</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">connect</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">eAPI</span><span class="w"> </span><span class="n">and</span><span class="w"> </span><span class="n">SSH</span><span class="o">.</span>
-<span class="n">name</span><span class="o">:</span><span class="w"> </span><span class="n">Device</span><span class="w"> </span><span class="n">name</span><span class="o">.</span>
-<span class="n">enable</span><span class="o">:</span><span class="w"> </span><span class="n">Collect</span><span class="w"> </span><span class="n">commands</span><span class="w"> </span><span class="n">using</span><span class="w"> </span><span class="n">privileged</span><span class="w"> </span><span class="n">mode</span><span class="o">.</span>
-<span class="n">enable_password</span><span class="o">:</span><span class="w"> </span><span class="n">Password</span><span class="w"> </span><span class="n">used</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">gain</span><span class="w"> </span><span class="n">privileged</span><span class="w"> </span><span class="n">access</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">EOS</span><span class="o">.</span>
-<span class="n">port</span><span class="o">:</span><span class="w"> </span><span class="n">eAPI</span><span class="w"> </span><span class="n">port</span><span class="o">.</span><span class="w"> </span><span class="n">Defaults</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="mi">80</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">proto</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="s1">&#39;http&#39;</span><span class="w"> </span><span class="n">or</span><span class="w"> </span><span class="mi">443</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">proto</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="s1">&#39;https&#39;</span><span class="o">.</span>
-<span class="n">ssh_port</span><span class="o">:</span><span class="w"> </span><span class="n">SSH</span><span class="w"> </span><span class="n">port</span><span class="o">.</span>
-<span class="n">tags</span><span class="o">:</span><span class="w"> </span><span class="n">Tags</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="k">this</span><span class="w"> </span><span class="n">device</span><span class="o">.</span>
-<span class="n">timeout</span><span class="o">:</span><span class="w"> </span><span class="n">Timeout</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">seconds</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">outgoing</span><span class="w"> </span><span class="n">API</span><span class="w"> </span><span class="n">calls</span><span class="o">.</span>
-<span class="n">insecure</span><span class="o">:</span><span class="w"> </span><span class="n">Disable</span><span class="w"> </span><span class="n">SSH</span><span class="w"> </span><span class="n">Host</span><span class="w"> </span><span class="n">Key</span><span class="w"> </span><span class="n">validation</span><span class="o">.</span>
-<span class="n">proto</span><span class="o">:</span><span class="w"> </span><span class="n">eAPI</span><span class="w"> </span><span class="n">protocol</span><span class="o">.</span><span class="w"> </span><span class="n">Value</span><span class="w"> </span><span class="n">can</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="s1">&#39;http&#39;</span><span class="w"> </span><span class="n">or</span><span class="w"> </span><span class="s1">&#39;https&#39;</span><span class="o">.</span>
-<span class="n">disable_cache</span><span class="o">:</span><span class="w"> </span><span class="n">Disable</span><span class="w"> </span><span class="n">caching</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">all</span><span class="w"> </span><span class="n">commands</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="k">this</span><span class="w"> </span><span class="n">device</span><span class="o">.</span>
-</code></pre></div>
-</details>
                     <details class="quote">
                     <summary>Source code in <code>anta/device.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">221</span>
@@ -2911,8 +2861,8 @@ tags: Tags for this device</p>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Instantiate an AsyncEOSDevice.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">    ----</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">        host: Device FQDN or IP.</span>
 <span class="sd">        username: Username to connect to eAPI and SSH.</span>
 <span class="sd">        password: Password to connect to eAPI and SSH.</span>
@@ -2987,14 +2937,6 @@ tags: Tags for this device</p>
   
         <p>Copy files to and from the device using asyncssh.scp().</p>
 
-
-<details class="args:" open>
-  <summary>Args:</summary>
-  <div class="codehilite"><pre><span></span><code><span class="n">sources</span><span class="o">:</span><span class="w"> </span><span class="n">List</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">files</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">copy</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">or</span><span class="w"> </span><span class="n">from</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">device</span><span class="o">.</span>
-<span class="n">destination</span><span class="o">:</span><span class="w"> </span><span class="n">Local</span><span class="w"> </span><span class="n">or</span><span class="w"> </span><span class="n">remote</span><span class="w"> </span><span class="n">destination</span><span class="w"> </span><span class="n">when</span><span class="w"> </span><span class="n">copying</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">files</span><span class="o">.</span><span class="w"> </span><span class="n">Can</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">folder</span><span class="o">.</span>
-<span class="n">direction</span><span class="o">:</span><span class="w"> </span><span class="n">Defines</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="k">this</span><span class="w"> </span><span class="n">coroutine</span><span class="w"> </span><span class="n">copies</span><span class="w"> </span><span class="n">files</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">or</span><span class="w"> </span><span class="n">from</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">device</span><span class="o">.</span>
-</code></pre></div>
-</details>
             <details class="quote">
               <summary>Source code in <code>anta/device.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">405</span>
@@ -3038,8 +2980,8 @@ tags: Tags for this device</p>
 <span class="normal">443</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sources</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Path</span><span class="p">],</span> <span class="n">destination</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">direction</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;to&quot;</span><span class="p">,</span> <span class="s2">&quot;from&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;from&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Copy files to and from the device using asyncssh.scp().</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">    ----</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">        sources: List of files to copy to or from the device.</span>
 <span class="sd">        destination: Local or remote destination when copying the files. Can be a folder.</span>
 <span class="sd">        direction: Defines if this coroutine copies files to or from the device.</span>

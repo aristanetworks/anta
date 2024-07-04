@@ -4797,7 +4797,11 @@
 <span class="normal">728</span>
 <span class="normal">729</span>
 <span class="normal">730</span>
-<span class="normal">731</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyISISSegmentRoutingTunnels</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">731</span>
+<span class="normal">732</span>
+<span class="normal">733</span>
+<span class="normal">734</span>
+<span class="normal">735</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyISISSegmentRoutingTunnels</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Verify ISIS-SR tunnels computed by device.</span>
 
@@ -4913,7 +4917,8 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if the tunnel type specified in `via_input` matches any of the tunnel types in `eos_entry`.</span>
 
-<span class="sd">        Args:</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
 <span class="sd">            via_input (VerifyISISSegmentRoutingTunnels.Input.Entry.Vias): The input tunnel type to check.</span>
 <span class="sd">            eos_entry (dict[str, Any]): The EOS entry containing the tunnel types.</span>
 
@@ -4937,7 +4942,8 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if the tunnel nexthop matches the given input.</span>
 
-<span class="sd">        Args:</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
 <span class="sd">            via_input (VerifyISISSegmentRoutingTunnels.Input.Entry.Vias): The input via object.</span>
 <span class="sd">            eos_entry (dict[str, Any]): The EOS entry dictionary.</span>
 
@@ -4961,7 +4967,8 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if the tunnel interface exists in the given EOS entry.</span>
 
-<span class="sd">        Args:</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
 <span class="sd">            via_input (VerifyISISSegmentRoutingTunnels.Input.Entry.Vias): The input via object.</span>
 <span class="sd">            eos_entry (dict[str, Any]): The EOS entry dictionary.</span>
 
@@ -4985,7 +4992,8 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if the tunnel ID matches any of the tunnel IDs in the EOS entry&#39;s vias.</span>
 
-<span class="sd">        Args:</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
 <span class="sd">            via_input (VerifyISISSegmentRoutingTunnels.Input.Entry.Vias): The input vias to check.</span>
 <span class="sd">            eos_entry (dict[str, Any]): The EOS entry to compare against.</span>
 

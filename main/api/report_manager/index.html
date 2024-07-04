@@ -2247,13 +2247,6 @@
 <p>Create table with full output: Host / Test / Status / Message</p>
 
 
-<details class="args:" open>
-  <summary>Args:</summary>
-  <div class="codehilite"><pre><span></span><code><span class="n">manager</span><span class="o">:</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="n">ResultManager</span><span class="w"> </span><span class="n">instance</span><span class="o">.</span>
-<span class="n">title</span><span class="o">:</span><span class="w"> </span><span class="n">Title</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">report</span><span class="o">.</span><span class="w"> </span><span class="n">Defaults</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="s1">&#39;All tests results&#39;</span><span class="o">.</span>
-</code></pre></div>
-</details>
-
     <p><span class="doc-section-title">Returns:</span></p>
     <table>
       <thead>
@@ -2310,8 +2303,8 @@
 
 <span class="sd">    Create table with full output: Host / Test / Status / Message</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">    ----</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">        manager: A ResultManager instance.</span>
 <span class="sd">        title: Title for the report. Defaults to &#39;All tests results&#39;.</span>
 
@@ -2355,14 +2348,6 @@
         <p>Create a table report with result aggregated per device.</p>
 <p>Create table with full output: Host | Number of success | Number of failure | Number of error | List of nodes in error or failure</p>
 
-
-<details class="args:" open>
-  <summary>Args:</summary>
-  <div class="codehilite"><pre><span></span><code><span class="n">manager</span><span class="o">:</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="n">ResultManager</span><span class="w"> </span><span class="n">instance</span><span class="o">.</span>
-<span class="n">devices</span><span class="o">:</span><span class="w"> </span><span class="n">List</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="n">names</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="k">include</span><span class="o">.</span><span class="w"> </span><span class="n">None</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">select</span><span class="w"> </span><span class="n">all</span><span class="w"> </span><span class="n">devices</span><span class="o">.</span>
-<span class="n">title</span><span class="o">:</span><span class="w"> </span><span class="n">Title</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">report</span><span class="o">.</span>
-</code></pre></div>
-</details>
 
     <p><span class="doc-section-title">Returns:</span></p>
     <table>
@@ -2444,8 +2429,8 @@
 
 <span class="sd">    Create table with full output: Host | Number of success | Number of failure | Number of error | List of nodes in error or failure</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">    ----</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">        manager: A ResultManager instance.</span>
 <span class="sd">        devices: List of device names to include. None to select all devices.</span>
 <span class="sd">        title: Title of the report.</span>
@@ -2503,14 +2488,6 @@
         <p>Create a table report with result aggregated per test.</p>
 <p>Create table with full output: Test | Number of success | Number of failure | Number of error | List of nodes in error or failure</p>
 
-
-<details class="args:" open>
-  <summary>Args:</summary>
-  <div class="codehilite"><pre><span></span><code><span class="n">manager</span><span class="o">:</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="n">ResultManager</span><span class="w"> </span><span class="n">instance</span><span class="o">.</span>
-<span class="n">tests</span><span class="o">:</span><span class="w"> </span><span class="n">List</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">test</span><span class="w"> </span><span class="n">names</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="k">include</span><span class="o">.</span><span class="w"> </span><span class="n">None</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">select</span><span class="w"> </span><span class="n">all</span><span class="w"> </span><span class="n">tests</span><span class="o">.</span>
-<span class="n">title</span><span class="o">:</span><span class="w"> </span><span class="n">Title</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">report</span><span class="o">.</span>
-</code></pre></div>
-</details>
 
     <p><span class="doc-section-title">Returns:</span></p>
     <table>
@@ -2592,8 +2569,8 @@
 
 <span class="sd">    Create table with full output: Test | Number of success | Number of failure | Number of error | List of nodes in error or failure</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">    ----</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">        manager: A ResultManager instance.</span>
 <span class="sd">        tests: List of test names to include. None to select all tests.</span>
 <span class="sd">        title: Title of the report.</span>

@@ -2647,12 +2647,6 @@ error_status is set to True.</p>
   
         <p>Add a result to the ResultManager instance.</p>
 
-
-<details class="args:" open>
-  <summary>Args:</summary>
-  <div class="codehilite"><pre><span></span><code><span class="n">result</span><span class="o">:</span><span class="w"> </span><span class="n">TestResult</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">add</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">ResultManager</span><span class="w"> </span><span class="n">instance</span><span class="o">.</span>
-</code></pre></div>
-</details>
             <details class="quote">
               <summary>Source code in <code>anta/result_manager/__init__.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">119</span>
@@ -2678,8 +2672,8 @@ error_status is set to True.</p>
 <span class="normal">139</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">TestResult</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Add a result to the ResultManager instance.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">    ----</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">        result: TestResult to add to the ResultManager instance.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -2717,12 +2711,6 @@ error_status is set to True.</p>
   
         <p>Get a filtered ResultManager based on test status.</p>
 
-
-<details class="args:" open>
-  <summary>Args:</summary>
-  <div class="codehilite"><pre><span></span><code><span class="n">hide</span><span class="o">:</span><span class="w"> </span><span class="kd">set</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">TestStatus</span><span class="w"> </span><span class="n">literals</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">select</span><span class="w"> </span><span class="n">tests</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">hide</span><span class="w"> </span><span class="n">based</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">their</span><span class="w"> </span><span class="n">status</span><span class="o">.</span>
-</code></pre></div>
-</details>
 
     <p><span class="doc-section-title">Returns:</span></p>
     <table>
@@ -2764,8 +2752,8 @@ error_status is set to True.</p>
 <span class="normal">158</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hide</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="n">TestStatus</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">ResultManager</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get a filtered ResultManager based on test status.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">    ----</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">        hide: set of TestStatus literals to select tests to hide based on their status.</span>
 
 <span class="sd">    Returns</span>
@@ -2796,12 +2784,6 @@ error_status is set to True.</p>
   
         <p>Get a filtered ResultManager that only contains specific devices.</p>
 
-
-<details class="args:" open>
-  <summary>Args:</summary>
-  <div class="codehilite"><pre><span></span><code><span class="n">devices</span><span class="o">:</span><span class="w"> </span><span class="n">Set</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="n">names</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">filter</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">results</span><span class="o">.</span>
-</code></pre></div>
-</details>
 
     <p><span class="doc-section-title">Returns:</span></p>
     <table>
@@ -2843,8 +2825,8 @@ error_status is set to True.</p>
 <span class="normal">188</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">filter_by_devices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">devices</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">ResultManager</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get a filtered ResultManager that only contains specific devices.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">    ----</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">        devices: Set of device names to filter the results.</span>
 
 <span class="sd">    Returns</span>
@@ -2875,12 +2857,6 @@ error_status is set to True.</p>
   
         <p>Get a filtered ResultManager that only contains specific tests.</p>
 
-
-<details class="args:" open>
-  <summary>Args:</summary>
-  <div class="codehilite"><pre><span></span><code><span class="n">tests</span><span class="o">:</span><span class="w"> </span><span class="n">Set</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">test</span><span class="w"> </span><span class="n">names</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">filter</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">results</span><span class="o">.</span>
-</code></pre></div>
-</details>
 
     <p><span class="doc-section-title">Returns:</span></p>
     <table>
@@ -2922,8 +2898,8 @@ error_status is set to True.</p>
 <span class="normal">173</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">filter_by_tests</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tests</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">ResultManager</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get a filtered ResultManager that only contains specific tests.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">    ----</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">        tests: Set of test names to filter the results.</span>
 
 <span class="sd">    Returns</span>

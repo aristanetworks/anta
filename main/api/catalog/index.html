@@ -2625,15 +2625,7 @@
   
         <p>Class representing an ANTA Catalog.</p>
 <p>It can be instantiated using its constructor or one of the static methods: <code>parse()</code>, <code>from_list()</code> or <code>from_dict()</code></p>
-  
 
-
-<details class="args:" open>
-  <summary>Args:</summary>
-  <div class="codehilite"><pre><span></span><code><span class="n">tests</span><span class="p">:</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">AntaTestDefinition</span><span class="w"> </span><span class="n">instances</span><span class="o">.</span>
-<span class="n">filename</span><span class="p">:</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">path</span><span class="w"> </span><span class="n">from</span><span class="w"> </span><span class="n">which</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">catalog</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">loaded</span><span class="o">.</span>
-</code></pre></div>
-</details>
                     <details class="quote">
                     <summary>Source code in <code>anta/catalog.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">250</span>
@@ -2670,8 +2662,8 @@
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Instantiate an AntaCatalog instance.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">    ----</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">        tests: A list of AntaTestDefinition instances.</span>
 <span class="sd">        filename: The path from which the catalog is loaded.</span>
 
@@ -2922,13 +2914,6 @@
 It is the data structure returned by <code>yaml.load()</code> function of a valid
 YAML Test Catalog file.</p>
 
-
-<details class="args:" open>
-  <summary>Args:</summary>
-  <div class="codehilite"><pre><span></span><code><span class="n">data</span><span class="o">:</span><span class="w"> </span><span class="n">Python</span><span class="w"> </span><span class="n">dictionary</span><span class="w"> </span><span class="n">used</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">instantiate</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">AntaCatalog</span><span class="w"> </span><span class="n">instance</span>
-<span class="n">filename</span><span class="o">:</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="kd">set</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">AntaCatalog</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="n">attribute</span>
-</code></pre></div>
-</details>
             <details class="quote">
               <summary>Source code in <code>anta/catalog.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">320</span>
@@ -2973,8 +2958,8 @@ YAML Test Catalog file.</p>
 <span class="sd">    It is the data structure returned by `yaml.load()` function of a valid</span>
 <span class="sd">    YAML Test Catalog file.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">    ----</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">        data: Python dictionary used to instantiate the AntaCatalog instance</span>
 <span class="sd">        filename: value to be set as AntaCatalog instance attribute</span>
 
@@ -3026,12 +3011,6 @@ YAML Test Catalog file.</p>
         <p>Create an AntaCatalog instance from a list data structure.</p>
 <p>See ListAntaTestTuples type alias for details.</p>
 
-
-<details class="args:" open>
-  <summary>Args:</summary>
-  <div class="codehilite"><pre><span></span><code><span class="n">data</span><span class="o">:</span><span class="w"> </span><span class="n">Python</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="n">used</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">instantiate</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">AntaCatalog</span><span class="w"> </span><span class="n">instance</span>
-</code></pre></div>
-</details>
             <details class="quote">
               <summary>Source code in <code>anta/catalog.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">356</span>
@@ -3057,8 +3036,8 @@ YAML Test Catalog file.</p>
 
 <span class="sd">    See ListAntaTestTuples type alias for details.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">    ----</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">        data: Python list used to instantiate the AntaCatalog instance</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -3090,14 +3069,6 @@ YAML Test Catalog file.</p>
   
         <p>Return all tests that match a given set of tags, according to the specified strictness.</p>
 
-
-<details class="args:" open>
-  <summary>Args:</summary>
-  <div class="codehilite"><pre><span></span><code><span class="n">tags</span><span class="o">:</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">tags</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">filter</span><span class="w"> </span><span class="n">tests</span><span class="w"> </span><span class="n">by</span><span class="o">.</span><span class="w"> </span><span class="n">If</span><span class="w"> </span><span class="n">empty</span><span class="o">,</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">all</span><span class="w"> </span><span class="n">tests</span><span class="w"> </span><span class="n">without</span><span class="w"> </span><span class="n">tags</span><span class="o">.</span>
-<span class="n">strict</span><span class="o">:</span><span class="w"> </span><span class="n">If</span><span class="w"> </span><span class="n">True</span><span class="o">,</span><span class="w"> </span><span class="n">returns</span><span class="w"> </span><span class="n">only</span><span class="w"> </span><span class="n">tests</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="n">contain</span><span class="w"> </span><span class="n">all</span><span class="w"> </span><span class="n">specified</span><span class="w"> </span><span class="n">tags</span><span class="w"> </span><span class="o">(</span><span class="n">intersection</span><span class="o">).</span>
-<span class="w">        </span><span class="n">If</span><span class="w"> </span><span class="n">False</span><span class="o">,</span><span class="w"> </span><span class="n">returns</span><span class="w"> </span><span class="n">tests</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="n">contain</span><span class="w"> </span><span class="n">any</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">specified</span><span class="w"> </span><span class="n">tags</span><span class="w"> </span><span class="o">(</span><span class="n">union</span><span class="o">).</span>
-</code></pre></div>
-</details>
 
     <p><span class="doc-section-title">Returns:</span></p>
     <table>
@@ -3178,8 +3149,8 @@ YAML Test Catalog file.</p>
 <span class="normal">456</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_tests_by_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="n">AntaTestDefinition</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return all tests that match a given set of tags, according to the specified strictness.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">    ----</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">        tags: The tags to filter tests by. If empty, return all tests without tags.</span>
 <span class="sd">        strict: If True, returns only tests that contain all specified tags (intersection).</span>
 <span class="sd">                If False, returns tests that contain any of the specified tags (union).</span>
@@ -3227,12 +3198,6 @@ YAML Test Catalog file.</p>
         <p>Merge two AntaCatalog instances.</p>
 
 
-<details class="args:" open>
-  <summary>Args:</summary>
-  <div class="codehilite"><pre><span></span><code><span class="n">catalog</span><span class="o">:</span><span class="w"> </span><span class="n">AntaCatalog</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">merge</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="k">this</span><span class="w"> </span><span class="n">instance</span><span class="o">.</span>
-</code></pre></div>
-</details>
-
     <p><span class="doc-section-title">Returns:</span></p>
     <table>
       <thead>
@@ -3271,8 +3236,8 @@ YAML Test Catalog file.</p>
 <span class="normal">386</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">merge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">catalog</span><span class="p">:</span> <span class="n">AntaCatalog</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaCatalog</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Merge two AntaCatalog instances.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">    ----</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">        catalog: AntaCatalog instance to merge to this instance.</span>
 
 <span class="sd">    Returns</span>
@@ -3305,12 +3270,6 @@ YAML Test Catalog file.</p>
   
         <p>Create an AntaCatalog instance from a test catalog file.</p>
 
-
-<details class="args:" open>
-  <summary>Args:</summary>
-  <div class="codehilite"><pre><span></span><code><span class="n">filename</span><span class="o">:</span><span class="w"> </span><span class="n">Path</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">test</span><span class="w"> </span><span class="n">catalog</span><span class="w"> </span><span class="n">YAML</span><span class="w"> </span><span class="n">file</span>
-</code></pre></div>
-</details>
             <details class="quote">
               <summary>Source code in <code>anta/catalog.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">300</span>
@@ -3335,8 +3294,8 @@ YAML Test Catalog file.</p>
 <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaCatalog</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create an AntaCatalog instance from a test catalog file.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">    ----</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">        filename: Path to test catalog YAML file</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>

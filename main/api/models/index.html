@@ -2605,17 +2605,7 @@ logger: Python logger for this test instance</p>
           </tr>
       </tbody>
     </table>
-  
 
-
-<details class="args:" open>
-  <summary>Args:</summary>
-  <div class="codehilite"><pre><span></span><code><span class="n">device</span><span class="o">:</span><span class="w"> </span><span class="n">AntaDevice</span><span class="w"> </span><span class="k">instance</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">which</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">test</span><span class="w"> </span><span class="n">will</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">run</span>
-<span class="n">inputs</span><span class="o">:</span><span class="w"> </span><span class="n">dictionary</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="n">attributes</span><span class="w"> </span><span class="n">used</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">instantiate</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">AntaTest</span><span class="p">.</span><span class="n">Input</span><span class="w"> </span><span class="k">instance</span>
-<span class="n">eos_data</span><span class="o">:</span><span class="w"> </span><span class="n">Populate</span><span class="w"> </span><span class="n">outputs</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">test</span><span class="w"> </span><span class="n">commands</span><span class="w"> </span><span class="n">instead</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="n">collecting</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">devices</span><span class="p">.</span>
-<span class="w">          </span><span class="n">This</span><span class="w"> </span><span class="k">list</span><span class="w"> </span><span class="n">must</span><span class="w"> </span><span class="n">have</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">same</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="k">order</span><span class="w"> </span><span class="k">than</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n n-Quoted">`instance_commands`</span><span class="w"> </span><span class="k">instance</span><span class="w"> </span><span class="k">attribute</span><span class="p">.</span>
-</code></pre></div>
-</details>
                     <details class="quote">
                     <summary>Source code in <code>anta/models.py</code></summary>
                     <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">376</span>
@@ -2653,8 +2643,8 @@ logger: Python logger for this test instance</p>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;AntaTest Constructor.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">    ----</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">        device: AntaDevice instance on which the test will be run</span>
 <span class="sd">        inputs: dictionary of attributes used to instantiate the AntaTest.Input instance</span>
 <span class="sd">        eos_data: Populate outputs of the test commands instead of collecting from devices.</span>
@@ -3155,8 +3145,8 @@ custom_field: a free string that will be included in the TestResult object</p>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TestResult</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Inner function for the anta_test decorator.</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">        ----</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
 <span class="sd">            self: The test instance.</span>
 <span class="sd">            eos_data: Populate outputs of the test commands instead of collecting from devices.</span>
 <span class="sd">                      This list must have the same length and order than the `instance_commands` instance attribute.</span>
@@ -3917,12 +3907,6 @@ use_cache: Enable or disable caching for this AntaTemplate if the AntaDevice sup
 <p>Keep the parameters used in the AntaTemplate instance.</p>
 
 
-<details class="args:" open>
-  <summary>Args:</summary>
-  <div class="codehilite"><pre><span></span><code><span class="n">params</span><span class="o">:</span><span class="w"> </span><span class="n">dictionary</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">variables</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="n">string</span><span class="w"> </span><span class="n">values</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">render</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">Python</span><span class="w"> </span><span class="n">f</span><span class="o">-</span><span class="n">string</span>
-</code></pre></div>
-</details>
-
     <p><span class="doc-section-title">Returns:</span></p>
     <table>
       <thead>
@@ -4008,8 +3992,8 @@ AntaTemplate instance.</p>
 
 <span class="sd">    Keep the parameters used in the AntaTemplate instance.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">    ----</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">        params: dictionary of variables with string values to render the Python f-string</span>
 
 <span class="sd">    Returns</span>

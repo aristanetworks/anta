@@ -2336,12 +2336,6 @@ custom_field: Custom field to store a string for flexibility in integrating with
   
         <p>Set status to error.</p>
 
-
-<details class="args:" open>
-  <summary>Args:</summary>
-  <div class="codehilite"><pre><span></span><code><span class="n">message</span><span class="o">:</span><span class="w"> </span><span class="n">Optional</span><span class="w"> </span><span class="n">message</span><span class="w"> </span><span class="n">related</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">test</span>
-</code></pre></div>
-</details>
             <details class="quote">
               <summary>Source code in <code>anta/result_manager/models.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">66</span>
@@ -2355,8 +2349,8 @@ custom_field: Custom field to store a string for flexibility in integrating with
 <span class="normal">74</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">is_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Set status to error.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">    ----</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">        message: Optional message related to the test</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2382,12 +2376,6 @@ custom_field: Custom field to store a string for flexibility in integrating with
   
         <p>Set status to failure.</p>
 
-
-<details class="args:" open>
-  <summary>Args:</summary>
-  <div class="codehilite"><pre><span></span><code><span class="n">message</span><span class="o">:</span><span class="w"> </span><span class="n">Optional</span><span class="w"> </span><span class="n">message</span><span class="w"> </span><span class="n">related</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">test</span>
-</code></pre></div>
-</details>
             <details class="quote">
               <summary>Source code in <code>anta/result_manager/models.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">46</span>
@@ -2401,8 +2389,8 @@ custom_field: Custom field to store a string for flexibility in integrating with
 <span class="normal">54</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">is_failure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Set status to failure.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">    ----</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">        message: Optional message related to the test</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2428,12 +2416,6 @@ custom_field: Custom field to store a string for flexibility in integrating with
   
         <p>Set status to skipped.</p>
 
-
-<details class="args:" open>
-  <summary>Args:</summary>
-  <div class="codehilite"><pre><span></span><code><span class="n">message</span><span class="o">:</span><span class="w"> </span><span class="n">Optional</span><span class="w"> </span><span class="n">message</span><span class="w"> </span><span class="n">related</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">test</span>
-</code></pre></div>
-</details>
             <details class="quote">
               <summary>Source code in <code>anta/result_manager/models.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">56</span>
@@ -2447,8 +2429,8 @@ custom_field: Custom field to store a string for flexibility in integrating with
 <span class="normal">64</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">is_skipped</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Set status to skipped.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">    ----</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">        message: Optional message related to the test</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2474,12 +2456,6 @@ custom_field: Custom field to store a string for flexibility in integrating with
   
         <p>Set status to success.</p>
 
-
-<details class="args:" open>
-  <summary>Args:</summary>
-  <div class="codehilite"><pre><span></span><code><span class="n">message</span><span class="o">:</span><span class="w"> </span><span class="n">Optional</span><span class="w"> </span><span class="n">message</span><span class="w"> </span><span class="n">related</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">test</span>
-</code></pre></div>
-</details>
             <details class="quote">
               <summary>Source code in <code>anta/result_manager/models.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">36</span>
@@ -2493,8 +2469,8 @@ custom_field: Custom field to store a string for flexibility in integrating with
 <span class="normal">44</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">is_success</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Set status to success.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">    ----</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">        message: Optional message related to the test</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>

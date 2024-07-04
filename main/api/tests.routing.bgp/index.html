@@ -7181,16 +7181,6 @@ If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, `vrf` must be `default`
 <p>Note: This function modifies <code>failures</code> in-place.</p>
 
 
-<details class="args:" open>
-  <summary>Args:</summary>
-  <div class="codehilite"><pre><span></span><code><span class="n">failures</span><span class="o">:</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">dictionary</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">which</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">failure</span><span class="w"> </span><span class="n">will</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">added</span><span class="o">.</span>
-<span class="n">afi</span><span class="o">:</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">address</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="n">identifier</span><span class="o">.</span>
-<span class="n">vrf</span><span class="o">:</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">VRF</span><span class="w"> </span><span class="n">name</span><span class="o">.</span>
-<span class="n">safi</span><span class="o">:</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">subsequent</span><span class="w"> </span><span class="n">address</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="n">identifier</span><span class="o">.</span>
-<span class="n">issue</span><span class="o">:</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="n">description</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">issue</span><span class="o">.</span><span class="w"> </span><span class="n">Can</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">any</span><span class="w"> </span><span class="n">type</span><span class="o">.</span>
-</code></pre></div>
-</details>
-
 <details class="example:" open>
   <summary>Example:</summary>
   <p>The <code>failures</code> dictionary will have the following structure:
@@ -7256,8 +7246,8 @@ If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, `vrf` must be `default`
 
 <span class="sd">    Note: This function modifies `failures` in-place.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">    ----</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">        failures: The dictionary to which the failure will be added.</span>
 <span class="sd">        afi: The address family identifier.</span>
 <span class="sd">        vrf: The VRF name.</span>
@@ -7313,16 +7303,6 @@ If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, `vrf` must be `default`
 <p>This function checks the BGP output from the device against the expected routes.</p>
 <p>It identifies any missing routes as well as any routes that are invalid or inactive. The results are returned in a dictionary.</p>
 
-
-<details class="args:" open>
-  <summary>Args:</summary>
-  <div class="codehilite"><pre><span></span><code><span class="n">bgp_routes</span><span class="o">:</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">expected</span><span class="w"> </span><span class="n">routes</span><span class="o">.</span>
-<span class="n">bgp_output</span><span class="o">:</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">BGP</span><span class="w"> </span><span class="n">output</span><span class="w"> </span><span class="n">from</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">device</span><span class="o">.</span>
-<span class="n">peer</span><span class="o">:</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">IP</span><span class="w"> </span><span class="n">address</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">BGP</span><span class="w"> </span><span class="n">peer</span><span class="o">.</span>
-<span class="n">vrf</span><span class="o">:</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">VRF</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">which</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">routes</span><span class="w"> </span><span class="n">need</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">verified</span><span class="o">.</span>
-<span class="n">route_type</span><span class="o">:</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">type</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">BGP</span><span class="w"> </span><span class="n">routes</span><span class="o">.</span><span class="w"> </span><span class="n">Defaults</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="s1">&#39;advertised_routes&#39;</span><span class="o">.</span>
-</code></pre></div>
-</details>
 
     <p><span class="doc-section-title">Returns:</span></p>
     <table>
@@ -7403,8 +7383,8 @@ If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, `vrf` must be `default`
 
 <span class="sd">    It identifies any missing routes as well as any routes that are invalid or inactive. The results are returned in a dictionary.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">    ----</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">        bgp_routes: The list of expected routes.</span>
 <span class="sd">        bgp_output: The BGP output from the device.</span>
 <span class="sd">        peer: The IP address of the BGP peer.</span>
@@ -7462,12 +7442,6 @@ If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, `vrf` must be `default`
   
         <p>Check for issues in BGP peer data.</p>
 
-
-<details class="args:" open>
-  <summary>Args:</summary>
-  <div class="codehilite"><pre><span></span><code><span class="n">peer_data</span><span class="o">:</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">BGP</span><span class="w"> </span><span class="n">peer</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="n">dictionary</span><span class="w"> </span><span class="n">nested</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="err">`</span><span class="n">show</span><span class="w"> </span><span class="n">bgp</span><span class="w"> </span><span class="o">&lt;</span><span class="n">afi</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&lt;</span><span class="n">safi</span><span class="o">&gt;</span><span class="w"> </span><span class="n">summary</span><span class="err">`</span><span class="w"> </span><span class="n">command</span><span class="o">.</span>
-</code></pre></div>
-</details>
 
     <p><span class="doc-section-title">Returns:</span></p>
     <table>
@@ -7559,8 +7533,8 @@ If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, `vrf` must be `default`
 <span class="normal">95</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">_check_peer_issues</span><span class="p">(</span><span class="n">peer_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check for issues in BGP peer data.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">    ----</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">        peer_data: The BGP peer data dictionary nested in the `show bgp &lt;afi&gt; &lt;safi&gt; summary` command.</span>
 
 <span class="sd">    Returns</span>
