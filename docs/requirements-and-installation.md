@@ -31,8 +31,6 @@ pip install anta
 !!! Warning
 
     * This command alone **will not** install the ANTA CLI requirements.
-    * When using ANTA mode in [AVD](https://avd.arista.com) `eos_validate` role, (currently in preview), ensure you install the documented supported ANTA version for your AVD version.</br>
-        The latest documented version can be found at: https://avd.arista.com/stable/roles/eos_validate_state/ANTA-Preview.html
 
 ### Install ANTA CLI as an application with `pipx`
 
