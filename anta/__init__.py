@@ -26,7 +26,6 @@ if __DEBUG__:
     os.environ["PYTHONASYNCIODEBUG"] = "1"
 
 
-# trigger
 # Source: https://rich.readthedocs.io/en/stable/appendix/colors.html
 # pylint: disable=R0903
 class RICH_COLOR_PALETTE:
