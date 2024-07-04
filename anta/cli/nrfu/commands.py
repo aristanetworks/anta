@@ -13,7 +13,7 @@ import click
 
 from anta.cli.utils import exit_with_code
 
-from .utils import print_jinja, print_json, print_table, print_text, run_tests
+from .utils import print_jinja, print_json, print_table, print_text, run_tests, save_markdown_report
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +31,7 @@ def table(
     ctx: click.Context,
     group_by: Literal["device", "test"] | None,
 ) -> None:
-    """ANTA command to check network states with table result."""
+    """ANTA command to check network state with table results."""
     run_tests(ctx)
     print_table(ctx, group_by=group_by)
     exit_with_code(ctx)
@@ -48,7 +48,7 @@ def table(
     help="Path to save report as a file",
 )
 def json(ctx: click.Context, output: pathlib.Path | None) -> None:
-    """ANTA command to check network state with JSON result."""
+    """ANTA command to check network state with JSON results."""
     run_tests(ctx)
     print_json(ctx, output=output)
     exit_with_code(ctx)
@@ -57,7 +57,7 @@ def json(ctx: click.Context, output: pathlib.Path | None) -> None:
 @click.command()
 @click.pass_context
 def text(ctx: click.Context) -> None:
-    """ANTA command to check network states with text result."""
+    """ANTA command to check network state with text results."""
     run_tests(ctx)
     print_text(ctx)
     exit_with_code(ctx)
@@ -85,4 +85,28 @@ def tpl_report(ctx: click.Context, template: pathlib.Path, output: pathlib.Path 
     """ANTA command to check network state with templated report."""
     run_tests(ctx)
     print_jinja(results=ctx.obj["result_manager"], template=template, output=output)
+    exit_with_code(ctx)
+
+
+@click.command()
+@click.pass_context
+@click.option(
+    "--output",
+    "-o",
+    type=click.Path(file_okay=True, dir_okay=False, exists=False, writable=True, path_type=pathlib.Path),
+    show_envvar=True,
+    required=True,
+    help="Path to save the Markdown report in a file",
+)
+@click.option(
+    "--only_failed_tests",
+    is_flag=True,
+    default=False,
+    show_envvar=True,
+    help="Flag to determine if only failed tests should be saved in the report",
+)
+def md_report(ctx: click.Context, output: pathlib.Path, *, only_failed_tests: bool = False) -> None:
+    """ANTA command to check network state with Markdown report."""
+    run_tests(ctx)
+    save_markdown_report(results=ctx.obj["result_manager"], output=output, only_failed_tests=only_failed_tests)
     exit_with_code(ctx)

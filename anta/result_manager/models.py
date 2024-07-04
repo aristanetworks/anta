@@ -5,6 +5,8 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass, field
+
 from pydantic import BaseModel
 
 from anta.custom_types import TestStatus
@@ -15,6 +17,7 @@ class TestResult(BaseModel):
 
     Attributes
     ----------
+        id: TestResult unique identifier. Added when the TestResult is added to the ResultManager.
         name: Device name where the test has run.
         test: Test name runs on the device.
         categories: List of categories the TestResult belongs to, by default the AntaTest categories.
@@ -25,6 +28,7 @@ class TestResult(BaseModel):
 
     """
 
+    id: int | None = None
     name: str
     test: str
     categories: list[str]
@@ -89,3 +93,23 @@ class TestResult(BaseModel):
     def __str__(self) -> str:
         """Return a human readable string of this TestResult."""
         return f"Test '{self.test}' (on '{self.name}'): Result '{self.result}'\nMessages: {self.messages}"
+
+
+@dataclass
+class DeviceStats:
+    """Device statistics for a run of tests."""
+
+    tests_passed: int = 0
+    tests_failed: int = 0
+    tests_skipped: int = 0
+    categories_failed: set[str] = field(default_factory=set)
+    categories_skipped: set[str] = field(default_factory=set)
+
+
+@dataclass
+class CategoryStats:
+    """Category statistics for a run of tests."""
+
+    tests_passed: int = 0
+    tests_failed: int = 0
+    tests_skipped: int = 0
