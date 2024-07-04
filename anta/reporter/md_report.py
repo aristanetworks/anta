@@ -35,14 +35,18 @@ class MDReportFactory:
     def generate_report(cls, mdfile: TextIOWrapper, manager: ResultManager, *, only_failed_tests: bool = False) -> None:
         """Generate and write the various sections of the markdown report."""
         sections: list[MDReportBase] = [
-            ANTAReport(mdfile, manager, only_failed_tests=only_failed_tests),
-            TestResultsSummary(mdfile, manager, only_failed_tests=only_failed_tests),
-            SummaryTotals(mdfile, manager, only_failed_tests=only_failed_tests),
-            SummaryTotalsDeviceUnderTest(mdfile, manager, only_failed_tests=only_failed_tests),
-            SummaryTotalsPerCategory(mdfile, manager, only_failed_tests=only_failed_tests),
-            FailedTestResultsSummary(mdfile, manager, only_failed_tests=only_failed_tests),
-            AllTestResults(mdfile, manager, only_failed_tests=only_failed_tests),
+            ANTAReport(mdfile, manager),
+            TestResultsSummary(mdfile, manager),
+            SummaryTotals(mdfile, manager),
+            SummaryTotalsDeviceUnderTest(mdfile, manager),
+            SummaryTotalsPerCategory(mdfile, manager),
+            FailedTestResultsSummary(mdfile, manager),
+            AllTestResults(mdfile, manager),
         ]
+
+        if only_failed_tests:
+            sections.pop()
+
         for section in sections:
             section.generate_section()
 
@@ -297,6 +301,5 @@ class AllTestResults(MDReportBase):
 
         This section is generated only if the report includes all results.
         """
-        if not self.only_failed_tests:
-            self.write_heading(heading_level=2)
-            self.write_table(table_heading=self.TABLE_HEADING, last_table=True)
+        self.write_heading(heading_level=2)
+        self.write_table(table_heading=self.TABLE_HEADING, last_table=True)
