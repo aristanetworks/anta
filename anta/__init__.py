@@ -25,6 +25,7 @@ if __DEBUG__:
     # enable asyncio DEBUG mode when __DEBUG__ is enabled
     os.environ["PYTHONASYNCIODEBUG"] = "1"
 
+
 # trigger
 # Source: https://rich.readthedocs.io/en/stable/appendix/colors.html
 # pylint: disable=R0903
