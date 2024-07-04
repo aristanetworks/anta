@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 from typing import TYPE_CHECKING, Literal
@@ -14,7 +15,9 @@ from rich.panel import Panel
 from rich.progress import BarColumn, MofNCompleteColumn, Progress, SpinnerColumn, TextColumn, TimeElapsedColumn, TimeRemainingColumn
 
 from anta.cli.console import console
+from anta.models import AntaTest
 from anta.reporter import ReportJinja, ReportTable
+from anta.runner import main
 
 if TYPE_CHECKING:
     import pathlib
@@ -26,6 +29,37 @@ if TYPE_CHECKING:
     from anta.result_manager import ResultManager
 
 logger = logging.getLogger(__name__)
+
+
+def run_tests(ctx: click.Context) -> None:
+    """Run the tests."""
+    # Digging up the parameters from the parent context
+    if ctx.parent is None:
+        ctx.exit()
+    nrfu_ctx_params = ctx.parent.params
+    tags = nrfu_ctx_params["tags"]
+    device = nrfu_ctx_params["device"] or None
+    test = nrfu_ctx_params["test"] or None
+    dry_run = nrfu_ctx_params["dry_run"]
+
+    catalog = ctx.obj["catalog"]
+    inventory = ctx.obj["inventory"]
+
+    print_settings(inventory, catalog)
+    with anta_progress_bar() as AntaTest.progress:
+        asyncio.run(
+            main(
+                ctx.obj["result_manager"],
+                inventory,
+                catalog,
+                tags=tags,
+                devices=set(device) if device else None,
+                tests=set(test) if test else None,
+                dry_run=dry_run,
+            )
+        )
+    if dry_run:
+        ctx.exit()
 
 
 def _get_result_manager(ctx: click.Context) -> ResultManager:

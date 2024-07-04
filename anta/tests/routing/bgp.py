@@ -24,8 +24,8 @@ def _add_bgp_failures(failures: dict[tuple[str, str | None], dict[str, Any]], af
 
     Note: This function modifies `failures` in-place.
 
-    Args:
-    ----
+    Parameters
+    ----------
         failures: The dictionary to which the failure will be added.
         afi: The address family identifier.
         vrf: The VRF name.
@@ -63,8 +63,8 @@ def _add_bgp_failures(failures: dict[tuple[str, str | None], dict[str, Any]], af
 def _check_peer_issues(peer_data: dict[str, Any] | None) -> dict[str, Any]:
     """Check for issues in BGP peer data.
 
-    Args:
-    ----
+    Parameters
+    ----------
         peer_data: The BGP peer data dictionary nested in the `show bgp <afi> <safi> summary` command.
 
     Returns
@@ -104,8 +104,8 @@ def _add_bgp_routes_failure(
 
     It identifies any missing routes as well as any routes that are invalid or inactive. The results are returned in a dictionary.
 
-    Args:
-    ----
+    Parameters
+    ----------
         bgp_routes: The list of expected routes.
         bgp_output: The BGP output from the device.
         peer: The IP address of the BGP peer.

@@ -82,8 +82,8 @@ def get_cv_token(cvp_ip: str, cvp_username: str, cvp_password: str, *, verify_ce
 
     TODO: need to handle requests error
 
-    Args:
-    ----
+    Parameters
+    ----------
         cvp_ip: IP address of CloudVision.
         cvp_username: Username to connect to CloudVision.
         cvp_password: Password to connect to CloudVision.
@@ -161,8 +161,8 @@ def deep_yaml_parsing(data: dict[str, Any], hosts: list[AntaInventoryHost] | Non
 def create_inventory_from_ansible(inventory: Path, output: Path, ansible_group: str = "all") -> None:
     """Create an ANTA inventory from an Ansible inventory YAML file.
 
-    Args:
-    ----
+    Parameters
+    ----------
         inventory: Ansible Inventory file to read
         output: ANTA inventory file to generate.
         ansible_group: Ansible group from where to extract data.

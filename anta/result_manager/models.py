@@ -36,8 +36,8 @@ class TestResult(BaseModel):
     def is_success(self, message: str | None = None) -> None:
         """Set status to success.
 
-        Args:
-        ----
+        Parameters
+        ----------
             message: Optional message related to the test
 
         """
@@ -46,8 +46,8 @@ class TestResult(BaseModel):
     def is_failure(self, message: str | None = None) -> None:
         """Set status to failure.
 
-        Args:
-        ----
+        Parameters
+        ----------
             message: Optional message related to the test
 
         """
@@ -56,8 +56,8 @@ class TestResult(BaseModel):
     def is_skipped(self, message: str | None = None) -> None:
         """Set status to skipped.
 
-        Args:
-        ----
+        Parameters
+        ----------
             message: Optional message related to the test
 
         """
@@ -66,8 +66,8 @@ class TestResult(BaseModel):
     def is_error(self, message: str | None = None) -> None:
         """Set status to error.
 
-        Args:
-        ----
+        Parameters
+        ----------
             message: Optional message related to the test
 
         """
@@ -76,8 +76,8 @@ class TestResult(BaseModel):
     def _set_status(self, status: TestStatus, message: str | None = None) -> None:
         """Set status and insert optional message.
 
-        Args:
-        ----
+        Parameters
+        ----------
             status: status of the test
             message: optional message
 
