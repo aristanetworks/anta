@@ -1,5 +1,5 @@
 ---
-name: Linting and Testing Anta
+name: Analysis with Sonarlint and publish to SonarCloud
 on:
   push:
     branches:
