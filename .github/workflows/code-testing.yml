@@ -119,6 +119,11 @@ jobs:
         run: pip install tox tox-gh-actions
       - name: "Run pytest via tox for ${{ matrix.python }}"
         run: tox
+      - name: Save coverage report for Sonarlint
+        uses: actions/upload-artifact@master
+        with:
+          name: coverage.xml
+          path: .coverage.xml
   test-documentation:
     name: Build offline documentation for testing
     runs-on: ubuntu-20.04
@@ -141,6 +146,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Load coverage report from artifacts
+        uses: actions/download-artifact@master
+        with:
+          name: coverage.xml
+          path: .coverage.xml
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
