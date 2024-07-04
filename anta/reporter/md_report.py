@@ -58,18 +58,16 @@ class MDReportBase(ABC):
     to generate and write content to the provided markdown file.
     """
 
-    def __init__(self, mdfile: TextIOWrapper, manager: ResultManager, *, only_failed_tests: bool = False) -> None:
+    def __init__(self, mdfile: TextIOWrapper, manager: ResultManager) -> None:
         """Initialize the MDReportBase with an open markdown file object to write to and a ResultManager instance.
 
         Args:
         ----
             mdfile (TextIOWrapper): An open file object to write the markdown data into.
             results (ResultManager): The ResultsManager instance containing all test results.
-            only_failed_tests (bool): Flag to determine if only failed tests are included in the report. Defaults to False.
         """
         self.mdfile = mdfile
         self.manager = manager
-        self.only_failed_tests = only_failed_tests
 
     @abstractmethod
     def generate_section(self) -> None:
