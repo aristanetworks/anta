@@ -50,7 +50,7 @@ def adjust_rlimit_nofile() -> tuple[int, int]:
 
     limits = resource.getrlimit(resource.RLIMIT_NOFILE)
     logger.debug("Initial limit numbers for open file descriptors for the current ANTA process: Soft Limit: %s | Hard Limit: %s", limits[0], limits[1])
-    nofile = nofile if limits[1] > nofile else limits[1]
+    nofile = min(limits[1], nofile)
     logger.debug("Setting soft limit for open file descriptors for the current ANTA process to %s", nofile)
     resource.setrlimit(resource.RLIMIT_NOFILE, (nofile, limits[1]))
     return resource.getrlimit(resource.RLIMIT_NOFILE)
