@@ -195,9 +195,9 @@ class SummaryTotals(MDReportBase):
         """Generate the rows of the summary totals table."""
         yield (
             f"| {self.manager.get_total_results()} "
-            f"| {self.manager.get_total_results("success")} "
-            f"| {self.manager.get_total_results({"failure", "error", "unset"})} "
-            f"| {self.manager.get_total_results("skipped")} |\n"
+            f"| {self.manager.get_total_results('success')} "
+            f"| {self.manager.get_total_results({'failure', 'error', 'unset'})} "
+            f"| {self.manager.get_total_results('skipped')} |\n"
         )
 
     def generate_section(self) -> None:
