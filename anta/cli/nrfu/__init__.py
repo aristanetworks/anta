@@ -116,6 +116,7 @@ def nrfu(
     ignore_status: bool,
     ignore_error: bool,
     dry_run: bool,
+    catalog_format: str = "yaml",
 ) -> None:
     """Run ANTA tests on selected inventory devices."""
     # If help is invoke somewhere, skip the command
@@ -129,6 +130,7 @@ def nrfu(
     ctx.obj["ignore_error"] = ignore_error
     ctx.obj["hide"] = set(hide) if hide else None
     ctx.obj["catalog"] = catalog
+    ctx.obj["catalog_format"] = catalog_format
     ctx.obj["inventory"] = inventory
     ctx.obj["tags"] = tags
     ctx.obj["device"] = device
