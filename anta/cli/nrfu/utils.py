@@ -17,7 +17,8 @@ from rich.progress import BarColumn, MofNCompleteColumn, Progress, SpinnerColumn
 
 from anta.cli.console import console
 from anta.models import AntaTest
-from anta.reporter import ReportCsv, ReportJinja, ReportTable
+from anta.reporter import ReportJinja, ReportTable
+from anta.reporter.csv_reporter import ReportCsv
 from anta.runner import main
 
 if TYPE_CHECKING:
