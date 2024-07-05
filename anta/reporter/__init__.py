@@ -32,7 +32,7 @@ class ReportTable:
         """Headers for the table report."""
 
         device: str = "Device"
-        test_case: str = "Test Case"
+        test_case: str = "Test Name"
         number_of_success: str = "# of success"
         number_of_failure: str = "# of failure"
         number_of_skipped: str = "# of skipped"
@@ -75,9 +75,6 @@ class ReportTable:
         for idx, header in enumerate(headers):
             if idx == 0:
                 table.add_column(header, justify="left", style=RICH_COLOR_PALETTE.HEADER, no_wrap=True)
-            elif header == "Test Name":
-                # We always want the full test name
-                table.add_column(header, justify="left", no_wrap=True)
             else:
                 table.add_column(header, justify="left")
         return table
@@ -148,12 +145,12 @@ class ReportTable:
         """
         table = Table(title=title, show_lines=True)
         headers = [
-            self.Headers.test_case,
-            self.Headers.number_of_success,
-            self.Headers.number_of_skipped,
-            self.Headers.number_of_failure,
-            self.Headers.number_of_errors,
-            self.Headers.list_of_error_nodes,
+            self.Headers().test_case,
+            self.Headers().number_of_success,
+            self.Headers().number_of_skipped,
+            self.Headers().number_of_failure,
+            self.Headers().number_of_errors,
+            self.Headers().list_of_error_nodes,
         ]
         table = self._build_headers(headers=headers, table=table)
         for test in manager.get_tests():
@@ -196,12 +193,12 @@ class ReportTable:
         """
         table = Table(title=title, show_lines=True)
         headers = [
-            self.Headers.device,
-            self.Headers.number_of_success,
-            self.Headers.number_of_skipped,
-            self.Headers.number_of_failure,
-            self.Headers.number_of_errors,
-            self.Headers.list_of_error_tests,
+            self.Headers().device,
+            self.Headers().number_of_success,
+            self.Headers().number_of_skipped,
+            self.Headers().number_of_failure,
+            self.Headers().number_of_errors,
+            self.Headers().list_of_error_tests,
         ]
         table = self._build_headers(headers=headers, table=table)
         for device in manager.get_devices():
@@ -321,12 +318,12 @@ class ReportCsv:
             ]
 
         headers = [
-            self.Headers.device,
-            self.Headers.test_name,
-            self.Headers.test_status,
-            self.Headers.messages,
-            self.Headers.description,
-            self.Headers.categories,
+            self.Headers().device,
+            self.Headers().test_name,
+            self.Headers().test_status,
+            self.Headers().messages,
+            self.Headers().description,
+            self.Headers().categories,
         ]
 
         with pathlib.Path.open(csv_filename, "w", encoding="utf-8") as csvfile:
