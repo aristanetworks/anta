@@ -49,6 +49,13 @@ def test_anta_nrfu_dry_run(click_runner: CliRunner) -> None:
     assert "Dry-run" in result.output
 
 
+def test_anta_nrfu_wrong_catalog_format(click_runner: CliRunner) -> None:
+    """Test anta nrfu --dry-run, catalog is given via env."""
+    result = click_runner.invoke(anta, ["nrfu", "--dry-run", "--catalog-format", "toto"])
+    assert result.exit_code == ExitCode.USAGE_ERROR
+    assert "Invalid value for '--catalog-format': 'toto' is not one of 'yaml', 'json'." in result.output
+
+
 def test_anta_password_required(click_runner: CliRunner) -> None:
     """Test that password is provided."""
     env = default_anta_env()
