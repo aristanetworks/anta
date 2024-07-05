@@ -10,14 +10,14 @@ import logging
 import math
 from collections import defaultdict
 from inspect import isclass
+from json import load as json_load
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Optional, Union
+from typing import TYPE_CHECKING, Any, Literal, Optional, Union
 
-import yaml
 from pydantic import BaseModel, ConfigDict, RootModel, ValidationError, ValidationInfo, field_validator, model_serializer, model_validator
 from pydantic.types import ImportString
 from pydantic_core import PydanticCustomError
-from yaml import YAMLError, safe_load
+from yaml import YAMLError, safe_dump, safe_load
 
 from anta.logger import anta_log_exception
 from anta.models import AntaTest
@@ -238,7 +238,16 @@ class AntaCatalogFile(RootModel[dict[ImportString[Any], list[AntaTestDefinition]
         # This could be improved.
         # https://github.com/pydantic/pydantic/issues/1043
         # Explore if this worth using this: https://github.com/NowanIlfideme/pydantic-yaml
-        return yaml.safe_dump(yaml.safe_load(self.model_dump_json(serialize_as_any=True, exclude_unset=True)), indent=2, width=math.inf)
+        return safe_dump(safe_load(self.model_dump_json(serialize_as_any=True, exclude_unset=True)), indent=2, width=math.inf)
+
+    def to_json(self) -> str:
+        """Return a JSON representation string of this model.
+
+        Returns
+        -------
+            The JSON representation string of this model.
+        """
+        return self.model_dump_json(serialize_as_any=True, exclude_unset=True, indent=2)
 
 
 class AntaCatalog:
@@ -298,19 +307,24 @@ class AntaCatalog:
         self._tests = value
 
     @staticmethod
-    def parse(filename: str | Path) -> AntaCatalog:
+    def parse(filename: str | Path, file_format: Literal["yaml", "json"] = "yaml") -> AntaCatalog:
         """Create an AntaCatalog instance from a test catalog file.
 
         Parameters
         ----------
-            filename: Path to test catalog YAML file
+            filename: Path to test catalog YAML or JSON fil
+            file_format: Format of the file, either 'yaml' or 'json'
 
         """
+        if file_format not in ["yaml", "json"]:
+            message = f"'{file_format}' is not a valid format for an AntaCatalog file. Only 'yaml' and 'json' are supported."
+            raise ValueError(message)
+
         try:
             file: Path = filename if isinstance(filename, Path) else Path(filename)
             with file.open(encoding="UTF-8") as f:
-                data = safe_load(f)
-        except (TypeError, YAMLError, OSError) as e:
+                data = safe_load(f) if file_format == "yaml" else json_load(f)
+        except (TypeError, YAMLError, OSError, ValueError) as e:
             message = f"Unable to parse ANTA Test Catalog file '{filename}'"
             anta_log_exception(e, message, logger)
             raise
