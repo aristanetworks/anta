@@ -38,3 +38,5 @@ jobs:
             -Dsonar.pullrequest.key=${{ github.event.number }}
             -Dsonar.pullrequest.branch=${{ github.event.pull_request.head.ref }}
             -Dsonar.pullrequest.base=${{ github.event.pull_request.base.ref }}
+            # To trigger verbose when debugging in Github Action
+            -Dsonar.verbose=${{ secrets.ACTIONS_STEP_DEBUG }}
