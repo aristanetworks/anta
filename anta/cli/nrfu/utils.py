@@ -11,6 +11,7 @@ import logging
 from typing import TYPE_CHECKING, Literal
 
 import rich
+from rich.emoji import Emoji
 from rich.panel import Panel
 from rich.progress import BarColumn, MofNCompleteColumn, Progress, SpinnerColumn, TextColumn, TimeElapsedColumn, TimeRemainingColumn
 
@@ -77,7 +78,7 @@ def print_settings(
     console.print()
 
 
-def print_table(ctx: click.Context, group_by: Literal["device", "test"] | None = None, csv_file: pathlib.Path | None = None) -> None:
+def print_table(ctx: click.Context, group_by: Literal["device", "test"] | None = None) -> None:
     """Print result in a table."""
     reporter = ReportTable()
     console.print()
@@ -89,8 +90,6 @@ def print_table(ctx: click.Context, group_by: Literal["device", "test"] | None =
         console.print(reporter.report_summary_tests(results))
     else:
         console.print(reporter.report_all(results))
-        if csv_file is not None:
-            ReportCsv().csv_report(results=results, csv_filename=csv_file)
 
 
 def print_json(ctx: click.Context, output: pathlib.Path | None = None) -> None:
@@ -104,14 +103,12 @@ def print_json(ctx: click.Context, output: pathlib.Path | None = None) -> None:
             fout.write(results.json)
 
 
-def print_text(ctx: click.Context, csv_file: pathlib.Path | None = None) -> None:
+def print_text(ctx: click.Context) -> None:
     """Print results as simple text."""
     console.print()
     for test in _get_result_manager(ctx).results:
         message = f" ({test.messages[0]!s})" if len(test.messages) > 0 else ""
         console.print(f"{test.name} :: {test.test} :: [{test.result}]{test.result.upper()}[/{test.result}]{message}", highlight=False)
-    if csv_file is not None:
-        ReportCsv().csv_report(results=_get_result_manager(ctx), csv_filename=csv_file)
 
 
 def print_jinja(results: ResultManager, template: pathlib.Path, output: pathlib.Path | None = None) -> None:
@@ -124,6 +121,14 @@ def print_jinja(results: ResultManager, template: pathlib.Path, output: pathlib.
     if output is not None:
         with output.open(mode="w", encoding="utf-8") as file:
             file.write(report)
+
+
+def save_to_csv(ctx: click.Context, csv_file: pathlib.Path | None = None) -> None:
+    """Save results to a CSV file."""
+    if csv_file is not None:
+        ReportCsv().csv_report(results=_get_result_manager(ctx), csv_filename=csv_file)
+        checkmark = Emoji("white_check_mark")
+        console.print(f"CSV report saved to {csv_file} {checkmark}", style="cyan")
 
 
 # Adding our own ANTA spinner - overriding rich SPINNERS for our own
