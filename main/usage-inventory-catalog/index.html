@@ -2458,12 +2458,20 @@ The file must comply with the following structure:</p>
 <p>A test catalog is an instance of the <a href="../api/catalog/#anta.catalog.AntaCatalog">AntaCatalog</a> class.</p>
 <h3 id="test-catalog-file">Test Catalog File<a class="headerlink" href="#test-catalog-file" title="Permanent link">&para;</a></h3>
 <p>In addition to the inventory file, you also have to define a catalog of tests to execute against your devices. This catalog list all your tests, their inputs and their tags.</p>
-<p>A valid test catalog file must have the following structure:
+<p>A valid test catalog file must have the following structure in either YAML or JSON:
 <div class="highlight"><pre><span></span><code><span class="nn">---</span>
 <span class="nt">&lt;Python module&gt;</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">&lt;AntaTest subclass&gt;</span><span class="p">:</span>
 <span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">&lt;AntaTest.Input compliant dictionary&gt;</span>
 </code></pre></div></p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;&lt;Python module&gt;&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;&lt;AntaTest subclass&gt;&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">&lt;A</span><span class="kc">nta</span><span class="err">Tes</span><span class="kc">t</span><span class="err">.I</span><span class="kc">n</span><span class="err">pu</span><span class="kc">t</span><span class="w"> </span><span class="err">complia</span><span class="kc">nt</span><span class="w"> </span><span class="err">dic</span><span class="kc">t</span><span class="err">io</span><span class="kc">nar</span><span class="err">y&gt;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
 <h3 id="example_1">Example<a class="headerlink" href="#example_1" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="nn">---</span>
 <span class="nt">anta.tests.connectivity</span><span class="p">:</span>
@@ -2482,6 +2490,40 @@ The file must comply with the following structure:</p>
 <span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;Overwritten</span><span class="nv"> </span><span class="s">category</span><span class="nv"> </span><span class="s">1&quot;</span>
 <span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Test</span><span class="nv"> </span><span class="s">with</span><span class="nv"> </span><span class="s">overwritten</span><span class="nv"> </span><span class="s">description&quot;</span>
 <span class="w">        </span><span class="nt">custom_field</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Test</span><span class="nv"> </span><span class="s">run</span><span class="nv"> </span><span class="s">by</span><span class="nv"> </span><span class="s">John</span><span class="nv"> </span><span class="s">Doe&quot;</span>
+</code></pre></div>
+<p>or equivalent in JSON:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;anta.tests.connectivity&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;VerifyReachability&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;result_overwrite&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Test with overwritten description&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;categories&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">&quot;Overwritten category 1&quot;</span>
+<span class="w">          </span><span class="p">],</span>
+<span class="w">          </span><span class="nt">&quot;custom_field&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Test run by John Doe&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;filters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;tags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">&quot;leaf&quot;</span>
+<span class="w">          </span><span class="p">]</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;hosts&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">          </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;destination&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.1.1.1&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Management0&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;vrf&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MGMT&quot;</span>
+<span class="w">          </span><span class="p">},</span>
+<span class="w">          </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;destination&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;8.8.8.8&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Management0&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;vrf&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MGMT&quot;</span>
+<span class="w">          </span><span class="p">}</span>
+<span class="w">        </span><span class="p">]</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
 </code></pre></div>
 <p>It is also possible to nest Python module definition:
 <div class="highlight"><pre><span></span><code><span class="nt">anta.tests</span><span class="p">:</span>
@@ -2528,13 +2570,26 @@ The complete list of the tests and their respective inputs is available at the <
 <div class="highlight"><pre><span></span><code><span class="nt">anta.tests.software</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyEOSVersion</span><span class="p">:</span>
 </code></pre></div>
-<p>It will load the test <code>VerifyEOSVersion</code> located in <code>anta.tests.software</code>. But since this test has mandatory inputs, we need to provide them as a dictionary in the YAML file:</p>
+<p>It will load the test <code>VerifyEOSVersion</code> located in <code>anta.tests.software</code>. But since this test has mandatory inputs, we need to provide them as a dictionary in the YAML or JSON file:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">anta.tests.software</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyEOSVersion</span><span class="p">:</span>
 <span class="w">      </span><span class="c1"># List of allowed EOS versions.</span>
 <span class="w">      </span><span class="nt">versions</span><span class="p">:</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4.25.4M</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4.26.1F</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;anta.tests.software&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;VerifyEOSVersion&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;versions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">          </span><span class="s2">&quot;4.25.4M&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="s2">&quot;4.31.1F&quot;</span>
+<span class="w">        </span><span class="p">]</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
 </code></pre></div>
 <p>The following example is a very minimal test catalog:</p>
 <div class="highlight"><pre><span></span><code><span class="nn">---</span>
@@ -2636,7 +2691,7 @@ So for instance, if my custom tests are defined in the <code>custom.tests.system
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 11, 2024</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 5, 2024</span>
   </span>
 
     
