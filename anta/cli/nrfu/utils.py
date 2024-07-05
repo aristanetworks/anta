@@ -15,7 +15,6 @@ from rich.panel import Panel
 from rich.progress import BarColumn, MofNCompleteColumn, Progress, SpinnerColumn, TextColumn, TimeElapsedColumn, TimeRemainingColumn
 
 from anta.cli.console import console
-
 from anta.models import AntaTest
 from anta.reporter import ReportCsv, ReportJinja, ReportTable
 from anta.runner import main
