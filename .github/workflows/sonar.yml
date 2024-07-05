@@ -1,0 +1,34 @@
+---
+name: Analysis with Sonarlint and publish to SonarCloud
+on:
+  push:
+    branches:
+      - main
+  # Need to do this to be able to have coverage on PR across forks.
+  pull_request_target:
+
+# TODO this can be made better by running only coverage, it happens that today
+# in tox gh-actions we have configured 3.11 to run the report side in
+# pyproject.toml
+
+jobs:
+  sonarcloud:
+    name: Run Sonarlint analysis and upload to SonarCloud.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+      - name: Install dependencies
+        run: pip install tox tox-gh-actions
+      - name: "Run pytest via tox for ${{ matrix.python }}"
+        run: tox
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
