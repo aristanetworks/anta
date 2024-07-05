@@ -12,6 +12,7 @@ import pathlib
 from typing import TYPE_CHECKING, Any
 
 from jinja2 import Template
+from pydantic import BaseModel
 from rich.table import Table
 
 from anta import RICH_COLOR_PALETTE, RICH_COLOR_THEME
@@ -26,6 +27,18 @@ logger = logging.getLogger(__name__)
 
 class ReportTable:
     """TableReport Generate a Table based on TestResult."""
+
+    class Headers(BaseModel):
+        """Headers for the table report."""
+
+        device: str = "Device"
+        test_case: str = "Test Case"
+        number_of_success: str = "# of success"
+        number_of_failure: str = "# of failure"
+        number_of_skipped: str = "# of skipped"
+        number_of_errors: str = "# of errors"
+        list_of_error_nodes: str = "List of failed or error nodes"
+        list_of_error_tests: str = "List of failed or error test cases"
 
     def _split_list_to_txt_list(self, usr_list: list[str], delimiter: str | None = None) -> str:
         """Split list to multi-lines string.
@@ -135,12 +148,12 @@ class ReportTable:
         """
         table = Table(title=title, show_lines=True)
         headers = [
-            "Test Case",
-            "# of success",
-            "# of skipped",
-            "# of failure",
-            "# of errors",
-            "List of failed or error nodes",
+            self.Headers.test_case,
+            self.Headers.number_of_success,
+            self.Headers.number_of_skipped,
+            self.Headers.number_of_failure,
+            self.Headers.number_of_errors,
+            self.Headers.list_of_error_nodes,
         ]
         table = self._build_headers(headers=headers, table=table)
         for test in manager.get_tests():
@@ -183,12 +196,12 @@ class ReportTable:
         """
         table = Table(title=title, show_lines=True)
         headers = [
-            "Device",
-            "# of success",
-            "# of skipped",
-            "# of failure",
-            "# of errors",
-            "List of failed or error test cases",
+            self.Headers.device,
+            self.Headers.number_of_success,
+            self.Headers.number_of_skipped,
+            self.Headers.number_of_failure,
+            self.Headers.number_of_errors,
+            self.Headers.list_of_error_tests,
         ]
         table = self._build_headers(headers=headers, table=table)
         for device in manager.get_devices():
@@ -259,6 +272,16 @@ class ReportJinja:
 class ReportCsv:
     """Build a CSV report."""
 
+    class Headers(BaseModel):
+        """Headers for the CSV report."""
+
+        device: str = "Device"
+        test_name: str = "Test Name"
+        test_status: str = "Test Status"
+        messages: str = "Message(s)"
+        description: str = "Test description"
+        categories: str = "Test category"
+
     def _split_list_to_txt_list(self, usr_list: list[str], delimiter: str | None = None) -> str:
         """Split list to multi-lines string.
 
@@ -298,12 +321,12 @@ class ReportCsv:
             ]
 
         headers = [
-            "Device",
-            "Test Name",
-            "Test Status",
-            "Message(s)",
-            "Test description",
-            "Test category",
+            self.Headers.device,
+            self.Headers.test_name,
+            self.Headers.test_status,
+            self.Headers.messages,
+            self.Headers.description,
+            self.Headers.categories,
         ]
 
         with pathlib.Path.open(csv_filename, "w", encoding="utf-8") as csvfile:
