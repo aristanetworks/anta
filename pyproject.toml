@@ -180,6 +180,7 @@ filterwarnings = [
 branch = true
 source = ["anta"]
 parallel = true
+relative_files = true
 
 [tool.coverage.report]
 # Regexes for lines to exclude from consideration
