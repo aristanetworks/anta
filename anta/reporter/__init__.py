@@ -6,18 +6,18 @@
 # pylint: disable = too-few-public-methods
 from __future__ import annotations
 
-import csv
 import logging
-import pathlib
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
 from jinja2 import Template
-from pydantic import BaseModel
 from rich.table import Table
 
 from anta import RICH_COLOR_PALETTE, RICH_COLOR_THEME
 
 if TYPE_CHECKING:
+    import pathlib
+
     from anta.custom_types import TestStatus
     from anta.result_manager import ResultManager
     from anta.result_manager.models import TestResult
@@ -28,7 +28,8 @@ logger = logging.getLogger(__name__)
 class ReportTable:
     """TableReport Generate a Table based on TestResult."""
 
-    class Headers(BaseModel):
+    @dataclass()
+    class Headers:  # pylint: disable=too-many-instance-attributes
         """Headers for the table report."""
 
         device: str = "Device"
@@ -145,12 +146,12 @@ class ReportTable:
         """
         table = Table(title=title, show_lines=True)
         headers = [
-            self.Headers().test_case,
-            self.Headers().number_of_success,
-            self.Headers().number_of_skipped,
-            self.Headers().number_of_failure,
-            self.Headers().number_of_errors,
-            self.Headers().list_of_error_nodes,
+            self.Headers.test_case,
+            self.Headers.number_of_success,
+            self.Headers.number_of_skipped,
+            self.Headers.number_of_failure,
+            self.Headers.number_of_errors,
+            self.Headers.list_of_error_nodes,
         ]
         table = self._build_headers(headers=headers, table=table)
         for test in manager.get_tests():
@@ -193,12 +194,12 @@ class ReportTable:
         """
         table = Table(title=title, show_lines=True)
         headers = [
-            self.Headers().device,
-            self.Headers().number_of_success,
-            self.Headers().number_of_skipped,
-            self.Headers().number_of_failure,
-            self.Headers().number_of_errors,
-            self.Headers().list_of_error_tests,
+            self.Headers.device,
+            self.Headers.number_of_success,
+            self.Headers.number_of_skipped,
+            self.Headers.number_of_failure,
+            self.Headers.number_of_errors,
+            self.Headers.list_of_error_tests,
         ]
         table = self._build_headers(headers=headers, table=table)
         for device in manager.get_devices():
@@ -264,73 +265,3 @@ class ReportJinja:
             template = Template(file_.read(), trim_blocks=trim_blocks, lstrip_blocks=lstrip_blocks)
 
         return template.render({"data": data})
-
-
-class ReportCsv:
-    """Build a CSV report."""
-
-    class Headers(BaseModel):
-        """Headers for the CSV report."""
-
-        device: str = "Device"
-        test_name: str = "Test Name"
-        test_status: str = "Test Status"
-        messages: str = "Message(s)"
-        description: str = "Test description"
-        categories: str = "Test category"
-
-    def _split_list_to_txt_list(self, usr_list: list[str], delimiter: str | None = None) -> str:
-        """Split list to multi-lines string.
-
-        Args:
-        ----
-            usr_list (list[str]): List of string to concatenate
-            delimiter (str, optional): A delimiter to use to start string. Defaults to None.
-
-        Returns
-        -------
-            str: Multi-lines string
-
-        """
-        if delimiter is not None:
-            return "\n".join(f"{delimiter} {line}" for line in usr_list)
-        return "\n".join(f"{line}" for line in usr_list)
-
-    def csv_report(self, results: ResultManager, csv_filename: pathlib.Path) -> None:
-        """Build CSV flle with tests results.
-
-        Args:
-        ----
-            results: A ResultManager instance.
-            csv_filename: File path where to save CSV data.
-        """
-
-        def add_line(result: TestResult) -> list[str]:
-            message = self._split_list_to_txt_list(result.messages) if len(result.messages) > 0 else ""
-            categories = ", ".join(result.categories)
-            return [
-                str(result.name),
-                result.test,
-                result.result,
-                message.replace("\n", "\r\n"),
-                result.description,
-                categories,
-            ]
-
-        headers = [
-            self.Headers().device,
-            self.Headers().test_name,
-            self.Headers().test_status,
-            self.Headers().messages,
-            self.Headers().description,
-            self.Headers().categories,
-        ]
-
-        with pathlib.Path.open(csv_filename, "w", encoding="utf-8") as csvfile:
-            spamwriter = csv.writer(
-                csvfile,
-                delimiter=",",
-            )
-            spamwriter.writerow(headers)
-            for entry in results.results:
-                spamwriter.writerow(add_line(entry))

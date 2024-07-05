@@ -9,9 +9,8 @@ from __future__ import annotations
 import csv
 import logging
 import pathlib
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
-
-from pydantic import BaseModel
 
 if TYPE_CHECKING:
     from anta.result_manager import ResultManager
@@ -23,7 +22,8 @@ logger = logging.getLogger(__name__)
 class ReportCsv:
     """Build a CSV report."""
 
-    class Headers(BaseModel):
+    @dataclass()
+    class Headers:
         """Headers for the CSV report."""
 
         device: str = "Device"
@@ -33,7 +33,8 @@ class ReportCsv:
         description: str = "Test description"
         categories: str = "Test category"
 
-    def _split_list_to_txt_list(self, usr_list: list[str], delimiter: str | None = None) -> str:
+    @classmethod
+    def _split_list_to_txt_list(cls, usr_list: list[str], delimiter: str | None = None) -> str:
         """Split list to multi-lines string.
 
         Args:
@@ -50,7 +51,8 @@ class ReportCsv:
             return "\n".join(f"{delimiter} {line}" for line in usr_list)
         return "\n".join(f"{line}" for line in usr_list)
 
-    def csv_report(self, results: ResultManager, csv_filename: pathlib.Path) -> None:
+    @classmethod
+    def generate(cls, results: ResultManager, csv_filename: pathlib.Path) -> None:
         """Build CSV flle with tests results.
 
         Args:
@@ -60,7 +62,7 @@ class ReportCsv:
         """
 
         def add_line(result: TestResult) -> list[str]:
-            message = self._split_list_to_txt_list(result.messages) if len(result.messages) > 0 else ""
+            message = cls._split_list_to_txt_list(result.messages) if len(result.messages) > 0 else ""
             categories = ", ".join(result.categories)
             return [
                 str(result.name),
@@ -72,12 +74,12 @@ class ReportCsv:
             ]
 
         headers = [
-            self.Headers().device,
-            self.Headers().test_name,
-            self.Headers().test_status,
-            self.Headers().messages,
-            self.Headers().description,
-            self.Headers().categories,
+            cls.Headers.device,
+            cls.Headers.test_name,
+            cls.Headers.test_status,
+            cls.Headers.messages,
+            cls.Headers.description,
+            cls.Headers.categories,
         ]
 
         with pathlib.Path.open(csv_filename, "w", encoding="utf-8") as csvfile:

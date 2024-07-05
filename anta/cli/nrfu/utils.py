@@ -127,7 +127,7 @@ def print_jinja(results: ResultManager, template: pathlib.Path, output: pathlib.
 def save_to_csv(ctx: click.Context, csv_file: pathlib.Path | None = None) -> None:
     """Save results to a CSV file."""
     if csv_file is not None:
-        ReportCsv().csv_report(results=_get_result_manager(ctx), csv_filename=csv_file)
+        ReportCsv.generate(results=_get_result_manager(ctx), csv_filename=csv_file)
         checkmark = Emoji("white_check_mark")
         console.print(f"CSV report saved to {csv_file} {checkmark}", style="cyan")
 
