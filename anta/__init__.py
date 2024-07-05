@@ -27,7 +27,6 @@ if __DEBUG__:
 
 
 # Source: https://rich.readthedocs.io/en/stable/appendix/colors.html
-# Does this show in sonar?
 # pylint: disable=R0903
 class RICH_COLOR_PALETTE:
     """Color code for text rendering."""
@@ -50,3 +49,11 @@ RICH_COLOR_THEME = {
 }
 
 GITHUB_SUGGESTION = "Please reach out to the maintainer team or open an issue on Github: https://github.com/aristanetworks/anta."
+
+
+# Does this show in sonar?
+class Test:
+    """just a test."""
+
+
+BLAH = 42
