@@ -94,3 +94,10 @@ def test_anta_nrfu_template(click_runner: CliRunner) -> None:
     result = click_runner.invoke(anta, ["nrfu", "tpl-report", "--template", str(DATA_DIR / "template.j2")])
     assert result.exit_code == ExitCode.OK
     assert "* VerifyEOSVersion is SUCCESS for dummy" in result.output
+
+
+def test_anta_nrfu_csv(click_runner: CliRunner) -> None:
+    """Test anta nrfu, catalog is given via env."""
+    result = click_runner.invoke(anta, ["nrfu", "csv", "--csv-output", "test.csv"])
+    assert result.exit_code == ExitCode.OK
+    assert "CSV report saved to" in result.output
