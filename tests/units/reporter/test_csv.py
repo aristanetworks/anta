@@ -55,12 +55,12 @@ class TestReportCsv:
 
         # Assert the headers
         assert rows[0] == [
-            "Device",
-            "Test Name",
-            "Test Status",
-            "Message(s)",
-            "Test description",
-            "Test category",
+            ReportCsv.Headers.device,
+            ReportCsv.Headers.test_name,
+            ReportCsv.Headers.test_status,
+            ReportCsv.Headers.messages,
+            ReportCsv.Headers.description,
+            ReportCsv.Headers.categories,
         ]
 
         # Assert the test result rows
