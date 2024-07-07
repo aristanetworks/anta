@@ -87,6 +87,10 @@ anta.tests.bfd:
 anta.tests.configuration:
   - VerifyZeroTouch:
   - VerifyRunningConfigDiffs:
+  - VerifyRunningConfigLines:
+      regex_patterns:
+        - "^enable password.*$"
+        - "bla bla"
 
 anta.tests.connectivity:
   - VerifyReachability:
