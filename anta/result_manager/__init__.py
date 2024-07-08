@@ -114,9 +114,16 @@ class ResultManager:
     @results.setter
     def results(self, value: list[TestResult]) -> None:
         """Set the list of TestResult."""
+        # When setting the results, we need to reset the state of the current instance
         self._result_entries = []
         self.status = "unset"
         self.error_status = False
+
+        # Also reset the stats attributes
+        self.dut_stats = defaultdict(DeviceStats)
+        self.category_stats = defaultdict(CategoryStats)
+        self.test_stats = defaultdict(TestStats)
+
         for result in value:
             self.add(result)
 
