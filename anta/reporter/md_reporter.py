@@ -12,43 +12,45 @@ from typing import TYPE_CHECKING, ClassVar
 if TYPE_CHECKING:
     from collections.abc import Generator
     from io import TextIOWrapper
+    from pathlib import Path
 
     from anta.result_manager import ResultManager
 
 
 # pylint: disable=too-few-public-methods
-class MDReportFactory:
-    """Factory class responsible for generating a Markdown report based on the provided `ResultManager` object.
+class MDReportGenerator:
+    """Class responsible for generating a Markdown report based on the provided `ResultManager` object.
 
     It aggregates different report sections, each represented by a subclass of `MDReportBase`,
     and sequentially generates their content into a markdown file.
 
-    The `generate_report` method will loop over all the section subclasses and call their `generate_section` method.
+    The `generate` class method will loop over all the section subclasses and call their `generate_section` method.
     The final report will be generated in the same order as the `sections` list of the method.
 
-    The factory method also accepts an optional `only_failed_tests` flag to generate a report with only failed tests.
+    The class method also accepts an optional `only_failed_tests` flag to generate a report with only failed tests.
 
     By default, the report will include all test results.
     """
 
     @classmethod
-    def generate_report(cls, mdfile: TextIOWrapper, manager: ResultManager, *, only_failed_tests: bool = False) -> None:
+    def generate(cls, results: ResultManager, md_filename: Path, *, only_failed_tests: bool = False) -> None:
         """Generate and write the various sections of the markdown report."""
-        sections: list[MDReportBase] = [
-            ANTAReport(mdfile, manager),
-            TestResultsSummary(mdfile, manager),
-            SummaryTotals(mdfile, manager),
-            SummaryTotalsDeviceUnderTest(mdfile, manager),
-            SummaryTotalsPerCategory(mdfile, manager),
-            FailedTestResultsSummary(mdfile, manager),
-            AllTestResults(mdfile, manager),
-        ]
+        with md_filename.open("w", encoding="utf-8") as mdfile:
+            sections: list[MDReportBase] = [
+                ANTAReport(mdfile, results),
+                TestResultsSummary(mdfile, results),
+                SummaryTotals(mdfile, results),
+                SummaryTotalsDeviceUnderTest(mdfile, results),
+                SummaryTotalsPerCategory(mdfile, results),
+                FailedTestResultsSummary(mdfile, results),
+                AllTestResults(mdfile, results),
+            ]
 
-        if only_failed_tests:
-            sections.pop()
+            if only_failed_tests:
+                sections.pop()
 
-        for section in sections:
-            section.generate_section()
+            for section in sections:
+                section.generate_section()
 
 
 class MDReportBase(ABC):
@@ -58,7 +60,7 @@ class MDReportBase(ABC):
     to generate and write content to the provided markdown file.
     """
 
-    def __init__(self, mdfile: TextIOWrapper, manager: ResultManager) -> None:
+    def __init__(self, mdfile: TextIOWrapper, results: ResultManager) -> None:
         """Initialize the MDReportBase with an open markdown file object to write to and a ResultManager instance.
 
         Args:
@@ -67,7 +69,7 @@ class MDReportBase(ABC):
             results (ResultManager): The ResultsManager instance containing all test results.
         """
         self.mdfile = mdfile
-        self.manager = manager
+        self.results = results
 
     @abstractmethod
     def generate_section(self) -> None:
@@ -101,7 +103,7 @@ class MDReportBase(ABC):
         class_name = self.__class__.__name__
 
         # Split the class name into words, keeping acronyms together
-        words = re.findall(r"([A-Z]+(?=[A-Z][a-z]|\d|\W|$|\s)|[A-Z]?[a-z]+|\d+)", class_name)
+        words = re.findall(r"[A-Z]?[a-z]+|[A-Z]+(?=[A-Z][a-z]|\d|\W|$)|\d+", class_name)
 
         # Capitalize each word, but keep acronyms in all caps
         formatted_words = [word if word.isupper() else word.capitalize() for word in words]
@@ -185,17 +187,18 @@ class SummaryTotals(MDReportBase):
     """Generate the `### Summary Totals` section of the markdown report."""
 
     TABLE_HEADING: ClassVar[list[str]] = [
-        "| Total Tests | Total Tests Passed | Total Tests Failed | Total Tests Skipped |",
-        "| ----------- | ------------------ | ------------------ | ------------------- |",
+        "| Total Tests | Total Tests Success | Total Tests Skipped | Total Tests Failure | Total Tests Error |",
+        "| ----------- | ------------------- | ------------------- | ------------------- | ------------------|",
     ]
 
     def generate_rows(self) -> Generator[str, None, None]:
         """Generate the rows of the summary totals table."""
         yield (
-            f"| {self.manager.get_total_results()} "
-            f"| {self.manager.get_total_results('success')} "
-            f"| {self.manager.get_total_results({'failure', 'error', 'unset'})} "
-            f"| {self.manager.get_total_results('skipped')} |\n"
+            f"| {self.results.get_total_results()} "
+            f"| {self.results.get_total_results('success')} "
+            f"| {self.results.get_total_results('skipped')} "
+            f"| {self.results.get_total_results('failure')} "
+            f"| {self.results.get_total_results('error')} |\n"
         )
 
     def generate_section(self) -> None:
@@ -208,19 +211,19 @@ class SummaryTotalsDeviceUnderTest(MDReportBase):
     """Generate the `### Summary Totals Devices Under Tests` section of the markdown report."""
 
     TABLE_HEADING: ClassVar[list[str]] = [
-        "| Device Under Test | Total Tests | Tests Passed | Tests Failed | Tests Skipped | Categories Failed | Categories Skipped |",
-        "| ------------------| ----------- | ------------ | ------------ | ------------- | ----------------- | ------------------ |",
+        "| Device Under Test | Total Tests | Tests Success | Tests Skipped | Tests Failure | Tests Error | Categories Skipped | Categories Failed |",
+        "| ------------------| ----------- | ------------- | ------------- | ------------- | ----------- | -------------------| ------------------|",
     ]
 
     def generate_rows(self) -> Generator[str, None, None]:
         """Generate the rows of the summary totals dut table."""
-        for dut, stat in self.manager.dut_stats.items():
-            total_tests = stat.tests_passed + stat.tests_failed + stat.tests_skipped
-            categories_failed = ", ".join(sorted(stat.categories_failed))
+        for dut, stat in self.results.dut_stats.items():
+            total_tests = stat.tests_success_count + stat.tests_skipped_count + stat.tests_failure_count + stat.tests_error_count
             categories_skipped = ", ".join(sorted(stat.categories_skipped))
+            categories_failed = ", ".join(sorted(stat.categories_failed))
             yield (
-                f"| {dut} | {total_tests} | {stat.tests_passed} | {stat.tests_failed} | {stat.tests_skipped} | {categories_failed or '-'} "
-                f"| {categories_skipped or '-'} |\n"
+                f"| {dut} | {total_tests} | {stat.tests_success_count} | {stat.tests_skipped_count} | {stat.tests_failure_count} | {stat.tests_error_count} "
+                f"| {categories_skipped or '-'} | {categories_failed or '-'} |\n"
             )
 
     def generate_section(self) -> None:
@@ -233,15 +236,15 @@ class SummaryTotalsPerCategory(MDReportBase):
     """Generate the `### Summary Totals Per Category` section of the markdown report."""
 
     TABLE_HEADING: ClassVar[list[str]] = [
-        "| Test Category | Total Tests | Tests Passed | Tests Failed | Tests Skipped |",
-        "| ------------- | ----------- | ------------ | ------------ | ------------- |",
+        "| Test Category | Total Tests | Tests Success | Tests Skipped | Tests Failure | Tests Error |",
+        "| ------------- | ----------- | ------------- | ------------- | ------------- | ----------- |",
     ]
 
     def generate_rows(self) -> Generator[str, None, None]:
         """Generate the rows of the summary totals per category table."""
-        for category, stat in self.manager.sorted_category_stats.items():
-            total_tests = stat.tests_passed + stat.tests_failed + stat.tests_skipped
-            yield f"| {category} | {total_tests} | {stat.tests_passed} | {stat.tests_failed} | {stat.tests_skipped} |\n"
+        for category, stat in self.results.sorted_category_stats.items():
+            total_tests = stat.tests_success_count + stat.tests_skipped_count + stat.tests_failure_count + stat.tests_error_count
+            yield f"| {category} | {total_tests} | {stat.tests_success_count} | {stat.tests_skipped_count} | {stat.tests_failure_count} | {stat.tests_error_count}\n"
 
     def generate_section(self) -> None:
         """Generate the `### Summary Totals Per Category` section of the markdown report."""
@@ -254,12 +257,12 @@ class FailedTestResultsSummary(MDReportBase):
 
     TABLE_HEADING: ClassVar[list[str]] = [
         "| ID | Device Under Test | Categories | Test | Description | Custom Field | Result | Messages |",
-        "| -- | ----------------- | ---------- | ---- | ----------- | ------------ | -------| -------- |",
+        "| -- | ----------------- | ---------- | ---- | ----------- | ------------ | ------ | -------- |",
     ]
 
     def generate_rows(self) -> Generator[str, None, None]:
         """Generate the rows of the failed test results table."""
-        for result in self.manager.get_results({"failure", "error", "unset"}):
+        for result in self.results.get_results({"failure", "error"}):
             messages = self.safe_markdown(", ".join(result.messages))
             categories = ", ".join(result.categories)
             yield (
@@ -281,12 +284,12 @@ class AllTestResults(MDReportBase):
 
     TABLE_HEADING: ClassVar[list[str]] = [
         "| ID | Device Under Test | Categories | Test | Description | Custom Field | Result | Messages |",
-        "| -- | ----------------- | ---------- | ---- | ----------- | ------------ | -------| -------- |",
+        "| -- | ----------------- | ---------- | ---- | ----------- | ------------ | ------ | -------- |",
     ]
 
     def generate_rows(self) -> Generator[str, None, None]:
         """Generate the rows of the all test results table."""
-        for result in self.manager.results:
+        for result in self.results.get_results():
             messages = self.safe_markdown(", ".join(result.messages))
             categories = ", ".join(result.categories)
             yield (

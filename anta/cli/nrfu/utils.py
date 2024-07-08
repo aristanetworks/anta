@@ -18,7 +18,7 @@ from rich.progress import BarColumn, MofNCompleteColumn, Progress, SpinnerColumn
 from anta.cli.console import console
 from anta.models import AntaTest
 from anta.reporter import ReportJinja, ReportTable
-from anta.reporter.md_report import MDReportFactory
+from anta.reporter.md_reporter import MDReportGenerator
 from anta.runner import main
 
 if TYPE_CHECKING:
@@ -124,13 +124,12 @@ def print_jinja(results: ResultManager, template: pathlib.Path, output: pathlib.
             file.write(report)
 
 
-def save_markdown_report(results: ResultManager, output: pathlib.Path, *, only_failed_tests: bool = False) -> None:
+def save_markdown_report(ctx: click.Context, md_output: pathlib.Path, *, only_failed_tests: bool = False) -> None:
     """Save the markdown report."""
     console.print()
-    with output.open(mode="w", encoding="utf-8") as report_file:
-        MDReportFactory.generate_report(report_file, results, only_failed_tests=only_failed_tests)
+    MDReportGenerator.generate(results=_get_result_manager(ctx), md_filename=md_output, only_failed_tests=only_failed_tests)
     checkmark = Emoji("white_check_mark")
-    console.print(f"Markdown report saved to {output} {checkmark}", style="cyan")
+    console.print(f"Markdown report saved to {md_output} {checkmark}", style="cyan")
 
 
 # Adding our own ANTA spinner - overriding rich SPINNERS for our own

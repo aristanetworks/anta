@@ -95,13 +95,18 @@ class TestResult(BaseModel):
         return f"Test '{self.test}' (on '{self.name}'): Result '{self.result}'\nMessages: {self.messages}"
 
 
+# Pylint does not treat dataclasses differently: https://github.com/pylint-dev/pylint/issues/9058
+# pylint: disable=too-many-instance-attributes
 @dataclass
 class DeviceStats:
     """Device statistics for a run of tests."""
 
-    tests_passed: int = 0
-    tests_failed: int = 0
-    tests_skipped: int = 0
+    tests_success_count: int = 0
+    tests_skipped_count: int = 0
+    tests_failure_count: int = 0
+    tests_error_count: int = 0
+    tests_unset_count: int = 0
+    tests_failure: set[str] = field(default_factory=set)
     categories_failed: set[str] = field(default_factory=set)
     categories_skipped: set[str] = field(default_factory=set)
 
@@ -110,6 +115,20 @@ class DeviceStats:
 class CategoryStats:
     """Category statistics for a run of tests."""
 
-    tests_passed: int = 0
-    tests_failed: int = 0
-    tests_skipped: int = 0
+    tests_success_count: int = 0
+    tests_skipped_count: int = 0
+    tests_failure_count: int = 0
+    tests_error_count: int = 0
+    tests_unset_count: int = 0
+
+
+@dataclass
+class TestStats:
+    """Test statistics for a run of tests."""
+
+    devices_success_count: int = 0
+    devices_skipped_count: int = 0
+    devices_failure_count: int = 0
+    devices_error_count: int = 0
+    devices_unset_count: int = 0
+    devices_failure: set[str] = field(default_factory=set)
