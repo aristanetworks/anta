@@ -92,7 +92,7 @@ HIDE_STATUS.remove("unset")
     default=None,
     type=click.Choice(HIDE_STATUS, case_sensitive=False),
     multiple=True,
-    help="Group result by test or device.",
+    help="Hide results by type: success / failure / error / skipped'.",
     required=False,
 )
 @click.option(
