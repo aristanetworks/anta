@@ -145,6 +145,29 @@ anta nrfu --tags LEAF json
 ```
 ![$1anta nrfu json results](../imgs/anta-nrfu-json-output.png){ loading=lazy width="1600" }
 
+## Performing NRFU with saving results in CSV file.
+
+The `csv` command in NRFU testing is useful in generating a CSV file with all tests result that can be analyzed, filtered by operator for reporting purposes.
+
+### Command overview
+
+```bash
+anta nrfu csv --help
+Usage: anta nrfu csv [OPTIONS]
+
+  ANTA command to check network states with CSV result.
+
+Options:
+  --csv-output FILE  Path to save report as a CSV file. It only saves test
+                     results and not the output from --group-by option  [env
+                     var: ANTA_NRFU_CSV_CSV_OUTPUT]
+  --help             Show this message and exit.
+```
+
+### Example
+
+![anta nrfu csv results](../imgs/anta_nrfu_csv.png){ loading=lazy width="1600" }
+
 ## Performing NRFU with custom reports
 
 ANTA offers a CLI option for creating custom reports. This leverages the Jinja2 template system, allowing you to tailor reports to your specific needs.
