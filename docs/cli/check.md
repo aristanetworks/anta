@@ -27,10 +27,12 @@ Commands:
 ```bash
 Usage: anta check catalog [OPTIONS]
 
-  Check that the catalog is valid
+  Check that the catalog is valid.
 
 Options:
-  -c, --catalog FILE  Path to the test catalog YAML file  [env var:
-                      ANTA_CATALOG; required]
-  --help              Show this message and exit.
+  -c, --catalog FILE            Path to the test catalog file  [env var:
+                                ANTA_CATALOG; required]
+  --catalog-format [yaml|json]  Format of the catalog file, either 'yaml' or
+                                'json'  [env var: ANTA_CATALOG_FORMAT]
+  --help                        Show this message and exit.
 ```

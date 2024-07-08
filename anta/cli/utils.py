@@ -60,8 +60,8 @@ def exit_with_code(ctx: click.Context) -> None:
         * 1 if status is `failure`
         * 2 if status is `error`.
 
-    Args:
-    ----
+    Parameters
+    ----------
         ctx: Click Context
 
     """
@@ -268,7 +268,7 @@ def catalog_options(f: Callable[..., Any]) -> Callable[..., Any]:
         "-c",
         envvar="ANTA_CATALOG",
         show_envvar=True,
-        help="Path to the test catalog YAML file",
+        help="Path to the test catalog file",
         type=click.Path(
             file_okay=True,
             dir_okay=False,
@@ -278,19 +278,29 @@ def catalog_options(f: Callable[..., Any]) -> Callable[..., Any]:
         ),
         required=True,
     )
+    @click.option(
+        "--catalog-format",
+        envvar="ANTA_CATALOG_FORMAT",
+        show_envvar=True,
+        help="Format of the catalog file, either 'yaml' or 'json'",
+        default="yaml",
+        type=click.Choice(["yaml", "json"], case_sensitive=False),
+    )
     @click.pass_context
     @functools.wraps(f)
     def wrapper(
         ctx: click.Context,
         *args: tuple[Any],
         catalog: Path,
+        catalog_format: str,
         **kwargs: dict[str, Any],
     ) -> Any:
         # If help is invoke somewhere, do not parse catalog
         if ctx.obj.get("_anta_help"):
             return f(*args, catalog=None, **kwargs)
         try:
-            c = AntaCatalog.parse(catalog)
+            file_format = catalog_format.lower()
+            c = AntaCatalog.parse(catalog, file_format=file_format)  # type: ignore[arg-type]
         except (TypeError, ValueError, YAMLError, OSError):
             ctx.exit(ExitCode.USAGE_ERROR)
         return f(*args, catalog=c, **kwargs)
