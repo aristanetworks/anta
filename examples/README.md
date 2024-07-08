@@ -21,13 +21,13 @@ This file should contain all the tests implemented in [anta.tests](../anta/tests
 
 The file [eos-commands.yaml](eos-commands.yaml) is an example of input given with the `--commands-list` option to the [anta exec snapshot](https://anta.arista.com/stable/cli/exec/#collect-a-set-of-commands) command.
 
-## anta runner in Python
+## ANTA runner in Python
 
 - Filename: [`anta_runner.py`](./anta_runner.py)
 
-The file is an example demonstrated how tu run anta using a python script
+The file is an example demonstrating how to run ANTA using a python script
 
-## Anta template for results rendering
+## ANTA template for results rendering
 
 - Filename: [`template.j2`](./template.j2)
 
