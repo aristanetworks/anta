@@ -78,12 +78,22 @@ A test catalog is an instance of the [AntaCatalog](./api/catalog.md#anta.catalog
 
 In addition to the inventory file, you also have to define a catalog of tests to execute against your devices. This catalog list all your tests, their inputs and their tags.
 
-A valid test catalog file must have the following structure:
+A valid test catalog file must have the following structure in either YAML or JSON:
 ```yaml
 ---
 <Python module>:
     - <AntaTest subclass>:
         <AntaTest.Input compliant dictionary>
+```
+
+```json
+{
+  "<Python module>": [
+    {
+      "<AntaTest subclass>": <AntaTest.Input compliant dictionary>
+    }
+  ]
+}
 ```
 
 ### Example
@@ -108,6 +118,43 @@ anta.tests.connectivity:
         custom_field: "Test run by John Doe"
 ```
 
+or equivalent in JSON:
+
+```json
+{
+  "anta.tests.connectivity": [
+    {
+      "VerifyReachability": {
+        "result_overwrite": {
+          "description": "Test with overwritten description",
+          "categories": [
+            "Overwritten category 1"
+          ],
+          "custom_field": "Test run by John Doe"
+        },
+        "filters": {
+          "tags": [
+            "leaf"
+          ]
+        },
+        "hosts": [
+          {
+            "destination": "1.1.1.1",
+            "source": "Management0",
+            "vrf": "MGMT"
+          },
+          {
+            "destination": "8.8.8.8",
+            "source": "Management0",
+            "vrf": "MGMT"
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
 It is also possible to nest Python module definition:
 ```yaml
 anta.tests:
@@ -129,7 +176,7 @@ anta.tests:
           custom_field: "Test run by John Doe"
 ```
 
-[This test catalog example](https://github.com/arista-netdevops-community/anta/blob/main/examples/tests.yaml) is maintained with all the tests defined in the `anta.tests` Python module.
+[This test catalog example](https://github.com/aristanetworks/anta/blob/main/examples/tests.yaml) is maintained with all the tests defined in the `anta.tests` Python module.
 
 ### Test tags
 
@@ -165,7 +212,7 @@ anta.tests.software:
   - VerifyEOSVersion:
 ```
 
-It will load the test `VerifyEOSVersion` located in `anta.tests.software`. But since this test has mandatory inputs, we need to provide them as a dictionary in the YAML file:
+It will load the test `VerifyEOSVersion` located in `anta.tests.software`. But since this test has mandatory inputs, we need to provide them as a dictionary in the YAML or JSON file:
 
 ```yaml
 anta.tests.software:
@@ -174,6 +221,21 @@ anta.tests.software:
       versions:
         - 4.25.4M
         - 4.26.1F
+```
+
+```json
+{
+  "anta.tests.software": [
+    {
+      "VerifyEOSVersion": {
+        "versions": [
+          "4.25.4M",
+          "4.31.1F"
+        ]
+      }
+    }
+  ]
+}
 ```
 
 The following example is a very minimal test catalog:
@@ -205,10 +267,10 @@ anta.tests.configuration:
 ### Catalog with custom tests
 
 In case you want to leverage your own tests collection, use your own Python package in the test catalog.
-So for instance, if my custom tests are defined in the `titom73.tests.system` Python module, the test catalog will be:
+So for instance, if my custom tests are defined in the `custom.tests.system` Python module, the test catalog will be:
 
 ```yaml
-titom73.tests.system:
+custom.tests.system:
   - VerifyPlatform:
     type: ['cEOS-LAB']
 ```
@@ -243,4 +305,33 @@ Once you run `anta nrfu table`, you will see following output:
 │ spine01   │ VerifyRunningConfigDiffs   │ success     │            │                                               │ configuration │
 │ spine01   │ VerifyInterfaceUtilization │ success     │            │ Verifies interfaces utilization is below 75%. │ interfaces    │
 └───────────┴────────────────────────────┴─────────────┴────────────┴───────────────────────────────────────────────┴───────────────┘
+```
+
+### Example script to merge catalogs
+
+The following script reads all the files in `intended/test_catalogs/` with names `<device_name>-catalog.yml` and merge them together inside one big catalog `anta-catalog.yml`.
+
+```python
+#!/usr/bin/env python
+from anta.catalog import AntaCatalog
+
+from pathlib import Path
+from anta.models import AntaTest
+
+
+CATALOG_SUFFIX = '-catalog.yml'
+CATALOG_DIR = 'intended/test_catalogs/'
+
+if __name__ == "__main__":
+    catalog = AntaCatalog()
+    for file in Path(CATALOG_DIR).glob('*'+CATALOG_SUFFIX):
+        c = AntaCatalog.parse(file)
+        device = str(file).removesuffix(CATALOG_SUFFIX).removeprefix(CATALOG_DIR)
+        print(f"Merging test catalog for device {device}")
+        # Apply filters to all tests for this device
+        for test in c.tests:
+            test.inputs.filters = AntaTest.Input.Filters(tags=[device])
+        catalog = catalog.merge(c)
+    with open(Path('anta-catalog.yml'), "w") as f:
+        f.write(catalog.dump().yaml())
 ```

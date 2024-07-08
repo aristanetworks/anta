@@ -5,7 +5,6 @@
 
 from __future__ import annotations
 
-import asyncio
 from typing import TYPE_CHECKING, get_args
 
 import click
@@ -13,11 +12,7 @@ import click
 from anta.cli.nrfu import commands
 from anta.cli.utils import AliasedGroup, catalog_options, inventory_options
 from anta.custom_types import TestStatus
-from anta.models import AntaTest
 from anta.result_manager import ResultManager
-from anta.runner import main
-
-from .utils import anta_progress_bar, print_settings
 
 if TYPE_CHECKING:
     from anta.catalog import AntaCatalog
@@ -37,6 +32,7 @@ class IgnoreRequiredWithHelp(AliasedGroup):
         """Ignore MissingParameter exception when parsing arguments if `--help` is present for a subcommand."""
         # Adding a flag for potential callbacks
         ctx.ensure_object(dict)
+        ctx.obj["args"] = args
         if "--help" in args:
             ctx.obj["_anta_help"] = True
 
@@ -96,7 +92,7 @@ HIDE_STATUS.remove("unset")
     default=None,
     type=click.Choice(HIDE_STATUS, case_sensitive=False),
     multiple=True,
-    help="Group result by test or device.",
+    help="Hide results by type: success / failure / error / skipped'.",
     required=False,
 )
 @click.option(
@@ -120,34 +116,29 @@ def nrfu(
     ignore_status: bool,
     ignore_error: bool,
     dry_run: bool,
+    catalog_format: str = "yaml",
 ) -> None:
     """Run ANTA tests on selected inventory devices."""
     # If help is invoke somewhere, skip the command
     if ctx.obj.get("_anta_help"):
         return
+
     # We use ctx.obj to pass stuff to the next Click functions
     ctx.ensure_object(dict)
     ctx.obj["result_manager"] = ResultManager()
     ctx.obj["ignore_status"] = ignore_status
     ctx.obj["ignore_error"] = ignore_error
     ctx.obj["hide"] = set(hide) if hide else None
-    print_settings(inventory, catalog)
-    with anta_progress_bar() as AntaTest.progress:
-        asyncio.run(
-            main(
-                ctx.obj["result_manager"],
-                inventory,
-                catalog,
-                tags=tags,
-                devices=set(device) if device else None,
-                tests=set(test) if test else None,
-                dry_run=dry_run,
-            )
-        )
-    if dry_run:
-        return
+    ctx.obj["catalog"] = catalog
+    ctx.obj["catalog_format"] = catalog_format
+    ctx.obj["inventory"] = inventory
+    ctx.obj["tags"] = tags
+    ctx.obj["device"] = device
+    ctx.obj["test"] = test
+    ctx.obj["dry_run"] = dry_run
+
     # Invoke `anta nrfu table` if no command is passed
-    if ctx.invoked_subcommand is None:
+    if not ctx.invoked_subcommand:
         ctx.invoke(commands.table)
 
 

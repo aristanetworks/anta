@@ -25,8 +25,8 @@ if TYPE_CHECKING:
 def _get_logging_states(logger: logging.Logger, command_output: str) -> str:
     """Parse `show logging` output and gets operational logging states used in the tests in this module.
 
-    Args:
-    ----
+    Parameters
+    ----------
         logger: The logger object.
         command_output: The `show logging` output.
 

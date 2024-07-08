@@ -24,6 +24,7 @@ if TYPE_CHECKING:
 
 DATA_DIR: Path = Path(__file__).parent.parent.resolve() / "data"
 
+
 @pytest.mark.parametrize(
     ("test_inventory", "test_catalog"),
     [

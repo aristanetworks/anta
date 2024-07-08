@@ -19,30 +19,31 @@ Python 3.11.8
 
 This installation will deploy tests collection, scripts and all their Python requirements.
 
-The ANTA package and the cli require some packages that are not part of the Python standard library. They are indicated in the [pyproject.toml](https://github.com/arista-netdevops-community/anta/blob/main/pyproject.toml) file, under dependencies.
+The ANTA package and the cli require some packages that are not part of the Python standard library. They are indicated in the [pyproject.toml](https://github.com/aristanetworks/anta/blob/main/pyproject.toml) file, under dependencies.
 
 
 ### Install library from Pypi server
-
-!!! Note
-
-    This command alone **will not** install the ANTA CLI requirements.
 
 ```bash
 pip install anta
 ```
 
+!!! Warning
+
+    * This command alone **will not** install the ANTA CLI requirements.
+
 ### Install ANTA CLI as an application with `pipx`
 
 [`pipx`](https://pipx.pypa.io/stable/) is a tool to install and run python applications in isolated environments. If you plan to use ANTA only as a CLI tool you can use `pipx` to install it. `pipx` installs ANTA in an isolated python environment and makes it available globally.
+
+```
+pipx install anta[cli]
+```
 
 !!! Info
 
     Please take the time to read through the installation instructions of `pipx` before getting started.
 
-```
-pipx install anta[cli]
-```
 
 ### Install CLI from Pypi server
 
@@ -56,18 +57,18 @@ pip install anta[cli]
 
 
 ```bash
-pip install git+https://github.com/arista-netdevops-community/anta.git
-pip install git+https://github.com/arista-netdevops-community/anta.git#egg=anta[cli]
+pip install git+https://github.com/aristanetworks/anta.git
+pip install git+https://github.com/aristanetworks/anta.git#egg=anta[cli]
 
 # You can even specify the branch, tag or commit:
-pip install git+https://github.com/arista-netdevops-community/anta.git@<cool-feature-branch>
-pip install git+https://github.com/arista-netdevops-community/anta.git@<cool-feature-branch>#egg=anta[cli]
+pip install git+https://github.com/aristanetworks/anta.git@<cool-feature-branch>
+pip install git+https://github.com/aristanetworks/anta.git@<cool-feature-branch>#egg=anta[cli]
 
-pip install git+https://github.com/arista-netdevops-community/anta.git@<cool-tag>
-pip install git+https://github.com/arista-netdevops-community/anta.git@<cool-tag>#egg=anta[cli]
+pip install git+https://github.com/aristanetworks/anta.git@<cool-tag>
+pip install git+https://github.com/aristanetworks/anta.git@<cool-tag>#egg=anta[cli]
 
-pip install git+https://github.com/arista-netdevops-community/anta.git@<more-or-less-cool-hash>
-pip install git+https://github.com/arista-netdevops-community/anta.git@<more-or-less-cool-hash>#egg=anta[cli]
+pip install git+https://github.com/aristanetworks/anta.git@<more-or-less-cool-hash>
+pip install git+https://github.com/aristanetworks/anta.git@<more-or-less-cool-hash>#egg=anta[cli]
 ```
 
 ### Check installation
@@ -90,12 +91,12 @@ which anta
 ```bash
 # Check ANTA version
 anta --version
-anta, version v0.14.0
+anta, version v1.0.0
 ```
 
 ## EOS Requirements
 
-To get ANTA working, the targeted Arista EOS devices must have the following configuration (assuming you connect to the device using Management interface in MGMT VRF):
+To get ANTA working, the targeted Arista EOS devices must have eAPI enabled. They need to use the following configuration (assuming you connect to the device using Management interface in MGMT VRF):
 
 ```eos
 configure

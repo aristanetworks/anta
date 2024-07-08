@@ -153,10 +153,10 @@ class FakeTestWithTemplateBadRender1(AntaTest):
 
 
 class FakeTestWithTemplateBadRender2(AntaTest):
-    """ANTA test with template that raises an arbitrary exception."""
+    """ANTA test with template that raises an arbitrary exception in render()."""
 
     name = "FakeTestWithTemplateBadRender2"
-    description = "ANTA test with template that raises an arbitrary exception"
+    description = "ANTA test with template that raises an arbitrary exception in render()"
     categories: ClassVar[list[str]] = []
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show interface {interface}")]
 
@@ -173,6 +173,53 @@ class FakeTestWithTemplateBadRender2(AntaTest):
     def test(self) -> None:
         """Test function."""
         self.result.is_success(self.instance_commands[0].command)
+
+
+class FakeTestWithTemplateBadRender3(AntaTest):
+    """ANTA test with template that gives extra template parameters in render()."""
+
+    name = "FakeTestWithTemplateBadRender3"
+    description = "ANTA test with template that gives extra template parameters in render()"
+    categories: ClassVar[list[str]] = []
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show interface {interface}")]
+
+    class Input(AntaTest.Input):
+        """Inputs for FakeTestWithTemplateBadRender3 test."""
+
+        interface: str
+
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        """Render function."""
+        return [template.render(interface=self.inputs.interface, extra="blah")]
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Test function."""
+        self.result.is_success(self.instance_commands[0].command)
+
+
+class FakeTestWithTemplateBadTest(AntaTest):
+    """ANTA test with template that tries to access an undefined template parameter in test()."""
+
+    name = "FakeTestWithTemplateBadTest"
+    description = "ANTA test with template that tries to access an undefined template parameter in test()"
+    categories: ClassVar[list[str]] = []
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show interface {interface}")]
+
+    class Input(AntaTest.Input):
+        """Inputs for FakeTestWithTemplateBadTest test."""
+
+        interface: str
+
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        """Render function."""
+        return [template.render(interface=self.inputs.interface)]
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Test function."""
+        # The following line must raise AttributeError at runtime
+        self.result.is_success(self.instance_commands[0].params.wrong_template_param)
 
 
 class SkipOnPlatformTest(AntaTest):
@@ -362,6 +409,31 @@ ANTATEST_DATA: list[dict[str, Any]] = [
                 "messages": ["Exception in tests.units.test_models.FakeTestWithTemplateBadRender2.render(): RuntimeError"],
             },
             "test": {"result": "error"},
+        },
+    },
+    {
+        "name": "Extra template parameters in render()",
+        "test": FakeTestWithTemplateBadRender3,
+        "inputs": {"interface": "Ethernet1"},
+        "expected": {
+            "__init__": {
+                "result": "error",
+                "messages": [
+                    "Exception in tests.units.test_models.FakeTestWithTemplateBadRender3.render(): ValidationError: 1 validation error for AntaParams\n"
+                    "extra\n"
+                    "  Extra inputs are not permitted [type=extra_forbidden, input_value='blah', input_type=str]\n"
+                ],
+            },
+            "test": {"result": "error"},
+        },
+    },
+    {
+        "name": "Access undefined template param in test()",
+        "test": FakeTestWithTemplateBadTest,
+        "inputs": {"interface": "Ethernet1"},
+        "expected": {
+            "__init__": {"result": "unset"},
+            "test": {"result": "error", "messages": ["AttributeError: 'AntaParams' object has no attribute 'wrong_template_param'"]},
         },
     },
     {
@@ -573,7 +645,6 @@ class TestAntaComamnd:
         json_cmd_2 = AntaCommand(command="show dummy", output="not_json")
         text_cmd = AntaCommand(command="show dummy", ofmt="text", output="blah")
         text_cmd_2 = AntaCommand(command="show dummy", ofmt="text", output={"not_a": "string"})
-        msg = "Output of command 'show dummy' is invalid"
         msg = "Output of command 'show dummy' is invalid"
         with pytest.raises(RuntimeError, match=msg):
             json_cmd.text_output

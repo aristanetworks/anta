@@ -54,6 +54,20 @@ def test_anta_nrfu_table(click_runner: CliRunner) -> None:
     assert "dummy  │ VerifyEOSVersion │ success" in result.output
 
 
+def test_anta_nrfu_table_group_by_device(click_runner: CliRunner) -> None:
+    """Test anta nrfu, catalog is given via env."""
+    result = click_runner.invoke(anta, ["nrfu", "table", "--group-by", "device"])
+    assert result.exit_code == ExitCode.OK
+    assert "Summary per device" in result.output
+
+
+def test_anta_nrfu_table_group_by_test(click_runner: CliRunner) -> None:
+    """Test anta nrfu, catalog is given via env."""
+    result = click_runner.invoke(anta, ["nrfu", "table", "--group-by", "test"])
+    assert result.exit_code == ExitCode.OK
+    assert "Summary per test" in result.output
+
+
 def test_anta_nrfu_text(click_runner: CliRunner) -> None:
     """Test anta nrfu, catalog is given via env."""
     result = click_runner.invoke(anta, ["nrfu", "text"])
@@ -66,7 +80,7 @@ def test_anta_nrfu_json(click_runner: CliRunner) -> None:
     result = click_runner.invoke(anta, ["nrfu", "json"])
     assert result.exit_code == ExitCode.OK
     assert "JSON results" in result.output
-    match = re.search(r"\[\n  {[\s\S]+  }\n\]", result.output)
+    match = re.search(r"\[\n {2}{[\s\S]+ {2}}\n\]", result.output)
     assert match is not None
     result_list = json.loads(match.group())
     for res in result_list:

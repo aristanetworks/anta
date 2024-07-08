@@ -1,19 +1,21 @@
 ---
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
-files: ^(anta|docs|scripts|tests)/
+files: ^(anta|docs|scripts|tests|asynceapi)/
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v4.6.0
     hooks:
       - id: trailing-whitespace
+        exclude: docs/.*.svg
       - id: end-of-file-fixer
       - id: check-added-large-files
+        exclude: tests/data/.*$
       - id: check-merge-conflict
 
   - repo: https://github.com/Lucas-C/pre-commit-hooks
-    rev: v1.5.4
+    rev: v1.5.5
     hooks:
       - name: Check and insert license on Python files
         id: insert-license
@@ -41,7 +43,7 @@ repos:
           - '<!--|  ~|  -->'
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.4.0
+    rev: v0.5.0
     hooks:
     - id: ruff
       name: Run Ruff linter
@@ -49,11 +51,10 @@ repos:
     - id: ruff-format
       name: Run Ruff formatter
 
-  - repo: local  # as per https://pylint.pycqa.org/en/latest/user_guide/installation/pre-commit-integration.html
+  - repo: https://github.com/pycqa/pylint
+    rev: "v3.2.4"
     hooks:
       - id: pylint
-        entry: pylint
-        language: python
         name: Check code style with pylint
         description: This hook runs pylint.
         types: [python]
@@ -61,9 +62,17 @@ repos:
           - -rn                      # Only display messages
           - -sn                      # Don't display the score
           - --rcfile=pyproject.toml  # Link to config file
+        additional_dependencies:
+          - anta[cli]
+          - types-PyYAML
+          - types-requests
+          - types-pyOpenSSL
+          - pylint_pydantic
+          - pytest
+          - pytest-asyncio
 
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.2.6
+    rev: v2.3.0
     hooks:
       - id: codespell
         name: Checks for common misspellings in text files.
@@ -72,7 +81,7 @@ repos:
         types: [text]
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.10.0
+    rev: v1.10.1
     hooks:
       - id: mypy
         name: Check typing with mypy

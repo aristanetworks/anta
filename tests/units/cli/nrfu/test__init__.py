@@ -24,6 +24,14 @@ def test_anta_nrfu_help(click_runner: CliRunner) -> None:
     assert "Usage: anta nrfu" in result.output
 
 
+def test_anta_nrfu_wrong_subcommand(click_runner: CliRunner) -> None:
+    """Test anta nrfu toast."""
+    result = click_runner.invoke(anta, ["nrfu", "oook"])
+    assert result.exit_code == ExitCode.USAGE_ERROR
+    assert "Usage: anta nrfu" in result.output
+    assert "No such command 'oook'." in result.output
+
+
 def test_anta_nrfu(click_runner: CliRunner) -> None:
     """Test anta nrfu, catalog is given via env."""
     result = click_runner.invoke(anta, ["nrfu"])
@@ -39,6 +47,13 @@ def test_anta_nrfu_dry_run(click_runner: CliRunner) -> None:
     assert "ANTA Inventory contains 3 devices" in result.output
     assert "Tests catalog contains 1 tests" in result.output
     assert "Dry-run" in result.output
+
+
+def test_anta_nrfu_wrong_catalog_format(click_runner: CliRunner) -> None:
+    """Test anta nrfu --dry-run, catalog is given via env."""
+    result = click_runner.invoke(anta, ["nrfu", "--dry-run", "--catalog-format", "toto"])
+    assert result.exit_code == ExitCode.USAGE_ERROR
+    assert "Invalid value for '--catalog-format': 'toto' is not one of 'yaml', 'json'." in result.output
 
 
 def test_anta_password_required(click_runner: CliRunner) -> None:

@@ -24,8 +24,8 @@ def _add_bgp_failures(failures: dict[tuple[str, str | None], dict[str, Any]], af
 
     Note: This function modifies `failures` in-place.
 
-    Args:
-    ----
+    Parameters
+    ----------
         failures: The dictionary to which the failure will be added.
         afi: The address family identifier.
         vrf: The VRF name.
@@ -63,8 +63,8 @@ def _add_bgp_failures(failures: dict[tuple[str, str | None], dict[str, Any]], af
 def _check_peer_issues(peer_data: dict[str, Any] | None) -> dict[str, Any]:
     """Check for issues in BGP peer data.
 
-    Args:
-    ----
+    Parameters
+    ----------
         peer_data: The BGP peer data dictionary nested in the `show bgp <afi> <safi> summary` command.
 
     Returns
@@ -104,8 +104,8 @@ def _add_bgp_routes_failure(
 
     It identifies any missing routes as well as any routes that are invalid or inactive. The results are returned in a dictionary.
 
-    Args:
-    ----
+    Parameters
+    ----------
         bgp_routes: The list of expected routes.
         bgp_output: The BGP output from the device.
         peer: The IP address of the BGP peer.
@@ -262,8 +262,8 @@ class VerifyBGPPeerCount(AntaTest):
             command_output = command.json_output
 
             afi = command.params.afi
-            safi = command.params.safi
-            afi_vrf = command.params.vrf or "default"
+            safi = command.params.safi if hasattr(command.params, "safi") else None
+            afi_vrf = command.params.vrf if hasattr(command.params, "vrf") else "default"
 
             # Swapping AFI and SAFI in case of SR-TE
             if afi == "sr-te":
@@ -400,12 +400,12 @@ class VerifyBGPPeersHealth(AntaTest):
             command_output = command.json_output
 
             afi = command.params.afi
-            safi = command.params.safi
+            safi = command.params.safi if hasattr(command.params, "safi") else None
+            afi_vrf = command.params.vrf if hasattr(command.params, "vrf") else "default"
 
             # Swapping AFI and SAFI in case of SR-TE
             if afi == "sr-te":
                 afi, safi = safi, afi
-            afi_vrf = command.params.vrf or "default"
 
             if not (vrfs := command_output.get("vrfs")):
                 _add_bgp_failures(failures=failures, afi=afi, safi=safi, vrf=afi_vrf, issue="Not Configured")
@@ -551,8 +551,8 @@ class VerifyBGPSpecificPeers(AntaTest):
             command_output = command.json_output
 
             afi = command.params.afi
-            safi = command.params.safi
-            afi_vrf = command.params.vrf or "default"
+            safi = command.params.safi if hasattr(command.params, "safi") else None
+            afi_vrf = command.params.vrf if hasattr(command.params, "vrf") else "default"
 
             # Swapping AFI and SAFI in case of SR-TE
             if afi == "sr-te":

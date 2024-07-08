@@ -48,14 +48,11 @@ def debug_options(f: Callable[..., Any]) -> Callable[..., Any]:
         device: str,
         **kwargs: Any,
     ) -> Any:
-        # TODO: @gmuloc - tags come from context https://github.com/arista-netdevops-community/anta/issues/584
+        # TODO: @gmuloc - tags come from context https://github.com/aristanetworks/anta/issues/584
         # pylint: disable=unused-argument
         # ruff: noqa: ARG001
-        try:
-            d = inventory[device]
-        except KeyError as e:
-            message = f"Device {device} does not exist in Inventory"
-            logger.error(e, message)
+        if (d := inventory.get(device)) is None:
+            logger.error("Device '%s' does not exist in Inventory", device)
             ctx.exit(ExitCode.USAGE_ERROR)
         return f(*args, device=d, **kwargs)
 

@@ -13,7 +13,7 @@ This section shows how to use ANTA with basic configuration. All examples are ba
 The easiest way to install ANTA package is to run Python (`>=3.9`) and its pip package to install:
 
 ```bash
-pip install anta
+pip install anta[cli]
 ```
 
 For more details about how to install package, please see the [requirements and installation](./requirements-and-installation.md) section.
@@ -121,6 +121,8 @@ anta.tests.configuration:
 
 ## Test your network
 
+### CLI
+
 ANTA comes with a generic CLI entrypoint to run tests in your network. It requires an inventory file as well as a test catalog.
 
 This entrypoint has multiple options to manage test coverage and reporting.
@@ -135,7 +137,7 @@ This entrypoint has multiple options to manage test coverage and reporting.
 
 To run the NRFU, you need to select an output format amongst ["json", "table", "text", "tpl-report"]. For a first usage, `table` is recommended.  By default all test results for all devices are rendered but it can be changed to a report per test case or per host
 
-### Default report using table
+#### Default report using table
 
 ```bash
 anta nrfu \
@@ -176,7 +178,7 @@ anta nrfu \
 └───────────┴──────────────────────────┴─────────────┴──────────────────┴──────────────────────────────────────────────────────────────────────┴───────────────┘
 ```
 
-### Report in text mode
+#### Report in text mode
 
 ```bash
 $ anta nrfu \
@@ -206,7 +208,7 @@ leaf01 :: VerifyMlagConfigSanity :: SKIPPED (MLAG is disabled)
 [...]
 ```
 
-### Report in JSON format
+#### Report in JSON format
 
 ```bash
 $ anta nrfu \
@@ -256,3 +258,9 @@ $ anta nrfu \
 ```
 
 You can find more information under the __usage__ section of the website
+
+### Basic usage in a Python script
+
+```python
+--8<-- "anta_runner.py"
+```

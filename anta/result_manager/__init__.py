@@ -48,19 +48,25 @@ class ResultManager:
             manager.results
             [
                 TestResult(
-                    host=IPv4Address('192.168.0.10'),
-                    test='VerifyNTP',
-                    result='failure',
-                    message="device is not running NTP correctly"
+                    name="pf1",
+                    test="VerifyZeroTouch",
+                    categories=["configuration"],
+                    description="Verifies ZeroTouch is disabled",
+                    result="success",
+                    messages=[],
+                    custom_field=None,
                 ),
                 TestResult(
-                    host=IPv4Address('192.168.0.10'),
-                    test='VerifyEOSVersion',
-                    result='success',
-                    message=None
+                    name="pf1",
+                    test='VerifyNTP',
+                    categories=["software"],
+                    categories=['system'],
+                    description='Verifies if NTP is synchronised.',
+                    result='failure',
+                    messages=["The device is not synchronized with the configured NTP server(s): 'NTP is disabled.'"],
+                    custom_field=None,
                 ),
             ]
-
     """
 
     def __init__(self) -> None:
@@ -113,13 +119,13 @@ class ResultManager:
     def add(self, result: TestResult) -> None:
         """Add a result to the ResultManager instance.
 
-        Args:
-        ----
+        Parameters
+        ----------
             result: TestResult to add to the ResultManager instance.
         """
 
         def _update_status(test_status: TestStatus) -> None:
-            result_validator = TypeAdapter(TestStatus)
+            result_validator: TypeAdapter[TestStatus] = TypeAdapter(TestStatus)
             result_validator.validate_python(test_status)
             if test_status == "error":
                 self.error_status = True
@@ -139,8 +145,8 @@ class ResultManager:
     def filter(self, hide: set[TestStatus]) -> ResultManager:
         """Get a filtered ResultManager based on test status.
 
-        Args:
-        ----
+        Parameters
+        ----------
             hide: set of TestStatus literals to select tests to hide based on their status.
 
         Returns
@@ -154,8 +160,8 @@ class ResultManager:
     def filter_by_tests(self, tests: set[str]) -> ResultManager:
         """Get a filtered ResultManager that only contains specific tests.
 
-        Args:
-        ----
+        Parameters
+        ----------
             tests: Set of test names to filter the results.
 
         Returns
@@ -169,8 +175,8 @@ class ResultManager:
     def filter_by_devices(self, devices: set[str]) -> ResultManager:
         """Get a filtered ResultManager that only contains specific devices.
 
-        Args:
-        ----
+        Parameters
+        ----------
             devices: Set of device names to filter the results.
 
         Returns

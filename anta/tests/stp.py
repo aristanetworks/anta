@@ -188,6 +188,7 @@ class VerifySTPForwardingPorts(AntaTest):
             if not (topologies := get_value(command.json_output, "topologies")):
                 not_configured.append(vlan_id)
             else:
+                interfaces_not_forwarding = []
                 for value in topologies.values():
                     if vlan_id and int(vlan_id) in value["vlans"]:
                         interfaces_not_forwarding = [interface for interface, state in value["interfaces"].items() if state["state"] != "forwarding"]

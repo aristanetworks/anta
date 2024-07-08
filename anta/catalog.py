@@ -7,15 +7,17 @@ from __future__ import annotations
 
 import importlib
 import logging
+import math
 from collections import defaultdict
 from inspect import isclass
+from json import load as json_load
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Optional, Union
+from typing import TYPE_CHECKING, Any, Literal, Optional, Union
 
-from pydantic import BaseModel, ConfigDict, RootModel, ValidationError, ValidationInfo, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, RootModel, ValidationError, ValidationInfo, field_validator, model_serializer, model_validator
 from pydantic.types import ImportString
 from pydantic_core import PydanticCustomError
-from yaml import YAMLError, safe_load
+from yaml import YAMLError, safe_dump, safe_load
 
 from anta.logger import anta_log_exception
 from anta.models import AntaTest
@@ -43,6 +45,22 @@ class AntaTestDefinition(BaseModel):
 
     test: type[AntaTest]
     inputs: AntaTest.Input
+
+    @model_serializer()
+    def serialize_model(self) -> dict[str, AntaTest.Input]:
+        """Serialize the AntaTestDefinition model.
+
+        The dictionary representing the model will be look like:
+        ```
+        <AntaTest subclass name>:
+                <AntaTest.Input compliant dictionary>
+        ```
+
+        Returns
+        -------
+            A dictionary representing the model.
+        """
+        return {self.test.__name__: self.inputs}
 
     def __init__(self, **data: type[AntaTest] | AntaTest.Input | dict[str, Any] | None) -> None:
         """Inject test in the context to allow to instantiate Input in the BeforeValidator.
@@ -158,12 +176,12 @@ class AntaCatalogFile(RootModel[dict[ImportString[Any], list[AntaTestDefinition]
             if isinstance(tests, dict):
                 # This is an inner Python module
                 modules.update(AntaCatalogFile.flatten_modules(data=tests, package=module.__name__))
-            else:
-                if not isinstance(tests, list):
-                    msg = f"Syntax error when parsing: {tests}\nIt must be a list of ANTA tests. Check the test catalog."
-                    raise ValueError(msg)  # noqa: TRY004 pydantic catches ValueError or AssertionError, no TypeError
+            elif isinstance(tests, list):
                 # This is a list of AntaTestDefinition
                 modules[module] = tests
+            else:
+                msg = f"Syntax error when parsing: {tests}\nIt must be a list of ANTA tests. Check the test catalog."
+                raise ValueError(msg)  # noqa: TRY004 pydantic catches ValueError or AssertionError, no TypeError
         return modules
 
     # ANN401 - Any ok for this validator as we are validating the received data
@@ -178,10 +196,15 @@ class AntaCatalogFile(RootModel[dict[ImportString[Any], list[AntaTestDefinition]
         with provided value to validate test inputs.
         """
         if isinstance(data, dict):
+            if not data:
+                return data
             typed_data: dict[ModuleType, list[Any]] = AntaCatalogFile.flatten_modules(data)
             for module, tests in typed_data.items():
                 test_definitions: list[AntaTestDefinition] = []
                 for test_definition in tests:
+                    if isinstance(test_definition, AntaTestDefinition):
+                        test_definitions.append(test_definition)
+                        continue
                     if not isinstance(test_definition, dict):
                         msg = f"Syntax error when parsing: {test_definition}\nIt must be a dictionary. Check the test catalog."
                         raise ValueError(msg)  # noqa: TRY004 pydantic catches ValueError or AssertionError, no TypeError
@@ -201,7 +224,30 @@ class AntaCatalogFile(RootModel[dict[ImportString[Any], list[AntaTestDefinition]
                             raise ValueError(msg)
                         test_definitions.append(AntaTestDefinition(test=test, inputs=test_inputs))
                 typed_data[module] = test_definitions
-        return typed_data
+            return typed_data
+        return data
+
+    def yaml(self) -> str:
+        """Return a YAML representation string of this model.
+
+        Returns
+        -------
+            The YAML representation string of this model.
+        """
+        # TODO: Pydantic and YAML serialization/deserialization is not supported natively.
+        # This could be improved.
+        # https://github.com/pydantic/pydantic/issues/1043
+        # Explore if this worth using this: https://github.com/NowanIlfideme/pydantic-yaml
+        return safe_dump(safe_load(self.model_dump_json(serialize_as_any=True, exclude_unset=True)), indent=2, width=math.inf)
+
+    def to_json(self) -> str:
+        """Return a JSON representation string of this model.
+
+        Returns
+        -------
+            The JSON representation string of this model.
+        """
+        return self.model_dump_json(serialize_as_any=True, exclude_unset=True, indent=2)
 
 
 class AntaCatalog:
@@ -217,8 +263,8 @@ class AntaCatalog:
     ) -> None:
         """Instantiate an AntaCatalog instance.
 
-        Args:
-        ----
+        Parameters
+        ----------
             tests: A list of AntaTestDefinition instances.
             filename: The path from which the catalog is loaded.
 
@@ -261,19 +307,24 @@ class AntaCatalog:
         self._tests = value
 
     @staticmethod
-    def parse(filename: str | Path) -> AntaCatalog:
+    def parse(filename: str | Path, file_format: Literal["yaml", "json"] = "yaml") -> AntaCatalog:
         """Create an AntaCatalog instance from a test catalog file.
 
-        Args:
-        ----
-            filename: Path to test catalog YAML file
+        Parameters
+        ----------
+            filename: Path to test catalog YAML or JSON fil
+            file_format: Format of the file, either 'yaml' or 'json'
 
         """
+        if file_format not in ["yaml", "json"]:
+            message = f"'{file_format}' is not a valid format for an AntaCatalog file. Only 'yaml' and 'json' are supported."
+            raise ValueError(message)
+
         try:
             file: Path = filename if isinstance(filename, Path) else Path(filename)
             with file.open(encoding="UTF-8") as f:
-                data = safe_load(f)
-        except (TypeError, YAMLError, OSError) as e:
+                data = safe_load(f) if file_format == "yaml" else json_load(f)
+        except (TypeError, YAMLError, OSError, ValueError) as e:
             message = f"Unable to parse ANTA Test Catalog file '{filename}'"
             anta_log_exception(e, message, logger)
             raise
@@ -288,8 +339,8 @@ class AntaCatalog:
         It is the data structure returned by `yaml.load()` function of a valid
         YAML Test Catalog file.
 
-        Args:
-        ----
+        Parameters
+        ----------
             data: Python dictionary used to instantiate the AntaCatalog instance
             filename: value to be set as AntaCatalog instance attribute
 
@@ -304,7 +355,7 @@ class AntaCatalog:
             raise TypeError(msg)
 
         try:
-            catalog_data = AntaCatalogFile(**data)  # type: ignore[arg-type]
+            catalog_data = AntaCatalogFile(data)  # type: ignore[arg-type]
         except ValidationError as e:
             anta_log_exception(
                 e,
@@ -322,8 +373,8 @@ class AntaCatalog:
 
         See ListAntaTestTuples type alias for details.
 
-        Args:
-        ----
+        Parameters
+        ----------
             data: Python list used to instantiate the AntaCatalog instance
 
         """
@@ -334,6 +385,32 @@ class AntaCatalog:
             anta_log_exception(e, "Test catalog is invalid!", logger)
             raise
         return AntaCatalog(tests)
+
+    def merge(self, catalog: AntaCatalog) -> AntaCatalog:
+        """Merge two AntaCatalog instances.
+
+        Parameters
+        ----------
+            catalog: AntaCatalog instance to merge to this instance.
+
+        Returns
+        -------
+            A new AntaCatalog instance containing the tests of the two instances.
+        """
+        return AntaCatalog(tests=self.tests + catalog.tests)
+
+    def dump(self) -> AntaCatalogFile:
+        """Return an AntaCatalogFile instance from this AntaCatalog instance.
+
+        Returns
+        -------
+            An AntaCatalogFile instance containing tests of this AntaCatalog instance.
+        """
+        root: dict[ImportString[Any], list[AntaTestDefinition]] = {}
+        for test in self.tests:
+            # Cannot use AntaTest.module property as the class is not instantiated
+            root.setdefault(test.test.__module__, []).append(test)
+        return AntaCatalogFile(root=root)
 
     def build_indexes(self, filtered_tests: set[str] | None = None) -> None:
         """Indexes tests by their tags for quick access during filtering operations.
@@ -364,8 +441,8 @@ class AntaCatalog:
     def get_tests_by_tags(self, tags: set[str], *, strict: bool = False) -> set[AntaTestDefinition]:
         """Return all tests that match a given set of tags, according to the specified strictness.
 
-        Args:
-        ----
+        Parameters
+        ----------
             tags: The tags to filter tests by. If empty, return all tests without tags.
             strict: If True, returns only tests that contain all specified tags (intersection).
                     If False, returns tests that contain any of the specified tags (union).

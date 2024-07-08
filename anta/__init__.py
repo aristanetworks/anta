@@ -20,7 +20,10 @@ __credits__ = [
 __copyright__ = "Copyright 2022-2024, Arista Networks, Inc."
 
 # ANTA Debug Mode environment variable
-__DEBUG__ = bool(os.environ.get("ANTA_DEBUG", "").lower() == "true")
+__DEBUG__ = os.environ.get("ANTA_DEBUG", "").lower() == "true"
+if __DEBUG__:
+    # enable asyncio DEBUG mode when __DEBUG__ is enabled
+    os.environ["PYTHONASYNCIODEBUG"] = "1"
 
 
 # Source: https://rich.readthedocs.io/en/stable/appendix/colors.html
@@ -45,4 +48,4 @@ RICH_COLOR_THEME = {
     "unset": RICH_COLOR_PALETTE.UNSET,
 }
 
-GITHUB_SUGGESTION = "Please reach out to the maintainer team or open an issue on Github: https://github.com/arista-netdevops-community/anta."
+GITHUB_SUGGESTION = "Please reach out to the maintainer team or open an issue on Github: https://github.com/aristanetworks/anta."

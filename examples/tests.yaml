@@ -50,6 +50,18 @@ anta.tests.aaa:
         - commands
         - dot1x
 
+anta.tests.avt:
+  - VerifyAVTPathHealth:
+  - VerifyAVTSpecificPath:
+      avt_paths:
+        - avt_name: CONTROL-PLANE-PROFILE
+          vrf: default
+          destination: 10.101.255.2
+          next_hop: 10.101.255.1
+          path_type: direct
+  - VerifyAVTRole:
+      role: edge
+
 anta.tests.bfd:
   - VerifyBFDSpecificPeers:
       bfd_peers:
@@ -390,6 +402,7 @@ anta.tests.stun:
           public_address: 100.64.3.21
           source_port: 4500
           public_port: 6006
+  - VerifyStunServer:
 
 anta.tests.system:
   - VerifyUptime:
@@ -536,3 +549,29 @@ anta.tests.routing:
     - VerifyOSPFNeighborCount:
         number: 3
     - VerifyOSPFMaxLSA:
+  isis:
+    - VerifyISISNeighborState:
+    - VerifyISISNeighborCount:
+        interfaces:
+          - name: Ethernet1
+            level: 1
+            count: 2
+          - name: Ethernet2
+            level: 2
+            count: 1
+          - name: Ethernet3
+            count: 2
+            # level is set to 2 by default
+    - VerifyISISInterfaceMode:
+        interfaces:
+          - name: Loopback0
+            mode: passive
+            # vrf is set to default by default
+          - name: Ethernet2
+            mode: passive
+            level: 2
+            # vrf is set to default by default
+          - name: Ethernet1
+            mode: point-to-point
+            vrf: default
+            # level is set to 2 by default

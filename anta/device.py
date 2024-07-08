@@ -18,7 +18,8 @@ from aiocache.plugins import HitMissRatioPlugin
 from asyncssh import SSHClientConnection, SSHClientConnectionOptions
 from httpx import ConnectError, HTTPError, TimeoutException
 
-from anta import __DEBUG__, aioeapi
+import asynceapi
+from anta import __DEBUG__
 from anta.logger import anta_log_exception, exc_to_str
 from anta.models import AntaCommand
 
@@ -54,8 +55,8 @@ class AntaDevice(ABC):
     def __init__(self, name: str, tags: set[str] | None = None, *, disable_cache: bool = False) -> None:
         """Initialize an AntaDevice.
 
-        Args:
-        ----
+        Parameters
+        ----------
             name: Device name.
             tags: Tags for this device.
             disable_cache: Disable caching for all commands for this device.
@@ -116,7 +117,7 @@ class AntaDevice(ABC):
         yield "disable_cache", self.cache is None
 
     @abstractmethod
-    async def _collect(self, command: AntaCommand) -> None:
+    async def _collect(self, command: AntaCommand, *, collection_id: str | None = None) -> None:
         """Collect device command output.
 
         This abstract coroutine can be used to implement any command collection method
@@ -129,13 +130,13 @@ class AntaDevice(ABC):
         exception and implement proper logging, the `output` attribute of the
         `AntaCommand` object passed as argument would be `None` in this case.
 
-        Args:
-        ----
-            command: the command to collect
-
+        Parameters
+        ----------
+            command: The command to collect.
+            collection_id: An identifier used to build the eAPI request ID.
         """
 
-    async def collect(self, command: AntaCommand) -> None:
+    async def collect(self, command: AntaCommand, *, collection_id: str | None = None) -> None:
         """Collect the output for a specified command.
 
         When caching is activated on both the device and the command,
@@ -146,10 +147,10 @@ class AntaDevice(ABC):
         When caching is NOT enabled, either at the device or command level, the method directly collects the output
         via the private `_collect` method without interacting with the cache.
 
-        Args:
-        ----
-            command (AntaCommand): The command to process.
-
+        Parameters
+        ----------
+            command: The command to collect.
+            collection_id: An identifier used to build the eAPI request ID.
         """
         # Need to ignore pylint no-member as Cache is a proxy class and pylint is not smart enough
         # https://github.com/pylint-dev/pylint/issues/7258
@@ -161,20 +162,20 @@ class AntaDevice(ABC):
                     logger.debug("Cache hit for %s on %s", command.command, self.name)
                     command.output = cached_output
                 else:
-                    await self._collect(command=command)
+                    await self._collect(command=command, collection_id=collection_id)
                     await self.cache.set(command.uid, command.output)  # pylint: disable=no-member
         else:
-            await self._collect(command=command)
+            await self._collect(command=command, collection_id=collection_id)
 
-    async def collect_commands(self, commands: list[AntaCommand]) -> None:
+    async def collect_commands(self, commands: list[AntaCommand], *, collection_id: str | None = None) -> None:
         """Collect multiple commands.
 
-        Args:
-        ----
-            commands: the commands to collect
-
+        Parameters
+        ----------
+            commands: The commands to collect.
+            collection_id: An identifier used to build the eAPI request ID.
         """
-        await asyncio.gather(*(self.collect(command=command) for command in commands))
+        await asyncio.gather(*(self.collect(command=command, collection_id=collection_id) for command in commands))
 
     @abstractmethod
     async def refresh(self) -> None:
@@ -191,8 +192,8 @@ class AntaDevice(ABC):
 
         It is not mandatory to implement this for a valid AntaDevice subclass.
 
-        Args:
-        ----
+        Parameters
+        ----------
             sources: List of files to copy to or from the device.
             destination: Local or remote destination when copying the files. Can be a folder.
             direction: Defines if this coroutine copies files to or from the device.
@@ -236,8 +237,8 @@ class AsyncEOSDevice(AntaDevice):
     ) -> None:
         """Instantiate an AsyncEOSDevice.
 
-        Args:
-        ----
+        Parameters
+        ----------
             host: Device FQDN or IP.
             username: Username to connect to eAPI and SSH.
             password: Password to connect to eAPI and SSH.
@@ -270,7 +271,7 @@ class AsyncEOSDevice(AntaDevice):
             raise ValueError(message)
         self.enable = enable
         self._enable_password = enable_password
-        self._session: aioeapi.Device = aioeapi.Device(host=host, port=port, username=username, password=password, proto=proto, timeout=timeout)
+        self._session: asynceapi.Device = asynceapi.Device(host=host, port=port, username=username, password=password, proto=proto, timeout=timeout)
         ssh_params: dict[str, Any] = {}
         if insecure:
             ssh_params["known_hosts"] = None
@@ -305,18 +306,19 @@ class AsyncEOSDevice(AntaDevice):
         """
         return (self._session.host, self._session.port)
 
-    async def _collect(self, command: AntaCommand) -> None:  # noqa: C901  function is too complex - because of many required except blocks
+    async def _collect(self, command: AntaCommand, *, collection_id: str | None = None) -> None:  # noqa: C901  function is too complex - because of many required except blocks #pylint: disable=line-too-long
         """Collect device command output from EOS using aio-eapi.
 
         Supports outformat `json` and `text` as output structure.
         Gain privileged access using the `enable_password` attribute
         of the `AntaDevice` instance if populated.
 
-        Args:
-        ----
-            command: the AntaCommand to collect.
+        Parameters
+        ----------
+            command: The command to collect.
+            collection_id: An identifier used to build the eAPI request ID.
         """
-        commands: list[dict[str, Any]] = []
+        commands: list[dict[str, str | int]] = []
         if self.enable and self._enable_password is not None:
             commands.append(
                 {
@@ -329,14 +331,15 @@ class AsyncEOSDevice(AntaDevice):
             commands.append({"cmd": "enable"})
         commands += [{"cmd": command.command, "revision": command.revision}] if command.revision else [{"cmd": command.command}]
         try:
-            response: list[dict[str, Any]] = await self._session.cli(
+            response: list[dict[str, Any] | str] = await self._session.cli(
                 commands=commands,
                 ofmt=command.ofmt,
                 version=command.version,
-            )
+                req_id=f"ANTA-{collection_id}-{id(command)}" if collection_id else f"ANTA-{id(command)}",
+            )  # type: ignore[assignment] # multiple commands returns a list
             # Do not keep response of 'enable' command
             command.output = response[-1]
-        except aioeapi.EapiCommandError as e:
+        except asynceapi.EapiCommandError as e:
             # This block catches exceptions related to EOS issuing an error.
             command.errors = e.errors
             if command.requires_privileges:
@@ -402,8 +405,8 @@ class AsyncEOSDevice(AntaDevice):
     async def copy(self, sources: list[Path], destination: Path, direction: Literal["to", "from"] = "from") -> None:
         """Copy files to and from the device using asyncssh.scp().
 
-        Args:
-        ----
+        Parameters
+        ----------
             sources: List of files to copy to or from the device.
             destination: Local or remote destination when copying the files. Can be a folder.
             direction: Defines if this coroutine copies files to or from the device.

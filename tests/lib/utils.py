@@ -28,7 +28,7 @@ def generate_test_ids(data: list[dict[str, Any]]) -> list[str]:
         ...
     }
     """
-    return [f"{val['test'].__module__}.{val['test'].__name__}-{val['name']}" for val in data]
+    return [f"{val['test'].module}.{val['test'].__name__}-{val['name']}" for val in data]
 
 
 def default_anta_env() -> dict[str, str | None]:

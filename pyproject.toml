@@ -5,35 +5,37 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "anta"
-version = "v0.14.0"
+version = "v1.0.0"
 readme = "docs/README.md"
-authors = [{ name = "Khelil Sator", email = "ksator@arista.com" }]
+authors = [{ name = "Arista Networks ANTA maintainers", email = "anta-dev@arista.com" }]
 maintainers = [
+  { name = "Arista Networks ANTA maintainers", email = "anta-dev@arista.com" },
   { name = "Khelil Sator", email = "ksator@arista.com" },
   { name = "Matthieu Tâche", email = "mtache@arista.com" },
   { name = "Thomas Grimonet", email = "tgrimonet@arista.com" },
   { name = "Guillaume Mulocher", email = "gmulocher@arista.com" },
+  { name = "Carl Baillargeon", email = "carl.baillargeon@arista.com" },
 ]
 description = "Arista Network Test Automation (ANTA) Framework"
 license = { file = "LICENSE" }
 dependencies = [
   "aiocache>=0.12.2",
-  "aio-eapi>=0.6.3",
   "asyncssh>=2.13.2",
   "cvprac>=1.3.1",
   "eval-type-backport>=0.1.3",  # Support newer typing features in older Python versions (required until Python 3.9 support is removed)
   "Jinja2>=3.1.2",
-  "pydantic>=2.6.1",
+  "pydantic>=2.7",
   "pydantic-extra-types>=2.3.0",
   "PyYAML>=6.0",
   "requests>=2.31.0",
   "rich>=13.5.2,<14",
+  "httpx>=0.27.0"
 ]
 keywords = ["test", "anta", "Arista", "network", "automation", "networking", "devops", "netdevops"]
 classifiers = [
     "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
     "Intended Audience :: System Administrators",
     "Intended Audience :: Information Technology",
@@ -57,18 +59,20 @@ cli = [
 ]
 dev = [
   "bumpver>=2023.1129",
-  "codespell~=2.2.6",
+  "codespell>=2.2.6,<2.4.0",
   "mypy-extensions~=1.0",
   "mypy~=1.10",
   "pre-commit>=3.3.3",
   "pylint-pydantic>=0.2.4",
   "pylint>=2.17.5",
-  "pytest-html",
-  "pytest-benchmark",
-  "pytest-asyncio",
-  "pytest-cov",
-  "pytest",
-  "ruff>=0.3.7,<0.5.0",
+  "pytest-asyncio>=0.21.1",
+  "pytest-benchmark>=4.0.0",
+  "pytest-cov>=4.1.0",
+  "pytest-dependency>=0.5.1",
+  "pytest-html>=3.2.0",
+  "pytest-metadata>=3.0.0",
+  "pytest>=7.4.0",
+  "ruff>=0.5.0,<0.6.0",
   "tox>=4.10.0,<5.0.0",
   "types-PyYAML",
   "types-pyOpenSSL",
@@ -79,7 +83,7 @@ dev = [
 doc = [
   "fontawesome_markdown",
   "griffe",
-  "mike==2.0.0",
+  "mike==2.1.2",
   "mkdocs-autorefs>=0.4.1",
   "mkdocs-bootswatch>=1.1",
   "mkdocs-git-revision-date-localized-plugin>=1.1.0",
@@ -88,12 +92,13 @@ doc = [
   "mkdocs-material>=8.3.9",
   "mkdocs>=1.3.1",
   "mkdocstrings[python]>=0.20.0",
+  "mkdocs-glightbox>=0.4.0"
 ]
 
 [project.urls]
-Homepage = "https://www.anta.ninja"
-"Bug Tracker" = "https://github.com/arista-netdevops-community/anta/issues"
-Contributing = "https://www.anta.ninja/main/contribution/"
+Homepage = "https://anta.arista.com"
+"Bug Tracker" = "https://github.com/aristanetworks/anta/issues"
+Contributing = "https://anta.arista.com/main/contribution/"
 
 [project.scripts]
 anta = "anta.cli:cli"
@@ -102,14 +107,14 @@ anta = "anta.cli:cli"
 # Tools
 ################################
 [tool.setuptools.packages.find]
-include = ["anta*"]
+include = ["anta*", "asynceapi*"]
 namespaces = false
 
 ################################
 # Version
 ################################
 [tool.bumpver]
-current_version = "0.14.0"
+current_version = "1.0.0"
 version_pattern = "MAJOR.MINOR.PATCH"
 commit_message  = "bump: Version {old_version} -> {new_version}"
 commit = true
@@ -176,10 +181,7 @@ filterwarnings = [
 branch = true
 source = ["anta"]
 parallel = true
-omit= [
-  # omit aioeapi patch
-  "anta/aioeapi.py",
-]
+relative_files = true
 
 [tool.coverage.report]
 # Regexes for lines to exclude from consideration
@@ -311,7 +313,6 @@ exclude = [
     "site-packages",
     "venv",
     ".github",
-    "aioeapi.py" # Remove this when https://github.com/jeremyschulman/aio-eapi/pull/13 is merged
 ]
 
 line-length = 165
@@ -403,6 +404,10 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.In
   "C901",     # TODO: test function is too complex, needs a refactor
   "PLR0911",  # TODO: Too many return statements, same as above needs a refactor
 ]
+"anta/tests/routing/isis.py" = [
+  "C901",     # TODO: test function is too complex, needs a refactor
+  "PLR0912"   # Too many branches (15/12) (too-many-branches), needs a refactor
+]
 "anta/decorators.py" = [
   "ANN401",  # Ok to use Any type hint in our decorators
 ]
@@ -415,6 +420,11 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.In
 ]
 "anta/inventory/__init__.py" = [
   "PLR0913",     # Ok to have more than 5 arguments in the AntaInventory class
+]
+"examples/anta_runner.py" = [  # This is an example script and linked in  snippets
+  "S108",   # Probable insecure usage of temporary file or directory
+  "S105",   # Possible hardcoded password
+  "INP001", # Implicit packages
 ]
 
 ################################
@@ -449,4 +459,5 @@ extension-pkg-whitelist="pydantic"
 ignore-paths = [
   "^tests/units/anta_tests/.*/data.py$",
   "^tests/units/anta_tests/routing/.*/data.py$",
+  "^docs/scripts/anta_runner.py",
 ]
