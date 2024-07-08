@@ -122,7 +122,7 @@ class ResultManager:
 
     @property
     def json(self) -> str:
-        """Get a JSON representation of all results."""
+        """Get a JSON representation of the results."""
         return json.dumps([result.model_dump() for result in self._result_entries], indent=4)
 
     @property

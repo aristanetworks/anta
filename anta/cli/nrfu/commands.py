@@ -102,7 +102,7 @@ def tpl_report(ctx: click.Context, template: pathlib.Path, output: pathlib.Path 
     is_flag=True,
     default=False,
     show_envvar=True,
-    help="Flag to determine if only failed tests should be saved in the report",
+    help="Flag to determine if only failed tests should be saved in the report.",
 )
 def md_report(ctx: click.Context, md_output: pathlib.Path, *, only_failed_tests: bool = False) -> None:
     """ANTA command to check network state with Markdown report."""
