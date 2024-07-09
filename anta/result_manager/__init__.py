@@ -211,7 +211,7 @@ class ResultManager:
             raise TypeError(msg)
 
         self._result_entries.append(result)
-        result.id = len(self) + 1
+        result.id = len(self)
 
         self._update_status(result.result)
         self._update_stats(result)
