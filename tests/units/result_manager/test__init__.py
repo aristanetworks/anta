@@ -71,6 +71,27 @@ class TestResultManager:
             assert test.get("custom_field") is None
             assert test.get("result") == "success"
 
+    def test_sorted_category_stats(self, list_result_factory: Callable[[int], list[TestResult]]) -> None:
+        """Test ResultManager.sorted_category_stats."""
+        result_manager = ResultManager()
+        results = list_result_factory(4)
+
+        # Modify the categories to have a mix of different acronym categories
+        results[0].categories = ["ospf"]
+        results[1].categories = ["bgp"]
+        results[2].categories = ["vxlan"]
+        results[3].categories = ["system"]
+
+        result_manager.results = results
+
+        # Check the current categories order and name format
+        expected_order = ["OSPF", "BGP", "VXLAN", "System"]
+        assert list(result_manager.category_stats.keys()) == expected_order
+
+        # Check the sorted categories order and name format
+        expected_order = ["BGP", "OSPF", "System", "VXLAN"]
+        assert list(result_manager.sorted_category_stats.keys()) == expected_order
+
     @pytest.mark.parametrize(
         ("starting_status", "test_status", "expected_status", "expected_raise"),
         [
@@ -148,6 +169,73 @@ class TestResultManager:
             else:
                 assert result_manager.status == expected_status
             assert len(result_manager) == 1
+
+    def test_add_type_error(self) -> None:
+        """Test ResultManager.add with wrong object type."""
+        result_manager = ResultManager()
+        with pytest.raises(TypeError, match="Added test result 'test' must be a TestResult instance, got str."):
+            result_manager.add("test")  # type: ignore[arg-type]
+
+    def test_get_results(self, test_result_factory: Callable[[], TestResult]) -> None:
+        """Test ResultManager.get_results."""
+        result_manager = ResultManager()
+        assert result_manager.get_results() == []
+
+        success_result = test_result_factory()
+        success_result.result = "success"
+        result_manager.add(success_result)
+
+        failure_result = test_result_factory()
+        failure_result.result = "failure"
+        result_manager.add(failure_result)
+
+        skipped_result = test_result_factory()
+        skipped_result.result = "skipped"
+        result_manager.add(skipped_result)
+
+        error_result = test_result_factory()
+        error_result.result = "error"
+        result_manager.add(error_result)
+
+        # Check for single status
+        success_results = result_manager.get_results(status="success")
+        assert len(success_results) == 1
+        assert success_results[0].result == "success"
+
+        # Check for multiple statuses
+        success_failure_results = result_manager.get_results(status={"success", "failure"})
+        assert len(success_failure_results) == 2
+        assert all(r.result in {"success", "failure"} for r in success_failure_results)
+
+        # Check all results
+        all_results = result_manager.get_results()
+        assert len(all_results) == 4
+        assert [r.result for r in all_results] == ["success", "failure", "skipped", "error"]
+
+    def test_get_total_results(self, test_result_factory: Callable[[], TestResult]) -> None:
+        """Test ResultManager.get_total_results."""
+        result_manager = ResultManager()
+        assert result_manager.get_total_results() == 0
+
+        success_result = test_result_factory()
+        success_result.result = "success"
+        result_manager.add(success_result)
+
+        failure_result = test_result_factory()
+        failure_result.result = "failure"
+        result_manager.add(failure_result)
+
+        skipped_result = test_result_factory()
+        skipped_result.result = "skipped"
+        result_manager.add(skipped_result)
+
+        error_result = test_result_factory()
+        error_result.result = "error"
+        result_manager.add(error_result)
+
+        assert result_manager.get_total_results(status="success") == 1
+        assert result_manager.get_total_results(status={"success", "failure"}) == 2
+        assert result_manager.get_total_results() == 4
 
     @pytest.mark.parametrize(
         ("status", "error_status", "ignore_error", "expected_status"),
