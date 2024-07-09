@@ -28,22 +28,22 @@
 
 | Test Category | Total Tests | Tests Success | Tests Skipped | Tests Failure | Tests Error |
 | ------------- | ----------- | ------------- | ------------- | ------------- | ----------- |
-| AAA | 2 | 0 | 0 | 2 | 0
-| BFD | 6 | 2 | 0 | 4 | 0
-| BGP | 22 | 0 | 0 | 22 | 0
-| Connectivity | 3 | 0 | 0 | 1 | 2
-| Interfaces | 10 | 6 | 0 | 4 | 0
-| MLAG | 4 | 2 | 2 | 0 | 0
-| Multicast | 4 | 2 | 0 | 2 | 0
-| OSPF | 4 | 0 | 4 | 0 | 0
-| Routing | 6 | 3 | 0 | 3 | 0
-| SNMP | 2 | 0 | 0 | 2 | 0
-| STP | 2 | 0 | 0 | 2 | 0
-| Security | 4 | 4 | 0 | 0 | 0
-| Software | 2 | 0 | 0 | 2 | 0
-| System | 12 | 10 | 0 | 2 | 0
-| VLAN | 2 | 0 | 0 | 2 | 0
-| VXLAN | 4 | 2 | 2 | 0 | 0
+| AAA | 2 | 0 | 0 | 2 | 0 |
+| BFD | 6 | 2 | 0 | 4 | 0 |
+| BGP | 22 | 0 | 0 | 22 | 0 |
+| Connectivity | 3 | 0 | 0 | 1 | 2 |
+| Interfaces | 10 | 6 | 0 | 4 | 0 |
+| MLAG | 4 | 2 | 2 | 0 | 0 |
+| Multicast | 4 | 2 | 0 | 2 | 0 |
+| OSPF | 4 | 0 | 4 | 0 | 0 |
+| Routing | 6 | 3 | 0 | 3 | 0 |
+| SNMP | 2 | 0 | 0 | 2 | 0 |
+| STP | 2 | 0 | 0 | 2 | 0 |
+| Security | 4 | 4 | 0 | 0 | 0 |
+| Software | 2 | 0 | 0 | 2 | 0 |
+| System | 12 | 10 | 0 | 2 | 0 |
+| VLAN | 2 | 0 | 0 | 2 | 0 |
+| VXLAN | 4 | 2 | 2 | 0 | 0 |
 
 ## Failed Test Results Summary
 

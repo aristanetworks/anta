@@ -248,7 +248,10 @@ class SummaryTotalsPerCategory(MDReportBase):
         """Generate the rows of the summary totals per category table."""
         for category, stat in self.results.sorted_category_stats.items():
             total_tests = stat.tests_success_count + stat.tests_skipped_count + stat.tests_failure_count + stat.tests_error_count
-            yield f"| {category} | {total_tests} | {stat.tests_success_count} | {stat.tests_skipped_count} | {stat.tests_failure_count} | {stat.tests_error_count}\n"
+            yield (
+                f"| {category} | {total_tests} | {stat.tests_success_count} | {stat.tests_skipped_count} | {stat.tests_failure_count} "
+                f"| {stat.tests_error_count} |\n"
+            )
 
     def generate_section(self) -> None:
         """Generate the `### Summary Totals Per Category` section of the markdown report."""
