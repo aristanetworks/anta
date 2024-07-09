@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import json
+import re
 from contextlib import AbstractContextManager, nullcontext
 from typing import TYPE_CHECKING, Callable
 
@@ -183,10 +184,12 @@ class TestResultManager:
 
         success_result = test_result_factory()
         success_result.result = "success"
+        success_result.categories = ["ospf"]
         result_manager.add(success_result)
 
         failure_result = test_result_factory()
         failure_result.result = "failure"
+        failure_result.categories = ["bgp"]
         result_manager.add(failure_result)
 
         skipped_result = test_result_factory()
@@ -211,6 +214,26 @@ class TestResultManager:
         all_results = result_manager.get_results()
         assert len(all_results) == 4
         assert [r.result for r in all_results] == ["success", "failure", "skipped", "error"]
+
+        # Check all results with sort_by result
+        all_results = result_manager.get_results(sort_by=["result"])
+        assert len(all_results) == 4
+        assert [r.result for r in all_results] == ["error", "failure", "skipped", "success"]
+
+        # Check multiple statuses with sort_by categories
+        success_failure_results = result_manager.get_results(status={"success", "failure"}, sort_by=["categories"])
+        assert len(success_failure_results) == 2
+        assert success_failure_results[0] == failure_result
+        assert success_failure_results[1] == success_result
+
+        # Check all results with bad sort_by
+        with pytest.raises(
+            ValueError,
+            match=re.escape(
+                "Invalid sort_by fields: ['bad_field']. Accepted fields are: ['name', 'test', 'categories', 'description', 'result', 'messages', 'custom_field']",
+            ),
+        ):
+            all_results = result_manager.get_results(sort_by=["bad_field"])
 
     def test_get_total_results(self, test_result_factory: Callable[[], TestResult]) -> None:
         """Test ResultManager.get_total_results."""

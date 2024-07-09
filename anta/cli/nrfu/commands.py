@@ -98,7 +98,7 @@ def tpl_report(ctx: click.Context, template: pathlib.Path, output: pathlib.Path 
     help="Path to save the report as a Markdown file. It only saves test results and not the output from the --group-by option.",
 )
 @click.option(
-    "--only_failed_tests",
+    "--only-failed-tests",
     is_flag=True,
     default=False,
     show_envvar=True,

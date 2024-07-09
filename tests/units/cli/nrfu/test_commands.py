@@ -94,3 +94,17 @@ def test_anta_nrfu_template(click_runner: CliRunner) -> None:
     result = click_runner.invoke(anta, ["nrfu", "tpl-report", "--template", str(DATA_DIR / "template.j2")])
     assert result.exit_code == ExitCode.OK
     assert "* VerifyEOSVersion is SUCCESS for dummy" in result.output
+
+
+def test_anta_nrfu_md_report_all_tests(click_runner: CliRunner) -> None:
+    """Test anta nrfu md-report."""
+    result = click_runner.invoke(anta, ["nrfu", "md-report", "--md-output", "test.md"])
+    assert result.exit_code == ExitCode.OK
+    assert "Markdown report saved to test.md" in result.output
+
+
+def test_anta_nrfu_md_report_only_failed_tests(click_runner: CliRunner) -> None:
+    """Test anta nrfu md-report."""
+    result = click_runner.invoke(anta, ["nrfu", "md-report", "--md-output", "test.md", "--only-failed-tests"])
+    assert result.exit_code == ExitCode.OK
+    assert "Markdown report saved to test.md" in result.output

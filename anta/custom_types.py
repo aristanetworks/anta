@@ -3,11 +3,16 @@
 # that can be found in the LICENSE file.
 """Module that provides predefined types for AntaTest.Input instances."""
 
+from __future__ import annotations
+
 import re
 from typing import Annotated, Literal
 
 from pydantic import Field
 from pydantic.functional_validators import AfterValidator, BeforeValidator
+
+ACRONYM_CATEGORIES: set[str] = {"aaa", "mlag", "snmp", "bgp", "ospf", "vxlan", "stp", "igmp", "ip", "lldp", "ntp", "bfd", "ptp", "lanz", "stun", "vlan"}
+"""A set of network protocol or feature acronyms that should be represented in uppercase."""
 
 # Regular Expression definition
 # TODO: make this configurable - with an env var maybe?

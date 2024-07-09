@@ -13,10 +13,9 @@ from typing import get_args
 
 from pydantic import TypeAdapter
 
-from anta.custom_types import TestStatus
+from anta.custom_types import ACRONYM_CATEGORIES, TestStatus
 from anta.result_manager.models import TestResult
 
-from .constants import ACRONYM_CATEGORIES
 from .models import CategoryStats, DeviceStats, TestStats
 
 
@@ -244,7 +243,7 @@ class ResultManager:
         if sort_by:
             accepted_fields = TestResult.model_fields.keys()
             if not set(sort_by).issubset(set(accepted_fields)):
-                msg = f"Invalid sort_by fields: {sort_by}. Accepted fields are: {accepted_fields}"
+                msg = f"Invalid sort_by fields: {sort_by}. Accepted fields are: {list(accepted_fields)}"
                 raise ValueError(msg)
             results = sorted(results, key=lambda result: [getattr(result, field) for field in sort_by])
 

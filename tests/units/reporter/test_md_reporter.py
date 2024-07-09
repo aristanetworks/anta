@@ -6,11 +6,12 @@
 from __future__ import annotations
 
 import json
+from io import StringIO
 from pathlib import Path
 
 import pytest
 
-from anta.reporter.md_reporter import MDReportGenerator
+from anta.reporter.md_reporter import MDReportBase, MDReportGenerator
 from anta.result_manager import ResultManager
 from anta.result_manager.models import TestResult as FakeTestResult
 
@@ -25,7 +26,7 @@ DATA_DIR: Path = Path(__file__).parent.parent.parent.resolve() / "data"
     ],
 )
 def test_md_report_generate(tmp_path: Path, expected_report_name: str, *, only_failed_tests: bool) -> None:
-    """Test the generate class method of MDReportGenerator."""
+    """Test the MDReportGenerator class."""
     # Create a temporary Markdown file
     md_filename = tmp_path / "test.md"
 
@@ -50,3 +51,22 @@ def test_md_report_generate(tmp_path: Path, expected_report_name: str, *, only_f
     content = md_filename.read_text(encoding="utf-8")
 
     assert content == expected_content
+
+
+def test_md_report_base() -> None:
+    """Test the MDReportBase class."""
+
+    class FakeMDReportBase(MDReportBase):
+        """Fake MDReportBase class."""
+
+        def generate_section(self) -> None:
+            pass
+
+    results = ResultManager()
+
+    with StringIO() as mock_file:
+        report = FakeMDReportBase(mock_file, results)
+        assert report.generate_heading_name() == "Fake MD Report Base"
+
+        with pytest.raises(NotImplementedError, match="Subclasses should implement this method"):
+            report.generate_rows()
