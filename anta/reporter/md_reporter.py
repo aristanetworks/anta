@@ -35,9 +35,11 @@ class MDReportGenerator:
     @classmethod
     def generate(cls, results: ResultManager, md_filename: Path, *, only_failed_tests: bool = False) -> None:
         """Generate and write the various sections of the markdown report."""
+        MDReportBase.ONLY_FAILED_TESTS = only_failed_tests
+
         with md_filename.open("w", encoding="utf-8") as mdfile:
             sections: list[MDReportBase] = [
-                ANTAReport(mdfile, results, only_failed_tests=only_failed_tests),
+                ANTAReport(mdfile, results),
                 TestResultsSummary(mdfile, results),
                 SummaryTotals(mdfile, results),
                 SummaryTotalsDeviceUnderTest(mdfile, results),
@@ -45,9 +47,6 @@ class MDReportGenerator:
                 FailedTestResultsSummary(mdfile, results),
                 AllTestResults(mdfile, results),
             ]
-
-            if only_failed_tests:
-                sections.pop()
 
             for section in sections:
                 section.generate_section()
@@ -59,6 +58,8 @@ class MDReportBase(ABC):
     Every subclasses must implement the `generate_section` method that uses the `ResultManager` object
     to generate and write content to the provided markdown file.
     """
+
+    ONLY_FAILED_TESTS: ClassVar[bool] = False
 
     def __init__(self, mdfile: TextIOWrapper, results: ResultManager) -> None:
         """Initialize the MDReportBase with an open markdown file object to write to and a ResultManager instance.
@@ -160,11 +161,6 @@ class MDReportBase(ABC):
 class ANTAReport(MDReportBase):
     """Generate the `# ANTA Report` section of the markdown report."""
 
-    def __init__(self, mdfile: TextIOWrapper, results: ResultManager, *, only_failed_tests: bool = False) -> None:
-        """Initialize the `# ANTA Report` section with the only_failed_tests flag to generate the appropriate TOC."""
-        super().__init__(mdfile, results)
-        self.only_failed_tests = only_failed_tests
-
     def generate_section(self) -> None:
         """Generate the `# ANTA Report` section of the markdown report."""
         self.write_heading(heading_level=1)
@@ -177,7 +173,7 @@ class ANTAReport(MDReportBase):
     - [Summary Totals Per Category](#summary-totals-per-category)
   - [Failed Test Results Summary](#failed-test-results-summary)"""
 
-        if not self.only_failed_tests:
+        if not self.ONLY_FAILED_TESTS:
             toc += "\n  - [All Test Results](#all-test-results)"
 
         self.mdfile.write(toc + "\n\n")
@@ -281,7 +277,7 @@ class FailedTestResultsSummary(MDReportBase):
     def generate_section(self) -> None:
         """Generate the `## Failed Test Results Summary` section of the markdown report."""
         self.write_heading(heading_level=2)
-        self.write_table(table_heading=self.TABLE_HEADING)
+        self.write_table(table_heading=self.TABLE_HEADING, last_table=self.ONLY_FAILED_TESTS)
 
 
 class AllTestResults(MDReportBase):
@@ -310,5 +306,6 @@ class AllTestResults(MDReportBase):
 
         This section is generated only if the report includes all results.
         """
-        self.write_heading(heading_level=2)
-        self.write_table(table_heading=self.TABLE_HEADING, last_table=True)
+        if not self.ONLY_FAILED_TESTS:
+            self.write_heading(heading_level=2)
+            self.write_table(table_heading=self.TABLE_HEADING, last_table=True)
