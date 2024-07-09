@@ -17,7 +17,6 @@ class TestResult(BaseModel):
 
     Attributes
     ----------
-        id: TestResult unique identifier. Added when the TestResult is added to the ResultManager.
         name: Device name where the test has run.
         test: Test name runs on the device.
         categories: List of categories the TestResult belongs to, by default the AntaTest categories.
@@ -28,7 +27,6 @@ class TestResult(BaseModel):
 
     """
 
-    id: int | None = None
     name: str
     test: str
     categories: list[str]

@@ -37,7 +37,7 @@ class MDReportGenerator:
         """Generate and write the various sections of the markdown report."""
         with md_filename.open("w", encoding="utf-8") as mdfile:
             sections: list[MDReportBase] = [
-                ANTAReport(mdfile, results),
+                ANTAReport(mdfile, results, only_failed_tests=only_failed_tests),
                 TestResultsSummary(mdfile, results),
                 SummaryTotals(mdfile, results),
                 SummaryTotalsDeviceUnderTest(mdfile, results),
@@ -160,19 +160,27 @@ class MDReportBase(ABC):
 class ANTAReport(MDReportBase):
     """Generate the `# ANTA Report` section of the markdown report."""
 
+    def __init__(self, mdfile: TextIOWrapper, results: ResultManager, *, only_failed_tests: bool = False) -> None:
+        """Initialize the `# ANTA Report` section with the only_failed_tests flag to generate the appropriate TOC."""
+        super().__init__(mdfile, results)
+        self.only_failed_tests = only_failed_tests
+
     def generate_section(self) -> None:
         """Generate the `# ANTA Report` section of the markdown report."""
         self.write_heading(heading_level=1)
-        self.mdfile.write(
-            """**Table of Contents:**
+        toc = """**Table of Contents:**
 
 - [ANTA Report](#anta-report)
   - [Test Results Summary](#test-results-summary)
-  - [Failed Test Results Summary](#failed-test-results-summary)
-  - [All Test Results](#all-test-results)
+    - [Summary Totals](#summary-totals)
+    - [Summary Totals Device Under Test](#summary-totals-device-under-test)
+    - [Summary Totals Per Category](#summary-totals-per-category)
+  - [Failed Test Results Summary](#failed-test-results-summary)"""
 
-""",
-        )
+        if not self.only_failed_tests:
+            toc += "\n  - [All Test Results](#all-test-results)"
+
+        self.mdfile.write(toc + "\n\n")
 
 
 class TestResultsSummary(MDReportBase):
@@ -256,17 +264,17 @@ class FailedTestResultsSummary(MDReportBase):
     """Generate the `## Failed Test Results Summary` section of the markdown report."""
 
     TABLE_HEADING: ClassVar[list[str]] = [
-        "| ID | Device Under Test | Categories | Test | Description | Custom Field | Result | Messages |",
-        "| -- | ----------------- | ---------- | ---- | ----------- | ------------ | ------ | -------- |",
+        "| Device Under Test | Categories | Test | Description | Custom Field | Result | Messages |",
+        "| ----------------- | ---------- | ---- | ----------- | ------------ | ------ | -------- |",
     ]
 
     def generate_rows(self) -> Generator[str, None, None]:
         """Generate the rows of the failed test results table."""
-        for result in self.results.get_results({"failure", "error"}):
+        for result in self.results.get_results(status={"failure", "error"}, sort_by=["name", "test"]):
             messages = self.safe_markdown(", ".join(result.messages))
             categories = ", ".join(result.categories)
             yield (
-                f"| {result.id or '-'} | {result.name or '-'} | {categories or '-'} | {result.test or '-'} "
+                f"| {result.name or '-'} | {categories or '-'} | {result.test or '-'} "
                 f"| {result.description or '-'} | {self.safe_markdown(result.custom_field) or '-'} | {result.result or '-'} | {messages or '-'} |\n"
             )
 
@@ -283,17 +291,17 @@ class AllTestResults(MDReportBase):
     """
 
     TABLE_HEADING: ClassVar[list[str]] = [
-        "| ID | Device Under Test | Categories | Test | Description | Custom Field | Result | Messages |",
-        "| -- | ----------------- | ---------- | ---- | ----------- | ------------ | ------ | -------- |",
+        "| Device Under Test | Categories | Test | Description | Custom Field | Result | Messages |",
+        "| ----------------- | ---------- | ---- | ----------- | ------------ | ------ | -------- |",
     ]
 
     def generate_rows(self) -> Generator[str, None, None]:
         """Generate the rows of the all test results table."""
-        for result in self.results.get_results():
+        for result in self.results.get_results(sort_by=["name", "test"]):
             messages = self.safe_markdown(", ".join(result.messages))
             categories = ", ".join(result.categories)
             yield (
-                f"| {result.id or '-'} | {result.name or '-'} | {categories or '-'} | {result.test or '-'} "
+                f"| {result.name or '-'} | {categories or '-'} | {result.test or '-'} "
                 f"| {result.description or '-'} | {self.safe_markdown(result.custom_field) or '-'} | {result.result or '-'} | {messages or '-'} |\n"
             )
 

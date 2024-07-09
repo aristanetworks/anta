@@ -211,22 +211,21 @@ class ResultManager:
             raise TypeError(msg)
 
         self._result_entries.append(result)
-        result.id = len(self)
-
         self._update_status(result.result)
         self._update_stats(result)
 
         # Every time a new result is added, we need to clear the cached property
         self.__dict__.pop("results_by_status", None)
 
-    def get_results(self, status: set[TestStatus] | TestStatus | None = None) -> list[TestResult]:
-        """Get the results, optionally filtered by status.
+    def get_results(self, status: set[TestStatus] | TestStatus | None = None, sort_by: list[str] | None = None) -> list[TestResult]:
+        """Get the results, optionally filtered by status and sorted by TestResult fields.
 
         If no status is provided, all results are returned.
 
         Parameters
         ----------
-            status: TestStatus or set of TestStatus literals to filter the results.
+            status: Optional TestStatus or set of TestStatus literals to filter the results.
+            sort_by: Optional list of TestResult fields to sort the results.
 
         Returns
         -------
@@ -234,14 +233,22 @@ class ResultManager:
         """
         if status is None:
             # Return all results
-            return self._result_entries
-
-        if isinstance(status, set):
+            results = self._result_entries
+        elif isinstance(status, set):
             # Return results for multiple statuses
-            return list(chain.from_iterable(self.results_by_status.get(status, []) for status in status))
+            results = list(chain.from_iterable(self.results_by_status.get(status, []) for status in status))
+        else:
+            # Return results for a single status
+            results = self.results_by_status.get(status, [])
 
-        # Return results for a single status
-        return self.results_by_status.get(status, [])
+        if sort_by:
+            accepted_fields = TestResult.model_fields.keys()
+            if not set(sort_by).issubset(set(accepted_fields)):
+                msg = f"Invalid sort_by fields: {sort_by}. Accepted fields are: {accepted_fields}"
+                raise ValueError(msg)
+            results = sorted(results, key=lambda result: [getattr(result, field) for field in sort_by])
+
+        return results
 
     def get_total_results(self, status: set[TestStatus] | TestStatus | None = None) -> int:
         """Get the total number of results, optionally filtered by status.
