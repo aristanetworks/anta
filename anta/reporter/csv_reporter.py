@@ -34,7 +34,7 @@ class ReportCsv:
         categories: str = "Test category"
 
     @classmethod
-    def _split_list_to_txt_list(cls, usr_list: list[str], delimiter: str | None = None) -> str:
+    def split_list_to_txt_list(cls, usr_list: list[str], delimiter: str | None = None) -> str:
         """Split list to multi-lines string.
 
         Parameters
@@ -48,8 +48,8 @@ class ReportCsv:
 
         """
         if delimiter is not None:
-            return "\n".join(f"{delimiter} {line}" for line in usr_list)
-        return "\n".join(f"{line}" for line in usr_list)
+            return " - ".join(f"{delimiter} {line}" for line in usr_list)
+        return " - ".join(f"{line}" for line in usr_list)
 
     @classmethod
     def convert_to_list(cls, result: TestResult) -> list[str]:
@@ -60,13 +60,13 @@ class ReportCsv:
         ----
             results: A TestResult to convert into list.
         """
-        message = cls._split_list_to_txt_list(result.messages) if len(result.messages) > 0 else ""
-        categories = ", ".join(result.categories)
+        message = cls.split_list_to_txt_list(result.messages) if len(result.messages) > 0 else ""
+        categories = cls.split_list_to_txt_list(result.categories) if len(result.categories) > 0 else "None"
         return [
             str(result.name),
             result.test,
             result.result,
-            message.replace("\n", "\r\n"),
+            message,
             result.description,
             categories,
         ]
