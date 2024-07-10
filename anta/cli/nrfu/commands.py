@@ -73,10 +73,10 @@ def text(ctx: click.Context) -> None:
     ),
     show_envvar=True,
     required=False,
-    help="Path to save report as a CSV file. It only saves test results and not the output from --group-by option",
+    help="Path to save report as a CSV file",
 )
 def csv(ctx: click.Context, csv_output: pathlib.Path) -> None:
-    """ANTA command to check network states with CSV result."""
+    """ANTA command to check network states with CSV result. It only saves test results and not the output from --group-by option."""
     run_tests(ctx)
     save_to_csv(ctx, csv_file=csv_output)
     exit_with_code(ctx)
