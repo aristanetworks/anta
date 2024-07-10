@@ -145,7 +145,7 @@ anta nrfu --tags LEAF json
 ```
 ![$1anta nrfu json results](../imgs/anta-nrfu-json-output.png){ loading=lazy width="1600" }
 
-## Performing NRFU with saving results in CSV file.
+## Performing NRFU and saving results in a CSV file.
 
 The `csv` command in NRFU testing is useful in generating a CSV file with all tests result that can be analyzed, filtered by operator for reporting purposes.
 
