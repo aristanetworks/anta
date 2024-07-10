@@ -39,8 +39,8 @@ class ReportCsv:
 
         Args:
         ----
-            usr_list (list[str]): List of string to concatenate
-            delimiter (str, optional): A delimiter to use to start string. Defaults to None.
+            usr_list: List of string to concatenate
+            delimiter: A delimiter to use to start string. Defaults to None.
 
         Returns
         -------
