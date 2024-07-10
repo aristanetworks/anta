@@ -7,46 +7,32 @@
 
 import csv
 import pathlib
+from typing import Callable
 
 from anta.reporter.csv_reporter import ReportCsv
 from anta.result_manager import ResultManager
 
 # To avoid such error:
 # pytest.PytestCollectionWarning: cannot collect test class 'TestResult' because it has a __init__ constructor
-from anta.result_manager.models import TestResult as FakeResult
 
 
 class TestReportCsv:
     """Tester for ReportCsv class."""
 
-    def test_report_csv_generate(self, tmp_path: pathlib.Path) -> None:
+    def test_report_csv_generate(
+        self,
+        result_manager_factory: Callable[[int], ResultManager],
+        tmp_path: pathlib.Path,
+    ) -> None:
         """Test CSV reporter."""
         # Create a temporary CSV file path
         csv_filename = tmp_path / "test.csv"
 
         # Create a ResultManager instance with dummy test results
-        results = ResultManager()
-        results.results = [
-            FakeResult(
-                name="dummy",
-                test="VerifyEOSVersion",
-                result="success",
-                messages=["Test passed"],
-                description="Verify EOS version",
-                categories=["category1", "category2"],
-            ),
-            FakeResult(
-                name="dummy",
-                test="VerifyHardwareStatus",
-                result="failure",
-                messages=["Test failed"],
-                description="Verify hardware status",
-                categories=["category1"],
-            ),
-        ]
+        result_manager = result_manager_factory(10)
 
         # Generate the CSV report
-        ReportCsv.generate(results, csv_filename)
+        ReportCsv.generate(result_manager, csv_filename)
 
         # Read the generated CSV file
         with pathlib.Path.open(csv_filename, encoding="utf-8") as csvfile:
@@ -64,19 +50,8 @@ class TestReportCsv:
         ]
 
         # Assert the test result rows
-        assert rows[1] == [
-            "dummy",
-            "VerifyEOSVersion",
-            "success",
-            "Test passed",
-            "Verify EOS version",
-            "category1, category2",
-        ]
-        assert rows[2] == [
-            "dummy",
-            "VerifyHardwareStatus",
-            "failure",
-            "Test failed",
-            "Verify hardware status",
-            "category1",
-        ]
+        assert rows[1] == ReportCsv().convert_to_list(result_manager.results[0])
+        assert rows[2] == ReportCsv().convert_to_list(result_manager.results[1])
+
+        # Assert number of lines
+        assert len(rows) == len(result_manager.results) + 1

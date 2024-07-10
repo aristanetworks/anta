@@ -52,6 +52,26 @@ class ReportCsv:
         return "\n".join(f"{line}" for line in usr_list)
 
     @classmethod
+    def convert_to_list(cls, result: TestResult) -> list[str]:
+        """
+        Convert a TestResult into a list of string for creating file content.
+
+        Args:
+        ----
+            results: A TestResult to convert into list.
+        """
+        message = cls._split_list_to_txt_list(result.messages) if len(result.messages) > 0 else ""
+        categories = ", ".join(result.categories)
+        return [
+            str(result.name),
+            result.test,
+            result.result,
+            message.replace("\n", "\r\n"),
+            result.description,
+            categories,
+        ]
+
+    @classmethod
     def generate(cls, results: ResultManager, csv_filename: pathlib.Path) -> None:
         """Build CSV flle with tests results.
 
@@ -60,19 +80,6 @@ class ReportCsv:
             results: A ResultManager instance.
             csv_filename: File path where to save CSV data.
         """
-
-        def add_line(result: TestResult) -> list[str]:
-            message = cls._split_list_to_txt_list(result.messages) if len(result.messages) > 0 else ""
-            categories = ", ".join(result.categories)
-            return [
-                str(result.name),
-                result.test,
-                result.result,
-                message.replace("\n", "\r\n"),
-                result.description,
-                categories,
-            ]
-
         headers = [
             cls.Headers.device,
             cls.Headers.test_name,
@@ -89,4 +96,4 @@ class ReportCsv:
             )
             spamwriter.writerow(headers)
             for entry in results.results:
-                spamwriter.writerow(add_line(entry))
+                spamwriter.writerow(cls.convert_to_list(entry))
