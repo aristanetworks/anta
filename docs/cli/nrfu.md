@@ -147,7 +147,7 @@ anta nrfu --tags LEAF json
 
 ## Performing NRFU and saving results in a CSV file.
 
-The `csv` command in NRFU testing is useful in generating a CSV file with all tests result that can be analyzed, filtered by operator for reporting purposes.
+The `csv` command in NRFU testing is useful for generating a CSV file with all tests result. This file can be easily analyzed and filtered by operator for reporting purposes.
 
 ### Command overview
 
