@@ -11,7 +11,7 @@ import pathlib
 from anta.reporter.csv_reporter import ReportCsv
 from anta.result_manager import ResultManager
 
-# To avoid succh error:
+# To avoid such error:
 # pytest.PytestCollectionWarning: cannot collect test class 'TestResult' because it has a __init__ constructor
 from anta.result_manager.models import TestResult as FakeResult
 
