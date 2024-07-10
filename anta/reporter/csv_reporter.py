@@ -37,7 +37,7 @@ class ReportCsv:
     def _split_list_to_txt_list(cls, usr_list: list[str], delimiter: str | None = None) -> str:
         """Split list to multi-lines string.
 
-        Args:
+       Parameters
         ----
             usr_list: List of string to concatenate
             delimiter: A delimiter to use to start string. Defaults to None.
