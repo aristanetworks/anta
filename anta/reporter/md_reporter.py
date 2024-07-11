@@ -34,7 +34,14 @@ class MDReportGenerator:
 
     @classmethod
     def generate(cls, results: ResultManager, md_filename: Path, *, only_failed_tests: bool = False) -> None:
-        """Generate and write the various sections of the markdown report."""
+        """Generate and write the various sections of the markdown report.
+
+        Parameters
+        ----------
+            results: The ResultsManager instance containing all test results.
+            md_filename: The path to the markdown file to write the report into.
+            only_failed_tests: Flag to generate a report with only failed tests. Defaults to False.
+        """
         MDReportBase.ONLY_FAILED_TESTS = only_failed_tests
 
         with md_filename.open("w", encoding="utf-8") as mdfile:
@@ -64,10 +71,10 @@ class MDReportBase(ABC):
     def __init__(self, mdfile: TextIOWrapper, results: ResultManager) -> None:
         """Initialize the MDReportBase with an open markdown file object to write to and a ResultManager instance.
 
-        Args:
-        ----
-            mdfile (TextIOWrapper): An open file object to write the markdown data into.
-            results (ResultManager): The ResultsManager instance containing all test results.
+        Parameters
+        ----------
+            mdfile: An open file object to write the markdown data into.
+            results: The ResultsManager instance containing all test results.
         """
         self.mdfile = mdfile
         self.results = results
@@ -114,11 +121,10 @@ class MDReportBase(ABC):
     def write_table(self, table_heading: list[str], *, last_table: bool = False) -> None:
         """Write a markdown table with a table heading and multiple rows to the markdown file.
 
-        Args:
-        ----
-            table_heading (list[str]): List of strings to join for the table heading.
-            last_table (bool): Flag to determine if it's the last table of the markdown file to avoid unnecessary new line.
-                                Defaults to False.
+        Parameters
+        ----------
+            table_heading: List of strings to join for the table heading.
+            last_table: Flag to determine if it's the last table of the markdown file to avoid unnecessary new line. Defaults to False.
         """
         self.mdfile.write("\n".join(table_heading) + "\n")
         for row in self.generate_rows():
@@ -131,9 +137,9 @@ class MDReportBase(ABC):
 
         The heading name used is the class name.
 
-        Args:
-        ----
-            heading_level (int): The level of the heading (1-6).
+        Parameters
+        ----------
+            heading_level: The level of the heading (1-6).
 
         Example:
         -------
@@ -146,7 +152,16 @@ class MDReportBase(ABC):
         self.mdfile.write(f"{heading}\n\n")
 
     def safe_markdown(self, text: str | None) -> str:
-        """Escape markdown characters in the text to prevent markdown rendering issues."""
+        """Escape markdown characters in the text to prevent markdown rendering issues.
+
+        Parameters
+        ----------
+            text: The text to escape markdown characters from.
+
+        Returns
+        -------
+            str: The text with escaped markdown characters.
+        """
         # Custom field from a TestResult object can be None
         if text is None:
             return ""
@@ -220,13 +235,13 @@ class SummaryTotalsDeviceUnderTest(MDReportBase):
     ]
 
     def generate_rows(self) -> Generator[str, None, None]:
-        """Generate the rows of the summary totals dut table."""
-        for dut, stat in self.results.dut_stats.items():
+        """Generate the rows of the summary totals device under test table."""
+        for device, stat in self.results.device_stats.items():
             total_tests = stat.tests_success_count + stat.tests_skipped_count + stat.tests_failure_count + stat.tests_error_count
             categories_skipped = ", ".join(sorted(stat.categories_skipped))
             categories_failed = ", ".join(sorted(stat.categories_failed))
             yield (
-                f"| {dut} | {total_tests} | {stat.tests_success_count} | {stat.tests_skipped_count} | {stat.tests_failure_count} | {stat.tests_error_count} "
+                f"| {device} | {total_tests} | {stat.tests_success_count} | {stat.tests_skipped_count} | {stat.tests_failure_count} | {stat.tests_error_count} "
                 f"| {categories_skipped or '-'} | {categories_failed or '-'} |\n"
             )
 

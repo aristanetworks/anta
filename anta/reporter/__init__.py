@@ -185,7 +185,7 @@ class ReportTable:
             "List of failed or errored test cases",
         ]
         table = self._build_headers(headers=headers, table=table)
-        for device, stats in sorted(manager.dut_stats.items()):
+        for device, stats in sorted(manager.device_stats.items()):
             if devices is None or device in devices:
                 table.add_row(
                     device,

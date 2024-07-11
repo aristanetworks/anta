@@ -97,7 +97,7 @@ class ResultManager:
         self.status: TestStatus = "unset"
         self.error_status = False
 
-        self.dut_stats: defaultdict[str, DeviceStats] = defaultdict(DeviceStats)
+        self.device_stats: defaultdict[str, DeviceStats] = defaultdict(DeviceStats)
         self.category_stats: defaultdict[str, CategoryStats] = defaultdict(CategoryStats)
         self.test_stats: defaultdict[str, TestStats] = defaultdict(TestStats)
 
@@ -119,7 +119,7 @@ class ResultManager:
         self.error_status = False
 
         # Also reset the stats attributes
-        self.dut_stats = defaultdict(DeviceStats)
+        self.device_stats = defaultdict(DeviceStats)
         self.category_stats = defaultdict(CategoryStats)
         self.test_stats = defaultdict(TestStats)
 
@@ -170,14 +170,14 @@ class ResultManager:
         ]
         count_attr = f"tests_{result.result}_count"
 
-        # Update DUT stats
-        dut_stats: DeviceStats = self.dut_stats[result.name]
-        setattr(dut_stats, count_attr, getattr(dut_stats, count_attr) + 1)
+        # Update device stats
+        device_stats: DeviceStats = self.device_stats[result.name]
+        setattr(device_stats, count_attr, getattr(device_stats, count_attr) + 1)
         if result.result in ("failure", "error"):
-            dut_stats.tests_failure.add(result.test)
-            dut_stats.categories_failed.update(result.categories)
+            device_stats.tests_failure.add(result.test)
+            device_stats.categories_failed.update(result.categories)
         elif result.result == "skipped":
-            dut_stats.categories_skipped.update(result.categories)
+            device_stats.categories_skipped.update(result.categories)
 
         # Update category stats
         for category in result.categories:

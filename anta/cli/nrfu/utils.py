@@ -125,7 +125,14 @@ def print_jinja(results: ResultManager, template: pathlib.Path, output: pathlib.
 
 
 def save_markdown_report(ctx: click.Context, md_output: pathlib.Path, *, only_failed_tests: bool = False) -> None:
-    """Save the markdown report."""
+    """Save the markdown report to a file.
+
+    Parameters
+    ----------
+        ctx: Click context containing the result manager.
+        md_output: Path to save the markdown report.
+        only_failed_tests: If True, only failed tests will be included in the report. Default is False.
+    """
     console.print()
     MDReportGenerator.generate(results=_get_result_manager(ctx), md_filename=md_output, only_failed_tests=only_failed_tests)
     checkmark = Emoji("white_check_mark")

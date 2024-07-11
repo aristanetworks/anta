@@ -158,15 +158,13 @@ anta nrfu md-report --help
 
 Usage: anta nrfu md-report [OPTIONS]
 
-  ANTA command to check network state with Markdown report.
+  ANTA command to check network state with Markdown report. It only saves test
+  results and not the output from the --group-by option.
 
 Options:
-  --md-output FILE     Path to save the report as a Markdown file. It only
-                       saves test results and not the output from the --group-
-                       by option.  [env var: ANTA_NRFU_MD_REPORT_MD_OUTPUT;
-                       required]
-  --only-failed-tests  Flag to determine if only failed tests should be saved
-                       in the report.  [env var:
+  --md-output FILE     Path to save the report as a Markdown file  [env var:
+                       ANTA_NRFU_MD_REPORT_MD_OUTPUT; required]
+  --only-failed-tests  Only include failed tests in the report.  [env var:
                        ANTA_NRFU_MD_REPORT_ONLY_FAILED_TESTS]
   --help               Show this message and exit.
 ```

@@ -95,17 +95,17 @@ def tpl_report(ctx: click.Context, template: pathlib.Path, output: pathlib.Path 
     type=click.Path(file_okay=True, dir_okay=False, exists=False, writable=True, path_type=pathlib.Path),
     show_envvar=True,
     required=True,
-    help="Path to save the report as a Markdown file. It only saves test results and not the output from the --group-by option.",
+    help="Path to save the report as a Markdown file",
 )
 @click.option(
     "--only-failed-tests",
     is_flag=True,
     default=False,
     show_envvar=True,
-    help="Flag to determine if only failed tests should be saved in the report.",
+    help="Only include failed tests in the report.",
 )
 def md_report(ctx: click.Context, md_output: pathlib.Path, *, only_failed_tests: bool = False) -> None:
-    """ANTA command to check network state with Markdown report."""
+    """ANTA command to check network state with Markdown report. It only saves test results and not the output from the --group-by option."""
     run_tests(ctx)
     save_markdown_report(ctx, md_output=md_output, only_failed_tests=only_failed_tests)
     exit_with_code(ctx)
