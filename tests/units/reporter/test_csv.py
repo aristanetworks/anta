@@ -41,7 +41,9 @@ class TestReportCsv:
 
         # Create a ResultManager instance with dummy test results
         result_manager = result_manager_factory(max_test_entries)
+        # Test usecase with list of messages
         result_manager.results[0].messages = ["Message 1", "Message 2"]
+        # Test usecase with list of categories
         result_manager.results[1].messages = ["Cat 1", "Cat 2"]
 
         # Generate the CSV report
@@ -66,5 +68,5 @@ class TestReportCsv:
         for index in [0, max_test_entries - 1]:
             self.compare_csv_and_result(rows, index, result_manager)
 
-        # Assert number of lines
+        # Assert number of lines: Number of TestResults + CSV Headers
         assert len(rows) == len(result_manager.results) + 1

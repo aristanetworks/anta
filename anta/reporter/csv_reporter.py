@@ -34,7 +34,7 @@ class ReportCsv:
         categories: str = "Test category"
 
     @classmethod
-    def split_list_to_txt_list(cls, usr_list: list[str], delimiter: str | None = None) -> str:
+    def split_list_to_txt_list(cls, usr_list: list[str], delimiter: str = " - ") -> str:
         """Split list to multi-lines string.
 
         Parameters
@@ -47,9 +47,7 @@ class ReportCsv:
             str: Multi-lines string
 
         """
-        if delimiter is not None:
-            return " - ".join(f"{delimiter} {line}" for line in usr_list)
-        return " - ".join(f"{line}" for line in usr_list)
+        return f"{delimiter}".join(f"{line}" for line in usr_list)
 
     @classmethod
     def convert_to_list(cls, result: TestResult) -> list[str]:
@@ -90,10 +88,10 @@ class ReportCsv:
         ]
 
         with pathlib.Path.open(csv_filename, "w", encoding="utf-8") as csvfile:
-            spamwriter = csv.writer(
+            csvwriter = csv.writer(
                 csvfile,
                 delimiter=",",
             )
-            spamwriter.writerow(headers)
+            csvwriter.writerow(headers)
             for entry in results.results:
-                spamwriter.writerow(cls.convert_to_list(entry))
+                csvwriter.writerow(cls.convert_to_list(entry))
