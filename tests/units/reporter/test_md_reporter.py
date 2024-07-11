@@ -5,7 +5,6 @@
 
 from __future__ import annotations
 
-import json
 from io import StringIO
 from pathlib import Path
 
@@ -13,7 +12,6 @@ import pytest
 
 from anta.reporter.md_reporter import MDReportBase, MDReportGenerator
 from anta.result_manager import ResultManager
-from anta.result_manager.models import TestResult as FakeTestResult
 
 DATA_DIR: Path = Path(__file__).parent.parent.parent.resolve() / "data"
 
@@ -25,22 +23,13 @@ DATA_DIR: Path = Path(__file__).parent.parent.parent.resolve() / "data"
         pytest.param(False, "test_md_report_all_tests.md", id="all_tests"),
     ],
 )
-def test_md_report_generate(tmp_path: Path, expected_report_name: str, *, only_failed_tests: bool) -> None:
+def test_md_report_generate(tmp_path: Path, result_manager: ResultManager, expected_report_name: str, *, only_failed_tests: bool) -> None:
     """Test the MDReportGenerator class."""
     # Create a temporary Markdown file
     md_filename = tmp_path / "test.md"
 
-    manager = ResultManager()
-
-    # Load JSON results into the manager
-    with (DATA_DIR / "test_md_report_results.json").open("r", encoding="utf-8") as f:
-        results = json.load(f)
-
-    for result in results:
-        manager.add(FakeTestResult(**result))
-
     # Generate the Markdown report
-    MDReportGenerator.generate(manager, md_filename, only_failed_tests=only_failed_tests)
+    MDReportGenerator.generate(result_manager, md_filename, only_failed_tests=only_failed_tests)
     assert md_filename.exists()
 
     # Load the existing Markdown report to compare with the generated one

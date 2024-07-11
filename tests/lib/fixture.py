@@ -5,8 +5,10 @@
 
 from __future__ import annotations
 
+import json
 import logging
 import shutil
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable
 from unittest.mock import patch
 
@@ -23,11 +25,14 @@ from tests.lib.utils import default_anta_env
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
-    from pathlib import Path
 
     from anta.models import AntaCommand
 
 logger = logging.getLogger(__name__)
+
+DATA_DIR: Path = Path(__file__).parent.parent.resolve() / "data"
+
+JSON_RESULTS = "test_md_report_results.json"
 
 DEVICE_HW_MODEL = "pytest"
 DEVICE_NAME = "pytest"
@@ -152,6 +157,31 @@ def result_manager_factory(list_result_factory: Callable[[int], list[TestResult]
         return result_manager
 
     return _factory
+
+
+@pytest.fixture()
+def result_manager() -> ResultManager:
+    """Return a ResultManager with 89 random tests loaded from a JSON file.
+
+    Devices: DC1-SPINE1, DC1-LEAF1A
+
+    - Total tests: 89
+    - Success: 31
+    - Skipped: 8
+    - Failure: 48
+    - Error: 2
+
+    See `tests/data/test_md_report_results.json` and `tests/data/test_md_report_all_tests.md` for details.
+    """
+    manager = ResultManager()
+
+    with (DATA_DIR / JSON_RESULTS).open("r", encoding="utf-8") as f:
+        results = json.load(f)
+
+    for result in results:
+        manager.add(TestResult(**result))
+
+    return manager
 
 
 # tests.units.cli fixtures

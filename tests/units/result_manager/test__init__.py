@@ -177,54 +177,40 @@ class TestResultManager:
         with pytest.raises(TypeError, match="Added test result 'test' must be a TestResult instance, got str."):
             result_manager.add("test")  # type: ignore[arg-type]
 
-    def test_get_results(self, test_result_factory: Callable[[], TestResult]) -> None:
+    def test_get_results(self, result_manager: ResultManager) -> None:
         """Test ResultManager.get_results."""
-        result_manager = ResultManager()
-        assert result_manager.get_results() == []
-
-        success_result = test_result_factory()
-        success_result.result = "success"
-        success_result.categories = ["ospf"]
-        result_manager.add(success_result)
-
-        failure_result = test_result_factory()
-        failure_result.result = "failure"
-        failure_result.categories = ["bgp"]
-        result_manager.add(failure_result)
-
-        skipped_result = test_result_factory()
-        skipped_result.result = "skipped"
-        result_manager.add(skipped_result)
-
-        error_result = test_result_factory()
-        error_result.result = "error"
-        result_manager.add(error_result)
-
         # Check for single status
         success_results = result_manager.get_results(status="success")
-        assert len(success_results) == 1
-        assert success_results[0].result == "success"
+        assert len(success_results) == 31
+        assert all(r.result == "success" for r in success_results)
 
         # Check for multiple statuses
-        success_failure_results = result_manager.get_results(status={"success", "failure"})
-        assert len(success_failure_results) == 2
-        assert all(r.result in {"success", "failure"} for r in success_failure_results)
+        failure_results = result_manager.get_results(status={"failure", "error"})
+        assert len(failure_results) == 50
+        assert all(r.result in {"failure", "error"} for r in failure_results)
 
         # Check all results
         all_results = result_manager.get_results()
-        assert len(all_results) == 4
-        assert [r.result for r in all_results] == ["success", "failure", "skipped", "error"]
+        assert len(all_results) == 89
 
+    def test_get_results_sort_by(self, result_manager: ResultManager) -> None:
+        """Test ResultManager.get_results with sort_by."""
         # Check all results with sort_by result
         all_results = result_manager.get_results(sort_by=["result"])
-        assert len(all_results) == 4
-        assert [r.result for r in all_results] == ["error", "failure", "skipped", "success"]
+        assert len(all_results) == 89
+        assert [r.result for r in all_results] == ["error"] * 2 + ["failure"] * 48 + ["skipped"] * 8 + ["success"] * 31
+
+        # Check all results with sort_by device (name)
+        all_results = result_manager.get_results(sort_by=["name"])
+        assert len(all_results) == 89
+        assert all_results[0].name == "DC1-LEAF1A"
+        assert all_results[-1].name == "DC1-SPINE1"
 
         # Check multiple statuses with sort_by categories
-        success_failure_results = result_manager.get_results(status={"success", "failure"}, sort_by=["categories"])
-        assert len(success_failure_results) == 2
-        assert success_failure_results[0] == failure_result
-        assert success_failure_results[1] == success_result
+        success_skipped_results = result_manager.get_results(status={"success", "skipped"}, sort_by=["categories"])
+        assert len(success_skipped_results) == 39
+        assert success_skipped_results[0].categories == ["BFD"]
+        assert success_skipped_results[-1].categories == ["VXLAN"]
 
         # Check all results with bad sort_by
         with pytest.raises(
@@ -235,30 +221,21 @@ class TestResultManager:
         ):
             all_results = result_manager.get_results(sort_by=["bad_field"])
 
-    def test_get_total_results(self, test_result_factory: Callable[[], TestResult]) -> None:
+    def test_get_total_results(self, result_manager: ResultManager) -> None:
         """Test ResultManager.get_total_results."""
-        result_manager = ResultManager()
-        assert result_manager.get_total_results() == 0
+        # Test all results
+        assert result_manager.get_total_results() == 89
 
-        success_result = test_result_factory()
-        success_result.result = "success"
-        result_manager.add(success_result)
+        # Test single status
+        assert result_manager.get_total_results(status="success") == 31
+        assert result_manager.get_total_results(status="failure") == 48
+        assert result_manager.get_total_results(status="error") == 2
+        assert result_manager.get_total_results(status="skipped") == 8
 
-        failure_result = test_result_factory()
-        failure_result.result = "failure"
-        result_manager.add(failure_result)
-
-        skipped_result = test_result_factory()
-        skipped_result.result = "skipped"
-        result_manager.add(skipped_result)
-
-        error_result = test_result_factory()
-        error_result.result = "error"
-        result_manager.add(error_result)
-
-        assert result_manager.get_total_results(status="success") == 1
-        assert result_manager.get_total_results(status={"success", "failure"}) == 2
-        assert result_manager.get_total_results() == 4
+        # Test multiple statuses
+        assert result_manager.get_total_results(status={"success", "failure"}) == 79
+        assert result_manager.get_total_results(status={"success", "failure", "error"}) == 81
+        assert result_manager.get_total_results(status={"success", "failure", "error", "skipped"}) == 89
 
     @pytest.mark.parametrize(
         ("status", "error_status", "ignore_error", "expected_status"),
