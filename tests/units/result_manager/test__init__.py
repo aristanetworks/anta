@@ -177,6 +177,31 @@ class TestResultManager:
         with pytest.raises(TypeError, match="Added test result 'test' must be a TestResult instance, got str."):
             result_manager.add("test")  # type: ignore[arg-type]
 
+    def test_add_clear_cache(self, result_manager: ResultManager, test_result_factory: Callable[[], TestResult]) -> None:
+        """Test ResultManager.add and make sure the cache is reset after adding a new test."""
+        # Check the cache is empty
+        assert "results_by_status" not in result_manager.__dict__
+
+        # Access the cache
+        assert result_manager.get_total_results() == 89
+
+        # Check the cache is filled with the correct results count
+        assert "results_by_status" in result_manager.__dict__
+        assert sum(len(v) for v in result_manager.__dict__["results_by_status"].values()) == 89
+
+        # Add a new test
+        result_manager.add(result=test_result_factory())
+
+        # Check the cache has been reset
+        assert "results_by_status" not in result_manager.__dict__
+
+        # Access the cache again
+        assert result_manager.get_total_results() == 90
+
+        # Check the cache is filled again with the correct results count
+        assert "results_by_status" in result_manager.__dict__
+        assert sum(len(v) for v in result_manager.__dict__["results_by_status"].values()) == 90
+
     def test_get_results(self, result_manager: ResultManager) -> None:
         """Test ResultManager.get_results."""
         # Check for single status
