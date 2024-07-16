@@ -12,9 +12,6 @@ from typing import Any, Callable
 from anta.reporter.csv_reporter import ReportCsv
 from anta.result_manager import ResultManager
 
-# To avoid such error:
-# pytest.PytestCollectionWarning: cannot collect test class 'TestResult' because it has a __init__ constructor
-
 
 class TestReportCsv:
     """Tester for ReportCsv class."""
