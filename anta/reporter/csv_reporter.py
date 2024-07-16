@@ -87,11 +87,14 @@ class ReportCsv:
             cls.Headers.categories,
         ]
 
-        with pathlib.Path.open(csv_filename, "w", encoding="utf-8") as csvfile:
-            csvwriter = csv.writer(
-                csvfile,
-                delimiter=",",
-            )
-            csvwriter.writerow(headers)
-            for entry in results.results:
-                csvwriter.writerow(cls.convert_to_list(entry))
+        try:
+            with pathlib.Path.open(csv_filename, "w", encoding="utf-8") as csvfile:
+                csvwriter = csv.writer(
+                    csvfile,
+                    delimiter=",",
+                )
+                csvwriter.writerow(headers)
+                for entry in results.results:
+                    csvwriter.writerow(cls.convert_to_list(entry))
+        except OSError as exc:
+            logger.error("Error: %s", exc)
