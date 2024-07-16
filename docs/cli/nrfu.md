@@ -158,9 +158,8 @@ Usage: anta nrfu csv [OPTIONS]
   ANTA command to check network states with CSV result.
 
 Options:
-  --csv-output FILE  Path to save report as a CSV file. It only saves test
-                     results and not the output from --group-by option  [env
-                     var: ANTA_NRFU_CSV_CSV_OUTPUT]
+  --csv-output FILE  Path to save report as a CSV file  [env var:
+                     ANTA_NRFU_CSV_CSV_OUTPUT]
   --help             Show this message and exit.
 ```
 
