@@ -9,6 +9,8 @@ import csv
 import pathlib
 from typing import Any, Callable
 
+import pytest
+
 from anta.reporter.csv_reporter import ReportCsv
 from anta.result_manager import ResultManager
 
@@ -67,3 +69,25 @@ class TestReportCsv:
 
         # Assert number of lines: Number of TestResults + CSV Headers
         assert len(rows) == len(result_manager.results) + 1
+
+    def test_report_csv_generate_os_error(
+        self,
+        result_manager_factory: Callable[[int], ResultManager],
+        tmp_path: pathlib.Path,
+        caplog: pytest.LogCaptureFixture,
+    ) -> None:
+        """Test CSV reporter OSError."""
+        # Create a ResultManager instance with dummy test results
+        max_test_entries = 10
+        result_manager = result_manager_factory(max_test_entries)
+
+        # Create a temporary CSV file path and make tmp_path read_only
+        tmp_path.chmod(0o400)
+        csv_filename = tmp_path / "read_only.csv"
+
+        with pytest.raises(OSError, match="Permission denied"):
+            # Generate the CSV report
+            ReportCsv.generate(result_manager, csv_filename)
+
+        assert len(caplog.record_tuples) == 1
+        assert "OSError caught while writing the CSV file" in caplog.text

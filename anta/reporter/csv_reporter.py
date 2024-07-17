@@ -8,11 +8,14 @@ from __future__ import annotations
 
 import csv
 import logging
-import pathlib
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from anta.logger import anta_log_exception
+
 if TYPE_CHECKING:
+    import pathlib
+
     from anta.result_manager import ResultManager
     from anta.result_manager.models import TestResult
 
@@ -73,10 +76,14 @@ class ReportCsv:
     def generate(cls, results: ResultManager, csv_filename: pathlib.Path) -> None:
         """Build CSV flle with tests results.
 
-        Args:
-        ----
+        Parameter
+        ---------
             results: A ResultManager instance.
             csv_filename: File path where to save CSV data.
+
+        Raise
+        -----
+            OSError if any is raised while writing the CSV file.
         """
         headers = [
             cls.Headers.device,
@@ -88,7 +95,7 @@ class ReportCsv:
         ]
 
         try:
-            with pathlib.Path.open(csv_filename, "w", encoding="utf-8") as csvfile:
+            with csv_filename.open(mode="w", encoding="utf-8") as csvfile:
                 csvwriter = csv.writer(
                     csvfile,
                     delimiter=",",
@@ -97,4 +104,6 @@ class ReportCsv:
                 for entry in results.results:
                     csvwriter.writerow(cls.convert_to_list(entry))
         except OSError as exc:
-            logger.error("Error: %s", exc)
+            message = f"OSError caught while writing the CSV file '{csv_filename.resolve()}'."
+            anta_log_exception(exc, message, logger)
+            raise

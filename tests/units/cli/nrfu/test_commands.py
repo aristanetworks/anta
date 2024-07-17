@@ -9,6 +9,7 @@ import json
 import re
 from pathlib import Path
 from typing import TYPE_CHECKING
+from unittest.mock import patch
 
 from anta.cli import anta
 from anta.cli.utils import ExitCode
@@ -101,3 +102,11 @@ def test_anta_nrfu_csv(click_runner: CliRunner) -> None:
     result = click_runner.invoke(anta, ["nrfu", "csv", "--csv-output", "test.csv"])
     assert result.exit_code == ExitCode.OK
     assert "CSV report saved to" in result.output
+
+
+def test_anta_nrfu_csv_failure(click_runner: CliRunner) -> None:
+    """Test anta nrfu csv."""
+    with patch("anta.reporter.csv_reporter.ReportCsv.generate", side_effect=OSError()):
+        result = click_runner.invoke(anta, ["nrfu", "csv", "--csv-output", "read_test.csv"])
+    assert result.exit_code == ExitCode.USAGE_ERROR
+    assert "Failed to save CSV report to" in result.output
