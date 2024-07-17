@@ -11,7 +11,6 @@ import logging
 from typing import TYPE_CHECKING, Literal
 
 import rich
-from rich.emoji import Emoji
 from rich.panel import Panel
 from rich.progress import BarColumn, MofNCompleteColumn, Progress, SpinnerColumn, TextColumn, TimeElapsedColumn, TimeRemainingColumn
 
@@ -129,8 +128,7 @@ def save_to_csv(ctx: click.Context, csv_file: pathlib.Path) -> None:
     """Save results to a CSV file."""
     try:
         ReportCsv.generate(results=_get_result_manager(ctx), csv_filename=csv_file)
-        checkmark = Emoji("white_check_mark")
-        console.print(f"CSV report saved to {csv_file} {checkmark}", style="cyan")
+        console.print(f"CSV report saved to {csv_file} ✅", style="cyan")
     except OSError:
         console.print(f"Failed to save CSV report to {csv_file} ❌", style="cyan")
         ctx.exit(ExitCode.USAGE_ERROR)
