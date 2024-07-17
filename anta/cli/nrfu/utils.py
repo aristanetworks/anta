@@ -15,8 +15,10 @@ from rich.panel import Panel
 from rich.progress import BarColumn, MofNCompleteColumn, Progress, SpinnerColumn, TextColumn, TimeElapsedColumn, TimeRemainingColumn
 
 from anta.cli.console import console
+from anta.cli.utils import ExitCode
 from anta.models import AntaTest
 from anta.reporter import ReportJinja, ReportTable
+from anta.reporter.csv_reporter import ReportCsv
 from anta.runner import main
 
 if TYPE_CHECKING:
@@ -120,6 +122,16 @@ def print_jinja(results: ResultManager, template: pathlib.Path, output: pathlib.
     if output is not None:
         with output.open(mode="w", encoding="utf-8") as file:
             file.write(report)
+
+
+def save_to_csv(ctx: click.Context, csv_file: pathlib.Path) -> None:
+    """Save results to a CSV file."""
+    try:
+        ReportCsv.generate(results=_get_result_manager(ctx), csv_filename=csv_file)
+        console.print(f"CSV report saved to {csv_file} ✅", style="cyan")
+    except OSError:
+        console.print(f"Failed to save CSV report to {csv_file} ❌", style="cyan")
+        ctx.exit(ExitCode.USAGE_ERROR)
 
 
 # Adding our own ANTA spinner - overriding rich SPINNERS for our own
