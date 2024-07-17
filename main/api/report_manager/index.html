@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.28">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.29">
     
     
       
@@ -28,7 +28,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.6543a935.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.76a95c52.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
@@ -1966,6 +1966,20 @@
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#anta.reporter.ReportTable.Headers" class="md-nav__link">
+      <span class="md-ellipsis">
+        Headers
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#anta.reporter.ReportTable.report_all" class="md-nav__link">
       <span class="md-ellipsis">
         report_all
@@ -2147,6 +2161,20 @@
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#anta.reporter.ReportTable.Headers" class="md-nav__link">
+      <span class="md-ellipsis">
+        Headers
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#anta.reporter.ReportTable.report_all" class="md-nav__link">
       <span class="md-ellipsis">
         report_all
@@ -2250,7 +2278,53 @@
 
 
 
+  
 
+  
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="anta.reporter.ReportTable.Headers" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">Headers</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+<a href="#anta.reporter.ReportTable.Headers" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">Headers</span><span class="p">(</span><span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;Device&#39;</span><span class="p">,</span> <span class="n">test_case</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;Test Name&#39;</span><span class="p">,</span> <span class="n">number_of_success</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;# of success&#39;</span><span class="p">,</span> <span class="n">number_of_failure</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;# of failure&#39;</span><span class="p">,</span> <span class="n">number_of_skipped</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;# of skipped&#39;</span><span class="p">,</span> <span class="n">number_of_errors</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;# of errors&#39;</span><span class="p">,</span> <span class="n">list_of_error_nodes</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;List of failed or error nodes&#39;</span><span class="p">,</span> <span class="n">list_of_error_tests</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;List of failed or error test cases&#39;</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+  
+        <p>Headers for the table report.</p>
+
+  
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+
+    </div>
+
+</div>
 
 
 <div class="doc doc-object doc-function">
@@ -2294,18 +2368,7 @@
 
             <details class="quote">
               <summary>Source code in <code>anta/reporter/__init__.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 87</span>
-<span class="normal"> 88</span>
-<span class="normal"> 89</span>
-<span class="normal"> 90</span>
-<span class="normal"> 91</span>
-<span class="normal"> 92</span>
-<span class="normal"> 93</span>
-<span class="normal"> 94</span>
-<span class="normal"> 95</span>
-<span class="normal"> 96</span>
-<span class="normal"> 97</span>
-<span class="normal"> 98</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 98</span>
 <span class="normal"> 99</span>
 <span class="normal">100</span>
 <span class="normal">101</span>
@@ -2321,7 +2384,18 @@
 <span class="normal">111</span>
 <span class="normal">112</span>
 <span class="normal">113</span>
-<span class="normal">114</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">report_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">manager</span><span class="p">:</span> <span class="n">ResultManager</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;All tests results&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Table</span><span class="p">:</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">report_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">manager</span><span class="p">:</span> <span class="n">ResultManager</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;All tests results&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Table</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a table report with all tests for one or all devices.</span>
 
 <span class="sd">    Create table with full output: Host / Test / Status / Message</span>
@@ -2396,18 +2470,7 @@
 
             <details class="quote">
               <summary>Source code in <code>anta/reporter/__init__.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">164</span>
-<span class="normal">165</span>
-<span class="normal">166</span>
-<span class="normal">167</span>
-<span class="normal">168</span>
-<span class="normal">169</span>
-<span class="normal">170</span>
-<span class="normal">171</span>
-<span class="normal">172</span>
-<span class="normal">173</span>
-<span class="normal">174</span>
-<span class="normal">175</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">175</span>
 <span class="normal">176</span>
 <span class="normal">177</span>
 <span class="normal">178</span>
@@ -2442,7 +2505,18 @@
 <span class="normal">207</span>
 <span class="normal">208</span>
 <span class="normal">209</span>
-<span class="normal">210</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">report_summary_devices</span><span class="p">(</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">report_summary_devices</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">manager</span><span class="p">:</span> <span class="n">ResultManager</span><span class="p">,</span>
     <span class="n">devices</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -2464,12 +2538,12 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">show_lines</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s2">&quot;Device&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;# of success&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;# of skipped&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;# of failure&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;# of errors&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;List of failed or error test cases&quot;</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Headers</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Headers</span><span class="o">.</span><span class="n">number_of_success</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Headers</span><span class="o">.</span><span class="n">number_of_skipped</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Headers</span><span class="o">.</span><span class="n">number_of_failure</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Headers</span><span class="o">.</span><span class="n">number_of_errors</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Headers</span><span class="o">.</span><span class="n">list_of_error_tests</span><span class="p">,</span>
     <span class="p">]</span>
     <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_headers</span><span class="p">(</span><span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">table</span><span class="o">=</span><span class="n">table</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="n">manager</span><span class="o">.</span><span class="n">get_devices</span><span class="p">():</span>
@@ -2536,18 +2610,7 @@
 
             <details class="quote">
               <summary>Source code in <code>anta/reporter/__init__.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">127</span>
 <span class="normal">128</span>
 <span class="normal">129</span>
 <span class="normal">130</span>
@@ -2582,7 +2645,18 @@
 <span class="normal">159</span>
 <span class="normal">160</span>
 <span class="normal">161</span>
-<span class="normal">162</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">report_summary_tests</span><span class="p">(</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">report_summary_tests</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">manager</span><span class="p">:</span> <span class="n">ResultManager</span><span class="p">,</span>
     <span class="n">tests</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -2604,12 +2678,12 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">show_lines</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s2">&quot;Test Case&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;# of success&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;# of skipped&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;# of failure&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;# of errors&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;List of failed or error nodes&quot;</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Headers</span><span class="o">.</span><span class="n">test_case</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Headers</span><span class="o">.</span><span class="n">number_of_success</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Headers</span><span class="o">.</span><span class="n">number_of_skipped</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Headers</span><span class="o">.</span><span class="n">number_of_failure</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Headers</span><span class="o">.</span><span class="n">number_of_errors</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Headers</span><span class="o">.</span><span class="n">list_of_error_nodes</span><span class="p">,</span>
     <span class="p">]</span>
     <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_headers</span><span class="p">(</span><span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">table</span><span class="o">=</span><span class="n">table</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">manager</span><span class="o">.</span><span class="n">get_tests</span><span class="p">():</span>
