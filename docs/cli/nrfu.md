@@ -145,6 +145,28 @@ anta nrfu --tags LEAF json
 ```
 ![$1anta nrfu json results](../imgs/anta-nrfu-json-output.png){ loading=lazy width="1600" }
 
+## Performing NRFU and saving results in a CSV file.
+
+The `csv` command in NRFU testing is useful for generating a CSV file with all tests result. This file can be easily analyzed and filtered by operator for reporting purposes.
+
+### Command overview
+
+```bash
+anta nrfu csv --help
+Usage: anta nrfu csv [OPTIONS]
+
+  ANTA command to check network states with CSV result.
+
+Options:
+  --csv-output FILE  Path to save report as a CSV file  [env var:
+                     ANTA_NRFU_CSV_CSV_OUTPUT]
+  --help             Show this message and exit.
+```
+
+### Example
+
+![anta nrfu csv results](../imgs/anta_nrfu_csv.png){ loading=lazy width="1600" }
+
 ## Performing NRFU and saving results in a Markdown file
 
 The `md-report` command in NRFU testing generates a comprehensive Markdown report containing various sections, including detailed statistics for devices and test categories. By default, this command saves all test results from the current run in the Markdown file. However, you can choose to include only failed tests by using the `--only-failed-tests` option in the command line interface.

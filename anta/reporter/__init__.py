@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 import logging
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
 from jinja2 import Template
@@ -26,6 +27,19 @@ logger = logging.getLogger(__name__)
 
 class ReportTable:
     """TableReport Generate a Table based on TestResult."""
+
+    @dataclass()
+    class Headers:  # pylint: disable=too-many-instance-attributes
+        """Headers for the table report."""
+
+        device: str = "Device"
+        test_case: str = "Test Name"
+        number_of_success: str = "# of success"
+        number_of_failure: str = "# of failure"
+        number_of_skipped: str = "# of skipped"
+        number_of_errors: str = "# of errors"
+        list_of_error_nodes: str = "List of failed or error nodes"
+        list_of_error_tests: str = "List of failed or error test cases"
 
     def _split_list_to_txt_list(self, usr_list: list[str], delimiter: str | None = None) -> str:
         """Split list to multi-lines string.
@@ -62,9 +76,6 @@ class ReportTable:
         for idx, header in enumerate(headers):
             if idx == 0:
                 table.add_column(header, justify="left", style=RICH_COLOR_PALETTE.HEADER, no_wrap=True)
-            elif header == "Test Name":
-                # We always want the full test name
-                table.add_column(header, justify="left", no_wrap=True)
             else:
                 table.add_column(header, justify="left")
         return table
@@ -135,12 +146,12 @@ class ReportTable:
         """
         table = Table(title=title, show_lines=True)
         headers = [
-            "Test Case",
-            "# of success",
-            "# of skipped",
-            "# of failure",
-            "# of errors",
-            "List of failed or errored devices",
+            self.Headers.test_case,
+            self.Headers.number_of_success,
+            self.Headers.number_of_skipped,
+            self.Headers.number_of_failure,
+            self.Headers.number_of_errors,
+            self.Headers.list_of_error_nodes,
         ]
         table = self._build_headers(headers=headers, table=table)
         for test, stats in sorted(manager.test_stats.items()):
@@ -177,12 +188,12 @@ class ReportTable:
         """
         table = Table(title=title, show_lines=True)
         headers = [
-            "Device",
-            "# of success",
-            "# of skipped",
-            "# of failure",
-            "# of errors",
-            "List of failed or errored test cases",
+            self.Headers.device,
+            self.Headers.number_of_success,
+            self.Headers.number_of_skipped,
+            self.Headers.number_of_failure,
+            self.Headers.number_of_errors,
+            self.Headers.list_of_error_tests,
         ]
         table = self._build_headers(headers=headers, table=table)
         for device, stats in sorted(manager.device_stats.items()):

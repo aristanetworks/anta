@@ -52,6 +52,7 @@ Options:
   --help                          Show this message and exit.
 
 Commands:
+  csv         ANTA command to check network state with CSV report.
   json        ANTA command to check network state with JSON results.
   md-report   ANTA command to check network state with Markdown report.
   table       ANTA command to check network state with table results.
