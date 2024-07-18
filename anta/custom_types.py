@@ -3,8 +3,6 @@
 # that can be found in the LICENSE file.
 """Module that provides predefined types for AntaTest.Input instances."""
 
-from __future__ import annotations
-
 import re
 from typing import Annotated, Literal
 
