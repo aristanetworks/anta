@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 
 from pydantic import TypeAdapter
 
-from anta.custom_types import TestStatus
+from anta.result_manager.models import TestStatus
 
 if TYPE_CHECKING:
     from anta.result_manager.models import TestResult
@@ -91,7 +91,7 @@ class ResultManager:
         error_status is set to True.
         """
         self._result_entries: list[TestResult] = []
-        self.status: TestStatus = "unset"
+        self.status: TestStatus = TestStatus.unset
         self.error_status = False
 
     def __len__(self) -> int:
@@ -106,7 +106,7 @@ class ResultManager:
     @results.setter
     def results(self, value: list[TestResult]) -> None:
         self._result_entries = []
-        self.status = "unset"
+        self.status = TestStatus.unset
         self.error_status = False
         for e in value:
             self.add(e)
@@ -133,7 +133,7 @@ class ResultManager:
             if self.status == "unset" or self.status == "skipped" and test_status in {"success", "failure"}:
                 self.status = test_status
             elif self.status == "success" and test_status == "failure":
-                self.status = "failure"
+                self.status = TestStatus.failure
 
         self._result_entries.append(result)
         _update_status(result.result)

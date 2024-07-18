@@ -18,9 +18,8 @@ from anta import RICH_COLOR_PALETTE, RICH_COLOR_THEME
 if TYPE_CHECKING:
     import pathlib
 
-    from anta.custom_types import TestStatus
     from anta.result_manager import ResultManager
-    from anta.result_manager.models import TestResult
+    from anta.result_manager.models import TestResult, TestStatus
 
 logger = logging.getLogger(__name__)
 

@@ -5,9 +5,23 @@
 
 from __future__ import annotations
 
+from enum import Enum
+
 from pydantic import BaseModel
 
-from anta.custom_types import TestStatus
+
+class TestStatus(str, Enum):
+    """TestStatus enum."""
+
+    # This is to prevent pytest to collecting this
+    # TODO: find a way to ignore this only in test and not in library code.
+    __test__ = False
+
+    unset = "unset"
+    success = "success"
+    failure = "failure"
+    error = "error"
+    skipped = "skipped"
 
 
 class TestResult(BaseModel):
@@ -29,7 +43,7 @@ class TestResult(BaseModel):
     test: str
     categories: list[str]
     description: str
-    result: TestStatus = "unset"
+    result: TestStatus = TestStatus.unset
     messages: list[str] = []
     custom_field: str | None = None
 
@@ -41,7 +55,7 @@ class TestResult(BaseModel):
             message: Optional message related to the test
 
         """
-        self._set_status("success", message)
+        self._set_status(TestStatus.success, message)
 
     def is_failure(self, message: str | None = None) -> None:
         """Set status to failure.
@@ -51,7 +65,7 @@ class TestResult(BaseModel):
             message: Optional message related to the test
 
         """
-        self._set_status("failure", message)
+        self._set_status(TestStatus.failure, message)
 
     def is_skipped(self, message: str | None = None) -> None:
         """Set status to skipped.
@@ -61,7 +75,7 @@ class TestResult(BaseModel):
             message: Optional message related to the test
 
         """
-        self._set_status("skipped", message)
+        self._set_status(TestStatus.skipped, message)
 
     def is_error(self, message: str | None = None) -> None:
         """Set status to error.
@@ -71,7 +85,7 @@ class TestResult(BaseModel):
             message: Optional message related to the test
 
         """
-        self._set_status("error", message)
+        self._set_status(TestStatus.error, message)
 
     def _set_status(self, status: TestStatus, message: str | None = None) -> None:
         """Set status and insert optional message.

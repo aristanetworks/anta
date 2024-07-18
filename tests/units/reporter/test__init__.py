@@ -13,9 +13,9 @@ from rich.table import Table
 
 from anta import RICH_COLOR_PALETTE
 from anta.reporter import ReportJinja, ReportTable
+from anta.result_manager.models import TestStatus
 
 if TYPE_CHECKING:
-    from anta.custom_types import TestStatus
     from anta.result_manager import ResultManager
 
 
@@ -140,7 +140,7 @@ class TestReportTable:
         new_results = [result.model_copy() for result in manager.results]
         for result in new_results:
             result.name = "test_device"
-            result.result = "failure"
+            result.result = TestStatus.failure
 
         report = ReportTable()
         kwargs = {"tests": [test] if test is not None else None, "title": title}
@@ -175,7 +175,7 @@ class TestReportTable:
         new_results = [result.model_copy() for result in manager.results]
         for result in new_results:
             result.name = dev or "test_device"
-            result.result = "failure"
+            result.result = TestStatus.failure
         manager.results = new_results
 
         report = ReportTable()
