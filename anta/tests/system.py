@@ -9,10 +9,9 @@ from __future__ import annotations
 
 import re
 from ipaddress import IPv4Address
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import TYPE_CHECKING, ClassVar
 
 from pydantic import BaseModel
-from pydantic.v1.utils import deep_update
 
 from anta.custom_types import PositiveInteger
 from anta.models import AntaCommand, AntaTest
@@ -320,7 +319,7 @@ class VerifyNTPAssociations(AntaTest):
     - VerifyNTPAssociations:
         ntp_servers:
             - server_address: 1.1.1.1
-            preferred: True
+              preferred: True
             - server_address: 2.2.2.2
             - server_address: 3.3.3.3
     ```
@@ -348,36 +347,32 @@ class VerifyNTPAssociations(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyNTPAssociations."""
-        failures: dict[str, Any] = {"ntp_servers": {}}
+        failures: str = ""
+
+        if not (peer_details := get_value(self.instance_commands[0].json_output, "peers")):
+            self.result.is_failure("NTP peers are not configured.")
+            return
 
         # Iterate over each NTP server
         for ntp_server in self.inputs.ntp_servers:
             address = str(ntp_server.server_address)
             preferred = ntp_server.preferred
-            failure: dict[str, dict[str, dict[str, Any]]] = {"ntp_servers": {address: {}}}
 
             # Check if NTP server details exists
-            if (
-                not (peer_details := get_value(self.instance_commands[0].json_output, "peers"))
-                or (peer_detail := get_item(list(peer_details.values()), "peerIpAddr", address)) is None
-            ):
-                failure["ntp_servers"][address] = {"status": "Not configured"}
-                failures = deep_update(failures, failure)
+            if (peer_detail := get_item(list(peer_details.values()), "peerIpAddr", address)) is None:
+                failures += f"NTP peer {address} is not configured.\n"
                 continue
 
             # Check the condition of NTP servers
             condition = get_value(peer_detail, "condition")
             if not preferred and condition != "candidate":
-                failure["ntp_servers"][address] = {"condition": "Not candidate"}
-                failures = deep_update(failures, failure)
+                failures += f"For NTP peer {address} expected condition as 'candidate' but found '{condition}' instead.\n"
                 continue
             if preferred and condition != "sys.peer":
-                failure["ntp_servers"][address] = {"condition": "Not sys.peer"}
-                failures = deep_update(failures, failure)
-                continue
+                failures += f"For NTP peer {address} expected condition as 'sys.peer' but found '{condition}' instead.\n"
 
         # Check if there are any failures
-        if not failures["ntp_servers"]:
+        if not failures:
             self.result.is_success()
         else:
-            self.result.is_failure(f"Following NTP server details are not found or not ok:\n{failures}")
+            self.result.is_failure(failures)
