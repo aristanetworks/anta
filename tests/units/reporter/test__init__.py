@@ -73,12 +73,11 @@ class TestReportTable:
     @pytest.mark.parametrize(
         ("status", "expected_status"),
         [
-            pytest.param("unknown", "unknown", id="unknown status"),
-            pytest.param("unset", "[grey74]unset", id="unset status"),
-            pytest.param("skipped", "[bold orange4]skipped", id="skipped status"),
-            pytest.param("failure", "[bold red]failure", id="failure status"),
-            pytest.param("error", "[indian_red]error", id="error status"),
-            pytest.param("success", "[green4]success", id="success status"),
+            pytest.param(TestStatus.unset, "[grey74]unset", id="unset status"),
+            pytest.param(TestStatus.skipped, "[bold orange4]skipped", id="skipped status"),
+            pytest.param(TestStatus.failure, "[bold red]failure", id="failure status"),
+            pytest.param(TestStatus.error, "[indian_red]error", id="error status"),
+            pytest.param(TestStatus.success, "[green4]success", id="success status"),
         ],
     )
     def test__color_result(self, status: TestStatus, expected_status: str) -> None:

@@ -91,8 +91,8 @@ class ReportTable:
         str: the colored string
 
         """
-        color = RICH_COLOR_THEME.get(status, "")
-        return f"[{color}]{status}" if color != "" else str(status)
+        color = RICH_COLOR_THEME.get(status.value, "")
+        return f"[{color}]{status.value}" if color != "" else str(status.value)
 
     def report_all(self, manager: ResultManager, title: str = "All tests results") -> Table:
         """Create a table report with all tests for one or all devices.
