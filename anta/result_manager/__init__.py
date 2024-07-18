@@ -200,15 +200,7 @@ class ResultManager:
         Parameters
         ----------
             result: TestResult to add to the ResultManager instance.
-
-        Raises
-        ------
-            TypeError: If the added test result is not a TestResult instance.
         """
-        if not isinstance(result, TestResult):
-            msg = f"Added test result '{result}' must be a TestResult instance, got {type(result).__name__}."
-            raise TypeError(msg)
-
         self._result_entries.append(result)
         self._update_status(result.result)
         self._update_stats(result)

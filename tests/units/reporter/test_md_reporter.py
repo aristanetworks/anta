@@ -25,7 +25,6 @@ DATA_DIR: Path = Path(__file__).parent.parent.parent.resolve() / "data"
 )
 def test_md_report_generate(tmp_path: Path, result_manager: ResultManager, expected_report_name: str, *, only_failed_tests: bool) -> None:
     """Test the MDReportGenerator class."""
-    # Create a temporary Markdown file
     md_filename = tmp_path / "test.md"
 
     # Generate the Markdown report

@@ -171,23 +171,17 @@ class TestResultManager:
                 assert result_manager.status == expected_status
             assert len(result_manager) == 1
 
-    def test_add_type_error(self) -> None:
-        """Test ResultManager.add with wrong object type."""
-        result_manager = ResultManager()
-        with pytest.raises(TypeError, match="Added test result 'test' must be a TestResult instance, got str."):
-            result_manager.add("test")  # type: ignore[arg-type]
-
     def test_add_clear_cache(self, result_manager: ResultManager, test_result_factory: Callable[[], TestResult]) -> None:
         """Test ResultManager.add and make sure the cache is reset after adding a new test."""
         # Check the cache is empty
         assert "results_by_status" not in result_manager.__dict__
 
         # Access the cache
-        assert result_manager.get_total_results() == 89
+        assert result_manager.get_total_results() == 30
 
         # Check the cache is filled with the correct results count
         assert "results_by_status" in result_manager.__dict__
-        assert sum(len(v) for v in result_manager.__dict__["results_by_status"].values()) == 89
+        assert sum(len(v) for v in result_manager.__dict__["results_by_status"].values()) == 30
 
         # Add a new test
         result_manager.add(result=test_result_factory())
@@ -196,45 +190,45 @@ class TestResultManager:
         assert "results_by_status" not in result_manager.__dict__
 
         # Access the cache again
-        assert result_manager.get_total_results() == 90
+        assert result_manager.get_total_results() == 31
 
         # Check the cache is filled again with the correct results count
         assert "results_by_status" in result_manager.__dict__
-        assert sum(len(v) for v in result_manager.__dict__["results_by_status"].values()) == 90
+        assert sum(len(v) for v in result_manager.__dict__["results_by_status"].values()) == 31
 
     def test_get_results(self, result_manager: ResultManager) -> None:
         """Test ResultManager.get_results."""
         # Check for single status
         success_results = result_manager.get_results(status="success")
-        assert len(success_results) == 31
+        assert len(success_results) == 7
         assert all(r.result == "success" for r in success_results)
 
         # Check for multiple statuses
         failure_results = result_manager.get_results(status={"failure", "error"})
-        assert len(failure_results) == 50
+        assert len(failure_results) == 21
         assert all(r.result in {"failure", "error"} for r in failure_results)
 
         # Check all results
         all_results = result_manager.get_results()
-        assert len(all_results) == 89
+        assert len(all_results) == 30
 
     def test_get_results_sort_by(self, result_manager: ResultManager) -> None:
         """Test ResultManager.get_results with sort_by."""
         # Check all results with sort_by result
         all_results = result_manager.get_results(sort_by=["result"])
-        assert len(all_results) == 89
-        assert [r.result for r in all_results] == ["error"] * 2 + ["failure"] * 48 + ["skipped"] * 8 + ["success"] * 31
+        assert len(all_results) == 30
+        assert [r.result for r in all_results] == ["error"] * 2 + ["failure"] * 19 + ["skipped"] * 2 + ["success"] * 7
 
         # Check all results with sort_by device (name)
         all_results = result_manager.get_results(sort_by=["name"])
-        assert len(all_results) == 89
+        assert len(all_results) == 30
         assert all_results[0].name == "DC1-LEAF1A"
         assert all_results[-1].name == "DC1-SPINE1"
 
         # Check multiple statuses with sort_by categories
         success_skipped_results = result_manager.get_results(status={"success", "skipped"}, sort_by=["categories"])
-        assert len(success_skipped_results) == 39
-        assert success_skipped_results[0].categories == ["BFD"]
+        assert len(success_skipped_results) == 9
+        assert success_skipped_results[0].categories == ["Interfaces"]
         assert success_skipped_results[-1].categories == ["VXLAN"]
 
         # Check all results with bad sort_by
@@ -249,18 +243,18 @@ class TestResultManager:
     def test_get_total_results(self, result_manager: ResultManager) -> None:
         """Test ResultManager.get_total_results."""
         # Test all results
-        assert result_manager.get_total_results() == 89
+        assert result_manager.get_total_results() == 30
 
         # Test single status
-        assert result_manager.get_total_results(status="success") == 31
-        assert result_manager.get_total_results(status="failure") == 48
+        assert result_manager.get_total_results(status="success") == 7
+        assert result_manager.get_total_results(status="failure") == 19
         assert result_manager.get_total_results(status="error") == 2
-        assert result_manager.get_total_results(status="skipped") == 8
+        assert result_manager.get_total_results(status="skipped") == 2
 
         # Test multiple statuses
-        assert result_manager.get_total_results(status={"success", "failure"}) == 79
-        assert result_manager.get_total_results(status={"success", "failure", "error"}) == 81
-        assert result_manager.get_total_results(status={"success", "failure", "error", "skipped"}) == 89
+        assert result_manager.get_total_results(status={"success", "failure"}) == 26
+        assert result_manager.get_total_results(status={"success", "failure", "error"}) == 28
+        assert result_manager.get_total_results(status={"success", "failure", "error", "skipped"}) == 30
 
     @pytest.mark.parametrize(
         ("status", "error_status", "ignore_error", "expected_status"),
