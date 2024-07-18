@@ -11,11 +11,11 @@ import logging
 from typing import TYPE_CHECKING, Literal
 
 import rich
-from rich.emoji import Emoji
 from rich.panel import Panel
 from rich.progress import BarColumn, MofNCompleteColumn, Progress, SpinnerColumn, TextColumn, TimeElapsedColumn, TimeRemainingColumn
 
 from anta.cli.console import console
+from anta.cli.utils import ExitCode
 from anta.models import AntaTest
 from anta.reporter import ReportJinja, ReportTable
 from anta.reporter.md_reporter import MDReportGenerator
@@ -133,10 +133,12 @@ def save_markdown_report(ctx: click.Context, md_output: pathlib.Path, *, only_fa
         md_output: Path to save the markdown report.
         only_failed_tests: If True, only failed tests will be included in the report. Default is False.
     """
-    console.print()
-    MDReportGenerator.generate(results=_get_result_manager(ctx), md_filename=md_output, only_failed_tests=only_failed_tests)
-    checkmark = Emoji("white_check_mark")
-    console.print(f"Markdown report saved to {md_output} {checkmark}", style="cyan")
+    try:
+        MDReportGenerator.generate(results=_get_result_manager(ctx), md_filename=md_output, only_failed_tests=only_failed_tests)
+        console.print(f"Markdown report saved to {md_output} ✅", style="cyan")
+    except OSError:
+        console.print(f"Failed to save Markdown report to {md_output} ❌", style="cyan")
+        ctx.exit(ExitCode.USAGE_ERROR)
 
 
 # Adding our own ANTA spinner - overriding rich SPINNERS for our own

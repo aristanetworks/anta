@@ -105,7 +105,7 @@ def tpl_report(ctx: click.Context, template: pathlib.Path, output: pathlib.Path 
     help="Only include failed tests in the report.",
 )
 def md_report(ctx: click.Context, md_output: pathlib.Path, *, only_failed_tests: bool = False) -> None:
-    """ANTA command to check network state with Markdown report. It only saves test results and not the output from the --group-by option."""
+    """ANTA command to check network state with Markdown report."""
     run_tests(ctx)
     save_markdown_report(ctx, md_output=md_output, only_failed_tests=only_failed_tests)
     exit_with_code(ctx)

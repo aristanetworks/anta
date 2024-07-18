@@ -5,9 +5,13 @@
 
 from __future__ import annotations
 
+import logging
 import re
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, ClassVar
+
+from anta.constants import MD_REPORT_TOC
+from anta.logger import anta_log_exception
 
 if TYPE_CHECKING:
     from collections.abc import Generator
@@ -15,6 +19,8 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from anta.result_manager import ResultManager
+
+logger = logging.getLogger(__name__)
 
 
 # pylint: disable=too-few-public-methods
@@ -44,19 +50,23 @@ class MDReportGenerator:
         """
         MDReportBase.ONLY_FAILED_TESTS = only_failed_tests
 
-        with md_filename.open("w", encoding="utf-8") as mdfile:
-            sections: list[MDReportBase] = [
-                ANTAReport(mdfile, results),
-                TestResultsSummary(mdfile, results),
-                SummaryTotals(mdfile, results),
-                SummaryTotalsDeviceUnderTest(mdfile, results),
-                SummaryTotalsPerCategory(mdfile, results),
-                FailedTestResultsSummary(mdfile, results),
-                AllTestResults(mdfile, results),
-            ]
-
-            for section in sections:
-                section.generate_section()
+        try:
+            with md_filename.open("w", encoding="utf-8") as mdfile:
+                sections: list[MDReportBase] = [
+                    ANTAReport(mdfile, results),
+                    TestResultsSummary(mdfile, results),
+                    SummaryTotals(mdfile, results),
+                    SummaryTotalsDeviceUnderTest(mdfile, results),
+                    SummaryTotalsPerCategory(mdfile, results),
+                    FailedTestResultsSummary(mdfile, results),
+                    AllTestResults(mdfile, results),
+                ]
+                for section in sections:
+                    section.generate_section()
+        except OSError as exc:
+            message = f"OSError caught while writing the Markdown file '{md_filename.resolve()}'."
+            anta_log_exception(exc, message, logger)
+            raise
 
 
 class MDReportBase(ABC):
@@ -179,14 +189,7 @@ class ANTAReport(MDReportBase):
     def generate_section(self) -> None:
         """Generate the `# ANTA Report` section of the markdown report."""
         self.write_heading(heading_level=1)
-        toc = """**Table of Contents:**
-
-- [ANTA Report](#anta-report)
-  - [Test Results Summary](#test-results-summary)
-    - [Summary Totals](#summary-totals)
-    - [Summary Totals Device Under Test](#summary-totals-device-under-test)
-    - [Summary Totals Per Category](#summary-totals-per-category)
-  - [Failed Test Results Summary](#failed-test-results-summary)"""
+        toc = MD_REPORT_TOC
 
         if not self.ONLY_FAILED_TESTS:
             toc += "\n  - [All Test Results](#all-test-results)"

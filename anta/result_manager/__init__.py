@@ -13,7 +13,8 @@ from typing import get_args
 
 from pydantic import TypeAdapter
 
-from anta.custom_types import ACRONYM_CATEGORIES, TestStatus
+from anta.constants import ACRONYM_CATEGORIES
+from anta.custom_types import TestStatus
 from anta.result_manager.models import TestResult
 
 from .models import CategoryStats, DeviceStats, TestStats
