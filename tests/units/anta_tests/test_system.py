@@ -14,6 +14,7 @@ from anta.tests.system import (
     VerifyFileSystemUtilization,
     VerifyMemoryUtilization,
     VerifyNTP,
+    VerifyNTPAssociations,
     VerifyReloadCause,
     VerifyUptime,
 )
@@ -285,5 +286,128 @@ poll interval unknown
         ],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["The device is not synchronized with the configured NTP server(s): 'unsynchronised'"]},
+    },
+    {
+        "name": "success",
+        "test": VerifyNTPAssociations,
+        "eos_data": [
+            {
+                "peers": {
+                    "1.1.1.1 (*.pool.ntp.org)": {
+                        "condition": "sys.peer",
+                        "peerIpAddr": "1.1.1.1",
+                        "refid": "17.253.16.125",
+                        "stratumLevel": 2,
+                        "peerType": "unicast",
+                        "lastReceived": 1720764730.0,
+                        "pollInterval": 64,
+                        "reachabilityHistory": [True],
+                        "delay": 173.387,
+                        "offset": -0.221,
+                        "jitter": 0.709,
+                    },
+                    "2.2.2.2 (*.pool.ntp.org)": {
+                        "condition": "candidate",
+                        "peerIpAddr": "2.2.2.2",
+                        "refid": "17.253.16.125",
+                        "stratumLevel": 2,
+                        "peerType": "unicast",
+                        "lastReceived": 1720764730.0,
+                        "pollInterval": 64,
+                        "reachabilityHistory": [True],
+                        "delay": 173.387,
+                        "offset": -0.221,
+                        "jitter": 0.709,
+                    },
+                    "3.3.3.3 (*.pool.ntp.org)": {
+                        "condition": "candidate",
+                        "peerIpAddr": "3.3.3.3",
+                        "refid": "17.253.16.125",
+                        "stratumLevel": 2,
+                        "peerType": "unicast",
+                        "lastReceived": 1720764730.0,
+                        "pollInterval": 64,
+                        "reachabilityHistory": [True],
+                        "delay": 173.387,
+                        "offset": -0.221,
+                        "jitter": 0.709,
+                    },
+                }
+            }
+        ],
+        "inputs": {"ntp_servers": [{"server_address": "1.1.1.1", "preferred": True}, {"server_address": "2.2.2.2"}, {"server_address": "3.3.3.3"}]},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure",
+        "test": VerifyNTPAssociations,
+        "eos_data": [
+            {
+                "peers": {
+                    "1.1.1.1 (*.pool.ntp.org)": {
+                        "condition": "candidate",
+                        "peerIpAddr": "1.1.1.1",
+                        "refid": "17.253.16.125",
+                        "stratumLevel": 2,
+                        "peerType": "unicast",
+                        "lastReceived": 1720764730.0,
+                        "pollInterval": 64,
+                        "reachabilityHistory": [True],
+                        "delay": 173.387,
+                        "offset": -0.221,
+                        "jitter": 0.709,
+                    },
+                    "2.2.2.2 (*.pool.ntp.org)": {
+                        "condition": "sys.peer",
+                        "peerIpAddr": "2.2.2.2",
+                        "refid": "17.253.16.125",
+                        "stratumLevel": 2,
+                        "peerType": "unicast",
+                        "lastReceived": 1720764730.0,
+                        "pollInterval": 64,
+                        "reachabilityHistory": [True],
+                        "delay": 173.387,
+                        "offset": -0.221,
+                        "jitter": 0.709,
+                    },
+                    "3.3.3.3 (*.pool.ntp.org)": {
+                        "condition": "candidate1",
+                        "peerIpAddr": "3.3.3.3",
+                        "refid": "17.253.16.125",
+                        "stratumLevel": 2,
+                        "peerType": "unicast",
+                        "lastReceived": 1720764730.0,
+                        "pollInterval": 64,
+                        "reachabilityHistory": [True],
+                        "delay": 173.387,
+                        "offset": -0.221,
+                        "jitter": 0.709,
+                    },
+                }
+            }
+        ],
+        "inputs": {"ntp_servers": [{"server_address": "1.1.1.1", "preferred": True}, {"server_address": "2.2.2.2"}, {"server_address": "3.3.3.3"}]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Following NTP server details are not found or not ok:\n"
+                "{'ntp_servers': {'1.1.1.1': {'condition': 'Not sys.peer'},"
+                " '2.2.2.2': {'condition': 'Not candidate'}, '3.3.3.3': {'condition': 'Not candidate'}}}"
+            ],
+        },
+    },
+    {
+        "name": "failure-no-peers",
+        "test": VerifyNTPAssociations,
+        "eos_data": [{"peers": {}}],
+        "inputs": {"ntp_servers": [{"server_address": "1.1.1.1", "preferred": True}, {"server_address": "2.2.2.2"}, {"server_address": "3.3.3.3"}]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Following NTP server details are not found or not ok:\n"
+                "{'ntp_servers': {'1.1.1.1': {'status': 'Not configured'},"
+                " '2.2.2.2': {'status': 'Not configured'}, '3.3.3.3': {'status': 'Not configured'}}}"
+            ],
+        },
     },
 ]
