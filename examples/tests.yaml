@@ -221,6 +221,12 @@ anta.tests.interfaces:
         - name: Eth2
           auto: False
           speed: 2.5
+  - VerifyLACPInterfacesStatus:
+      interfaces:
+        - name: Ethernet5
+          portchannel: Port-Channel5
+        - name: Ethernet6
+          portchannel: Port-Channel5
 
 anta.tests.lanz:
   - VerifyLANZ:
