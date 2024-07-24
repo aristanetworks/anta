@@ -447,10 +447,10 @@ anta.tests.system:
   - VerifyNTP:
   - VerifyNTPAssociations:
       ntp_servers:
-          - server_address: 1.1.1.1
-            preferred: True
-          - server_address: 2.2.2.2
-          - server_address: 3.3.3.3
+        - server_address: 1.1.1.1
+          preferred: True
+        - server_address: 2.2.2.2
+        - server_address: 3.3.3.3
 
 anta.tests.vlan:
   - VerifyVlanInternalPolicy:
