@@ -375,4 +375,26 @@ poll interval unknown
             "messages": ["NTP peer 3.3.3.3 is not configured."],
         },
     },
+    {
+        "name": "failure-with-two-peers-not-found",
+        "test": VerifyNTPAssociations,
+        "eos_data": [
+            {
+                "peers": {
+                    "1.1.1.1 (*.pool.ntp.org)": {
+                        "condition": "candidate",
+                        "peerIpAddr": "1.1.1.1",
+                    }
+                }
+            }
+        ],
+        "inputs": {"ntp_servers": [{"server_address": "1.1.1.1", "preferred": True}, {"server_address": "2.2.2.2"}, {"server_address": "3.3.3.3"}]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "For NTP peer 1.1.1.1 expected condition as 'sys.peer' but found 'candidate' instead.\n"
+                "NTP peer 2.2.2.2 is not configured.\nNTP peer 3.3.3.3 is not configured.\n"
+            ],
+        },
+    },
 ]

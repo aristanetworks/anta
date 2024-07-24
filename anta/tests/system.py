@@ -310,14 +310,17 @@ class VerifyNTPAssociations(AntaTest):
 
     Expected Results
     ----------------
-    * Success: The test will pass if the Primary NTP server should be preferred and will have condition 'sys.peer' and other servers will have condition "candidate".
-    * Failure: The test will fail if the Primary NTP server is NOT preferred.
+    * Success: The test will pass if the Primary NTP server (marked as preferred) has the condition 'sys.peer' and
+    all other NTP servers have the condition 'candidate'.
+    * Failure: The test will fail if the Primary NTP server (marked as preferred) does not have the condition 'sys.peer' or
+    if any other NTP server does not have the condition 'candidate'.
 
     Examples
     --------
     ```yaml
-    - VerifyNTPAssociations:
-        ntp_servers:
+    anta.tests.system:
+      - VerifyNTPAssociations:
+          ntp_servers:
             - server_address: 1.1.1.1
               preferred: True
             - server_address: 2.2.2.2
@@ -350,7 +353,7 @@ class VerifyNTPAssociations(AntaTest):
         failures: str = ""
 
         if not (peer_details := get_value(self.instance_commands[0].json_output, "peers")):
-            self.result.is_failure("NTP peers are not configured.")
+            self.result.is_failure("None of NTP peers are not configured.")
             return
 
         # Iterate over each NTP server
