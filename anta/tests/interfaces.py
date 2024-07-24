@@ -910,7 +910,7 @@ class VerifyLACPInterfacesStatus(AntaTest):
     """
 
     name = "VerifyLACPInterfacesStatus"
-    description = "Verifies the status of the provided interfaces."
+    description = "Verifies the Link Aggregation Control Protocol(LACP) status of the provided interfaces."
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show lacp interface {interface}", revision=1)]
 
