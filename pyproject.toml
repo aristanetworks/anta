@@ -172,6 +172,9 @@ filterwarnings = [
   "default:pkg_resources is deprecated:DeprecationWarning",
   # Need to investigate the following - only occuring when running the full pytest suite
   "ignore:Exception ignored in.*:pytest.PytestUnraisableExceptionWarning",
+  # Ignore cryptography >=43.0.0 warnings until asyncssh issue is fixed
+  "ignore:ARC4:cryptography.utils.CryptographyDeprecationWarning",
+  "ignore:TripleDES:cryptography.utils.CryptographyDeprecationWarning",
 
 ]
 
