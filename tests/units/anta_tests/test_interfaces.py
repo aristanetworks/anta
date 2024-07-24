@@ -2532,4 +2532,18 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
+    {
+        "name": "failure-no-details-found",
+        "test": VerifyLACPInterfacesStatus,
+        "eos_data": [
+            {
+                "portChannels": {"Port-Channel5": {"interfaces": {}}},
+            }
+        ],
+        "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "Port-Channel5"}]},
+        "expected": {
+            "result": "failure",
+            "messages": ["Interface details are not for `Ethernet5`.\n"],
+        },
+    },
 ]
