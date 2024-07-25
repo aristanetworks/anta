@@ -87,6 +87,10 @@ anta.tests.bfd:
 anta.tests.configuration:
   - VerifyZeroTouch:
   - VerifyRunningConfigDiffs:
+  - VerifyRunningConfigLines:
+      regex_patterns:
+        - "^enable password.*$"
+        - "bla bla"
 
 anta.tests.connectivity:
   - VerifyReachability:
@@ -109,6 +113,21 @@ anta.tests.connectivity:
 anta.tests.field_notices:
   - VerifyFieldNotice44Resolution:
   - VerifyFieldNotice72Resolution:
+
+anta.tests.flow_tracking:
+  - VerifyHardwareFlowTrackerStatus:
+      trackers:
+        - name: FLOW-TRACKER
+          record_export:
+            on_inactive_timeout: 700000
+            on_interval: 3000000
+          exporters:
+            - name: CV-TELEMETRY
+              local_interface: Loopback11
+              template_interval: 3600
+            - name: CVP-TELEMETRY
+              local_interface: Loopback01
+              template_interval: 36000000
 
 anta.tests.greent:
   - VerifyGreenT:
@@ -575,3 +594,30 @@ anta.tests.routing:
             mode: point-to-point
             vrf: default
             # level is set to 2 by default
+    - VerifyISISSegmentRoutingAdjacencySegments:
+        instances:
+          - name: CORE-ISIS
+            vrf: default
+            segments:
+              - interface: Ethernet2
+                address: 10.0.1.3
+                sid_origin: dynamic
+    - VerifyISISSegmentRoutingDataplane:
+        instances:
+          - name: CORE-ISIS
+            vrf: default
+            dataplane: MPLS
+    - VerifyISISSegmentRoutingTunnels:
+        entries:
+        # Check only endpoint
+        - endpoint: 1.0.0.122/32
+        # Check endpoint and via TI-LFA
+        - endpoint: 1.0.0.13/32
+          vias:
+            - type: tunnel
+              tunnel_id: ti-lfa
+        # Check endpoint and via IP routers
+        - endpoint: 1.0.0.14/32
+          vias:
+            - type: ip
+              nexthop: 1.1.1.1
