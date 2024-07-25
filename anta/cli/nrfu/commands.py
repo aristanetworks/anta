@@ -13,7 +13,7 @@ import click
 
 from anta.cli.utils import exit_with_code
 
-from .utils import print_jinja, print_json, print_table, print_text, run_tests
+from .utils import print_jinja, print_json, print_table, print_text, run_tests, save_to_csv
 
 logger = logging.getLogger(__name__)
 
@@ -27,10 +27,7 @@ logger = logging.getLogger(__name__)
     help="Group result by test or device.",
     required=False,
 )
-def table(
-    ctx: click.Context,
-    group_by: Literal["device", "test"] | None,
-) -> None:
+def table(ctx: click.Context, group_by: Literal["device", "test"] | None) -> None:
     """ANTA command to check network states with table result."""
     run_tests(ctx)
     print_table(ctx, group_by=group_by)
@@ -60,6 +57,28 @@ def text(ctx: click.Context) -> None:
     """ANTA command to check network states with text result."""
     run_tests(ctx)
     print_text(ctx)
+    exit_with_code(ctx)
+
+
+@click.command()
+@click.pass_context
+@click.option(
+    "--csv-output",
+    type=click.Path(
+        file_okay=True,
+        dir_okay=False,
+        exists=False,
+        writable=True,
+        path_type=pathlib.Path,
+    ),
+    show_envvar=True,
+    required=False,
+    help="Path to save report as a CSV file",
+)
+def csv(ctx: click.Context, csv_output: pathlib.Path) -> None:
+    """ANTA command to check network states with CSV result."""
+    run_tests(ctx)
+    save_to_csv(ctx, csv_file=csv_output)
     exit_with_code(ctx)
 
 

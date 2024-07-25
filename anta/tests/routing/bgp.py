@@ -123,7 +123,7 @@ def _add_bgp_routes_failure(
     # Iterate over the expected BGP routes
     for route in bgp_routes:
         str_route = str(route)
-        failure = {"bgp_peers": {peer: {vrf: {route_type: {str_route: Any}}}}}
+        failure: dict[str, Any] = {"bgp_peers": {peer: {vrf: {route_type: {}}}}}
 
         # Check if the route is missing in the BGP output
         if str_route not in bgp_output:
