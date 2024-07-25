@@ -71,7 +71,7 @@ dev = [
   "pytest-html>=3.2.0",
   "pytest-metadata>=3.0.0",
   "pytest>=7.4.0",
-  "ruff>=0.5.0,<0.6.0",
+  "ruff>=0.5.4,<0.6.0",
   "tox>=4.10.0,<5.0.0",
   "types-PyYAML",
   "types-pyOpenSSL",
@@ -172,6 +172,9 @@ filterwarnings = [
   "default:pkg_resources is deprecated:DeprecationWarning",
   # Need to investigate the following - only occuring when running the full pytest suite
   "ignore:Exception ignored in.*:pytest.PytestUnraisableExceptionWarning",
+  # Ignore cryptography >=43.0.0 warnings until asyncssh issue is fixed
+  "ignore:ARC4:cryptography.utils.CryptographyDeprecationWarning",
+  "ignore:TripleDES:cryptography.utils.CryptographyDeprecationWarning",
 
 ]
 
