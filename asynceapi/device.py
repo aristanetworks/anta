@@ -54,7 +54,7 @@ class Device(httpx.AsyncClient):
     EAPI_OFMT_OPTIONS = ("json", "text")
     EAPI_DEFAULT_OFMT = "json"
 
-    def __init__(  # noqa: PLR0913  # pylint: disable=too-many-arguments
+    def __init__(  # pylint: disable=too-many-arguments
         self,
         host: str | None = None,
         username: str | None = None,

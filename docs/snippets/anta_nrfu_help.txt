@@ -43,7 +43,7 @@ Options:
                                   or 1 if any test failed.  [env var:
                                   ANTA_NRFU_IGNORE_ERROR]
   --hide [success|failure|error|skipped]
-                                  Hide result by type: success / failure /
+                                  Hide results by type: success / failure /
                                   error / skipped'.
   --dry-run                       Run anta nrfu command but stop before
                                   starting to execute the tests. Considers all
@@ -52,6 +52,7 @@ Options:
   --help                          Show this message and exit.
 
 Commands:
+  csv         ANTA command to check network state with CSV report.
   json        ANTA command to check network state with JSON result.
   table       ANTA command to check network states with table result.
   text        ANTA command to check network states with text result.
