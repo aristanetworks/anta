@@ -57,7 +57,7 @@ class AntaTemplate:
 
     # pylint: disable=too-few-public-methods
 
-    def __init__(  # noqa: PLR0913
+    def __init__(
         self,
         template: str,
         version: Literal[1, "latest"] = "latest",
