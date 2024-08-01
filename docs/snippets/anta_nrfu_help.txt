@@ -29,8 +29,10 @@ Options:
                                   ANTA_INVENTORY; required]
   --tags TEXT                     List of tags using comma as separator:
                                   tag1,tag2,tag3.  [env var: ANTA_TAGS]
-  -c, --catalog FILE              Path to the test catalog YAML file  [env
-                                  var: ANTA_CATALOG; required]
+  -c, --catalog FILE              Path to the test catalog file  [env var:
+                                  ANTA_CATALOG; required]
+  --catalog-format [yaml|json]    Format of the catalog file, either 'yaml' or
+                                  'json'  [env var: ANTA_CATALOG_FORMAT]
   -d, --device TEXT               Run tests on a specific device. Can be
                                   provided multiple times.
   -t, --test TEXT                 Run a specific test. Can be provided
@@ -41,7 +43,8 @@ Options:
                                   or 1 if any test failed.  [env var:
                                   ANTA_NRFU_IGNORE_ERROR]
   --hide [success|failure|error|skipped]
-                                  Group result by test or device.
+                                  Hide results by type: success / failure /
+                                  error / skipped'.
   --dry-run                       Run anta nrfu command but stop before
                                   starting to execute the tests. Considers all
                                   devices as connected.  [env var:
@@ -49,6 +52,7 @@ Options:
   --help                          Show this message and exit.
 
 Commands:
+  csv         ANTA command to check network state with CSV report.
   json        ANTA command to check network state with JSON result.
   table       ANTA command to check network states with table result.
   text        ANTA command to check network states with text result.

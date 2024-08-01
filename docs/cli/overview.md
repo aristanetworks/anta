@@ -35,7 +35,7 @@ To set them as environment variables:
 export ANTA_USERNAME=admin
 export ANTA_PASSWORD=arista123
 export ANTA_INVENTORY=inventory.yml
-export ANTA_INVENTORY=tests.yml
+export ANTA_CATALOG=tests.yml
 ```
 
 Then, run the CLI without options:

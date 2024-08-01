@@ -9,6 +9,7 @@ import json
 import re
 from pathlib import Path
 from typing import TYPE_CHECKING
+from unittest.mock import patch
 
 from anta.cli import anta
 from anta.cli.utils import ExitCode
@@ -94,3 +95,22 @@ def test_anta_nrfu_template(click_runner: CliRunner) -> None:
     result = click_runner.invoke(anta, ["nrfu", "tpl-report", "--template", str(DATA_DIR / "template.j2")])
     assert result.exit_code == ExitCode.OK
     assert "* VerifyEOSVersion is SUCCESS for dummy" in result.output
+
+
+def test_anta_nrfu_csv(click_runner: CliRunner, tmp_path: Path) -> None:
+    """Test anta nrfu csv."""
+    csv_output = tmp_path / "test.csv"
+    result = click_runner.invoke(anta, ["nrfu", "csv", "--csv-output", str(csv_output)])
+    assert result.exit_code == ExitCode.OK
+    assert "CSV report saved to" in result.output
+    assert csv_output.exists()
+
+
+def test_anta_nrfu_csv_failure(click_runner: CliRunner, tmp_path: Path) -> None:
+    """Test anta nrfu csv."""
+    csv_output = tmp_path / "test.csv"
+    with patch("anta.reporter.csv_reporter.ReportCsv.generate", side_effect=OSError()):
+        result = click_runner.invoke(anta, ["nrfu", "csv", "--csv-output", str(csv_output)])
+    assert result.exit_code == ExitCode.USAGE_ERROR
+    assert "Failed to save CSV report to" in result.output
+    assert not csv_output.exists()

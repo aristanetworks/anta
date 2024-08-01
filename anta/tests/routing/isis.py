@@ -638,7 +638,8 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
         """
         Check if the tunnel type specified in `via_input` matches any of the tunnel types in `eos_entry`.
 
-        Args:
+        Parameters
+        ----------
             via_input (VerifyISISSegmentRoutingTunnels.Input.Entry.Vias): The input tunnel type to check.
             eos_entry (dict[str, Any]): The EOS entry containing the tunnel types.
 
@@ -662,7 +663,8 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
         """
         Check if the tunnel nexthop matches the given input.
 
-        Args:
+        Parameters
+        ----------
             via_input (VerifyISISSegmentRoutingTunnels.Input.Entry.Vias): The input via object.
             eos_entry (dict[str, Any]): The EOS entry dictionary.
 
@@ -686,7 +688,8 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
         """
         Check if the tunnel interface exists in the given EOS entry.
 
-        Args:
+        Parameters
+        ----------
             via_input (VerifyISISSegmentRoutingTunnels.Input.Entry.Vias): The input via object.
             eos_entry (dict[str, Any]): The EOS entry dictionary.
 
@@ -710,7 +713,8 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
         """
         Check if the tunnel ID matches any of the tunnel IDs in the EOS entry's vias.
 
-        Args:
+        Parameters
+        ----------
             via_input (VerifyISISSegmentRoutingTunnels.Input.Entry.Vias): The input vias to check.
             eos_entry (dict[str, Any]): The EOS entry to compare against.
 
