@@ -205,6 +205,55 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
+        "name": "success-protocols",
+        "test": VerifyBFDSpecificPeers,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "ipv4Neighbors": {
+                            "192.0.255.7": {
+                                "peerStats": {
+                                    "": {
+                                        "status": "up",
+                                        "remoteDisc": 108328132,
+                                        "peerStatsDetail": {
+                                            "role": "active",
+                                            "apps": ["bgp"],
+                                        },
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "MGMT": {
+                        "ipv4Neighbors": {
+                            "192.0.255.70": {
+                                "peerStats": {
+                                    "": {
+                                        "status": "up",
+                                        "remoteDisc": 108328132,
+                                        "peerStatsDetail": {
+                                            "role": "active",
+                                            "apps": ["ospf"],
+                                        },
+                                    }
+                                }
+                            }
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bfd_peers": [
+                {"peer_address": "192.0.255.7", "vrf": "default", "protocols": ["bgp"]},
+                {"peer_address": "192.0.255.70", "vrf": "MGMT", "protocols": ["ospf"]},
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
         "name": "failure-no-peer",
         "test": VerifyBFDSpecificPeers,
         "eos_data": [
@@ -241,8 +290,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Following BFD peers are not configured, status is not up or remote disc is zero:\n"
-                "{'192.0.255.7': {'CS': 'Not Configured'}, '192.0.255.70': {'MGMT': 'Not Configured'}}"
+                "For following BFD peers, session parameters are not Ok:\n{'192.0.255.7': {'CS': 'Not Configured'}, '192.0.255.70': {'MGMT': 'Not Configured'}}"
             ],
         },
     },
@@ -283,9 +331,121 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Following BFD peers are not configured, status is not up or remote disc is zero:\n"
+                "For following BFD peers, session parameters are not Ok:\n"
                 "{'192.0.255.7': {'default': {'status': 'Down', 'remote_disc': 108328132}}, "
                 "'192.0.255.70': {'MGMT': {'status': 'Down', 'remote_disc': 0}}}"
+            ],
+        },
+    },
+    {
+        "name": "failure-protocols",
+        "test": VerifyBFDSpecificPeers,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "ipv4Neighbors": {
+                            "192.0.255.7": {
+                                "peerStats": {
+                                    "": {
+                                        "status": "up",
+                                        "remoteDisc": 108328132,
+                                        "peerStatsDetail": {
+                                            "role": "active",
+                                            "apps": ["ospf"],
+                                        },
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "MGMT": {
+                        "ipv4Neighbors": {
+                            "192.0.255.70": {
+                                "peerStats": {
+                                    "": {
+                                        "status": "up",
+                                        "remoteDisc": 108328132,
+                                        "peerStatsDetail": {
+                                            "role": "active",
+                                            "apps": ["bgp"],
+                                        },
+                                    }
+                                }
+                            }
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bfd_peers": [
+                {"peer_address": "192.0.255.7", "vrf": "default", "protocols": ["isis"]},
+                {"peer_address": "192.0.255.70", "vrf": "MGMT", "protocols": ["isis"]},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "For following BFD peers, session parameters are not Ok:\n"
+                "{'192.0.255.7': {'default': {'protocols': ['ospf']}}, "
+                "'192.0.255.70': {'MGMT': {'protocols': ['bgp']}}}"
+            ],
+        },
+    },
+    {
+        "name": "failure-misc",
+        "test": VerifyBFDSpecificPeers,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "ipv4Neighbors": {
+                            "192.0.255.7": {
+                                "peerStats": {
+                                    "": {
+                                        "status": "down",
+                                        "remoteDisc": 0,
+                                        "peerStatsDetail": {
+                                            "role": "active",
+                                            "apps": ["ospf"],
+                                        },
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "MGMT": {
+                        "ipv4Neighbors": {
+                            "192.0.255.70": {
+                                "peerStats": {
+                                    "": {
+                                        "status": "down",
+                                        "remoteDisc": 0,
+                                        "peerStatsDetail": {
+                                            "role": "active",
+                                            "apps": ["bgp"],
+                                        },
+                                    }
+                                }
+                            }
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bfd_peers": [
+                {"peer_address": "192.0.255.7", "vrf": "default", "protocols": ["isis"]},
+                {"peer_address": "192.0.255.70", "vrf": "MGMT", "protocols": ["isis"]},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "For following BFD peers, session parameters are not Ok:\n"
+                "{'192.0.255.7': {'default': {'status': 'down', 'remote_disc': 0, 'protocols': ['ospf']}}, "
+                "'192.0.255.70': {'MGMT': {'status': 'down', 'remote_disc': 0, 'protocols': ['bgp']}}}"
             ],
         },
     },
