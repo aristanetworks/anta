@@ -83,8 +83,8 @@ async def run_tests(tests_generator: AsyncGenerator[Coroutine[Any, Any, TestResu
     with a limit on the number of concurrent tests. It yields test results as each
     test completes.
 
-    Args:
-    ----
+    Parameters
+    -----------
         tests_generator: An asynchronous generator that yields test coroutines.
         limit: The maximum number of concurrent tests to run.
 
@@ -214,8 +214,8 @@ async def generate_tests(selected_tests: defaultdict[AntaDevice, set[AntaTestDef
 
     It creates an async generator of coroutines which are created by the `test` method of the AntaTest instances. Each coroutine is a test to run.
 
-    Args:
-    ----
+    Parameters
+    -----------
         selected_tests: A mapping of devices to the tests to run. The selected tests are created by the `prepare_tests` function.
 
     Yields
