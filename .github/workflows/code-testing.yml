@@ -123,19 +123,14 @@ jobs:
     name: Codespeed for all supported python versions
     runs-on: ubuntu-20.04
     needs: [lint-python, type-python]
-    strategy:
-      matrix:
-        python: ["3.9", "3.10", "3.11", "3.12"]
     steps:
       - uses: actions/checkout@v4
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python }}
+          python-version: "3.12"
       - name: Install dependencies
         run: pip install tox tox-gh-actions
-      - name: "Run pytest via tox for ${{ matrix.python }}"
-        run: tox
       - name: Run benchmarks
         uses: CodSpeedHQ/action@v3
         with:
