@@ -240,7 +240,7 @@ envlist =
 python =
   3.9: py39
   3.10: py310
-  3.11: erase, py311, report, codespeed
+  3.11: erase, py311, report
   3.12: py312
 
 [testenv]

@@ -140,7 +140,7 @@ jobs:
         uses: CodSpeedHQ/action@v3
         with:
           token: ${{ secrets.CODSPEED_SECRET }}
-          run: tox -e codespeed
+          run: tox -e codspeed
   test-documentation:
     name: Build offline documentation for testing
     runs-on: ubuntu-20.04
