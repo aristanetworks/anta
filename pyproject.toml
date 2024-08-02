@@ -67,6 +67,8 @@ dev = [
   "pylint>=2.17.5",
   "pytest-asyncio>=0.23",
   "pytest-cov>=4.1.0",
+  "pytest-benchmark",
+  "pytest-codspeed",
   "pytest-dependency",
   "pytest-html>=3.2.0",
   "pytest-metadata>=3.0.0",
@@ -78,9 +80,6 @@ dev = [
   "types-requests",
   "typing-extensions",
   "yamllint>=1.32.0",
-]
-codspeed = [
-  "pytest-codspeed",
 ]
 doc = [
   "fontawesome_markdown",
@@ -260,7 +259,6 @@ description = Run pytest --codespeed with {basepython}
 extras =
   dev
   cli
-  codspeed
 # posargs allows to run only a specific test using
 # tox -e <env> -- path/to/my/test::test
 commands =
