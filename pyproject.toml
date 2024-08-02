@@ -65,7 +65,7 @@ dev = [
   "pre-commit>=3.3.3",
   "pylint-pydantic>=0.2.4",
   "pylint>=2.17.5",
-  "pytest-asyncio>=0.21.1",
+  "pytest-asyncio>=0.23",
   "pytest-cov>=4.1.0",
   "pytest-dependency",
   "pytest-html>=3.2.0",
@@ -78,6 +78,9 @@ dev = [
   "types-requests",
   "typing-extensions",
   "yamllint>=1.32.0",
+]
+codspeed = [
+  "pytest-codspeed",
 ]
 doc = [
   "fontawesome_markdown",
@@ -175,7 +178,10 @@ filterwarnings = [
   # Ignore cryptography >=43.0.0 warnings until asyncssh issue is fixed
   "ignore:ARC4:cryptography.utils.CryptographyDeprecationWarning",
   "ignore:TripleDES:cryptography.utils.CryptographyDeprecationWarning",
-
+  # This's triggered by pytest-asyncio,
+  # which calls deprecated asyncio.get_event_loop() method
+  # ref: https://github.com/pytest-dev/pytest-asyncio/issues/757
+  "ignore:There is no current event loop:DeprecationWarning",
 ]
 
 
@@ -236,7 +242,7 @@ envlist =
 python =
   3.9: py39
   3.10: py310
-  3.11: erase, py311, report
+  3.11: erase, py311, report, codespeed
   3.12: py312
 
 [testenv]
@@ -248,6 +254,17 @@ extras =
 # tox -e <env> -- path/to/my/test::test
 commands =
    pytest {posargs}
+
+[testenv:codspeed]
+description = Run pytest --codespeed with {basepython}
+extras =
+  dev
+  cli
+  codspeed
+# posargs allows to run only a specific test using
+# tox -e <env> -- path/to/my/test::test
+commands =
+   pytest --codspeed {posargs}
 
 [testenv:lint]
 description = Check the code style
@@ -372,6 +389,9 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.In
   "S101",    # Complains about asserts in units and libs.
   "SLF001",  # Lots of private member accessed for test purposes
 ]
+"tests/lib/fixture.py" = [
+  "ANN401",  # Ok to use Any type hint fixtures.
+]
 "tests/units/*" = [
   "BLE001",  # Do not catch blind exception: `Exception` - already disabling this in pylint
   "FBT001",  # Boolean-typed positional argument in function definition
@@ -420,7 +440,7 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.In
 "anta/inventory/__init__.py" = [
   "PLR0913",     # Ok to have more than 5 arguments in the AntaInventory class
 ]
-"examples/anta_runner.py" = [  # This is an example script and linked in  snippets
+"examples/anta_runner.py" = [  # This is an example script and linked in snippets
   "S108",   # Probable insecure usage of temporary file or directory
   "S105",   # Possible hardcoded password
   "INP001", # Implicit packages

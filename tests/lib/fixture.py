@@ -5,15 +5,19 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
 import shutil
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable
 from unittest.mock import patch
 
 import pytest
+import pytest_asyncio
 from click.testing import CliRunner, Result
 
 import asynceapi
+from anta.catalog import AntaCatalog
 from anta.cli.console import console
 from anta.device import AntaDevice, AsyncEOSDevice
 from anta.inventory import AntaInventory
@@ -23,7 +27,6 @@ from tests.lib.utils import default_anta_env
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
-    from pathlib import Path
 
     from anta.models import AntaCommand
 
@@ -34,7 +37,7 @@ DEVICE_NAME = "pytest"
 COMMAND_OUTPUT = "retrieved"
 
 MOCK_CLI_JSON: dict[str, asynceapi.EapiCommandError | dict[str, Any]] = {
-    "show version": {
+    "show version": {  # NOSONAR
         "modelName": "DCS-7280CR3-32P4-F",
         "version": "4.31.1F",
     },
@@ -62,7 +65,7 @@ MOCK_CLI_TEXT: dict[str, asynceapi.EapiCommandError | str] = {
 def device(request: pytest.FixtureRequest) -> Iterator[AntaDevice]:
     """Return an AntaDevice instance with mocked abstract method."""
 
-    def _collect(command: AntaCommand, *args: Any, **kwargs: Any) -> None:  # noqa: ARG001, ANN401 #pylint: disable=unused-argument
+    def _collect(command: AntaCommand, *args: Any, **kwargs: Any) -> None:  # noqa: ARG001 #pylint: disable=unused-argument
         command.output = COMMAND_OUTPUT
 
     kwargs = {"name": DEVICE_NAME, "hw_model": DEVICE_HW_MODEL}
@@ -79,17 +82,66 @@ def device(request: pytest.FixtureRequest) -> Iterator[AntaDevice]:
 
 
 @pytest.fixture()
-def test_inventory() -> AntaInventory:
-    """Return the test_inventory."""
+def test_inventory(request: pytest.FixtureRequest) -> AntaInventory:
+    """Return an AntaInventory.
+
+    By default, it returns the AntaInventory pointed at in the default_anta_env function.
+    It can be overridden when passing a parameter to the fixture.
+    """
     env = default_anta_env()
-    assert env["ANTA_INVENTORY"]
     assert env["ANTA_USERNAME"]
     assert env["ANTA_PASSWORD"] is not None
+
+    if hasattr(request, "param"):
+        # Fixture is parametrized indirectly with a specific test inventory filename
+        env["ANTA_INVENTORY"] = str(Path(__file__).parent.parent / "data" / request.param)
+    assert env["ANTA_INVENTORY"]
+
     return AntaInventory.parse(
         filename=env["ANTA_INVENTORY"],
         username=env["ANTA_USERNAME"],
         password=env["ANTA_PASSWORD"],
     )
+
+
+@pytest.fixture()
+def test_catalog(request: pytest.FixtureRequest) -> AntaCatalog:
+    """Return an AntaCatalog.
+
+    By default, it returns the AntaCatalog pointed at in the default_anta_env function.
+    It can be overridden when passing a parameter to the fixture.
+    """
+    env = default_anta_env()
+    if hasattr(request, "param"):
+        # Fixture is parametrized indirectly with a specific test catalog filename
+        env["ANTA_CATALOG"] = str(Path(__file__).parent.parent / "data" / request.param)
+    assert env["ANTA_CATALOG"]
+    return AntaCatalog.parse(filename=env["ANTA_CATALOG"])
+
+
+@pytest_asyncio.fixture
+async def aio_benchmark(benchmark: Callable[..., Any]) -> Callable[..., Any]:
+    """Fixture to benchmark a coroutine function.
+
+    https://github.com/ionelmc/pytest-benchmark/issues/66#issuecomment-2058337929
+
+    Hitting this: https://github.com/pytest-dev/pytest-asyncio/issues/757
+    """
+
+    async def run_async_coroutine(func: Callable[..., Any], *args: Any, **kwargs: Any) -> Any:
+        return await func(*args, **kwargs)
+
+    def wrapper(func: Callable[..., Any], *args: Any, **kwargs: Any) -> Any:
+        if asyncio.iscoroutinefunction(func):
+
+            @benchmark
+            def _() -> asyncio.Future[None]:
+                future = asyncio.ensure_future(run_async_coroutine(func, *args, **kwargs))
+                return asyncio.get_event_loop().run_until_complete(future)
+        else:
+            benchmark(func, *args, **kwargs)
+
+    return wrapper
 
 
 # tests.unit.test_device.py fixture
@@ -179,8 +231,8 @@ def click_runner(capsys: pytest.CaptureFixture[str]) -> Iterator[CliRunner]:  # 
 
         def invoke(
             self,
-            *args: Any,  # noqa: ANN401
-            **kwargs: Any,  # noqa: ANN401
+            *args: Any,
+            **kwargs: Any,
         ) -> Result:
             # Inject default env if not provided
             kwargs["env"] = kwargs["env"] if "env" in kwargs else default_anta_env()
@@ -201,7 +253,7 @@ def click_runner(capsys: pytest.CaptureFixture[str]) -> Iterator[CliRunner]:  # 
         commands: list[dict[str, Any]] | None = None,
         ofmt: str = "json",
         _version: int | str | None = "latest",
-        **_kwargs: Any,  # noqa: ANN401
+        **_kwargs: Any,
     ) -> dict[str, Any] | list[dict[str, Any]]:
         def get_output(command: str | dict[str, Any]) -> dict[str, Any]:
             if isinstance(command, dict):

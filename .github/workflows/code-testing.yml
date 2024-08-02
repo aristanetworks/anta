@@ -119,6 +119,28 @@ jobs:
         run: pip install tox tox-gh-actions
       - name: "Run pytest via tox for ${{ matrix.python }}"
         run: tox
+  test-performance:
+    name: Codespeed for all supported python versions
+    runs-on: ubuntu-20.04
+    needs: [lint-python, type-python]
+    strategy:
+      matrix:
+        python: ["3.9", "3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install dependencies
+        run: pip install tox tox-gh-actions
+      - name: "Run pytest via tox for ${{ matrix.python }}"
+        run: tox
+      - name: Run benchmarks
+        uses: CodSpeedHQ/action@v3
+        with:
+          token: ${{ secrets.CODSPEED_SECRET }}
+          run: tox -e codespeed
   test-documentation:
     name: Build offline documentation for testing
     runs-on: ubuntu-20.04
