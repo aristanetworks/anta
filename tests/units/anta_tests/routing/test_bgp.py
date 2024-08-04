@@ -15,6 +15,7 @@ from anta.tests.routing.bgp import (
     VerifyBGPExchangedRoutes,
     VerifyBGPPeerASNCap,
     VerifyBGPPeerCount,
+    VerifyBGPPeerErrors,
     VerifyBGPPeerMD5Auth,
     VerifyBGPPeerMPCaps,
     VerifyBGPPeerRouteRefreshCap,
@@ -3719,6 +3720,138 @@ DATA: list[dict[str, Any]] = [
                 "Following BGP peers are not configured or hold and keep-alive timers are not correct:\n"
                 "{'172.30.11.1': {'default': {'hold_time': 160, 'keep_alive_time': 60}}, "
                 "'172.30.11.11': {'MGMT': {'hold_time': 120, 'keep_alive_time': 40}}}"
+            ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifyBGPPeerErrors,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "peerInUpdateErrors": {
+                                    "inUpdErrWithdraw": 0,
+                                    "inUpdErrIgnore": 0,
+                                    "inUpdErrDisableAfiSafi": 0,
+                                    "disabledAfiSafi": "None",
+                                    "lastUpdErrTime": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+            {
+                "vrfs": {
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.9",
+                                "peerInUpdateErrors": {
+                                    "inUpdErrWithdraw": 0,
+                                    "inUpdErrIgnore": 0,
+                                    "inUpdErrDisableAfiSafi": 0,
+                                    "disabledAfiSafi": "None",
+                                    "lastUpdErrTime": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default", "errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
+                {"peer_address": "10.100.0.9", "vrf": "MGMT", "errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-not-found",
+        "test": VerifyBGPPeerErrors,
+        "eos_data": [
+            {
+                "vrfs": {},
+            },
+            {
+                "vrfs": {},
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default", "errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
+                {"peer_address": "10.100.0.9", "vrf": "MGMT", "errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Following BGP peers are not configured or error counters are not correct:\n"
+                "{'10.100.0.8': {'default': 'Not configured'}, '10.100.0.9': {'MGMT': 'Not configured'}}"
+            ],
+        },
+    },
+    {
+        "name": "failure-errors",
+        "test": VerifyBGPPeerErrors,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "peerInUpdateErrors": {
+                                    "inUpdErrWithdraw": 0,
+                                    "inUpdErrIgnore": 0,
+                                    "inUpdErrDisableAfiSafi": 0,
+                                    "disabledAfiSafi": "Yes",
+                                    "lastUpdErrTime": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+            {
+                "vrfs": {
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.9",
+                                "peerInUpdateErrors": {
+                                    "inUpdErrWithdraw": 1,
+                                    "inUpdErrIgnore": 0,
+                                    "inUpdErrDisableAfiSafi": 0,
+                                    "disabledAfiSafi": "None",
+                                    "lastUpdErrTime": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default", "errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
+                {"peer_address": "10.100.0.9", "vrf": "MGMT", "errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Following BGP peers are not configured or error counters are not correct:\n"
+                "{'10.100.0.8': {'default': {'inUpdErrWithdraw': 0, 'inUpdErrIgnore': 0, "
+                "'inUpdErrDisableAfiSafi': 0, 'disabledAfiSafi': 'Yes', 'lastUpdErrTime': 0}}, "
+                "'10.100.0.9': {'MGMT': {'inUpdErrWithdraw': 1, 'inUpdErrIgnore': 0, 'inUpdErrDisableAfiSafi': 0, "
+                "'disabledAfiSafi': 'None', 'lastUpdErrTime': 0}}}"
             ],
         },
     },
