@@ -14,7 +14,7 @@ from pydantic import BaseModel, Field, PositiveInt, model_validator
 from pydantic.v1.utils import deep_update
 from pydantic_extra_types.mac_address import MacAddress
 
-from anta.custom_types import Afi, MultiProtocolCaps, Safi, Vni
+from anta.custom_types import Afi, BgpDropStats, MultiProtocolCaps, Safi, Vni
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_item, get_value
 
@@ -1226,3 +1226,82 @@ class VerifyBGPTimers(AntaTest):
             self.result.is_success()
         else:
             self.result.is_failure(f"Following BGP peers are not configured or hold and keep-alive timers are not correct:\n{failures}")
+
+
+class VerifyBGPPeerDropStats(AntaTest):
+    """Verifies that verifies BGP drop statistics.
+
+    This test case checks if specified BGP drop statistics are zero, ensuring that no BGP messages
+    are being dropped.(Inbound updates, Inbound paths, Outbound paths).
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the BGP peer's drop statistics are zero.
+    * Failure: The test will fail if the BGP peer's drop statistics are non-zero.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      bgp:
+        - VerifyBGPPeerErrors:
+            bgp_peers:
+              - peer_address: 172.30.11.1
+                vrf: default
+                drop_stats:
+                  - inDropAsloop
+                  - prefixEvpnDroppedUnsupportedRouteType
+    ```
+    """
+
+    name = "VerifyBGPPeerDropStats"
+    description = "Verifies the Drop Statistics of a BGP peer."
+    categories: ClassVar[list[str]] = ["bgp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show bgp neighbors {peer} vrf {vrf}")]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyBGPPeerDropStats test."""
+
+        bgp_peers: list[BgpPeer]
+        """List of BGP peers"""
+
+        class BgpPeer(BaseModel):
+            """Model for a BGP peer."""
+
+            peer_address: IPv4Address
+            """IPv4 address of a BGP peer."""
+            vrf: str = "default"
+            """Optional VRF for BGP peer. If not provided, it defaults to `default`."""
+            drop_stats: list[BgpDropStats]
+            """List of drop statistics to be verified."""
+
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        """Render the template for each Bgp peer in the input list."""
+        return [template.render(peer=str(bgp_peer.peer_address), vrf=bgp_peer.vrf) for bgp_peer in self.inputs.bgp_peers]
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyEVPNType2Route."""
+        failures: dict[Any, Any] = {}
+
+        for command, input_entry in zip(self.instance_commands, self.inputs.bgp_peers):
+            peer = command.params.peer
+            vrf = command.params.vrf
+            drop_statistics = input_entry.drop_stats
+
+            # Verify BGP peer
+            if not (bgp_output := get_value(command.json_output, f"vrfs.{vrf}.peerList")) or (bgp_output := get_item(bgp_output, "peerAddress", peer)) is None:
+                failures[peer] = {vrf: "Not configured"}
+                continue
+
+            # Verify BGP peer's drop stats
+            drop_stats_output = bgp_output.get("dropStats", {})
+            drop_stats_not_ok = [drop_stat for drop_stat in drop_statistics if drop_stats_output.get(drop_stat)]
+            if any(drop_stats_not_ok):
+                failures[peer] = {vrf: drop_stats_not_ok}
+
+        # Check if any failures
+        if not failures:
+            self.result.is_success()
+        else:
+            self.result.is_failure(f"Following BGP peers are not configured or drop stats are not correct:\n{failures}")

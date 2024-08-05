@@ -15,6 +15,7 @@ from anta.tests.routing.bgp import (
     VerifyBGPExchangedRoutes,
     VerifyBGPPeerASNCap,
     VerifyBGPPeerCount,
+    VerifyBGPPeerDropStats,
     VerifyBGPPeerMD5Auth,
     VerifyBGPPeerMPCaps,
     VerifyBGPPeerRouteRefreshCap,
@@ -3719,6 +3720,162 @@ DATA: list[dict[str, Any]] = [
                 "Following BGP peers are not configured or hold and keep-alive timers are not correct:\n"
                 "{'172.30.11.1': {'default': {'hold_time': 160, 'keep_alive_time': 60}}, "
                 "'172.30.11.11': {'MGMT': {'hold_time': 120, 'keep_alive_time': 40}}}"
+            ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifyBGPPeerDropStats,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "dropStats": {
+                                    "inDropAsloop": 0,
+                                    "inDropClusterIdLoop": 0,
+                                    "inDropMalformedMpbgp": 0,
+                                    "inDropOrigId": 0,
+                                    "inDropNhLocal": 0,
+                                    "inDropNhAfV6": 0,
+                                    "prefixDroppedMartianV4": 0,
+                                    "prefixDroppedMaxRouteLimitViolatedV4": 0,
+                                    "prefixDroppedMartianV6": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+            {
+                "vrfs": {
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.9",
+                                "dropStats": {
+                                    "inDropAsloop": 0,
+                                    "inDropClusterIdLoop": 0,
+                                    "inDropMalformedMpbgp": 0,
+                                    "inDropOrigId": 0,
+                                    "inDropNhLocal": 0,
+                                    "inDropNhAfV6": 0,
+                                    "prefixDroppedMartianV4": 0,
+                                    "prefixDroppedMaxRouteLimitViolatedV4": 0,
+                                    "prefixDroppedMartianV6": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "10.100.0.8",
+                    "vrf": "default",
+                    "drop_stats": ["prefixDroppedMartianV4", "prefixDroppedMaxRouteLimitViolatedV4", "prefixDroppedMartianV6"],
+                },
+                {"peer_address": "10.100.0.9", "vrf": "MGMT", "drop_stats": ["inDropClusterIdLoop", "inDropOrigId", "inDropNhLocal"]},
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-not-found",
+        "test": VerifyBGPPeerDropStats,
+        "eos_data": [
+            {
+                "vrfs": {},
+            },
+            {"vrfs": {}},
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "10.100.0.8",
+                    "vrf": "default",
+                    "drop_stats": ["prefixDroppedMartianV4", "prefixDroppedMaxRouteLimitViolatedV4", "prefixDroppedMartianV6"],
+                },
+                {"peer_address": "10.100.0.9", "vrf": "MGMT", "drop_stats": ["inDropClusterIdLoop", "inDropOrigId", "inDropNhLocal"]},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Following BGP peers are not configured or drop stats are not correct:\n"
+                "{'10.100.0.8': {'default': 'Not configured'}, '10.100.0.9': {'MGMT': 'Not configured'}}"
+            ],
+        },
+    },
+    {
+        "name": "failure",
+        "test": VerifyBGPPeerDropStats,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "dropStats": {
+                                    "inDropAsloop": 0,
+                                    "inDropClusterIdLoop": 0,
+                                    "inDropMalformedMpbgp": 0,
+                                    "inDropOrigId": 1,
+                                    "inDropNhLocal": 1,
+                                    "inDropNhAfV6": 0,
+                                    "prefixDroppedMartianV4": 1,
+                                    "prefixDroppedMaxRouteLimitViolatedV4": 1,
+                                    "prefixDroppedMartianV6": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+            {
+                "vrfs": {
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.9",
+                                "dropStats": {
+                                    "inDropAsloop": 0,
+                                    "inDropClusterIdLoop": 0,
+                                    "inDropMalformedMpbgp": 0,
+                                    "inDropOrigId": 1,
+                                    "inDropNhLocal": 1,
+                                    "inDropNhAfV6": 0,
+                                    "prefixDroppedMartianV4": 0,
+                                    "prefixDroppedMaxRouteLimitViolatedV4": 0,
+                                    "prefixDroppedMartianV6": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "10.100.0.8",
+                    "vrf": "default",
+                    "drop_stats": ["prefixDroppedMartianV4", "prefixDroppedMaxRouteLimitViolatedV4", "prefixDroppedMartianV6"],
+                },
+                {"peer_address": "10.100.0.9", "vrf": "MGMT", "drop_stats": ["inDropClusterIdLoop", "inDropOrigId", "inDropNhLocal"]},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Following BGP peers are not configured or drop stats are not correct:\n"
+                "{'10.100.0.8': {'default': ['prefixDroppedMartianV4', 'prefixDroppedMaxRouteLimitViolatedV4']}, "
+                "'10.100.0.9': {'MGMT': ['inDropOrigId', 'inDropNhLocal']}}"
             ],
         },
     },
