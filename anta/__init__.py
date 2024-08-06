@@ -5,6 +5,14 @@
 
 import importlib.metadata
 import os
+import warnings
+
+from cryptography.utils import CryptographyDeprecationWarning
+
+# Suppress deprecation messages from Crypto - See Issue 674 in asyncssh
+# https://github.com/ronf/asyncssh/issues/674
+warnings.filterwarnings("ignore", category=CryptographyDeprecationWarning)
+
 
 __version__ = f"v{importlib.metadata.version('anta')}"
 __credits__ = [
