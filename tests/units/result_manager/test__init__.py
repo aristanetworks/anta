@@ -12,9 +12,9 @@ from typing import TYPE_CHECKING, Callable
 import pytest
 
 from anta.result_manager import ResultManager, models
+from anta.result_manager.models import TestStatus
 
 if TYPE_CHECKING:
-    from anta.custom_types import TestStatus
     from anta.result_manager.models import TestResult
 
 
@@ -55,7 +55,7 @@ class TestResultManager:
 
         success_list = list_result_factory(3)
         for test in success_list:
-            test.result = "success"
+            test.result = TestStatus.success
         result_manager.results = success_list
 
         json_res = result_manager.json
@@ -177,28 +177,28 @@ class TestResultManager:
 
         success_list = list_result_factory(3)
         for test in success_list:
-            test.result = "success"
+            test.result = TestStatus.success
         result_manager.results = success_list
 
         test = test_result_factory()
-        test.result = "failure"
+        test.result = TestStatus.failure
         result_manager.add(test)
 
         test = test_result_factory()
-        test.result = "error"
+        test.result = TestStatus.error
         result_manager.add(test)
 
         test = test_result_factory()
-        test.result = "skipped"
+        test.result = TestStatus.skipped
         result_manager.add(test)
 
         assert len(result_manager) == 6
-        assert len(result_manager.filter({"failure"})) == 5
-        assert len(result_manager.filter({"error"})) == 5
-        assert len(result_manager.filter({"skipped"})) == 5
-        assert len(result_manager.filter({"failure", "error"})) == 4
-        assert len(result_manager.filter({"failure", "error", "skipped"})) == 3
-        assert len(result_manager.filter({"success", "failure", "error", "skipped"})) == 0
+        assert len(result_manager.filter({TestStatus.failure})) == 5
+        assert len(result_manager.filter({TestStatus.error})) == 5
+        assert len(result_manager.filter({TestStatus.skipped})) == 5
+        assert len(result_manager.filter({TestStatus.failure, TestStatus.error})) == 4
+        assert len(result_manager.filter({TestStatus.failure, TestStatus.error, TestStatus.skipped})) == 3
+        assert len(result_manager.filter({TestStatus.success, TestStatus.failure, TestStatus.error, TestStatus.skipped})) == 0
 
     def test_get_by_tests(self, test_result_factory: Callable[[], TestResult], result_manager_factory: Callable[[int], ResultManager]) -> None:
         """Test ResultManager.get_by_tests."""

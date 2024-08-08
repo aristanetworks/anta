@@ -13,9 +13,9 @@ from rich.table import Table
 
 from anta import RICH_COLOR_PALETTE
 from anta.reporter import ReportJinja, ReportTable
+from anta.result_manager.models import TestStatus
 
 if TYPE_CHECKING:
-    from anta.custom_types import TestStatus
     from anta.result_manager import ResultManager
 
 
@@ -73,12 +73,11 @@ class TestReportTable:
     @pytest.mark.parametrize(
         ("status", "expected_status"),
         [
-            pytest.param("unknown", "unknown", id="unknown status"),
-            pytest.param("unset", "[grey74]unset", id="unset status"),
-            pytest.param("skipped", "[bold orange4]skipped", id="skipped status"),
-            pytest.param("failure", "[bold red]failure", id="failure status"),
-            pytest.param("error", "[indian_red]error", id="error status"),
-            pytest.param("success", "[green4]success", id="success status"),
+            pytest.param(TestStatus.unset, "[grey74]unset", id="unset status"),
+            pytest.param(TestStatus.skipped, "[bold orange4]skipped", id="skipped status"),
+            pytest.param(TestStatus.failure, "[bold red]failure", id="failure status"),
+            pytest.param(TestStatus.error, "[indian_red]error", id="error status"),
+            pytest.param(TestStatus.success, "[green4]success", id="success status"),
         ],
     )
     def test__color_result(self, status: TestStatus, expected_status: str) -> None:
@@ -140,7 +139,7 @@ class TestReportTable:
         new_results = [result.model_copy() for result in manager.results]
         for result in new_results:
             result.name = "test_device"
-            result.result = "failure"
+            result.result = TestStatus.failure
 
         report = ReportTable()
         kwargs = {"tests": [test] if test is not None else None, "title": title}
@@ -175,7 +174,7 @@ class TestReportTable:
         new_results = [result.model_copy() for result in manager.results]
         for result in new_results:
             result.name = dev or "test_device"
-            result.result = "failure"
+            result.result = TestStatus.failure
         manager.results = new_results
 
         report = ReportTable()
