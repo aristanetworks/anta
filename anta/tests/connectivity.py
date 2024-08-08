@@ -70,9 +70,9 @@ class VerifyReachability(AntaTest):
             repeat: int = 2
             """Number of ping repetition. Defaults to 2."""
             size: int = 100
-            """Specify datagram size. Defaults to 100"""
+            """Specify datagram size. Defaults to 100."""
             df_bit: bool = False
-            """Enable do not fragment bit in IP header. Defaults to False"""
+            """Enable do not fragment bit in IP header. Defaults to False."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each host in the input list."""
