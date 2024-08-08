@@ -167,6 +167,33 @@ Options:
 
 ![anta nrfu csv results](../imgs/anta_nrfu_csv.png){ loading=lazy width="1600" }
 
+## Performing NRFU and saving results in a Markdown file
+
+The `md-report` command in NRFU testing generates a comprehensive Markdown report containing various sections, including detailed statistics for devices and test categories. By default, this command saves all test results from the current run in the Markdown file. However, you can choose to include only failed tests by using the `--only-failed-tests` option in the command line interface.
+
+This feature is particularly useful for comparing reports from multiple runs, allowing you to quickly identify and track issues across your network over time. By focusing on failed tests, you can efficiently pinpoint areas that require attention or have shown improvement between different test executions.
+
+### Command overview
+
+```bash
+anta nrfu md-report --help
+
+Usage: anta nrfu md-report [OPTIONS]
+
+  ANTA command to check network state with Markdown report.
+
+Options:
+  --md-output FILE     Path to save the report as a Markdown file  [env var:
+                       ANTA_NRFU_MD_REPORT_MD_OUTPUT; required]
+  --only-failed-tests  Only include failed tests in the report.  [env var:
+                       ANTA_NRFU_MD_REPORT_ONLY_FAILED_TESTS]
+  --help               Show this message and exit.
+```
+
+### Example
+
+![anta nrfu md-report results](../imgs/anta-nrfu-md-report-output.png){ loading=lazy width="1600" }
+
 ## Performing NRFU with custom reports
 
 ANTA offers a CLI option for creating custom reports. This leverages the Jinja2 template system, allowing you to tailor reports to your specific needs.

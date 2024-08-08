@@ -114,3 +114,32 @@ def test_anta_nrfu_csv_failure(click_runner: CliRunner, tmp_path: Path) -> None:
     assert result.exit_code == ExitCode.USAGE_ERROR
     assert "Failed to save CSV report to" in result.output
     assert not csv_output.exists()
+
+
+def test_anta_nrfu_md_report_all_tests(click_runner: CliRunner, tmp_path: Path) -> None:
+    """Test anta nrfu md-report."""
+    md_output = tmp_path / "test.md"
+    result = click_runner.invoke(anta, ["nrfu", "md-report", "--md-output", str(md_output)])
+    assert result.exit_code == ExitCode.OK
+    assert "Markdown report saved to" in result.output
+    assert md_output.exists()
+
+
+def test_anta_nrfu_md_report_only_failed_tests(click_runner: CliRunner, tmp_path: Path) -> None:
+    """Test anta nrfu md-report --only-failed-tests."""
+    md_output = tmp_path / "test.md"
+    result = click_runner.invoke(anta, ["nrfu", "md-report", "--md-output", str(md_output), "--only-failed-tests"])
+    assert result.exit_code == ExitCode.OK
+    assert "Markdown report saved to" in result.output
+    assert md_output.exists()
+
+
+def test_anta_nrfu_md_report_failure(click_runner: CliRunner, tmp_path: Path) -> None:
+    """Test anta nrfu md-report failure."""
+    md_output = tmp_path / "test.md"
+    with patch("anta.reporter.md_reporter.MDReportGenerator.generate", side_effect=OSError()):
+        result = click_runner.invoke(anta, ["nrfu", "md-report", "--md-output", str(md_output)])
+
+    assert result.exit_code == ExitCode.USAGE_ERROR
+    assert "Failed to save Markdown report to" in result.output
+    assert not md_output.exists()

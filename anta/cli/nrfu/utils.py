@@ -19,6 +19,7 @@ from anta.cli.utils import ExitCode
 from anta.models import AntaTest
 from anta.reporter import ReportJinja, ReportTable
 from anta.reporter.csv_reporter import ReportCsv
+from anta.reporter.md_reporter import MDReportGenerator
 from anta.runner import main
 
 if TYPE_CHECKING:
@@ -131,6 +132,23 @@ def save_to_csv(ctx: click.Context, csv_file: pathlib.Path) -> None:
         console.print(f"CSV report saved to {csv_file} ✅", style="cyan")
     except OSError:
         console.print(f"Failed to save CSV report to {csv_file} ❌", style="cyan")
+        ctx.exit(ExitCode.USAGE_ERROR)
+
+
+def save_markdown_report(ctx: click.Context, md_output: pathlib.Path, *, only_failed_tests: bool = False) -> None:
+    """Save the markdown report to a file.
+
+    Parameters
+    ----------
+        ctx: Click context containing the result manager.
+        md_output: Path to save the markdown report.
+        only_failed_tests: If True, only failed tests will be included in the report. Default is False.
+    """
+    try:
+        MDReportGenerator.generate(results=_get_result_manager(ctx), md_filename=md_output, only_failed_tests=only_failed_tests)
+        console.print(f"Markdown report saved to {md_output} ✅", style="cyan")
+    except OSError:
+        console.print(f"Failed to save Markdown report to {md_output} ❌", style="cyan")
         ctx.exit(ExitCode.USAGE_ERROR)
 
 

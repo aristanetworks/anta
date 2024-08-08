@@ -1,0 +1,378 @@
+[
+    {
+        "name": "DC1-SPINE1",
+        "test": "VerifyTacacsSourceIntf",
+        "categories": [
+            "AAA"
+        ],
+        "description": "Verifies TACACS source-interface for a specified VRF.",
+        "result": "failure",
+        "messages": [
+            "Source-interface Management0 is not configured in VRF default"
+        ],
+        "custom_field": null
+    },
+    {
+        "name": "DC1-SPINE1",
+        "test": "VerifyLLDPNeighbors",
+        "categories": [
+            "Connectivity"
+        ],
+        "description": "Verifies that the provided LLDP neighbors are connected properly.",
+        "result": "failure",
+        "messages": [
+            "Wrong LLDP neighbor(s) on port(s):\n   Ethernet1\n      DC1-LEAF1A_Ethernet1\n   Ethernet2\n      DC1-LEAF1B_Ethernet1\nPort(s) not configured:\n   Ethernet7"
+        ],
+        "custom_field": null
+    },
+    {
+        "name": "DC1-SPINE1",
+        "test": "VerifyBGPPeerCount",
+        "categories": [
+            "BGP"
+        ],
+        "description": "Verifies the count of BGP peers.",
+        "result": "failure",
+        "messages": [
+            "Failures: [{'afi': 'ipv4', 'safi': 'unicast', 'vrfs': {'PROD': 'Not Configured', 'default': 'Expected: 3, Actual: 4'}}, {'afi': 'ipv4', 'safi': 'multicast', 'vrfs': {'DEV': 'Not Configured'}}, {'afi': 'evpn', 'vrfs': {'default': 'Expected: 2, Actual: 4'}}]"
+        ],
+        "custom_field": null
+    },
+    {
+        "name": "DC1-SPINE1",
+        "test": "VerifySTPMode",
+        "categories": [
+            "STP"
+        ],
+        "description": "Verifies the configured STP mode for a provided list of VLAN(s).",
+        "result": "failure",
+        "messages": [
+            "STP mode 'rapidPvst' not configured for the following VLAN(s): [10, 20]"
+        ],
+        "custom_field": null
+    },
+    {
+        "name": "DC1-SPINE1",
+        "test": "VerifySnmpStatus",
+        "categories": [
+            "SNMP"
+        ],
+        "description": "Verifies if the SNMP agent is enabled.",
+        "result": "failure",
+        "messages": [
+            "SNMP agent disabled in vrf default"
+        ],
+        "custom_field": null
+    },
+    {
+        "name": "DC1-SPINE1",
+        "test": "VerifyRoutingTableEntry",
+        "categories": [
+            "Routing"
+        ],
+        "description": "Verifies that the provided routes are present in the routing table of a specified VRF.",
+        "result": "failure",
+        "messages": [
+            "The following route(s) are missing from the routing table of VRF default: ['10.1.0.2']"
+        ],
+        "custom_field": null
+    },
+    {
+        "name": "DC1-SPINE1",
+        "test": "VerifyInterfaceUtilization",
+        "categories": [
+            "Interfaces"
+        ],
+        "description": "Verifies that the utilization of interfaces is below a certain threshold.",
+        "result": "success",
+        "messages": [],
+        "custom_field": null
+    },
+    {
+        "name": "DC1-SPINE1",
+        "test": "VerifyMlagStatus",
+        "categories": [
+            "MLAG"
+        ],
+        "description": "Verifies the health status of the MLAG configuration.",
+        "result": "skipped",
+        "messages": [
+            "MLAG is disabled"
+        ],
+        "custom_field": null
+    },
+    {
+        "name": "DC1-SPINE1",
+        "test": "VerifyVxlan1Interface",
+        "categories": [
+            "VXLAN"
+        ],
+        "description": "Verifies the Vxlan1 interface status.",
+        "result": "skipped",
+        "messages": [
+            "Vxlan1 interface is not configured"
+        ],
+        "custom_field": null
+    },
+    {
+        "name": "DC1-SPINE1",
+        "test": "VerifyBFDSpecificPeers",
+        "categories": [
+            "BFD"
+        ],
+        "description": "Verifies the IPv4 BFD peer's sessions and remote disc in the specified VRF.",
+        "result": "failure",
+        "messages": [
+            "Following BFD peers are not configured, status is not up or remote disc is zero:\n{'192.0.255.8': {'default': 'Not Configured'}, '192.0.255.7': {'default': 'Not Configured'}}"
+        ],
+        "custom_field": null
+    },
+    {
+        "name": "DC1-SPINE1",
+        "test": "VerifyNTP",
+        "categories": [
+            "System"
+        ],
+        "description": "Verifies if NTP is synchronised.",
+        "result": "failure",
+        "messages": [
+            "The device is not synchronized with the configured NTP server(s): 'NTP is disabled.'"
+        ],
+        "custom_field": null
+    },
+    {
+        "name": "DC1-SPINE1",
+        "test": "VerifyReachability",
+        "categories": [
+            "Connectivity"
+        ],
+        "description": "Test the network reachability to one or many destination IP(s).",
+        "result": "error",
+        "messages": [
+            "ping vrf MGMT 1.1.1.1 source Management1 repeat 2 has failed: No source interface Management1"
+        ],
+        "custom_field": null
+    },
+    {
+        "name": "DC1-SPINE1",
+        "test": "VerifyTelnetStatus",
+        "categories": [
+            "Security"
+        ],
+        "description": "Verifies if Telnet is disabled in the default VRF.",
+        "result": "success",
+        "messages": [],
+        "custom_field": null
+    },
+    {
+        "name": "DC1-SPINE1",
+        "test": "VerifyEOSVersion",
+        "categories": [
+            "Software"
+        ],
+        "description": "Verifies the EOS version of the device.",
+        "result": "failure",
+        "messages": [
+            "device is running version \"4.31.1F-34554157.4311F (engineering build)\" not in expected versions: ['4.25.4M', '4.26.1F']"
+        ],
+        "custom_field": null
+    },
+    {
+        "name": "DC1-SPINE1",
+        "test": "VerifyHostname",
+        "categories": [
+            "Services"
+        ],
+        "description": "Verifies the hostname of a device.",
+        "result": "failure",
+        "messages": [
+            "Expected `s1-spine1` as the hostname, but found `DC1-SPINE1` instead."
+        ],
+        "custom_field": null
+    },
+    {
+        "name": "DC1-LEAF1A",
+        "test": "VerifyTacacsSourceIntf",
+        "categories": [
+            "AAA"
+        ],
+        "description": "Verifies TACACS source-interface for a specified VRF.",
+        "result": "failure",
+        "messages": [
+            "Source-interface Management0 is not configured in VRF default"
+        ],
+        "custom_field": null
+    },
+    {
+        "name": "DC1-LEAF1A",
+        "test": "VerifyLLDPNeighbors",
+        "categories": [
+            "Connectivity"
+        ],
+        "description": "Verifies that the provided LLDP neighbors are connected properly.",
+        "result": "failure",
+        "messages": [
+            "Wrong LLDP neighbor(s) on port(s):\n   Ethernet1\n      DC1-SPINE1_Ethernet1\n   Ethernet2\n      DC1-SPINE2_Ethernet1\nPort(s) not configured:\n   Ethernet7"
+        ],
+        "custom_field": null
+    },
+    {
+        "name": "DC1-LEAF1A",
+        "test": "VerifyBGPPeerCount",
+        "categories": [
+            "BGP"
+        ],
+        "description": "Verifies the count of BGP peers.",
+        "result": "failure",
+        "messages": [
+            "Failures: [{'afi': 'ipv4', 'safi': 'unicast', 'vrfs': {'PROD': 'Expected: 2, Actual: 1'}}, {'afi': 'ipv4', 'safi': 'multicast', 'vrfs': {'DEV': 'Expected: 3, Actual: 0'}}]"
+        ],
+        "custom_field": null
+    },
+    {
+        "name": "DC1-LEAF1A",
+        "test": "VerifySTPMode",
+        "categories": [
+            "STP"
+        ],
+        "description": "Verifies the configured STP mode for a provided list of VLAN(s).",
+        "result": "failure",
+        "messages": [
+            "Wrong STP mode configured for the following VLAN(s): [10, 20]"
+        ],
+        "custom_field": null
+    },
+    {
+        "name": "DC1-LEAF1A",
+        "test": "VerifySnmpStatus",
+        "categories": [
+            "SNMP"
+        ],
+        "description": "Verifies if the SNMP agent is enabled.",
+        "result": "failure",
+        "messages": [
+            "SNMP agent disabled in vrf default"
+        ],
+        "custom_field": null
+    },
+    {
+        "name": "DC1-LEAF1A",
+        "test": "VerifyRoutingTableEntry",
+        "categories": [
+            "Routing"
+        ],
+        "description": "Verifies that the provided routes are present in the routing table of a specified VRF.",
+        "result": "success",
+        "messages": [],
+        "custom_field": null
+    },
+    {
+        "name": "DC1-LEAF1A",
+        "test": "VerifyInterfaceUtilization",
+        "categories": [
+            "Interfaces"
+        ],
+        "description": "Verifies that the utilization of interfaces is below a certain threshold.",
+        "result": "success",
+        "messages": [],
+        "custom_field": null
+    },
+    {
+        "name": "DC1-LEAF1A",
+        "test": "VerifyMlagStatus",
+        "categories": [
+            "MLAG"
+        ],
+        "description": "Verifies the health status of the MLAG configuration.",
+        "result": "success",
+        "messages": [],
+        "custom_field": null
+    },
+    {
+        "name": "DC1-LEAF1A",
+        "test": "VerifyVxlan1Interface",
+        "categories": [
+            "VXLAN"
+        ],
+        "description": "Verifies the Vxlan1 interface status.",
+        "result": "success",
+        "messages": [],
+        "custom_field": null
+    },
+    {
+        "name": "DC1-LEAF1A",
+        "test": "VerifyBFDSpecificPeers",
+        "categories": [
+            "BFD"
+        ],
+        "description": "Verifies the IPv4 BFD peer's sessions and remote disc in the specified VRF.",
+        "result": "failure",
+        "messages": [
+            "Following BFD peers are not configured, status is not up or remote disc is zero:\n{'192.0.255.8': {'default': 'Not Configured'}, '192.0.255.7': {'default': 'Not Configured'}}"
+        ],
+        "custom_field": null
+    },
+    {
+        "name": "DC1-LEAF1A",
+        "test": "VerifyNTP",
+        "categories": [
+            "System"
+        ],
+        "description": "Verifies if NTP is synchronised.",
+        "result": "failure",
+        "messages": [
+            "The device is not synchronized with the configured NTP server(s): 'NTP is disabled.'"
+        ],
+        "custom_field": null
+    },
+    {
+        "name": "DC1-LEAF1A",
+        "test": "VerifyReachability",
+        "categories": [
+            "Connectivity"
+        ],
+        "description": "Test the network reachability to one or many destination IP(s).",
+        "result": "error",
+        "messages": [
+            "ping vrf MGMT 1.1.1.1 source Management1 repeat 2 has failed: No source interface Management1"
+        ],
+        "custom_field": null
+    },
+    {
+        "name": "DC1-LEAF1A",
+        "test": "VerifyTelnetStatus",
+        "categories": [
+            "Security"
+        ],
+        "description": "Verifies if Telnet is disabled in the default VRF.",
+        "result": "success",
+        "messages": [],
+        "custom_field": null
+    },
+    {
+        "name": "DC1-LEAF1A",
+        "test": "VerifyEOSVersion",
+        "categories": [
+            "Software"
+        ],
+        "description": "Verifies the EOS version of the device.",
+        "result": "failure",
+        "messages": [
+            "device is running version \"4.31.1F-34554157.4311F (engineering build)\" not in expected versions: ['4.25.4M', '4.26.1F']"
+        ],
+        "custom_field": null
+    },
+    {
+        "name": "DC1-LEAF1A",
+        "test": "VerifyHostname",
+        "categories": [
+            "Services"
+        ],
+        "description": "Verifies the hostname of a device.",
+        "result": "failure",
+        "messages": [
+            "Expected `s1-spine1` as the hostname, but found `DC1-LEAF1A` instead."
+        ],
+        "custom_field": null
+    }
+]
