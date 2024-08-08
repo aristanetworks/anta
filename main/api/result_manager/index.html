@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.30">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.31">
     
     
       
@@ -1916,9 +1916,11 @@
 
     <!-- Table of contents list -->
     
-  </li>
-      
-        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+      <nav class="md-nav" aria-label="UML Diagram">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
     <a href="#anta.result_manager.ResultManager" class="md-nav__link">
       <span class="md-ellipsis">
@@ -2053,6 +2055,12 @@
     </a>
 
     <!-- Table of contents list -->
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
     
   </li>
           
@@ -2245,9 +2253,11 @@
 
     <!-- Table of contents list -->
     
-  </li>
-      
-        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+      <nav class="md-nav" aria-label="UML Diagram">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
     <a href="#anta.result_manager.ResultManager" class="md-nav__link">
       <span class="md-ellipsis">
@@ -2390,6 +2400,12 @@
       </nav>
     
   </li>
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
       
     </ul>
   
@@ -2426,11 +2442,11 @@
 
 
 
-<h2 id="anta.result_manager.ResultManager" class="doc doc-heading">
+<h3 id="anta.result_manager.ResultManager" class="doc doc-heading">
             <span class="doc doc-object-name doc-class-name">ResultManager</span>
 
 
-<a href="#anta.result_manager.ResultManager" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#anta.result_manager.ResultManager" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">ResultManager</span><span class="p">()</span>
 </code></pre></div>
 
@@ -2610,7 +2626,7 @@ error_status is set to True.</p>
 
 
 
-<h3 id="anta.result_manager.ResultManager.json" class="doc doc-heading">
+<h4 id="anta.result_manager.ResultManager.json" class="doc doc-heading">
             <span class="doc doc-object-name doc-attribute-name">json</span>
 
 
@@ -2618,7 +2634,7 @@ error_status is set to True.</p>
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
 
-<a href="#anta.result_manager.ResultManager.json" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#anta.result_manager.ResultManager.json" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">json</span><span class="p">:</span> <span class="nb">str</span>
 </code></pre></div>
 
@@ -2633,7 +2649,7 @@ error_status is set to True.</p>
 
 
 
-<h3 id="anta.result_manager.ResultManager.results" class="doc doc-heading">
+<h4 id="anta.result_manager.ResultManager.results" class="doc doc-heading">
             <span class="doc doc-object-name doc-attribute-name">results</span>
 
 
@@ -2642,7 +2658,7 @@ error_status is set to True.</p>
       <small class="doc doc-label doc-label-writable"><code>writable</code></small>
   </span>
 
-<a href="#anta.result_manager.ResultManager.results" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#anta.result_manager.ResultManager.results" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">results</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">TestResult</span><span class="p">]</span>
 </code></pre></div>
 
@@ -2658,11 +2674,11 @@ error_status is set to True.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="anta.result_manager.ResultManager.add" class="doc doc-heading">
+<h4 id="anta.result_manager.ResultManager.add" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">add</span>
 
 
-<a href="#anta.result_manager.ResultManager.add" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#anta.result_manager.ResultManager.add" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">add</span><span class="p">(</span><span class="n">result</span><span class="p">:</span> <span class="n">TestResult</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -2722,11 +2738,11 @@ error_status is set to True.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="anta.result_manager.ResultManager.filter" class="doc doc-heading">
+<h4 id="anta.result_manager.ResultManager.filter" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">filter</span>
 
 
-<a href="#anta.result_manager.ResultManager.filter" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#anta.result_manager.ResultManager.filter" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nb">filter</span><span class="p">(</span><span class="nf">hide</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="n">TestStatus</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">ResultManager</span>
 </code></pre></div>
 
@@ -2795,11 +2811,11 @@ error_status is set to True.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="anta.result_manager.ResultManager.filter_by_devices" class="doc doc-heading">
+<h4 id="anta.result_manager.ResultManager.filter_by_devices" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">filter_by_devices</span>
 
 
-<a href="#anta.result_manager.ResultManager.filter_by_devices" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#anta.result_manager.ResultManager.filter_by_devices" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">filter_by_devices</span><span class="p">(</span><span class="n">devices</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">ResultManager</span>
 </code></pre></div>
 
@@ -2868,11 +2884,11 @@ error_status is set to True.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="anta.result_manager.ResultManager.filter_by_tests" class="doc doc-heading">
+<h4 id="anta.result_manager.ResultManager.filter_by_tests" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">filter_by_tests</span>
 
 
-<a href="#anta.result_manager.ResultManager.filter_by_tests" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#anta.result_manager.ResultManager.filter_by_tests" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">filter_by_tests</span><span class="p">(</span><span class="n">tests</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">ResultManager</span>
 </code></pre></div>
 
@@ -2941,11 +2957,11 @@ error_status is set to True.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="anta.result_manager.ResultManager.get_devices" class="doc doc-heading">
+<h4 id="anta.result_manager.ResultManager.get_devices" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">get_devices</span>
 
 
-<a href="#anta.result_manager.ResultManager.get_devices" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#anta.result_manager.ResultManager.get_devices" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">get_devices</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
 </code></pre></div>
 
@@ -3002,11 +3018,11 @@ error_status is set to True.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="anta.result_manager.ResultManager.get_status" class="doc doc-heading">
+<h4 id="anta.result_manager.ResultManager.get_status" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">get_status</span>
 
 
-<a href="#anta.result_manager.ResultManager.get_status" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#anta.result_manager.ResultManager.get_status" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">get_status</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">ignore_error</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
 </code></pre></div>
 
@@ -3030,11 +3046,11 @@ error_status is set to True.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="anta.result_manager.ResultManager.get_tests" class="doc doc-heading">
+<h4 id="anta.result_manager.ResultManager.get_tests" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">get_tests</span>
 
 
-<a href="#anta.result_manager.ResultManager.get_tests" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#anta.result_manager.ResultManager.get_tests" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">get_tests</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
 </code></pre></div>
 

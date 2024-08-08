@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.30">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.31">
     
     
       
@@ -1825,9 +1825,11 @@
 
     <!-- Table of contents list -->
     
-  </li>
-      
-        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+      <nav class="md-nav" aria-label="UML Diagram">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
     <a href="#anta.models.AntaTest" class="md-nav__link">
       <span class="md-ellipsis">
@@ -2024,6 +2026,12 @@
     </a>
 
     <!-- Table of contents list -->
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
     
   </li>
           
@@ -2307,9 +2315,11 @@
 
     <!-- Table of contents list -->
     
-  </li>
-      
-        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+      <nav class="md-nav" aria-label="UML Diagram">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
     <a href="#anta.models.AntaTest" class="md-nav__link">
       <span class="md-ellipsis">
@@ -2514,6 +2524,12 @@
       </nav>
     
   </li>
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
       
     </ul>
   
@@ -2550,11 +2566,11 @@
 
 
 
-<h2 id="anta.models.AntaTest" class="doc doc-heading">
+<h3 id="anta.models.AntaTest" class="doc doc-heading">
             <span class="doc doc-object-name doc-class-name">AntaTest</span>
 
 
-<a href="#anta.models.AntaTest" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#anta.models.AntaTest" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">AntaTest</span><span class="p">(</span><span class="n">device</span><span class="p">:</span> <span class="n">AntaDevice</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">eos_data</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
 </code></pre></div>
 
@@ -2704,7 +2720,7 @@ logger: Python logger for this test instance</p>
 
 
 
-<h3 id="anta.models.AntaTest.blocked" class="doc doc-heading">
+<h4 id="anta.models.AntaTest.blocked" class="doc doc-heading">
             <span class="doc doc-object-name doc-attribute-name">blocked</span>
 
 
@@ -2712,7 +2728,7 @@ logger: Python logger for this test instance</p>
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
 
-<a href="#anta.models.AntaTest.blocked" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#anta.models.AntaTest.blocked" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">blocked</span><span class="p">:</span> <span class="nb">bool</span>
 </code></pre></div>
 
@@ -2727,7 +2743,7 @@ logger: Python logger for this test instance</p>
 
 
 
-<h3 id="anta.models.AntaTest.collected" class="doc doc-heading">
+<h4 id="anta.models.AntaTest.collected" class="doc doc-heading">
             <span class="doc doc-object-name doc-attribute-name">collected</span>
 
 
@@ -2735,7 +2751,7 @@ logger: Python logger for this test instance</p>
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
 
-<a href="#anta.models.AntaTest.collected" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#anta.models.AntaTest.collected" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">collected</span><span class="p">:</span> <span class="nb">bool</span>
 </code></pre></div>
 
@@ -2750,7 +2766,7 @@ logger: Python logger for this test instance</p>
 
 
 
-<h3 id="anta.models.AntaTest.failed_commands" class="doc doc-heading">
+<h4 id="anta.models.AntaTest.failed_commands" class="doc doc-heading">
             <span class="doc doc-object-name doc-attribute-name">failed_commands</span>
 
 
@@ -2758,7 +2774,7 @@ logger: Python logger for this test instance</p>
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
 
-<a href="#anta.models.AntaTest.failed_commands" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#anta.models.AntaTest.failed_commands" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">failed_commands</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]</span>
 </code></pre></div>
 
@@ -2773,7 +2789,7 @@ logger: Python logger for this test instance</p>
 
 
 
-<h3 id="anta.models.AntaTest.module" class="doc doc-heading">
+<h4 id="anta.models.AntaTest.module" class="doc doc-heading">
             <span class="doc doc-object-name doc-attribute-name">module</span>
 
 
@@ -2781,7 +2797,7 @@ logger: Python logger for this test instance</p>
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
 
-<a href="#anta.models.AntaTest.module" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#anta.models.AntaTest.module" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">module</span><span class="p">:</span> <span class="nb">str</span>
 </code></pre></div>
 
@@ -2799,11 +2815,11 @@ logger: Python logger for this test instance</p>
 
 
 
-<h3 id="anta.models.AntaTest.Input" class="doc doc-heading">
+<h4 id="anta.models.AntaTest.Input" class="doc doc-heading">
             <span class="doc doc-object-name doc-class-name">Input</span>
 
 
-<a href="#anta.models.AntaTest.Input" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#anta.models.AntaTest.Input" class="headerlink" title="Permanent link">&para;</a></h4>
 
 
     <div class="doc doc-contents ">
@@ -2871,11 +2887,11 @@ logger: Python logger for this test instance</p>
 
 
 
-<h4 id="anta.models.AntaTest.Input.Filters" class="doc doc-heading">
+<h5 id="anta.models.AntaTest.Input.Filters" class="doc doc-heading">
             <span class="doc doc-object-name doc-class-name">Filters</span>
 
 
-<a href="#anta.models.AntaTest.Input.Filters" class="headerlink" title="Permanent link">&para;</a></h4>
+<a href="#anta.models.AntaTest.Input.Filters" class="headerlink" title="Permanent link">&para;</a></h5>
 
 
     <div class="doc doc-contents ">
@@ -2939,11 +2955,11 @@ logger: Python logger for this test instance</p>
 
 
 
-<h4 id="anta.models.AntaTest.Input.ResultOverwrite" class="doc doc-heading">
+<h5 id="anta.models.AntaTest.Input.ResultOverwrite" class="doc doc-heading">
             <span class="doc doc-object-name doc-class-name">ResultOverwrite</span>
 
 
-<a href="#anta.models.AntaTest.Input.ResultOverwrite" class="headerlink" title="Permanent link">&para;</a></h4>
+<a href="#anta.models.AntaTest.Input.ResultOverwrite" class="headerlink" title="Permanent link">&para;</a></h5>
 
 
     <div class="doc doc-contents ">
@@ -3006,11 +3022,11 @@ custom_field: a free string that will be included in the TestResult object</p>
 <div class="doc doc-object doc-function">
 
 
-<h4 id="anta.models.AntaTest.Input.__hash__" class="doc doc-heading">
+<h5 id="anta.models.AntaTest.Input.__hash__" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">__hash__</span>
 
 
-<a href="#anta.models.AntaTest.Input.__hash__" class="headerlink" title="Permanent link">&para;</a></h4>
+<a href="#anta.models.AntaTest.Input.__hash__" class="headerlink" title="Permanent link">&para;</a></h5>
 <div class="doc-signature highlight"><pre><span></span><code><span class="fm">__hash__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span>
 </code></pre></div>
 
@@ -3051,7 +3067,7 @@ custom_field: a free string that will be included in the TestResult object</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="anta.models.AntaTest.anta_test" class="doc doc-heading">
+<h4 id="anta.models.AntaTest.anta_test" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">anta_test</span>
 
 
@@ -3059,7 +3075,7 @@ custom_field: a free string that will be included in the TestResult object</p>
       <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
   </span>
 
-<a href="#anta.models.AntaTest.anta_test" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#anta.models.AntaTest.anta_test" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">anta_test</span><span class="p">(</span><span class="n">function</span><span class="p">:</span> <span class="n">F</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Coroutine</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TestResult</span><span class="p">]]</span>
 </code></pre></div>
 
@@ -3230,7 +3246,7 @@ custom_field: a free string that will be included in the TestResult object</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="anta.models.AntaTest.collect" class="doc doc-heading">
+<h4 id="anta.models.AntaTest.collect" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">collect</span>
 
 
@@ -3238,7 +3254,7 @@ custom_field: a free string that will be included in the TestResult object</p>
       <small class="doc doc-label doc-label-async"><code>async</code></small>
   </span>
 
-<a href="#anta.models.AntaTest.collect" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#anta.models.AntaTest.collect" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">collect</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -3280,11 +3296,11 @@ custom_field: a free string that will be included in the TestResult object</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="anta.models.AntaTest.render" class="doc doc-heading">
+<h4 id="anta.models.AntaTest.render" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">render</span>
 
 
-<a href="#anta.models.AntaTest.render" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#anta.models.AntaTest.render" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">render</span><span class="p">(</span><span class="n">template</span><span class="p">:</span> <span class="n">AntaTemplate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]</span>
 </code></pre></div>
 
@@ -3322,11 +3338,11 @@ no AntaTemplate for this test.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="anta.models.AntaTest.save_commands_data" class="doc doc-heading">
+<h4 id="anta.models.AntaTest.save_commands_data" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">save_commands_data</span>
 
 
-<a href="#anta.models.AntaTest.save_commands_data" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#anta.models.AntaTest.save_commands_data" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">save_commands_data</span><span class="p">(</span><span class="n">eos_data</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -3364,7 +3380,7 @@ no AntaTemplate for this test.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="anta.models.AntaTest.test" class="doc doc-heading">
+<h4 id="anta.models.AntaTest.test" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">test</span>
 
 
@@ -3372,7 +3388,7 @@ no AntaTemplate for this test.</p>
       <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
   </span>
 
-<a href="#anta.models.AntaTest.test" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#anta.models.AntaTest.test" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">test</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Coroutine</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TestResult</span><span class="p">]</span>
 </code></pre></div>
 
@@ -3461,11 +3477,11 @@ It must set the correct status of the <code>result</code> instance attribute wit
 
 
 
-<h2 id="anta.models.AntaCommand" class="doc doc-heading">
+<h3 id="anta.models.AntaCommand" class="doc doc-heading">
             <span class="doc doc-object-name doc-class-name">AntaCommand</span>
 
 
-<a href="#anta.models.AntaCommand" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#anta.models.AntaCommand" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents first">
@@ -3533,7 +3549,7 @@ use_cache: Enable or disable caching for this AntaCommand if the AntaDevice supp
 
 
 
-<h3 id="anta.models.AntaCommand.collected" class="doc doc-heading">
+<h4 id="anta.models.AntaCommand.collected" class="doc doc-heading">
             <span class="doc doc-object-name doc-attribute-name">collected</span>
 
 
@@ -3541,7 +3557,7 @@ use_cache: Enable or disable caching for this AntaCommand if the AntaDevice supp
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
 
-<a href="#anta.models.AntaCommand.collected" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#anta.models.AntaCommand.collected" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">collected</span><span class="p">:</span> <span class="nb">bool</span>
 </code></pre></div>
 
@@ -3558,7 +3574,7 @@ See error property.</p>
 
 
 
-<h3 id="anta.models.AntaCommand.error" class="doc doc-heading">
+<h4 id="anta.models.AntaCommand.error" class="doc doc-heading">
             <span class="doc doc-object-name doc-attribute-name">error</span>
 
 
@@ -3566,7 +3582,7 @@ See error property.</p>
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
 
-<a href="#anta.models.AntaCommand.error" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#anta.models.AntaCommand.error" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">error</span><span class="p">:</span> <span class="nb">bool</span>
 </code></pre></div>
 
@@ -3581,7 +3597,7 @@ See error property.</p>
 
 
 
-<h3 id="anta.models.AntaCommand.json_output" class="doc doc-heading">
+<h4 id="anta.models.AntaCommand.json_output" class="doc doc-heading">
             <span class="doc doc-object-name doc-attribute-name">json_output</span>
 
 
@@ -3589,7 +3605,7 @@ See error property.</p>
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
 
-<a href="#anta.models.AntaCommand.json_output" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#anta.models.AntaCommand.json_output" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">json_output</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
 </code></pre></div>
 
@@ -3604,7 +3620,7 @@ See error property.</p>
 
 
 
-<h3 id="anta.models.AntaCommand.requires_privileges" class="doc doc-heading">
+<h4 id="anta.models.AntaCommand.requires_privileges" class="doc doc-heading">
             <span class="doc doc-object-name doc-attribute-name">requires_privileges</span>
 
 
@@ -3612,7 +3628,7 @@ See error property.</p>
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
 
-<a href="#anta.models.AntaCommand.requires_privileges" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#anta.models.AntaCommand.requires_privileges" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">requires_privileges</span><span class="p">:</span> <span class="nb">bool</span>
 </code></pre></div>
 
@@ -3651,7 +3667,7 @@ AntaDevice.collect() must be called before this property.</p>
 
 
 
-<h3 id="anta.models.AntaCommand.supported" class="doc doc-heading">
+<h4 id="anta.models.AntaCommand.supported" class="doc doc-heading">
             <span class="doc doc-object-name doc-attribute-name">supported</span>
 
 
@@ -3659,7 +3675,7 @@ AntaDevice.collect() must be called before this property.</p>
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
 
-<a href="#anta.models.AntaCommand.supported" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#anta.models.AntaCommand.supported" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">supported</span><span class="p">:</span> <span class="nb">bool</span>
 </code></pre></div>
 
@@ -3698,7 +3714,7 @@ AntaDevice.collect() must be called before this property.</p>
 
 
 
-<h3 id="anta.models.AntaCommand.text_output" class="doc doc-heading">
+<h4 id="anta.models.AntaCommand.text_output" class="doc doc-heading">
             <span class="doc doc-object-name doc-attribute-name">text_output</span>
 
 
@@ -3706,7 +3722,7 @@ AntaDevice.collect() must be called before this property.</p>
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
 
-<a href="#anta.models.AntaCommand.text_output" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#anta.models.AntaCommand.text_output" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">text_output</span><span class="p">:</span> <span class="nb">str</span>
 </code></pre></div>
 
@@ -3721,7 +3737,7 @@ AntaDevice.collect() must be called before this property.</p>
 
 
 
-<h3 id="anta.models.AntaCommand.uid" class="doc doc-heading">
+<h4 id="anta.models.AntaCommand.uid" class="doc doc-heading">
             <span class="doc doc-object-name doc-attribute-name">uid</span>
 
 
@@ -3729,7 +3745,7 @@ AntaDevice.collect() must be called before this property.</p>
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
 
-<a href="#anta.models.AntaCommand.uid" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#anta.models.AntaCommand.uid" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">uid</span><span class="p">:</span> <span class="nb">str</span>
 </code></pre></div>
 
@@ -3769,11 +3785,11 @@ AntaDevice.collect() must be called before this property.</p>
 
 
 
-<h2 id="anta.models.AntaTemplate" class="doc doc-heading">
+<h3 id="anta.models.AntaTemplate" class="doc doc-heading">
             <span class="doc doc-object-name doc-class-name">AntaTemplate</span>
 
 
-<a href="#anta.models.AntaTemplate" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#anta.models.AntaTemplate" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">version</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;latest&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;latest&#39;</span><span class="p">,</span> <span class="n">revision</span><span class="p">:</span> <span class="n">Revision</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">ofmt</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;json&#39;</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;json&#39;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">use_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
 </code></pre></div>
 
@@ -3881,11 +3897,11 @@ use_cache: Enable or disable caching for this AntaTemplate if the AntaDevice sup
 <div class="doc doc-object doc-function">
 
 
-<h3 id="anta.models.AntaTemplate.__repr__" class="doc doc-heading">
+<h4 id="anta.models.AntaTemplate.__repr__" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">__repr__</span>
 
 
-<a href="#anta.models.AntaTemplate.__repr__" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#anta.models.AntaTemplate.__repr__" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="fm">__repr__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span>
 </code></pre></div>
 
@@ -3916,11 +3932,11 @@ use_cache: Enable or disable caching for this AntaTemplate if the AntaDevice sup
 <div class="doc doc-object doc-function">
 
 
-<h3 id="anta.models.AntaTemplate.render" class="doc doc-heading">
+<h4 id="anta.models.AntaTemplate.render" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">render</span>
 
 
-<a href="#anta.models.AntaTemplate.render" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#anta.models.AntaTemplate.render" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">render</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaCommand</span>
 </code></pre></div>
 

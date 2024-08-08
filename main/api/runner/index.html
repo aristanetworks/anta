@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.30">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.31">
     
     
       
@@ -2309,11 +2309,11 @@
 
 
 
-<h2 id="anta.runner" class="doc doc-heading">
+<h3 id="anta.runner" class="doc doc-heading">
             <span class="doc doc-object-name doc-module-name">runner</span>
 
 
-<a href="#anta.runner" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#anta.runner" class="headerlink" title="Permanent link">&para;</a></h3>
 
     <div class="doc doc-contents first">
   
@@ -2334,11 +2334,11 @@
 <div class="doc doc-object doc-function">
 
 
-<h3 id="anta.runner.adjust_rlimit_nofile" class="doc doc-heading">
+<h4 id="anta.runner.adjust_rlimit_nofile" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">adjust_rlimit_nofile</span>
 
 
-<a href="#anta.runner.adjust_rlimit_nofile" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#anta.runner.adjust_rlimit_nofile" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">adjust_rlimit_nofile</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
 </code></pre></div>
 
@@ -2427,11 +2427,11 @@
 <div class="doc doc-object doc-function">
 
 
-<h3 id="anta.runner.get_coroutines" class="doc doc-heading">
+<h4 id="anta.runner.get_coroutines" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">get_coroutines</span>
 
 
-<a href="#anta.runner.get_coroutines" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#anta.runner.get_coroutines" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">get_coroutines</span><span class="p">(</span><span class="n">selected_tests</span><span class="p">:</span> <span class="n">defaultdict</span><span class="p">[</span><span class="n">AntaDevice</span><span class="p">,</span> <span class="nb">set</span><span class="p">[</span><span class="n">AntaTestDefinition</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Coroutine</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TestResult</span><span class="p">]]</span>
 </code></pre></div>
 
@@ -2528,11 +2528,11 @@
 <div class="doc doc-object doc-function">
 
 
-<h3 id="anta.runner.log_cache_statistics" class="doc doc-heading">
+<h4 id="anta.runner.log_cache_statistics" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">log_cache_statistics</span>
 
 
-<a href="#anta.runner.log_cache_statistics" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#anta.runner.log_cache_statistics" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">log_cache_statistics</span><span class="p">(</span><span class="n">devices</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaDevice</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -2584,7 +2584,7 @@
 <div class="doc doc-object doc-function">
 
 
-<h3 id="anta.runner.main" class="doc doc-heading">
+<h4 id="anta.runner.main" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">main</span>
 
 
@@ -2592,7 +2592,7 @@
       <small class="doc doc-label doc-label-async"><code>async</code></small>
   </span>
 
-<a href="#anta.runner.main" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#anta.runner.main" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">main</span><span class="p">(</span><span class="n">manager</span><span class="p">:</span> <span class="n">ResultManager</span><span class="p">,</span> <span class="n">inventory</span><span class="p">:</span> <span class="n">AntaInventory</span><span class="p">,</span> <span class="n">catalog</span><span class="p">:</span> <span class="n">AntaCatalog</span><span class="p">,</span> <span class="n">devices</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tests</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">established_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -2774,11 +2774,11 @@ ResultManager object gets updated with the test results.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="anta.runner.prepare_tests" class="doc doc-heading">
+<h4 id="anta.runner.prepare_tests" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">prepare_tests</span>
 
 
-<a href="#anta.runner.prepare_tests" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#anta.runner.prepare_tests" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">prepare_tests</span><span class="p">(</span><span class="n">inventory</span><span class="p">:</span> <span class="n">AntaInventory</span><span class="p">,</span> <span class="n">catalog</span><span class="p">:</span> <span class="n">AntaCatalog</span><span class="p">,</span> <span class="n">tests</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">defaultdict</span><span class="p">[</span><span class="n">AntaDevice</span><span class="p">,</span> <span class="nb">set</span><span class="p">[</span><span class="n">AntaTestDefinition</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -2907,7 +2907,7 @@ ResultManager object gets updated with the test results.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="anta.runner.setup_inventory" class="doc doc-heading">
+<h4 id="anta.runner.setup_inventory" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">setup_inventory</span>
 
 
@@ -2915,7 +2915,7 @@ ResultManager object gets updated with the test results.</p>
       <small class="doc doc-label doc-label-async"><code>async</code></small>
   </span>
 
-<a href="#anta.runner.setup_inventory" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#anta.runner.setup_inventory" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">setup_inventory</span><span class="p">(</span><span class="n">inventory</span><span class="p">:</span> <span class="n">AntaInventory</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">devices</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">established_only</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaInventory</span> <span class="o">|</span> <span class="kc">None</span>
 </code></pre></div>
 

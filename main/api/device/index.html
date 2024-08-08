@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.30">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.31">
     
     
       
@@ -1649,9 +1649,11 @@
 
     <!-- Table of contents list -->
     
-  </li>
-      
-        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+      <nav class="md-nav" aria-label="UML representation">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
     <a href="#anta.device.AntaDevice" class="md-nav__link">
       <span class="md-ellipsis">
@@ -1744,6 +1746,12 @@
     </a>
 
     <!-- Table of contents list -->
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
     
   </li>
           
@@ -2201,9 +2209,11 @@
 
     <!-- Table of contents list -->
     
-  </li>
-      
-        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+      <nav class="md-nav" aria-label="UML representation">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
     <a href="#anta.device.AntaDevice" class="md-nav__link">
       <span class="md-ellipsis">
@@ -2304,6 +2314,12 @@
       </nav>
     
   </li>
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
       
     </ul>
   
@@ -2340,11 +2356,11 @@
 
 
 
-<h2 id="anta.device.AntaDevice" class="doc doc-heading">
+<h3 id="anta.device.AntaDevice" class="doc doc-heading">
             <span class="doc doc-object-name doc-class-name">AntaDevice</span>
 
 
-<a href="#anta.device.AntaDevice" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#anta.device.AntaDevice" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">AntaDevice</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">disable_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
 </code></pre></div>
 
@@ -2452,7 +2468,7 @@ cache_locks: Dictionary mapping keys to asyncio locks to guarantee exclusive acc
 
 
 
-<h3 id="anta.device.AntaDevice.cache_statistics" class="doc doc-heading">
+<h4 id="anta.device.AntaDevice.cache_statistics" class="doc doc-heading">
             <span class="doc doc-object-name doc-attribute-name">cache_statistics</span>
 
 
@@ -2460,7 +2476,7 @@ cache_locks: Dictionary mapping keys to asyncio locks to guarantee exclusive acc
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
 
-<a href="#anta.device.AntaDevice.cache_statistics" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#anta.device.AntaDevice.cache_statistics" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">cache_statistics</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -2476,11 +2492,11 @@ cache_locks: Dictionary mapping keys to asyncio locks to guarantee exclusive acc
 <div class="doc doc-object doc-function">
 
 
-<h3 id="anta.device.AntaDevice.__hash__" class="doc doc-heading">
+<h4 id="anta.device.AntaDevice.__hash__" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">__hash__</span>
 
 
-<a href="#anta.device.AntaDevice.__hash__" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#anta.device.AntaDevice.__hash__" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="fm">__hash__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span>
 </code></pre></div>
 
@@ -2504,7 +2520,7 @@ cache_locks: Dictionary mapping keys to asyncio locks to guarantee exclusive acc
 <div class="doc doc-object doc-function">
 
 
-<h3 id="anta.device.AntaDevice.collect" class="doc doc-heading">
+<h4 id="anta.device.AntaDevice.collect" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">collect</span>
 
 
@@ -2512,7 +2528,7 @@ cache_locks: Dictionary mapping keys to asyncio locks to guarantee exclusive acc
       <small class="doc doc-label doc-label-async"><code>async</code></small>
   </span>
 
-<a href="#anta.device.AntaDevice.collect" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#anta.device.AntaDevice.collect" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">collect</span><span class="p">(</span><span class="n">command</span><span class="p">:</span> <span class="n">AntaCommand</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">collection_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -2596,7 +2612,7 @@ via the private <code>_collect</code> method without interacting with the cache.
 <div class="doc doc-object doc-function">
 
 
-<h3 id="anta.device.AntaDevice.collect_commands" class="doc doc-heading">
+<h4 id="anta.device.AntaDevice.collect_commands" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">collect_commands</span>
 
 
@@ -2604,7 +2620,7 @@ via the private <code>_collect</code> method without interacting with the cache.
       <small class="doc doc-label doc-label-async"><code>async</code></small>
   </span>
 
-<a href="#anta.device.AntaDevice.collect_commands" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#anta.device.AntaDevice.collect_commands" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">collect_commands</span><span class="p">(</span><span class="n">commands</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">collection_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -2640,7 +2656,7 @@ via the private <code>_collect</code> method without interacting with the cache.
 <div class="doc doc-object doc-function">
 
 
-<h3 id="anta.device.AntaDevice.copy" class="doc doc-heading">
+<h4 id="anta.device.AntaDevice.copy" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">copy</span>
 
 
@@ -2648,7 +2664,7 @@ via the private <code>_collect</code> method without interacting with the cache.
       <small class="doc doc-label doc-label-async"><code>async</code></small>
   </span>
 
-<a href="#anta.device.AntaDevice.copy" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#anta.device.AntaDevice.copy" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">copy</span><span class="p">(</span><span class="n">sources</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Path</span><span class="p">],</span> <span class="n">destination</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">direction</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;to&#39;</span><span class="p">,</span> <span class="s1">&#39;from&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;from&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -2697,7 +2713,7 @@ via the private <code>_collect</code> method without interacting with the cache.
 <div class="doc doc-object doc-function">
 
 
-<h3 id="anta.device.AntaDevice.refresh" class="doc doc-heading">
+<h4 id="anta.device.AntaDevice.refresh" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">refresh</span>
 
 
@@ -2706,7 +2722,7 @@ via the private <code>_collect</code> method without interacting with the cache.
       <small class="doc doc-label doc-label-async"><code>async</code></small>
   </span>
 
-<a href="#anta.device.AntaDevice.refresh" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#anta.device.AntaDevice.refresh" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">refresh</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -2761,11 +2777,11 @@ via the private <code>_collect</code> method without interacting with the cache.
 
 
 
-<h2 id="anta.device.AsyncEOSDevice" class="doc doc-heading">
+<h3 id="anta.device.AsyncEOSDevice" class="doc doc-heading">
             <span class="doc doc-object-name doc-class-name">AsyncEOSDevice</span>
 
 
-<a href="#anta.device.AsyncEOSDevice" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#anta.device.AsyncEOSDevice" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">AsyncEOSDevice</span><span class="p">(</span><span class="n">host</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">enable_password</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">ssh_port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="mi">22</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">proto</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;http&#39;</span><span class="p">,</span> <span class="s1">&#39;https&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;https&#39;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">enable</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">insecure</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">disable_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
 </code></pre></div>
 
@@ -2944,7 +2960,7 @@ tags: Tags for this device</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="anta.device.AsyncEOSDevice.copy" class="doc doc-heading">
+<h4 id="anta.device.AsyncEOSDevice.copy" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">copy</span>
 
 
@@ -2952,7 +2968,7 @@ tags: Tags for this device</p>
       <small class="doc doc-label doc-label-async"><code>async</code></small>
   </span>
 
-<a href="#anta.device.AsyncEOSDevice.copy" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#anta.device.AsyncEOSDevice.copy" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">copy</span><span class="p">(</span><span class="n">sources</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Path</span><span class="p">],</span> <span class="n">destination</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">direction</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;to&#39;</span><span class="p">,</span> <span class="s1">&#39;from&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;from&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
@@ -3048,7 +3064,7 @@ tags: Tags for this device</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="anta.device.AsyncEOSDevice.refresh" class="doc doc-heading">
+<h4 id="anta.device.AsyncEOSDevice.refresh" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">refresh</span>
 
 
@@ -3056,7 +3072,7 @@ tags: Tags for this device</p>
       <small class="doc doc-label doc-label-async"><code>async</code></small>
   </span>
 
-<a href="#anta.device.AsyncEOSDevice.refresh" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#anta.device.AsyncEOSDevice.refresh" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">refresh</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
