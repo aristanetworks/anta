@@ -1229,10 +1229,7 @@ class VerifyBGPTimers(AntaTest):
 
 
 class VerifyBGPPeerDropStats(AntaTest):
-    """Verifies that verifies BGP drop statistics.
-
-    This test case checks if specified BGP drop statistics are zero, ensuring that no BGP messages
-    are being dropped.(Inbound updates, Inbound paths, Outbound paths).
+    """Verifies BGP NLRI drop statistics for the provided BGP IPv4 peer(s), checking for any non-zero values in various drop categories.
 
     Expected Results
     ----------------
@@ -1244,7 +1241,7 @@ class VerifyBGPPeerDropStats(AntaTest):
     ```yaml
     anta.tests.routing:
       bgp:
-        - VerifyBGPPeerErrors:
+        - VerifyBGPPeerDropStats:
             bgp_peers:
               - peer_address: 172.30.11.1
                 vrf: default
@@ -1255,7 +1252,7 @@ class VerifyBGPPeerDropStats(AntaTest):
     """
 
     name = "VerifyBGPPeerDropStats"
-    description = "Verifies the Drop Statistics of a BGP peer."
+    description = "Verifies the NLRI drop Statistics of a BGP IPv4 peer."
     categories: ClassVar[list[str]] = ["bgp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show bgp neighbors {peer} vrf {vrf}")]
 
@@ -1272,8 +1269,8 @@ class VerifyBGPPeerDropStats(AntaTest):
             """IPv4 address of a BGP peer."""
             vrf: str = "default"
             """Optional VRF for BGP peer. If not provided, it defaults to `default`."""
-            drop_stats: list[BgpDropStats]
-            """List of drop statistics to be verified."""
+            drop_stats: list[BgpDropStats] | None = None
+            """Optional list of drop statistics to be verified. If not provided, test will verifies all the drop statistics."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each Bgp peer in the input list."""
@@ -1281,7 +1278,7 @@ class VerifyBGPPeerDropStats(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """Main test function for VerifyEVPNType2Route."""
+        """Main test function for VerifyBGPPeerDropStats."""
         failures: dict[Any, Any] = {}
 
         for command, input_entry in zip(self.instance_commands, self.inputs.bgp_peers):
@@ -1290,13 +1287,21 @@ class VerifyBGPPeerDropStats(AntaTest):
             drop_statistics = input_entry.drop_stats
 
             # Verify BGP peer
-            if not (bgp_output := get_value(command.json_output, f"vrfs.{vrf}.peerList")) or (bgp_output := get_item(bgp_output, "peerAddress", peer)) is None:
+            if not (peer_list := get_value(command.json_output, f"vrfs.{vrf}.peerList")) or (peer_detail := get_item(peer_list, "peerAddress", peer)) is None:
                 failures[peer] = {vrf: "Not configured"}
                 continue
 
             # Verify BGP peer's drop stats
-            drop_stats_output = bgp_output.get("dropStats", {})
-            drop_stats_not_ok = [drop_stat for drop_stat in drop_statistics if drop_stats_output.get(drop_stat)]
+            drop_stats_output = peer_detail.get("dropStats", {})
+
+            # In case drop stats not provided, It will check all drop statistics
+            if not drop_statistics:
+                drop_statistics = drop_stats_output
+
+            # Verify BGP peer's drop stats
+            drop_stats_not_ok = {
+                drop_stat: drop_stats_output.get(drop_stat, "Not Found") for drop_stat in drop_statistics if drop_stats_output.get(drop_stat, "Not Found")
+            }
             if any(drop_stats_not_ok):
                 failures[peer] = {vrf: drop_stats_not_ok}
 
@@ -1304,4 +1309,4 @@ class VerifyBGPPeerDropStats(AntaTest):
         if not failures:
             self.result.is_success()
         else:
-            self.result.is_failure(f"Following BGP peers are not configured or drop stats are not correct:\n{failures}")
+            self.result.is_failure(f"The following BGP peers are not configured or have non-zero NLRI drop statistics counters:\n{failures}")

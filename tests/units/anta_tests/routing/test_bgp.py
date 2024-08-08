@@ -3788,9 +3788,7 @@ DATA: list[dict[str, Any]] = [
         "name": "failure-not-found",
         "test": VerifyBGPPeerDropStats,
         "eos_data": [
-            {
-                "vrfs": {},
-            },
+            {"vrfs": {}},
             {"vrfs": {}},
         ],
         "inputs": {
@@ -3806,7 +3804,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Following BGP peers are not configured or drop stats are not correct:\n"
+                "The following BGP peers are not configured or have non-zero NLRI drop statistics counters:\n"
                 "{'10.100.0.8': {'default': 'Not configured'}, '10.100.0.9': {'MGMT': 'Not configured'}}"
             ],
         },
@@ -3873,9 +3871,170 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Following BGP peers are not configured or drop stats are not correct:\n"
-                "{'10.100.0.8': {'default': ['prefixDroppedMartianV4', 'prefixDroppedMaxRouteLimitViolatedV4']}, "
-                "'10.100.0.9': {'MGMT': ['inDropOrigId', 'inDropNhLocal']}}"
+                "The following BGP peers are not configured or have non-zero NLRI drop statistics counters:\n"
+                "{'10.100.0.8': {'default': {'prefixDroppedMartianV4': 1, 'prefixDroppedMaxRouteLimitViolatedV4': 1}}, "
+                "'10.100.0.9': {'MGMT': {'inDropOrigId': 1, 'inDropNhLocal': 1}}}"
+            ],
+        },
+    },
+    {
+        "name": "success-all-drop-stats",
+        "test": VerifyBGPPeerDropStats,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "dropStats": {
+                                    "inDropAsloop": 0,
+                                    "inDropClusterIdLoop": 0,
+                                    "inDropMalformedMpbgp": 0,
+                                    "inDropOrigId": 0,
+                                    "inDropNhLocal": 0,
+                                    "inDropNhAfV6": 0,
+                                    "prefixDroppedMartianV4": 0,
+                                    "prefixDroppedMaxRouteLimitViolatedV4": 0,
+                                    "prefixDroppedMartianV6": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+            {
+                "vrfs": {
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.9",
+                                "dropStats": {
+                                    "inDropAsloop": 0,
+                                    "inDropClusterIdLoop": 0,
+                                    "inDropMalformedMpbgp": 0,
+                                    "inDropOrigId": 0,
+                                    "inDropNhLocal": 0,
+                                    "inDropNhAfV6": 0,
+                                    "prefixDroppedMartianV4": 0,
+                                    "prefixDroppedMaxRouteLimitViolatedV4": 0,
+                                    "prefixDroppedMartianV6": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default"},
+                {"peer_address": "10.100.0.9", "vrf": "MGMT"},
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-all-drop-stats",
+        "test": VerifyBGPPeerDropStats,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "dropStats": {
+                                    "inDropAsloop": 3,
+                                    "inDropClusterIdLoop": 0,
+                                    "inDropMalformedMpbgp": 0,
+                                    "inDropOrigId": 1,
+                                    "inDropNhLocal": 1,
+                                    "inDropNhAfV6": 0,
+                                    "prefixDroppedMartianV4": 1,
+                                    "prefixDroppedMaxRouteLimitViolatedV4": 1,
+                                    "prefixDroppedMartianV6": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+            {
+                "vrfs": {
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.9",
+                                "dropStats": {
+                                    "inDropAsloop": 2,
+                                    "inDropClusterIdLoop": 0,
+                                    "inDropMalformedMpbgp": 0,
+                                    "inDropOrigId": 1,
+                                    "inDropNhLocal": 1,
+                                    "inDropNhAfV6": 0,
+                                    "prefixDroppedMartianV4": 0,
+                                    "prefixDroppedMaxRouteLimitViolatedV4": 0,
+                                    "prefixDroppedMartianV6": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default"},
+                {"peer_address": "10.100.0.9", "vrf": "MGMT"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following BGP peers are not configured or have non-zero NLRI drop statistics counters:\n"
+                "{'10.100.0.8': {'default': {'inDropAsloop': 3, 'inDropOrigId': 1, 'inDropNhLocal': 1, "
+                "'prefixDroppedMartianV4': 1, 'prefixDroppedMaxRouteLimitViolatedV4': 1}}, "
+                "'10.100.0.9': {'MGMT': {'inDropAsloop': 2, 'inDropOrigId': 1, 'inDropNhLocal': 1}}}"
+            ],
+        },
+    },
+    {
+        "name": "failure-drop-stat-not-found",
+        "test": VerifyBGPPeerDropStats,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "dropStats": {
+                                    "inDropAsloop": 3,
+                                    "inDropClusterIdLoop": 0,
+                                    "inDropMalformedMpbgp": 0,
+                                    "inDropOrigId": 1,
+                                    "inDropNhLocal": 1,
+                                    "inDropNhAfV6": 0,
+                                    "prefixDroppedMaxRouteLimitViolatedV4": 1,
+                                    "prefixDroppedMartianV6": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default", "drop_stats": ["inDropAsloop", "inDropOrigId", "inDropNhLocal", "prefixDroppedMartianV4"]}
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following BGP peers are not configured or have non-zero NLRI drop statistics counters:\n"
+                "{'10.100.0.8': {'default': {'inDropAsloop': 3, 'inDropOrigId': 1, 'inDropNhLocal': 1, 'prefixDroppedMartianV4': 'Not Found'}}}"
             ],
         },
     },
