@@ -685,6 +685,8 @@ class VerifyBGPExchangedRoutes(AntaTest):
 class VerifyBGPPeerMPCaps(AntaTest):
     """Verifies the multiprotocol capabilities of a BGP peer in a specified VRF.
 
+    Optionally test verifies the only specified multiprotocol capabilities should be listed.
+
     Expected Results
     ----------------
     * Success: The test will pass if the BGP peer's multiprotocol capabilities are advertised, received, and enabled in the specified VRF.
@@ -699,6 +701,7 @@ class VerifyBGPPeerMPCaps(AntaTest):
             bgp_peers:
               - peer_address: 172.30.11.1
                 vrf: default
+                strict: False
                 capabilities:
                   - ipv4Unicast
     ```
@@ -722,6 +725,8 @@ class VerifyBGPPeerMPCaps(AntaTest):
             """IPv4 address of a BGP peer."""
             vrf: str = "default"
             """Optional VRF for BGP peer. If not provided, it defaults to `default`."""
+            strict: bool = False
+            """Optional check for BGP peer. Verifies the only mentioned capabilities should be listed, otherwise test should fail."""
             capabilities: list[MultiProtocolCaps]
             """List of multiprotocol capabilities to be verified."""
 
@@ -746,8 +751,17 @@ class VerifyBGPPeerMPCaps(AntaTest):
                 failures = deep_update(failures, failure)
                 continue
 
-            # Check each capability
+            # Fetching the capabilities output
             bgp_output = get_value(bgp_output, "neighborCapabilities.multiprotocolCaps")
+
+            # Verifies the only mentioned capabilities should be listed in case needed.
+            if bgp_peer.strict and not set(bgp_output).issubset(set(capabilities)):
+                other_capabilities = ", ".join(list(set(bgp_output) - set(capabilities)))
+                failure["bgp_peers"][peer][vrf] = {"status": f"Other than mentioned capabilities following capability(s) are listed: {other_capabilities}"}
+                failures = deep_update(failures, failure)
+                continue
+
+            # Check each capability
             for capability in capabilities:
                 capability_output = bgp_output.get(capability)
 
