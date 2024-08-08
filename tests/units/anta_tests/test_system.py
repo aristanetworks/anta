@@ -14,6 +14,7 @@ from anta.tests.system import (
     VerifyFileSystemUtilization,
     VerifyMemoryUtilization,
     VerifyNTP,
+    VerifyNTPAssociations,
     VerifyReloadCause,
     VerifyUptime,
 )
@@ -285,5 +286,115 @@ poll interval unknown
         ],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["The device is not synchronized with the configured NTP server(s): 'unsynchronised'"]},
+    },
+    {
+        "name": "success",
+        "test": VerifyNTPAssociations,
+        "eos_data": [
+            {
+                "peers": {
+                    "1.1.1.1 (*.pool.ntp.org)": {
+                        "condition": "sys.peer",
+                        "peerIpAddr": "1.1.1.1",
+                    },
+                    "2.2.2.2 (*.pool.ntp.org)": {
+                        "condition": "candidate",
+                        "peerIpAddr": "2.2.2.2",
+                    },
+                    "3.3.3.3 (*.pool.ntp.org)": {
+                        "condition": "candidate",
+                        "peerIpAddr": "3.3.3.3",
+                    },
+                }
+            }
+        ],
+        "inputs": {"ntp_servers": [{"server_address": "1.1.1.1", "preferred": True}, {"server_address": "2.2.2.2"}, {"server_address": "3.3.3.3"}]},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure",
+        "test": VerifyNTPAssociations,
+        "eos_data": [
+            {
+                "peers": {
+                    "1.1.1.1 (*.pool.ntp.org)": {
+                        "condition": "candidate",
+                        "peerIpAddr": "1.1.1.1",
+                    },
+                    "2.2.2.2 (*.pool.ntp.org)": {
+                        "condition": "sys.peer",
+                        "peerIpAddr": "2.2.2.2",
+                    },
+                    "3.3.3.3 (*.pool.ntp.org)": {
+                        "condition": "candidate1",
+                        "peerIpAddr": "3.3.3.3",
+                    },
+                }
+            }
+        ],
+        "inputs": {"ntp_servers": [{"server_address": "1.1.1.1", "preferred": True}, {"server_address": "2.2.2.2"}, {"server_address": "3.3.3.3"}]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "For NTP peer 1.1.1.1 expected condition as 'sys.peer' but found 'candidate' instead.\n"
+                "For NTP peer 2.2.2.2 expected condition as 'candidate' but found 'sys.peer' instead.\n"
+                "For NTP peer 3.3.3.3 expected condition as 'candidate' but found 'candidate1' instead.\n"
+            ],
+        },
+    },
+    {
+        "name": "failure-no-peers",
+        "test": VerifyNTPAssociations,
+        "eos_data": [{"peers": {}}],
+        "inputs": {"ntp_servers": [{"server_address": "1.1.1.1", "preferred": True}, {"server_address": "2.2.2.2"}, {"server_address": "3.3.3.3"}]},
+        "expected": {
+            "result": "failure",
+            "messages": ["NTP peers are not configured."],
+        },
+    },
+    {
+        "name": "failure-one-peer-no-found",
+        "test": VerifyNTPAssociations,
+        "eos_data": [
+            {
+                "peers": {
+                    "1.1.1.1 (*.pool.ntp.org)": {
+                        "condition": "sys.peer",
+                        "peerIpAddr": "1.1.1.1",
+                    },
+                    "2.2.2.2 (*.pool.ntp.org)": {
+                        "condition": "candidate",
+                        "peerIpAddr": "2.2.2.2",
+                    },
+                }
+            }
+        ],
+        "inputs": {"ntp_servers": [{"server_address": "1.1.1.1", "preferred": True}, {"server_address": "2.2.2.2"}, {"server_address": "3.3.3.3"}]},
+        "expected": {
+            "result": "failure",
+            "messages": ["NTP peer 3.3.3.3 is not configured."],
+        },
+    },
+    {
+        "name": "failure-with-two-peers-not-found",
+        "test": VerifyNTPAssociations,
+        "eos_data": [
+            {
+                "peers": {
+                    "1.1.1.1 (*.pool.ntp.org)": {
+                        "condition": "candidate",
+                        "peerIpAddr": "1.1.1.1",
+                    }
+                }
+            }
+        ],
+        "inputs": {"ntp_servers": [{"server_address": "1.1.1.1", "preferred": True}, {"server_address": "2.2.2.2"}, {"server_address": "3.3.3.3"}]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "For NTP peer 1.1.1.1 expected condition as 'sys.peer' but found 'candidate' instead.\n"
+                "NTP peer 2.2.2.2 is not configured.\nNTP peer 3.3.3.3 is not configured.\n"
+            ],
+        },
     },
 ]

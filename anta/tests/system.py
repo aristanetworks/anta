@@ -8,10 +8,14 @@
 from __future__ import annotations
 
 import re
+from ipaddress import IPv4Address
 from typing import TYPE_CHECKING, ClassVar
+
+from pydantic import BaseModel
 
 from anta.custom_types import PositiveInteger
 from anta.models import AntaCommand, AntaTest
+from anta.tools import get_item, get_value
 
 if TYPE_CHECKING:
     from anta.models import AntaTemplate
@@ -299,3 +303,79 @@ class VerifyNTP(AntaTest):
         else:
             data = command_output.split("\n")[0]
             self.result.is_failure(f"The device is not synchronized with the configured NTP server(s): '{data}'")
+
+
+class VerifyNTPAssociations(AntaTest):
+    """Verifies the Network Time Protocol (NTP) associations.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the Primary NTP server (marked as preferred) has the condition 'sys.peer' and
+    all other NTP servers have the condition 'candidate'.
+    * Failure: The test will fail if the Primary NTP server (marked as preferred) does not have the condition 'sys.peer' or
+    if any other NTP server does not have the condition 'candidate'.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.system:
+      - VerifyNTPAssociations:
+          ntp_servers:
+            - server_address: 1.1.1.1
+              preferred: True
+            - server_address: 2.2.2.2
+            - server_address: 3.3.3.3
+    ```
+    """
+
+    name = "VerifyNTPAssociations"
+    description = "Verifies the Network Time Protocol (NTP) associations."
+    categories: ClassVar[list[str]] = ["system"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ntp associations")]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyNTPAssociations test."""
+
+        ntp_servers: list[NTPServer]
+        """List of NTP servers."""
+
+        class NTPServer(BaseModel):
+            """Model for a NTP server."""
+
+            server_address: IPv4Address
+            """IPv4 address of NTP server."""
+            preferred: bool = False
+            """Optional preferred for NTP server. If not provided, it defaults to `False`."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyNTPAssociations."""
+        failures: str = ""
+
+        if not (peer_details := get_value(self.instance_commands[0].json_output, "peers")):
+            self.result.is_failure("None of NTP peers are not configured.")
+            return
+
+        # Iterate over each NTP server
+        for ntp_server in self.inputs.ntp_servers:
+            address = str(ntp_server.server_address)
+            preferred = ntp_server.preferred
+
+            # Check if NTP server details exists
+            if (peer_detail := get_item(list(peer_details.values()), "peerIpAddr", address)) is None:
+                failures += f"NTP peer {address} is not configured.\n"
+                continue
+
+            # Check the condition of NTP servers
+            condition = get_value(peer_detail, "condition")
+            if not preferred and condition != "candidate":
+                failures += f"For NTP peer {address} expected condition as 'candidate' but found '{condition}' instead.\n"
+                continue
+            if preferred and condition != "sys.peer":
+                failures += f"For NTP peer {address} expected condition as 'sys.peer' but found '{condition}' instead.\n"
+
+        # Check if there are any failures
+        if not failures:
+            self.result.is_success()
+        else:
+            self.result.is_failure(failures)
