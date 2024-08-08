@@ -14,7 +14,7 @@ from pydantic import BaseModel, Field, PositiveInt, model_validator
 from pydantic.v1.utils import deep_update
 from pydantic_extra_types.mac_address import MacAddress
 
-from anta.custom_types import Afi, BgpErrors, MultiProtocolCaps, Safi, Vni
+from anta.custom_types import Afi, BgpUpdateErrors, MultiProtocolCaps, Safi, Vni
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_item, get_value
 
@@ -1228,20 +1228,20 @@ class VerifyBGPTimers(AntaTest):
             self.result.is_failure(f"Following BGP peers are not configured or hold and keep-alive timers are not correct:\n{failures}")
 
 
-class VerifyBGPPeerErrors(AntaTest):
-    """Verifies if the BGP peer's errors counters should be zero.
+class VerifyBGPPeerUpdateErrors(AntaTest):
+    """Verifies if the IPv4 BGP peer's update errors counters should be zero.
 
     Expected Results
     ----------------
-    * Success: The test will pass if the BGP peer's error counters are zero.
-    * Failure: The test will fail if the BGP peer's error counters are non-zero.
+    * Success: The test will pass if the BGP peer's update error counters are zero.
+    * Failure: The test will fail if the BGP peer's update error counters are non-zero.
 
     Examples
     --------
     ```yaml
     anta.tests.routing:
       bgp:
-        - VerifyBGPPeerErrors:
+        - VerifyBGPPeerUpdateErrors:
             bgp_peers:
               - peer_address: 172.30.11.1
                 vrf: default
@@ -1250,13 +1250,13 @@ class VerifyBGPPeerErrors(AntaTest):
     ```
     """
 
-    name = "VerifyBGPPeerErrors"
-    description = "Verifies the error counters of a BGP peer."
+    name = "VerifyBGPPeerUpdateErrors"
+    description = "Verifies the update error counters of a BGP IPv4 peer."
     categories: ClassVar[list[str]] = ["bgp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show bgp neighbors {peer} vrf {vrf}")]
 
     class Input(AntaTest.Input):
-        """Input model for the VerifyBGPPeerErrors test."""
+        """Input model for the VerifyBGPPeerUpdateErrors test."""
 
         bgp_peers: list[BgpPeer]
         """List of BGP peers"""
@@ -1268,8 +1268,8 @@ class VerifyBGPPeerErrors(AntaTest):
             """IPv4 address of a BGP peer."""
             vrf: str = "default"
             """Optional VRF for BGP peer. If not provided, it defaults to `default`."""
-            errors: list[BgpErrors]
-            """List of error counters to be verified."""
+            update_error_filter: list[BgpUpdateErrors] | None = None
+            """Optional list of update error counters to be verified. If not provided, test will verifies all the update error counters."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each Bgp peer in the input list."""
@@ -1277,30 +1277,37 @@ class VerifyBGPPeerErrors(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """Main test function for VerifyEVPNType2Route."""
+        """Main test function for VerifyBGPPeerUpdateErrors."""
         failures: dict[Any, Any] = {}
 
         for command, input_entry in zip(self.instance_commands, self.inputs.bgp_peers):
             peer = command.params.peer
             vrf = command.params.vrf
-            error_counters = input_entry.errors
+            update_error_counters = input_entry.update_error_filter
 
-            # Verify BGP peer
-            if not (bgp_output := get_value(command.json_output, f"vrfs.{vrf}.peerList")) or (bgp_output := get_item(bgp_output, "peerAddress", peer)) is None:
+            # Verify BGP peer.
+            if not (peer_list := get_value(command.json_output, f"vrfs.{vrf}.peerList")) or (peer_detail := get_item(peer_list, "peerAddress", peer)) is None:
                 failures[peer] = {vrf: "Not configured"}
                 continue
 
-            # Verify BGP peer's error counters
-            error_counters_output = bgp_output.get("peerInUpdateErrors", {})
-            error_counters_not_ok = [
-                None if error_conter == "disabledAfiSafi" and error_counters_output.get(error_conter) == "None" else error_counters_output.get(error_conter)
-                for error_conter in error_counters
-            ]
-            if any(error_counters_not_ok):
-                failures[peer] = {vrf: error_counters_output}
+            # Getting the BGP peer's error counters output.
+            error_counters_output = peer_detail.get("peerInUpdateErrors", {})
+
+            # In case update error counters not provided, It will check all the update error counters.
+            if not update_error_counters:
+                update_error_counters = error_counters_output
+
+            # verifying the error counters.
+            error_counters_not_ok = {
+                ("disabledAfiSafi" if error_counter == "disabledAfiSafi" else error_counter): value
+                for error_counter in update_error_counters
+                if (value := error_counters_output.get(error_counter, "Not Found")) != "None" and value != 0
+            }
+            if error_counters_not_ok:
+                failures[peer] = {vrf: error_counters_not_ok}
 
         # Check if any failures
         if not failures:
             self.result.is_success()
         else:
-            self.result.is_failure(f"Following BGP peers are not configured or error counters are not correct:\n{failures}")
+            self.result.is_failure(f"The following BGP peers are not configured or have non-zero update error counters:\n{failures}")
