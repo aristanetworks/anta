@@ -69,6 +69,8 @@ anta.tests.bfd:
           vrf: default
         - peer_address: 192.0.255.7
           vrf: default
+          protocols:
+            - isis
   - VerifyBFDPeersIntervals:
       bfd_peers:
         - peer_address: 192.0.255.8
