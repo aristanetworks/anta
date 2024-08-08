@@ -32,7 +32,7 @@ def generate_test_ids(data: list[dict[str, Any]]) -> list[str]:
 
 
 def default_anta_env() -> dict[str, str | None]:
-    """Return a default_anta_environement which can be passed to a cliRunner.invoke method."""
+    """Return a default ANTA environment used for unit testing."""
     return {
         "ANTA_USERNAME": "anta",
         "ANTA_PASSWORD": "formica",
