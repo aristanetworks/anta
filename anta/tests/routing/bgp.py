@@ -14,7 +14,7 @@ from pydantic import BaseModel, Field, PositiveInt, model_validator
 from pydantic.v1.utils import deep_update
 from pydantic_extra_types.mac_address import MacAddress
 
-from anta.custom_types import Afi, BgpUpdateErrors, MultiProtocolCaps, Safi, Vni
+from anta.custom_types import Afi, BgpUpdateError, MultiProtocolCaps, Safi, Vni
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_item, get_value
 
@@ -1229,12 +1229,18 @@ class VerifyBGPTimers(AntaTest):
 
 
 class VerifyBGPPeerUpdateErrors(AntaTest):
-    """Verifies if the IPv4 BGP peer's update errors counters should be zero.
+    """Verifies BGP update error counters for the provided BGP IPv4 peer(s).
+
+    By default, all update error counters will be checked for any non-zero values.
+    An optional list of specific update error counters can be provided for granular testing.
+
+    Note: For "disabledAfiSafi" error counter field, checking that it's not "None" versus 0.
 
     Expected Results
     ----------------
-    * Success: The test will pass if the BGP peer's update error counters are zero.
-    * Failure: The test will fail if the BGP peer's update error counters are non-zero.
+    * Success: The test will pass if the BGP peer's update error counter(s) are zero/None.
+    * Failure: The test will fail if the BGP peer's update error counter(s) are non-zero/not None/Not Found or
+    peer is not configured.
 
     Examples
     --------
@@ -1245,7 +1251,7 @@ class VerifyBGPPeerUpdateErrors(AntaTest):
             bgp_peers:
               - peer_address: 172.30.11.1
                 vrf: default
-                errors:
+                update_error_filter:
                   - inUpdErrWithdraw
     ```
     """
@@ -1253,7 +1259,7 @@ class VerifyBGPPeerUpdateErrors(AntaTest):
     name = "VerifyBGPPeerUpdateErrors"
     description = "Verifies the update error counters of a BGP IPv4 peer."
     categories: ClassVar[list[str]] = ["bgp"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show bgp neighbors {peer} vrf {vrf}")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show bgp neighbors {peer} vrf {vrf}", revision=3)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPPeerUpdateErrors test."""
@@ -1268,11 +1274,11 @@ class VerifyBGPPeerUpdateErrors(AntaTest):
             """IPv4 address of a BGP peer."""
             vrf: str = "default"
             """Optional VRF for BGP peer. If not provided, it defaults to `default`."""
-            update_error_filter: list[BgpUpdateErrors] | None = None
+            update_error_filter: list[BgpUpdateError] | None = None
             """Optional list of update error counters to be verified. If not provided, test will verifies all the update error counters."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
-        """Render the template for each Bgp peer in the input list."""
+        """Render the template for each BGP peer in the input list."""
         return [template.render(peer=str(bgp_peer.peer_address), vrf=bgp_peer.vrf) for bgp_peer in self.inputs.bgp_peers]
 
     @AntaTest.anta_test

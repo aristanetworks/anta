@@ -3807,7 +3807,7 @@ DATA: list[dict[str, Any]] = [
                                     "inUpdErrWithdraw": 0,
                                     "inUpdErrIgnore": 0,
                                     "inUpdErrDisableAfiSafi": 0,
-                                    "disabledAfiSafi": "Yes",
+                                    "disabledAfiSafi": "ipv4Unicast",
                                     "lastUpdErrTime": 0,
                                 },
                             }
@@ -3844,7 +3844,7 @@ DATA: list[dict[str, Any]] = [
             "result": "failure",
             "messages": [
                 "The following BGP peers are not configured or have non-zero update error counters:\n"
-                "{'10.100.0.8': {'default': {'disabledAfiSafi': 'Yes'}}, "
+                "{'10.100.0.8': {'default': {'disabledAfiSafi': 'ipv4Unicast'}}, "
                 "'10.100.0.9': {'MGMT': {'inUpdErrWithdraw': 1}}}"
             ],
         },
@@ -3937,7 +3937,7 @@ DATA: list[dict[str, Any]] = [
                                     "inUpdErrWithdraw": 1,
                                     "inUpdErrIgnore": 0,
                                     "inUpdErrDisableAfiSafi": 0,
-                                    "disabledAfiSafi": "Yes",
+                                    "disabledAfiSafi": "ipv4Unicast",
                                     "lastUpdErrTime": 0,
                                 },
                             }
@@ -3978,7 +3978,7 @@ DATA: list[dict[str, Any]] = [
             "result": "failure",
             "messages": [
                 "The following BGP peers are not configured or have non-zero update error counters:\n"
-                "{'10.100.0.8': {'default': {'inUpdErrWithdraw': 1, 'disabledAfiSafi': 'Yes'}}, "
+                "{'10.100.0.8': {'default': {'inUpdErrWithdraw': 1, 'disabledAfiSafi': 'ipv4Unicast'}}, "
                 "'10.100.0.9': {'MGMT': {'inUpdErrWithdraw': 1, 'inUpdErrDisableAfiSafi': 1}}}"
             ],
         },
@@ -3996,7 +3996,7 @@ DATA: list[dict[str, Any]] = [
                                 "peerInUpdateErrors": {
                                     "inUpdErrIgnore": 0,
                                     "inUpdErrDisableAfiSafi": 0,
-                                    "disabledAfiSafi": "Yes",
+                                    "disabledAfiSafi": "ipv4Unicast",
                                     "lastUpdErrTime": 0,
                                 },
                             }
@@ -4036,7 +4036,7 @@ DATA: list[dict[str, Any]] = [
             "result": "failure",
             "messages": [
                 "The following BGP peers are not configured or have non-zero update error counters:\n"
-                "{'10.100.0.8': {'default': {'inUpdErrWithdraw': 'Not Found', 'disabledAfiSafi': 'Yes'}}, "
+                "{'10.100.0.8': {'default': {'inUpdErrWithdraw': 'Not Found', 'disabledAfiSafi': 'ipv4Unicast'}}, "
                 "'10.100.0.9': {'MGMT': {'inUpdErrWithdraw': 1, 'inUpdErrDisableAfiSafi': 'Not Found'}}}"
             ],
         },
