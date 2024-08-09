@@ -1229,12 +1229,15 @@ class VerifyBGPTimers(AntaTest):
 
 
 class VerifyBGPPeerDropStats(AntaTest):
-    """Verifies BGP NLRI drop statistics for the provided BGP IPv4 peer(s), checking for any non-zero values in various drop categories.
+    """Verifies BGP NLRI drop statistics for the provided BGP IPv4 peer(s).
+
+    By default, all drop statistics counters will be checked for any non-zero values.
+    An optional list of specific drop statistics can be provided for granular testing
 
     Expected Results
     ----------------
-    * Success: The test will pass if the BGP peer's drop statistics are zero.
-    * Failure: The test will fail if the BGP peer's drop statistics are non-zero.
+    * Success: The test will pass if the BGP peer's drop statistic(s) are zero.
+    * Failure: The test will fail if the BGP peer's drop statistic(s) are non-zero/Not Found or peer is not configured.
 
     Examples
     --------
@@ -1252,9 +1255,9 @@ class VerifyBGPPeerDropStats(AntaTest):
     """
 
     name = "VerifyBGPPeerDropStats"
-    description = "Verifies the NLRI drop Statistics of a BGP IPv4 peer."
+    description = "Verifies the NLRI drop statistics of a BGP IPv4 peer(s)."
     categories: ClassVar[list[str]] = ["bgp"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show bgp neighbors {peer} vrf {vrf}")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show bgp neighbors {peer} vrf {vrf}", revision=3)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPPeerDropStats test."""
@@ -1273,7 +1276,7 @@ class VerifyBGPPeerDropStats(AntaTest):
             """Optional list of drop statistics to be verified. If not provided, test will verifies all the drop statistics."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
-        """Render the template for each Bgp peer in the input list."""
+        """Render the template for each BGP peer in the input list."""
         return [template.render(peer=str(bgp_peer.peer_address), vrf=bgp_peer.vrf) for bgp_peer in self.inputs.bgp_peers]
 
     @AntaTest.anta_test
