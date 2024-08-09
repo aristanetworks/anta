@@ -567,6 +567,17 @@ anta.tests.routing:
             vrf: default
             hold_time: 180
             keep_alive_time: 60
+    - VerifyBGPPeerDropStats:
+        bgp_peers:
+          - peer_address: 10.101.0.4
+            vrf: default
+            drop_stats:
+              - inDropAsloop
+              - inDropClusterIdLoop
+              - inDropMalformedMpbgp
+              - inDropOrigId
+              - inDropNhLocal
+              - inDropNhAfV6
   ospf:
     - VerifyOSPFNeighborState:
     - VerifyOSPFNeighborCount:
