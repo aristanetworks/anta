@@ -1228,11 +1228,4 @@ DATA: list[dict[str, Any]] = [
         "inputs": {},
         "expected": {"result": "failure", "messages": ["Hardware entropy generation is disabled."]},
     },
-    {
-        "name": "failure-not-found",
-        "test": VerifyHardwareEntropy,
-        "eos_data": [{}],
-        "inputs": {},
-        "expected": {"result": "failure", "messages": ["No cryptographic algorithm is configured."]},
-    },
 ]

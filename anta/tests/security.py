@@ -840,21 +840,17 @@ class VerifyHardwareEntropy(AntaTest):
     """
 
     name = "VerifyHardwareEntropy"
-    description = "Verifies hardware entropy generation."
+    description = "Verifies hardware entropy generation is enabled on device."
     categories: ClassVar[list[str]] = ["security"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management security")]
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyHardwareEntropy."""
-        self.result.is_success()
-
         command_output = self.instance_commands[0].json_output
 
-        # Check if security parameters are configured
-        if not command_output:
-            self.result.is_failure("No cryptographic algorithm is configured.")
-            return
-
+        # Check if hardware entropy generation is enabled.
         if not command_output.get("hardwareEntropyEnabled"):
             self.result.is_failure("Hardware entropy generation is disabled.")
+        else:
+            self.result.is_success()
