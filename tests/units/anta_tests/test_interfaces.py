@@ -2492,7 +2492,45 @@ DATA: list[dict[str, Any]] = [
                     "Port-Channel5": {
                         "interfaces": {
                             "Ethernet5": {
-                                "actorPortStatus": "Notbundled",
+                                "actorPortStatus": "No Aggregate",
+                            }
+                        }
+                    }
+                },
+                "interface": "Ethernet5",
+                "orphanPorts": {},
+            }
+        ],
+        "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "Port-Channel5"}]},
+        "expected": {
+            "result": "failure",
+            "messages": ["For Interface Ethernet5:\nThe interface is not bundled in the PortChannel Port-Channel5.\n"],
+        },
+    },
+    {
+        "name": "failure-no-details-found",
+        "test": VerifyLACPInterfacesStatus,
+        "eos_data": [
+            {
+                "portChannels": {"Port-Channel5": {"interfaces": {}}},
+            }
+        ],
+        "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "Port-Channel5"}]},
+        "expected": {
+            "result": "failure",
+            "messages": ["Interface details are not for `Ethernet5`.\n"],
+        },
+    },
+    {
+        "name": "failure-lacp-params",
+        "test": VerifyLACPInterfacesStatus,
+        "eos_data": [
+            {
+                "portChannels": {
+                    "Port-Channel5": {
+                        "interfaces": {
+                            "Ethernet5": {
+                                "actorPortStatus": "bundled",
                                 "partnerPortState": {
                                     "activity": False,
                                     "timeout": False,
@@ -2504,10 +2542,10 @@ DATA: list[dict[str, Any]] = [
                                     "expired": False,
                                 },
                                 "actorPortState": {
-                                    "activity": True,
+                                    "activity": False,
                                     "timeout": False,
-                                    "aggregation": True,
-                                    "synchronization": True,
+                                    "aggregation": False,
+                                    "synchronization": False,
                                     "collecting": True,
                                     "distributing": True,
                                     "defaulted": False,
@@ -2525,25 +2563,14 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "For Interface Ethernet5:\nThe interface is not bundled in the PortChannel Port-Channel5.\n"
-                "Partner port details:\nExpected `True` as the activity, but found `False` instead.\n"
+                "For Interface Ethernet5:\n"
+                "Actor port details:\nExpected `True` as the activity, but found `False` instead."
+                "\nExpected `True` as the aggregation, but found `False` instead."
+                "\nExpected `True` as the synchronization, but found `False` instead."
+                "\nPartner port details:\nExpected `True` as the activity, but found `False` instead.\n"
                 "Expected `True` as the aggregation, but found `False` instead.\n"
                 "Expected `True` as the synchronization, but found `False` instead.\n"
             ],
-        },
-    },
-    {
-        "name": "failure-no-details-found",
-        "test": VerifyLACPInterfacesStatus,
-        "eos_data": [
-            {
-                "portChannels": {"Port-Channel5": {"interfaces": {}}},
-            }
-        ],
-        "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "Port-Channel5"}]},
-        "expected": {
-            "result": "failure",
-            "messages": ["Interface details are not for `Ethernet5`.\n"],
         },
     },
 ]

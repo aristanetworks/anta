@@ -135,6 +135,12 @@ VxlanSrcIntf = Annotated[
     BeforeValidator(interface_autocomplete),
     BeforeValidator(interface_case_sensitivity),
 ]
+PortChannel = Annotated[
+    str,
+    Field(pattern=r"^Port-Channel[0-9]{1,3}$"),
+    BeforeValidator(interface_autocomplete),
+    BeforeValidator(interface_case_sensitivity),
+]
 Afi = Literal["ipv4", "ipv6", "vpn-ipv4", "vpn-ipv6", "evpn", "rt-membership", "path-selection", "link-state"]
 Safi = Literal["unicast", "multicast", "labeled-unicast", "sr-te"]
 EncryptionAlgorithm = Literal["RSA", "ECDSA"]

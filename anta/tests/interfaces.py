@@ -15,7 +15,7 @@ from pydantic import BaseModel, Field
 from pydantic_extra_types.mac_address import MacAddress
 
 from anta import GITHUB_SUGGESTION
-from anta.custom_types import EthernetInterface, Interface, Percent, PositiveInteger
+from anta.custom_types import EthernetInterface, Interface, Percent, PortChannel, PositiveInteger
 from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import custom_division, get_failed_logs, get_item, get_value
@@ -895,8 +895,8 @@ class VerifyLACPInterfacesStatus(AntaTest):
 
     Expected Results
     ----------------
-    * Success: The test will pass if the provided interfaces are all in the expected state.
-    * Failure: The test will fail if any interface is not in the expected state.
+    * Success: The test will pass if the provided interfaces are bundled in port channel and all specified parameters are correct.
+    * Failure: The test will fail if any interface is not bundled in port channel and any of specified parameter is not correct.
 
     Examples
     --------
@@ -923,9 +923,9 @@ class VerifyLACPInterfacesStatus(AntaTest):
         class Interfaces(BaseModel):
             """Model for an interface state."""
 
-            name: Interface
+            name: EthernetInterface
             """Interface to validate."""
-            portchannel: Interface
+            portchannel: PortChannel
             """Specify PortChannel in which the interface is bundled."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
@@ -938,39 +938,43 @@ class VerifyLACPInterfacesStatus(AntaTest):
         self.result.is_success()
 
         # Iterating over command output for different interfaces
-        for command in self.instance_commands:
-            for input_entry in self.inputs.interfaces:
-                if command.params.interface == input_entry.name:
-                    interface = input_entry.name
-                    portchannel = input_entry.portchannel
-                    break
+        for command, input_entry in zip(self.instance_commands, self.inputs.interfaces):
+            interface = command.params.interface
+            portchannel = input_entry.portchannel
 
             # Verify if a PortChannel is configured with the provided interface
             if not (interface_details := get_value(command.json_output, f"portChannels.{portchannel}.interfaces.{interface}")):
                 self.result.is_failure(f"Interface details are not for `{interface}`.\n")
                 continue
 
+            # Verify the interface is bundled in port channel.
             actor_port_status = interface_details.get("actorPortStatus")
+            if actor_port_status != "bundled":
+                message = f"For Interface {interface}:\nThe interface is not bundled in the PortChannel {portchannel}.\n"
+                self.result.is_failure(message)
+                continue
+
+            # Collecting actor and partner port details
             actor_port_details = interface_details.get("actorPortState", {})
             partner_port_details = interface_details.get("partnerPortState", {})
 
             # Collecting actual interface details
             actual_interface_output = {
                 "actor_port_details": {
-                    "activity": actor_port_details.get("activity"),
-                    "aggregation": actor_port_details.get("aggregation"),
-                    "synchronization": actor_port_details.get("synchronization"),
-                    "collecting": actor_port_details.get("collecting"),
-                    "distributing": actor_port_details.get("distributing"),
-                    "timeout": actor_port_details.get("timeout"),
+                    "activity": actor_port_details.get("activity", "NotFound"),
+                    "aggregation": actor_port_details.get("aggregation", "NotFound"),
+                    "synchronization": actor_port_details.get("synchronization", "NotFound"),
+                    "collecting": actor_port_details.get("collecting", "NotFound"),
+                    "distributing": actor_port_details.get("distributing", "NotFound"),
+                    "timeout": actor_port_details.get("timeout", "NotFound"),
                 },
                 "partner_port_details": {
-                    "activity": partner_port_details.get("activity"),
-                    "aggregation": partner_port_details.get("aggregation"),
-                    "synchronization": partner_port_details.get("synchronization"),
-                    "collecting": partner_port_details.get("collecting"),
-                    "distributing": partner_port_details.get("distributing"),
-                    "timeout": partner_port_details.get("timeout"),
+                    "activity": partner_port_details.get("activity", "NotFound"),
+                    "aggregation": partner_port_details.get("aggregation", "NotFound"),
+                    "synchronization": partner_port_details.get("synchronization", "NotFound"),
+                    "collecting": partner_port_details.get("collecting", "NotFound"),
+                    "distributing": partner_port_details.get("distributing", "NotFound"),
+                    "timeout": partner_port_details.get("timeout", "NotFound"),
                 },
             }
 
@@ -1004,8 +1008,6 @@ class VerifyLACPInterfacesStatus(AntaTest):
                     expected_interface_output.get("partner_port_details", {}), actual_interface_output.get("partner_port_details", {})
                 )
 
-                if actor_port_status != "bundled":
-                    message += f"The interface is not bundled in the PortChannel {portchannel}.\n"
                 if actor_port_failed_log:
                     message += f"Actor port details:{actor_port_failed_log}\n"
                 if partner_port_failed_log:
