@@ -7,7 +7,8 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from ipaddress import IPv4Address, ip_interface
+from functools import cache
+from ipaddress import IPv4Address, IPv4Interface
 from typing import ClassVar, Literal
 
 from pydantic import model_validator
@@ -131,7 +132,10 @@ class VerifyRoutingTableEntry(AntaTest):
     name = "VerifyRoutingTableEntry"
     description = "Verifies that the provided routes are present in the routing table of a specified VRF."
     categories: ClassVar[list[str]] = ["routing"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show ip route vrf {vrf} {route}", revision=4)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
+        AntaTemplate(template="show ip route vrf {vrf} {route}", revision=4),
+        AntaTemplate(template="show ip route vrf {vrf}", revision=4),
+    ]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyRoutingTableEntry test."""
@@ -140,20 +144,35 @@ class VerifyRoutingTableEntry(AntaTest):
         """VRF context. Defaults to `default` VRF."""
         routes: list[IPv4Address]
         """List of routes to verify."""
+        collect: Literal["one", "all"] = "one"
+        """Route collect behavior: one=one route per command, all=all routes in vrf per command. Defaults to `one`"""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
-        """Render the template for each route in the input list."""
-        return [template.render(vrf=self.inputs.vrf, route=route) for route in self.inputs.routes]
+        """Render the template for the input vrf."""
+        if template == VerifyRoutingTableEntry.commands[0] and self.inputs.collect == "one":
+            return [template.render(vrf=self.inputs.vrf, route=route) for route in self.inputs.routes]
+
+        if template == VerifyRoutingTableEntry.commands[1] and self.inputs.collect == "all":
+            return [template.render(vrf=self.inputs.vrf)]
+
+        return []
+
+    @staticmethod
+    @cache
+    def ip_interface_ip(route: str) -> IPv4Address:
+        """Return the IP address of the provided ip route with mask."""
+        return IPv4Interface(route).ip
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyRoutingTableEntry."""
-        missing_routes = []
+        commands_output_route_ips = set()
 
         for command in self.instance_commands:
-            vrf, route = command.params.vrf, command.params.route
-            if len(routes := command.json_output["vrfs"][vrf]["routes"]) == 0 or route != ip_interface(next(iter(routes))).ip:
-                missing_routes.append(str(route))
+            command_output_vrf = command.json_output["vrfs"][self.inputs.vrf]
+            commands_output_route_ips |= {self.ip_interface_ip(route) for route in command_output_vrf["routes"]}
+
+        missing_routes = [str(route) for route in self.inputs.routes if route not in commands_output_route_ips]
 
         if not missing_routes:
             self.result.is_success()
