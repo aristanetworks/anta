@@ -10,7 +10,6 @@ import logging
 import math
 from collections import defaultdict
 from inspect import isclass
-from itertools import chain
 from json import load as json_load
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal, Optional, Union
@@ -387,21 +386,18 @@ class AntaCatalog:
             raise
         return AntaCatalog(tests)
 
-    # TODO: Move this change to a separate PR
-    @staticmethod
-    def merge(catalogs: list[AntaCatalog]) -> AntaCatalog:
-        """Merge multiple AntaCatalog instances.
+    def merge(self, catalog: AntaCatalog) -> AntaCatalog:
+        """Merge two AntaCatalog instances.
 
         Parameters
         ----------
-            catalogs: List of AntaCatalog instances to merge.
+            catalog: AntaCatalog instance to merge to this instance.
 
         Returns
         -------
-            A new AntaCatalog instance containing the tests of all the instances.
+            A new AntaCatalog instance containing the tests of the two instances.
         """
-        combined_tests = list(chain(*(catalog.tests for catalog in catalogs)))
-        return AntaCatalog(tests=combined_tests)
+        return AntaCatalog(tests=self.tests + catalog.tests)
 
     def dump(self) -> AntaCatalogFile:
         """Return an AntaCatalogFile instance from this AntaCatalog instance.
