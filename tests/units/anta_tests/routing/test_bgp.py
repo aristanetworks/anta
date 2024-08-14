@@ -3766,8 +3766,8 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "bgp_peers": [
-                {"peer_address": "10.100.0.8", "vrf": "default", "update_error_filter": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
-                {"peer_address": "10.100.0.9", "vrf": "MGMT", "update_error_filter": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
+                {"peer_address": "10.100.0.8", "vrf": "default", "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
+                {"peer_address": "10.100.0.9", "vrf": "MGMT", "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
             ]
         },
         "expected": {"result": "success"},
@@ -3781,8 +3781,8 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "bgp_peers": [
-                {"peer_address": "10.100.0.8", "vrf": "default", "update_error_filter": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
-                {"peer_address": "10.100.0.9", "vrf": "MGMT", "update_error_filter": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
+                {"peer_address": "10.100.0.8", "vrf": "default", "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
+                {"peer_address": "10.100.0.9", "vrf": "MGMT", "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
             ]
         },
         "expected": {
@@ -3836,8 +3836,8 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "bgp_peers": [
-                {"peer_address": "10.100.0.8", "vrf": "default", "update_error_filter": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
-                {"peer_address": "10.100.0.9", "vrf": "MGMT", "update_error_filter": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
+                {"peer_address": "10.100.0.8", "vrf": "default", "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
+                {"peer_address": "10.100.0.9", "vrf": "MGMT", "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
             ]
         },
         "expected": {
@@ -3862,8 +3862,8 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "bgp_peers": [
-                {"peer_address": "10.100.0.8", "vrf": "default", "update_error_filter": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
-                {"peer_address": "10.100.0.9", "vrf": "MGMT", "update_error_filter": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
+                {"peer_address": "10.100.0.8", "vrf": "default", "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
+                {"peer_address": "10.100.0.9", "vrf": "MGMT", "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
             ]
         },
         "expected": {
@@ -3966,11 +3966,11 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "bgp_peers": [
-                {"peer_address": "10.100.0.8", "vrf": "default", "update_error_filter": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
+                {"peer_address": "10.100.0.8", "vrf": "default", "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
                 {
                     "peer_address": "10.100.0.9",
                     "vrf": "MGMT",
-                    "update_error_filter": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi", "inUpdErrDisableAfiSafi"],
+                    "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi", "inUpdErrDisableAfiSafi"],
                 },
             ]
         },
@@ -4024,11 +4024,11 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "bgp_peers": [
-                {"peer_address": "10.100.0.8", "vrf": "default", "update_error_filter": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
+                {"peer_address": "10.100.0.8", "vrf": "default", "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
                 {
                     "peer_address": "10.100.0.9",
                     "vrf": "MGMT",
-                    "update_error_filter": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi", "inUpdErrDisableAfiSafi"],
+                    "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi", "inUpdErrDisableAfiSafi"],
                 },
             ]
         },

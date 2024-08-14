@@ -1274,7 +1274,7 @@ class VerifyBGPPeerUpdateErrors(AntaTest):
             """IPv4 address of a BGP peer."""
             vrf: str = "default"
             """Optional VRF for BGP peer. If not provided, it defaults to `default`."""
-            update_error_filter: list[BgpUpdateError] | None = None
+            update_errors: list[BgpUpdateError] | None = None
             """Optional list of update error counters to be verified. If not provided, test will verifies all the update error counters."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
@@ -1289,7 +1289,7 @@ class VerifyBGPPeerUpdateErrors(AntaTest):
         for command, input_entry in zip(self.instance_commands, self.inputs.bgp_peers):
             peer = command.params.peer
             vrf = command.params.vrf
-            update_error_counters = input_entry.update_error_filter
+            update_error_counters = input_entry.update_errors
 
             # Verify BGP peer.
             if not (peer_list := get_value(command.json_output, f"vrfs.{vrf}.peerList")) or (peer_detail := get_item(peer_list, "peerAddress", peer)) is None:

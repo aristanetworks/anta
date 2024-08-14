@@ -571,7 +571,7 @@ anta.tests.routing:
         bgp_peers:
           - peer_address: 10.100.0.8
             vrf: default
-            update_error_filter:
+            update_errors:
               - inUpdErrWithdraw
               - inUpdErrIgnore
   ospf:
