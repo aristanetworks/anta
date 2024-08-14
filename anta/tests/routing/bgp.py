@@ -1232,12 +1232,12 @@ class VerifyBGPPeerDropStats(AntaTest):
     """Verifies BGP NLRI drop statistics for the provided BGP IPv4 peer(s).
 
     By default, all drop statistics counters will be checked for any non-zero values.
-    An optional list of specific drop statistics can be provided for granular testing
+    An optional list of specific drop statistics can be provided for granular testing.
 
     Expected Results
     ----------------
     * Success: The test will pass if the BGP peer's drop statistic(s) are zero.
-    * Failure: The test will fail if the BGP peer's drop statistic(s) are non-zero/Not Found or peer is not configured.
+    * Failure: The test will fail if the BGP peer's drop statistic(s) are non-zero/not found or peer is not configured.
 
     Examples
     --------
