@@ -293,15 +293,15 @@ poll interval unknown
         "eos_data": [
             {
                 "peers": {
-                    "1.1.1.1 (*.pool.ntp.org)": {
+                    "1.1.1.1": {
                         "condition": "sys.peer",
                         "peerIpAddr": "1.1.1.1",
                     },
-                    "2.2.2.2 (*.pool.ntp.org)": {
+                    "2.2.2.2": {
                         "condition": "candidate",
                         "peerIpAddr": "2.2.2.2",
                     },
-                    "3.3.3.3 (*.pool.ntp.org)": {
+                    "3.3.3.3": {
                         "condition": "candidate",
                         "peerIpAddr": "3.3.3.3",
                     },
@@ -312,21 +312,51 @@ poll interval unknown
         "expected": {"result": "success"},
     },
     {
+        "name": "success-pool-name",
+        "test": VerifyNTPAssociations,
+        "eos_data": [
+            {
+                "peers": {
+                    "1.ntp.networks.com": {
+                        "condition": "sys.peer",
+                        "peerIpAddr": "1.1.1.1",
+                    },
+                    "2.ntp.networks.com": {
+                        "condition": "candidate",
+                        "peerIpAddr": "2.2.2.2",
+                    },
+                    "3.ntp.networks.com": {
+                        "condition": "candidate",
+                        "peerIpAddr": "3.3.3.3",
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "ntp_servers": [
+                {"server_address": "1.ntp.networks.com", "preferred": True},
+                {"server_address": "2.ntp.networks.com"},
+                {"server_address": "3.ntp.networks.com"},
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
         "name": "failure",
         "test": VerifyNTPAssociations,
         "eos_data": [
             {
                 "peers": {
-                    "1.1.1.1 (*.pool.ntp.org)": {
+                    "1.1.1.1": {
                         "condition": "candidate",
                         "peerIpAddr": "1.1.1.1",
                     },
-                    "2.2.2.2 (*.pool.ntp.org)": {
+                    "2.2.2.2": {
                         "condition": "sys.peer",
                         "peerIpAddr": "2.2.2.2",
                     },
-                    "3.3.3.3 (*.pool.ntp.org)": {
-                        "condition": "candidate1",
+                    "3.3.3.3": {
+                        "condition": "sys.peer",
                         "peerIpAddr": "3.3.3.3",
                     },
                 }
@@ -338,7 +368,7 @@ poll interval unknown
             "messages": [
                 "For NTP peer 1.1.1.1 expected condition as 'sys.peer' but found 'candidate' instead.\n"
                 "For NTP peer 2.2.2.2 expected condition as 'candidate' but found 'sys.peer' instead.\n"
-                "For NTP peer 3.3.3.3 expected condition as 'candidate' but found 'candidate1' instead.\n"
+                "For NTP peer 3.3.3.3 expected condition as 'candidate' but found 'sys.peer' instead.\n"
             ],
         },
     },
@@ -358,11 +388,11 @@ poll interval unknown
         "eos_data": [
             {
                 "peers": {
-                    "1.1.1.1 (*.pool.ntp.org)": {
+                    "1.1.1.1": {
                         "condition": "sys.peer",
                         "peerIpAddr": "1.1.1.1",
                     },
-                    "2.2.2.2 (*.pool.ntp.org)": {
+                    "2.2.2.2": {
                         "condition": "candidate",
                         "peerIpAddr": "2.2.2.2",
                     },
@@ -381,7 +411,7 @@ poll interval unknown
         "eos_data": [
             {
                 "peers": {
-                    "1.1.1.1 (*.pool.ntp.org)": {
+                    "1.1.1.1": {
                         "condition": "candidate",
                         "peerIpAddr": "1.1.1.1",
                     }

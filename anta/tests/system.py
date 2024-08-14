@@ -15,7 +15,7 @@ from pydantic import BaseModel
 
 from anta.custom_types import PositiveInteger
 from anta.models import AntaCommand, AntaTest
-from anta.tools import get_item, get_value
+from anta.tools import get_value
 
 if TYPE_CHECKING:
     from anta.models import AntaTemplate
@@ -342,8 +342,11 @@ class VerifyNTPAssociations(AntaTest):
         class NTPServer(BaseModel):
             """Model for a NTP server."""
 
-            server_address: IPv4Address
-            """IPv4 address of NTP server."""
+            # Note: There NTP server name defined in configuration command can be change with
+            # another name while DNS resolution which is not handled in ANTA so provide
+            # the DNS resolved server name.
+            server_address: str | IPv4Address
+            """The IPv4 server address or DNS-resolved pool name."""
             preferred: bool = False
             """Optional preferred for NTP server. If not provided, it defaults to `False`."""
 
@@ -356,25 +359,25 @@ class VerifyNTPAssociations(AntaTest):
             self.result.is_failure("None of NTP peers are not configured.")
             return
 
-        # Iterate over each NTP server
+        # Iterate over each NTP server.
         for ntp_server in self.inputs.ntp_servers:
-            address = str(ntp_server.server_address)
+            server_address = str(ntp_server.server_address)
             preferred = ntp_server.preferred
 
-            # Check if NTP server details exists
-            if (peer_detail := get_item(list(peer_details.values()), "peerIpAddr", address)) is None:
-                failures += f"NTP peer {address} is not configured.\n"
+            # Check if NTP server details exists.
+            if (peer_detail := get_value(peer_details, server_address, separator="..")) is None:
+                failures += f"NTP peer {server_address} is not configured.\n"
                 continue
 
-            # Check the condition of NTP servers
+            # Check the condition of NTP servers.
             condition = get_value(peer_detail, "condition")
             if not preferred and condition != "candidate":
-                failures += f"For NTP peer {address} expected condition as 'candidate' but found '{condition}' instead.\n"
+                failures += f"For NTP peer {server_address} expected condition as 'candidate' but found '{condition}' instead.\n"
                 continue
             if preferred and condition != "sys.peer":
-                failures += f"For NTP peer {address} expected condition as 'sys.peer' but found '{condition}' instead.\n"
+                failures += f"For NTP peer {server_address} expected condition as 'sys.peer' but found '{condition}' instead.\n"
 
-        # Check if there are any failures
+        # Check if there are any failures.
         if not failures:
             self.result.is_success()
         else:
