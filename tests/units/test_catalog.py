@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+from json import load as json_load
 from pathlib import Path
 from typing import Any
 
@@ -38,6 +39,14 @@ INIT_CATALOG_DATA: list[dict[str, Any]] = [
     {
         "name": "test_catalog",
         "filename": "test_catalog.yml",
+        "tests": [
+            (VerifyEOSVersion, VerifyEOSVersion.Input(versions=["4.31.1F"])),
+        ],
+    },
+    {
+        "name": "test_catalog",
+        "filename": "test_catalog.json",
+        "file_format": "json",
         "tests": [
             (VerifyEOSVersion, VerifyEOSVersion.Input(versions=["4.31.1F"])),
         ],
@@ -83,6 +92,18 @@ INIT_CATALOG_DATA: list[dict[str, Any]] = [
     },
 ]
 CATALOG_PARSE_FAIL_DATA: list[dict[str, Any]] = [
+    {
+        "name": "undefined_tests",
+        "filename": "test_catalog_wrong_format.toto",
+        "file_format": "toto",
+        "error": "'toto' is not a valid format for an AntaCatalog file. Only 'yaml' and 'json' are supported.",
+    },
+    {
+        "name": "invalid_json",
+        "filename": "test_catalog_invalid_json.json",
+        "file_format": "json",
+        "error": "JSONDecodeError",
+    },
     {
         "name": "undefined_tests",
         "filename": "test_catalog_with_undefined_tests.yml",
@@ -185,7 +206,7 @@ class TestAntaCatalog:
     @pytest.mark.parametrize("catalog_data", INIT_CATALOG_DATA, ids=generate_test_ids_list(INIT_CATALOG_DATA))
     def test_parse(self, catalog_data: dict[str, Any]) -> None:
         """Instantiate AntaCatalog from a file."""
-        catalog: AntaCatalog = AntaCatalog.parse(DATA_DIR / catalog_data["filename"])
+        catalog: AntaCatalog = AntaCatalog.parse(DATA_DIR / catalog_data["filename"], file_format=catalog_data.get("file_format", "yaml"))
 
         assert len(catalog.tests) == len(catalog_data["tests"])
         for test_id, (test, inputs_data) in enumerate(catalog_data["tests"]):
@@ -211,7 +232,8 @@ class TestAntaCatalog:
         """Instantiate AntaCatalog from a dict."""
         file = DATA_DIR / catalog_data["filename"]
         with file.open(encoding="UTF-8") as file:
-            data = safe_load(file)
+            file_format = catalog_data.get("file_format", "yaml")
+            data = safe_load(file) if file_format == "yaml" else json_load(file)
             catalog: AntaCatalog = AntaCatalog.from_dict(data)
 
         assert len(catalog.tests) == len(catalog_data["tests"])
@@ -224,8 +246,8 @@ class TestAntaCatalog:
     @pytest.mark.parametrize("catalog_data", CATALOG_PARSE_FAIL_DATA, ids=generate_test_ids_list(CATALOG_PARSE_FAIL_DATA))
     def test_parse_fail(self, catalog_data: dict[str, Any]) -> None:
         """Errors when instantiating AntaCatalog from a file."""
-        with pytest.raises((ValidationError, TypeError)) as exec_info:
-            AntaCatalog.parse(DATA_DIR / catalog_data["filename"])
+        with pytest.raises((ValidationError, TypeError, ValueError, OSError)) as exec_info:
+            AntaCatalog.parse(DATA_DIR / catalog_data["filename"], file_format=catalog_data.get("file_format", "yaml"))
         if isinstance(exec_info.value, ValidationError):
             assert catalog_data["error"] in exec_info.value.errors()[0]["msg"]
         else:

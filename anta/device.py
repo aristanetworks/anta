@@ -15,13 +15,13 @@ import asyncssh
 import httpcore
 from aiocache import Cache
 from aiocache.plugins import HitMissRatioPlugin
-from asynceapi import Device, EapiCommandError
 from asyncssh import SSHClientConnection, SSHClientConnectionOptions
 from httpx import ConnectError, HTTPError, Limits, TimeoutException
 
 from anta import __DEBUG__
 from anta.logger import anta_log_exception, exc_to_str
 from anta.models import AntaCommand
+from asynceapi import Device, EapiCommandError
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -55,8 +55,8 @@ class AntaDevice(ABC):
     def __init__(self, name: str, tags: set[str] | None = None, *, disable_cache: bool = False) -> None:
         """Initialize an AntaDevice.
 
-        Args:
-        ----
+        Parameters
+        ----------
             name: Device name.
             tags: Tags for this device.
             disable_cache: Disable caching for all commands for this device.
@@ -130,8 +130,8 @@ class AntaDevice(ABC):
         exception and implement proper logging, the `output` attribute of the
         `AntaCommand` object passed as argument would be `None` in this case.
 
-        Args:
-        ----
+        Parameters
+        ----------
             command: The command to collect.
             collection_id: An identifier used to build the eAPI request ID.
         """
@@ -139,8 +139,8 @@ class AntaDevice(ABC):
     async def collect_commands(self, anta_commands: list[AntaCommand], *, req_format: Literal["text", "json"] = "json", req_id: str) -> None:
         """Collect multiple commands.
 
-        Args:
-        ----
+        Parameters
+        ----------
             commands: The commands to collect.
             collection_id: An identifier used to build the eAPI request ID.
         """
@@ -187,8 +187,8 @@ class AntaDevice(ABC):
 
         It is not mandatory to implement this for a valid AntaDevice subclass.
 
-        Args:
-        ----
+        Parameters
+        ----------
             sources: List of files to copy to or from the device.
             destination: Local or remote destination when copying the files. Can be a folder.
             direction: Defines if this coroutine copies files to or from the device.
@@ -232,8 +232,8 @@ class AsyncEOSDevice(AntaDevice):
     ) -> None:
         """Instantiate an AsyncEOSDevice.
 
-        Args:
-        ----
+        Parameters
+        ----------
             host: Device FQDN or IP.
             username: Username to connect to eAPI and SSH.
             password: Password to connect to eAPI and SSH.
@@ -332,7 +332,7 @@ class AsyncEOSDevice(AntaDevice):
             logger.error("Command '%s' is not supported on %s (%s).", anta_command.command, self.name, self.hw_model)
 
         # Collect the commands that were not executed
-        await self._collect(anta_commands=anta_commands[err_at + 1:], req_format=req_format, req_id=req_id)
+        await self._collect(anta_commands=anta_commands[err_at + 1 :], req_format=req_format, req_id=req_id)
 
     def _handle_timeout_exception(self, exception: TimeoutException, anta_commands: list[AntaCommand]) -> None:
         """Handle TimeoutException exceptions."""
@@ -357,7 +357,9 @@ class AsyncEOSDevice(AntaDevice):
         for anta_command in anta_commands:
             anta_command.errors = [exc_to_str(exception)]
 
-        if (isinstance(exc := exception.__cause__, httpcore.ConnectError) and isinstance(os_error := exc.__context__, OSError)) or isinstance(os_error := exception, OSError):
+        if (isinstance(exc := exception.__cause__, httpcore.ConnectError) and isinstance(os_error := exc.__context__, OSError)) or isinstance(
+            os_error := exception, OSError
+        ):
             if isinstance(os_error.__cause__, OSError):
                 os_error = os_error.__cause__
             logger.error("A local OS error occurred while connecting to %s: %s.", self.name, os_error)
@@ -379,14 +381,13 @@ class AsyncEOSDevice(AntaDevice):
         Gain privileged access using the `enable_password` attribute
         of the `AntaDevice` instance if populated.
 
-        Args:
-        ----
+        Parameters
+        ----------
             command: The command to collect.
             collection_id: An identifier used to build the eAPI request ID.
         """
         commands = [
-            {"cmd": anta_command.command, "revision": anta_command.revision}
-            if anta_command.revision else {"cmd": anta_command.command}
+            {"cmd": anta_command.command, "revision": anta_command.revision} if anta_command.revision else {"cmd": anta_command.command}
             for anta_command in anta_commands
         ]
 
@@ -450,8 +451,8 @@ class AsyncEOSDevice(AntaDevice):
     async def copy(self, sources: list[Path], destination: Path, direction: Literal["to", "from"] = "from") -> None:
         """Copy files to and from the device using asyncssh.scp().
 
-        Args:
-        ----
+        Parameters
+        ----------
             sources: List of files to copy to or from the device.
             destination: Local or remote destination when copying the files. Can be a folder.
             direction: Defines if this coroutine copies files to or from the device.

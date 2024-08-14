@@ -49,7 +49,7 @@ def adjust_rlimit_nofile() -> tuple[int, int]:
 
     limits = resource.getrlimit(resource.RLIMIT_NOFILE)
     logger.debug("Initial limit numbers for open file descriptors for the current ANTA process: Soft Limit: %s | Hard Limit: %s", limits[0], limits[1])
-    nofile = nofile if limits[1] > nofile else limits[1]
+    nofile = min(limits[1], nofile)
     logger.debug("Setting soft limit for open file descriptors for the current ANTA process to %s", nofile)
     resource.setrlimit(resource.RLIMIT_NOFILE, (nofile, limits[1]))
     return resource.getrlimit(resource.RLIMIT_NOFILE)
@@ -58,8 +58,8 @@ def adjust_rlimit_nofile() -> tuple[int, int]:
 def log_cache_statistics(devices: list[AntaDevice]) -> None:
     """Log cache statistics for each device in the inventory.
 
-    Args:
-    ----
+    Parameters
+    ----------
         devices: List of devices in the inventory.
     """
     for device in devices:
@@ -77,8 +77,8 @@ def log_cache_statistics(devices: list[AntaDevice]) -> None:
 async def setup_inventory(inventory: AntaInventory, tags: set[str] | None, devices: set[str] | None, *, established_only: bool) -> AntaInventory | None:
     """Set up the inventory for the ANTA run.
 
-    Args:
-    ----
+    Parameters
+    ----------
         inventory: AntaInventory object that includes the device(s).
         tags: Tags to filter devices from the inventory.
         devices: Devices on which to run tests. None means all devices.
@@ -115,8 +115,8 @@ def prepare_tests(
 ) -> defaultdict[AntaDevice, set[AntaTestDefinition]] | None:
     """Prepare the tests to run.
 
-    Args:
-    ----
+    Parameters
+    ----------
         inventory: AntaInventory object that includes the device(s).
         catalog: AntaCatalog object that includes the list of tests.
         tests: Tests to run against devices. None means all tests.
@@ -154,6 +154,7 @@ def prepare_tests(
         return None
 
     return device_to_tests
+
 
 async def run_device_tests(device: AntaDevice, test_definitions: set[AntaTestDefinition], batch_size: int) -> list[TestResult]:
     """Run tests for a specific device using the AntaTestManager."""
@@ -206,8 +207,8 @@ async def main(  # noqa: PLR0913
     Use this as an entrypoint to the test framework in your script.
     ResultManager object gets updated with the test results.
 
-    Args:
-    ----
+    Parameters
+    ----------
         manager: ResultManager object to populate with the test results.
         inventory: AntaInventory object that includes the device(s).
         catalog: AntaCatalog object that includes the list of tests.

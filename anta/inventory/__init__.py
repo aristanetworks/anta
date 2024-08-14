@@ -44,8 +44,8 @@ class AntaInventory(dict[str, AntaDevice]):
     def _update_disable_cache(kwargs: dict[str, Any], *, inventory_disable_cache: bool) -> dict[str, Any]:
         """Return new dictionary, replacing kwargs with added disable_cache value from inventory_value if disable_cache has not been set by CLI.
 
-        Args:
-        ----
+        Parameters
+        ----------
             inventory_disable_cache: The value of disable_cache in the inventory
             kwargs: The kwargs to instantiate the device
 
@@ -62,8 +62,8 @@ class AntaInventory(dict[str, AntaDevice]):
     ) -> None:
         """Parse the host section of an AntaInventoryInput and add the devices to the inventory.
 
-        Args:
-        ----
+        Parameters
+        ----------
             inventory_input: AntaInventoryInput used to parse the devices
             inventory: AntaInventory to add the parsed devices to
             **kwargs: Additional keyword arguments to pass to the device constructor
@@ -91,8 +91,8 @@ class AntaInventory(dict[str, AntaDevice]):
     ) -> None:
         """Parse the network section of an AntaInventoryInput and add the devices to the inventory.
 
-        Args:
-        ----
+        Parameters
+        ----------
             inventory_input: AntaInventoryInput used to parse the devices
             inventory: AntaInventory to add the parsed devices to
             **kwargs: Additional keyword arguments to pass to the device constructor
@@ -124,8 +124,8 @@ class AntaInventory(dict[str, AntaDevice]):
     ) -> None:
         """Parse the range section of an AntaInventoryInput and add the devices to the inventory.
 
-        Args:
-        ----
+        Parameters
+        ----------
             inventory_input: AntaInventoryInput used to parse the devices
             inventory: AntaInventory to add the parsed devices to
             **kwargs: Additional keyword arguments to pass to the device constructor
@@ -175,8 +175,8 @@ class AntaInventory(dict[str, AntaDevice]):
 
         The inventory devices are AsyncEOSDevice instances.
 
-        Args:
-        ----
+        Parameters
+        ----------
             filename: Path to device inventory YAML file.
             username: Username to use to connect to devices.
             password: Password to use to connect to devices.
@@ -254,8 +254,8 @@ class AntaInventory(dict[str, AntaDevice]):
     def get_inventory(self, *, established_only: bool = False, tags: set[str] | None = None, devices: set[str] | None = None) -> AntaInventory:
         """Return a filtered inventory.
 
-        Args:
-        ----
+        Parameters
+        ----------
             established_only: Whether or not to include only established devices.
             tags: Tags to filter devices.
             devices: Names to filter devices.
@@ -293,8 +293,8 @@ class AntaInventory(dict[str, AntaDevice]):
     def add_device(self, device: AntaDevice) -> None:
         """Add a device to final inventory.
 
-        Args:
-        ----
+        Parameters
+        ----------
             device: Device object to be added
 
         """

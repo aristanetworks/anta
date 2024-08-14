@@ -278,7 +278,7 @@ class SessionConfig:
 
         commands.append(f"copy {filename} session-config")
         res: list[dict[str, Any]] = await self._cli(commands=commands)  # type: ignore[assignment] # JSON outformat of multiple commands returns list[dict[str, Any]]
-        checks_re = re.compile(r"error|abort|invalid", flags=re.I)
+        checks_re = re.compile(r"error|abort|invalid", flags=re.IGNORECASE)
         messages = res[-1]["messages"]
 
         if any(map(checks_re.search, messages)):

@@ -122,7 +122,7 @@ jobs:
   test-documentation:
     name: Build offline documentation for testing
     runs-on: ubuntu-20.04
-    needs: [lint-python, type-python, test-python]
+    needs: [test-python]
     steps:
       - uses: actions/checkout@v4
       - name: Setup Python

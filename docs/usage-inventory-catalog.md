@@ -78,12 +78,22 @@ A test catalog is an instance of the [AntaCatalog](./api/catalog.md#anta.catalog
 
 In addition to the inventory file, you also have to define a catalog of tests to execute against your devices. This catalog list all your tests, their inputs and their tags.
 
-A valid test catalog file must have the following structure:
+A valid test catalog file must have the following structure in either YAML or JSON:
 ```yaml
 ---
 <Python module>:
     - <AntaTest subclass>:
         <AntaTest.Input compliant dictionary>
+```
+
+```json
+{
+  "<Python module>": [
+    {
+      "<AntaTest subclass>": <AntaTest.Input compliant dictionary>
+    }
+  ]
+}
 ```
 
 ### Example
@@ -106,6 +116,43 @@ anta.tests.connectivity:
           - "Overwritten category 1"
         description: "Test with overwritten description"
         custom_field: "Test run by John Doe"
+```
+
+or equivalent in JSON:
+
+```json
+{
+  "anta.tests.connectivity": [
+    {
+      "VerifyReachability": {
+        "result_overwrite": {
+          "description": "Test with overwritten description",
+          "categories": [
+            "Overwritten category 1"
+          ],
+          "custom_field": "Test run by John Doe"
+        },
+        "filters": {
+          "tags": [
+            "leaf"
+          ]
+        },
+        "hosts": [
+          {
+            "destination": "1.1.1.1",
+            "source": "Management0",
+            "vrf": "MGMT"
+          },
+          {
+            "destination": "8.8.8.8",
+            "source": "Management0",
+            "vrf": "MGMT"
+          }
+        ]
+      }
+    }
+  ]
+}
 ```
 
 It is also possible to nest Python module definition:
@@ -165,7 +212,7 @@ anta.tests.software:
   - VerifyEOSVersion:
 ```
 
-It will load the test `VerifyEOSVersion` located in `anta.tests.software`. But since this test has mandatory inputs, we need to provide them as a dictionary in the YAML file:
+It will load the test `VerifyEOSVersion` located in `anta.tests.software`. But since this test has mandatory inputs, we need to provide them as a dictionary in the YAML or JSON file:
 
 ```yaml
 anta.tests.software:
@@ -174,6 +221,21 @@ anta.tests.software:
       versions:
         - 4.25.4M
         - 4.26.1F
+```
+
+```json
+{
+  "anta.tests.software": [
+    {
+      "VerifyEOSVersion": {
+        "versions": [
+          "4.25.4M",
+          "4.31.1F"
+        ]
+      }
+    }
+  ]
+}
 ```
 
 The following example is a very minimal test catalog:

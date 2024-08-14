@@ -49,8 +49,8 @@ def setup_logging(level: LogLevel = Log.INFO, file: Path | None = None) -> None:
     If a file is provided and logging level is DEBUG, only the logging level INFO and higher will
     be logged to stdout while all levels will be logged in the file.
 
-    Args:
-    ----
+    Parameters
+    ----------
         level: ANTA logging level
         file: Send logs to a file
 
@@ -104,8 +104,8 @@ def anta_log_exception(exception: BaseException, message: str | None = None, cal
 
     If `anta.__DEBUG__` is True then the `logger.exception` method is called to get the traceback, otherwise `logger.error` is called.
 
-    Args:
-    ----
+    Parameters
+    ----------
         exception: The Exception being logged.
         message: An optional message.
         calling_logger: A logger to which the exception should be logged. If not present, the logger in this file is used.

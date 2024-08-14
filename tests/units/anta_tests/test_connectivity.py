@@ -100,6 +100,28 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
+        "name": "success-df-bit-size",
+        "test": VerifyReachability,
+        "inputs": {"hosts": [{"destination": "10.0.0.1", "source": "Management0", "repeat": 5, "size": 1500, "df_bit": True}]},
+        "eos_data": [
+            {
+                "messages": [
+                    """PING 10.0.0.1 (10.0.0.1) from 172.20.20.6 : 1472(1500) bytes of data.
+                1480 bytes from 10.0.0.1: icmp_seq=1 ttl=64 time=0.085 ms
+                1480 bytes from 10.0.0.1: icmp_seq=2 ttl=64 time=0.020 ms
+                1480 bytes from 10.0.0.1: icmp_seq=3 ttl=64 time=0.019 ms
+                1480 bytes from 10.0.0.1: icmp_seq=4 ttl=64 time=0.018 ms
+                1480 bytes from 10.0.0.1: icmp_seq=5 ttl=64 time=0.017 ms
+
+                --- 10.0.0.1 ping statistics ---
+                5 packets transmitted, 5 received, 0% packet loss, time 0ms
+                rtt min/avg/max/mdev = 0.017/0.031/0.085/0.026 ms, ipg/ewma 0.061/0.057 ms""",
+                ],
+            },
+        ],
+        "expected": {"result": "success"},
+    },
+    {
         "name": "failure-ip",
         "test": VerifyReachability,
         "inputs": {"hosts": [{"destination": "10.0.0.11", "source": "10.0.0.5"}, {"destination": "10.0.0.2", "source": "10.0.0.5"}]},
@@ -166,6 +188,28 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "expected": {"result": "failure", "messages": ["Connectivity test failed for the following source-destination pairs: [('Management0', '10.0.0.11')]"]},
+    },
+    {
+        "name": "failure-size",
+        "test": VerifyReachability,
+        "inputs": {"hosts": [{"destination": "10.0.0.1", "source": "Management0", "repeat": 5, "size": 1501, "df_bit": True}]},
+        "eos_data": [
+            {
+                "messages": [
+                    """PING 10.0.0.1 (10.0.0.1) from 172.20.20.6 : 1473(1501) bytes of data.
+                ping: local error: message too long, mtu=1500
+                ping: local error: message too long, mtu=1500
+                ping: local error: message too long, mtu=1500
+                ping: local error: message too long, mtu=1500
+                ping: local error: message too long, mtu=1500
+
+                --- 10.0.0.1 ping statistics ---
+                5 packets transmitted, 0 received, +5 errors, 100% packet loss, time 40ms
+                """,
+                ],
+            },
+        ],
+        "expected": {"result": "failure", "messages": ["Connectivity test failed for the following source-destination pairs: [('Management0', '10.0.0.1')]"]},
     },
     {
         "name": "success",

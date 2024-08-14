@@ -20,8 +20,8 @@ F = TypeVar("F", bound=Callable[..., Any])
 def deprecated_test(new_tests: list[str] | None = None) -> Callable[[F], F]:
     """Return a decorator to log a message of WARNING severity when a test is deprecated.
 
-    Args:
-    ----
+    Parameters
+    ----------
         new_tests: A list of new test classes that should replace the deprecated test.
 
     Returns
@@ -33,8 +33,8 @@ def deprecated_test(new_tests: list[str] | None = None) -> Callable[[F], F]:
     def decorator(function: F) -> F:
         """Actual decorator that logs the message.
 
-        Args:
-        ----
+        Parameters
+        ----------
             function: The test function to be decorated.
 
         Returns
@@ -64,8 +64,8 @@ def skip_on_platforms(platforms: list[str]) -> Callable[[F], F]:
     This decorator factory generates a decorator that will check the hardware model of the device
     the test is run on. If the model is in the list of platforms specified, the test will be skipped.
 
-    Args:
-    ----
+    Parameters
+    ----------
         platforms: List of hardware models on which the test should be skipped.
 
     Returns
@@ -77,8 +77,8 @@ def skip_on_platforms(platforms: list[str]) -> Callable[[F], F]:
     def decorator(function: F) -> F:
         """Actual decorator that either runs the test or skips it based on the device's hardware model.
 
-        Args:
-        ----
+        Parameters
+        ----------
             function: The test function to be decorated.
 
         Returns

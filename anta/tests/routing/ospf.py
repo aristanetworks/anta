@@ -18,8 +18,8 @@ if TYPE_CHECKING:
 def _count_ospf_neighbor(ospf_neighbor_json: dict[str, Any]) -> int:
     """Count the number of OSPF neighbors.
 
-    Args:
-    ----
+    Parameters
+    ----------
       ospf_neighbor_json: The JSON output of the `show ip ospf neighbor` command.
 
     Returns
@@ -37,8 +37,8 @@ def _count_ospf_neighbor(ospf_neighbor_json: dict[str, Any]) -> int:
 def _get_not_full_ospf_neighbors(ospf_neighbor_json: dict[str, Any]) -> list[dict[str, Any]]:
     """Return the OSPF neighbors whose adjacency state is not `full`.
 
-    Args:
-    ----
+    Parameters
+    ----------
       ospf_neighbor_json: The JSON output of the `show ip ospf neighbor` command.
 
     Returns
@@ -63,8 +63,8 @@ def _get_not_full_ospf_neighbors(ospf_neighbor_json: dict[str, Any]) -> list[dic
 def _get_ospf_max_lsa_info(ospf_process_json: dict[str, Any]) -> list[dict[str, Any]]:
     """Return information about OSPF instances and their LSAs.
 
-    Args:
-    ----
+    Parameters
+    ----------
       ospf_process_json: OSPF process information in JSON format.
 
     Returns

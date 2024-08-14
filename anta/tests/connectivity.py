@@ -33,16 +33,24 @@ class VerifyReachability(AntaTest):
             - source: Management0
               destination: 1.1.1.1
               vrf: MGMT
+              df_bit: True
+              size: 100
             - source: Management0
               destination: 8.8.8.8
               vrf: MGMT
+              df_bit: True
+              size: 100
     ```
     """
 
     name = "VerifyReachability"
     description = "Test the network reachability to one or many destination IP(s)."
     categories: ClassVar[list[str]] = ["connectivity"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="ping vrf {vrf} {destination} source {source} repeat {repeat}", revision=1)]
+    # Removing the <space> between '{size}' and '{df_bit}' to compensate the df-bit set default value
+    # i.e if df-bit kept disable then it will add redundant space in between the command
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
+        AntaTemplate(template="ping vrf {vrf} {destination} source {source} size {size}{df_bit} repeat {repeat}", revision=1)
+    ]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyReachability test."""
@@ -61,15 +69,27 @@ class VerifyReachability(AntaTest):
             """VRF context. Defaults to `default`."""
             repeat: int = 2
             """Number of ping repetition. Defaults to 2."""
+            size: int = 100
+            """Specify datagram size. Defaults to 100."""
+            df_bit: bool = False
+            """Enable do not fragment bit in IP header. Defaults to False."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each host in the input list."""
-        return [template.render(destination=host.destination, source=host.source, vrf=host.vrf, repeat=host.repeat) for host in self.inputs.hosts]
+        commands = []
+        for host in self.inputs.hosts:
+            # Enables do not fragment bit in IP header if needed else keeping disable.
+            # Adding the <space> at start to compensate change in AntaTemplate
+            df_bit = " df-bit" if host.df_bit else ""
+            command = template.render(destination=host.destination, source=host.source, vrf=host.vrf, repeat=host.repeat, size=host.size, df_bit=df_bit)
+            commands.append(command)
+        return commands
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyReachability."""
         failures = []
+
         for command in self.instance_commands:
             src = command.params.source
             dst = command.params.destination

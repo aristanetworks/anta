@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from anta.tests.stun import VerifyStunClient
+from anta.tests.stun import VerifyStunClient, VerifyStunServer
 from tests.lib.anta import test  # noqa: F401; pylint: disable=W0611
 
 DATA: list[dict[str, Any]] = [
@@ -171,6 +171,63 @@ DATA: list[dict[str, Any]] = [
                 "Expected `192.118.3.2` as the public ip, but found `192.18.3.2` instead.\n"
                 "Expected `6006` as the public port, but found `4800` instead.",
             ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifyStunServer,
+        "eos_data": [
+            {
+                "enabled": True,
+                "pid": 1895,
+            }
+        ],
+        "inputs": {},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-disabled",
+        "test": VerifyStunServer,
+        "eos_data": [
+            {
+                "enabled": False,
+                "pid": 1895,
+            }
+        ],
+        "inputs": {},
+        "expected": {
+            "result": "failure",
+            "messages": ["STUN server status is disabled."],
+        },
+    },
+    {
+        "name": "failure-not-running",
+        "test": VerifyStunServer,
+        "eos_data": [
+            {
+                "enabled": True,
+                "pid": 0,
+            }
+        ],
+        "inputs": {},
+        "expected": {
+            "result": "failure",
+            "messages": ["STUN server is not running."],
+        },
+    },
+    {
+        "name": "failure-not-running-disabled",
+        "test": VerifyStunServer,
+        "eos_data": [
+            {
+                "enabled": False,
+                "pid": 0,
+            }
+        ],
+        "inputs": {},
+        "expected": {
+            "result": "failure",
+            "messages": ["STUN server status is disabled and not running."],
         },
     },
 ]

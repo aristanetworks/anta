@@ -32,8 +32,8 @@ def get_failed_logs(expected_output: dict[Any, Any], actual_output: dict[Any, An
 
     Returns the failed log or an empty string if there is no difference between the expected and actual output.
 
-    Args:
-    ----
+    Parameters
+    ----------
     expected_output (dict): Expected output of a test.
     actual_output (dict): Actual output of a test
 
@@ -302,8 +302,8 @@ def cprofile(sort_by: str = "cumtime") -> Callable[[F], F]:
     profile is conditionally enabled based on the presence of ANTA_CPROFILE environment variable.
     Expect to decorate an async function.
 
-    Args:
-    ----
+    Parameters
+    ----------
         sort_by (str): The criterion to sort the profiling results. Default is 'cumtime'.
 
     Returns
@@ -318,8 +318,8 @@ def cprofile(sort_by: str = "cumtime") -> Callable[[F], F]:
 
             If `ANTA_CPROFILE` is set, cProfile is enabled and dumps the stats to the file.
 
-            Args:
-            ----
+            Parameters
+            ----------
                 *args: Arbitrary positional arguments.
                 **kwargs: Arbitrary keyword arguments.
 

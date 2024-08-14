@@ -193,6 +193,7 @@ nav:
     - Configuration: api/tests.configuration.md
     - Connectivity: api/tests.connectivity.md
     - Field Notices: api/tests.field_notices.md
+    - Flow Tracking: api/test.flow_tracking.md
     - GreenT: api/tests.greent.md
     - Hardware: api/tests.hardware.md
     - Interfaces: api/tests.interfaces.md
