@@ -197,3 +197,4 @@ BgpDropStats = Literal[
     "prefixRtMembershipDroppedLocalAsReject",
     "prefixRtMembershipDroppedMaxRouteLimitViolated",
 ]
+BgpUpdateError = Literal["inUpdErrWithdraw", "inUpdErrIgnore", "inUpdErrDisableAfiSafi", "disabledAfiSafi", "lastUpdErrTime"]

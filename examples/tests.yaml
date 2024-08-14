@@ -578,6 +578,13 @@ anta.tests.routing:
               - inDropOrigId
               - inDropNhLocal
               - inDropNhAfV6
+    - VerifyBGPPeerUpdateErrors:
+        bgp_peers:
+          - peer_address: 10.100.0.8
+            vrf: default
+            update_errors:
+              - inUpdErrWithdraw
+              - inUpdErrIgnore
   ospf:
     - VerifyOSPFNeighborState:
     - VerifyOSPFNeighborCount:
