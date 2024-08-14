@@ -168,16 +168,6 @@ class AntaCommand(BaseModel):
     params: AntaParamsBaseModel = AntaParamsBaseModel()
     use_cache: bool = True
 
-    # def __hash__(self) -> int:
-    #     """Implement hashing based on the `uid` property."""
-    #     return hash(self.uid)
-
-    # def __eq__(self, other: object) -> bool:
-    #     """Implement equality based on the `uid` property."""
-    #     if not isinstance(other, AntaCommand):
-    #         return False
-    #     return self.uid == other.uid
-
     @cached_property
     def uid(self) -> str:
         """Generate a unique identifier for this command."""
