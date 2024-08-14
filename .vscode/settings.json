@@ -1,5 +1,6 @@
 {
   "ruff.enable": true,
+  "ruff.configuration": "pyproject.toml",
   "python.testing.unittestEnabled": false,
   "python.testing.pytestEnabled": true,
   "pylint.importStrategy": "fromEnvironment",
