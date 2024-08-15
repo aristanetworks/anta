@@ -1529,6 +1529,58 @@
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#anta.tests.routing.bgp.VerifyBGPPeerDropStats" class="md-nav__link">
+      <span class="md-ellipsis">
+        VerifyBGPPeerDropStats
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="VerifyBGPPeerDropStats">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.routing.bgp.VerifyBGPPeerDropStats-attributes" class="md-nav__link">
+      <span class="md-ellipsis">
+        Inputs
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="Inputs">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.routing.bgp.VerifyBGPPeerDropStats-attributes" class="md-nav__link">
+      <span class="md-ellipsis">
+        BgpPeer
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#anta.tests.routing.bgp.VerifyBGPPeerMD5Auth" class="md-nav__link">
       <span class="md-ellipsis">
         VerifyBGPPeerMD5Auth
@@ -2922,6 +2974,58 @@
     <a href="#anta.tests.routing.bgp.VerifyBGPPeerCount-attributes" class="md-nav__link">
       <span class="md-ellipsis">
         BgpAfi
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.routing.bgp.VerifyBGPPeerDropStats" class="md-nav__link">
+      <span class="md-ellipsis">
+        VerifyBGPPeerDropStats
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="VerifyBGPPeerDropStats">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.routing.bgp.VerifyBGPPeerDropStats-attributes" class="md-nav__link">
+      <span class="md-ellipsis">
+        Inputs
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="Inputs">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.routing.bgp.VerifyBGPPeerDropStats-attributes" class="md-nav__link">
+      <span class="md-ellipsis">
+        BgpPeer
       </span>
     </a>
 
@@ -4865,6 +4969,332 @@ If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, `vrf` must be `default`
 
 
 
+<h2 id="anta.tests.routing.bgp.VerifyBGPPeerDropStats" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">VerifyBGPPeerDropStats</span>
+
+
+<a href="#anta.tests.routing.bgp.VerifyBGPPeerDropStats" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+
+  
+        <p>Verifies BGP NLRI drop statistics for the provided BGP IPv4 peer(s).</p>
+<p>By default, all drop statistics counters will be checked for any non-zero values.
+An optional list of specific drop statistics can be provided for granular testing.</p>
+
+
+<details class="expected-results" open>
+  <summary>Expected Results</summary>
+  <ul>
+<li>Success: The test will pass if the BGP peer&rsquo;s drop statistic(s) are zero.</li>
+<li>Failure: The test will fail if the BGP peer&rsquo;s drop statistic(s) are non-zero/Not Found or peer is not configured.</li>
+</ul>
+</details>
+
+
+<details class="example" open>
+  <summary>Examples</summary>
+        <div class="highlight"><pre><span></span><code><span class="nt">anta.tests.routing</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">bgp</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyBGPPeerDropStats</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">bgp_peers</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">peer_address</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.30.11.1</span>
+<span class="w">            </span><span class="nt">vrf</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
+<span class="w">            </span><span class="nt">drop_stats</span><span class="p">:</span>
+<span class="w">              </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">inDropAsloop</span>
+<span class="w">              </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">prefixEvpnDroppedUnsupportedRouteType</span>
+</code></pre></div>
+</details>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+<h3 id="anta.tests.routing.bgp.VerifyBGPPeerDropStats-attributes">Inputs<a href="#anta.tests.routing.bgp.VerifyBGPPeerDropStats-attributes" class="headerlink" title="Permanent link">&para;</a></h3>  
+
+  <div class="doc doc-children">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Description</th>
+              <th>Default</th>
+            </tr>
+          </thead>
+          <tbody>
+              <tr>
+                <td><code>bgp_peers</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<span title="anta.tests.routing.bgp.VerifyBGPPeerDropStats.Input.BgpPeer">BgpPeer</span>]</code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    List of BGP peers
+                  </div>
+                </td>
+                <td>
+                    <em>-</em>
+                </td>
+              </tr>
+          </tbody>
+        </table>
+<h4 id="anta.tests.routing.bgp.VerifyBGPPeerDropStats-attributes">BgpPeer<a href="#anta.tests.routing.bgp.VerifyBGPPeerDropStats-attributes" class="headerlink" title="Permanent link">&para;</a></h4>          <div class="doc doc-children doc-contents">
+  
+
+  <div class="doc doc-children">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Description</th>
+              <th>Default</th>
+            </tr>
+          </thead>
+          <tbody>
+              <tr>
+                <td><code>peer_address</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" title="ipaddress.IPv4Address" href="https://docs.python.org/3/library/ipaddress.html#ipaddress.IPv4Address">IPv4Address</a></code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    IPv4 address of a BGP peer.
+                  </div>
+                </td>
+                <td>
+                    <em>-</em>
+                </td>
+              </tr>
+              <tr>
+                <td><code>vrf</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    Optional VRF for BGP peer. If not provided, it defaults to `default`.
+                  </div>
+                </td>
+                <td>
+                      <code>&#39;default&#39;</code>
+                </td>
+              </tr>
+              <tr>
+                <td><code>drop_stats</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="anta.custom_types.BgpDropStats" href="../types/#anta.custom_types.BgpDropStats">BgpDropStats</a>] | None</code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    Optional list of drop statistics to be verified. If not provided, test will verifies all the drop statistics.
+                  </div>
+                </td>
+                <td>
+                      <code>None</code>
+                </td>
+              </tr>
+          </tbody>
+        </table>
+  </div>
+          </div>
+  </div>
+
+
+
+
+
+  </div>
+	<details class="quote">
+	<summary>Source code in <code>anta/tests/routing/bgp.py</code></summary>
+	<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1231</span>
+<span class="normal">1232</span>
+<span class="normal">1233</span>
+<span class="normal">1234</span>
+<span class="normal">1235</span>
+<span class="normal">1236</span>
+<span class="normal">1237</span>
+<span class="normal">1238</span>
+<span class="normal">1239</span>
+<span class="normal">1240</span>
+<span class="normal">1241</span>
+<span class="normal">1242</span>
+<span class="normal">1243</span>
+<span class="normal">1244</span>
+<span class="normal">1245</span>
+<span class="normal">1246</span>
+<span class="normal">1247</span>
+<span class="normal">1248</span>
+<span class="normal">1249</span>
+<span class="normal">1250</span>
+<span class="normal">1251</span>
+<span class="normal">1252</span>
+<span class="normal">1253</span>
+<span class="normal">1254</span>
+<span class="normal">1255</span>
+<span class="normal">1256</span>
+<span class="normal">1257</span>
+<span class="normal">1258</span>
+<span class="normal">1259</span>
+<span class="normal">1260</span>
+<span class="normal">1261</span>
+<span class="normal">1262</span>
+<span class="normal">1263</span>
+<span class="normal">1264</span>
+<span class="normal">1265</span>
+<span class="normal">1266</span>
+<span class="normal">1267</span>
+<span class="normal">1268</span>
+<span class="normal">1269</span>
+<span class="normal">1270</span>
+<span class="normal">1271</span>
+<span class="normal">1272</span>
+<span class="normal">1273</span>
+<span class="normal">1274</span>
+<span class="normal">1275</span>
+<span class="normal">1276</span>
+<span class="normal">1277</span>
+<span class="normal">1278</span>
+<span class="normal">1279</span>
+<span class="normal">1280</span>
+<span class="normal">1281</span>
+<span class="normal">1282</span>
+<span class="normal">1283</span>
+<span class="normal">1284</span>
+<span class="normal">1285</span>
+<span class="normal">1286</span>
+<span class="normal">1287</span>
+<span class="normal">1288</span>
+<span class="normal">1289</span>
+<span class="normal">1290</span>
+<span class="normal">1291</span>
+<span class="normal">1292</span>
+<span class="normal">1293</span>
+<span class="normal">1294</span>
+<span class="normal">1295</span>
+<span class="normal">1296</span>
+<span class="normal">1297</span>
+<span class="normal">1298</span>
+<span class="normal">1299</span>
+<span class="normal">1300</span>
+<span class="normal">1301</span>
+<span class="normal">1302</span>
+<span class="normal">1303</span>
+<span class="normal">1304</span>
+<span class="normal">1305</span>
+<span class="normal">1306</span>
+<span class="normal">1307</span>
+<span class="normal">1308</span>
+<span class="normal">1309</span>
+<span class="normal">1310</span>
+<span class="normal">1311</span>
+<span class="normal">1312</span>
+<span class="normal">1313</span>
+<span class="normal">1314</span>
+<span class="normal">1315</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyBGPPeerDropStats</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies BGP NLRI drop statistics for the provided BGP IPv4 peer(s).</span>
+
+<span class="sd">    By default, all drop statistics counters will be checked for any non-zero values.</span>
+<span class="sd">    An optional list of specific drop statistics can be provided for granular testing.</span>
+
+<span class="sd">    Expected Results</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    * Success: The test will pass if the BGP peer&#39;s drop statistic(s) are zero.</span>
+<span class="sd">    * Failure: The test will fail if the BGP peer&#39;s drop statistic(s) are non-zero/Not Found or peer is not configured.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    ```yaml</span>
+<span class="sd">    anta.tests.routing:</span>
+<span class="sd">      bgp:</span>
+<span class="sd">        - VerifyBGPPeerDropStats:</span>
+<span class="sd">            bgp_peers:</span>
+<span class="sd">              - peer_address: 172.30.11.1</span>
+<span class="sd">                vrf: default</span>
+<span class="sd">                drop_stats:</span>
+<span class="sd">                  - inDropAsloop</span>
+<span class="sd">                  - prefixEvpnDroppedUnsupportedRouteType</span>
+<span class="sd">    ```</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;VerifyBGPPeerDropStats&quot;</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Verifies the NLRI drop statistics of a BGP IPv4 peer(s).&quot;</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;bgp&quot;</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">&quot;show bgp neighbors </span><span class="si">{peer}</span><span class="s2"> vrf </span><span class="si">{vrf}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">3</span><span class="p">)]</span>
+
+    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyBGPPeerDropStats test.&quot;&quot;&quot;</span>
+
+        <span class="n">bgp_peers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BgpPeer</span><span class="p">]</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of BGP peers&quot;&quot;&quot;</span>
+
+        <span class="k">class</span> <span class="nc">BgpPeer</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Model for a BGP peer.&quot;&quot;&quot;</span>
+
+            <span class="n">peer_address</span><span class="p">:</span> <span class="n">IPv4Address</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;IPv4 address of a BGP peer.&quot;&quot;&quot;</span>
+            <span class="n">vrf</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Optional VRF for BGP peer. If not provided, it defaults to `default`.&quot;&quot;&quot;</span>
+            <span class="n">drop_stats</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BgpDropStats</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Optional list of drop statistics to be verified. If not provided, test will verifies all the drop statistics.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">AntaTemplate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Render the template for each BGP peer in the input list.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">peer</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">bgp_peer</span><span class="o">.</span><span class="n">peer_address</span><span class="p">),</span> <span class="n">vrf</span><span class="o">=</span><span class="n">bgp_peer</span><span class="o">.</span><span class="n">vrf</span><span class="p">)</span> <span class="k">for</span> <span class="n">bgp_peer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">bgp_peers</span><span class="p">]</span>
+
+    <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyBGPPeerDropStats.&quot;&quot;&quot;</span>
+        <span class="n">failures</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">command</span><span class="p">,</span> <span class="n">input_entry</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">bgp_peers</span><span class="p">):</span>
+            <span class="n">peer</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">peer</span>
+            <span class="n">vrf</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">vrf</span>
+            <span class="n">drop_statistics</span> <span class="o">=</span> <span class="n">input_entry</span><span class="o">.</span><span class="n">drop_stats</span>
+
+            <span class="c1"># Verify BGP peer</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">peer_list</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">json_output</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;vrfs.</span><span class="si">{</span><span class="n">vrf</span><span class="si">}</span><span class="s2">.peerList&quot;</span><span class="p">))</span> <span class="ow">or</span> <span class="p">(</span><span class="n">peer_detail</span> <span class="o">:=</span> <span class="n">get_item</span><span class="p">(</span><span class="n">peer_list</span><span class="p">,</span> <span class="s2">&quot;peerAddress&quot;</span><span class="p">,</span> <span class="n">peer</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">failures</span><span class="p">[</span><span class="n">peer</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">vrf</span><span class="p">:</span> <span class="s2">&quot;Not configured&quot;</span><span class="p">}</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># Verify BGP peer&#39;s drop stats</span>
+            <span class="n">drop_stats_output</span> <span class="o">=</span> <span class="n">peer_detail</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dropStats&quot;</span><span class="p">,</span> <span class="p">{})</span>
+
+            <span class="c1"># In case drop stats not provided, It will check all drop statistics</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">drop_statistics</span><span class="p">:</span>
+                <span class="n">drop_statistics</span> <span class="o">=</span> <span class="n">drop_stats_output</span>
+
+            <span class="c1"># Verify BGP peer&#39;s drop stats</span>
+            <span class="n">drop_stats_not_ok</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">drop_stat</span><span class="p">:</span> <span class="n">drop_stats_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">drop_stat</span><span class="p">,</span> <span class="s2">&quot;Not Found&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">drop_stat</span> <span class="ow">in</span> <span class="n">drop_statistics</span> <span class="k">if</span> <span class="n">drop_stats_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">drop_stat</span><span class="p">,</span> <span class="s2">&quot;Not Found&quot;</span><span class="p">)</span>
+            <span class="p">}</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">drop_stats_not_ok</span><span class="p">):</span>
+                <span class="n">failures</span><span class="p">[</span><span class="n">peer</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">vrf</span><span class="p">:</span> <span class="n">drop_stats_not_ok</span><span class="p">}</span>
+
+        <span class="c1"># Check if any failures</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">failures</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The following BGP peers are not configured or have non-zero NLRI drop statistics counters:</span><span class="se">\n</span><span class="si">{</span><span class="n">failures</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+  </details>
+    </div>
+
+</div>  
+
+  
+
+<div class="doc doc-object doc-class">
+
+
+
 <h2 id="anta.tests.routing.bgp.VerifyBGPPeerMD5Auth" class="doc doc-heading">
             <span class="doc doc-object-name doc-class-name">VerifyBGPPeerMD5Auth</span>
 
@@ -5906,95 +6336,95 @@ peer is not configured.</li>
   </div>
 	<details class="quote">
 	<summary>Source code in <code>anta/tests/routing/bgp.py</code></summary>
-	<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1231</span>
-<span class="normal">1232</span>
-<span class="normal">1233</span>
-<span class="normal">1234</span>
-<span class="normal">1235</span>
-<span class="normal">1236</span>
-<span class="normal">1237</span>
-<span class="normal">1238</span>
-<span class="normal">1239</span>
-<span class="normal">1240</span>
-<span class="normal">1241</span>
-<span class="normal">1242</span>
-<span class="normal">1243</span>
-<span class="normal">1244</span>
-<span class="normal">1245</span>
-<span class="normal">1246</span>
-<span class="normal">1247</span>
-<span class="normal">1248</span>
-<span class="normal">1249</span>
-<span class="normal">1250</span>
-<span class="normal">1251</span>
-<span class="normal">1252</span>
-<span class="normal">1253</span>
-<span class="normal">1254</span>
-<span class="normal">1255</span>
-<span class="normal">1256</span>
-<span class="normal">1257</span>
-<span class="normal">1258</span>
-<span class="normal">1259</span>
-<span class="normal">1260</span>
-<span class="normal">1261</span>
-<span class="normal">1262</span>
-<span class="normal">1263</span>
-<span class="normal">1264</span>
-<span class="normal">1265</span>
-<span class="normal">1266</span>
-<span class="normal">1267</span>
-<span class="normal">1268</span>
-<span class="normal">1269</span>
-<span class="normal">1270</span>
-<span class="normal">1271</span>
-<span class="normal">1272</span>
-<span class="normal">1273</span>
-<span class="normal">1274</span>
-<span class="normal">1275</span>
-<span class="normal">1276</span>
-<span class="normal">1277</span>
-<span class="normal">1278</span>
-<span class="normal">1279</span>
-<span class="normal">1280</span>
-<span class="normal">1281</span>
-<span class="normal">1282</span>
-<span class="normal">1283</span>
-<span class="normal">1284</span>
-<span class="normal">1285</span>
-<span class="normal">1286</span>
-<span class="normal">1287</span>
-<span class="normal">1288</span>
-<span class="normal">1289</span>
-<span class="normal">1290</span>
-<span class="normal">1291</span>
-<span class="normal">1292</span>
-<span class="normal">1293</span>
-<span class="normal">1294</span>
-<span class="normal">1295</span>
-<span class="normal">1296</span>
-<span class="normal">1297</span>
-<span class="normal">1298</span>
-<span class="normal">1299</span>
-<span class="normal">1300</span>
-<span class="normal">1301</span>
-<span class="normal">1302</span>
-<span class="normal">1303</span>
-<span class="normal">1304</span>
-<span class="normal">1305</span>
-<span class="normal">1306</span>
-<span class="normal">1307</span>
-<span class="normal">1308</span>
-<span class="normal">1309</span>
-<span class="normal">1310</span>
-<span class="normal">1311</span>
-<span class="normal">1312</span>
-<span class="normal">1313</span>
-<span class="normal">1314</span>
-<span class="normal">1315</span>
-<span class="normal">1316</span>
-<span class="normal">1317</span>
-<span class="normal">1318</span>
-<span class="normal">1319</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyBGPPeerUpdateErrors</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+	<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1318</span>
+<span class="normal">1319</span>
+<span class="normal">1320</span>
+<span class="normal">1321</span>
+<span class="normal">1322</span>
+<span class="normal">1323</span>
+<span class="normal">1324</span>
+<span class="normal">1325</span>
+<span class="normal">1326</span>
+<span class="normal">1327</span>
+<span class="normal">1328</span>
+<span class="normal">1329</span>
+<span class="normal">1330</span>
+<span class="normal">1331</span>
+<span class="normal">1332</span>
+<span class="normal">1333</span>
+<span class="normal">1334</span>
+<span class="normal">1335</span>
+<span class="normal">1336</span>
+<span class="normal">1337</span>
+<span class="normal">1338</span>
+<span class="normal">1339</span>
+<span class="normal">1340</span>
+<span class="normal">1341</span>
+<span class="normal">1342</span>
+<span class="normal">1343</span>
+<span class="normal">1344</span>
+<span class="normal">1345</span>
+<span class="normal">1346</span>
+<span class="normal">1347</span>
+<span class="normal">1348</span>
+<span class="normal">1349</span>
+<span class="normal">1350</span>
+<span class="normal">1351</span>
+<span class="normal">1352</span>
+<span class="normal">1353</span>
+<span class="normal">1354</span>
+<span class="normal">1355</span>
+<span class="normal">1356</span>
+<span class="normal">1357</span>
+<span class="normal">1358</span>
+<span class="normal">1359</span>
+<span class="normal">1360</span>
+<span class="normal">1361</span>
+<span class="normal">1362</span>
+<span class="normal">1363</span>
+<span class="normal">1364</span>
+<span class="normal">1365</span>
+<span class="normal">1366</span>
+<span class="normal">1367</span>
+<span class="normal">1368</span>
+<span class="normal">1369</span>
+<span class="normal">1370</span>
+<span class="normal">1371</span>
+<span class="normal">1372</span>
+<span class="normal">1373</span>
+<span class="normal">1374</span>
+<span class="normal">1375</span>
+<span class="normal">1376</span>
+<span class="normal">1377</span>
+<span class="normal">1378</span>
+<span class="normal">1379</span>
+<span class="normal">1380</span>
+<span class="normal">1381</span>
+<span class="normal">1382</span>
+<span class="normal">1383</span>
+<span class="normal">1384</span>
+<span class="normal">1385</span>
+<span class="normal">1386</span>
+<span class="normal">1387</span>
+<span class="normal">1388</span>
+<span class="normal">1389</span>
+<span class="normal">1390</span>
+<span class="normal">1391</span>
+<span class="normal">1392</span>
+<span class="normal">1393</span>
+<span class="normal">1394</span>
+<span class="normal">1395</span>
+<span class="normal">1396</span>
+<span class="normal">1397</span>
+<span class="normal">1398</span>
+<span class="normal">1399</span>
+<span class="normal">1400</span>
+<span class="normal">1401</span>
+<span class="normal">1402</span>
+<span class="normal">1403</span>
+<span class="normal">1404</span>
+<span class="normal">1405</span>
+<span class="normal">1406</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyBGPPeerUpdateErrors</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies BGP update error counters for the provided BGP IPv4 peer(s).</span>
 
 <span class="sd">    By default, all update error counters will be checked for any non-zero values.</span>
