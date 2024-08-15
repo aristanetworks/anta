@@ -167,4 +167,34 @@ Revision = Annotated[int, Field(ge=1, le=99)]
 Hostname = Annotated[str, Field(pattern=REGEXP_TYPE_HOSTNAME)]
 Port = Annotated[int, Field(ge=1, le=65535)]
 RegexString = Annotated[str, AfterValidator(validate_regex)]
+BgpDropStats = Literal[
+    "inDropAsloop",
+    "inDropClusterIdLoop",
+    "inDropMalformedMpbgp",
+    "inDropOrigId",
+    "inDropNhLocal",
+    "inDropNhAfV6",
+    "prefixDroppedMartianV4",
+    "prefixDroppedMaxRouteLimitViolatedV4",
+    "prefixDroppedMartianV6",
+    "prefixDroppedMaxRouteLimitViolatedV6",
+    "prefixLuDroppedV4",
+    "prefixLuDroppedMartianV4",
+    "prefixLuDroppedMaxRouteLimitViolatedV4",
+    "prefixLuDroppedV6",
+    "prefixLuDroppedMartianV6",
+    "prefixLuDroppedMaxRouteLimitViolatedV6",
+    "prefixEvpnDroppedUnsupportedRouteType",
+    "prefixBgpLsDroppedReceptionUnsupported",
+    "outDropV4LocalAddr",
+    "outDropV6LocalAddr",
+    "prefixVpnIpv4DroppedImportMatchFailure",
+    "prefixVpnIpv4DroppedMaxRouteLimitViolated",
+    "prefixVpnIpv6DroppedImportMatchFailure",
+    "prefixVpnIpv6DroppedMaxRouteLimitViolated",
+    "prefixEvpnDroppedImportMatchFailure",
+    "prefixEvpnDroppedMaxRouteLimitViolated",
+    "prefixRtMembershipDroppedLocalAsReject",
+    "prefixRtMembershipDroppedMaxRouteLimitViolated",
+]
 BgpUpdateError = Literal["inUpdErrWithdraw", "inUpdErrIgnore", "inUpdErrDisableAfiSafi", "disabledAfiSafi", "lastUpdErrTime"]
