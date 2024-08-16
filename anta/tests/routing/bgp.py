@@ -144,7 +144,7 @@ def _add_bgp_routes_failure(
     return failure_routes
 
 
-def _check_peer_cpabilities(bgp_output: dict[str, Any], capabilities: list[MultiProtocolCaps], *, strict: bool = False) -> dict[str, Any]:
+def _check_peer_capabilities(bgp_output: dict[str, Any], capabilities: list[MultiProtocolCaps], *, strict: bool = False) -> dict[str, Any]:
     """Check for issues in BGP output for multiprotocol capabilities.
 
     - Checks the only mentioned capabilities should be listed when strict is True.
@@ -170,7 +170,12 @@ def _check_peer_cpabilities(bgp_output: dict[str, Any], capabilities: list[Multi
     # Verifies the only mentioned capabilities should be listed when strict is True.
     if strict and not set(bgp_output).issubset(set(capabilities)):
         other_capabilities = ", ".join(list(set(bgp_output) - set(capabilities)))
-        failure["status"] = f"Other than mentioned capabilities following capability(s) are listed: {other_capabilities}"
+        failure["strict"] = f"Other than mentioned BGP peer multiprotocol capabilities following capability(s) are listed: {other_capabilities}"
+
+        # Verifying the mentioned capabilities.
+        failure_msg = _check_peer_capabilities(bgp_output, capabilities, strict=False)
+        if failure_msg:
+            failure.update(failure_msg)
         return failure
 
     # Check each capability
@@ -799,7 +804,7 @@ class VerifyBGPPeerMPCaps(AntaTest):
             bgp_output = get_value(bgp_output, "neighborCapabilities.multiprotocolCaps")
 
             # Collecting the failure logs if any.
-            failure_log = _check_peer_cpabilities(bgp_output, capabilities, strict=bgp_peer.strict)
+            failure_log = _check_peer_capabilities(bgp_output, capabilities, strict=bgp_peer.strict)
             if failure_log:
                 failure["bgp_peers"][peer][vrf] = failure_log
                 failures = deep_update(failures, failure)

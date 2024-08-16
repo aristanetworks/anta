@@ -2306,7 +2306,7 @@ DATA: list[dict[str, Any]] = [
                                             "enabled": True,
                                         },
                                         "ipv4MplsVpn": {
-                                            "advertised": True,
+                                            "advertised": False,
                                             "received": True,
                                             "enabled": True,
                                         },
@@ -2338,8 +2338,11 @@ DATA: list[dict[str, Any]] = [
             "result": "failure",
             "messages": [
                 "Following BGP peer multiprotocol capabilities are not found or not ok:\n"
-                "{'bgp_peers': {'172.30.11.1': {'default': {'status': 'Other than mentioned capabilities following capability(s) are listed: ipv4MplsLabels'}}, "
-                "'172.30.11.10': {'MGMT': {'status': 'Other than mentioned capabilities following capability(s) are listed: ipv4Unicast'}}}}"
+                "{'bgp_peers': {'172.30.11.1': {'default': {'strict': "
+                "'Other than mentioned BGP peer multiprotocol capabilities following capability(s) are listed: ipv4MplsLabels'}}, "
+                "'172.30.11.10': {'MGMT': {'strict': "
+                "'Other than mentioned BGP peer multiprotocol capabilities following capability(s) are listed: ipv4Unicast', "
+                "'ipv4MplsVpn': {'advertised': False, 'received': True, 'enabled': True}}}}}"
             ],
         },
     },
