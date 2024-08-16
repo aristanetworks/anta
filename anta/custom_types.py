@@ -135,7 +135,7 @@ VxlanSrcIntf = Annotated[
     BeforeValidator(interface_autocomplete),
     BeforeValidator(interface_case_sensitivity),
 ]
-PortChannel = Annotated[
+PortChannelInterface = Annotated[
     str,
     Field(pattern=r"^Port-Channel[0-9]{1,3}$"),
     BeforeValidator(interface_autocomplete),

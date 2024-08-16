@@ -15,7 +15,7 @@ from pydantic import BaseModel, Field
 from pydantic_extra_types.mac_address import MacAddress
 
 from anta import GITHUB_SUGGESTION
-from anta.custom_types import EthernetInterface, Interface, Percent, PortChannel, PositiveInteger
+from anta.custom_types import EthernetInterface, Interface, Percent, PortChannelInterface, PositiveInteger
 from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import custom_division, get_failed_logs, get_item, get_value
@@ -917,15 +917,15 @@ class VerifyLACPInterfacesStatus(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyLACPInterfacesStatus test."""
 
-        interfaces: list[Interfaces]
+        interfaces: list[LACPInterfaces]
         """List of interfaces with their expected state."""
 
-        class Interfaces(BaseModel):
+        class LACPInterfaces(BaseModel):
             """Model for an interface state."""
 
             name: EthernetInterface
-            """Interface to validate."""
-            portchannel: PortChannel
+            """Ethernet interface to validate."""
+            portchannel: PortChannelInterface
             """Specify PortChannel in which the interface is bundled."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
@@ -939,18 +939,18 @@ class VerifyLACPInterfacesStatus(AntaTest):
 
         # Iterating over command output for different interfaces
         for command, input_entry in zip(self.instance_commands, self.inputs.interfaces):
-            interface = command.params.interface
+            interface = input_entry.name
             portchannel = input_entry.portchannel
 
             # Verify if a PortChannel is configured with the provided interface
             if not (interface_details := get_value(command.json_output, f"portChannels.{portchannel}.interfaces.{interface}")):
-                self.result.is_failure(f"Interface details are not for `{interface}`.\n")
+                self.result.is_failure(f"Interface '{interface}' is not configured in LACP.")
                 continue
 
             # Verify the interface is bundled in port channel.
             actor_port_status = interface_details.get("actorPortStatus")
             if actor_port_status != "bundled":
-                message = f"For Interface {interface}:\nThe interface is not bundled in the PortChannel {portchannel}.\n"
+                message = f"For Interface {interface}:\nExpected `bundled` as the actorPortStatus, but found `{actor_port_status}` instead.\n"
                 self.result.is_failure(message)
                 continue
 

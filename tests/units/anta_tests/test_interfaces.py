@@ -2484,7 +2484,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
-        "name": "failure",
+        "name": "failure-not-bundled",
         "test": VerifyLACPInterfacesStatus,
         "eos_data": [
             {
@@ -2504,7 +2504,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "Port-Channel5"}]},
         "expected": {
             "result": "failure",
-            "messages": ["For Interface Ethernet5:\nThe interface is not bundled in the PortChannel Port-Channel5.\n"],
+            "messages": ["For Interface Ethernet5:\nExpected `bundled` as the actorPortStatus, but found `No Aggregate` instead.\n"],
         },
     },
     {
@@ -2518,7 +2518,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "Port-Channel5"}]},
         "expected": {
             "result": "failure",
-            "messages": ["Interface details are not for `Ethernet5`.\n"],
+            "messages": ["Interface 'Ethernet5' is not configured in LACP."],
         },
     },
     {
