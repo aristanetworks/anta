@@ -293,8 +293,7 @@ class VerifyBFDPeersRegProtocols(AntaTest):
     Expected Results
     ----------------
     * Success: The test will pass if IPv4 BFD peers are registered with specified protocol(s).
-    * Failure: The test will fail if IPv4 BFD peers are not found, any BFD session is not established,
-    or the specified protocol(s) are not registered on the BFD peer(s).
+    * Failure: The test will fail if IPv4 BFD peers are not found or the specified protocol(s) are not registered on the BFD peer(s).
 
     Examples
     --------
