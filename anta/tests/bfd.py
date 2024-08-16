@@ -9,11 +9,11 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 from ipaddress import IPv4Address
-from typing import TYPE_CHECKING, Any, ClassVar, Literal
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from pydantic import BaseModel, Field
 
-from anta.custom_types import BfdInterval, BfdMultiplier
+from anta.custom_types import BfdInterval, BfdMultiplier, BfdProtocol
 from anta.models import AntaCommand, AntaTest
 from anta.tools import get_value
 
@@ -288,12 +288,13 @@ class VerifyBFDPeersHealth(AntaTest):
 
 
 class VerifyBFDPeersRegProtocols(AntaTest):
-    """Verifies BFD peer(s) has the specified protocol(s) registered.
+    """Verifies that IPv4 BFD peer(s) have the specified protocol(s) registered.
 
     Expected Results
     ----------------
-    * Success: The test will pass if IPv4 BFD peers are configured with specified protocol(s).
-    * Failure: The test will fail if IPv4 BFD peers are not found, BFD session is not established, specified protocol(s) are not registered on the BFD peer.
+    * Success: The test will pass if IPv4 BFD peers are registered with specified protocol(s).
+    * Failure: The test will fail if IPv4 BFD peers are not found, any BFD session is not established,
+    or the specified protocol(s) are not registered on the BFD peer(s).
 
     Examples
     --------
@@ -309,7 +310,7 @@ class VerifyBFDPeersRegProtocols(AntaTest):
     """
 
     name = "VerifyBFDPeersRegProtocols"
-    description = "Verifies IPv4 BFD peer(s) has the specified protocol(s) registered."
+    description = "Verifies that IPv4 BFD peer(s) have the specified protocol(s) registered."
     categories: ClassVar[list[str]] = ["bfd"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bfd peers detail", revision=1)]
 
@@ -326,7 +327,7 @@ class VerifyBFDPeersRegProtocols(AntaTest):
             """IPv4 address of a BFD peer."""
             vrf: str = "default"
             """Optional VRF for BFD peer. If not provided, it defaults to `default`."""
-            protocols: list[Literal["bgp", "isis", "ospf", "eigrp"]]
+            protocols: list[BfdProtocol]
             """List of protocols to be verified."""
 
     @AntaTest.anta_test
@@ -349,11 +350,6 @@ class VerifyBFDPeersRegProtocols(AntaTest):
             # Check if BFD peer configured
             if not bfd_output:
                 failures[peer] = {vrf: "Not Configured"}
-                continue
-
-            # Check BFD peer status
-            if bfd_output.get("status") != "up":
-                failures[peer] = {vrf: {"status": bfd_output.get("status")}}
                 continue
 
             # Check registered protocols if specified.

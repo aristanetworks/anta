@@ -579,7 +579,7 @@ DATA: list[dict[str, Any]] = [
                             "192.0.255.7": {
                                 "peerStats": {
                                     "": {
-                                        "status": "down",
+                                        "status": "up",
                                         "peerStatsDetail": {
                                             "role": "active",
                                             "apps": ["ospf"],
@@ -618,7 +618,7 @@ DATA: list[dict[str, Any]] = [
             "result": "failure",
             "messages": [
                 "The following BFD peers are not configured or specified protocol(s) are not registered:\n"
-                "{'192.0.255.7': {'default': {'status': 'down'}}, "
+                "{'192.0.255.7': {'default': {'protocols': ['ospf']}}, "
                 "'192.0.255.70': {'MGMT': {'protocols': ['bgp']}}}"
             ],
         },
