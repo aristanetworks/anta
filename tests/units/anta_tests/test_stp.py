@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from anta.tests.stp import VerifySTPBlockedPorts, VerifySTPCounters, VerifySTPForwardingPorts, VerifySTPMode, VerifySTPRootPriority
+from anta.tests.stp import VerifySTPBlockedPorts, VerifySTPCounters, VerifySTPForwardingPorts, VerifySTPMode, VerifySTPRootPriority, VerifyStpTopologyChanges
 from tests.lib.anta import test  # noqa: F401; pylint: disable=W0611
 
 DATA: list[dict[str, Any]] = [
@@ -323,5 +323,64 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {"priority": 32768, "instances": [10, 20, 30]},
         "expected": {"result": "failure", "messages": ["The following instance(s) have the wrong STP root priority configured: ['VL20', 'VL30']"]},
+    },
+    {
+        "name": "success",
+        "test": VerifyStpTopologyChanges,
+        "eos_data": [
+            {
+                "unmappedVlans": [],
+                "topologies": {
+                    "Cist": {
+                        "interfaces": {
+                            "Cpu": {"state": "forwarding", "numChanges": 1, "lastChange": 1723990624.735365},
+                            "Port-Channel5": {"state": "forwarding", "numChanges": 1, "lastChange": 1723990624.7353542},
+                        }
+                    },
+                    "NoStp": {
+                        "interfaces": {
+                            "Cpu": {"state": "forwarding", "numChanges": 1, "lastChange": 1723990624.735365},
+                            "Ethernet1": {"state": "forwarding", "numChanges": 15, "lastChange": 1723990624.7353542},
+                        }
+                    },
+                },
+            },
+        ],
+        "inputs": {},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure",
+        "test": VerifyStpTopologyChanges,
+        "eos_data": [
+            {
+                "unmappedVlans": [],
+                "topologies": {
+                    "Cist": {
+                        "interfaces": {
+                            "Cpu": {"state": "forwarding", "numChanges": 15, "lastChange": 1723990624.735365},
+                            "Port-Channel5": {"state": "forwarding", "numChanges": 15, "lastChange": 1723990624.7353542},
+                        }
+                    },
+                },
+            },
+        ],
+        "inputs": {},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following Spanning Tree Protocol (STP) topology(s) are not configured or number of changes"
+                " not within the threshold:{'topologies': {'Cist': {'Cpu': {'numChanges': 15}, 'Port-Channel5': {'numChanges': 15}}}}"
+            ],
+        },
+    },
+    {
+        "name": "failure",
+        "test": VerifyStpTopologyChanges,
+        "eos_data": [
+            {"unmappedVlans": [], "topologies": {}},
+        ],
+        "inputs": {},
+        "expected": {"result": "failure", "messages": ["No STP topology configured"]},
     },
 ]
