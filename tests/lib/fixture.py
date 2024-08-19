@@ -159,7 +159,7 @@ def result_manager_factory(list_result_factory: Callable[[int], list[TestResult]
     return _factory
 
 
-@pytest.fixture()
+@pytest.fixture
 def result_manager() -> ResultManager:
     """Return a ResultManager with 30 random tests loaded from a JSON file.
 
