@@ -1437,3 +1437,69 @@ class VerifyBGPPeerUpdateErrors(AntaTest):
             self.result.is_success()
         else:
             self.result.is_failure(f"The following BGP peers are not configured or have non-zero update error counters:\n{failures}")
+
+
+class VerifyBGPPeerNLRIs(AntaTest):
+    """Verifies BGP IPv4 peer(s) consistency of NLRIs received and accepted in a BGP session.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the `nlrisReceived` equals `nlrisAccepted`, indicating that all received NLRIs were accepted..
+    * Failure: The test will fail if the `nlrisReceived` is not equal to `nlrisAccepted`, indicating that some NLRIs were rejected or filtered out.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      bgp:
+        - VerifyBGPPeerNLRIs:
+            bgp_peers:
+              - peer_address: 172.30.11.1
+                vrf: default
+    ```
+    """
+
+    name = "VerifyBGPPeerNLRIs"
+    description = "Verifies the NLRIs received and accepted of a BGP IPv4 peer."
+    categories: ClassVar[list[str]] = ["bgp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp summary", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyBGPPeerNLRIs test."""
+
+        bgp_peers: list[BgpPeer]
+        """List of BGP peers"""
+
+        class BgpPeer(BaseModel):
+            """Model for a BGP peer."""
+
+            peer_address: IPv4Address
+            """IPv4 address of a BGP peer."""
+            vrf: str = "default"
+            """Optional VRF for BGP peer. If not provided, it defaults to `default`."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyBGPPeerNLRIs."""
+        failures: dict[Any, Any] = {}
+
+        # Iterate over each bgp peer
+        for bgp_peer in self.inputs.bgp_peers:
+            peer_address = str(bgp_peer.peer_address)
+            vrf = bgp_peer.vrf
+
+            if not (peer_details := get_value(self.instance_commands[0].json_output, f"vrfs..{vrf}..peers..{peer_address}", separator="..")):
+                failures[peer_address] = {vrf: "Not configured"}
+                continue
+
+            # Verifies the NLRIs received is equal to accepted.
+            if (nlri_rec := get_value(peer_details, "ipv4Unicast.nlrisReceived")) != (nlri_acc := get_value(peer_details, "ipv4Unicast.nlrisAccepted")):
+                failures[peer_address] = {
+                    vrf: f"The NLRIs received and accepted should be consistent, but found NLRI received `{nlri_rec}` and NLRI accepted `{nlri_acc}` instead."
+                }
+
+        # Check if any failures
+        if not failures:
+            self.result.is_success()
+        else:
+            self.result.is_failure(f"The following BGP peers are not configured or NLRI(s) received and accepted are not consistent:\n{failures}")

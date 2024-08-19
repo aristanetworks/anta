@@ -18,6 +18,7 @@ from anta.tests.routing.bgp import (
     VerifyBGPPeerDropStats,
     VerifyBGPPeerMD5Auth,
     VerifyBGPPeerMPCaps,
+    VerifyBGPPeerNLRIs,
     VerifyBGPPeerRouteRefreshCap,
     VerifyBGPPeersHealth,
     VerifyBGPPeerUpdateErrors,
@@ -4500,6 +4501,108 @@ DATA: list[dict[str, Any]] = [
                 "The following BGP peers are not configured or have non-zero update error counters:\n"
                 "{'10.100.0.8': {'default': {'inUpdErrWithdraw': 'Not Found', 'disabledAfiSafi': 'ipv4Unicast'}}, "
                 "'10.100.0.9': {'MGMT': {'inUpdErrWithdraw': 1, 'inUpdErrDisableAfiSafi': 'Not Found'}}}"
+            ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifyBGPPeerNLRIs,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peers": {
+                            "10.100.0.8": {
+                                "peerState": "Established",
+                                "peerAsn": "65100",
+                                "ipv4Unicast": {"afiSafiState": "negotiated", "nlrisReceived": 17, "nlrisAccepted": 17},
+                            },
+                        }
+                    },
+                    "MGMT": {
+                        "peers": {
+                            "10.100.0.10": {
+                                "peerState": "Established",
+                                "peerAsn": "65100",
+                                "ipv4Unicast": {"afiSafiState": "negotiated", "nlrisReceived": 17, "nlrisAccepted": 17},
+                            },
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default"},
+                {"peer_address": "10.100.0.10", "vrf": "MGMT"},
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure",
+        "test": VerifyBGPPeerNLRIs,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peers": {
+                            "10.100.0.8": {
+                                "peerState": "Established",
+                                "peerAsn": "65100",
+                                "ipv4Unicast": {"afiSafiState": "negotiated", "nlrisReceived": 20, "nlrisAccepted": 15},
+                            },
+                        }
+                    },
+                    "MGMT": {
+                        "peers": {
+                            "10.100.0.10": {
+                                "peerState": "Established",
+                                "peerAsn": "65100",
+                                "ipv4Unicast": {"afiSafiState": "negotiated", "nlrisReceived": 18, "nlrisAccepted": 17},
+                            },
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default"},
+                {"peer_address": "10.100.0.10", "vrf": "MGMT"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following BGP peers are not configured or NLRI(s) received and accepted are not consistent:\n"
+                "{'10.100.0.8': {'default': 'The NLRIs received and accepted should be consistent, but found NLRI received `20` and NLRI accepted `15` instead.'}, "
+                "'10.100.0.10': {'MGMT': 'The NLRIs received and accepted should be consistent, but found NLRI received `18` and NLRI accepted `17` instead.'}}"
+            ],
+        },
+    },
+    {
+        "name": "failure-not-found",
+        "test": VerifyBGPPeerNLRIs,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {"peers": {}},
+                    "MGMT": {"peers": {}},
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default"},
+                {"peer_address": "10.100.0.10", "vrf": "MGMT"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following BGP peers are not configured or NLRI(s) received and accepted are not consistent:\n"
+                "{'10.100.0.8': {'default': 'Not configured'}, '10.100.0.10': {'MGMT': 'Not configured'}}"
             ],
         },
     },

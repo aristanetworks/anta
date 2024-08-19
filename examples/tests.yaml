@@ -609,6 +609,12 @@ anta.tests.routing:
             update_errors:
               - inUpdErrWithdraw
               - inUpdErrIgnore
+    - VerifyBGPPeerNLRIs:
+        bgp_peers:
+          - peer_address: 10.100.0.10
+            vrf: default
+          - peer_address: 10.100.0.8
+            vrf: default
   ospf:
     - VerifyOSPFNeighborState:
     - VerifyOSPFNeighborCount:
