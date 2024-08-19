@@ -15,5 +15,5 @@ MD_REPORT_TOC = """**Table of Contents:**
     - [Summary Totals](#summary-totals)
     - [Summary Totals Device Under Test](#summary-totals-device-under-test)
     - [Summary Totals Per Category](#summary-totals-per-category)
-  - [Failed Test Results Summary](#failed-test-results-summary)"""
+  - [Test Results](#test-results)"""
 """Table of Contents for the Markdown report."""

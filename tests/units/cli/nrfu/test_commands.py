@@ -116,19 +116,10 @@ def test_anta_nrfu_csv_failure(click_runner: CliRunner, tmp_path: Path) -> None:
     assert not csv_output.exists()
 
 
-def test_anta_nrfu_md_report_all_tests(click_runner: CliRunner, tmp_path: Path) -> None:
+def test_anta_nrfu_md_report(click_runner: CliRunner, tmp_path: Path) -> None:
     """Test anta nrfu md-report."""
     md_output = tmp_path / "test.md"
     result = click_runner.invoke(anta, ["nrfu", "md-report", "--md-output", str(md_output)])
-    assert result.exit_code == ExitCode.OK
-    assert "Markdown report saved to" in result.output
-    assert md_output.exists()
-
-
-def test_anta_nrfu_md_report_only_failed_tests(click_runner: CliRunner, tmp_path: Path) -> None:
-    """Test anta nrfu md-report --only-failed-tests."""
-    md_output = tmp_path / "test.md"
-    result = click_runner.invoke(anta, ["nrfu", "md-report", "--md-output", str(md_output), "--only-failed-tests"])
     assert result.exit_code == ExitCode.OK
     assert "Markdown report saved to" in result.output
     assert md_output.exists()

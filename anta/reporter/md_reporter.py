@@ -32,24 +32,17 @@ class MDReportGenerator:
 
     The `generate` class method will loop over all the section subclasses and call their `generate_section` method.
     The final report will be generated in the same order as the `sections` list of the method.
-
-    The class method also accepts an optional `only_failed_tests` flag to generate a report with only failed tests.
-
-    By default, the report will include all test results.
     """
 
     @classmethod
-    def generate(cls, results: ResultManager, md_filename: Path, *, only_failed_tests: bool = False) -> None:
+    def generate(cls, results: ResultManager, md_filename: Path) -> None:
         """Generate and write the various sections of the markdown report.
 
         Parameters
         ----------
             results: The ResultsManager instance containing all test results.
             md_filename: The path to the markdown file to write the report into.
-            only_failed_tests: Flag to generate a report with only failed tests. Defaults to False.
         """
-        MDReportBase.ONLY_FAILED_TESTS = only_failed_tests
-
         try:
             with md_filename.open("w", encoding="utf-8") as mdfile:
                 sections: list[MDReportBase] = [
@@ -58,8 +51,7 @@ class MDReportGenerator:
                     SummaryTotals(mdfile, results),
                     SummaryTotalsDeviceUnderTest(mdfile, results),
                     SummaryTotalsPerCategory(mdfile, results),
-                    FailedTestResultsSummary(mdfile, results),
-                    AllTestResults(mdfile, results),
+                    TestResults(mdfile, results),
                 ]
                 for section in sections:
                     section.generate_section()
@@ -75,8 +67,6 @@ class MDReportBase(ABC):
     Every subclasses must implement the `generate_section` method that uses the `ResultManager` object
     to generate and write content to the provided markdown file.
     """
-
-    ONLY_FAILED_TESTS: ClassVar[bool] = False
 
     def __init__(self, mdfile: TextIOWrapper, results: ResultManager) -> None:
         """Initialize the MDReportBase with an open markdown file object to write to and a ResultManager instance.
@@ -113,7 +103,7 @@ class MDReportBase(ABC):
         -------
             str: Formatted header name.
 
-        Example:
+        Example
         -------
             - `ANTAReport` will become ANTA Report.
             - `TestResultsSummary` will become Test Results Summary.
@@ -151,7 +141,7 @@ class MDReportBase(ABC):
         ----------
             heading_level: The level of the heading (1-6).
 
-        Example:
+        Example
         -------
             ## Test Results Summary
         """
@@ -190,10 +180,6 @@ class ANTAReport(MDReportBase):
         """Generate the `# ANTA Report` section of the markdown report."""
         self.write_heading(heading_level=1)
         toc = MD_REPORT_TOC
-
-        if not self.ONLY_FAILED_TESTS:
-            toc += "\n  - [All Test Results](#all-test-results)"
-
         self.mdfile.write(toc + "\n\n")
 
 
@@ -217,10 +203,10 @@ class SummaryTotals(MDReportBase):
         """Generate the rows of the summary totals table."""
         yield (
             f"| {self.results.get_total_results()} "
-            f"| {self.results.get_total_results('success')} "
-            f"| {self.results.get_total_results('skipped')} "
-            f"| {self.results.get_total_results('failure')} "
-            f"| {self.results.get_total_results('error')} |\n"
+            f"| {self.results.get_total_results({'success'})} "
+            f"| {self.results.get_total_results({'skipped'})} "
+            f"| {self.results.get_total_results({'failure'})} "
+            f"| {self.results.get_total_results({'error'})} |\n"
         )
 
     def generate_section(self) -> None:
@@ -277,35 +263,8 @@ class SummaryTotalsPerCategory(MDReportBase):
         self.write_table(table_heading=self.TABLE_HEADING)
 
 
-class FailedTestResultsSummary(MDReportBase):
-    """Generate the `## Failed Test Results Summary` section of the markdown report."""
-
-    TABLE_HEADING: ClassVar[list[str]] = [
-        "| Device Under Test | Categories | Test | Description | Custom Field | Result | Messages |",
-        "| ----------------- | ---------- | ---- | ----------- | ------------ | ------ | -------- |",
-    ]
-
-    def generate_rows(self) -> Generator[str, None, None]:
-        """Generate the rows of the failed test results table."""
-        for result in self.results.get_results(status={"failure", "error"}, sort_by=["name", "test"]):
-            messages = self.safe_markdown(", ".join(result.messages))
-            categories = ", ".join(result.categories)
-            yield (
-                f"| {result.name or '-'} | {categories or '-'} | {result.test or '-'} "
-                f"| {result.description or '-'} | {self.safe_markdown(result.custom_field) or '-'} | {result.result or '-'} | {messages or '-'} |\n"
-            )
-
-    def generate_section(self) -> None:
-        """Generate the `## Failed Test Results Summary` section of the markdown report."""
-        self.write_heading(heading_level=2)
-        self.write_table(table_heading=self.TABLE_HEADING, last_table=self.ONLY_FAILED_TESTS)
-
-
-class AllTestResults(MDReportBase):
-    """Generates the `## All Test Results` section of the markdown report.
-
-    This section is generated only if the report includes all results.
-    """
+class TestResults(MDReportBase):
+    """Generates the `## Test Results` section of the markdown report."""
 
     TABLE_HEADING: ClassVar[list[str]] = [
         "| Device Under Test | Categories | Test | Description | Custom Field | Result | Messages |",
@@ -323,10 +282,6 @@ class AllTestResults(MDReportBase):
             )
 
     def generate_section(self) -> None:
-        """Generate the `## All Test Results` section of the markdown report.
-
-        This section is generated only if the report includes all results.
-        """
-        if not self.ONLY_FAILED_TESTS:
-            self.write_heading(heading_level=2)
-            self.write_table(table_heading=self.TABLE_HEADING, last_table=True)
+        """Generate the `## Test Results` section of the markdown report."""
+        self.write_heading(heading_level=2)
+        self.write_table(table_heading=self.TABLE_HEADING, last_table=True)

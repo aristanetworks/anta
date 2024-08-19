@@ -16,23 +16,17 @@ from anta.result_manager import ResultManager
 DATA_DIR: Path = Path(__file__).parent.parent.parent.resolve() / "data"
 
 
-@pytest.mark.parametrize(
-    ("only_failed_tests", "expected_report_name"),
-    [
-        pytest.param(True, "test_md_report_only_failed_tests.md", id="only_failed_tests"),
-        pytest.param(False, "test_md_report_all_tests.md", id="all_tests"),
-    ],
-)
-def test_md_report_generate(tmp_path: Path, result_manager: ResultManager, expected_report_name: str, *, only_failed_tests: bool) -> None:
+def test_md_report_generate(tmp_path: Path, result_manager: ResultManager) -> None:
     """Test the MDReportGenerator class."""
     md_filename = tmp_path / "test.md"
+    expected_report = "test_md_report.md"
 
     # Generate the Markdown report
-    MDReportGenerator.generate(result_manager, md_filename, only_failed_tests=only_failed_tests)
+    MDReportGenerator.generate(result_manager, md_filename)
     assert md_filename.exists()
 
     # Load the existing Markdown report to compare with the generated one
-    with (DATA_DIR / expected_report_name).open("r", encoding="utf-8") as f:
+    with (DATA_DIR / expected_report).open("r", encoding="utf-8") as f:
         expected_content = f.read()
 
     # Check the content of the Markdown file

@@ -209,29 +209,22 @@ class ResultManager:
         # Every time a new result is added, we need to clear the cached property
         self.__dict__.pop("results_by_status", None)
 
-    def get_results(self, status: set[TestStatus] | TestStatus | None = None, sort_by: list[str] | None = None) -> list[TestResult]:
+    def get_results(self, status: set[TestStatus] | None = None, sort_by: list[str] | None = None) -> list[TestResult]:
         """Get the results, optionally filtered by status and sorted by TestResult fields.
 
         If no status is provided, all results are returned.
 
         Parameters
         ----------
-            status: Optional TestStatus or set of TestStatus literals to filter the results.
+            status: Optional set of TestStatus literals to filter the results.
             sort_by: Optional list of TestResult fields to sort the results.
 
         Returns
         -------
             List of TestResult.
         """
-        if status is None:
-            # Return all results
-            results = self._result_entries
-        elif isinstance(status, set):
-            # Return results for multiple statuses
-            results = list(chain.from_iterable(self.results_by_status.get(status, []) for status in status))
-        else:
-            # Return results for a single status
-            results = self.results_by_status.get(status, [])
+        # Return all results if no status is provided, otherwise return results for multiple statuses
+        results = self._result_entries if status is None else list(chain.from_iterable(self.results_by_status.get(status, []) for status in status))
 
         if sort_by:
             accepted_fields = TestResult.model_fields.keys()
@@ -242,14 +235,14 @@ class ResultManager:
 
         return results
 
-    def get_total_results(self, status: set[TestStatus] | TestStatus | None = None) -> int:
+    def get_total_results(self, status: set[TestStatus] | None = None) -> int:
         """Get the total number of results, optionally filtered by status.
 
         If no status is provided, the total number of results is returned.
 
         Parameters
         ----------
-            status: TestStatus or set of TestStatus literals to filter the results.
+            status: Optional set of TestStatus literals to filter the results.
 
         Returns
         -------
@@ -259,12 +252,8 @@ class ResultManager:
             # Return the total number of results
             return sum(len(results) for results in self.results_by_status.values())
 
-        if isinstance(status, set):
-            # Return the total number of results for multiple statuses
-            return sum(len(self.results_by_status.get(status, [])) for status in status)
-
-        # Return the total number of results for a single status
-        return len(self.results_by_status.get(status, []))
+        # Return the total number of results for multiple statuses
+        return sum(len(self.results_by_status.get(status, [])) for status in status)
 
     def get_status(self, *, ignore_error: bool = False) -> str:
         """Return the current status including error_status if ignore_error is False."""

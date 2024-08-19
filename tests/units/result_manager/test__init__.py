@@ -199,7 +199,7 @@ class TestResultManager:
     def test_get_results(self, result_manager: ResultManager) -> None:
         """Test ResultManager.get_results."""
         # Check for single status
-        success_results = result_manager.get_results(status="success")
+        success_results = result_manager.get_results(status={"success"})
         assert len(success_results) == 7
         assert all(r.result == "success" for r in success_results)
 
@@ -246,10 +246,10 @@ class TestResultManager:
         assert result_manager.get_total_results() == 30
 
         # Test single status
-        assert result_manager.get_total_results(status="success") == 7
-        assert result_manager.get_total_results(status="failure") == 19
-        assert result_manager.get_total_results(status="error") == 2
-        assert result_manager.get_total_results(status="skipped") == 2
+        assert result_manager.get_total_results(status={"success"}) == 7
+        assert result_manager.get_total_results(status={"failure"}) == 19
+        assert result_manager.get_total_results(status={"error"}) == 2
+        assert result_manager.get_total_results(status={"skipped"}) == 2
 
         # Test multiple statuses
         assert result_manager.get_total_results(status={"success", "failure"}) == 26

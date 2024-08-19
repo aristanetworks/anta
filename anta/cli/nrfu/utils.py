@@ -135,17 +135,16 @@ def save_to_csv(ctx: click.Context, csv_file: pathlib.Path) -> None:
         ctx.exit(ExitCode.USAGE_ERROR)
 
 
-def save_markdown_report(ctx: click.Context, md_output: pathlib.Path, *, only_failed_tests: bool = False) -> None:
+def save_markdown_report(ctx: click.Context, md_output: pathlib.Path) -> None:
     """Save the markdown report to a file.
 
     Parameters
     ----------
         ctx: Click context containing the result manager.
         md_output: Path to save the markdown report.
-        only_failed_tests: If True, only failed tests will be included in the report. Default is False.
     """
     try:
-        MDReportGenerator.generate(results=_get_result_manager(ctx), md_filename=md_output, only_failed_tests=only_failed_tests)
+        MDReportGenerator.generate(results=_get_result_manager(ctx), md_filename=md_output)
         console.print(f"Markdown report saved to {md_output} ✅", style="cyan")
     except OSError:
         console.print(f"Failed to save Markdown report to {md_output} ❌", style="cyan")
