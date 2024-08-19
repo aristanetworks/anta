@@ -1404,3 +1404,103 @@ class VerifyBGPPeerUpdateErrors(AntaTest):
             self.result.is_success()
         else:
             self.result.is_failure(f"The following BGP peers are not configured or have non-zero update error counters:\n{failures}")
+
+
+class VerifyBgpRouteMaps(AntaTest):
+    """Verifies BGP Inbound Outbound route-maps of BGP IPv4 peer(s).
+
+    Checks whether the correct route maps are applied in the correct direction
+    (inbound or outbound) on the specified IPv4 BGP neighbors.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the route map names applied on each neighbor match the expected configuration.
+    * Failure: The test will fail if BGP peers are not configured or any neighbor has an incorrect or missing route map in either the inbound or outbound direction.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      bgp:
+        - VerifyBgpRouteMaps:
+            bgp_peers:
+              - peer_address: 172.30.11.1
+                vrf: default
+                inbound_route_map: RM-MLAG-PEER-IN
+                outbound_route_map: RM-MLAG-PEER-OUT
+    ```
+    """
+
+    name = "VerifyBgpRouteMaps"
+    description = "Verifies BGP Inbound Outbound route-maps of BGP IPv4 peer(s)."
+    categories: ClassVar[list[str]] = ["bgp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show bgp neighbors {peer} vrf {vrf}", revision=3)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyBgpRouteMaps test."""
+
+        bgp_peers: list[BgpPeer]
+        """List of BGP peers"""
+
+        class BgpPeer(BaseModel):
+            """Model for a BGP peer."""
+
+            peer_address: IPv4Address
+            """IPv4 address of a BGP peer."""
+            vrf: str = "default"
+            """Optional VRF for BGP peer. If not provided, it defaults to `default`."""
+            inbound_route_map: str | None = None
+            """Inbound route map applied, defaults to None."""
+            outbound_route_map: str | None = None
+            """Outbound route map applied, defaults to None."""
+
+            @model_validator(mode="after")
+            def validate_inputs(self: BaseModel) -> BaseModel:
+                """Validate the inputs provided to the BgpPeer class.
+
+                At least one of 'inbound' or 'outbound' route-map must be provided.
+                """
+                if not (self.inbound_route_map or self.outbound_route_map):
+                    msg = "At least one of 'inbound' or 'outbound' route-map must be provided."
+                    raise ValueError(msg)
+                return self
+
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        """Render the template for each BGP peer in the input list."""
+        return [template.render(peer=str(bgp_peer.peer_address), vrf=bgp_peer.vrf) for bgp_peer in self.inputs.bgp_peers]
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyBgpRouteMaps."""
+        failures: dict[Any, Any] = {}
+
+        for command, input_entry in zip(self.instance_commands, self.inputs.bgp_peers):
+            peer = str(input_entry.peer_address)
+            vrf = input_entry.vrf
+            inbound_route_map = input_entry.inbound_route_map
+            outbound_route_map = input_entry.outbound_route_map
+            failure: dict[Any, Any] = {vrf: {}}
+
+            # Verify BGP peer.
+            if not (peer_list := get_value(command.json_output, f"vrfs.{vrf}.peerList")) or (peer_detail := get_item(peer_list, "peerAddress", peer)) is None:
+                failures[peer] = {vrf: "Not configured"}
+                continue
+
+            # Verify Inbound route-map
+            if inbound_route_map and (inbound_map := peer_detail.get("routeMapInbound")) != inbound_route_map:
+                failure[vrf].update({"routeMapInbound": inbound_map})
+
+            # Verify Outbound route-map
+            if outbound_route_map and (outbound_map := peer_detail.get("routeMapOutbound")) != outbound_route_map:
+                failure[vrf].update({"routeMapOutbound": outbound_map})
+
+            if failure[vrf]:
+                failures[peer] = failure
+
+        # Check if any failures
+        if not failures:
+            self.result.is_success()
+        else:
+            self.result.is_failure(
+                f"The following BGP peers are not configured or has an incorrect or missing route map in either the inbound or outbound direction:\n{failures}"
+            )

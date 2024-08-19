@@ -21,6 +21,7 @@ from anta.tests.routing.bgp import (
     VerifyBGPPeerRouteRefreshCap,
     VerifyBGPPeersHealth,
     VerifyBGPPeerUpdateErrors,
+    VerifyBgpRouteMaps,
     VerifyBGPSpecificPeers,
     VerifyBGPTimers,
     VerifyEVPNType2Route,
@@ -4354,6 +4355,106 @@ DATA: list[dict[str, Any]] = [
                 "The following BGP peers are not configured or have non-zero update error counters:\n"
                 "{'10.100.0.8': {'default': {'inUpdErrWithdraw': 'Not Found', 'disabledAfiSafi': 'ipv4Unicast'}}, "
                 "'10.100.0.9': {'MGMT': {'inUpdErrWithdraw': 1, 'inUpdErrDisableAfiSafi': 'Not Found'}}}"
+            ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifyBgpRouteMaps,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "routeMapInbound": "RM-MLAG-PEER-IN",
+                                "routeMapOutbound": "RM-MLAG-PEER-OUT",
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default", "inbound_route_map": "RM-MLAG-PEER-IN", "outbound_route_map": "RM-MLAG-PEER-OUT"}]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure",
+        "test": VerifyBgpRouteMaps,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "routeMapInbound": "RM-MLAG-PEER",
+                                "routeMapOutbound": "RM-MLAG-PEER",
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default", "inbound_route_map": "RM-MLAG-PEER-IN", "outbound_route_map": "RM-MLAG-PEER-OUT"}]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following BGP peers are not configured or has an incorrect or missing route map in either the inbound or outbound direction:\n"
+                "{'10.100.0.8': {'default': {'routeMapInbound': 'RM-MLAG-PEER', 'routeMapOutbound': 'RM-MLAG-PEER'}}}"
+            ],
+        },
+    },
+    {
+        "name": "failure-inbound-map",
+        "test": VerifyBgpRouteMaps,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "routeMapInbound": "RM-MLAG-PEER",
+                                "routeMapOutbound": "RM-MLAG-PEER",
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {"bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default", "inbound_route_map": "RM-MLAG-PEER-IN"}]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following BGP peers are not configured or has an incorrect or missing route map in either the inbound or outbound direction:\n"
+                "{'10.100.0.8': {'default': {'routeMapInbound': 'RM-MLAG-PEER'}}}"
+            ],
+        },
+    },
+    {
+        "name": "failure-not-found",
+        "test": VerifyBgpRouteMaps,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [],
+                    }
+                },
+            },
+        ],
+        "inputs": {"bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default", "inbound_route_map": "RM-MLAG-PEER-IN"}]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following BGP peers are not configured or has an incorrect or missing route map in either the inbound or outbound direction:\n"
+                "{'10.100.0.8': {'default': 'Not configured'}}"
             ],
         },
     },
