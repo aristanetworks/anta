@@ -11,11 +11,11 @@ import re
 from ipaddress import IPv4Address
 from typing import TYPE_CHECKING, ClassVar
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from anta.custom_types import PositiveInteger
 from anta.models import AntaCommand, AntaTest
-from anta.tools import get_value
+from anta.tools import get_failed_logs, get_value
 
 if TYPE_CHECKING:
     from anta.models import AntaTemplate
@@ -323,8 +323,11 @@ class VerifyNTPAssociations(AntaTest):
           ntp_servers:
             - server_address: 1.1.1.1
               preferred: True
+              stratum: 1
             - server_address: 2.2.2.2
+              stratum: 2
             - server_address: 3.3.3.3
+              stratum: 2
     ```
     """
 
@@ -342,13 +345,15 @@ class VerifyNTPAssociations(AntaTest):
         class NTPServer(BaseModel):
             """Model for a NTP server."""
 
-            # Note: There NTP server name defined in configuration command can be change with
-            # another name while DNS resolution which is not handled in ANTA so provide
-            # the DNS resolved server name.
             server_address: str | IPv4Address
-            """The IPv4 server address or DNS-resolved pool name."""
+            """The NTP server address as an IPv4 address or hostname. The NTP server name defined in the running configuration
+            of the device may change during DNS resolution, which is not handled in ANTA. Please provide the DNS-resolved server name.
+            For example, 'ntp.example.com' in the configuration might resolve to 'ntp3.example.com' in the device output."""
             preferred: bool = False
             """Optional preferred for NTP server. If not provided, it defaults to `False`."""
+            stratum: int = Field(ge=0, le=16)
+            """NTP stratum level (0 to 15) where 0 is the reference clock and 16 indicates unsynchronized.
+            Values should be between 0 and 15 for valid synchronization and 16 represents an out-of-sync state."""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -363,19 +368,25 @@ class VerifyNTPAssociations(AntaTest):
         for ntp_server in self.inputs.ntp_servers:
             server_address = str(ntp_server.server_address)
             preferred = ntp_server.preferred
+            stratum = ntp_server.stratum
 
             # Check if NTP server details exists.
             if (peer_detail := get_value(peer_details, server_address, separator="..")) is None:
-                failures += f"NTP peer {server_address} is not configured.\n"
+                failures += f"\nNTP peer {server_address} is not configured."
                 continue
 
-            # Check the condition of NTP servers.
-            condition = get_value(peer_detail, "condition")
-            if not preferred and condition != "candidate":
-                failures += f"For NTP peer {server_address} expected condition as 'candidate' but found '{condition}' instead.\n"
-                continue
-            if preferred and condition != "sys.peer":
-                failures += f"For NTP peer {server_address} expected condition as 'sys.peer' but found '{condition}' instead.\n"
+            # Collecting the expected NTP peer details.
+            expected_peer_details = {"condition": "candidate", "stratum": stratum}
+            if preferred:
+                expected_peer_details["condition"] = "sys.peer"
+
+            # Collecting the actual NTP peer details.
+            actual_peer_details = {"condition": get_value(peer_detail, "condition"), "stratum": get_value(peer_detail, "stratumLevel")}
+
+            # Collecting failures logs if any.
+            failure_logs = get_failed_logs(expected_peer_details, actual_peer_details)
+            if failure_logs:
+                failures += f"\nFor NTP peer {server_address}:{failure_logs}"
 
         # Check if there are any failures.
         if not failures:

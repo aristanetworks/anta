@@ -296,19 +296,28 @@ poll interval unknown
                     "1.1.1.1": {
                         "condition": "sys.peer",
                         "peerIpAddr": "1.1.1.1",
+                        "stratumLevel": 1,
                     },
                     "2.2.2.2": {
                         "condition": "candidate",
                         "peerIpAddr": "2.2.2.2",
+                        "stratumLevel": 2,
                     },
                     "3.3.3.3": {
                         "condition": "candidate",
                         "peerIpAddr": "3.3.3.3",
+                        "stratumLevel": 2,
                     },
                 }
             }
         ],
-        "inputs": {"ntp_servers": [{"server_address": "1.1.1.1", "preferred": True}, {"server_address": "2.2.2.2"}, {"server_address": "3.3.3.3"}]},
+        "inputs": {
+            "ntp_servers": [
+                {"server_address": "1.1.1.1", "preferred": True, "stratum": 1},
+                {"server_address": "2.2.2.2", "stratum": 2},
+                {"server_address": "3.3.3.3", "stratum": 2},
+            ]
+        },
         "expected": {"result": "success"},
     },
     {
@@ -320,23 +329,26 @@ poll interval unknown
                     "1.ntp.networks.com": {
                         "condition": "sys.peer",
                         "peerIpAddr": "1.1.1.1",
+                        "stratumLevel": 1,
                     },
                     "2.ntp.networks.com": {
                         "condition": "candidate",
                         "peerIpAddr": "2.2.2.2",
+                        "stratumLevel": 2,
                     },
                     "3.ntp.networks.com": {
                         "condition": "candidate",
                         "peerIpAddr": "3.3.3.3",
+                        "stratumLevel": 2,
                     },
                 }
             }
         ],
         "inputs": {
             "ntp_servers": [
-                {"server_address": "1.ntp.networks.com", "preferred": True},
-                {"server_address": "2.ntp.networks.com"},
-                {"server_address": "3.ntp.networks.com"},
+                {"server_address": "1.ntp.networks.com", "preferred": True, "stratum": 1},
+                {"server_address": "2.ntp.networks.com", "stratum": 2},
+                {"server_address": "3.ntp.networks.com", "stratum": 2},
             ]
         },
         "expected": {"result": "success"},
@@ -350,25 +362,34 @@ poll interval unknown
                     "1.1.1.1": {
                         "condition": "candidate",
                         "peerIpAddr": "1.1.1.1",
+                        "stratumLevel": 2,
                     },
                     "2.2.2.2": {
                         "condition": "sys.peer",
                         "peerIpAddr": "2.2.2.2",
+                        "stratumLevel": 2,
                     },
                     "3.3.3.3": {
                         "condition": "sys.peer",
                         "peerIpAddr": "3.3.3.3",
+                        "stratumLevel": 3,
                     },
                 }
             }
         ],
-        "inputs": {"ntp_servers": [{"server_address": "1.1.1.1", "preferred": True}, {"server_address": "2.2.2.2"}, {"server_address": "3.3.3.3"}]},
+        "inputs": {
+            "ntp_servers": [
+                {"server_address": "1.1.1.1", "preferred": True, "stratum": 1},
+                {"server_address": "2.2.2.2", "stratum": 2},
+                {"server_address": "3.3.3.3", "stratum": 2},
+            ]
+        },
         "expected": {
             "result": "failure",
             "messages": [
-                "For NTP peer 1.1.1.1 expected condition as 'sys.peer' but found 'candidate' instead.\n"
-                "For NTP peer 2.2.2.2 expected condition as 'candidate' but found 'sys.peer' instead.\n"
-                "For NTP peer 3.3.3.3 expected condition as 'candidate' but found 'sys.peer' instead.\n"
+                "\nFor NTP peer 1.1.1.1:\nExpected `sys.peer` as the condition, but found `candidate` instead.\nExpected `1` as the stratum, but found `2` instead."
+                "\nFor NTP peer 2.2.2.2:\nExpected `candidate` as the condition, but found `sys.peer` instead.\n"
+                "For NTP peer 3.3.3.3:\nExpected `candidate` as the condition, but found `sys.peer` instead.\nExpected `2` as the stratum, but found `3` instead."
             ],
         },
     },
@@ -376,14 +397,20 @@ poll interval unknown
         "name": "failure-no-peers",
         "test": VerifyNTPAssociations,
         "eos_data": [{"peers": {}}],
-        "inputs": {"ntp_servers": [{"server_address": "1.1.1.1", "preferred": True}, {"server_address": "2.2.2.2"}, {"server_address": "3.3.3.3"}]},
+        "inputs": {
+            "ntp_servers": [
+                {"server_address": "1.1.1.1", "preferred": True, "stratum": 1},
+                {"server_address": "2.2.2.2", "stratum": 1},
+                {"server_address": "3.3.3.3", "stratum": 1},
+            ]
+        },
         "expected": {
             "result": "failure",
             "messages": ["NTP peers are not configured."],
         },
     },
     {
-        "name": "failure-one-peer-no-found",
+        "name": "failure-one-peer-not-found",
         "test": VerifyNTPAssociations,
         "eos_data": [
             {
@@ -391,15 +418,23 @@ poll interval unknown
                     "1.1.1.1": {
                         "condition": "sys.peer",
                         "peerIpAddr": "1.1.1.1",
+                        "stratumLevel": 1,
                     },
                     "2.2.2.2": {
                         "condition": "candidate",
                         "peerIpAddr": "2.2.2.2",
+                        "stratumLevel": 1,
                     },
                 }
             }
         ],
-        "inputs": {"ntp_servers": [{"server_address": "1.1.1.1", "preferred": True}, {"server_address": "2.2.2.2"}, {"server_address": "3.3.3.3"}]},
+        "inputs": {
+            "ntp_servers": [
+                {"server_address": "1.1.1.1", "preferred": True, "stratum": 1},
+                {"server_address": "2.2.2.2", "stratum": 1},
+                {"server_address": "3.3.3.3", "stratum": 1},
+            ]
+        },
         "expected": {
             "result": "failure",
             "messages": ["NTP peer 3.3.3.3 is not configured."],
@@ -414,16 +449,23 @@ poll interval unknown
                     "1.1.1.1": {
                         "condition": "candidate",
                         "peerIpAddr": "1.1.1.1",
+                        "stratumLevel": 1,
                     }
                 }
             }
         ],
-        "inputs": {"ntp_servers": [{"server_address": "1.1.1.1", "preferred": True}, {"server_address": "2.2.2.2"}, {"server_address": "3.3.3.3"}]},
+        "inputs": {
+            "ntp_servers": [
+                {"server_address": "1.1.1.1", "preferred": True, "stratum": 1},
+                {"server_address": "2.2.2.2", "stratum": 1},
+                {"server_address": "3.3.3.3", "stratum": 1},
+            ]
+        },
         "expected": {
             "result": "failure",
             "messages": [
-                "For NTP peer 1.1.1.1 expected condition as 'sys.peer' but found 'candidate' instead.\n"
-                "NTP peer 2.2.2.2 is not configured.\nNTP peer 3.3.3.3 is not configured.\n"
+                "\nFor NTP peer 1.1.1.1:\nExpected `sys.peer` as the condition, but found `candidate` instead.\n"
+                "NTP peer 2.2.2.2 is not configured.\nNTP peer 3.3.3.3 is not configured."
             ],
         },
     },

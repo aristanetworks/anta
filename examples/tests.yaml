@@ -449,8 +449,11 @@ anta.tests.system:
       ntp_servers:
         - server_address: 1.1.1.1
           preferred: True
+          stratum: 1
         - server_address: 2.2.2.2
+          stratum: 1
         - server_address: 3.3.3.3
+          stratum: 1
 
 anta.tests.vlan:
   - VerifyVlanInternalPolicy:
