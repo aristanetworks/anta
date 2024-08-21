@@ -292,8 +292,8 @@ class VerifyBFDPeersRegProtocols(AntaTest):
 
     Expected Results
     ----------------
-    * Success: The test will pass if IPv4 BFD peers are registered with specified protocol(s).
-    * Failure: The test will fail if IPv4 BFD peers are not found or the specified protocol(s) are not registered on the BFD peer(s).
+    * Success: The test will pass if IPv4 BFD peers are registered with the specified protocol(s).
+    * Failure: The test will fail if IPv4 BFD peers are not found or the specified protocol(s) are not registered for the BFD peer(s).
 
     Examples
     --------
@@ -351,12 +351,13 @@ class VerifyBFDPeersRegProtocols(AntaTest):
                 failures[peer] = {vrf: "Not Configured"}
                 continue
 
-            # Check registered protocols if specified.
-            actual_protocols = get_value(bfd_output, "peerStatsDetail.apps")
-            if not all(protocol in actual_protocols for protocol in protocols):
-                failures[peer] = {vrf: {"protocols": actual_protocols}}
+            # Check registered protocols
+            difference = set(protocols) - set(get_value(bfd_output, "peerStatsDetail.apps"))
+
+            if difference:
+                failures[peer] = {vrf: sorted(difference)}
 
         if not failures:
             self.result.is_success()
         else:
-            self.result.is_failure(f"The following BFD peers are not configured or specified protocol(s) are not registered:\n{failures}")
+            self.result.is_failure(f"The following BFD peers are not configured or have non-registered protocol(s):\n{failures}")

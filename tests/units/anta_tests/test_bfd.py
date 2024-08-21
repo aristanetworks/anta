@@ -617,9 +617,9 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "The following BFD peers are not configured or specified protocol(s) are not registered:\n"
-                "{'192.0.255.7': {'default': {'protocols': ['ospf']}}, "
-                "'192.0.255.70': {'MGMT': {'protocols': ['bgp']}}}"
+                "The following BFD peers are not configured or have non-registered protocol(s):\n"
+                "{'192.0.255.7': {'default': ['isis']}, "
+                "'192.0.255.70': {'MGMT': ['isis']}}"
             ],
         },
     },
@@ -643,7 +643,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "The following BFD peers are not configured or specified protocol(s) are not registered:\n"
+                "The following BFD peers are not configured or have non-registered protocol(s):\n"
                 "{'192.0.255.7': {'default': 'Not Configured'}, '192.0.255.70': {'MGMT': 'Not Configured'}}"
             ],
         },
