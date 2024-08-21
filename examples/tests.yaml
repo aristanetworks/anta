@@ -593,6 +593,12 @@ anta.tests.routing:
             update_errors:
               - inUpdErrWithdraw
               - inUpdErrIgnore
+    - VerifyBGPPeerRouteLimit:
+        bgp_peers:
+          - peer_address: 10.100.0.8
+            vrf: default
+            maximum_routes: 12000
+            warning_limit: 10000
   ospf:
     - VerifyOSPFNeighborState:
     - VerifyOSPFNeighborCount:
