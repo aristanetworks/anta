@@ -94,6 +94,11 @@ def test_anta_nrfu_json_output(click_runner: CliRunner, tmp_path: Path) -> None:
     """Test anta nrfu json with output file."""
     json_output = tmp_path / "test.json"
     result = click_runner.invoke(anta, ["nrfu", "json", "--output", str(json_output)])
+
+    # Making sure the output is not printed to stdout
+    match = re.search(r"\[\n {2}{[\s\S]+ {2}}\n\]", result.output)
+    assert match is None
+
     assert result.exit_code == ExitCode.OK
     assert "JSON results saved to" in result.output
     assert json_output.exists()
