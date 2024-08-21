@@ -19,8 +19,6 @@ if TYPE_CHECKING:
 
 DATA_DIR: Path = Path(__file__).parent.parent.parent.parent.resolve() / "data"
 
-pathlib_open = Path.open
-
 
 def test_anta_nrfu_table_help(click_runner: CliRunner) -> None:
     """Test anta nrfu table --help."""
