@@ -83,6 +83,13 @@ anta.tests.bfd:
           multiplier: 3
   - VerifyBFDPeersHealth:
       down_threshold: 2
+  - VerifyBFDPeersRegProtocols:
+      bfd_peers:
+        - peer_address: 192.0.255.8
+          vrf: default
+          protocols:
+            - bgp
+            - isis
 
 anta.tests.configuration:
   - VerifyZeroTouch:
