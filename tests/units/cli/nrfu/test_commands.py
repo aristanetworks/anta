@@ -8,7 +8,7 @@ from __future__ import annotations
 import json
 import re
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 from unittest.mock import patch
 
 from anta.cli import anta
@@ -18,6 +18,8 @@ if TYPE_CHECKING:
     from click.testing import CliRunner
 
 DATA_DIR: Path = Path(__file__).parent.parent.parent.parent.resolve() / "data"
+
+pathlib_open = Path.open
 
 
 def test_anta_nrfu_table_help(click_runner: CliRunner) -> None:
@@ -102,6 +104,29 @@ def test_anta_nrfu_json_output(click_runner: CliRunner, tmp_path: Path) -> None:
     assert result.exit_code == ExitCode.OK
     assert "JSON results saved to" in result.output
     assert json_output.exists()
+
+
+def test_anta_nrfu_json_output_failure(click_runner: CliRunner, tmp_path: Path) -> None:
+    """Test anta nrfu json with output file."""
+    json_output = tmp_path / "test.json"
+
+    original_open = Path.open
+
+    def mock_path_open(*args: Any, **kwargs: Any) -> Path:  # noqa: ANN401
+        """Mock Path.open only for the json_output file of this test."""
+        if args[0] == json_output:
+            msg = "Simulated OSError"
+            raise OSError(msg)
+
+        # If not the json_output file, call the original Path.open
+        return original_open(*args, **kwargs)
+
+    with patch("pathlib.Path.open", mock_path_open):
+        result = click_runner.invoke(anta, ["nrfu", "json", "--output", str(json_output)])
+
+    assert result.exit_code == ExitCode.USAGE_ERROR
+    assert "Failed to save JSON results to" in result.output
+    assert not json_output.exists()
 
 
 def test_anta_nrfu_template(click_runner: CliRunner) -> None:
