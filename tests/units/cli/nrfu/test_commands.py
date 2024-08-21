@@ -90,6 +90,15 @@ def test_anta_nrfu_json(click_runner: CliRunner) -> None:
             assert res["result"] == "success"
 
 
+def test_anta_nrfu_json_output(click_runner: CliRunner, tmp_path: Path) -> None:
+    """Test anta nrfu json with output file."""
+    json_output = tmp_path / "test.json"
+    result = click_runner.invoke(anta, ["nrfu", "json", "--output", str(json_output)])
+    assert result.exit_code == ExitCode.OK
+    assert "JSON results saved to" in result.output
+    assert json_output.exists()
+
+
 def test_anta_nrfu_template(click_runner: CliRunner) -> None:
     """Test anta nrfu, catalog is given via env."""
     result = click_runner.invoke(anta, ["nrfu", "tpl-report", "--template", str(DATA_DIR / "template.j2")])

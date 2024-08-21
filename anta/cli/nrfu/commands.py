@@ -42,7 +42,7 @@ def table(ctx: click.Context, group_by: Literal["device", "test"] | None) -> Non
     type=click.Path(file_okay=True, dir_okay=False, exists=False, writable=True, path_type=pathlib.Path),
     show_envvar=True,
     required=False,
-    help="Path to save report as a file",
+    help="Path to save report as a JSON file",
 )
 def json(ctx: click.Context, output: pathlib.Path | None) -> None:
     """ANTA command to check network state with JSON result."""
