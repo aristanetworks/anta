@@ -354,6 +354,7 @@ anta.tests.security:
               destination_address: 100.64.2.2
             - source_address: 172.18.3.2
               destination_address: 172.18.2.2
+  - VerifyHardwareEntropy:
 
 anta.tests.services:
   - VerifyHostname:
