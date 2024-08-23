@@ -4375,14 +4375,30 @@ DATA: list[dict[str, Any]] = [
                     },
                 },
             },
+            {
+                "vrfs": {
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.10",
+                                "routeMapInbound": "RM-MLAG-PEER-IN",
+                                "routeMapOutbound": "RM-MLAG-PEER-OUT",
+                            }
+                        ]
+                    },
+                },
+            },
         ],
         "inputs": {
-            "bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default", "inbound_route_map": "RM-MLAG-PEER-IN", "outbound_route_map": "RM-MLAG-PEER-OUT"}]
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default", "inbound_route_map": "RM-MLAG-PEER-IN", "outbound_route_map": "RM-MLAG-PEER-OUT"},
+                {"peer_address": "10.100.0.10", "vrf": "MGMT", "inbound_route_map": "RM-MLAG-PEER-IN", "outbound_route_map": "RM-MLAG-PEER-OUT"},
+            ]
         },
         "expected": {"result": "success"},
     },
     {
-        "name": "failure",
+        "name": "failure-incorrect-route-map",
         "test": VerifyBgpRouteMaps,
         "eos_data": [
             {
@@ -4391,6 +4407,19 @@ DATA: list[dict[str, Any]] = [
                         "peerList": [
                             {
                                 "peerAddress": "10.100.0.8",
+                                "routeMapInbound": "RM-MLAG-PEER",
+                                "routeMapOutbound": "RM-MLAG-PEER",
+                            }
+                        ]
+                    },
+                },
+            },
+            {
+                "vrfs": {
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.10",
                                 "routeMapInbound": "RM-MLAG-PEER",
                                 "routeMapOutbound": "RM-MLAG-PEER",
                             }
@@ -4400,18 +4429,22 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {
-            "bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default", "inbound_route_map": "RM-MLAG-PEER-IN", "outbound_route_map": "RM-MLAG-PEER-OUT"}]
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default", "inbound_route_map": "RM-MLAG-PEER-IN", "outbound_route_map": "RM-MLAG-PEER-OUT"},
+                {"peer_address": "10.100.0.10", "vrf": "MGMT", "inbound_route_map": "RM-MLAG-PEER-IN", "outbound_route_map": "RM-MLAG-PEER-OUT"},
+            ]
         },
         "expected": {
             "result": "failure",
             "messages": [
                 "The following BGP peers are not configured or has an incorrect or missing route map in either the inbound or outbound direction:\n"
-                "{'10.100.0.8': {'default': {'routeMapInbound': 'RM-MLAG-PEER', 'routeMapOutbound': 'RM-MLAG-PEER'}}}"
+                "{'10.100.0.8': {'default': {'Inbound route-map': 'RM-MLAG-PEER', 'Outbound route-map': 'RM-MLAG-PEER'}}, "
+                "'10.100.0.10': {'MGMT': {'Inbound route-map': 'RM-MLAG-PEER', 'Outbound route-map': 'RM-MLAG-PEER'}}}"
             ],
         },
     },
     {
-        "name": "failure-inbound-map",
+        "name": "failure-incorrect-inbound-map",
         "test": VerifyBgpRouteMaps,
         "eos_data": [
             {
@@ -4427,13 +4460,73 @@ DATA: list[dict[str, Any]] = [
                     },
                 },
             },
+            {
+                "vrfs": {
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.10",
+                                "routeMapInbound": "RM-MLAG-PEER",
+                                "routeMapOutbound": "RM-MLAG-PEER",
+                            }
+                        ]
+                    },
+                },
+            },
         ],
-        "inputs": {"bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default", "inbound_route_map": "RM-MLAG-PEER-IN"}]},
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default", "inbound_route_map": "RM-MLAG-PEER-IN"},
+                {"peer_address": "10.100.0.10", "vrf": "MGMT", "inbound_route_map": "RM-MLAG-PEER-IN"},
+            ]
+        },
         "expected": {
             "result": "failure",
             "messages": [
                 "The following BGP peers are not configured or has an incorrect or missing route map in either the inbound or outbound direction:\n"
-                "{'10.100.0.8': {'default': {'routeMapInbound': 'RM-MLAG-PEER'}}}"
+                "{'10.100.0.8': {'default': {'Inbound route-map': 'RM-MLAG-PEER'}}, '10.100.0.10': {'MGMT': {'Inbound route-map': 'RM-MLAG-PEER'}}}"
+            ],
+        },
+    },
+    {
+        "name": "failure-route-maps-not-configured",
+        "test": VerifyBgpRouteMaps,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                            }
+                        ]
+                    },
+                },
+            },
+            {
+                "vrfs": {
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.10",
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default", "inbound_route_map": "RM-MLAG-PEER-IN", "outbound_route_map": "RM-MLAG-PEER-OUT"},
+                {"peer_address": "10.100.0.10", "vrf": "MGMT", "inbound_route_map": "RM-MLAG-PEER-IN", "outbound_route_map": "RM-MLAG-PEER-OUT"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following BGP peers are not configured or has an incorrect or missing route map in either the inbound or outbound direction:\n"
+                "{'10.100.0.8': {'default': {'Inbound route-map': 'Not Configured', 'Outbound route-map': 'Not Configured'}}, "
+                "'10.100.0.10': {'MGMT': {'Inbound route-map': 'Not Configured', 'Outbound route-map': 'Not Configured'}}}"
             ],
         },
     },
@@ -4443,18 +4536,26 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {
-                        "peerList": [],
-                    }
+                    "default": {"peerList": []},
+                },
+            },
+            {
+                "vrfs": {
+                    "MGMT": {"peerList": []},
                 },
             },
         ],
-        "inputs": {"bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default", "inbound_route_map": "RM-MLAG-PEER-IN"}]},
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default", "inbound_route_map": "RM-MLAG-PEER-IN"},
+                {"peer_address": "10.100.0.10", "vrf": "MGMT", "inbound_route_map": "RM-MLAG-PEER-IN"},
+            ]
+        },
         "expected": {
             "result": "failure",
             "messages": [
                 "The following BGP peers are not configured or has an incorrect or missing route map in either the inbound or outbound direction:\n"
-                "{'10.100.0.8': {'default': 'Not configured'}}"
+                "{'10.100.0.8': {'default': 'Not configured'}, '10.100.0.10': {'MGMT': 'Not configured'}}"
             ],
         },
     },

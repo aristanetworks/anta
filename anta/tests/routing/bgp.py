@@ -1407,14 +1407,11 @@ class VerifyBGPPeerUpdateErrors(AntaTest):
 
 
 class VerifyBgpRouteMaps(AntaTest):
-    """Verifies BGP Inbound Outbound route-maps of BGP IPv4 peer(s).
-
-    Checks whether the correct route maps are applied in the correct direction
-    (inbound or outbound) on the specified IPv4 BGP neighbors.
+    """Verifies BGP inbound and outbound route-maps of BGP IPv4 peer(s).
 
     Expected Results
     ----------------
-    * Success: The test will pass if the route map names applied on each neighbor match the expected configuration.
+    * Success: The test will pass if the correct route maps are applied in the correct direction(inbound or outbound) on the specified IPv4 BGP neighbors..
     * Failure: The test will fail if BGP peers are not configured or any neighbor has an incorrect or missing route map in either the inbound or outbound direction.
 
     Examples
@@ -1432,7 +1429,7 @@ class VerifyBgpRouteMaps(AntaTest):
     """
 
     name = "VerifyBgpRouteMaps"
-    description = "Verifies BGP Inbound Outbound route-maps of BGP IPv4 peer(s)."
+    description = "Verifies BGP inbound and outbound route-maps of BGP IPv4 peer(s)."
     categories: ClassVar[list[str]] = ["bgp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show bgp neighbors {peer} vrf {vrf}", revision=3)]
 
@@ -1487,12 +1484,12 @@ class VerifyBgpRouteMaps(AntaTest):
                 continue
 
             # Verify Inbound route-map
-            if inbound_route_map and (inbound_map := peer_detail.get("routeMapInbound")) != inbound_route_map:
-                failure[vrf].update({"routeMapInbound": inbound_map})
+            if inbound_route_map and (inbound_map := peer_detail.get("routeMapInbound", "Not Configured")) != inbound_route_map:
+                failure[vrf].update({"Inbound route-map": inbound_map})
 
             # Verify Outbound route-map
-            if outbound_route_map and (outbound_map := peer_detail.get("routeMapOutbound")) != outbound_route_map:
-                failure[vrf].update({"routeMapOutbound": outbound_map})
+            if outbound_route_map and (outbound_map := peer_detail.get("routeMapOutbound", "Not Configured")) != outbound_route_map:
+                failure[vrf].update({"Outbound route-map": outbound_map})
 
             if failure[vrf]:
                 failures[peer] = failure
