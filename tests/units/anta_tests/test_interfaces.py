@@ -2504,7 +2504,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "Port-Channel5"}]},
         "expected": {
             "result": "failure",
-            "messages": ["For Interface Ethernet5:\nExpected `bundled` as the actorPortStatus, but found `No Aggregate` instead.\n"],
+            "messages": ["For Interface Ethernet5:\nExpected `bundled` as the `local port status`, but found `No Aggregate` instead.\n"],
         },
     },
     {
@@ -2518,7 +2518,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "Port-Channel5"}]},
         "expected": {
             "result": "failure",
-            "messages": ["Interface 'Ethernet5' is not configured in LACP."],
+            "messages": ["Interface 'Ethernet5' is not configured to be a member of LACP 'Port-Channel5'."],
         },
     },
     {

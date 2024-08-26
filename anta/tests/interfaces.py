@@ -886,17 +886,17 @@ class VerifyInterfacesSpeed(AntaTest):
 
 
 class VerifyLACPInterfacesStatus(AntaTest):
-    """Verifies the Link Aggregation Control Protocol(LACP) status for interfaces.
+    """Verifies the Link Aggregation Control Protocol (LACP) status of the provided interfaces.
 
-    - Verify that the interface is correctly added to LAG (Bundled in PortChannel).
-    - Ensure that the synchronization is established.
-    - Ensure that the interfaces are in the correct state for collecting and distributing the traffic.
-    - Validate that LACP settings, such as timeouts are correctly configured.
+    - Verifies that the interface is a member of the LACP port channel.
+    - Ensures that the synchronization is established.
+    - Ensures the interfaces are in the correct state for collecting and distributing traffic.
+    - Validates that LACP settings, such as timeouts, are correctly configured.
 
     Expected Results
     ----------------
     * Success: The test will pass if the provided interfaces are bundled in port channel and all specified parameters are correct.
-    * Failure: The test will fail if any interface is not bundled in port channel and any of specified parameter is not correct.
+    * Failure: The test will fail if any interface is not bundled in port channel or any of specified parameter is not correct.
 
     Examples
     --------
@@ -917,16 +917,16 @@ class VerifyLACPInterfacesStatus(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyLACPInterfacesStatus test."""
 
-        interfaces: list[LACPInterfaces]
-        """List of interfaces with their expected state."""
+        interfaces: list[LACPInterface]
+        """List of LACP member interface."""
 
-        class LACPInterfaces(BaseModel):
-            """Model for an interface state."""
+        class LACPInterface(BaseModel):
+            """Model for an LACP member interface."""
 
             name: EthernetInterface
             """Ethernet interface to validate."""
             portchannel: PortChannelInterface
-            """Specify PortChannel in which the interface is bundled."""
+            """Port Channel in which the interface is bundled."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each interface in the input list."""
@@ -944,13 +944,13 @@ class VerifyLACPInterfacesStatus(AntaTest):
 
             # Verify if a PortChannel is configured with the provided interface
             if not (interface_details := get_value(command.json_output, f"portChannels.{portchannel}.interfaces.{interface}")):
-                self.result.is_failure(f"Interface '{interface}' is not configured in LACP.")
+                self.result.is_failure(f"Interface '{interface}' is not configured to be a member of LACP '{portchannel}'.")
                 continue
 
             # Verify the interface is bundled in port channel.
             actor_port_status = interface_details.get("actorPortStatus")
             if actor_port_status != "bundled":
-                message = f"For Interface {interface}:\nExpected `bundled` as the actorPortStatus, but found `{actor_port_status}` instead.\n"
+                message = f"For Interface {interface}:\nExpected `bundled` as the `local port status`, but found `{actor_port_status}` instead.\n"
                 self.result.is_failure(message)
                 continue
 

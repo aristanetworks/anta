@@ -17,6 +17,7 @@ import pytest
 from anta.custom_types import (
     REGEX_BGP_IPV4_MPLS_VPN,
     REGEX_BGP_IPV4_UNICAST,
+    REGEX_TYPE_PORTCHANNEL,
     REGEXP_BGP_IPV4_MPLS_LABELS,
     REGEXP_BGP_L2VPN_AFI,
     REGEXP_EOS_BLACKLIST_CMDS,
@@ -138,6 +139,22 @@ def test_regexp_type_vxlan_src_interface() -> None:
     assert re.match(REGEXP_TYPE_VXLAN_SRC_INTERFACE, "Loopback") is None
     assert re.match(REGEXP_TYPE_VXLAN_SRC_INTERFACE, "Loopback9001") is None
     assert re.match(REGEXP_TYPE_VXLAN_SRC_INTERFACE, "Loopback9000") is None
+
+
+def test_regexp_type_portchannel() -> None:
+    """Test REGEX_TYPE_PORTCHANNEL."""
+    # Test strings that should match the pattern
+    assert re.match(REGEX_TYPE_PORTCHANNEL, "Port-Channel5") is not None
+    assert re.match(REGEX_TYPE_PORTCHANNEL, "Port-Channel100") is not None
+    assert re.match(REGEX_TYPE_PORTCHANNEL, "Port-Channel999") is not None
+
+    # Test strings that should not match the pattern
+    assert re.match(REGEX_TYPE_PORTCHANNEL, "Port-Channel") is None
+    assert re.match(REGEX_TYPE_PORTCHANNEL, "Port_Channel") is None
+    assert re.match(REGEX_TYPE_PORTCHANNEL, "Port-Channel1000") is None
+    assert re.match(REGEX_TYPE_PORTCHANNEL, "Port_Channel1000") is None
+    assert re.match(REGEX_TYPE_PORTCHANNEL, "Port_Channel5/1") is None
+    assert re.match(REGEX_TYPE_PORTCHANNEL, "Port-Channel-100") is None
 
 
 def test_regexp_type_hostname() -> None:
