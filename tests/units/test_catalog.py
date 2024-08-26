@@ -366,11 +366,15 @@ class TestAntaCatalog:
         catalog3: AntaCatalog = AntaCatalog.parse(DATA_DIR / "test_catalog_medium.yml")
         assert len(catalog3.tests) == 228
 
-        assert len(catalog1.merge(catalog2).tests) == 2
+        with pytest.deprecated_call():
+            merged_catalog = catalog1.merge(catalog2)
+        assert len(merged_catalog.tests) == 2
         assert len(catalog1.tests) == 1
         assert len(catalog2.tests) == 1
 
-        assert len(catalog2.merge(catalog3).tests) == 229
+        with pytest.deprecated_call():
+            merged_catalog = catalog2.merge(catalog3)
+        assert len(merged_catalog.tests) == 229
         assert len(catalog2.tests) == 1
         assert len(catalog3.tests) == 228
 

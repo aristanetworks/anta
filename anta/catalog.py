@@ -14,6 +14,7 @@ from itertools import chain
 from json import load as json_load
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal, Optional, Union
+from warnings import warn
 
 from pydantic import BaseModel, ConfigDict, RootModel, ValidationError, ValidationInfo, field_validator, model_serializer, model_validator
 from pydantic.types import ImportString
@@ -402,7 +403,6 @@ class AntaCatalog:
             raise
         return AntaCatalog(tests)
 
-    # TODO: Deprecate this method when https://github.com/aristanetworks/anta/issues/754 is resolved
     def merge(self, catalog: AntaCatalog) -> AntaCatalog:
         """Merge two AntaCatalog instances.
 
@@ -414,6 +414,12 @@ class AntaCatalog:
         -------
             A new AntaCatalog instance containing the tests of the two instances.
         """
+        # TODO: Use a decorator to deprecate this method instead. See https://github.com/aristanetworks/anta/issues/754
+        warn(
+            message="AntaCatalog.merge() is deprecated and will be removed in ANTA v2.0. Use merge_catalogs() from the anta.catalog module instead.",
+            category=DeprecationWarning,
+            stacklevel=2,
+        )
         return merge_catalogs([self, catalog])
 
     def dump(self) -> AntaCatalogFile:
