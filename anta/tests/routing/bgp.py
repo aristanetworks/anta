@@ -155,9 +155,7 @@ def _check_peer_capabilities(bgp_output: dict[str, Any], capabilities: list[Mult
     ----------
         bgp_output: The BGP output from the device.
         capabilities: List of multiprotocol capabilities to be verified.
-        strict: Optional check to verifies the only mentioned capabilities should be listed, otherwise test should fail. It defaults to false
-
-        The * indicates that all arguments following it must be provided as keyword arguments. To compensate boolean-type-hint-positional-argument (FBT001).
+        strict: If True, requires exact matching of provided capabilities. Defaults to False.
 
     Returns
     -------
@@ -734,7 +732,7 @@ class VerifyBGPExchangedRoutes(AntaTest):
 class VerifyBGPPeerMPCaps(AntaTest):
     """Verifies the multiprotocol capabilities of a BGP peer in a specified VRF.
 
-    Optionally test verifies the only specified multiprotocol capabilities should be listed.
+    Supports `strict: True` to verify that only the specified capabilities are configured, requiring an exact match.
 
     Expected Results
     ----------------
@@ -775,7 +773,7 @@ class VerifyBGPPeerMPCaps(AntaTest):
             vrf: str = "default"
             """Optional VRF for BGP peer. If not provided, it defaults to `default`."""
             strict: bool = False
-            """Optional check to verifies the only mentioned capabilities should be listed, otherwise test should fail. It defaults to false."""
+            """If True, requires exact matching of provided capabilities. Defaults to False."""
             capabilities: list[MultiProtocolCaps]
             """List of multiprotocol capabilities to be verified."""
 

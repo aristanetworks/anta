@@ -2330,7 +2330,7 @@ DATA: list[dict[str, Any]] = [
                     "peer_address": "172.30.11.10",
                     "vrf": "MGMT",
                     "strict": True,
-                    "capabilities": ["ipv4MplsVpn"],
+                    "capabilities": ["ipv4MplsVpn", "L2vpnEVPN"],
                 },
             ]
         },
@@ -2342,7 +2342,7 @@ DATA: list[dict[str, Any]] = [
                 "'Other than mentioned BGP peer multiprotocol capabilities following capability(s) are listed: ipv4MplsLabels'}}, "
                 "'172.30.11.10': {'MGMT': {'strict': "
                 "'Other than mentioned BGP peer multiprotocol capabilities following capability(s) are listed: ipv4Unicast', "
-                "'ipv4MplsVpn': {'advertised': False, 'received': True, 'enabled': True}}}}}"
+                "'ipv4MplsVpn': {'advertised': False, 'received': True, 'enabled': True}, 'l2VpnEvpn': 'not found'}}}}"
             ],
         },
     },
