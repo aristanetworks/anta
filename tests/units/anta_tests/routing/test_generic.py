@@ -131,6 +131,48 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
+        "name": "success-collect-all",
+        "test": VerifyRoutingTableEntry,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "routingDisabled": False,
+                        "allRoutesProgrammedHardware": True,
+                        "allRoutesProgrammedKernel": True,
+                        "defaultRouteState": "notSet",
+                        "routes": {
+                            "10.1.0.1/32": {
+                                "hardwareProgrammed": True,
+                                "routeType": "eBGP",
+                                "routeLeaked": False,
+                                "kernelProgrammed": True,
+                                "routeAction": "forward",
+                                "directlyConnected": False,
+                                "preference": 20,
+                                "metric": 0,
+                                "vias": [{"nexthopAddr": "10.1.255.4", "interface": "Ethernet1"}],
+                            },
+                            "10.1.0.2/32": {
+                                "hardwareProgrammed": True,
+                                "routeType": "eBGP",
+                                "routeLeaked": False,
+                                "kernelProgrammed": True,
+                                "routeAction": "forward",
+                                "directlyConnected": False,
+                                "preference": 20,
+                                "metric": 0,
+                                "vias": [{"nexthopAddr": "10.1.255.6", "interface": "Ethernet2"}],
+                            },
+                        },
+                    },
+                },
+            },
+        ],
+        "inputs": {"vrf": "default", "routes": ["10.1.0.1", "10.1.0.2"], "collect": "all"},
+        "expected": {"result": "success"},
+    },
+    {
         "name": "failure-missing-route",
         "test": VerifyRoutingTableEntry,
         "eos_data": [
@@ -225,5 +267,54 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {"vrf": "default", "routes": ["10.1.0.1", "10.1.0.2"]},
         "expected": {"result": "failure", "messages": ["The following route(s) are missing from the routing table of VRF default: ['10.1.0.2']"]},
+    },
+    {
+        "name": "failure-wrong-route-collect-all",
+        "test": VerifyRoutingTableEntry,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "routingDisabled": False,
+                        "allRoutesProgrammedHardware": True,
+                        "allRoutesProgrammedKernel": True,
+                        "defaultRouteState": "notSet",
+                        "routes": {
+                            "10.1.0.1/32": {
+                                "hardwareProgrammed": True,
+                                "routeType": "eBGP",
+                                "routeLeaked": False,
+                                "kernelProgrammed": True,
+                                "routeAction": "forward",
+                                "directlyConnected": False,
+                                "preference": 20,
+                                "metric": 0,
+                                "vias": [{"nexthopAddr": "10.1.255.4", "interface": "Ethernet1"}],
+                            },
+                            "10.1.0.55/32": {
+                                "hardwareProgrammed": True,
+                                "routeType": "eBGP",
+                                "routeLeaked": False,
+                                "kernelProgrammed": True,
+                                "routeAction": "forward",
+                                "directlyConnected": False,
+                                "preference": 20,
+                                "metric": 0,
+                                "vias": [{"nexthopAddr": "10.1.255.6", "interface": "Ethernet2"}],
+                            },
+                        },
+                    },
+                },
+            },
+        ],
+        "inputs": {"vrf": "default", "routes": ["10.1.0.1", "10.1.0.2"], "collect": "all"},
+        "expected": {"result": "failure", "messages": ["The following route(s) are missing from the routing table of VRF default: ['10.1.0.2']"]},
+    },
+    {
+        "name": "collect-input-error",
+        "test": VerifyRoutingTableEntry,
+        "eos_data": {},
+        "inputs": {"vrf": "default", "routes": ["10.1.0.1", "10.1.0.2"], "collect": "not-valid"},
+        "expected": {"result": "error", "messages": ["Inputs are not valid"]},
     },
 ]
