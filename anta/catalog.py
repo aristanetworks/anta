@@ -402,6 +402,7 @@ class AntaCatalog:
             raise
         return AntaCatalog(tests)
 
+    # TODO: Deprecate this method when https://github.com/aristanetworks/anta/issues/754 is resolved
     def merge(self, catalog: AntaCatalog) -> AntaCatalog:
         """Merge two AntaCatalog instances.
 
