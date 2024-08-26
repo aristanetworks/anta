@@ -13,7 +13,7 @@ import pytest
 from pydantic import ValidationError
 from yaml import safe_load
 
-from anta.catalog import AntaCatalog, AntaCatalogFile, AntaTestDefinition
+from anta.catalog import AntaCatalog, AntaCatalogFile, AntaTestDefinition, merge_catalogs
 from anta.models import AntaTest
 from anta.tests.interfaces import VerifyL3MTU
 from anta.tests.mlag import VerifyMlagStatus
@@ -198,6 +198,18 @@ TESTS_SETTER_FAIL_DATA: list[dict[str, Any]] = [
         "error": "A test in the catalog must be an AntaTestDefinition instance",
     },
 ]
+
+
+def test_merge_catalogs() -> None:
+    """Test the merge_catalogs function."""
+    # Load catalogs of different sizes
+    small_catalog = AntaCatalog.parse(DATA_DIR / "test_catalog.yml")
+    medium_catalog = AntaCatalog.parse(DATA_DIR / "test_catalog_medium.yml")
+    tagged_catalog = AntaCatalog.parse(DATA_DIR / "test_catalog_with_tags.yml")
+
+    # Merge the catalogs and check the number of tests
+    final_catalog = merge_catalogs([small_catalog, medium_catalog, tagged_catalog])
+    assert len(final_catalog.tests) == 240
 
 
 class TestAntaCatalog:
