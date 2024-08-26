@@ -350,7 +350,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
-        "name": "failure",
+        "name": "failure-unstable-topology",
         "test": VerifyStpTopologyChanges,
         "eos_data": [
             {
@@ -370,12 +370,12 @@ DATA: list[dict[str, Any]] = [
             "result": "failure",
             "messages": [
                 "The following Spanning Tree Protocol (STP) topology(s) are not configured or number of changes"
-                " not within the threshold:{'topologies': {'Cist': {'Cpu': {'numChanges': 15}, 'Port-Channel5': {'numChanges': 15}}}}"
+                " not within the threshold:{'topologies': {'Cist': {'Cpu': {'Number of changes': 15}, 'Port-Channel5': {'Number of changes': 15}}}}"
             ],
         },
     },
     {
-        "name": "failure",
+        "name": "failure-topologies-not-configured",
         "test": VerifyStpTopologyChanges,
         "eos_data": [
             {"unmappedVlans": [], "topologies": {}},
