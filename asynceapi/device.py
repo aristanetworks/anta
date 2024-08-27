@@ -10,12 +10,15 @@
 from __future__ import annotations
 
 from socket import getservbyname
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 # -----------------------------------------------------------------------------
 # Public Imports
 # -----------------------------------------------------------------------------
 import httpx
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 # -----------------------------------------------------------------------------
 # Private Imports
@@ -115,7 +118,7 @@ class Device(httpx.AsyncClient):
     async def cli(  # noqa: PLR0913  # pylint: disable=too-many-arguments
         self,
         command: str | dict[str, Any] | None = None,
-        commands: list[str | dict[str, Any]] | None = None,
+        commands: Sequence[str | dict[str, Any]] | None = None,
         ofmt: str | None = None,
         version: int | str | None = "latest",
         *,
@@ -188,7 +191,7 @@ class Device(httpx.AsyncClient):
 
     def _jsonrpc_command(  # noqa: PLR0913  # pylint: disable=too-many-arguments
         self,
-        commands: list[str | dict[str, Any]] | None = None,
+        commands: Sequence[str | dict[str, Any]] | None = None,
         ofmt: str | None = None,
         version: int | str | None = "latest",
         *,
