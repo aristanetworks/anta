@@ -10,7 +10,7 @@
 from __future__ import annotations
 
 from socket import getservbyname
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 # -----------------------------------------------------------------------------
 # Public Imports
@@ -23,9 +23,6 @@ import httpx
 from .aio_portcheck import port_check_url
 from .config_session import SessionConfig
 from .errors import EapiCommandError
-
-if TYPE_CHECKING:
-    from collections.abc import Sequence
 
 # -----------------------------------------------------------------------------
 # Exports
@@ -118,7 +115,7 @@ class Device(httpx.AsyncClient):
     async def cli(  # noqa: PLR0913  # pylint: disable=too-many-arguments
         self,
         command: str | dict[str, Any] | None = None,
-        commands: Sequence[str | dict[str, Any]] | None = None,
+        commands: list[str | dict[str, Any]] | None = None,
         ofmt: str | None = None,
         version: int | str | None = "latest",
         *,
@@ -191,7 +188,7 @@ class Device(httpx.AsyncClient):
 
     def _jsonrpc_command(  # noqa: PLR0913  # pylint: disable=too-many-arguments
         self,
-        commands: Sequence[str | dict[str, Any]] | None = None,
+        commands: list[str | dict[str, Any]] | None = None,
         ofmt: str | None = None,
         version: int | str | None = "latest",
         *,
@@ -271,10 +268,11 @@ class Device(httpx.AsyncClient):
         len_data = len(cmd_data)
         err_at = len_data - 1
         err_msg = err_data["message"]
+        failed_cmd = commands[err_at]
 
         raise EapiCommandError(
             passed=[get_output(cmd_data[cmd_i]) for cmd_i, cmd in enumerate(commands[:err_at])],
-            failed=commands[err_at]["cmd"],
+            failed=failed_cmd["cmd"] if isinstance(failed_cmd, dict) else failed_cmd,
             errors=cmd_data[err_at]["errors"],
             errmsg=err_msg,
             not_exec=commands[err_at + 1 :],
