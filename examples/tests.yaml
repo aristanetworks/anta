@@ -609,12 +609,16 @@ anta.tests.routing:
             update_errors:
               - inUpdErrWithdraw
               - inUpdErrIgnore
-    - VerifyBGPPeerNLRIs:
-        bgp_peers:
-          - peer_address: 10.100.0.10
-            vrf: default
-          - peer_address: 10.100.0.8
-            vrf: default
+    - VerifyBGPPeerPrefixes:
+        address_families:
+          - afi: ipv4
+            safi: unicast
+          - afi: ipv4
+            safi: multicast
+          - afi: evpn
+          - afi: vpn-ipv4
+          - afi: ipv4
+            safi: labeled-unicast
   ospf:
     - VerifyOSPFNeighborState:
     - VerifyOSPFNeighborCount:

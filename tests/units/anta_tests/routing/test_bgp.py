@@ -18,7 +18,7 @@ from anta.tests.routing.bgp import (
     VerifyBGPPeerDropStats,
     VerifyBGPPeerMD5Auth,
     VerifyBGPPeerMPCaps,
-    VerifyBGPPeerNLRIs,
+    VerifyBGPPeerPrefixes,
     VerifyBGPPeerRouteRefreshCap,
     VerifyBGPPeersHealth,
     VerifyBGPPeerUpdateErrors,
@@ -4506,103 +4506,209 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "success",
-        "test": VerifyBGPPeerNLRIs,
+        "test": VerifyBGPPeerPrefixes,
         "eos_data": [
             {
                 "vrfs": {
                     "default": {
                         "peers": {
                             "10.100.0.8": {
-                                "peerState": "Established",
-                                "peerAsn": "65100",
-                                "ipv4Unicast": {"afiSafiState": "negotiated", "nlrisReceived": 17, "nlrisAccepted": 17},
+                                "prefixAccepted": 17,
+                                "prefixReceived": 17,
+                            },
+                            "10.100.0.10": {
+                                "prefixAccepted": 17,
+                                "prefixReceived": 17,
                             },
                         }
-                    },
+                    }
+                }
+            },
+            {
+                "vrfs": {
                     "MGMT": {
                         "peers": {
+                            "10.100.0.8": {
+                                "prefixAccepted": 17,
+                                "prefixReceived": 17,
+                            },
                             "10.100.0.10": {
-                                "peerState": "Established",
-                                "peerAsn": "65100",
-                                "ipv4Unicast": {"afiSafiState": "negotiated", "nlrisReceived": 17, "nlrisAccepted": 17},
+                                "prefixAccepted": 17,
+                                "prefixReceived": 17,
                             },
                         }
-                    },
+                    }
                 }
-            }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "peers": {
+                            "10.100.0.8": {
+                                "prefixAccepted": 17,
+                                "prefixReceived": 17,
+                            },
+                            "10.100.0.10": {
+                                "prefixAccepted": 17,
+                                "prefixReceived": 17,
+                            },
+                        }
+                    }
+                }
+            },
         ],
         "inputs": {
-            "bgp_peers": [
-                {"peer_address": "10.100.0.8", "vrf": "default"},
-                {"peer_address": "10.100.0.10", "vrf": "MGMT"},
+            "address_families": [
+                {"afi": "ipv4", "safi": "unicast"},
+                {"afi": "ipv4", "safi": "multicast", "vrf": "MGMT"},
+                {"afi": "evpn"},
             ]
         },
         "expected": {"result": "success"},
     },
     {
-        "name": "failure",
-        "test": VerifyBGPPeerNLRIs,
+        "name": "failure-not-consitent",
+        "test": VerifyBGPPeerPrefixes,
         "eos_data": [
             {
                 "vrfs": {
                     "default": {
                         "peers": {
                             "10.100.0.8": {
-                                "peerState": "Established",
-                                "peerAsn": "65100",
-                                "ipv4Unicast": {"afiSafiState": "negotiated", "nlrisReceived": 20, "nlrisAccepted": 15},
+                                "prefixAccepted": 17,
+                                "prefixReceived": 18,
+                            },
+                            "10.100.0.10": {
+                                "prefixAccepted": 15,
+                                "prefixReceived": 20,
                             },
                         }
-                    },
+                    }
+                }
+            },
+            {
+                "vrfs": {
                     "MGMT": {
                         "peers": {
+                            "10.100.0.8": {
+                                "prefixAccepted": 17,
+                                "prefixReceived": 17,
+                            },
                             "10.100.0.10": {
-                                "peerState": "Established",
-                                "peerAsn": "65100",
-                                "ipv4Unicast": {"afiSafiState": "negotiated", "nlrisReceived": 18, "nlrisAccepted": 17},
+                                "prefixAccepted": 17,
+                                "prefixReceived": 18,
                             },
                         }
-                    },
+                    }
                 }
-            }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "peers": {
+                            "10.100.0.8": {
+                                "prefixAccepted": 14,
+                                "prefixReceived": 15,
+                            },
+                            "10.100.0.10": {
+                                "prefixAccepted": 11,
+                                "prefixReceived": 15,
+                            },
+                        }
+                    }
+                }
+            },
         ],
         "inputs": {
-            "bgp_peers": [
-                {"peer_address": "10.100.0.8", "vrf": "default"},
-                {"peer_address": "10.100.0.10", "vrf": "MGMT"},
+            "address_families": [
+                {"afi": "ipv4", "safi": "unicast"},
+                {"afi": "ipv4", "safi": "multicast", "vrf": "MGMT"},
+                {"afi": "evpn"},
             ]
         },
         "expected": {
             "result": "failure",
             "messages": [
-                "The following BGP peers are not configured or NLRI(s) received and accepted are not consistent:\n"
-                "{'10.100.0.8': {'default': 'The NLRIs received and accepted should be consistent, but found NLRI received `20` and NLRI accepted `15` instead.'}, "
-                "'10.100.0.10': {'MGMT': 'The NLRIs received and accepted should be consistent, but found NLRI received `18` and NLRI accepted `17` instead.'}}"
+                "The following BGP address family(s), peers are not configured or prefix(s) received and accepted are not consistent:\n"
+                "{'ipv4': {'unicast': {'10.100.0.8': {'prefix received': 18, 'prefix accepted': 17}, '10.100.0.10': {'prefix received': 20, 'prefix accepted': 15}},"
+                " 'multicast': {'10.100.0.10': {'prefix received': 18, 'prefix accepted': 17}}}, "
+                "'evpn': {'10.100.0.8': {'prefix received': 15, 'prefix accepted': 14}, '10.100.0.10': {'prefix received': 15, 'prefix accepted': 11}}}"
             ],
         },
     },
     {
-        "name": "failure-not-found",
-        "test": VerifyBGPPeerNLRIs,
-        "eos_data": [
-            {
-                "vrfs": {
-                    "default": {"peers": {}},
-                    "MGMT": {"peers": {}},
-                }
-            }
-        ],
+        "name": "failure-peers-not-configured",
+        "test": VerifyBGPPeerPrefixes,
+        "eos_data": [{"vrfs": {"default": {"peers": {}}}}, {"vrfs": {"MGMT": {"peers": {}}}}, {"vrfs": {"default": {"peers": {}}}}],
         "inputs": {
-            "bgp_peers": [
-                {"peer_address": "10.100.0.8", "vrf": "default"},
-                {"peer_address": "10.100.0.10", "vrf": "MGMT"},
+            "address_families": [
+                {"afi": "ipv4", "safi": "unicast"},
+                {"afi": "ipv4", "safi": "multicast", "vrf": "MGMT"},
+                {"afi": "evpn"},
             ]
         },
         "expected": {
             "result": "failure",
             "messages": [
-                "The following BGP peers are not configured or NLRI(s) received and accepted are not consistent:\n"
-                "{'10.100.0.8': {'default': 'Not configured'}, '10.100.0.10': {'MGMT': 'Not configured'}}"
+                "The following BGP address family(s), peers are not configured or prefix(s) received and accepted are not consistent:\n"
+                "{'ipv4': {'unicast': 'Peers not configured', "
+                "'multicast': 'Peers not configured'}, "
+                "'evpn': 'Peers not configured'}"
+            ],
+        },
+    },
+    {
+        "name": "failure-misc",
+        "test": VerifyBGPPeerPrefixes,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peers": {
+                            "10.100.0.8": {
+                                "prefixAccepted": 17,
+                                "prefixReceived": 18,
+                            },
+                            "10.100.0.10": {
+                                "prefixAccepted": 15,
+                                "prefixReceived": 20,
+                            },
+                        }
+                    }
+                }
+            },
+            {"vrfs": {"MGMT": {"peers": {}}}},
+            {
+                "vrfs": {
+                    "default": {
+                        "peers": {
+                            "10.100.0.8": {
+                                "prefixAccepted": 14,
+                                "prefixReceived": 15,
+                            },
+                            "10.100.0.10": {
+                                "prefixAccepted": 11,
+                                "prefixReceived": 15,
+                            },
+                        }
+                    }
+                }
+            },
+        ],
+        "inputs": {
+            "address_families": [
+                {"afi": "ipv4", "safi": "unicast"},
+                {"afi": "ipv4", "safi": "multicast", "vrf": "MGMT"},
+                {"afi": "evpn"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following BGP address family(s), peers are not configured or prefix(s) received and accepted are not consistent:\n"
+                "{'ipv4': {'unicast': {'10.100.0.8': {'prefix received': 18, 'prefix accepted': 17}, '10.100.0.10': {'prefix received': 20, 'prefix accepted': 15}},"
+                " 'multicast': 'Peers not configured'}, "
+                "'evpn': {'10.100.0.8': {'prefix received': 15, 'prefix accepted': 14}, '10.100.0.10': {'prefix received': 15, 'prefix accepted': 11}}}"
             ],
         },
     },
