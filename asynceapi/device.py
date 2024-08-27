@@ -17,15 +17,15 @@ from typing import TYPE_CHECKING, Any
 # -----------------------------------------------------------------------------
 import httpx
 
-if TYPE_CHECKING:
-    from collections.abc import Sequence
-
 # -----------------------------------------------------------------------------
 # Private Imports
 # -----------------------------------------------------------------------------
 from .aio_portcheck import port_check_url
 from .config_session import SessionConfig
 from .errors import EapiCommandError
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 # -----------------------------------------------------------------------------
 # Exports
