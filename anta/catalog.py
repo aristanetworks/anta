@@ -36,21 +36,6 @@ RawCatalogInput = dict[str, list[dict[str, Optional[dict[str, Any]]]]]
 ListAntaTestTuples = list[tuple[type[AntaTest], Optional[Union[AntaTest.Input, dict[str, Any]]]]]
 
 
-def merge_catalogs(catalogs: list[AntaCatalog]) -> AntaCatalog:
-    """Merge multiple AntaCatalog instances.
-
-    Parameters
-    ----------
-        catalogs: A list of AntaCatalog instances to merge.
-
-    Returns
-    -------
-        A new AntaCatalog instance containing the tests of all the input catalogs.
-    """
-    combined_tests = list(chain(*(catalog.tests for catalog in catalogs)))
-    return AntaCatalog(tests=combined_tests)
-
-
 class AntaTestDefinition(BaseModel):
     """Define a test with its associated inputs.
 
@@ -403,6 +388,21 @@ class AntaCatalog:
             raise
         return AntaCatalog(tests)
 
+    @classmethod
+    def merge_catalogs(cls, catalogs: list[AntaCatalog]) -> AntaCatalog:
+        """Merge multiple AntaCatalog instances.
+
+        Parameters
+        ----------
+            catalogs: A list of AntaCatalog instances to merge.
+
+        Returns
+        -------
+            A new AntaCatalog instance containing the tests of all the input catalogs.
+        """
+        combined_tests = list(chain(*(catalog.tests for catalog in catalogs)))
+        return cls(tests=combined_tests)
+
     def merge(self, catalog: AntaCatalog) -> AntaCatalog:
         """Merge two AntaCatalog instances.
 
@@ -416,11 +416,11 @@ class AntaCatalog:
         """
         # TODO: Use a decorator to deprecate this method instead. See https://github.com/aristanetworks/anta/issues/754
         warn(
-            message="AntaCatalog.merge() is deprecated and will be removed in ANTA v2.0. Use merge_catalogs() from the anta.catalog module instead.",
+            message="AntaCatalog.merge() is deprecated and will be removed in ANTA v2.0. Use AntaCatalog.merge_catalogs() instead.",
             category=DeprecationWarning,
             stacklevel=2,
         )
-        return merge_catalogs([self, catalog])
+        return self.merge_catalogs([self, catalog])
 
     def dump(self) -> AntaCatalogFile:
         """Return an AntaCatalogFile instance from this AntaCatalog instance.
