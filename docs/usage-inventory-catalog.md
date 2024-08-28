@@ -309,7 +309,7 @@ Once you run `anta nrfu table`, you will see following output:
 
 ### Example script to merge catalogs
 
-The following script reads all the files in `intended/test_catalogs/` with names `<device_name>-catalog.yml` and merge them together inside one big catalog `anta-catalog.yml`.
+The following script reads all the files in `intended/test_catalogs/` with names `<device_name>-catalog.yml` and merge them together inside one big catalog `anta-catalog.yml` using the new `AntaCatalog.merge_catalogs()` class method.
 
 ```python
 #!/usr/bin/env python
@@ -319,19 +319,26 @@ from pathlib import Path
 from anta.models import AntaTest
 
 
-CATALOG_SUFFIX = '-catalog.yml'
-CATALOG_DIR = 'intended/test_catalogs/'
+CATALOG_SUFFIX = "-catalog.yml"
+CATALOG_DIR = "intended/test_catalogs/"
 
 if __name__ == "__main__":
-    catalog = AntaCatalog()
-    for file in Path(CATALOG_DIR).glob('*'+CATALOG_SUFFIX):
-        c = AntaCatalog.parse(file)
+    catalogs = []
+    for file in Path(CATALOG_DIR).glob("*" + CATALOG_SUFFIX):
         device = str(file).removesuffix(CATALOG_SUFFIX).removeprefix(CATALOG_DIR)
-        print(f"Merging test catalog for device {device}")
-        # Apply filters to all tests for this device
-        for test in c.tests:
-            test.inputs.filters = AntaTest.Input.Filters(tags=[device])
-        catalog = catalog.merge(c)
+        print(f"Loading test catalog for device {device}")
+        catalog = AntaCatalog.parse(file)
+        # Add the device name as a tag to all tests in the catalog
+        for test in catalog.tests:
+            test.inputs.filters = AntaTest.Input.Filters(tags={device})
+        catalogs.append(catalog)
+
+    # Merge all catalogs
+    merged_catalog = AntaCatalog.merge_catalogs(catalogs)
+
+    # Save the merged catalog to a file
     with open(Path('anta-catalog.yml'), "w") as f:
         f.write(catalog.dump().yaml())
 ```
+!!! warning
+    The `AntaCatalog.merge()` method is deprecated and will be removed in ANTA v2.0. Please use the `AntaCatalog.merge_catalogs()` class method instead.
