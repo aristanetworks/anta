@@ -338,7 +338,7 @@ if __name__ == "__main__":
 
     # Save the merged catalog to a file
     with open(Path('anta-catalog.yml'), "w") as f:
-        f.write(catalog.dump().yaml())
+        f.write(merged_catalog.dump().yaml())
 ```
 !!! warning
     The `AntaCatalog.merge()` method is deprecated and will be removed in ANTA v2.0. Please use the `AntaCatalog.merge_catalogs()` class method instead.
