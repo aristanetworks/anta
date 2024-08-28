@@ -8,7 +8,7 @@ from __future__ import annotations
 import json
 import re
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 from unittest.mock import patch
 
 from anta.cli import anta
@@ -88,6 +88,43 @@ def test_anta_nrfu_json(click_runner: CliRunner) -> None:
         if res["name"] == "dummy":
             assert res["test"] == "VerifyEOSVersion"
             assert res["result"] == "success"
+
+
+def test_anta_nrfu_json_output(click_runner: CliRunner, tmp_path: Path) -> None:
+    """Test anta nrfu json with output file."""
+    json_output = tmp_path / "test.json"
+    result = click_runner.invoke(anta, ["nrfu", "json", "--output", str(json_output)])
+
+    # Making sure the output is not printed to stdout
+    match = re.search(r"\[\n {2}{[\s\S]+ {2}}\n\]", result.output)
+    assert match is None
+
+    assert result.exit_code == ExitCode.OK
+    assert "JSON results saved to" in result.output
+    assert json_output.exists()
+
+
+def test_anta_nrfu_json_output_failure(click_runner: CliRunner, tmp_path: Path) -> None:
+    """Test anta nrfu json with output file."""
+    json_output = tmp_path / "test.json"
+
+    original_open = Path.open
+
+    def mock_path_open(*args: Any, **kwargs: Any) -> Path:  # noqa: ANN401
+        """Mock Path.open only for the json_output file of this test."""
+        if args[0] == json_output:
+            msg = "Simulated OSError"
+            raise OSError(msg)
+
+        # If not the json_output file, call the original Path.open
+        return original_open(*args, **kwargs)
+
+    with patch("pathlib.Path.open", mock_path_open):
+        result = click_runner.invoke(anta, ["nrfu", "json", "--output", str(json_output)])
+
+    assert result.exit_code == ExitCode.USAGE_ERROR
+    assert "Failed to save JSON results to" in result.output
+    assert not json_output.exists()
 
 
 def test_anta_nrfu_template(click_runner: CliRunner) -> None:
