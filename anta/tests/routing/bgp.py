@@ -144,53 +144,6 @@ def _add_bgp_routes_failure(
     return failure_routes
 
 
-def _check_peer_capabilities(bgp_output: dict[str, Any], capabilities: list[MultiProtocolCaps], *, strict: bool = False) -> dict[str, Any]:
-    """Check for issues in BGP output for multiprotocol capabilities.
-
-    - Checks the only mentioned capabilities should be listed when strict is True.
-    - Checks the any capability(s) are missing from output.
-    - Checks the any capability(s) are not advertised, received, or enabled
-
-    Parameters
-    ----------
-        bgp_output: The BGP output from the device.
-        capabilities: List of multiprotocol capabilities to be verified.
-        strict: If True, requires exact matching of provided capabilities. Defaults to False.
-
-    Returns
-    -------
-        dict[str, Any]: A dictionary containing the failure message as per strict check.
-
-    """
-    # Prepare the failure dictionary
-    failure: dict[str, Any] = {}
-
-    # Verifies the only mentioned capabilities should be listed when strict is True.
-    if strict and not set(bgp_output).issubset(set(capabilities)):
-        other_capabilities = ", ".join(list(set(bgp_output) - set(capabilities)))
-        failure["strict"] = f"Other than mentioned BGP peer multiprotocol capabilities following capability(s) are listed: {other_capabilities}"
-
-        # Verifying the mentioned capabilities.
-        failure_msg = _check_peer_capabilities(bgp_output, capabilities, strict=False)
-        if failure_msg:
-            failure.update(failure_msg)
-        return failure
-
-    # Check each capability
-    for capability in capabilities:
-        capability_output = bgp_output.get(capability)
-
-        # Check if capabilities are missing
-        if not capability_output:
-            failure[capability] = "not found"
-
-        # Check if capabilities are not advertised, received, or enabled
-        elif not all(capability_output.get(prop, False) for prop in ["advertised", "received", "enabled"]):
-            failure[capability] = capability_output
-
-    return failure
-
-
 class VerifyBGPPeerCount(AntaTest):
     """Verifies the count of BGP peers for a given address family.
 
@@ -801,11 +754,26 @@ class VerifyBGPPeerMPCaps(AntaTest):
             # Fetching the capabilities output.
             bgp_output = get_value(bgp_output, "neighborCapabilities.multiprotocolCaps")
 
-            # Collecting the failure logs if any.
-            failure_log = _check_peer_capabilities(bgp_output, capabilities, strict=bgp_peer.strict)
-            if failure_log:
-                failure["bgp_peers"][peer][vrf] = failure_log
+            if bgp_peer.strict and sorted(capabilities) != sorted(bgp_output):
+                failure["bgp_peers"][peer][vrf] = {
+                    "status": f"Expected only `{', '.join(capabilities)}` capabilities should be listed but found `{', '.join(bgp_output)}` instead."
+                }
                 failures = deep_update(failures, failure)
+                continue
+
+            # Check each capability
+            for capability in capabilities:
+                capability_output = bgp_output.get(capability)
+
+                # Check if capabilities are missing
+                if not capability_output:
+                    failure["bgp_peers"][peer][vrf][capability] = "not found"
+                    failures = deep_update(failures, failure)
+
+                # Check if capabilities are not advertised, received, or enabled
+                elif not all(capability_output.get(prop, False) for prop in ["advertised", "received", "enabled"]):
+                    failure["bgp_peers"][peer][vrf][capability] = capability_output
+                    failures = deep_update(failures, failure)
 
         # Check if there are any failures
         if not failures["bgp_peers"]:

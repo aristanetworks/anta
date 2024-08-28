@@ -2256,11 +2256,13 @@ DATA: list[dict[str, Any]] = [
                 {
                     "peer_address": "172.30.11.1",
                     "vrf": "default",
+                    "strict": True,
                     "capabilities": ["Ipv4 Unicast", "ipv4 Mpls labels"],
                 },
                 {
                     "peer_address": "172.30.11.10",
                     "vrf": "MGMT",
+                    "strict": True,
                     "capabilities": ["ipv4 Unicast", "ipv4 MplsVpn"],
                 },
             ]
@@ -2268,7 +2270,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
-        "name": "success-failure-srict",
+        "name": "failure-srict",
         "test": VerifyBGPPeerMPCaps,
         "eos_data": [
             {
@@ -2337,12 +2339,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Following BGP peer multiprotocol capabilities are not found or not ok:\n"
-                "{'bgp_peers': {'172.30.11.1': {'default': {'strict': "
-                "'Other than mentioned BGP peer multiprotocol capabilities following capability(s) are listed: ipv4MplsLabels'}}, "
-                "'172.30.11.10': {'MGMT': {'strict': "
-                "'Other than mentioned BGP peer multiprotocol capabilities following capability(s) are listed: ipv4Unicast', "
-                "'ipv4MplsVpn': {'advertised': False, 'received': True, 'enabled': True}, 'l2VpnEvpn': 'not found'}}}}"
+                "Following BGP peer multiprotocol capabilities are not found or not ok:\n{'bgp_peers': {'172.30.11.1': "
+                "{'default': {'status': 'Expected only `ipv4Unicast` capabilities should be listed but found `ipv4Unicast, ipv4MplsLabels` instead.'}},"
+                " '172.30.11.10': {'MGMT': {'status': 'Expected only `ipv4MplsVpn, l2VpnEvpn` capabilities should be listed but found `ipv4Unicast, "
+                "ipv4MplsVpn` instead.'}}}}"
             ],
         },
     },
