@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import json
+import re
 from contextlib import AbstractContextManager, nullcontext
 from typing import TYPE_CHECKING, Callable
 
@@ -70,6 +71,27 @@ class TestResultManager:
             assert isinstance(test.get("description"), str)
             assert test.get("custom_field") is None
             assert test.get("result") == "success"
+
+    def test_sorted_category_stats(self, list_result_factory: Callable[[int], list[TestResult]]) -> None:
+        """Test ResultManager.sorted_category_stats."""
+        result_manager = ResultManager()
+        results = list_result_factory(4)
+
+        # Modify the categories to have a mix of different acronym categories
+        results[0].categories = ["ospf"]
+        results[1].categories = ["bgp"]
+        results[2].categories = ["vxlan"]
+        results[3].categories = ["system"]
+
+        result_manager.results = results
+
+        # Check the current categories order and name format
+        expected_order = ["OSPF", "BGP", "VXLAN", "System"]
+        assert list(result_manager.category_stats.keys()) == expected_order
+
+        # Check the sorted categories order and name format
+        expected_order = ["BGP", "OSPF", "System", "VXLAN"]
+        assert list(result_manager.sorted_category_stats.keys()) == expected_order
 
     @pytest.mark.parametrize(
         ("starting_status", "test_status", "expected_status", "expected_raise"),
@@ -148,6 +170,91 @@ class TestResultManager:
             else:
                 assert result_manager.status == expected_status
             assert len(result_manager) == 1
+
+    def test_add_clear_cache(self, result_manager: ResultManager, test_result_factory: Callable[[], TestResult]) -> None:
+        """Test ResultManager.add and make sure the cache is reset after adding a new test."""
+        # Check the cache is empty
+        assert "results_by_status" not in result_manager.__dict__
+
+        # Access the cache
+        assert result_manager.get_total_results() == 30
+
+        # Check the cache is filled with the correct results count
+        assert "results_by_status" in result_manager.__dict__
+        assert sum(len(v) for v in result_manager.__dict__["results_by_status"].values()) == 30
+
+        # Add a new test
+        result_manager.add(result=test_result_factory())
+
+        # Check the cache has been reset
+        assert "results_by_status" not in result_manager.__dict__
+
+        # Access the cache again
+        assert result_manager.get_total_results() == 31
+
+        # Check the cache is filled again with the correct results count
+        assert "results_by_status" in result_manager.__dict__
+        assert sum(len(v) for v in result_manager.__dict__["results_by_status"].values()) == 31
+
+    def test_get_results(self, result_manager: ResultManager) -> None:
+        """Test ResultManager.get_results."""
+        # Check for single status
+        success_results = result_manager.get_results(status={"success"})
+        assert len(success_results) == 7
+        assert all(r.result == "success" for r in success_results)
+
+        # Check for multiple statuses
+        failure_results = result_manager.get_results(status={"failure", "error"})
+        assert len(failure_results) == 21
+        assert all(r.result in {"failure", "error"} for r in failure_results)
+
+        # Check all results
+        all_results = result_manager.get_results()
+        assert len(all_results) == 30
+
+    def test_get_results_sort_by(self, result_manager: ResultManager) -> None:
+        """Test ResultManager.get_results with sort_by."""
+        # Check all results with sort_by result
+        all_results = result_manager.get_results(sort_by=["result"])
+        assert len(all_results) == 30
+        assert [r.result for r in all_results] == ["error"] * 2 + ["failure"] * 19 + ["skipped"] * 2 + ["success"] * 7
+
+        # Check all results with sort_by device (name)
+        all_results = result_manager.get_results(sort_by=["name"])
+        assert len(all_results) == 30
+        assert all_results[0].name == "DC1-LEAF1A"
+        assert all_results[-1].name == "DC1-SPINE1"
+
+        # Check multiple statuses with sort_by categories
+        success_skipped_results = result_manager.get_results(status={"success", "skipped"}, sort_by=["categories"])
+        assert len(success_skipped_results) == 9
+        assert success_skipped_results[0].categories == ["Interfaces"]
+        assert success_skipped_results[-1].categories == ["VXLAN"]
+
+        # Check all results with bad sort_by
+        with pytest.raises(
+            ValueError,
+            match=re.escape(
+                "Invalid sort_by fields: ['bad_field']. Accepted fields are: ['name', 'test', 'categories', 'description', 'result', 'messages', 'custom_field']",
+            ),
+        ):
+            all_results = result_manager.get_results(sort_by=["bad_field"])
+
+    def test_get_total_results(self, result_manager: ResultManager) -> None:
+        """Test ResultManager.get_total_results."""
+        # Test all results
+        assert result_manager.get_total_results() == 30
+
+        # Test single status
+        assert result_manager.get_total_results(status={"success"}) == 7
+        assert result_manager.get_total_results(status={"failure"}) == 19
+        assert result_manager.get_total_results(status={"error"}) == 2
+        assert result_manager.get_total_results(status={"skipped"}) == 2
+
+        # Test multiple statuses
+        assert result_manager.get_total_results(status={"success", "failure"}) == 26
+        assert result_manager.get_total_results(status={"success", "failure", "error"}) == 28
+        assert result_manager.get_total_results(status={"success", "failure", "error", "skipped"}) == 30
 
     @pytest.mark.parametrize(
         ("status", "error_status", "ignore_error", "expected_status"),
