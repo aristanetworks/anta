@@ -7,9 +7,7 @@ build-backend = "setuptools.build_meta"
 name = "anta"
 version = "v1.0.0"
 readme = "docs/README.md"
-authors = [
-  { name = "Arista Networks ANTA maintainers", email = "anta-dev@arista.com" },
-]
+authors = [{ name = "Arista Networks ANTA maintainers", email = "anta-dev@arista.com" }]
 maintainers = [
   { name = "Arista Networks ANTA maintainers", email = "anta-dev@arista.com" },
   { name = "Khelil Sator", email = "ksator@arista.com" },
@@ -22,49 +20,43 @@ description = "Arista Network Test Automation (ANTA) Framework"
 license = { file = "LICENSE" }
 dependencies = [
   "aiocache>=0.12.2",
-  "asyncssh>=2.13.2",
+  "asyncssh>=2.16",
   "cvprac>=1.3.1",
-  "eval-type-backport>=0.1.3",   # Support newer typing features in older Python versions (required until Python 3.9 support is removed)
+  "eval-type-backport>=0.1.3",  # Support newer typing features in older Python versions (required until Python 3.9 support is removed)
   "Jinja2>=3.1.2",
   "pydantic>=2.7",
   "pydantic-extra-types>=2.3.0",
   "PyYAML>=6.0",
   "requests>=2.31.0",
   "rich>=13.5.2,<14",
-  "httpx>=0.27.0",
+  "httpx>=0.27.0"
 ]
-keywords = [
-  "test",
-  "anta",
-  "Arista",
-  "network",
-  "automation",
-  "networking",
-  "devops",
-  "netdevops",
-]
+keywords = ["test", "anta", "Arista", "network", "automation", "networking", "devops", "netdevops"]
 classifiers = [
-  "License :: OSI Approved :: Apache Software License",
-  "Operating System :: OS Independent",
-  "Development Status :: 5 - Production/Stable",
-  "Intended Audience :: Developers",
-  "Intended Audience :: System Administrators",
-  "Intended Audience :: Information Technology",
-  "Programming Language :: Python",
-  "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.9",
-  "Programming Language :: Python :: 3.10",
-  "Programming Language :: Python :: 3.11",
-  "Programming Language :: Python :: 3.12",
-  "Programming Language :: Python :: 3 :: Only",
-  "Topic :: Software Development :: Libraries :: Python Modules",
-  "Topic :: Software Development :: Testing",
-  "Topic :: System :: Networking",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+    "Intended Audience :: Information Technology",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Testing",
+    "Topic :: System :: Networking",
 ]
 requires-python = ">=3.9"
 
 [project.optional-dependencies]
-cli = ["click~=8.1.6", "click-help-colors>=0.9"]
+cli = [
+  "click~=8.1.6",
+  "click-help-colors>=0.9",
+]
 dev = [
   "bumpver>=2023.1129",
   "codespell>=2.2.6,<2.4.0",
@@ -99,7 +91,7 @@ doc = [
   "mkdocs-material>=8.3.9",
   "mkdocs>=1.3.1",
   "mkdocstrings[python]>=0.20.0",
-  "mkdocs-glightbox>=0.4.0",
+  "mkdocs-glightbox>=0.4.0"
 ]
 
 [project.urls]
@@ -123,7 +115,7 @@ namespaces = false
 [tool.bumpver]
 current_version = "1.0.0"
 version_pattern = "MAJOR.MINOR.PATCH"
-commit_message = "bump: Version {old_version} -> {new_version}"
+commit_message  = "bump: Version {old_version} -> {new_version}"
 commit = true
 # No tag
 tag = false
@@ -139,7 +131,9 @@ push = false
 # mypy as per https://pydantic-docs.helpmanual.io/mypy_plugin/#enabling-the-plugin
 ################################
 [tool.mypy]
-plugins = ["pydantic.mypy"]
+plugins = [
+  "pydantic.mypy",
+  ]
 # Comment below for better type checking
 #follow_imports = "skip"
 # Make it false if we implement stubs using stubgen from mypy for aio-eapi, aiocache and cvprac
@@ -194,26 +188,26 @@ relative_files = true
 [tool.coverage.report]
 # Regexes for lines to exclude from consideration
 exclude_lines = [
-  # Have to re-enable the standard pragma
-  "pragma: no cover",
+    # Have to re-enable the standard pragma
+    "pragma: no cover",
 
-  # Don't complain about missing debug-only code:
-  "def __repr__",
-  "if self\\.debug",
+    # Don't complain about missing debug-only code:
+    "def __repr__",
+    "if self\\.debug",
 
-  # Don't complain if tests don't hit defensive assertion code:
-  "raise AssertionError",
-  "raise NotImplementedError",
+    # Don't complain if tests don't hit defensive assertion code:
+    "raise AssertionError",
+    "raise NotImplementedError",
 
-  # Don't complain if non-runnable code isn't run:
-  "if 0:",
-  "if __name__ == .__main__.:",
+    # Don't complain if non-runnable code isn't run:
+    "if 0:",
+    "if __name__ == .__main__.:",
 
-  # Don't complain about abstract methods, they aren't run:
-  "@(abc\\.)?abstractmethod",
+    # Don't complain about abstract methods, they aren't run:
+    "@(abc\\.)?abstractmethod",
 
-  # Don't complain about TYPE_CHECKING blocks
-  "if TYPE_CHECKING:",
+    # Don't complain about TYPE_CHECKING blocks
+    "if TYPE_CHECKING:",
 ]
 
 ignore_errors = true
@@ -294,33 +288,33 @@ depends = py311
 
 # Exclude a variety of commonly ignored directories.
 exclude = [
-  ".bzr",
-  ".direnv",
-  ".eggs",
-  ".git",
-  ".git-rewrite",
-  ".hg",
-  ".ipynb_checkpoints",
-  ".mypy_cache",
-  ".nox",
-  ".pants.d",
-  ".pyenv",
-  ".pytest_cache",
-  ".pytype",
-  ".ruff_cache",
-  ".svn",
-  ".tox",
-  ".venv",
-  ".vscode",
-  "__pypackages__",
-  "_build",
-  "buck-out",
-  "build",
-  "dist",
-  "node_modules",
-  "site-packages",
-  "venv",
-  ".github",
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".ipynb_checkpoints",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pyenv",
+    ".pytest_cache",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "site-packages",
+    "venv",
+    ".github",
 ]
 
 line-length = 165
@@ -332,15 +326,15 @@ target-version = "py39"
 # select all cause we like being suffering
 select = ["ALL"]
 ignore = [
-  "ANN101", # Missing type annotation for `self` in method - we know what self is..
-  "D203",   # Ignoring conflicting D* warnings - one-blank-line-before-class
-  "D213",   # Ignoring conflicting D* warnings - multi-line-summary-second-line
-  "COM812", # Ignoring conflicting rules that may cause conflicts when used with the formatter
-  "ISC001", # Ignoring conflicting rules that may cause conflicts when used with the formatter
-  "TD002",  # We don't have require authors in TODO
-  "TD003",  # We don't have an issue link for all TODOs today
-  "FIX002", # Line contains TODO - ignoring for ruff for now
-  "F821",   # Disable undefined-name until resolution of #10451
+  "ANN101",  # Missing type annotation for `self` in method - we know what self is..
+  "D203",    # Ignoring conflicting D* warnings - one-blank-line-before-class
+  "D213",    # Ignoring conflicting D* warnings - multi-line-summary-second-line
+  "COM812",  # Ignoring conflicting rules that may cause conflicts when used with the formatter
+  "ISC001",  # Ignoring conflicting rules that may cause conflicts when used with the formatter
+  "TD002",   # We don't have require authors in TODO
+  "TD003",   # We don't have an issue link for all TODOs today
+  "FIX002",  # Line contains TODO - ignoring for ruff for now
+  "F821",    # Disable undefined-name until resolution of #10451
 ]
 
 # Allow autofix for all enabled rules (when `--fix`) is provided.
@@ -364,20 +358,19 @@ max-branches = 13
 max-complexity = 10
 
 [tool.ruff.lint.pep8-naming]
-"ignore-names" = ["RICH_COLOR_PALETTE"]
+"ignore-names" = [
+  "RICH_COLOR_PALETTE"
+]
 
 [tool.ruff.lint.flake8-type-checking]
 # These classes require that type annotations be available at runtime
-runtime-evaluated-base-classes = [
-  "pydantic.BaseModel",
-  "anta.models.AntaTest.Input",
-]
+runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.Input"]
 
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = [
-  "S101",   # Complains about asserts in units and libs.
-  "SLF001", # Lots of private member accessed for test purposes
+  "S101",    # Complains about asserts in units and libs.
+  "SLF001",  # Lots of private member accessed for test purposes
 ]
 "tests/units/*" = [
   "BLE001",  # Do not catch blind exception: `Exception` - already disabling this in pylint
@@ -389,45 +382,45 @@ runtime-evaluated-base-classes = [
   "S108",    # Probable insecure usage of temporary file or directory
 ]
 "tests/units/anta_tests/test_interfaces.py" = [
-  "S104", # False positive for 0.0.0.0 bindings in test inputs
+  "S104",  # False positive for 0.0.0.0 bindings in test inputs
 ]
 "anta/*" = [
-  "BLE001", # Do not catch blind exception: `Exception` - caught by other linter
-  "TRY400", # Use `logging.exception` instead of `logging.error` - we know what we are doing
+  "BLE001",  # Do not catch blind exception: `Exception` - caught by other linter
+  "TRY400",  # Use `logging.exception` instead of `logging.error` - we know what we are doing
 ]
 "anta/cli/exec/utils.py" = [
-  "SLF001", # TODO: some private members, lets try to fix
+  "SLF001",  # TODO: some private members, lets try to fix
 ]
 "anta/cli/__init__.py" = [
-  "T201", # Allow print statements
+  "T201",  # Allow print statements
 ]
 "anta/cli/*" = [
-  "PLR0913", # Allow more than 5 input arguments in CLI functions
-  "ANN401",  # TODO: Check if we can update the Any type hints in the CLI
+  "PLR0913",  # Allow more than 5 input arguments in CLI functions
+  "ANN401",   # TODO: Check if we can update the Any type hints in the CLI
 ]
 "anta/tests/field_notices.py" = [
-  "PLR2004", # Magic value used in comparison, consider replacing 2131 with a constant variable - Field notice IDs are magic values
-  "C901",    # TODO: test function is too complex, needs a refactor
-  "PLR0911", # TODO: Too many return statements, same as above needs a refactor
+  "PLR2004",  # Magic value used in comparison, consider replacing 2131 with a constant variable - Field notice IDs are magic values
+  "C901",     # TODO: test function is too complex, needs a refactor
+  "PLR0911",  # TODO: Too many return statements, same as above needs a refactor
 ]
 "anta/tests/routing/isis.py" = [
-  "C901",    # TODO: test function is too complex, needs a refactor
-  "PLR0912", # Too many branches (15/12) (too-many-branches), needs a refactor
+  "C901",     # TODO: test function is too complex, needs a refactor
+  "PLR0912"   # Too many branches (15/12) (too-many-branches), needs a refactor
 ]
 "anta/decorators.py" = [
-  "ANN401", # Ok to use Any type hint in our decorators
+  "ANN401",  # Ok to use Any type hint in our decorators
 ]
 "anta/tools.py" = [
-  "ANN401",  # Ok to use Any type hint in our custom get functions
-  "PLR0913", # Ok to have more than 5 arguments in our custom get functions
+  "ANN401",   # Ok to use Any type hint in our custom get functions
+  "PLR0913",  # Ok to have more than 5 arguments in our custom get functions
 ]
 "anta/device.py" = [
-  "PLR0913", # Ok to have more than 5 arguments in the AntaDevice classes
+  "PLR0913",     # Ok to have more than 5 arguments in the AntaDevice classes
 ]
 "anta/inventory/__init__.py" = [
-  "PLR0913", # Ok to have more than 5 arguments in the AntaInventory class
+  "PLR0913",     # Ok to have more than 5 arguments in the AntaInventory class
 ]
-"examples/anta_runner.py" = [ # This is an example script and linked in  snippets
+"examples/anta_runner.py" = [  # This is an example script and linked in  snippets
   "S108",   # Probable insecure usage of temporary file or directory
   "S105",   # Possible hardcoded password
   "INP001", # Implicit packages
@@ -437,28 +430,31 @@ runtime-evaluated-base-classes = [
 # Pylint
 ################################
 [tool.pylint.'MESSAGES CONTROL']
-disable = ["invalid-name", "fixme"]
+disable = [
+    "invalid-name",
+    "fixme"
+]
 
 [tool.pylint.DESIGN]
-max-statements = 61
-max-returns = 8
-max-locals = 23
+max-statements=61
+max-returns=8
+max-locals=23
 
 [tool.pylint.FORMAT]
-max-line-length = 165
-max-module-lines = 1700
+max-line-length=165
+max-module-lines=1700
 
 [tool.pylint.SIMILARITIES]
 # making similarity lines limit a bit higher than default 4
-min-similarity-lines = 10
+min-similarity-lines=10
 
 [tool.pylint.TYPECHECK]
 # https://stackoverflow.com/questions/49680191/click-and-pylint
-signature-mutators = "click.decorators.option"
+signature-mutators="click.decorators.option"
 
 [tool.pylint.MAIN]
-load-plugins = "pylint_pydantic"
-extension-pkg-whitelist = "pydantic"
+load-plugins="pylint_pydantic"
+extension-pkg-whitelist="pydantic"
 ignore-paths = [
   "^tests/units/anta_tests/.*/data.py$",
   "^tests/units/anta_tests/routing/.*/data.py$",
