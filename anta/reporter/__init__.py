@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     import pathlib
 
     from anta.result_manager import ResultManager
-    from anta.result_manager.models import TestResult, TestStatus
+    from anta.result_manager.models import AntaTestStatus, TestResult
 
 logger = logging.getLogger(__name__)
 
@@ -79,12 +79,12 @@ class ReportTable:
                 table.add_column(header, justify="left")
         return table
 
-    def _color_result(self, status: TestStatus) -> str:
+    def _color_result(self, status: AntaTestStatus) -> str:
         """Return a colored string based on the status value.
 
         Parameters
         ----------
-            status (TestStatus): status value to color.
+            status (AntaTestStatus): status value to color.
 
         Returns
         -------
@@ -92,7 +92,7 @@ class ReportTable:
 
         """
         color = RICH_COLOR_THEME.get(status.value, "")
-        return f"[{color}]{status.value}" if color != "" else str(status.value)
+        return f"[{color}]{status.value}" if color != "" else status.value
 
     def report_all(self, manager: ResultManager, title: str = "All tests results") -> Table:
         """Create a table report with all tests for one or all devices.

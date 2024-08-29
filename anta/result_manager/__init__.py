@@ -9,12 +9,9 @@ import json
 from collections import defaultdict
 from functools import cached_property
 from itertools import chain
-from typing import get_args
-
-from pydantic import TypeAdapter
 
 from anta.constants import ACRONYM_CATEGORIES
-from anta.result_manager.models import TestResult, TestStatus
+from anta.result_manager.models import AntaTestStatus, TestResult
 
 from .models import CategoryStats, DeviceStats, TestStats
 
@@ -94,7 +91,7 @@ class ResultManager:
         error_status is set to True.
         """
         self._result_entries: list[TestResult] = []
-        self.status: TestStatus = TestStatus.unset
+        self.status: AntaTestStatus = AntaTestStatus.unset
         self.error_status = False
 
         self.device_stats: defaultdict[str, DeviceStats] = defaultdict(DeviceStats)
@@ -115,7 +112,7 @@ class ResultManager:
         """Set the list of TestResult."""
         # When setting the results, we need to reset the state of the current instance
         self._result_entries = []
-        self.status = TestStatus.unset
+        self.status = AntaTestStatus.unset
         self.error_status = False
 
         # Also reset the stats attributes
@@ -137,19 +134,17 @@ class ResultManager:
         return dict(sorted(self.category_stats.items()))
 
     @cached_property
-    def results_by_status(self) -> dict[TestStatus, list[TestResult]]:
+    def results_by_status(self) -> dict[AntaTestStatus, list[TestResult]]:
         """A cached property that returns the results grouped by status."""
-        return {status: [result for result in self._result_entries if result.result == status] for status in get_args(TestStatus)}
+        return {status: [result for result in self._result_entries if result.result == status] for status in AntaTestStatus}
 
-    def _update_status(self, test_status: TestStatus) -> None:
+    def _update_status(self, test_status: AntaTestStatus) -> None:
         """Update the status of the ResultManager instance based on the test status.
 
         Parameters
         ----------
-            test_status: TestStatus to update the ResultManager status.
+            test_status: AntaTestStatus to update the ResultManager status.
         """
-        result_validator: TypeAdapter[TestStatus] = TypeAdapter(TestStatus)
-        result_validator.validate_python(test_status)
         if test_status == "error":
             self.error_status = True
             return
@@ -168,7 +163,7 @@ class ResultManager:
         result.categories = [
             " ".join(word.upper() if word.lower() in ACRONYM_CATEGORIES else word.title() for word in category.split()) for category in result.categories
         ]
-        count_attr = f"tests_{result.result}_count"
+        count_attr = f"tests_{result.result.value}_count"
 
         # Update device stats
         device_stats: DeviceStats = self.device_stats[result.name]
@@ -185,7 +180,7 @@ class ResultManager:
             setattr(category_stats, count_attr, getattr(category_stats, count_attr) + 1)
 
         # Update test stats
-        count_attr = f"devices_{result.result}_count"
+        count_attr = f"devices_{result.result.value}_count"
         test_stats: TestStats = self.test_stats[result.test]
         setattr(test_stats, count_attr, getattr(test_stats, count_attr) + 1)
         if result.result in ("failure", "error"):
@@ -208,14 +203,14 @@ class ResultManager:
         # Every time a new result is added, we need to clear the cached property
         self.__dict__.pop("results_by_status", None)
 
-    def get_results(self, status: set[TestStatus] | None = None, sort_by: list[str] | None = None) -> list[TestResult]:
+    def get_results(self, status: set[AntaTestStatus] | None = None, sort_by: list[str] | None = None) -> list[TestResult]:
         """Get the results, optionally filtered by status and sorted by TestResult fields.
 
         If no status is provided, all results are returned.
 
         Parameters
         ----------
-            status: Optional set of TestStatus literals to filter the results.
+            status: Optional set of AntaTestStatus enum members to filter the results.
             sort_by: Optional list of TestResult fields to sort the results.
 
         Returns
@@ -234,14 +229,14 @@ class ResultManager:
 
         return results
 
-    def get_total_results(self, status: set[TestStatus] | None = None) -> int:
+    def get_total_results(self, status: set[AntaTestStatus] | None = None) -> int:
         """Get the total number of results, optionally filtered by status.
 
         If no status is provided, the total number of results is returned.
 
         Parameters
         ----------
-            status: Optional set of TestStatus literals to filter the results.
+            status: Optional set of AntaTestStatus enum members to filter the results.
 
         Returns
         -------
@@ -258,18 +253,18 @@ class ResultManager:
         """Return the current status including error_status if ignore_error is False."""
         return "error" if self.error_status and not ignore_error else self.status
 
-    def filter(self, hide: set[TestStatus]) -> ResultManager:
+    def filter(self, hide: set[AntaTestStatus]) -> ResultManager:
         """Get a filtered ResultManager based on test status.
 
         Parameters
         ----------
-            hide: set of TestStatus literals to select tests to hide based on their status.
+            hide: Set of AntaTestStatus enum members to select tests to hide based on their status.
 
         Returns
         -------
             A filtered `ResultManager`.
         """
-        possible_statuses = set(get_args(TestStatus))
+        possible_statuses = set(AntaTestStatus)
         manager = ResultManager()
         manager.results = self.get_results(possible_statuses - hide)
         return manager

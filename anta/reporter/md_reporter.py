@@ -278,7 +278,7 @@ class TestResults(MDReportBase):
             categories = ", ".join(result.categories)
             yield (
                 f"| {result.name or '-'} | {categories or '-'} | {result.test or '-'} "
-                f"| {result.description or '-'} | {self.safe_markdown(result.custom_field) or '-'} | {result.result or '-'} | {messages or '-'} |\n"
+                f"| {result.description or '-'} | {self.safe_markdown(result.custom_field) or '-'} | {result.result.value or '-'} | {messages or '-'} |\n"
             )
 
     def generate_section(self) -> None:

@@ -11,12 +11,8 @@ from enum import Enum
 from pydantic import BaseModel
 
 
-class TestStatus(str, Enum):
-    """TestStatus enum."""
-
-    # This is to prevent pytest to collecting this
-    # TODO: find a way to ignore this only in test and not in library code.
-    __test__ = False
+class AntaTestStatus(str, Enum):
+    """Test status Enum for the TestResult."""
 
     unset = "unset"
     success = "success"
@@ -30,13 +26,13 @@ class TestResult(BaseModel):
 
     Attributes
     ----------
-        name: Device name where the test has run.
-        test: Test name runs on the device.
-        categories: List of categories the TestResult belongs to, by default the AntaTest categories.
-        description: TestResult description, by default the AntaTest description.
-        result: Result of the test. Can be one of "unset", "success", "failure", "error" or "skipped".
-        messages: Message to report after the test if any.
-        custom_field: Custom field to store a string for flexibility in integrating with ANTA
+        name: Name of the device where the test was run.
+        test: Name of the test run on the device.
+        categories: List of categories the TestResult belongs to. Defaults to the AntaTest categories.
+        description: Description of the TestResult. Defaults to the AntaTest description.
+        result: Result of the test. Must be one of the Status Enum values: unset, success, failure, error, skipped.
+        messages: Messages to report after the test, if any.
+        custom_field: Custom field to store a string for flexibility in integrating with ANTA.
 
     """
 
@@ -44,7 +40,7 @@ class TestResult(BaseModel):
     test: str
     categories: list[str]
     description: str
-    result: TestStatus = TestStatus.unset
+    result: AntaTestStatus = AntaTestStatus.unset
     messages: list[str] = []
     custom_field: str | None = None
 
@@ -56,7 +52,7 @@ class TestResult(BaseModel):
             message: Optional message related to the test
 
         """
-        self._set_status(TestStatus.success, message)
+        self._set_status(AntaTestStatus.success, message)
 
     def is_failure(self, message: str | None = None) -> None:
         """Set status to failure.
@@ -66,7 +62,7 @@ class TestResult(BaseModel):
             message: Optional message related to the test
 
         """
-        self._set_status(TestStatus.failure, message)
+        self._set_status(AntaTestStatus.failure, message)
 
     def is_skipped(self, message: str | None = None) -> None:
         """Set status to skipped.
@@ -76,7 +72,7 @@ class TestResult(BaseModel):
             message: Optional message related to the test
 
         """
-        self._set_status(TestStatus.skipped, message)
+        self._set_status(AntaTestStatus.skipped, message)
 
     def is_error(self, message: str | None = None) -> None:
         """Set status to error.
@@ -86,9 +82,9 @@ class TestResult(BaseModel):
             message: Optional message related to the test
 
         """
-        self._set_status(TestStatus.error, message)
+        self._set_status(AntaTestStatus.error, message)
 
-    def _set_status(self, status: TestStatus, message: str | None = None) -> None:
+    def _set_status(self, status: AntaTestStatus, message: str | None = None) -> None:
         """Set status and insert optional message.
 
         Parameters
