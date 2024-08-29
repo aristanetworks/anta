@@ -3106,34 +3106,34 @@
         <span class="k">for</span> <span class="n">bfd_peers</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">bfd_peers</span><span class="p">:</span>
             <span class="n">peer</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">bfd_peers</span><span class="o">.</span><span class="n">peer_address</span><span class="p">)</span>
             <span class="n">vrf</span> <span class="o">=</span> <span class="n">bfd_peers</span><span class="o">.</span><span class="n">vrf</span>
-
-            <span class="c1"># Converting milliseconds intervals into actual value</span>
-            <span class="n">tx_interval</span> <span class="o">=</span> <span class="n">bfd_peers</span><span class="o">.</span><span class="n">tx_interval</span> <span class="o">*</span> <span class="mi">1000</span>
-            <span class="n">rx_interval</span> <span class="o">=</span> <span class="n">bfd_peers</span><span class="o">.</span><span class="n">rx_interval</span> <span class="o">*</span> <span class="mi">1000</span>
+            <span class="n">tx_interval</span> <span class="o">=</span> <span class="n">bfd_peers</span><span class="o">.</span><span class="n">tx_interval</span>
+            <span class="n">rx_interval</span> <span class="o">=</span> <span class="n">bfd_peers</span><span class="o">.</span><span class="n">rx_interval</span>
             <span class="n">multiplier</span> <span class="o">=</span> <span class="n">bfd_peers</span><span class="o">.</span><span class="n">multiplier</span>
+
+            <span class="c1"># Check if BFD peer configured</span>
             <span class="n">bfd_output</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">,</span>
                 <span class="sa">f</span><span class="s2">&quot;vrfs..</span><span class="si">{</span><span class="n">vrf</span><span class="si">}</span><span class="s2">..ipv4Neighbors..</span><span class="si">{</span><span class="n">peer</span><span class="si">}</span><span class="s2">..peerStats..&quot;</span><span class="p">,</span>
                 <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;..&quot;</span><span class="p">,</span>
             <span class="p">)</span>
-
-            <span class="c1"># Check if BFD peer configured</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">bfd_output</span><span class="p">:</span>
                 <span class="n">failures</span><span class="p">[</span><span class="n">peer</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">vrf</span><span class="p">:</span> <span class="s2">&quot;Not Configured&quot;</span><span class="p">}</span>
                 <span class="k">continue</span>
 
+            <span class="c1"># Convert interval timer(s) into milliseconds to be consistent with the inputs.</span>
             <span class="n">bfd_details</span> <span class="o">=</span> <span class="n">bfd_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;peerStatsDetail&quot;</span><span class="p">,</span> <span class="p">{})</span>
-            <span class="n">intervals_ok</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">bfd_details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;operTxInterval&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">tx_interval</span> <span class="ow">and</span> <span class="n">bfd_details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;operRxInterval&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">rx_interval</span> <span class="ow">and</span> <span class="n">bfd_details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;detectMult&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">multiplier</span>
-            <span class="p">)</span>
+            <span class="n">op_tx_interval</span> <span class="o">=</span> <span class="n">bfd_details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;operTxInterval&quot;</span><span class="p">)</span> <span class="o">//</span> <span class="mi">1000</span>
+            <span class="n">op_rx_interval</span> <span class="o">=</span> <span class="n">bfd_details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;operRxInterval&quot;</span><span class="p">)</span> <span class="o">//</span> <span class="mi">1000</span>
+            <span class="n">detect_multiplier</span> <span class="o">=</span> <span class="n">bfd_details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;detectMult&quot;</span><span class="p">)</span>
+            <span class="n">intervals_ok</span> <span class="o">=</span> <span class="n">op_tx_interval</span> <span class="o">==</span> <span class="n">tx_interval</span> <span class="ow">and</span> <span class="n">op_rx_interval</span> <span class="o">==</span> <span class="n">rx_interval</span> <span class="ow">and</span> <span class="n">detect_multiplier</span> <span class="o">==</span> <span class="n">multiplier</span>
 
             <span class="c1"># Check timers of BFD peer</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">intervals_ok</span><span class="p">:</span>
                 <span class="n">failures</span><span class="p">[</span><span class="n">peer</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
                     <span class="n">vrf</span><span class="p">:</span> <span class="p">{</span>
-                        <span class="s2">&quot;tx_interval&quot;</span><span class="p">:</span> <span class="n">bfd_details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;operTxInterval&quot;</span><span class="p">),</span>
-                        <span class="s2">&quot;rx_interval&quot;</span><span class="p">:</span> <span class="n">bfd_details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;operRxInterval&quot;</span><span class="p">),</span>
-                        <span class="s2">&quot;multiplier&quot;</span><span class="p">:</span> <span class="n">bfd_details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;detectMult&quot;</span><span class="p">),</span>
+                        <span class="s2">&quot;tx_interval&quot;</span><span class="p">:</span> <span class="n">op_tx_interval</span><span class="p">,</span>
+                        <span class="s2">&quot;rx_interval&quot;</span><span class="p">:</span> <span class="n">op_rx_interval</span><span class="p">,</span>
+                        <span class="s2">&quot;multiplier&quot;</span><span class="p">:</span> <span class="n">detect_multiplier</span><span class="p">,</span>
                     <span class="p">}</span>
                 <span class="p">}</span>
 
