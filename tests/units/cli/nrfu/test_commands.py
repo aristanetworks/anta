@@ -171,3 +171,27 @@ def test_anta_nrfu_md_report_failure(click_runner: CliRunner, tmp_path: Path) ->
     assert result.exit_code == ExitCode.USAGE_ERROR
     assert "Failed to save Markdown report to" in result.output
     assert not md_output.exists()
+
+
+def test_anta_nrfu_md_report_with_hide(click_runner: CliRunner, tmp_path: Path) -> None:
+    """Test anta nrfu md-report with the `--hide` option."""
+    md_output = tmp_path / "test.md"
+    result = click_runner.invoke(anta, ["nrfu", "--hide", "success", "md-report", "--md-output", str(md_output)])
+
+    assert result.exit_code == ExitCode.OK
+    assert "Markdown report saved to" in result.output
+    assert md_output.exists()
+
+    with md_output.open("r", encoding="utf-8") as f:
+        content = f.read()
+
+    # Use regex to find the "Total Tests Success" value
+    match = re.search(r"\| (\d+) \| (\d+) \| \d+ \| \d+ \| \d+ \|", content)
+
+    assert match is not None
+
+    total_tests = int(match.group(1))
+    total_tests_success = int(match.group(2))
+
+    assert total_tests == 0
+    assert total_tests_success == 0
