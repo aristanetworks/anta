@@ -345,6 +345,17 @@ class TestAntaCatalog:
         tests = catalog.get_tests_by_tags(tags={"leaf", "spine"}, strict=True)
         assert len(tests) == 1
 
+    def test_merge_catalogs(self) -> None:
+        """Test the merge_catalogs function."""
+        # Load catalogs of different sizes
+        small_catalog = AntaCatalog.parse(DATA_DIR / "test_catalog.yml")
+        medium_catalog = AntaCatalog.parse(DATA_DIR / "test_catalog_medium.yml")
+        tagged_catalog = AntaCatalog.parse(DATA_DIR / "test_catalog_with_tags.yml")
+
+        # Merge the catalogs and check the number of tests
+        final_catalog = AntaCatalog.merge_catalogs([small_catalog, medium_catalog, tagged_catalog])
+        assert len(final_catalog.tests) == len(small_catalog.tests) + len(medium_catalog.tests) + len(tagged_catalog.tests)
+
     def test_merge(self) -> None:
         """Test AntaCatalog.merge()."""
         catalog1: AntaCatalog = AntaCatalog.parse(DATA_DIR / "test_catalog.yml")
@@ -354,11 +365,15 @@ class TestAntaCatalog:
         catalog3: AntaCatalog = AntaCatalog.parse(DATA_DIR / "test_catalog_medium.yml")
         assert len(catalog3.tests) == 228
 
-        assert len(catalog1.merge(catalog2).tests) == 2
+        with pytest.deprecated_call():
+            merged_catalog = catalog1.merge(catalog2)
+        assert len(merged_catalog.tests) == 2
         assert len(catalog1.tests) == 1
         assert len(catalog2.tests) == 1
 
-        assert len(catalog2.merge(catalog3).tests) == 229
+        with pytest.deprecated_call():
+            merged_catalog = catalog2.merge(catalog3)
+        assert len(merged_catalog.tests) == 229
         assert len(catalog2.tests) == 1
         assert len(catalog3.tests) == 228
 

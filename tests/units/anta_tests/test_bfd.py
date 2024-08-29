@@ -10,7 +10,7 @@ from typing import Any
 
 # pylint: disable=C0413
 # because of the patch above
-from anta.tests.bfd import VerifyBFDPeersHealth, VerifyBFDPeersIntervals, VerifyBFDSpecificPeers
+from anta.tests.bfd import VerifyBFDPeersHealth, VerifyBFDPeersIntervals, VerifyBFDPeersRegProtocols, VerifyBFDSpecificPeers
 from tests.lib.anta import test  # noqa: F401; pylint: disable=W0611
 
 DATA: list[dict[str, Any]] = [
@@ -516,6 +516,135 @@ DATA: list[dict[str, Any]] = [
             "messages": [
                 "Following BFD peers were down:\n192.0.255.7 in default VRF was down 3 hours ago.\n"
                 "192.0.255.71 in default VRF was down 3 hours ago.\n192.0.255.17 in default VRF was down 3 hours ago."
+            ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifyBFDPeersRegProtocols,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "ipv4Neighbors": {
+                            "192.0.255.7": {
+                                "peerStats": {
+                                    "": {
+                                        "status": "up",
+                                        "remoteDisc": 108328132,
+                                        "peerStatsDetail": {
+                                            "role": "active",
+                                            "apps": ["ospf"],
+                                        },
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "MGMT": {
+                        "ipv4Neighbors": {
+                            "192.0.255.70": {
+                                "peerStats": {
+                                    "": {
+                                        "status": "up",
+                                        "remoteDisc": 108328132,
+                                        "peerStatsDetail": {
+                                            "role": "active",
+                                            "apps": ["bgp"],
+                                        },
+                                    }
+                                }
+                            }
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bfd_peers": [
+                {"peer_address": "192.0.255.7", "vrf": "default", "protocols": ["ospf"]},
+                {"peer_address": "192.0.255.70", "vrf": "MGMT", "protocols": ["bgp"]},
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure",
+        "test": VerifyBFDPeersRegProtocols,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "ipv4Neighbors": {
+                            "192.0.255.7": {
+                                "peerStats": {
+                                    "": {
+                                        "status": "up",
+                                        "peerStatsDetail": {
+                                            "role": "active",
+                                            "apps": ["ospf"],
+                                        },
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "MGMT": {
+                        "ipv4Neighbors": {
+                            "192.0.255.70": {
+                                "peerStats": {
+                                    "": {
+                                        "status": "up",
+                                        "remoteDisc": 0,
+                                        "peerStatsDetail": {
+                                            "role": "active",
+                                            "apps": ["bgp"],
+                                        },
+                                    }
+                                }
+                            }
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bfd_peers": [
+                {"peer_address": "192.0.255.7", "vrf": "default", "protocols": ["isis"]},
+                {"peer_address": "192.0.255.70", "vrf": "MGMT", "protocols": ["isis"]},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following BFD peers are not configured or have non-registered protocol(s):\n"
+                "{'192.0.255.7': {'default': ['isis']}, "
+                "'192.0.255.70': {'MGMT': ['isis']}}"
+            ],
+        },
+    },
+    {
+        "name": "failure-not-found",
+        "test": VerifyBFDPeersRegProtocols,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {},
+                    "MGMT": {},
+                }
+            }
+        ],
+        "inputs": {
+            "bfd_peers": [
+                {"peer_address": "192.0.255.7", "vrf": "default", "protocols": ["isis"]},
+                {"peer_address": "192.0.255.70", "vrf": "MGMT", "protocols": ["isis"]},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following BFD peers are not configured or have non-registered protocol(s):\n"
+                "{'192.0.255.7': {'default': 'Not Configured'}, '192.0.255.70': {'MGMT': 'Not Configured'}}"
             ],
         },
     },

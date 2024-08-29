@@ -120,7 +120,7 @@ anta nrfu --test VerifyZeroTouch table
 
 ## Performing NRFU with JSON rendering
 
-The JSON rendering command in NRFU testing is useful in generating a JSON output that can subsequently be passed on to another tool for reporting purposes.
+The JSON rendering command in NRFU testing will generate an output of all test results in JSON format.
 
 ### Command overview
 
@@ -131,12 +131,12 @@ Usage: anta nrfu json [OPTIONS]
   ANTA command to check network state with JSON result.
 
 Options:
-  -o, --output FILE  Path to save report as a file  [env var:
+  -o, --output FILE  Path to save report as a JSON file  [env var:
                      ANTA_NRFU_JSON_OUTPUT]
   --help             Show this message and exit.
 ```
 
-The `--output` option allows you to save the JSON report as a file.
+The `--output` option allows you to save the JSON report as a file. If specified, no output will be displayed in the terminal. This is useful for further processing or integration with other tools.
 
 ### Example
 
