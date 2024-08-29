@@ -5,8 +5,10 @@
 
 from __future__ import annotations
 
+import json
 import logging
 import shutil
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable
 from unittest.mock import patch
 
@@ -23,11 +25,14 @@ from tests.lib.utils import default_anta_env
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
-    from pathlib import Path
 
     from anta.models import AntaCommand
 
 logger = logging.getLogger(__name__)
+
+DATA_DIR: Path = Path(__file__).parent.parent.resolve() / "data"
+
+JSON_RESULTS = "test_md_report_results.json"
 
 DEVICE_HW_MODEL = "pytest"
 DEVICE_NAME = "pytest"
@@ -58,7 +63,7 @@ MOCK_CLI_TEXT: dict[str, asynceapi.EapiCommandError | str] = {
 }
 
 
-@pytest.fixture()
+@pytest.fixture
 def device(request: pytest.FixtureRequest) -> Iterator[AntaDevice]:
     """Return an AntaDevice instance with mocked abstract method."""
 
@@ -78,7 +83,7 @@ def device(request: pytest.FixtureRequest) -> Iterator[AntaDevice]:
         yield dev
 
 
-@pytest.fixture()
+@pytest.fixture
 def test_inventory() -> AntaInventory:
     """Return the test_inventory."""
     env = default_anta_env()
@@ -93,7 +98,7 @@ def test_inventory() -> AntaInventory:
 
 
 # tests.unit.test_device.py fixture
-@pytest.fixture()
+@pytest.fixture
 def async_device(request: pytest.FixtureRequest) -> AsyncEOSDevice:
     """Return an AsyncEOSDevice instance."""
     kwargs = {
@@ -110,7 +115,7 @@ def async_device(request: pytest.FixtureRequest) -> AsyncEOSDevice:
 
 
 # tests.units.result_manager fixtures
-@pytest.fixture()
+@pytest.fixture
 def test_result_factory(device: AntaDevice) -> Callable[[int], TestResult]:
     """Return a anta.result_manager.models.TestResult object."""
     # pylint: disable=redefined-outer-name
@@ -128,7 +133,7 @@ def test_result_factory(device: AntaDevice) -> Callable[[int], TestResult]:
     return _create
 
 
-@pytest.fixture()
+@pytest.fixture
 def list_result_factory(test_result_factory: Callable[[int], TestResult]) -> Callable[[int], list[TestResult]]:
     """Return a list[TestResult] with 'size' TestResult instantiated using the test_result_factory fixture."""
     # pylint: disable=redefined-outer-name
@@ -140,7 +145,7 @@ def list_result_factory(test_result_factory: Callable[[int], TestResult]) -> Cal
     return _factory
 
 
-@pytest.fixture()
+@pytest.fixture
 def result_manager_factory(list_result_factory: Callable[[int], list[TestResult]]) -> Callable[[int], ResultManager]:
     """Return a ResultManager factory that takes as input a number of tests."""
     # pylint: disable=redefined-outer-name
@@ -154,8 +159,33 @@ def result_manager_factory(list_result_factory: Callable[[int], list[TestResult]
     return _factory
 
 
+@pytest.fixture
+def result_manager() -> ResultManager:
+    """Return a ResultManager with 30 random tests loaded from a JSON file.
+
+    Devices: DC1-SPINE1, DC1-LEAF1A
+
+    - Total tests: 30
+    - Success: 7
+    - Skipped: 2
+    - Failure: 19
+    - Error: 2
+
+    See `tests/data/test_md_report_results.json` and `tests/data/test_md_report_all_tests.md` for details.
+    """
+    manager = ResultManager()
+
+    with (DATA_DIR / JSON_RESULTS).open("r", encoding="utf-8") as f:
+        results = json.load(f)
+
+    for result in results:
+        manager.add(TestResult(**result))
+
+    return manager
+
+
 # tests.units.cli fixtures
-@pytest.fixture()
+@pytest.fixture
 def temp_env(tmp_path: Path) -> dict[str, str | None]:
     """Fixture that create a temporary ANTA inventory.
 
@@ -169,7 +199,7 @@ def temp_env(tmp_path: Path) -> dict[str, str | None]:
     return env
 
 
-@pytest.fixture()
+@pytest.fixture
 # Disabling C901 - too complex as we like our runner like this
 def click_runner(capsys: pytest.CaptureFixture[str]) -> Iterator[CliRunner]:  # noqa: C901
     """Return a click.CliRunner for cli testing."""

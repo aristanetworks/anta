@@ -15,10 +15,12 @@ from anta.tests.routing.bgp import (
     VerifyBGPExchangedRoutes,
     VerifyBGPPeerASNCap,
     VerifyBGPPeerCount,
+    VerifyBGPPeerDropStats,
     VerifyBGPPeerMD5Auth,
     VerifyBGPPeerMPCaps,
     VerifyBGPPeerRouteRefreshCap,
     VerifyBGPPeersHealth,
+    VerifyBGPPeerUpdateErrors,
     VerifyBGPSpecificPeers,
     VerifyBGPTimers,
     VerifyEVPNType2Route,
@@ -3719,6 +3721,639 @@ DATA: list[dict[str, Any]] = [
                 "Following BGP peers are not configured or hold and keep-alive timers are not correct:\n"
                 "{'172.30.11.1': {'default': {'hold_time': 160, 'keep_alive_time': 60}}, "
                 "'172.30.11.11': {'MGMT': {'hold_time': 120, 'keep_alive_time': 40}}}"
+            ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifyBGPPeerDropStats,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "dropStats": {
+                                    "inDropAsloop": 0,
+                                    "inDropClusterIdLoop": 0,
+                                    "inDropMalformedMpbgp": 0,
+                                    "inDropOrigId": 0,
+                                    "inDropNhLocal": 0,
+                                    "inDropNhAfV6": 0,
+                                    "prefixDroppedMartianV4": 0,
+                                    "prefixDroppedMaxRouteLimitViolatedV4": 0,
+                                    "prefixDroppedMartianV6": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+            {
+                "vrfs": {
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.9",
+                                "dropStats": {
+                                    "inDropAsloop": 0,
+                                    "inDropClusterIdLoop": 0,
+                                    "inDropMalformedMpbgp": 0,
+                                    "inDropOrigId": 0,
+                                    "inDropNhLocal": 0,
+                                    "inDropNhAfV6": 0,
+                                    "prefixDroppedMartianV4": 0,
+                                    "prefixDroppedMaxRouteLimitViolatedV4": 0,
+                                    "prefixDroppedMartianV6": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "10.100.0.8",
+                    "vrf": "default",
+                    "drop_stats": ["prefixDroppedMartianV4", "prefixDroppedMaxRouteLimitViolatedV4", "prefixDroppedMartianV6"],
+                },
+                {"peer_address": "10.100.0.9", "vrf": "MGMT", "drop_stats": ["inDropClusterIdLoop", "inDropOrigId", "inDropNhLocal"]},
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-not-found",
+        "test": VerifyBGPPeerDropStats,
+        "eos_data": [
+            {"vrfs": {}},
+            {"vrfs": {}},
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "10.100.0.8",
+                    "vrf": "default",
+                    "drop_stats": ["prefixDroppedMartianV4", "prefixDroppedMaxRouteLimitViolatedV4", "prefixDroppedMartianV6"],
+                },
+                {"peer_address": "10.100.0.9", "vrf": "MGMT", "drop_stats": ["inDropClusterIdLoop", "inDropOrigId", "inDropNhLocal"]},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following BGP peers are not configured or have non-zero NLRI drop statistics counters:\n"
+                "{'10.100.0.8': {'default': 'Not configured'}, '10.100.0.9': {'MGMT': 'Not configured'}}"
+            ],
+        },
+    },
+    {
+        "name": "failure",
+        "test": VerifyBGPPeerDropStats,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "dropStats": {
+                                    "inDropAsloop": 0,
+                                    "inDropClusterIdLoop": 0,
+                                    "inDropMalformedMpbgp": 0,
+                                    "inDropOrigId": 1,
+                                    "inDropNhLocal": 1,
+                                    "inDropNhAfV6": 0,
+                                    "prefixDroppedMartianV4": 1,
+                                    "prefixDroppedMaxRouteLimitViolatedV4": 1,
+                                    "prefixDroppedMartianV6": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+            {
+                "vrfs": {
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.9",
+                                "dropStats": {
+                                    "inDropAsloop": 0,
+                                    "inDropClusterIdLoop": 0,
+                                    "inDropMalformedMpbgp": 0,
+                                    "inDropOrigId": 1,
+                                    "inDropNhLocal": 1,
+                                    "inDropNhAfV6": 0,
+                                    "prefixDroppedMartianV4": 0,
+                                    "prefixDroppedMaxRouteLimitViolatedV4": 0,
+                                    "prefixDroppedMartianV6": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "10.100.0.8",
+                    "vrf": "default",
+                    "drop_stats": ["prefixDroppedMartianV4", "prefixDroppedMaxRouteLimitViolatedV4", "prefixDroppedMartianV6"],
+                },
+                {"peer_address": "10.100.0.9", "vrf": "MGMT", "drop_stats": ["inDropClusterIdLoop", "inDropOrigId", "inDropNhLocal"]},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following BGP peers are not configured or have non-zero NLRI drop statistics counters:\n"
+                "{'10.100.0.8': {'default': {'prefixDroppedMartianV4': 1, 'prefixDroppedMaxRouteLimitViolatedV4': 1}}, "
+                "'10.100.0.9': {'MGMT': {'inDropOrigId': 1, 'inDropNhLocal': 1}}}"
+            ],
+        },
+    },
+    {
+        "name": "success-all-drop-stats",
+        "test": VerifyBGPPeerDropStats,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "dropStats": {
+                                    "inDropAsloop": 0,
+                                    "inDropClusterIdLoop": 0,
+                                    "inDropMalformedMpbgp": 0,
+                                    "inDropOrigId": 0,
+                                    "inDropNhLocal": 0,
+                                    "inDropNhAfV6": 0,
+                                    "prefixDroppedMartianV4": 0,
+                                    "prefixDroppedMaxRouteLimitViolatedV4": 0,
+                                    "prefixDroppedMartianV6": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+            {
+                "vrfs": {
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.9",
+                                "dropStats": {
+                                    "inDropAsloop": 0,
+                                    "inDropClusterIdLoop": 0,
+                                    "inDropMalformedMpbgp": 0,
+                                    "inDropOrigId": 0,
+                                    "inDropNhLocal": 0,
+                                    "inDropNhAfV6": 0,
+                                    "prefixDroppedMartianV4": 0,
+                                    "prefixDroppedMaxRouteLimitViolatedV4": 0,
+                                    "prefixDroppedMartianV6": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default"},
+                {"peer_address": "10.100.0.9", "vrf": "MGMT"},
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-all-drop-stats",
+        "test": VerifyBGPPeerDropStats,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "dropStats": {
+                                    "inDropAsloop": 3,
+                                    "inDropClusterIdLoop": 0,
+                                    "inDropMalformedMpbgp": 0,
+                                    "inDropOrigId": 1,
+                                    "inDropNhLocal": 1,
+                                    "inDropNhAfV6": 0,
+                                    "prefixDroppedMartianV4": 1,
+                                    "prefixDroppedMaxRouteLimitViolatedV4": 1,
+                                    "prefixDroppedMartianV6": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+            {
+                "vrfs": {
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.9",
+                                "dropStats": {
+                                    "inDropAsloop": 2,
+                                    "inDropClusterIdLoop": 0,
+                                    "inDropMalformedMpbgp": 0,
+                                    "inDropOrigId": 1,
+                                    "inDropNhLocal": 1,
+                                    "inDropNhAfV6": 0,
+                                    "prefixDroppedMartianV4": 0,
+                                    "prefixDroppedMaxRouteLimitViolatedV4": 0,
+                                    "prefixDroppedMartianV6": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default"},
+                {"peer_address": "10.100.0.9", "vrf": "MGMT"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following BGP peers are not configured or have non-zero NLRI drop statistics counters:\n"
+                "{'10.100.0.8': {'default': {'inDropAsloop': 3, 'inDropOrigId': 1, 'inDropNhLocal': 1, "
+                "'prefixDroppedMartianV4': 1, 'prefixDroppedMaxRouteLimitViolatedV4': 1}}, "
+                "'10.100.0.9': {'MGMT': {'inDropAsloop': 2, 'inDropOrigId': 1, 'inDropNhLocal': 1}}}"
+            ],
+        },
+    },
+    {
+        "name": "failure-drop-stat-not-found",
+        "test": VerifyBGPPeerDropStats,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "dropStats": {
+                                    "inDropAsloop": 3,
+                                    "inDropClusterIdLoop": 0,
+                                    "inDropMalformedMpbgp": 0,
+                                    "inDropOrigId": 1,
+                                    "inDropNhLocal": 1,
+                                    "inDropNhAfV6": 0,
+                                    "prefixDroppedMaxRouteLimitViolatedV4": 1,
+                                    "prefixDroppedMartianV6": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default", "drop_stats": ["inDropAsloop", "inDropOrigId", "inDropNhLocal", "prefixDroppedMartianV4"]}
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following BGP peers are not configured or have non-zero NLRI drop statistics counters:\n"
+                "{'10.100.0.8': {'default': {'inDropAsloop': 3, 'inDropOrigId': 1, 'inDropNhLocal': 1, 'prefixDroppedMartianV4': 'Not Found'}}}"
+            ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifyBGPPeerUpdateErrors,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "peerInUpdateErrors": {
+                                    "inUpdErrWithdraw": 0,
+                                    "inUpdErrIgnore": 0,
+                                    "inUpdErrDisableAfiSafi": 0,
+                                    "disabledAfiSafi": "None",
+                                    "lastUpdErrTime": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+            {
+                "vrfs": {
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.9",
+                                "peerInUpdateErrors": {
+                                    "inUpdErrWithdraw": 0,
+                                    "inUpdErrIgnore": 0,
+                                    "inUpdErrDisableAfiSafi": 0,
+                                    "disabledAfiSafi": "None",
+                                    "lastUpdErrTime": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default", "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
+                {"peer_address": "10.100.0.9", "vrf": "MGMT", "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-not-found",
+        "test": VerifyBGPPeerUpdateErrors,
+        "eos_data": [
+            {"vrfs": {}},
+            {"vrfs": {}},
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default", "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
+                {"peer_address": "10.100.0.9", "vrf": "MGMT", "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following BGP peers are not configured or have non-zero update error counters:\n"
+                "{'10.100.0.8': {'default': 'Not configured'}, '10.100.0.9': {'MGMT': 'Not configured'}}"
+            ],
+        },
+    },
+    {
+        "name": "failure-errors",
+        "test": VerifyBGPPeerUpdateErrors,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "peerInUpdateErrors": {
+                                    "inUpdErrWithdraw": 0,
+                                    "inUpdErrIgnore": 0,
+                                    "inUpdErrDisableAfiSafi": 0,
+                                    "disabledAfiSafi": "ipv4Unicast",
+                                    "lastUpdErrTime": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+            {
+                "vrfs": {
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.9",
+                                "peerInUpdateErrors": {
+                                    "inUpdErrWithdraw": 1,
+                                    "inUpdErrIgnore": 0,
+                                    "inUpdErrDisableAfiSafi": 0,
+                                    "disabledAfiSafi": "None",
+                                    "lastUpdErrTime": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default", "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
+                {"peer_address": "10.100.0.9", "vrf": "MGMT", "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following BGP peers are not configured or have non-zero update error counters:\n"
+                "{'10.100.0.8': {'default': {'disabledAfiSafi': 'ipv4Unicast'}}, "
+                "'10.100.0.9': {'MGMT': {'inUpdErrWithdraw': 1}}}"
+            ],
+        },
+    },
+    {
+        "name": "failure-not-found",
+        "test": VerifyBGPPeerUpdateErrors,
+        "eos_data": [
+            {
+                "vrfs": {},
+            },
+            {
+                "vrfs": {},
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default", "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
+                {"peer_address": "10.100.0.9", "vrf": "MGMT", "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following BGP peers are not configured or have non-zero update error counters:\n"
+                "{'10.100.0.8': {'default': 'Not configured'}, '10.100.0.9': {'MGMT': 'Not configured'}}"
+            ],
+        },
+    },
+    {
+        "name": "success-all-error-counters",
+        "test": VerifyBGPPeerUpdateErrors,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "peerInUpdateErrors": {
+                                    "inUpdErrWithdraw": 0,
+                                    "inUpdErrIgnore": 0,
+                                    "inUpdErrDisableAfiSafi": 0,
+                                    "disabledAfiSafi": "None",
+                                    "lastUpdErrTime": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+            {
+                "vrfs": {
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.9",
+                                "peerInUpdateErrors": {
+                                    "inUpdErrWithdraw": 0,
+                                    "inUpdErrIgnore": 0,
+                                    "inUpdErrDisableAfiSafi": 0,
+                                    "disabledAfiSafi": "None",
+                                    "lastUpdErrTime": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default"},
+                {"peer_address": "10.100.0.9", "vrf": "MGMT"},
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-all-error-counters",
+        "test": VerifyBGPPeerUpdateErrors,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "peerInUpdateErrors": {
+                                    "inUpdErrWithdraw": 1,
+                                    "inUpdErrIgnore": 0,
+                                    "inUpdErrDisableAfiSafi": 0,
+                                    "disabledAfiSafi": "ipv4Unicast",
+                                    "lastUpdErrTime": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+            {
+                "vrfs": {
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.9",
+                                "peerInUpdateErrors": {
+                                    "inUpdErrWithdraw": 1,
+                                    "inUpdErrIgnore": 0,
+                                    "inUpdErrDisableAfiSafi": 1,
+                                    "disabledAfiSafi": "None",
+                                    "lastUpdErrTime": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default", "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
+                {
+                    "peer_address": "10.100.0.9",
+                    "vrf": "MGMT",
+                    "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi", "inUpdErrDisableAfiSafi"],
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following BGP peers are not configured or have non-zero update error counters:\n"
+                "{'10.100.0.8': {'default': {'inUpdErrWithdraw': 1, 'disabledAfiSafi': 'ipv4Unicast'}}, "
+                "'10.100.0.9': {'MGMT': {'inUpdErrWithdraw': 1, 'inUpdErrDisableAfiSafi': 1}}}"
+            ],
+        },
+    },
+    {
+        "name": "failure-all-not-found",
+        "test": VerifyBGPPeerUpdateErrors,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "peerInUpdateErrors": {
+                                    "inUpdErrIgnore": 0,
+                                    "inUpdErrDisableAfiSafi": 0,
+                                    "disabledAfiSafi": "ipv4Unicast",
+                                    "lastUpdErrTime": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+            {
+                "vrfs": {
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.9",
+                                "peerInUpdateErrors": {
+                                    "inUpdErrWithdraw": 1,
+                                    "inUpdErrIgnore": 0,
+                                    "disabledAfiSafi": "None",
+                                    "lastUpdErrTime": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default", "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
+                {
+                    "peer_address": "10.100.0.9",
+                    "vrf": "MGMT",
+                    "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi", "inUpdErrDisableAfiSafi"],
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following BGP peers are not configured or have non-zero update error counters:\n"
+                "{'10.100.0.8': {'default': {'inUpdErrWithdraw': 'Not Found', 'disabledAfiSafi': 'ipv4Unicast'}}, "
+                "'10.100.0.9': {'MGMT': {'inUpdErrWithdraw': 1, 'inUpdErrDisableAfiSafi': 'Not Found'}}}"
             ],
         },
     },

@@ -820,3 +820,37 @@ class VerifySpecificIPSecConn(AntaTest):
                     self.result.is_failure(
                         f"IPv4 security connection `source:{source_input} destination:{destination_input} vrf:{vrf}` for peer `{peer}` is not found."
                     )
+
+
+class VerifyHardwareEntropy(AntaTest):
+    """
+    Verifies hardware entropy generation is enabled on device.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if hardware entropy generation is enabled.
+    * Failure: The test will fail if hardware entropy generation is not enabled.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.security:
+      - VerifyHardwareEntropy:
+    ```
+    """
+
+    name = "VerifyHardwareEntropy"
+    description = "Verifies hardware entropy generation is enabled on device."
+    categories: ClassVar[list[str]] = ["security"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management security")]
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyHardwareEntropy."""
+        command_output = self.instance_commands[0].json_output
+
+        # Check if hardware entropy generation is enabled.
+        if not command_output.get("hardwareEntropyEnabled"):
+            self.result.is_failure("Hardware entropy generation is disabled.")
+        else:
+            self.result.is_success()

@@ -24,7 +24,7 @@ DATA_DIR: Path = Path(__file__).parent.parent.resolve() / "data"
 FAKE_CATALOG: AntaCatalog = AntaCatalog.from_list([(FakeTest, None)])
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_runner_empty_tests(caplog: pytest.LogCaptureFixture, test_inventory: AntaInventory) -> None:
     """Test that when the list of tests is empty, a log is raised.
 
@@ -40,7 +40,7 @@ async def test_runner_empty_tests(caplog: pytest.LogCaptureFixture, test_invento
     assert "The list of tests is empty, exiting" in caplog.records[0].message
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_runner_empty_inventory(caplog: pytest.LogCaptureFixture) -> None:
     """Test that when the Inventory is empty, a log is raised.
 
@@ -55,7 +55,7 @@ async def test_runner_empty_inventory(caplog: pytest.LogCaptureFixture) -> None:
     assert "The inventory is empty, exiting" in caplog.records[1].message
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_runner_no_selected_device(caplog: pytest.LogCaptureFixture, test_inventory: AntaInventory) -> None:
     """Test that when the list of established device.
 
@@ -140,7 +140,7 @@ def test_adjust_rlimit_nofile_invalid_env(caplog: pytest.LogCaptureFixture) -> N
         setrlimit_mock.assert_called_once_with(resource.RLIMIT_NOFILE, (16384, 1048576))
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     ("tags", "expected_tests_count", "expected_devices_count"),
     [
@@ -173,7 +173,7 @@ async def test_prepare_tests(
         assert sum(len(tests) for tests in selected_tests.values()) == expected_tests_count
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_prepare_tests_with_specific_tests(caplog: pytest.LogCaptureFixture, test_inventory: AntaInventory) -> None:
     """Test the runner prepare_tests function with specific tests."""
     logger.setup_logging(logger.Log.INFO)
@@ -187,7 +187,7 @@ async def test_prepare_tests_with_specific_tests(caplog: pytest.LogCaptureFixtur
     assert sum(len(tests) for tests in selected_tests.values()) == 5
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_runner_dry_run(caplog: pytest.LogCaptureFixture, test_inventory: AntaInventory) -> None:
     """Test that when dry_run is True, no tests are run.
 

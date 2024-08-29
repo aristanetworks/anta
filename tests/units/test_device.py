@@ -613,7 +613,7 @@ CACHE_STATS_DATA: list[ParameterSet] = [
 class TestAntaDevice:
     """Test for anta.device.AntaDevice Abstract class."""
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     @pytest.mark.parametrize(
         ("device", "command_data", "expected_data"),
         ((d["device"], d["command"], d["expected"]) for d in COLLECT_DATA),
@@ -693,7 +693,7 @@ class TestAsyncEOSDevice:
         else:
             assert device1 != device2
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     @pytest.mark.parametrize(
         ("async_device", "patch_kwargs", "expected"),
         ((d["device"], d["patch_kwargs"], d["expected"]) for d in REFRESH_DATA),
@@ -712,7 +712,7 @@ class TestAsyncEOSDevice:
             assert async_device.established == expected["established"]
             assert async_device.hw_model == expected["hw_model"]
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     @pytest.mark.parametrize(
         ("async_device", "command", "expected"),
         ((d["device"], d["command"], d["expected"]) for d in ASYNCEAPI_COLLECT_DATA),
@@ -745,7 +745,7 @@ class TestAsyncEOSDevice:
             assert cmd.output == expected["output"]
             assert cmd.errors == expected["errors"]
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     @pytest.mark.parametrize(
         ("async_device", "copy"),
         ((d["device"], d["copy"]) for d in ASYNCEAPI_COPY_DATA),

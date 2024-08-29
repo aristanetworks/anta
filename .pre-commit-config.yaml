@@ -32,7 +32,7 @@ repos:
       - name: Check and insert license on Markdown files
         id: insert-license
         files: .*\.md$
-        # exclude:
+        exclude: ^tests/data/.*\.md$
         args:
           - --license-filepath
           - .github/license-short.txt
@@ -43,7 +43,7 @@ repos:
           - '<!--|  ~|  -->'
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.5.4
+    rev: v0.6.2
     hooks:
     - id: ruff
       name: Run Ruff linter
@@ -52,7 +52,7 @@ repos:
       name: Run Ruff formatter
 
   - repo: https://github.com/pycqa/pylint
-    rev: "v3.2.5"
+    rev: "v3.2.6"
     hooks:
       - id: pylint
         name: Check code style with pylint
@@ -80,7 +80,7 @@ repos:
         types: [text]
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.10.1
+    rev: v1.11.2
     hooks:
       - id: mypy
         name: Check typing with mypy
