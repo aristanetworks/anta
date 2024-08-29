@@ -151,7 +151,7 @@ class ResultManager:
         if self.status == "unset" or self.status == "skipped" and test_status in {"success", "failure"}:
             self.status = test_status
         elif self.status == "success" and test_status == "failure":
-            self.status = "failure"
+            self.status = AntaTestStatus.failure
 
     def _update_stats(self, result: TestResult) -> None:
         """Update the statistics based on the test result.

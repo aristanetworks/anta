@@ -141,29 +141,27 @@ class TestResultManager:
                 nullcontext(),
                 id="failure, add success",
             ),
-            pytest.param(
-                "unset", "unknown", None, pytest.raises(ValueError, match="Input should be 'unset', 'success', 'failure', 'error' or 'skipped'"), id="wrong status"
-            ),
+            pytest.param("unset", "unknown", None, pytest.raises(ValueError, match="'unknown' is not a valid AntaTestStatus"), id="wrong status"),
         ],
     )
     def test_add(
         self,
         test_result_factory: Callable[[], TestResult],
-        starting_status: AntaTestStatus,
-        test_status: AntaTestStatus,
+        starting_status: str,
+        test_status: str,
         expected_status: str,
         expected_raise: AbstractContextManager[Exception],
     ) -> None:
         # pylint: disable=too-many-arguments
         """Test ResultManager_update_status."""
         result_manager = ResultManager()
-        result_manager.status = starting_status
+        result_manager.status = AntaTestStatus(starting_status)
         assert result_manager.error_status is False
         assert len(result_manager) == 0
 
         test = test_result_factory()
-        test.result = test_status
         with expected_raise:
+            test.result = AntaTestStatus(test_status)
             result_manager.add(test)
             if test_status == "error":
                 assert result_manager.error_status is True
@@ -199,12 +197,12 @@ class TestResultManager:
     def test_get_results(self, result_manager: ResultManager) -> None:
         """Test ResultManager.get_results."""
         # Check for single status
-        success_results = result_manager.get_results(status={"success"})
+        success_results = result_manager.get_results(status={AntaTestStatus.success})
         assert len(success_results) == 7
         assert all(r.result == "success" for r in success_results)
 
         # Check for multiple statuses
-        failure_results = result_manager.get_results(status={"failure", "error"})
+        failure_results = result_manager.get_results(status={AntaTestStatus.failure, AntaTestStatus.error})
         assert len(failure_results) == 21
         assert all(r.result in {"failure", "error"} for r in failure_results)
 
@@ -226,7 +224,7 @@ class TestResultManager:
         assert all_results[-1].name == "DC1-SPINE1"
 
         # Check multiple statuses with sort_by categories
-        success_skipped_results = result_manager.get_results(status={"success", "skipped"}, sort_by=["categories"])
+        success_skipped_results = result_manager.get_results(status={AntaTestStatus.success, AntaTestStatus.skipped}, sort_by=["categories"])
         assert len(success_skipped_results) == 9
         assert success_skipped_results[0].categories == ["Interfaces"]
         assert success_skipped_results[-1].categories == ["VXLAN"]
@@ -246,15 +244,15 @@ class TestResultManager:
         assert result_manager.get_total_results() == 30
 
         # Test single status
-        assert result_manager.get_total_results(status={"success"}) == 7
-        assert result_manager.get_total_results(status={"failure"}) == 19
-        assert result_manager.get_total_results(status={"error"}) == 2
-        assert result_manager.get_total_results(status={"skipped"}) == 2
+        assert result_manager.get_total_results(status={AntaTestStatus.success}) == 7
+        assert result_manager.get_total_results(status={AntaTestStatus.failure}) == 19
+        assert result_manager.get_total_results(status={AntaTestStatus.error}) == 2
+        assert result_manager.get_total_results(status={AntaTestStatus.skipped}) == 2
 
         # Test multiple statuses
-        assert result_manager.get_total_results(status={"success", "failure"}) == 26
-        assert result_manager.get_total_results(status={"success", "failure", "error"}) == 28
-        assert result_manager.get_total_results(status={"success", "failure", "error", "skipped"}) == 30
+        assert result_manager.get_total_results(status={AntaTestStatus.success, AntaTestStatus.failure}) == 26
+        assert result_manager.get_total_results(status={AntaTestStatus.success, AntaTestStatus.failure, AntaTestStatus.error}) == 28
+        assert result_manager.get_total_results(status={AntaTestStatus.success, AntaTestStatus.failure, AntaTestStatus.error, AntaTestStatus.skipped}) == 30
 
     @pytest.mark.parametrize(
         ("status", "error_status", "ignore_error", "expected_status"),

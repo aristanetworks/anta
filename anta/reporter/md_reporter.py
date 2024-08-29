@@ -12,6 +12,7 @@ from typing import TYPE_CHECKING, ClassVar
 
 from anta.constants import MD_REPORT_TOC
 from anta.logger import anta_log_exception
+from anta.result_manager.models import AntaTestStatus
 
 if TYPE_CHECKING:
     from collections.abc import Generator
@@ -203,10 +204,10 @@ class SummaryTotals(MDReportBase):
         """Generate the rows of the summary totals table."""
         yield (
             f"| {self.results.get_total_results()} "
-            f"| {self.results.get_total_results({'success'})} "
-            f"| {self.results.get_total_results({'skipped'})} "
-            f"| {self.results.get_total_results({'failure'})} "
-            f"| {self.results.get_total_results({'error'})} |\n"
+            f"| {self.results.get_total_results({AntaTestStatus.success})} "
+            f"| {self.results.get_total_results({AntaTestStatus.skipped})} "
+            f"| {self.results.get_total_results({AntaTestStatus.failure})} "
+            f"| {self.results.get_total_results({AntaTestStatus.error})} |\n"
         )
 
     def generate_section(self) -> None:
