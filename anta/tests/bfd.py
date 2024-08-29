@@ -157,22 +157,21 @@ class VerifyBFDPeersIntervals(AntaTest):
         for bfd_peers in self.inputs.bfd_peers:
             peer = str(bfd_peers.peer_address)
             vrf = bfd_peers.vrf
-
-            # Converting milliseconds intervals into actual value
             tx_interval = bfd_peers.tx_interval
             rx_interval = bfd_peers.rx_interval
             multiplier = bfd_peers.multiplier
+
+            # Check if BFD peer configured
             bfd_output = get_value(
                 self.instance_commands[0].json_output,
                 f"vrfs..{vrf}..ipv4Neighbors..{peer}..peerStats..",
                 separator="..",
             )
-
-            # Check if BFD peer configured
             if not bfd_output:
                 failures[peer] = {vrf: "Not Configured"}
                 continue
 
+            # Convert interval timer(s) into milliseconds to be consistent with the inputs.
             bfd_details = bfd_output.get("peerStatsDetail", {})
             op_tx_interval = bfd_details.get("operTxInterval") // 1000
             op_rx_interval = bfd_details.get("operRxInterval") // 1000
