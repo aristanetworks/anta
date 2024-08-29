@@ -45,7 +45,7 @@ Options `--device` and `--test` can be used to target one or multiple devices an
 
 ### Hide results
 
-Option `--hide` can be used to hide test results in the output based on their status. The option can be repeated. Example: `anta nrfu --hide error --hide skipped`.
+Option `--hide` can be used to hide test results in the output or report file based on their status. The option can be repeated. Example: `anta nrfu --hide error --hide skipped`.
 
 ## Performing NRFU with text rendering
 
@@ -166,6 +166,29 @@ Options:
 ### Example
 
 ![anta nrfu csv results](../imgs/anta_nrfu_csv.png){ loading=lazy width="1600" }
+
+## Performing NRFU and saving results in a Markdown file
+
+The `md-report` command in NRFU testing generates a comprehensive Markdown report containing various sections, including detailed statistics for devices and test categories.
+
+### Command overview
+
+```bash
+anta nrfu md-report --help
+
+Usage: anta nrfu md-report [OPTIONS]
+
+  ANTA command to check network state with Markdown report.
+
+Options:
+  --md-output FILE  Path to save the report as a Markdown file  [env var:
+                    ANTA_NRFU_MD_REPORT_MD_OUTPUT; required]
+  --help            Show this message and exit.
+```
+
+### Example
+
+![anta nrfu md-report results](../imgs/anta-nrfu-md-report-output.png){ loading=lazy width="1600" }
 
 ## Performing NRFU with custom reports
 

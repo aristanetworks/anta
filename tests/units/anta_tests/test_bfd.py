@@ -163,8 +163,8 @@ DATA: list[dict[str, Any]] = [
             "result": "failure",
             "messages": [
                 "Following BFD peers are not configured or timers are not correct:\n"
-                "{'192.0.255.7': {'default': {'tx_interval': 1300000, 'rx_interval': 1200000, 'multiplier': 4}}, "
-                "'192.0.255.70': {'MGMT': {'tx_interval': 120000, 'rx_interval': 120000, 'multiplier': 5}}}"
+                "{'192.0.255.7': {'default': {'tx_interval': 1300, 'rx_interval': 1200, 'multiplier': 4}}, "
+                "'192.0.255.70': {'MGMT': {'tx_interval': 120, 'rx_interval': 120, 'multiplier': 5}}}"
             ],
         },
     },
