@@ -159,8 +159,8 @@ class VerifyBFDPeersIntervals(AntaTest):
             vrf = bfd_peers.vrf
 
             # Converting milliseconds intervals into actual value
-            tx_interval = bfd_peers.tx_interval * 1000
-            rx_interval = bfd_peers.rx_interval * 1000
+            tx_interval = bfd_peers.tx_interval
+            rx_interval = bfd_peers.rx_interval
             multiplier = bfd_peers.multiplier
             bfd_output = get_value(
                 self.instance_commands[0].json_output,
@@ -174,17 +174,18 @@ class VerifyBFDPeersIntervals(AntaTest):
                 continue
 
             bfd_details = bfd_output.get("peerStatsDetail", {})
-            intervals_ok = (
-                bfd_details.get("operTxInterval") == tx_interval and bfd_details.get("operRxInterval") == rx_interval and bfd_details.get("detectMult") == multiplier
-            )
+            op_tx_interval = bfd_details.get("operTxInterval") // 1000
+            op_rx_interval = bfd_details.get("operRxInterval") // 1000
+            detect_multiplier = bfd_details.get("detectMult")
+            intervals_ok = op_tx_interval == tx_interval and op_rx_interval == rx_interval and detect_multiplier == multiplier
 
             # Check timers of BFD peer
             if not intervals_ok:
                 failures[peer] = {
                     vrf: {
-                        "tx_interval": bfd_details.get("operTxInterval"),
-                        "rx_interval": bfd_details.get("operRxInterval"),
-                        "multiplier": bfd_details.get("detectMult"),
+                        "tx_interval": op_tx_interval,
+                        "rx_interval": op_rx_interval,
+                        "multiplier": detect_multiplier,
                     }
                 }
 
