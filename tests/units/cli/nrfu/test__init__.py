@@ -120,3 +120,9 @@ def test_disable_cache(click_runner: CliRunner) -> None:
         if "disable_cache" in line:
             assert "True" in line
     assert result.exit_code == ExitCode.OK
+
+
+def test_hide(click_runner: CliRunner) -> None:
+    """Test the `--hide` option of the `anta nrfu` command."""
+    result = click_runner.invoke(anta, ["nrfu", "--hide", "success", "text"])
+    assert "SUCCESS" not in result.output

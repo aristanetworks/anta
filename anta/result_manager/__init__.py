@@ -6,14 +6,18 @@
 from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING
+from collections import defaultdict
+from functools import cached_property
+from itertools import chain
+from typing import get_args
 
 from pydantic import TypeAdapter
 
+from anta.constants import ACRONYM_CATEGORIES
 from anta.custom_types import TestStatus
+from anta.result_manager.models import TestResult
 
-if TYPE_CHECKING:
-    from anta.result_manager.models import TestResult
+from .models import CategoryStats, DeviceStats, TestStats
 
 
 class ResultManager:
@@ -94,6 +98,10 @@ class ResultManager:
         self.status: TestStatus = "unset"
         self.error_status = False
 
+        self.device_stats: defaultdict[str, DeviceStats] = defaultdict(DeviceStats)
+        self.category_stats: defaultdict[str, CategoryStats] = defaultdict(CategoryStats)
+        self.test_stats: defaultdict[str, TestStats] = defaultdict(TestStats)
+
     def __len__(self) -> int:
         """Implement __len__ method to count number of results."""
         return len(self._result_entries)
@@ -105,38 +113,147 @@ class ResultManager:
 
     @results.setter
     def results(self, value: list[TestResult]) -> None:
+        """Set the list of TestResult."""
+        # When setting the results, we need to reset the state of the current instance
         self._result_entries = []
         self.status = "unset"
         self.error_status = False
-        for e in value:
-            self.add(e)
+
+        # Also reset the stats attributes
+        self.device_stats = defaultdict(DeviceStats)
+        self.category_stats = defaultdict(CategoryStats)
+        self.test_stats = defaultdict(TestStats)
+
+        for result in value:
+            self.add(result)
 
     @property
     def json(self) -> str:
         """Get a JSON representation of the results."""
         return json.dumps([result.model_dump() for result in self._result_entries], indent=4)
 
+    @property
+    def sorted_category_stats(self) -> dict[str, CategoryStats]:
+        """A property that returns the category_stats dictionary sorted by key name."""
+        return dict(sorted(self.category_stats.items()))
+
+    @cached_property
+    def results_by_status(self) -> dict[TestStatus, list[TestResult]]:
+        """A cached property that returns the results grouped by status."""
+        return {status: [result for result in self._result_entries if result.result == status] for status in get_args(TestStatus)}
+
+    def _update_status(self, test_status: TestStatus) -> None:
+        """Update the status of the ResultManager instance based on the test status.
+
+        Parameters
+        ----------
+            test_status: TestStatus to update the ResultManager status.
+        """
+        result_validator: TypeAdapter[TestStatus] = TypeAdapter(TestStatus)
+        result_validator.validate_python(test_status)
+        if test_status == "error":
+            self.error_status = True
+            return
+        if self.status == "unset" or self.status == "skipped" and test_status in {"success", "failure"}:
+            self.status = test_status
+        elif self.status == "success" and test_status == "failure":
+            self.status = "failure"
+
+    def _update_stats(self, result: TestResult) -> None:
+        """Update the statistics based on the test result.
+
+        Parameters
+        ----------
+            result: TestResult to update the statistics.
+        """
+        result.categories = [
+            " ".join(word.upper() if word.lower() in ACRONYM_CATEGORIES else word.title() for word in category.split()) for category in result.categories
+        ]
+        count_attr = f"tests_{result.result}_count"
+
+        # Update device stats
+        device_stats: DeviceStats = self.device_stats[result.name]
+        setattr(device_stats, count_attr, getattr(device_stats, count_attr) + 1)
+        if result.result in ("failure", "error"):
+            device_stats.tests_failure.add(result.test)
+            device_stats.categories_failed.update(result.categories)
+        elif result.result == "skipped":
+            device_stats.categories_skipped.update(result.categories)
+
+        # Update category stats
+        for category in result.categories:
+            category_stats: CategoryStats = self.category_stats[category]
+            setattr(category_stats, count_attr, getattr(category_stats, count_attr) + 1)
+
+        # Update test stats
+        count_attr = f"devices_{result.result}_count"
+        test_stats: TestStats = self.test_stats[result.test]
+        setattr(test_stats, count_attr, getattr(test_stats, count_attr) + 1)
+        if result.result in ("failure", "error"):
+            test_stats.devices_failure.add(result.name)
+
     def add(self, result: TestResult) -> None:
         """Add a result to the ResultManager instance.
+
+        The result is added to the internal list of results and the overall status
+        of the ResultManager instance is updated based on the added test status.
 
         Parameters
         ----------
             result: TestResult to add to the ResultManager instance.
         """
-
-        def _update_status(test_status: TestStatus) -> None:
-            result_validator: TypeAdapter[TestStatus] = TypeAdapter(TestStatus)
-            result_validator.validate_python(test_status)
-            if test_status == "error":
-                self.error_status = True
-                return
-            if self.status == "unset" or self.status == "skipped" and test_status in {"success", "failure"}:
-                self.status = test_status
-            elif self.status == "success" and test_status == "failure":
-                self.status = "failure"
-
         self._result_entries.append(result)
-        _update_status(result.result)
+        self._update_status(result.result)
+        self._update_stats(result)
+
+        # Every time a new result is added, we need to clear the cached property
+        self.__dict__.pop("results_by_status", None)
+
+    def get_results(self, status: set[TestStatus] | None = None, sort_by: list[str] | None = None) -> list[TestResult]:
+        """Get the results, optionally filtered by status and sorted by TestResult fields.
+
+        If no status is provided, all results are returned.
+
+        Parameters
+        ----------
+            status: Optional set of TestStatus literals to filter the results.
+            sort_by: Optional list of TestResult fields to sort the results.
+
+        Returns
+        -------
+            List of TestResult.
+        """
+        # Return all results if no status is provided, otherwise return results for multiple statuses
+        results = self._result_entries if status is None else list(chain.from_iterable(self.results_by_status.get(status, []) for status in status))
+
+        if sort_by:
+            accepted_fields = TestResult.model_fields.keys()
+            if not set(sort_by).issubset(set(accepted_fields)):
+                msg = f"Invalid sort_by fields: {sort_by}. Accepted fields are: {list(accepted_fields)}"
+                raise ValueError(msg)
+            results = sorted(results, key=lambda result: [getattr(result, field) for field in sort_by])
+
+        return results
+
+    def get_total_results(self, status: set[TestStatus] | None = None) -> int:
+        """Get the total number of results, optionally filtered by status.
+
+        If no status is provided, the total number of results is returned.
+
+        Parameters
+        ----------
+            status: Optional set of TestStatus literals to filter the results.
+
+        Returns
+        -------
+            Total number of results.
+        """
+        if status is None:
+            # Return the total number of results
+            return sum(len(results) for results in self.results_by_status.values())
+
+        # Return the total number of results for multiple statuses
+        return sum(len(self.results_by_status.get(status, [])) for status in status)
 
     def get_status(self, *, ignore_error: bool = False) -> str:
         """Return the current status including error_status if ignore_error is False."""
@@ -153,8 +270,9 @@ class ResultManager:
         -------
             A filtered `ResultManager`.
         """
+        possible_statuses = set(get_args(TestStatus))
         manager = ResultManager()
-        manager.results = [test for test in self._result_entries if test.result not in hide]
+        manager.results = self.get_results(possible_statuses - hide)
         return manager
 
     def filter_by_tests(self, tests: set[str]) -> ResultManager:

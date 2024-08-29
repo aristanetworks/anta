@@ -8,7 +8,7 @@ from __future__ import annotations
 import json
 import re
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 from unittest.mock import patch
 
 from anta.cli import anta
@@ -90,6 +90,43 @@ def test_anta_nrfu_json(click_runner: CliRunner) -> None:
             assert res["result"] == "success"
 
 
+def test_anta_nrfu_json_output(click_runner: CliRunner, tmp_path: Path) -> None:
+    """Test anta nrfu json with output file."""
+    json_output = tmp_path / "test.json"
+    result = click_runner.invoke(anta, ["nrfu", "json", "--output", str(json_output)])
+
+    # Making sure the output is not printed to stdout
+    match = re.search(r"\[\n {2}{[\s\S]+ {2}}\n\]", result.output)
+    assert match is None
+
+    assert result.exit_code == ExitCode.OK
+    assert "JSON results saved to" in result.output
+    assert json_output.exists()
+
+
+def test_anta_nrfu_json_output_failure(click_runner: CliRunner, tmp_path: Path) -> None:
+    """Test anta nrfu json with output file."""
+    json_output = tmp_path / "test.json"
+
+    original_open = Path.open
+
+    def mock_path_open(*args: Any, **kwargs: Any) -> Path:  # noqa: ANN401
+        """Mock Path.open only for the json_output file of this test."""
+        if args[0] == json_output:
+            msg = "Simulated OSError"
+            raise OSError(msg)
+
+        # If not the json_output file, call the original Path.open
+        return original_open(*args, **kwargs)
+
+    with patch("pathlib.Path.open", mock_path_open):
+        result = click_runner.invoke(anta, ["nrfu", "json", "--output", str(json_output)])
+
+    assert result.exit_code == ExitCode.USAGE_ERROR
+    assert "Failed to save JSON results to" in result.output
+    assert not json_output.exists()
+
+
 def test_anta_nrfu_template(click_runner: CliRunner) -> None:
     """Test anta nrfu, catalog is given via env."""
     result = click_runner.invoke(anta, ["nrfu", "tpl-report", "--template", str(DATA_DIR / "template.j2")])
@@ -114,3 +151,47 @@ def test_anta_nrfu_csv_failure(click_runner: CliRunner, tmp_path: Path) -> None:
     assert result.exit_code == ExitCode.USAGE_ERROR
     assert "Failed to save CSV report to" in result.output
     assert not csv_output.exists()
+
+
+def test_anta_nrfu_md_report(click_runner: CliRunner, tmp_path: Path) -> None:
+    """Test anta nrfu md-report."""
+    md_output = tmp_path / "test.md"
+    result = click_runner.invoke(anta, ["nrfu", "md-report", "--md-output", str(md_output)])
+    assert result.exit_code == ExitCode.OK
+    assert "Markdown report saved to" in result.output
+    assert md_output.exists()
+
+
+def test_anta_nrfu_md_report_failure(click_runner: CliRunner, tmp_path: Path) -> None:
+    """Test anta nrfu md-report failure."""
+    md_output = tmp_path / "test.md"
+    with patch("anta.reporter.md_reporter.MDReportGenerator.generate", side_effect=OSError()):
+        result = click_runner.invoke(anta, ["nrfu", "md-report", "--md-output", str(md_output)])
+
+    assert result.exit_code == ExitCode.USAGE_ERROR
+    assert "Failed to save Markdown report to" in result.output
+    assert not md_output.exists()
+
+
+def test_anta_nrfu_md_report_with_hide(click_runner: CliRunner, tmp_path: Path) -> None:
+    """Test anta nrfu md-report with the `--hide` option."""
+    md_output = tmp_path / "test.md"
+    result = click_runner.invoke(anta, ["nrfu", "--hide", "success", "md-report", "--md-output", str(md_output)])
+
+    assert result.exit_code == ExitCode.OK
+    assert "Markdown report saved to" in result.output
+    assert md_output.exists()
+
+    with md_output.open("r", encoding="utf-8") as f:
+        content = f.read()
+
+    # Use regex to find the "Total Tests Success" value
+    match = re.search(r"\| (\d+) \| (\d+) \| \d+ \| \d+ \| \d+ \|", content)
+
+    assert match is not None
+
+    total_tests = int(match.group(1))
+    total_tests_success = int(match.group(2))
+
+    assert total_tests == 0
+    assert total_tests_success == 0
