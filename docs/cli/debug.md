@@ -52,8 +52,6 @@ Options:
                             ANTA_DISABLE_CACHE]
   -i, --inventory FILE      Path to the inventory YAML file.  [env var:
                             ANTA_INVENTORY; required]
-  --tags TEXT               List of tags using comma as separator:
-                            tag1,tag2,tag3.  [env var: ANTA_TAGS]
   --ofmt [json|text]        EOS eAPI format to use. can be text or json
   -v, --version [1|latest]  EOS eAPI version
   -r, --revision INTEGER    eAPI command revision
@@ -97,8 +95,9 @@ Usage: anta debug run-template [OPTIONS] PARAMS...
   Takes a list of arguments (keys followed by a value) to build a dictionary
   used as template parameters.
 
-  Example: ------- anta debug run-template -d leaf1a -t 'show vlan {vlan_id}'
-  vlan_id 1
+  Example
+  -------
+      anta debug run-template -d leaf1a -t 'show vlan {vlan_id}' vlan_id 1
 
 Options:
   -u, --username TEXT       Username to connect to EOS  [env var:
@@ -125,8 +124,6 @@ Options:
                             ANTA_DISABLE_CACHE]
   -i, --inventory FILE      Path to the inventory YAML file.  [env var:
                             ANTA_INVENTORY; required]
-  --tags TEXT               List of tags using comma as separator:
-                            tag1,tag2,tag3.  [env var: ANTA_TAGS]
   --ofmt [json|text]        EOS eAPI format to use. can be text or json
   -v, --version [1|latest]  EOS eAPI version
   -r, --revision INTEGER    eAPI command revision
