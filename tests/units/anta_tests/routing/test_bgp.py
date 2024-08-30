@@ -4427,7 +4427,7 @@ DATA: list[dict[str, Any]] = [
         },
     },
     {
-        "name": "failure-incorrect-conf",
+        "name": "failure-incorrect-max-routes",
         "test": VerifyBGPPeerRouteLimit,
         "eos_data": [
             {

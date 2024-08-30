@@ -1407,13 +1407,13 @@ class VerifyBGPPeerUpdateErrors(AntaTest):
 
 
 class VerifyBGPPeerRouteLimit(AntaTest):
-    """Verifies maximum routes and maximum routes warning limit for the provided BGP IPv4 peer(s).
+    """Verifies the maximum routes and optionally verifies the maximum routes warning limit for the provided BGP IPv4 peer(s).
 
     Expected Results
     ----------------
-    * Success: The test will pass if the BGP peer's maximum routes and maximum routes warning limit are equal to given limits.
-    * Failure: The test will fail if the BGP peer's maximum routes and maximum routes warning limit are not equal to given limits or
-    peer is not configured.
+    * Success: The test will pass if the BGP peer's maximum routes and, if provided, the maximum routes warning limit are equal to the given limits.
+    * Failure: The test will fail if the BGP peer's maximum routes do not match the given limit, or if the maximum routes warning limit is provided
+    and does not match the given limit, or if the peer is not configured.
 
     Examples
     --------
@@ -1448,9 +1448,11 @@ class VerifyBGPPeerRouteLimit(AntaTest):
             vrf: str = "default"
             """Optional VRF for BGP peer. If not provided, it defaults to `default`."""
             maximum_routes: int
-            """The maximum allowable number of BGP routes."""
+            """The maximum allowable number of BGP routes.
+            Upto `4294967294` routes can be configured and `0` means unlimited."""
             warning_limit: int | None = None
-            """An optional threshold which, if exceeded, triggers a warning."""
+            """An optional threshold which, if exceeded, triggers a warning.
+            Upto `4294967294` maximum number of routes after which a warning is issued and 0 means never warn."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each BGP peer in the input list."""
