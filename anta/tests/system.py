@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING, ClassVar
 
 from pydantic import BaseModel, Field
 
-from anta.custom_types import PositiveInteger
+from anta.custom_types import Hostname, PositiveInteger
 from anta.models import AntaCommand, AntaTest
 from anta.tools import get_failed_logs, get_value
 
@@ -345,7 +345,7 @@ class VerifyNTPAssociations(AntaTest):
         class NTPServer(BaseModel):
             """Model for a NTP server."""
 
-            server_address: str | IPv4Address
+            server_address: Hostname | IPv4Address
             """The NTP server address as an IPv4 address or hostname. The NTP server name defined in the running configuration
             of the device may change during DNS resolution, which is not handled in ANTA. Please provide the DNS-resolved server name.
             For example, 'ntp.example.com' in the configuration might resolve to 'ntp3.example.com' in the device output."""
