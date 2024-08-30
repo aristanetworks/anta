@@ -9,6 +9,8 @@ from typing import TYPE_CHECKING, Any, Callable
 
 import pytest
 
+from anta.result_manager.models import AntaTestStatus
+
 # Import as Result to avoid pytest collection
 from tests.data.json_data import TEST_RESULT_SET_STATUS
 from tests.lib.fixture import DEVICE_NAME
@@ -45,7 +47,7 @@ class TestTestResultModels:
             assert data["message"] in testresult.messages
         # no helper for unset, testing _set_status
         if data["target"] == "unset":
-            testresult._set_status("unset", data["message"])  # pylint: disable=W0212
+            testresult._set_status(AntaTestStatus.UNSET, data["message"])  # pylint: disable=W0212
             assert testresult.result == data["target"]
             assert data["message"] in testresult.messages
 
