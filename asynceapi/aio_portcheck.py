@@ -33,7 +33,7 @@ __all__ = ["port_check_url"]
 # -----------------------------------------------------------------------------
 
 
-async def port_check_url(url: URL, timeout: int = 5) -> bool:  # noqa: ASYNC109
+async def port_check_url(url: URL, timeout: int = 5) -> bool:
     """
     Open the port designated by the URL given the timeout in seconds.
 
