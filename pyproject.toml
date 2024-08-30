@@ -69,6 +69,7 @@ dev = [
   "pytest-cov>=4.1.0",
   "pytest-dependency",
   "pytest-html>=3.2.0",
+  "pytest-httpx>=0.30.0",
   "pytest-metadata>=3.0.0",
   "pytest>=7.4.0",
   "ruff>=0.5.4,<0.7.0",
@@ -181,7 +182,8 @@ filterwarnings = [
 
 [tool.coverage.run]
 branch = true
-source = ["anta"]
+# https://community.sonarsource.com/t/python-coverage-analysis-warning/62629/7
+include = ["anta/*", "asynceapi/*"]
 parallel = true
 relative_files = true
 
