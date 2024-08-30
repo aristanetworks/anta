@@ -381,6 +381,6 @@ DATA: list[dict[str, Any]] = [
             {"unmappedVlans": [], "topologies": {}},
         ],
         "inputs": {},
-        "expected": {"result": "failure", "messages": ["No STP topology configured"]},
+        "expected": {"result": "failure", "messages": ["None of STP topology is configured."]},
     },
 ]

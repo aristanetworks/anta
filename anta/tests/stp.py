@@ -297,7 +297,7 @@ class VerifyStpTopologyChanges(AntaTest):
 
         command_output = self.instance_commands[0].json_output
         if not (stp_topologies := command_output.get("topologies")):
-            self.result.is_failure("No STP topology configured")
+            self.result.is_failure("None of STP topology is configured.")
             return
 
         # verifies all available topologies except the "NoStp" topology.
