@@ -183,7 +183,7 @@ filterwarnings = [
 [tool.coverage.run]
 branch = true
 # https://community.sonarsource.com/t/python-coverage-analysis-warning/62629/7
-include = ["anta", "asynceapi"]
+include = ["anta/*", "asynceapi/*"]
 parallel = true
 relative_files = true
 
