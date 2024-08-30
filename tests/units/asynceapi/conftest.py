@@ -14,7 +14,7 @@ def asynceapi_device() -> Device:
     return Device(
         host="localhost",
         username="admin",
-        password="admin",  # noqa: S106
+        password="admin",
         proto="https",
         port=443,
     )
