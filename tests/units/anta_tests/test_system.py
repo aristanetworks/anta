@@ -387,8 +387,8 @@ poll interval unknown
         "expected": {
             "result": "failure",
             "messages": [
-                "\nFor NTP peer 1.1.1.1:\nExpected `sys.peer` as the condition, but found `candidate` instead.\nExpected `1` as the stratum, but found `2` instead."
-                "\nFor NTP peer 2.2.2.2:\nExpected `candidate` as the condition, but found `sys.peer` instead.\n"
+                "For NTP peer 1.1.1.1:\nExpected `sys.peer` as the condition, but found `candidate` instead.\nExpected `1` as the stratum, but found `2` instead.\n"
+                "For NTP peer 2.2.2.2:\nExpected `candidate` as the condition, but found `sys.peer` instead.\n"
                 "For NTP peer 3.3.3.3:\nExpected `candidate` as the condition, but found `sys.peer` instead.\nExpected `2` as the stratum, but found `3` instead."
             ],
         },
@@ -406,7 +406,7 @@ poll interval unknown
         },
         "expected": {
             "result": "failure",
-            "messages": ["NTP peers are not configured."],
+            "messages": ["None of NTP peers are not configured."],
         },
     },
     {
@@ -464,7 +464,7 @@ poll interval unknown
         "expected": {
             "result": "failure",
             "messages": [
-                "\nFor NTP peer 1.1.1.1:\nExpected `sys.peer` as the condition, but found `candidate` instead.\n"
+                "For NTP peer 1.1.1.1:\nExpected `sys.peer` as the condition, but found `candidate` instead.\n"
                 "NTP peer 2.2.2.2 is not configured.\nNTP peer 3.3.3.3 is not configured."
             ],
         },

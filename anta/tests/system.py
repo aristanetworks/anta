@@ -372,7 +372,7 @@ class VerifyNTPAssociations(AntaTest):
 
             # Check if NTP server details exists.
             if (peer_detail := get_value(peer_details, server_address, separator="..")) is None:
-                failures += f"\nNTP peer {server_address} is not configured."
+                failures += f"NTP peer {server_address} is not configured.\n"
                 continue
 
             # Collecting the expected NTP peer details.
@@ -386,7 +386,7 @@ class VerifyNTPAssociations(AntaTest):
             # Collecting failures logs if any.
             failure_logs = get_failed_logs(expected_peer_details, actual_peer_details)
             if failure_logs:
-                failures += f"\nFor NTP peer {server_address}:{failure_logs}"
+                failures += f"For NTP peer {server_address}:{failure_logs}\n"
 
         # Check if there are any failures.
         if not failures:
