@@ -18,9 +18,8 @@ from anta import RICH_COLOR_PALETTE, RICH_COLOR_THEME
 if TYPE_CHECKING:
     import pathlib
 
-    from anta.custom_types import TestStatus
     from anta.result_manager import ResultManager
-    from anta.result_manager.models import TestResult
+    from anta.result_manager.models import AntaTestStatus, TestResult
 
 logger = logging.getLogger(__name__)
 
@@ -80,19 +79,19 @@ class ReportTable:
                 table.add_column(header, justify="left")
         return table
 
-    def _color_result(self, status: TestStatus) -> str:
-        """Return a colored string based on the status value.
+    def _color_result(self, status: AntaTestStatus) -> str:
+        """Return a colored string based on an AntaTestStatus.
 
         Parameters
         ----------
-            status (TestStatus): status value to color.
+            status: AntaTestStatus enum to color.
 
         Returns
         -------
-        str: the colored string
+            The colored string.
 
         """
-        color = RICH_COLOR_THEME.get(status, "")
+        color = RICH_COLOR_THEME.get(str(status), "")
         return f"[{color}]{status}" if color != "" else str(status)
 
     def report_all(self, manager: ResultManager, title: str = "All tests results") -> Table:
