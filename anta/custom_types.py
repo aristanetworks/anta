@@ -112,9 +112,6 @@ def validate_regex(value: str) -> str:
     return value
 
 
-# ANTA framework
-TestStatus = Literal["unset", "success", "failure", "error", "skipped"]
-
 # AntaTest.Input types
 AAAAuthMethod = Annotated[str, AfterValidator(aaa_group_prefix)]
 Vlan = Annotated[int, Field(ge=0, le=4094)]
