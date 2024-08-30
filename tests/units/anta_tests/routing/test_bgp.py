@@ -4531,7 +4531,7 @@ DATA: list[dict[str, Any]] = [
         },
     },
     {
-        "name": "failure-not-found",
+        "name": "failure-peer-not-found",
         "test": VerifyBgpRouteMaps,
         "eos_data": [
             {

@@ -1411,7 +1411,7 @@ class VerifyBgpRouteMaps(AntaTest):
 
     Expected Results
     ----------------
-    * Success: The test will pass if the correct route maps are applied in the correct direction(inbound or outbound) on the specified IPv4 BGP neighbors..
+    * Success: The test will pass if the correct route maps are applied in the correct direction(inbound or outbound) for IPv4 BGP peers in the specified VRF.
     * Failure: The test will fail if BGP peers are not configured or any neighbor has an incorrect or missing route map in either the inbound or outbound direction.
 
     Examples
