@@ -5,11 +5,13 @@
 
 from __future__ import annotations
 
+import asyncio
 import hashlib
 import logging
 import re
 from abc import ABC, abstractmethod
-from functools import wraps
+from collections import defaultdict
+from functools import cached_property, wraps
 from string import Formatter
 from typing import TYPE_CHECKING, Any, Callable, ClassVar, Literal, TypeVar
 
@@ -25,6 +27,7 @@ if TYPE_CHECKING:
 
     from rich.progress import Progress, TaskID
 
+    from anta.catalog import AntaTestDefinition
     from anta.device import AntaDevice
 
 F = TypeVar("F", bound=Callable[..., Any])
@@ -165,12 +168,11 @@ class AntaCommand(BaseModel):
     params: AntaParamsBaseModel = AntaParamsBaseModel()
     use_cache: bool = True
 
-    @property
+    @cached_property
     def uid(self) -> str:
         """Generate a unique identifier for this command."""
         uid_str = f"{self.command}_{self.version}_{self.revision or 'NA'}_{self.ofmt}"
-        # Ignoring S324 probable use of insecure hash function - sha1 is enough for our needs.
-        return hashlib.sha1(uid_str.encode()).hexdigest()  # noqa: S324
+        return hashlib.sha256(uid_str.encode()).hexdigest()
 
     @property
     def json_output(self) -> dict[str, Any]:
@@ -302,6 +304,8 @@ class AntaTest(ABC):
         instance_commands: List of AntaCommand instances of this test
         result: TestResult instance representing the result of this test
         logger: Python logger for this test instance
+        event: asyncio.Event used by the AntaTestManager to signal the test that all commands have been collected
+                so that it can start running the validation
     """
 
     # Mandatory class attributes
@@ -398,6 +402,7 @@ class AntaTest(ABC):
             categories=self.categories,
             description=self.description,
         )
+        self.event: asyncio.Event | None = None
         self._init_inputs(inputs)
         if self.result.result == "unset":
             self._init_commands(eos_data)
@@ -523,19 +528,6 @@ class AntaTest(ABC):
                     state = True
         return state
 
-    async def collect(self) -> None:
-        """Collect outputs of all commands of this test class from the device of this test instance."""
-        try:
-            if self.blocked is False:
-                await self.device.collect_commands(self.instance_commands, collection_id=self.name)
-        except Exception as e:  # pylint: disable=broad-exception-caught
-            # device._collect() is user-defined code.
-            # We need to catch everything if we want the AntaTest object
-            # to live until the reporting
-            message = f"Exception raised while collecting commands for test {self.name} (on device {self.device.name})"
-            anta_log_exception(e, message, self.logger)
-            self.result.is_error(message=exc_to_str(e))
-
     @staticmethod
     def anta_test(function: F) -> Callable[..., Coroutine[Any, Any, TestResult]]:
         """Decorate the `test()` method in child classes.
@@ -552,7 +544,6 @@ class AntaTest(ABC):
         async def wrapper(
             self: AntaTest,
             eos_data: list[dict[Any, Any] | str] | None = None,
-            **kwargs: dict[str, Any],
         ) -> TestResult:
             """Inner function for the anta_test decorator.
 
@@ -561,7 +552,6 @@ class AntaTest(ABC):
                 self: The test instance.
                 eos_data: Populate outputs of the test commands instead of collecting from devices.
                           This list must have the same length and order than the `instance_commands` instance attribute.
-                kwargs: Any keyword argument to pass to the test.
 
             Returns
             -------
@@ -576,9 +566,12 @@ class AntaTest(ABC):
                 self.save_commands_data(eos_data)
                 self.logger.debug("Test %s initialized with input data %s", self.name, eos_data)
 
-            # If some data is missing, try to collect
+            # Wait until all commands have been collected by the manager before running the test
+            logger.debug("Waiting for all commands to be collected for %s on device %s", self.name, self.device.name)
+            await self.event.wait()
+
+            self.logger.debug("Starting validation for %s on device %s", self.name, self.device.name)
             if not self.collected:
-                await self.collect()
                 if self.result.result != "unset":
                     AntaTest.update_progress()
                     return self.result
@@ -594,8 +587,9 @@ class AntaTest(ABC):
                     AntaTest.update_progress()
                     return self.result
 
+            # Run the test in a separate thread to avoid blocking the event loop
             try:
-                function(self, **kwargs)
+                await asyncio.to_thread(function, self)
             except Exception as e:  # pylint: disable=broad-exception-caught
                 # test() is user-defined code.
                 # We need to catch everything if we want the AntaTest object
@@ -606,6 +600,8 @@ class AntaTest(ABC):
 
             # TODO: find a correct way to time test execution
             AntaTest.update_progress()
+
+            logger.debug("Validation completed for %s on device %s", self.name, self.device.name)
             return self.result
 
         return wrapper
@@ -617,7 +613,7 @@ class AntaTest(ABC):
             cls.progress.update(cls.nrfu_task, advance=1)
 
     @abstractmethod
-    def test(self) -> Coroutine[Any, Any, TestResult]:
+    def test(self) -> None:
         """Core of the test logic.
 
         This is an abstractmethod that must be implemented by child classes.
@@ -636,3 +632,92 @@ class AntaTest(ABC):
             ```
 
         """
+
+
+class AntaTestManager:
+    """TODO: Add docstring.
+
+    # FIXME: Handle different batch sizes for different tests
+    # FIXME: Handle decorators that skip tests. For now commands are still sent to the device.
+    """
+
+    def __init__(self, device: AntaDevice, batch_size: int) -> None:
+        """TODO: Add docstring."""
+        self.device = device
+        self.batch_size = batch_size
+        self.completed_command_ids: set[int] = set()
+        self.test_map: defaultdict[AntaTest, set[int]] = defaultdict(set)
+        self.events: dict[AntaTest, asyncio.Event] = {}
+
+    async def run_tests(self, test_definitions: set[AntaTestDefinition]) -> None:
+        json_commands: list[AntaCommand] = []
+        text_commands: list[AntaCommand] = []
+        test_tasks = []
+        batch_tasks = []
+
+        for test_definition in test_definitions:
+            try:
+                test_instance = test_definition.test(device=self.device, inputs=test_definition.inputs)
+                # Skip the test if it has blocked commands
+                if test_instance.blocked is True:
+                    continue
+
+                test_instance.event = asyncio.Event()
+                self.events[test_instance] = test_instance.event
+
+                for command in test_instance.instance_commands:
+                    self.test_map[test_instance].add(id(command))
+                    if command.ofmt == "json":
+                        json_commands.append(command)
+                    elif command.ofmt == "text":
+                        text_commands.append(command)
+
+                test_tasks.append(asyncio.create_task(test_instance.test()))
+            except Exception as exc:  # pylint: disable=broad-exception-caught
+                # An AntaTest instance is potentially user-defined code.
+                # We need to catch everything and exit gracefully with an error message.
+                message = "\n".join(
+                    [
+                        f"There is an error when creating test {test_definition.test.module}.{test_definition.test.__name__}.",
+                        f"If this is not a custom test implementation: {GITHUB_SUGGESTION}",
+                    ],
+                )
+                anta_log_exception(exc, message, logger)
+
+        total_commands = len(json_commands) + len(text_commands)
+        logger.debug("Total commands to process for %s: %d", self.device.name, total_commands)
+
+        # Create batches for JSON commands
+        json_batches = [json_commands[i : i + self.batch_size] for i in range(0, len(json_commands), self.batch_size)]
+        # Create batches for text commands
+        text_batches = [text_commands[i : i + self.batch_size] for i in range(0, len(text_commands), self.batch_size)]
+
+        logger.debug("Number of JSON batches for %s: %d", self.device.name, len(json_batches))
+        logger.debug("Number of text batches for %s: %d", self.device.name, len(text_batches))
+
+        # Process JSON batches
+        for i, batch in enumerate(json_batches):
+            batch_tasks.append(asyncio.create_task(self.process_batch(i, batch, "json")))
+
+        # Process text batches
+        for i, batch in enumerate(text_batches):
+            batch_tasks.append(asyncio.create_task(self.process_batch(i, batch, "text")))
+
+        # Make sure all batch tasks are completed
+        await asyncio.gather(*batch_tasks)
+
+        # Make sure all test tasks are completed and return the results
+        return await asyncio.gather(*test_tasks)
+
+    async def process_batch(self, batch_id: int, batch: list[AntaCommand], batch_format: Literal["text", "json"] = "json") -> None:
+        await self.device.collect_commands(batch, req_format=batch_format, req_id=f"Batch #{batch_id}")
+        for command in batch:
+            cmd_id = id(command)
+            self.completed_command_ids.add(cmd_id)
+            self.check_test_completion(cmd_id)
+
+    def check_test_completion(self, cmd_id: int) -> None:
+        for test_instance, cmd_ids in self.test_map.items():
+            if cmd_id in cmd_ids and cmd_ids.issubset(self.completed_command_ids):
+                logger.debug("All commands completed for %s", test_instance.name)
+                self.events[test_instance].set()
