@@ -37,7 +37,7 @@ class TestResult(BaseModel):
         test: Name of the test run on the device.
         categories: List of categories the TestResult belongs to. Defaults to the AntaTest categories.
         description: Description of the TestResult. Defaults to the AntaTest description.
-        result: Result of the test. Must be one of the AntaTestStatus Enum values: unset, success, failure, error, skipped.
+        result: Result of the test. Must be one of the AntaTestStatus Enum values: unset, success, failure, error or skipped.
         messages: Messages to report after the test, if any.
         custom_field: Custom field to store a string for flexibility in integrating with ANTA.
 
