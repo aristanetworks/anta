@@ -47,7 +47,7 @@ class TestTestResultModels:
             assert data["message"] in testresult.messages
         # no helper for unset, testing _set_status
         if data["target"] == "unset":
-            testresult._set_status(AntaTestStatus.unset, data["message"])  # pylint: disable=W0212
+            testresult._set_status(AntaTestStatus.UNSET, data["message"])  # pylint: disable=W0212
             assert testresult.result == data["target"]
             assert data["message"] in testresult.messages
 

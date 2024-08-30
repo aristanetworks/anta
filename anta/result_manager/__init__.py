@@ -91,7 +91,7 @@ class ResultManager:
         error_status is set to True.
         """
         self._result_entries: list[TestResult] = []
-        self.status: AntaTestStatus = AntaTestStatus.unset
+        self.status: AntaTestStatus = AntaTestStatus.UNSET
         self.error_status = False
 
         self.device_stats: defaultdict[str, DeviceStats] = defaultdict(DeviceStats)
@@ -112,7 +112,7 @@ class ResultManager:
         """Set the list of TestResult."""
         # When setting the results, we need to reset the state of the current instance
         self._result_entries = []
-        self.status = AntaTestStatus.unset
+        self.status = AntaTestStatus.UNSET
         self.error_status = False
 
         # Also reset the stats attributes
@@ -151,7 +151,7 @@ class ResultManager:
         if self.status == "unset" or self.status == "skipped" and test_status in {"success", "failure"}:
             self.status = test_status
         elif self.status == "success" and test_status == "failure":
-            self.status = AntaTestStatus.failure
+            self.status = AntaTestStatus.FAILURE
 
     def _update_stats(self, result: TestResult) -> None:
         """Update the statistics based on the test result.
@@ -163,7 +163,7 @@ class ResultManager:
         result.categories = [
             " ".join(word.upper() if word.lower() in ACRONYM_CATEGORIES else word.title() for word in category.split()) for category in result.categories
         ]
-        count_attr = f"tests_{result.result.value}_count"
+        count_attr = f"tests_{result.result}_count"
 
         # Update device stats
         device_stats: DeviceStats = self.device_stats[result.name]
@@ -180,7 +180,7 @@ class ResultManager:
             setattr(category_stats, count_attr, getattr(category_stats, count_attr) + 1)
 
         # Update test stats
-        count_attr = f"devices_{result.result.value}_count"
+        count_attr = f"devices_{result.result}_count"
         test_stats: TestStats = self.test_stats[result.test]
         setattr(test_stats, count_attr, getattr(test_stats, count_attr) + 1)
         if result.result in ("failure", "error"):

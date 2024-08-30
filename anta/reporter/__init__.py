@@ -80,19 +80,19 @@ class ReportTable:
         return table
 
     def _color_result(self, status: AntaTestStatus) -> str:
-        """Return a colored string based on the status value.
+        """Return a colored string based on an AntaTestStatus.
 
         Parameters
         ----------
-            status (AntaTestStatus): status value to color.
+            status: AntaTestStatus enum to color.
 
         Returns
         -------
-        str: the colored string
+            The colored string.
 
         """
-        color = RICH_COLOR_THEME.get(status.value, "")
-        return f"[{color}]{status.value}" if color != "" else status.value
+        color = RICH_COLOR_THEME.get(str(status), "")
+        return f"[{color}]{status}" if color != "" else str(status)
 
     def report_all(self, manager: ResultManager, title: str = "All tests results") -> Table:
         """Create a table report with all tests for one or all devices.

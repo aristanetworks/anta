@@ -117,7 +117,7 @@ def print_text(ctx: click.Context) -> None:
     console.print()
     for test in _get_result_manager(ctx).results:
         message = f" ({test.messages[0]!s})" if len(test.messages) > 0 else ""
-        console.print(f"{test.name} :: {test.test} :: [{test.result.value}]{test.result.upper()}[/{test.result.value}]{message}", highlight=False)
+        console.print(f"{test.name} :: {test.test} :: [{test.result}]{test.result.upper()}[/{test.result}]{message}", highlight=False)
 
 
 def print_jinja(results: ResultManager, template: pathlib.Path, output: pathlib.Path | None = None) -> None:

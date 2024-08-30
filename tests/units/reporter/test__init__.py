@@ -73,11 +73,11 @@ class TestReportTable:
     @pytest.mark.parametrize(
         ("status", "expected_status"),
         [
-            pytest.param(AntaTestStatus.unset, "[grey74]unset", id="unset status"),
-            pytest.param(AntaTestStatus.skipped, "[bold orange4]skipped", id="skipped status"),
-            pytest.param(AntaTestStatus.failure, "[bold red]failure", id="failure status"),
-            pytest.param(AntaTestStatus.error, "[indian_red]error", id="error status"),
-            pytest.param(AntaTestStatus.success, "[green4]success", id="success status"),
+            pytest.param(AntaTestStatus.UNSET, "[grey74]unset", id="unset status"),
+            pytest.param(AntaTestStatus.SKIPPED, "[bold orange4]skipped", id="skipped status"),
+            pytest.param(AntaTestStatus.FAILURE, "[bold red]failure", id="failure status"),
+            pytest.param(AntaTestStatus.ERROR, "[indian_red]error", id="error status"),
+            pytest.param(AntaTestStatus.SUCCESS, "[green4]success", id="success status"),
         ],
     )
     def test__color_result(self, status: AntaTestStatus, expected_status: str) -> None:
@@ -139,7 +139,7 @@ class TestReportTable:
         new_results = [result.model_copy() for result in manager.results]
         for result in new_results:
             result.name = "test_device"
-            result.result = AntaTestStatus.failure
+            result.result = AntaTestStatus.FAILURE
 
         report = ReportTable()
         kwargs = {"tests": [test] if test is not None else None, "title": title}
@@ -174,7 +174,7 @@ class TestReportTable:
         new_results = [result.model_copy() for result in manager.results]
         for result in new_results:
             result.name = dev or "test_device"
-            result.result = AntaTestStatus.failure
+            result.result = AntaTestStatus.FAILURE
         manager.results = new_results
 
         report = ReportTable()

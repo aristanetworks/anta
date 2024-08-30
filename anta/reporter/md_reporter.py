@@ -204,10 +204,10 @@ class SummaryTotals(MDReportBase):
         """Generate the rows of the summary totals table."""
         yield (
             f"| {self.results.get_total_results()} "
-            f"| {self.results.get_total_results({AntaTestStatus.success})} "
-            f"| {self.results.get_total_results({AntaTestStatus.skipped})} "
-            f"| {self.results.get_total_results({AntaTestStatus.failure})} "
-            f"| {self.results.get_total_results({AntaTestStatus.error})} |\n"
+            f"| {self.results.get_total_results({AntaTestStatus.SUCCESS})} "
+            f"| {self.results.get_total_results({AntaTestStatus.SKIPPED})} "
+            f"| {self.results.get_total_results({AntaTestStatus.FAILURE})} "
+            f"| {self.results.get_total_results({AntaTestStatus.ERROR})} |\n"
         )
 
     def generate_section(self) -> None:
@@ -279,7 +279,7 @@ class TestResults(MDReportBase):
             categories = ", ".join(result.categories)
             yield (
                 f"| {result.name or '-'} | {categories or '-'} | {result.test or '-'} "
-                f"| {result.description or '-'} | {self.safe_markdown(result.custom_field) or '-'} | {result.result.value or '-'} | {messages or '-'} |\n"
+                f"| {result.description or '-'} | {self.safe_markdown(result.custom_field) or '-'} | {result.result or '-'} | {messages or '-'} |\n"
             )
 
     def generate_section(self) -> None:
