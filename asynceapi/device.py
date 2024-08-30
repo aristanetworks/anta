@@ -271,10 +271,11 @@ class Device(httpx.AsyncClient):
         len_data = len(cmd_data)
         err_at = len_data - 1
         err_msg = err_data["message"]
+        failed_cmd = commands[err_at]
 
         raise EapiCommandError(
             passed=[get_output(cmd_data[cmd_i]) for cmd_i, cmd in enumerate(commands[:err_at])],
-            failed=commands[err_at]["cmd"],
+            failed=failed_cmd["cmd"] if isinstance(failed_cmd, dict) else failed_cmd,
             errors=cmd_data[err_at]["errors"],
             errmsg=err_msg,
             not_exec=commands[err_at + 1 :],

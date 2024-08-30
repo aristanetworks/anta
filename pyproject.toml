@@ -20,7 +20,7 @@ description = "Arista Network Test Automation (ANTA) Framework"
 license = { file = "LICENSE" }
 dependencies = [
   "aiocache>=0.12.2",
-  "asyncssh>=2.13.2",
+  "asyncssh>=2.16",
   "cvprac>=1.3.1",
   "eval-type-backport>=0.1.3",  # Support newer typing features in older Python versions (required until Python 3.9 support is removed)
   "Jinja2>=3.1.2",
@@ -69,6 +69,7 @@ dev = [
   "pytest-cov>=4.1.0",
   "pytest-dependency",
   "pytest-html>=3.2.0",
+  "pytest-httpx>=0.30.0",
   "pytest-metadata>=3.0.0",
   "pytest>=7.4.0",
   "ruff>=0.5.4,<0.7.0",
@@ -181,7 +182,8 @@ filterwarnings = [
 
 [tool.coverage.run]
 branch = true
-source = ["anta"]
+# https://community.sonarsource.com/t/python-coverage-analysis-warning/62629/7
+include = ["anta/*", "asynceapi/*"]
 parallel = true
 relative_files = true
 
