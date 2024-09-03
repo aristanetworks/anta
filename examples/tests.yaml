@@ -593,6 +593,22 @@ anta.tests.routing:
             update_errors:
               - inUpdErrWithdraw
               - inUpdErrIgnore
+    - VerifyBGPRouteOrigin:
+        route_entries:
+          - prefix: 10.100.0.128/31
+            vrf: default
+            paths:
+              - nexthop: 10.100.0.10
+                origin: Igp
+              - nexthop: 10.100.4.5
+                origin: Incomplete
+          - prefix: 10.100.0.130/31
+            vrf: default
+            paths:
+              - nexthop: 10.100.0.8
+                origin: Igp
+              - nexthop: 10.100.0.10
+                origin: Igp
   ospf:
     - VerifyOSPFNeighborState:
     - VerifyOSPFNeighborCount:
