@@ -100,6 +100,20 @@ DATA: list[dict[str, Any]] = [
         },
     },
     {
+        "name": "failure-details-not-configured",
+        "test": VerifySnmpLocation,
+        "eos_data": [
+            {
+                "location": {"location": ""},
+            }
+        ],
+        "inputs": {"location": "New York"},
+        "expected": {
+            "result": "failure",
+            "messages": ["SNMP location is not configured."],
+        },
+    },
+    {
         "name": "success",
         "test": VerifySnmpContact,
         "eos_data": [
@@ -122,6 +136,20 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": ["Expected `Bob@example.com` as the contact, but found `Jon@example.com` instead."],
+        },
+    },
+    {
+        "name": "failure-details-not-configured",
+        "test": VerifySnmpContact,
+        "eos_data": [
+            {
+                "contact": {"contact": ""},
+            }
+        ],
+        "inputs": {"contact": "Bob@example.com"},
+        "expected": {
+            "result": "failure",
+            "messages": ["SNMP contact is not configured."],
         },
     },
 ]
