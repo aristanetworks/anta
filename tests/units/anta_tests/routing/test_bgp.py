@@ -4712,4 +4712,73 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
+    {
+        "name": "failure-not-consitent-specific-peers",
+        "test": VerifyBGPPeerPrefixes,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peers": {
+                            "10.100.0.8": {
+                                "prefixAccepted": 17,
+                                "prefixReceived": 17,
+                            },
+                            "10.100.0.10": {
+                                "prefixAccepted": 15,
+                                "prefixReceived": 20,
+                            },
+                        }
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "MGMT": {
+                        "peers": {
+                            "10.100.0.8": {
+                                "prefixAccepted": 17,
+                                "prefixReceived": 17,
+                            },
+                            "10.100.0.10": {
+                                "prefixAccepted": 17,
+                                "prefixReceived": 17,
+                            },
+                        }
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "peers": {
+                            "10.100.0.8": {
+                                "prefixAccepted": 14,
+                                "prefixReceived": 15,
+                            },
+                            "10.100.0.10": {
+                                "prefixAccepted": 11,
+                                "prefixReceived": 15,
+                            },
+                        }
+                    }
+                }
+            },
+        ],
+        "inputs": {
+            "address_families": [
+                {"afi": "ipv4", "safi": "unicast", "peers": ["10.100.0.15"]},
+                {"afi": "ipv4", "safi": "multicast", "vrf": "MGMT", "peers": ["10.100.0.8", "10.100.0.10"]},
+                {"afi": "evpn", "peers": ["10.100.0.8", "10.100.0.10"]},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following BGP address family(s), peers are not configured or prefix(s) received and accepted are not consistent:\n"
+                "{'ipv4': {'unicast': {'10.100.0.15': 'Not Configured'}}, 'evpn': {'10.100.0.8': {'prefix received': 15, 'prefix accepted': 14}, "
+                "'10.100.0.10': {'prefix received': 15, 'prefix accepted': 11}}}"
+            ],
+        },
+    },
 ]

@@ -163,6 +163,46 @@ def _add_bgp_routes_failure(
     return failure_routes
 
 
+def _get_inconsistent_peers(peer_details: dict[Any, Any], bgp_peers: list[IPv4Address] | None) -> dict[Any, Any]:
+    """Identify BGP peers with inconsistency of prefix(s) received and accepted in a BGP session.
+
+    bgp_peers: list of IPv4 address of a BGP peer to be verified. If not provided, test will verifies all the BGP peers.
+
+    Parameters
+    ----------
+        peer_details: The BGP peer data dictionary.
+        bgp_peers: The list of IPv4 address of a BGP peer(s) to be verified.
+
+    Returns
+    -------
+        dict[Any, Any]: A dictionary containing the BGP peer(s) with inconsistent prefix(s).
+
+    """
+    failure: dict[Any, Any] = {}
+
+    # Update the peer details as per input peer addresses for verification.
+    if bgp_peers:
+        details: dict[Any, Any] = {}
+        for peer in bgp_peers:
+            if not (peer_detail := peer_details.get(str(peer))):
+                failure[str(peer)] = "Not Configured"
+            else:
+                details[str(peer)] = peer_detail
+        peer_details = details
+
+    # Iterate over each peer and verify the prefix(s) consistency.
+    for peer, peer_detail in peer_details.items():
+        prefix_rcv = peer_detail.get("prefixReceived", "Not Found")
+        prefix_acc = peer_detail.get("prefixAccepted", "Not Found")
+        if (prefix_acc and prefix_rcv) == "Not Found":
+            failure[peer] = {"prefix received": prefix_rcv, "prefix accepted": prefix_acc}
+            continue
+        if prefix_rcv != prefix_acc:
+            failure[peer] = {"prefix received": prefix_rcv, "prefix accepted": prefix_acc}
+
+    return failure
+
+
 class VerifyBGPPeerCount(AntaTest):
     """Verifies the count of BGP peers for a given address family.
 
@@ -1444,8 +1484,8 @@ class VerifyBGPPeerPrefixes(AntaTest):
 
     Expected Results
     ----------------
-    * Success: The test will pass if the `prefixReceived` equals `prefixAccepted`, indicating that all received prefix(s) were accepted.
-    * Failure: The test will fail if the `prefixReceived` is not equal to `prefixAccepted`, indicating that some prefix(s) were rejected/filtered out or
+    * Success: The test will pass if the `PfxRcd` equals `PfxAcc`, indicating that all received prefix(s) were accepted.
+    * Failure: The test will fail if the `PfxRcd` is not equal to `PfxAcc`, indicating that some prefix(s) were rejected/filtered out or
     peer(s) are not configured.
 
     Examples
@@ -1457,6 +1497,9 @@ class VerifyBGPPeerPrefixes(AntaTest):
             address_families:
               - afi: ipv4
                 safi: unicast
+                peers:
+                  - 10.100.0.8
+                  - 10.100.0.10
               - afi: ipv4
                 safi: multicast
               - afi: evpn
@@ -1496,6 +1539,8 @@ class VerifyBGPPeerPrefixes(AntaTest):
 
             If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, `vrf` must be `default`.
             """
+            peers: list[IPv4Address] | None = None
+            """Optional list of IPv4 address of a BGP peer to be verified. If not provided, test will verifies all the BGP peers."""
 
             @model_validator(mode="after")
             def validate_inputs(self: BaseModel) -> BaseModel:
@@ -1536,11 +1581,12 @@ class VerifyBGPPeerPrefixes(AntaTest):
         """Main test function for VerifyBGPPeerPrefixes."""
         failures: dict[Any, Any] = {}
 
-        for command in self.instance_commands:
+        for command, input_entry in zip(self.instance_commands, self.inputs.address_families):
             command_output = command.json_output
-            afi = command.params.afi
-            safi = command.params.safi if hasattr(command.params, "safi") else None
-            afi_vrf = command.params.vrf if hasattr(command.params, "vrf") else "default"
+            afi = input_entry.afi
+            safi = input_entry.safi
+            afi_vrf = input_entry.vrf
+            peers = input_entry.peers
 
             # Update failures dictionary for `afi`, later on removing the same if no failure found.
             if not failures.get(afi):
@@ -1553,19 +1599,17 @@ class VerifyBGPPeerPrefixes(AntaTest):
                     failures[afi] = "Peers not configured"
                 continue
 
-            # Iterate over each peer and verify the prefix(s) consistency.
-            failure: dict[Any, Any] = {}
-            for peer, peer_detail in peer_details.items():
-                if (prefix_rcv := peer_detail.get("prefixReceived", "Not Found")) != (prefix_acc := peer_detail.get("prefixAccepted", "Not Found")):
-                    failure[peer] = {"prefix received": prefix_rcv, "prefix accepted": prefix_acc}
+            # Verify the received and accepted prefix(s).
+            failure_logs = _get_inconsistent_peers(peer_details, peers)
 
             # Update failures if any.
-            if failure:
+            if failure_logs:
                 if safi:
-                    failures[afi].update({safi: failure})
+                    failures[afi].update({safi: failure_logs})
                 else:
-                    failures[afi].update(failure)
-            else:
+                    failures[afi].update(failure_logs)
+            # Remove AFI from failures if empty.
+            if not failures.get(afi):
                 failures.pop(afi, None)
 
         # Check if any failures

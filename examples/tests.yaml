@@ -613,6 +613,9 @@ anta.tests.routing:
         address_families:
           - afi: ipv4
             safi: unicast
+            peers:
+              - 10.100.0.8
+              - 10.100.0.10
           - afi: ipv4
             safi: multicast
           - afi: evpn
