@@ -8,10 +8,14 @@
 from __future__ import annotations
 
 import re
+from ipaddress import IPv4Address
 from typing import TYPE_CHECKING, ClassVar
 
-from anta.custom_types import PositiveInteger
+from pydantic import BaseModel, Field
+
+from anta.custom_types import Hostname, PositiveInteger
 from anta.models import AntaCommand, AntaTest
+from anta.tools import get_failed_logs, get_value
 
 if TYPE_CHECKING:
     from anta.models import AntaTemplate
@@ -299,3 +303,93 @@ class VerifyNTP(AntaTest):
         else:
             data = command_output.split("\n")[0]
             self.result.is_failure(f"The device is not synchronized with the configured NTP server(s): '{data}'")
+
+
+class VerifyNTPAssociations(AntaTest):
+    """Verifies the Network Time Protocol (NTP) associations.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the Primary NTP server (marked as preferred) has the condition 'sys.peer' and
+    all other NTP servers have the condition 'candidate'.
+    * Failure: The test will fail if the Primary NTP server (marked as preferred) does not have the condition 'sys.peer' or
+    if any other NTP server does not have the condition 'candidate'.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.system:
+      - VerifyNTPAssociations:
+          ntp_servers:
+            - server_address: 1.1.1.1
+              preferred: True
+              stratum: 1
+            - server_address: 2.2.2.2
+              stratum: 2
+            - server_address: 3.3.3.3
+              stratum: 2
+    ```
+    """
+
+    name = "VerifyNTPAssociations"
+    description = "Verifies the Network Time Protocol (NTP) associations."
+    categories: ClassVar[list[str]] = ["system"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ntp associations")]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyNTPAssociations test."""
+
+        ntp_servers: list[NTPServer]
+        """List of NTP servers."""
+
+        class NTPServer(BaseModel):
+            """Model for a NTP server."""
+
+            server_address: Hostname | IPv4Address
+            """The NTP server address as an IPv4 address or hostname. The NTP server name defined in the running configuration
+            of the device may change during DNS resolution, which is not handled in ANTA. Please provide the DNS-resolved server name.
+            For example, 'ntp.example.com' in the configuration might resolve to 'ntp3.example.com' in the device output."""
+            preferred: bool = False
+            """Optional preferred for NTP server. If not provided, it defaults to `False`."""
+            stratum: int = Field(ge=0, le=16)
+            """NTP stratum level (0 to 15) where 0 is the reference clock and 16 indicates unsynchronized.
+            Values should be between 0 and 15 for valid synchronization and 16 represents an out-of-sync state."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyNTPAssociations."""
+        failures: str = ""
+
+        if not (peer_details := get_value(self.instance_commands[0].json_output, "peers")):
+            self.result.is_failure("None of NTP peers are not configured.")
+            return
+
+        # Iterate over each NTP server.
+        for ntp_server in self.inputs.ntp_servers:
+            server_address = str(ntp_server.server_address)
+            preferred = ntp_server.preferred
+            stratum = ntp_server.stratum
+
+            # Check if NTP server details exists.
+            if (peer_detail := get_value(peer_details, server_address, separator="..")) is None:
+                failures += f"NTP peer {server_address} is not configured.\n"
+                continue
+
+            # Collecting the expected NTP peer details.
+            expected_peer_details = {"condition": "candidate", "stratum": stratum}
+            if preferred:
+                expected_peer_details["condition"] = "sys.peer"
+
+            # Collecting the actual NTP peer details.
+            actual_peer_details = {"condition": get_value(peer_detail, "condition"), "stratum": get_value(peer_detail, "stratumLevel")}
+
+            # Collecting failures logs if any.
+            failure_logs = get_failed_logs(expected_peer_details, actual_peer_details)
+            if failure_logs:
+                failures += f"For NTP peer {server_address}:{failure_logs}\n"
+
+        # Check if there are any failures.
+        if not failures:
+            self.result.is_success()
+        else:
+            self.result.is_failure(failures)
