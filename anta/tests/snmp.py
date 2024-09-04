@@ -184,12 +184,12 @@ class VerifySnmpLocation(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifySnmpLocation."""
-        # Verifies the SNMP location details are configured.
+        # Verifies the SNMP location is configured.
         if not (location := get_value(self.instance_commands[0].json_output, "location.location")):
-            self.result.is_failure("SNMP location detail(s) are not configured.")
+            self.result.is_failure("SNMP location is not configured.")
             return
 
-        # Verifies the expected SNMP location details.
+        # Verifies the expected SNMP location.
         if location != self.inputs.location:
             self.result.is_failure(f"Expected `{self.inputs.location}` as the location, but found `{location}` instead.")
         else:
@@ -227,12 +227,12 @@ class VerifySnmpContact(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifySnmpContact."""
-        # Verifies the SNMP contact details are configured.
+        # Verifies the SNMP contact is configured.
         if not (contact := get_value(self.instance_commands[0].json_output, "contact.contact")):
-            self.result.is_failure("SNMP contact detail(s) are not configured.")
+            self.result.is_failure("SNMP contact is not configured.")
             return
 
-        # Verifies the expected SNMP contact details.
+        # Verifies the expected SNMP contact.
         if contact != self.inputs.contact:
             self.result.is_failure(f"Expected `{self.inputs.contact}` as the contact, but found `{contact}` instead.")
         else:
