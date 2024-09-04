@@ -110,7 +110,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"location": "New York"},
         "expected": {
             "result": "failure",
-            "messages": ["SNMP location detail(s) are not configured."],
+            "messages": ["SNMP location is not configured."],
         },
     },
     {
@@ -149,7 +149,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"contact": "Bob@example.com"},
         "expected": {
             "result": "failure",
-            "messages": ["SNMP contact detail(s) are not configured."],
+            "messages": ["SNMP contact is not configured."],
         },
     },
 ]
