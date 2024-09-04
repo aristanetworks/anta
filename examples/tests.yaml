@@ -546,6 +546,7 @@ anta.tests.routing:
         bgp_peers:
           - peer_address: 172.30.11.1
             vrf: default
+            strict: False
             capabilities:
               - ipv4Unicast
     - VerifyBGPPeerASNCap:

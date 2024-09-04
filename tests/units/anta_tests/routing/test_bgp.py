@@ -2201,6 +2201,152 @@ DATA: list[dict[str, Any]] = [
         },
     },
     {
+        "name": "success-strict",
+        "test": VerifyBGPPeerMPCaps,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.1",
+                                "neighborCapabilities": {
+                                    "multiprotocolCaps": {
+                                        "ipv4Unicast": {
+                                            "advertised": True,
+                                            "received": True,
+                                            "enabled": True,
+                                        },
+                                        "ipv4MplsLabels": {
+                                            "advertised": True,
+                                            "received": True,
+                                            "enabled": True,
+                                        },
+                                    }
+                                },
+                            }
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.10",
+                                "neighborCapabilities": {
+                                    "multiprotocolCaps": {
+                                        "ipv4Unicast": {
+                                            "advertised": True,
+                                            "received": True,
+                                            "enabled": True,
+                                        },
+                                        "ipv4MplsVpn": {
+                                            "advertised": True,
+                                            "received": True,
+                                            "enabled": True,
+                                        },
+                                    }
+                                },
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "172.30.11.1",
+                    "vrf": "default",
+                    "strict": True,
+                    "capabilities": ["Ipv4 Unicast", "ipv4 Mpls labels"],
+                },
+                {
+                    "peer_address": "172.30.11.10",
+                    "vrf": "MGMT",
+                    "strict": True,
+                    "capabilities": ["ipv4 Unicast", "ipv4 MplsVpn"],
+                },
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-srict",
+        "test": VerifyBGPPeerMPCaps,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.1",
+                                "neighborCapabilities": {
+                                    "multiprotocolCaps": {
+                                        "ipv4Unicast": {
+                                            "advertised": True,
+                                            "received": True,
+                                            "enabled": True,
+                                        },
+                                        "ipv4MplsLabels": {
+                                            "advertised": True,
+                                            "received": True,
+                                            "enabled": True,
+                                        },
+                                    }
+                                },
+                            }
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.10",
+                                "neighborCapabilities": {
+                                    "multiprotocolCaps": {
+                                        "ipv4Unicast": {
+                                            "advertised": True,
+                                            "received": True,
+                                            "enabled": True,
+                                        },
+                                        "ipv4MplsVpn": {
+                                            "advertised": False,
+                                            "received": True,
+                                            "enabled": True,
+                                        },
+                                    }
+                                },
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "172.30.11.1",
+                    "vrf": "default",
+                    "strict": True,
+                    "capabilities": ["Ipv4 Unicast"],
+                },
+                {
+                    "peer_address": "172.30.11.10",
+                    "vrf": "MGMT",
+                    "strict": True,
+                    "capabilities": ["ipv4MplsVpn", "L2vpnEVPN"],
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Following BGP peer multiprotocol capabilities are not found or not ok:\n{'bgp_peers': {'172.30.11.1': "
+                "{'default': {'status': 'Expected only `ipv4Unicast` capabilities should be listed but found `ipv4Unicast, ipv4MplsLabels` instead.'}},"
+                " '172.30.11.10': {'MGMT': {'status': 'Expected only `ipv4MplsVpn, l2VpnEvpn` capabilities should be listed but found `ipv4Unicast, "
+                "ipv4MplsVpn` instead.'}}}}"
+            ],
+        },
+    },
+    {
         "name": "success",
         "test": VerifyBGPPeerASNCap,
         "eos_data": [
