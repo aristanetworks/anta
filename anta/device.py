@@ -15,6 +15,7 @@ import asyncssh
 import httpcore
 from aiocache import Cache
 from aiocache.plugins import HitMissRatioPlugin
+from aiocache.serializers import PickleSerializer
 from asyncssh import SSHClientConnection, SSHClientConnectionOptions
 from httpx import ConnectError, HTTPError, TimeoutException
 
@@ -91,7 +92,7 @@ class AntaDevice(ABC):
 
     def _init_cache(self) -> None:
         """Initialize cache for the device, can be overridden by subclasses to manipulate how it works."""
-        self.cache = Cache(cache_class=Cache.MEMORY, ttl=60, namespace=self.name, plugins=[HitMissRatioPlugin()])
+        self.cache = Cache(cache_class=Cache.MEMORY, ttl=60, namespace=self.name, serializer=PickleSerializer, plugins=[HitMissRatioPlugin()])
         self.cache_locks = defaultdict(asyncio.Lock)
 
     @property
