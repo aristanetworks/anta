@@ -1437,3 +1437,77 @@ class VerifyBGPPeerUpdateErrors(AntaTest):
             self.result.is_success()
         else:
             self.result.is_failure(f"The following BGP peers are not configured or have non-zero update error counters:\n{failures}")
+
+
+class VerifyBGPPeerGroup(AntaTest):
+    """Verifies BGP peer group of the BGP IPv4 peer(s).
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the peer group is correctly assigned to the BGP peer(s).
+    * Failure: The test will fail if the BGP peer group not correctly assigned or peer is not configured.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      bgp:
+        - VerifyBGPPeerGroup:
+            bgp_peers:
+              - peer_address: 172.30.11.1
+                vrf: default
+                peer_group: IPv4-UNDERLAY-PEERS
+    ```
+    """
+
+    name = "VerifyBGPPeerGroup"
+    description = "Verifies BGP peer group of the BGP IPv4 peer(s)."
+    categories: ClassVar[list[str]] = ["bgp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show bgp neighbors {peer} vrf {vrf}", revision=3)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyBGPPeerGroup test."""
+
+        bgp_peers: list[BgpPeer]
+        """List of BGP peers"""
+
+        class BgpPeer(BaseModel):
+            """Model for a BGP peer."""
+
+            peer_address: IPv4Address
+            """IPv4 address of a BGP peer."""
+            vrf: str = "default"
+            """Optional VRF for BGP peer. If not provided, it defaults to `default`."""
+            peer_group: str
+            """The name of the peer group, BGP neighbor is associated with."""
+
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        """Render the template for each BGP peer in the input list."""
+        return [template.render(peer=str(bgp_peer.peer_address), vrf=bgp_peer.vrf) for bgp_peer in self.inputs.bgp_peers]
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyBGPPeerGroup."""
+        failures: dict[Any, Any] = {}
+
+        for command, input_entry in zip(self.instance_commands, self.inputs.bgp_peers):
+            peer = command.params.peer
+            vrf = command.params.vrf
+            peer_group = input_entry.peer_group
+
+            # Verify BGP peer.
+            if not (peer_list := get_value(command.json_output, f"vrfs.{vrf}.peerList")) or (peer_detail := get_item(peer_list, "peerAddress", peer)) is None:
+                failures[peer] = {vrf: "Not configured"}
+                continue
+
+            if (actual_peer_group := peer_detail.get("peerGroupName")) != peer_group:
+                failure_log = f"Expected `{peer_group}` as the configured peer-group, but found `{actual_peer_group}` instead."
+                if not actual_peer_group:
+                    failure_log = "Peer-group not configured."
+                failures[peer] = failure_log
+
+        # Check if any failures
+        if not failures:
+            self.result.is_success()
+        else:
+            self.result.is_failure(f"The following BGP peer(s) are not configured or have incorrect peer-group configured:\n{failures}")

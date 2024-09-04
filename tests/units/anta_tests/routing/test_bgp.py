@@ -16,6 +16,7 @@ from anta.tests.routing.bgp import (
     VerifyBGPPeerASNCap,
     VerifyBGPPeerCount,
     VerifyBGPPeerDropStats,
+    VerifyBGPPeerGroup,
     VerifyBGPPeerMD5Auth,
     VerifyBGPPeerMPCaps,
     VerifyBGPPeerRouteRefreshCap,
@@ -4500,6 +4501,294 @@ DATA: list[dict[str, Any]] = [
                 "The following BGP peers are not configured or have non-zero update error counters:\n"
                 "{'10.100.0.8': {'default': {'inUpdErrWithdraw': 'Not Found', 'disabledAfiSafi': 'ipv4Unicast'}}, "
                 "'10.100.0.9': {'MGMT': {'inUpdErrWithdraw': 1, 'inUpdErrDisableAfiSafi': 'Not Found'}}}"
+            ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifyBGPPeerGroup,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "peerGroupName": "IPv4-UNDERLAY-PEERS",
+                            }
+                        ]
+                    },
+                },
+            },
+            {
+                "vrfs": {
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.10",
+                                "peerGroupName": "IPv4-UNDERLAY-PEERS",
+                            }
+                        ]
+                    },
+                },
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.1.1",
+                                "peerGroupName": "EVPN-OVERLAY-PEERS",
+                            }
+                        ]
+                    },
+                },
+            },
+            {
+                "vrfs": {
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.1.2",
+                                "peerGroupName": "EVPN-OVERLAY-PEERS",
+                            }
+                        ]
+                    },
+                },
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.4.5",
+                                "peerGroupName": "MLAG-IPv4-UNDERLAY-PEER",
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default", "peer_group": "IPv4-UNDERLAY-PEERS"},
+                {"peer_address": "10.100.0.10", "vrf": "MGMT", "peer_group": "IPv4-UNDERLAY-PEERS"},
+                {"peer_address": "10.100.1.1", "vrf": "default", "peer_group": "EVPN-OVERLAY-PEERS"},
+                {"peer_address": "10.100.1.2", "vrf": "MGMT", "peer_group": "EVPN-OVERLAY-PEERS"},
+                {"peer_address": "10.100.4.5", "vrf": "default", "peer_group": "MLAG-IPv4-UNDERLAY-PEER"},
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-incorrect-peer-group",
+        "test": VerifyBGPPeerGroup,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "peerGroupName": "UNDERLAY-PEERS",
+                            }
+                        ]
+                    },
+                },
+            },
+            {
+                "vrfs": {
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.10",
+                                "peerGroupName": "UNDERLAY-PEERS",
+                            }
+                        ]
+                    },
+                },
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.1.1",
+                                "peerGroupName": "OVERLAY-PEERS",
+                            }
+                        ]
+                    },
+                },
+            },
+            {
+                "vrfs": {
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.1.2",
+                                "peerGroupName": "OVERLAY-PEERS",
+                            }
+                        ]
+                    },
+                },
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.4.5",
+                                "peerGroupName": "UNDERLAY-PEER",
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default", "peer_group": "IPv4-UNDERLAY-PEERS"},
+                {"peer_address": "10.100.0.10", "vrf": "MGMT", "peer_group": "IPv4-UNDERLAY-PEERS"},
+                {"peer_address": "10.100.1.1", "vrf": "default", "peer_group": "EVPN-OVERLAY-PEERS"},
+                {"peer_address": "10.100.1.2", "vrf": "MGMT", "peer_group": "EVPN-OVERLAY-PEERS"},
+                {"peer_address": "10.100.4.5", "vrf": "default", "peer_group": "MLAG-IPv4-UNDERLAY-PEER"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following BGP peer(s) are not configured or have incorrect peer-group configured:\n"
+                "{'10.100.0.8': 'Expected `IPv4-UNDERLAY-PEERS` as the configured peer-group, but found `UNDERLAY-PEERS` instead.', "
+                "'10.100.0.10': 'Expected `IPv4-UNDERLAY-PEERS` as the configured peer-group, but found `UNDERLAY-PEERS` instead.', "
+                "'10.100.1.1': 'Expected `EVPN-OVERLAY-PEERS` as the configured peer-group, but found `OVERLAY-PEERS` instead.', "
+                "'10.100.1.2': 'Expected `EVPN-OVERLAY-PEERS` as the configured peer-group, but found `OVERLAY-PEERS` instead.', "
+                "'10.100.4.5': 'Expected `MLAG-IPv4-UNDERLAY-PEER` as the configured peer-group, but found `UNDERLAY-PEER` instead.'}"
+            ],
+        },
+    },
+    {
+        "name": "failure-peers-not-found",
+        "test": VerifyBGPPeerGroup,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {"peerList": []},
+                },
+            },
+            {
+                "vrfs": {
+                    "MGMT": {"peerList": []},
+                },
+            },
+            {
+                "vrfs": {
+                    "default": {"peerList": []},
+                },
+            },
+            {
+                "vrfs": {
+                    "MGMT": {"peerList": []},
+                },
+            },
+            {
+                "vrfs": {
+                    "default": {"peerList": []},
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default", "peer_group": "IPv4-UNDERLAY-PEERS"},
+                {"peer_address": "10.100.0.10", "vrf": "MGMT", "peer_group": "IPv4-UNDERLAY-PEERS"},
+                {"peer_address": "10.100.1.1", "vrf": "default", "peer_group": "EVPN-OVERLAY-PEERS"},
+                {"peer_address": "10.100.1.2", "vrf": "MGMT", "peer_group": "EVPN-OVERLAY-PEERS"},
+                {"peer_address": "10.100.4.5", "vrf": "default", "peer_group": "MLAG-IPv4-UNDERLAY-PEER"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following BGP peer(s) are not configured or have incorrect peer-group configured:\n"
+                "{'10.100.0.8': {'default': 'Not configured'}, '10.100.0.10': {'MGMT': 'Not configured'}, '10.100.1.1': "
+                "{'default': 'Not configured'}, '10.100.1.2': {'MGMT': 'Not configured'}, '10.100.4.5': {'default': 'Not configured'}}"
+            ],
+        },
+    },
+    {
+        "name": "failure-peer-group-not-found",
+        "test": VerifyBGPPeerGroup,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                            }
+                        ]
+                    },
+                },
+            },
+            {
+                "vrfs": {
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.10",
+                            }
+                        ]
+                    },
+                },
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.1.1",
+                            }
+                        ]
+                    },
+                },
+            },
+            {
+                "vrfs": {
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.1.2",
+                            }
+                        ]
+                    },
+                },
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.4.5",
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default", "peer_group": "IPv4-UNDERLAY-PEERS"},
+                {"peer_address": "10.100.0.10", "vrf": "MGMT", "peer_group": "IPv4-UNDERLAY-PEERS"},
+                {"peer_address": "10.100.1.1", "vrf": "default", "peer_group": "EVPN-OVERLAY-PEERS"},
+                {"peer_address": "10.100.1.2", "vrf": "MGMT", "peer_group": "EVPN-OVERLAY-PEERS"},
+                {"peer_address": "10.100.4.5", "vrf": "default", "peer_group": "MLAG-IPv4-UNDERLAY-PEER"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following BGP peer(s) are not configured or have incorrect peer-group configured:\n"
+                "{'10.100.0.8': 'Peer-group not configured.', '10.100.0.10': 'Peer-group not configured.', '10.100.1.1': "
+                "'Peer-group not configured.', '10.100.1.2': 'Peer-group not configured.', '10.100.4.5': 'Peer-group not configured.'}"
             ],
         },
     },
