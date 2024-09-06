@@ -6,7 +6,7 @@
 from unittest.mock import patch
 
 import pytest
-import respx  # pylint: disable=import-error
+import respx
 
 from anta.device import AntaDevice, AsyncEOSDevice
 from anta.models import AntaTest

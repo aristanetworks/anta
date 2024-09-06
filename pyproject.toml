@@ -72,6 +72,7 @@ dev = [
   "pytest-httpx>=0.30.0",
   "pytest-metadata>=3.0.0",
   "pytest>=7.4.0",
+  "respx",
   "ruff>=0.5.4,<0.7.0",
   "tox>=4.10.0,<5.0.0",
   "types-PyYAML",
