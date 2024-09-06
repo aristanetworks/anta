@@ -335,7 +335,7 @@ class AsyncEOSDevice(AntaDevice):
                 commands=commands,
                 ofmt=command.ofmt,
                 version=command.version,
-                req_id=f"ANTA-{collection_id}-{id(command)}" if collection_id else f"ANTA-{id(command)}",
+                req_id=collection_id or f"ANTA-{id(command)}",
             )  # type: ignore[assignment] # multiple commands returns a list
             # Do not keep response of 'enable' command
             command.output = response[-1]

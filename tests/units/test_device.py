@@ -741,7 +741,7 @@ class TestAsyncEOSDevice:
                 commands.append({"cmd": cmd.command, "revision": cmd.revision})
             else:
                 commands.append({"cmd": cmd.command})
-            async_device._session.cli.assert_called_once_with(commands=commands, ofmt=cmd.ofmt, version=cmd.version, req_id=f"ANTA-{collection_id}-{id(cmd)}")  # type: ignore[attr-defined] # asynceapi.Device.cli is patched # pylint: disable=line-too-long
+            async_device._session.cli.assert_called_once_with(commands=commands, ofmt=cmd.ofmt, version=cmd.version, req_id=collection_id)  # type: ignore[attr-defined] # asynceapi.Device.cli is patched # pylint: disable=line-too-long
             assert cmd.output == expected["output"]
             assert cmd.errors == expected["errors"]
 
