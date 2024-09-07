@@ -12,7 +12,7 @@ import pytest
 
 # Load fixtures from dedicated file tests/lib/fixture.py
 # As well as pytest_asyncio plugin to test co-routines
-pytest_plugins = ["tests.lib.fixture", "pytest_asyncio", "respx"]
+pytest_plugins = ["tests.lib.fixture", "pytest_asyncio"]
 
 # Enable nice assert messages
 # https://docs.pytest.org/en/7.1.x/how-to/writing_plugins.html#assertion-rewriting
