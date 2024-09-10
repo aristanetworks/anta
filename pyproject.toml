@@ -336,7 +336,6 @@ ignore = [
   "TD003",   # We don't have an issue link for all TODOs today
   "FIX002",  # Line contains TODO - ignoring for ruff for now
   "F821",    # Disable undefined-name until resolution of #10451
-  "D107", "D203", "D212", "D213", "D402", "D413", "D415", "D416", "D417", # numpy docstring style ignore as per doc
 ]
 
 # Allow autofix for all enabled rules (when `--fix`) is provided.
