@@ -126,10 +126,8 @@
     line-height: 1em;
     font-size: 1.3rem;
     margin: 1em 0;
-    /* font-weight: 700; */
     letter-spacing: -.01em;
     color: var(--md-default-fg-color--light);
-    text-transform: capitalize;
     font-style: normal;
     font-weight: bold;
   }
@@ -142,7 +140,6 @@
     line-height: 1em;
     color: var(--md-default-fg-color--light);
     font-style: italic;
-    text-transform: capitalize;
   }
 
   .md-typeset h5,
@@ -154,7 +151,6 @@
     /* line-height: 2em; */
     color: var(--md-default-fg-color--light);
     font-style: italic;
-    text-transform: capitalize;
     text-decoration: underline;
   }
 
