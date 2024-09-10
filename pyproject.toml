@@ -330,14 +330,13 @@ target-version = "py39"
 select = ["ALL"]
 ignore = [
   "ANN101",  # Missing type annotation for `self` in method - we know what self is..
-  "D203",    # Ignoring conflicting D* warnings - one-blank-line-before-class
-  "D213",    # Ignoring conflicting D* warnings - multi-line-summary-second-line
   "COM812",  # Ignoring conflicting rules that may cause conflicts when used with the formatter
   "ISC001",  # Ignoring conflicting rules that may cause conflicts when used with the formatter
   "TD002",   # We don't have require authors in TODO
   "TD003",   # We don't have an issue link for all TODOs today
   "FIX002",  # Line contains TODO - ignoring for ruff for now
   "F821",    # Disable undefined-name until resolution of #10451
+  "D107", "D203", "D212", "D213", "D402", "D413", "D415", "D416", "D417", # numpy docstring style ignore as per doc
 ]
 
 # Allow autofix for all enabled rules (when `--fix`) is provided.
