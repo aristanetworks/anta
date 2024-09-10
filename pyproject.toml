@@ -327,7 +327,12 @@ target-version = "py39"
 
 [tool.ruff.lint]
 # select all cause we like being suffering
-select = ["ALL"]
+select = ["ALL",
+    # TODO: Augment the numpy convention rules to make sure we add all the params
+    #       Uncomment below D417
+    "D415",
+    # "D417",
+]
 ignore = [
   "ANN101",  # Missing type annotation for `self` in method - we know what self is..
   "COM812",  # Ignoring conflicting rules that may cause conflicts when used with the formatter
