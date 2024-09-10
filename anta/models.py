@@ -600,7 +600,7 @@ class AntaTest(ABC):
             Returns
             -------
             TestResult
-                The TestResult instance attribute populated with error status if any
+                The TestResult instance attribute populated with error status if any.
 
             """
             if self.result.result != "unset":
