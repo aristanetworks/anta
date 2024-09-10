@@ -305,7 +305,8 @@ class ResultManager:
 
         Returns
         -------
-        A filtered `ResultManager`.
+        ResultManager
+            A filtered `ResultManager`.
         """
         manager = ResultManager()
         manager.results = [result for result in self._result_entries if result.name in devices]

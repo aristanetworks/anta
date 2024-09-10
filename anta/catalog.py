@@ -421,6 +421,10 @@ class AntaCatalog:
     def merge(self, catalog: AntaCatalog) -> AntaCatalog:
         """Merge two AntaCatalog instances.
 
+        Warning
+        -------
+        This method is deprecated and will be removed in ANTA v2.0. Use `AntaCatalog.merge_catalogs()` instead.
+
         Parameters
         ----------
         catalog
@@ -459,7 +463,9 @@ class AntaCatalog:
         If a `filtered_tests` set is provided, only the tests in this set will be indexed.
 
         This method populates two attributes:
+
         - tag_to_tests: A dictionary mapping each tag to a set of tests that contain it.
+
         - tests_without_tags: A set of tests that do not have any tags.
 
         Once the indexes are built, the `indexes_built` attribute is set to True.

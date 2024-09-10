@@ -198,9 +198,12 @@ class AntaDevice(ABC):
         """Update attributes of an AntaDevice instance.
 
         This coroutine must update the following attributes of AntaDevice:
-            - `is_online`: When the device IP is reachable and a port can be open
-            - `established`: When a command execution succeeds
-            - `hw_model`: The hardware model of the device
+
+        - `is_online`: When the device IP is reachable and a port can be open.
+
+        - `established`: When a command execution succeeds.
+
+        - `hw_model`: The hardware model of the device.
         """
 
     async def copy(self, sources: list[Path], destination: Path, direction: Literal["to", "from"] = "from") -> None:
