@@ -68,6 +68,7 @@ class ReportCsv:
         Returns
         -------
         list[str]
+            TestResult converted into a list.
         """
         message = cls.split_list_to_txt_list(result.messages) if len(result.messages) > 0 else ""
         categories = cls.split_list_to_txt_list(result.categories) if len(result.categories) > 0 else "None"
