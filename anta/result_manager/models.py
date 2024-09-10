@@ -5,9 +5,27 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass, field
+from enum import Enum
+
 from pydantic import BaseModel
 
-from anta.custom_types import TestStatus
+
+class AntaTestStatus(str, Enum):
+    """Test status Enum for the TestResult.
+
+    NOTE: This could be updated to StrEnum when Python 3.11 is the minimum supported version in ANTA.
+    """
+
+    UNSET = "unset"
+    SUCCESS = "success"
+    FAILURE = "failure"
+    ERROR = "error"
+    SKIPPED = "skipped"
+
+    def __str__(self) -> str:
+        """Override the __str__ method to return the value of the Enum, mimicking the behavior of StrEnum."""
+        return self.value
 
 
 class TestResult(BaseModel):
@@ -15,13 +33,13 @@ class TestResult(BaseModel):
 
     Attributes
     ----------
-    name: Device name where the test has run.
-    test: Test name runs on the device.
-    categories: List of categories the TestResult belongs to, by default the AntaTest categories.
-    description: TestResult description, by default the AntaTest description.
-    result: Result of the test. Can be one of "unset", "success", "failure", "error" or "skipped".
-    messages: Message to report after the test if any.
-    custom_field: Custom field to store a string for flexibility in integrating with ANTA
+    name: Name of the device where the test was run.
+    test: Name of the test run on the device.
+    categories: List of categories the TestResult belongs to. Defaults to the AntaTest categories.
+    description: Description of the TestResult. Defaults to the AntaTest description.
+    result: Result of the test. Must be one of the AntaTestStatus Enum values: unset, success, failure, error or skipped.
+    messages: Messages to report after the test, if any.
+    custom_field: Custom field to store a string for flexibility in integrating with ANTA.
 
     """
 
@@ -29,7 +47,7 @@ class TestResult(BaseModel):
     test: str
     categories: list[str]
     description: str
-    result: TestStatus = "unset"
+    result: AntaTestStatus = AntaTestStatus.UNSET
     messages: list[str] = []
     custom_field: str | None = None
 
@@ -41,7 +59,7 @@ class TestResult(BaseModel):
         message: Optional message related to the test
 
         """
-        self._set_status("success", message)
+        self._set_status(AntaTestStatus.SUCCESS, message)
 
     def is_failure(self, message: str | None = None) -> None:
         """Set status to failure.
@@ -51,7 +69,7 @@ class TestResult(BaseModel):
         message: Optional message related to the test
 
         """
-        self._set_status("failure", message)
+        self._set_status(AntaTestStatus.FAILURE, message)
 
     def is_skipped(self, message: str | None = None) -> None:
         """Set status to skipped.
@@ -61,7 +79,7 @@ class TestResult(BaseModel):
         message: Optional message related to the test
 
         """
-        self._set_status("skipped", message)
+        self._set_status(AntaTestStatus.SKIPPED, message)
 
     def is_error(self, message: str | None = None) -> None:
         """Set status to error.
@@ -71,9 +89,9 @@ class TestResult(BaseModel):
         message: Optional message related to the test
 
         """
-        self._set_status("error", message)
+        self._set_status(AntaTestStatus.ERROR, message)
 
-    def _set_status(self, status: TestStatus, message: str | None = None) -> None:
+    def _set_status(self, status: AntaTestStatus, message: str | None = None) -> None:
         """Set status and insert optional message.
 
         Parameters
@@ -89,3 +107,42 @@ class TestResult(BaseModel):
     def __str__(self) -> str:
         """Return a human readable string of this TestResult."""
         return f"Test '{self.test}' (on '{self.name}'): Result '{self.result}'\nMessages: {self.messages}"
+
+
+# Pylint does not treat dataclasses differently: https://github.com/pylint-dev/pylint/issues/9058
+# pylint: disable=too-many-instance-attributes
+@dataclass
+class DeviceStats:
+    """Device statistics for a run of tests."""
+
+    tests_success_count: int = 0
+    tests_skipped_count: int = 0
+    tests_failure_count: int = 0
+    tests_error_count: int = 0
+    tests_unset_count: int = 0
+    tests_failure: set[str] = field(default_factory=set)
+    categories_failed: set[str] = field(default_factory=set)
+    categories_skipped: set[str] = field(default_factory=set)
+
+
+@dataclass
+class CategoryStats:
+    """Category statistics for a run of tests."""
+
+    tests_success_count: int = 0
+    tests_skipped_count: int = 0
+    tests_failure_count: int = 0
+    tests_error_count: int = 0
+    tests_unset_count: int = 0
+
+
+@dataclass
+class TestStats:
+    """Test statistics for a run of tests."""
+
+    devices_success_count: int = 0
+    devices_skipped_count: int = 0
+    devices_failure_count: int = 0
+    devices_error_count: int = 0
+    devices_unset_count: int = 0
+    devices_failure: set[str] = field(default_factory=set)

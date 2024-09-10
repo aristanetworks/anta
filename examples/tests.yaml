@@ -83,6 +83,13 @@ anta.tests.bfd:
           multiplier: 3
   - VerifyBFDPeersHealth:
       down_threshold: 2
+  - VerifyBFDPeersRegProtocols:
+      bfd_peers:
+        - peer_address: 192.0.255.8
+          vrf: default
+          protocols:
+            - bgp
+            - isis
 
 anta.tests.configuration:
   - VerifyZeroTouch:
@@ -347,6 +354,7 @@ anta.tests.security:
               destination_address: 100.64.2.2
             - source_address: 172.18.3.2
               destination_address: 172.18.2.2
+  - VerifyHardwareEntropy:
 
 anta.tests.services:
   - VerifyHostname:
@@ -437,6 +445,15 @@ anta.tests.system:
   - VerifyMemoryUtilization:
   - VerifyFileSystemUtilization:
   - VerifyNTP:
+  - VerifyNTPAssociations:
+      ntp_servers:
+        - server_address: 1.1.1.1
+          preferred: True
+          stratum: 1
+        - server_address: 2.2.2.2
+          stratum: 1
+        - server_address: 3.3.3.3
+          stratum: 1
 
 anta.tests.vlan:
   - VerifyVlanInternalPolicy:
@@ -529,6 +546,7 @@ anta.tests.routing:
         bgp_peers:
           - peer_address: 172.30.11.1
             vrf: default
+            strict: False
             capabilities:
               - ipv4Unicast
     - VerifyBGPPeerASNCap:

@@ -18,9 +18,8 @@ from anta import RICH_COLOR_PALETTE, RICH_COLOR_THEME
 if TYPE_CHECKING:
     import pathlib
 
-    from anta.custom_types import TestStatus
     from anta.result_manager import ResultManager
-    from anta.result_manager.models import TestResult
+    from anta.result_manager.models import AntaTestStatus, TestResult
 
 logger = logging.getLogger(__name__)
 
@@ -80,19 +79,19 @@ class ReportTable:
                 table.add_column(header, justify="left")
         return table
 
-    def _color_result(self, status: TestStatus) -> str:
-        """Return a colored string based on the status value.
+    def _color_result(self, status: AntaTestStatus) -> str:
+        """Return a colored string based on an AntaTestStatus.
 
         Parameters
         ----------
-        status (TestStatus): status value to color.
+        status: AntaTestStatus enum to color.
 
         Returns
         -------
-        str: the colored string
+        The colored string.
 
         """
-        color = RICH_COLOR_THEME.get(status, "")
+        color = RICH_COLOR_THEME.get(str(status), "")
         return f"[{color}]{status}" if color != "" else str(status)
 
     def report_all(self, manager: ResultManager, title: str = "All tests results") -> Table:
@@ -154,21 +153,15 @@ class ReportTable:
             self.Headers.list_of_error_nodes,
         ]
         table = self._build_headers(headers=headers, table=table)
-        for test in manager.get_tests():
+        for test, stats in sorted(manager.test_stats.items()):
             if tests is None or test in tests:
-                results = manager.filter_by_tests({test}).results
-                nb_failure = len([result for result in results if result.result == "failure"])
-                nb_error = len([result for result in results if result.result == "error"])
-                list_failure = [result.name for result in results if result.result in ["failure", "error"]]
-                nb_success = len([result for result in results if result.result == "success"])
-                nb_skipped = len([result for result in results if result.result == "skipped"])
                 table.add_row(
                     test,
-                    str(nb_success),
-                    str(nb_skipped),
-                    str(nb_failure),
-                    str(nb_error),
-                    str(list_failure),
+                    str(stats.devices_success_count),
+                    str(stats.devices_skipped_count),
+                    str(stats.devices_failure_count),
+                    str(stats.devices_error_count),
+                    ", ".join(stats.devices_failure),
                 )
         return table
 
@@ -202,21 +195,15 @@ class ReportTable:
             self.Headers.list_of_error_tests,
         ]
         table = self._build_headers(headers=headers, table=table)
-        for device in manager.get_devices():
+        for device, stats in sorted(manager.device_stats.items()):
             if devices is None or device in devices:
-                results = manager.filter_by_devices({device}).results
-                nb_failure = len([result for result in results if result.result == "failure"])
-                nb_error = len([result for result in results if result.result == "error"])
-                list_failure = [result.test for result in results if result.result in ["failure", "error"]]
-                nb_success = len([result for result in results if result.result == "success"])
-                nb_skipped = len([result for result in results if result.result == "skipped"])
                 table.add_row(
                     device,
-                    str(nb_success),
-                    str(nb_skipped),
-                    str(nb_failure),
-                    str(nb_error),
-                    str(list_failure),
+                    str(stats.tests_success_count),
+                    str(stats.tests_skipped_count),
+                    str(stats.tests_failure_count),
+                    str(stats.tests_error_count),
+                    ", ".join(stats.tests_failure),
                 )
         return table
 

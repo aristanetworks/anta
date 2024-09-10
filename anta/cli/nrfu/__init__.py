@@ -5,14 +5,14 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, get_args
+from typing import TYPE_CHECKING
 
 import click
 
 from anta.cli.nrfu import commands
 from anta.cli.utils import AliasedGroup, catalog_options, inventory_options
-from anta.custom_types import TestStatus
 from anta.result_manager import ResultManager
+from anta.result_manager.models import AntaTestStatus
 
 if TYPE_CHECKING:
     from anta.catalog import AntaCatalog
@@ -49,7 +49,7 @@ class IgnoreRequiredWithHelp(AliasedGroup):
             return super().parse_args(ctx, args)
 
 
-HIDE_STATUS: list[str] = list(get_args(TestStatus))
+HIDE_STATUS: list[str] = list(AntaTestStatus)
 HIDE_STATUS.remove("unset")
 
 
@@ -147,3 +147,4 @@ nrfu.add_command(commands.csv)
 nrfu.add_command(commands.json)
 nrfu.add_command(commands.text)
 nrfu.add_command(commands.tpl_report)
+nrfu.add_command(commands.md_report)
