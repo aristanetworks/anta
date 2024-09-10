@@ -47,9 +47,9 @@ class AntaInventory(dict[str, AntaDevice]):
         Parameters
         ----------
         inventory_disable_cache
-            The value of disable_cache in the inventory
+            The value of disable_cache in the inventory.
         kwargs
-            The kwargs to instantiate the device
+            The kwargs to instantiate the device.
 
         """
         updated_kwargs = kwargs.copy()
@@ -67,11 +67,11 @@ class AntaInventory(dict[str, AntaDevice]):
         Parameters
         ----------
         inventory_input
-            AntaInventoryInput used to parse the devices
+            AntaInventoryInput used to parse the devices.
         inventory
-            AntaInventory to add the parsed devices to
+            AntaInventory to add the parsed devices to.
         **kwargs
-            Additional keyword arguments to pass to the device constructor
+            Additional keyword arguments to pass to the device constructor.
 
         """
         if inventory_input.hosts is None:
@@ -99,11 +99,11 @@ class AntaInventory(dict[str, AntaDevice]):
         Parameters
         ----------
         inventory_input
-            AntaInventoryInput used to parse the devices
+            AntaInventoryInput used to parse the devices.
         inventory
-            AntaInventory to add the parsed devices to
+            AntaInventory to add the parsed devices to.
         **kwargs
-           Additional keyword arguments to pass to the device constructor
+           Additional keyword arguments to pass to the device constructor.
 
         Raises
         ------
@@ -136,11 +136,11 @@ class AntaInventory(dict[str, AntaDevice]):
         Parameters
         ----------
         inventory_input
-            AntaInventoryInput used to parse the devices
+            AntaInventoryInput used to parse the devices.
         inventory
-            AntaInventory to add the parsed devices to
+            AntaInventory to add the parsed devices to.
         **kwargs
-            Additional keyword arguments to pass to the device constructor
+            Additional keyword arguments to pass to the device constructor.
 
         Raises
         ------
@@ -323,7 +323,7 @@ class AntaInventory(dict[str, AntaDevice]):
         Parameters
         ----------
         device
-            Device object to be added
+            Device object to be added.
 
         """
         self[device.name] = device

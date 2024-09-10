@@ -43,14 +43,14 @@ class ReportCsv:
         Parameters
         ----------
         usr_list
-            List of string to concatenate
+            List of string to concatenate.
         delimiter
             A delimiter to use to start string. Defaults to None.
 
         Returns
         -------
         str
-            Multi-lines string
+            Multi-lines string.
 
         """
         return f"{delimiter}".join(f"{line}" for line in usr_list)

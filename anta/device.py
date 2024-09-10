@@ -43,7 +43,7 @@ class AntaDevice(ABC):
     Attributes
     ----------
     name : str
-        Device name
+        Device name.
     is_online : bool
         True if the device IP is reachable and a port can be open.
     established : bool
@@ -229,15 +229,15 @@ class AsyncEOSDevice(AntaDevice):
     Attributes
     ----------
     name : str
-        Device name
+        Device name.
     is_online : bool
-        True if the device IP is reachable and a port can be open
+        True if the device IP is reachable and a port can be open.
     established : bool
-        True if remote command execution succeeds
+        True if remote command execution succeeds.
     hw_model : str
-        Hardware model of the device
+        Hardware model of the device.
     tags : set[str]
-        Tags for this device
+        Tags for this device.
 
     """
 

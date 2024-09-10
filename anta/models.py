@@ -49,7 +49,7 @@ class AntaTemplate:
     Attributes
     ----------
     template
-        Python f-string. Example: 'show vlan {vlan_id}'
+        Python f-string. Example: 'show vlan {vlan_id}'.
     version
         eAPI version - valid values are 1 or "latest".
     revision
@@ -103,7 +103,7 @@ class AntaTemplate:
         Parameters
         ----------
         params
-            dictionary of variables with string values to render the Python f-string
+            Dictionary of variables with string values to render the Python f-string.
 
         Returns
         -------
@@ -149,7 +149,7 @@ class AntaCommand(BaseModel):
     Attributes
     ----------
     command
-        Device command
+        Device command.
     version
         eAPI version - valid values are 1 or "latest".
     revision
@@ -264,9 +264,9 @@ class AntaTemplateRenderError(RuntimeError):
         Parameters
         ----------
         template
-            The AntaTemplate instance that failed to render
+            The AntaTemplate instance that failed to render.
         key
-            Key that has not been provided to render the template
+            Key that has not been provided to render the template.
 
         """
         self.template = template
@@ -316,15 +316,15 @@ class AntaTest(ABC):
     Attributes
     ----------
     device
-        AntaDevice instance on which this test is run
+        AntaDevice instance on which this test is run.
     inputs
-        AntaTest.Input instance carrying the test inputs
+        AntaTest.Input instance carrying the test inputs.
     instance_commands
-        List of AntaCommand instances of this test
+        List of AntaCommand instances of this test.
     result
-        TestResult instance representing the result of this test
+        TestResult instance representing the result of this test.
     logger
-        Python logger for this test instance
+        Python logger for this test instance.
     """
 
     # Mandatory class attributes
@@ -356,7 +356,7 @@ class AntaTest(ABC):
         Attributes
         ----------
         result_overwrite
-            Define fields to overwrite in the TestResult object
+            Define fields to overwrite in the TestResult object.
         """
 
         model_config = ConfigDict(extra="forbid")
@@ -376,11 +376,11 @@ class AntaTest(ABC):
             Attributes
             ----------
             description
-                overwrite TestResult.description
+                Overwrite `TestResult.description`.
             categories
-                overwrite TestResult.categories
+                Overwrite `TestResult.categories`.
             custom_field
-                a free string that will be included in the TestResult object
+                A free string that will be included in the TestResult object.
 
             """
 
@@ -412,9 +412,9 @@ class AntaTest(ABC):
         Parameters
         ----------
         device
-            AntaDevice instance on which the test will be run
+            AntaDevice instance on which the test will be run.
         inputs
-            dictionary of attributes used to instantiate the AntaTest.Input instance
+            Dictionary of attributes used to instantiate the AntaTest.Input instance.
         eos_data
             Populate outputs of the test commands instead of collecting from devices.
             This list must have the same length and order than the `instance_commands` instance attribute.

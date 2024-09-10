@@ -101,7 +101,7 @@ def get_cv_token(cvp_ip: str, cvp_username: str, cvp_password: str, *, verify_ce
     Raises
     ------
     requests.ssl.SSLError
-        If the certificate verification fails
+        If the certificate verification fails.
 
     """
     # use CVP REST API to generate a token
@@ -170,7 +170,7 @@ def create_inventory_from_ansible(inventory: Path, output: Path, ansible_group: 
     Parameters
     ----------
     inventory
-        Ansible Inventory file to read
+        Ansible Inventory file to read.
     output
         ANTA inventory file to generate.
     ansible_group

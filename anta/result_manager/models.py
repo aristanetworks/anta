@@ -64,7 +64,7 @@ class TestResult(BaseModel):
         Parameters
         ----------
         message
-            Optional message related to the test
+            Optional message related to the test.
 
         """
         self._set_status(AntaTestStatus.SUCCESS, message)
@@ -75,7 +75,7 @@ class TestResult(BaseModel):
         Parameters
         ----------
         message
-            Optional message related to the test
+            Optional message related to the test.
 
         """
         self._set_status(AntaTestStatus.FAILURE, message)
@@ -86,7 +86,7 @@ class TestResult(BaseModel):
         Parameters
         ----------
         message
-            Optional message related to the test
+            Optional message related to the test.
 
         """
         self._set_status(AntaTestStatus.SKIPPED, message)
@@ -97,7 +97,7 @@ class TestResult(BaseModel):
         Parameters
         ----------
         message
-            Optional message related to the test
+            Optional message related to the test.
 
         """
         self._set_status(AntaTestStatus.ERROR, message)
@@ -108,9 +108,9 @@ class TestResult(BaseModel):
         Parameters
         ----------
         status
-            status of the test
+            Status of the test.
         message
-            optional message
+            Optional message.
 
         """
         self.result = status

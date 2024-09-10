@@ -46,14 +46,14 @@ class ReportTable:
         Parameters
         ----------
         usr_list : list[str]
-            List of string to concatenate
+            List of string to concatenate.
         delimiter : str, optional
             A delimiter to use to start string. Defaults to None.
 
         Returns
         -------
         str
-            Multi-lines string
+            Multi-lines string.
 
         """
         if delimiter is not None:
@@ -261,7 +261,7 @@ class ReportJinja:
         Parameters
         ----------
         data
-            List of results from ResultManager.results
+            List of results from `ResultManager.results`.
         trim_blocks
             enable trim_blocks for J2 rendering.
         lstrip_blocks

@@ -63,7 +63,7 @@ def exit_with_code(ctx: click.Context) -> None:
     Parameters
     ----------
     ctx
-        Click Context
+        Click Context.
 
     """
     if ctx.obj.get("ignore_status"):

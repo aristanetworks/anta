@@ -75,7 +75,7 @@ def _get_full_isis_neighbors(isis_neighbor_json: dict[str, Any], neighbor_state:
     isis_neighbor_json
         The JSON output of the `show isis neighbors` command.
     neighbor_state
-        Value of the neihbor state we are looking for. Default up
+        Value of the neihbor state we are looking for. Defaults to `up`.
 
     Returns
     -------

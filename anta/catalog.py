@@ -42,9 +42,9 @@ class AntaTestDefinition(BaseModel):
     Attributes
     ----------
     test
-        An AntaTest concrete subclass
+        An AntaTest concrete subclass.
     inputs
-        The associated AntaTest.Input subclass instance
+        The associated AntaTest.Input subclass instance.
     """
 
     model_config = ConfigDict(frozen=True)
@@ -324,9 +324,9 @@ class AntaCatalog:
         Parameters
         ----------
         filename
-            Path to test catalog YAML or JSON fil
+            Path to test catalog YAML or JSON file.
         file_format
-            Format of the file, either 'yaml' or 'json'
+            Format of the file, either 'yaml' or 'json'.
 
         """
         if file_format not in ["yaml", "json"]:
@@ -355,7 +355,7 @@ class AntaCatalog:
         Parameters
         ----------
         data
-            Python dictionary used to instantiate the AntaCatalog instance
+            Python dictionary used to instantiate the AntaCatalog instance.
             filename: value to be set as AntaCatalog instance attribute
 
         """
@@ -390,7 +390,7 @@ class AntaCatalog:
         Parameters
         ----------
         data
-            Python list used to instantiate the AntaCatalog instance
+            Python list used to instantiate the AntaCatalog instance.
 
         """
         tests: list[AntaTestDefinition] = []

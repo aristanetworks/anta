@@ -220,7 +220,8 @@ class ResultManager:
 
         Returns
         -------
-        List[TestResult]
+        list[TestResult]
+            List of results.
         """
         # Return all results if no status is provided, otherwise return results for multiple statuses
         results = self._result_entries if status is None else list(chain.from_iterable(self.results_by_status.get(status, []) for status in status))
