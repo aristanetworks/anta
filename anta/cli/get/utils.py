@@ -84,18 +84,24 @@ def get_cv_token(cvp_ip: str, cvp_username: str, cvp_password: str, *, verify_ce
 
     Parameters
     ----------
-        cvp_ip: IP address of CloudVision.
-        cvp_username: Username to connect to CloudVision.
-        cvp_password: Password to connect to CloudVision.
-        verify_cert: Enable or disable certificate verification when connecting to CloudVision.
+    cvp_ip
+        IP address of CloudVision.
+    cvp_username
+        Username to connect to CloudVision.
+    cvp_password
+        Password to connect to CloudVision.
+    verify_cert
+        Enable or disable certificate verification when connecting to CloudVision.
 
     Returns
     -------
-        token(str): The token to use in further API calls to CloudVision.
+    str
+        The token to use in further API calls to CloudVision.
 
     Raises
     ------
-        requests.ssl.SSLError: If the certificate verification fails
+    requests.ssl.SSLError
+        If the certificate verification fails
 
     """
     # use CVP REST API to generate a token
@@ -163,9 +169,12 @@ def create_inventory_from_ansible(inventory: Path, output: Path, ansible_group: 
 
     Parameters
     ----------
-        inventory: Ansible Inventory file to read
-        output: ANTA inventory file to generate.
-        ansible_group: Ansible group from where to extract data.
+    inventory
+        Ansible Inventory file to read
+    output
+        ANTA inventory file to generate.
+    ansible_group
+        Ansible group from where to extract data.
 
     """
     try:

@@ -42,13 +42,20 @@ class AntaDevice(ABC):
 
     Attributes
     ----------
-        name: Device name
-        is_online: True if the device IP is reachable and a port can be open.
-        established: True if remote command execution succeeds.
-        hw_model: Hardware model of the device.
-        tags: Tags for this device.
-        cache: In-memory cache from aiocache library for this device (None if cache is disabled).
-        cache_locks: Dictionary mapping keys to asyncio locks to guarantee exclusive access to the cache if not disabled.
+    name : str
+        Device name
+    is_online : bool
+        True if the device IP is reachable and a port can be open.
+    established : bool
+        True if remote command execution succeeds.
+    hw_model : str
+        Hardware model of the device.
+    tags : set[str]
+        Tags for this device.
+    cache : Cache | None
+        In-memory cache from aiocache library for this device (None if cache is disabled).
+    cache_locks : dict
+        Dictionary mapping keys to asyncio locks to guarantee exclusive access to the cache if not disabled.
 
     """
 
@@ -57,9 +64,12 @@ class AntaDevice(ABC):
 
         Parameters
         ----------
-        name: Device name.
-        tags: Tags for this device.
-        disable_cache: Disable caching for all commands for this device.
+        name
+            Device name.
+        tags
+            Tags for this device.
+        disable_cache
+            Disable caching for all commands for this device.
 
         """
         self.name: str = name
@@ -132,8 +142,10 @@ class AntaDevice(ABC):
 
         Parameters
         ----------
-        command: The command to collect.
-        collection_id: An identifier used to build the eAPI request ID.
+        command
+            The command to collect.
+        collection_id
+            An identifier used to build the eAPI request ID.
         """
 
     async def collect(self, command: AntaCommand, *, collection_id: str | None = None) -> None:
@@ -149,8 +161,10 @@ class AntaDevice(ABC):
 
         Parameters
         ----------
-        command: The command to collect.
-        collection_id: An identifier used to build the eAPI request ID.
+        command
+            The command to collect.
+        collection_id
+            An identifier used to build the eAPI request ID.
         """
         # Need to ignore pylint no-member as Cache is a proxy class and pylint is not smart enough
         # https://github.com/pylint-dev/pylint/issues/7258
@@ -172,8 +186,10 @@ class AntaDevice(ABC):
 
         Parameters
         ----------
-        commands: The commands to collect.
-        collection_id: An identifier used to build the eAPI request ID.
+        commands
+            The commands to collect.
+        collection_id
+            An identifier used to build the eAPI request ID.
         """
         await asyncio.gather(*(self.collect(command=command, collection_id=collection_id) for command in commands))
 
@@ -194,9 +210,12 @@ class AntaDevice(ABC):
 
         Parameters
         ----------
-        sources: List of files to copy to or from the device.
-        destination: Local or remote destination when copying the files. Can be a folder.
-        direction: Defines if this coroutine copies files to or from the device.
+        sources
+            List of files to copy to or from the device.
+        destination
+            Local or remote destination when copying the files. Can be a folder.
+        direction
+            Defines if this coroutine copies files to or from the device.
 
         """
         _ = (sources, destination, direction)
@@ -209,11 +228,16 @@ class AsyncEOSDevice(AntaDevice):
 
     Attributes
     ----------
-        name: Device name
-        is_online: True if the device IP is reachable and a port can be open
-        established: True if remote command execution succeeds
-        hw_model: Hardware model of the device
-        tags: Tags for this device
+    name : str
+        Device name
+    is_online : bool
+        True if the device IP is reachable and a port can be open
+    established : bool
+        True if remote command execution succeeds
+    hw_model : str
+        Hardware model of the device
+    tags : set[str]
+        Tags for this device
 
     """
 
@@ -239,19 +263,32 @@ class AsyncEOSDevice(AntaDevice):
 
         Parameters
         ----------
-        host: Device FQDN or IP.
-        username: Username to connect to eAPI and SSH.
-        password: Password to connect to eAPI and SSH.
-        name: Device name.
-        enable: Collect commands using privileged mode.
-        enable_password: Password used to gain privileged access on EOS.
-        port: eAPI port. Defaults to 80 is proto is 'http' or 443 if proto is 'https'.
-        ssh_port: SSH port.
-        tags: Tags for this device.
-        timeout: Timeout value in seconds for outgoing API calls.
-        insecure: Disable SSH Host Key validation.
-        proto: eAPI protocol. Value can be 'http' or 'https'.
-        disable_cache: Disable caching for all commands for this device.
+        host
+            Device FQDN or IP.
+        username
+            Username to connect to eAPI and SSH.
+        password
+            Password to connect to eAPI and SSH.
+        name
+            Device name.
+        enable
+            Collect commands using privileged mode.
+        enable_password
+            Password used to gain privileged access on EOS.
+        port
+            eAPI port. Defaults to 80 is proto is 'http' or 443 if proto is 'https'.
+        ssh_port
+            SSH port.
+        tags
+            Tags for this device.
+        timeout
+            Timeout value in seconds for outgoing API calls.
+        insecure
+            Disable SSH Host Key validation.
+        proto
+            eAPI protocol. Value can be 'http' or 'https'.
+        disable_cache
+            Disable caching for all commands for this device.
 
         """
         if host is None:
@@ -315,8 +352,10 @@ class AsyncEOSDevice(AntaDevice):
 
         Parameters
         ----------
-        command: The command to collect.
-        collection_id: An identifier used to build the eAPI request ID.
+        command
+            The command to collect.
+        collection_id
+            An identifier used to build the eAPI request ID.
         """
         commands: list[dict[str, str | int]] = []
         if self.enable and self._enable_password is not None:
@@ -407,9 +446,12 @@ class AsyncEOSDevice(AntaDevice):
 
         Parameters
         ----------
-        sources: List of files to copy to or from the device.
-        destination: Local or remote destination when copying the files. Can be a folder.
-        direction: Defines if this coroutine copies files to or from the device.
+        sources
+            List of files to copy to or from the device.
+        destination
+            Local or remote destination when copying the files. Can be a folder.
+        direction
+            Defines if this coroutine copies files to or from the device.
 
         """
         async with asyncssh.connect(

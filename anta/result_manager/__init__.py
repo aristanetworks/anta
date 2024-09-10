@@ -143,7 +143,8 @@ class ResultManager:
 
         Parameters
         ----------
-        test_status: AntaTestStatus to update the ResultManager status.
+        test_status
+            AntaTestStatus to update the ResultManager status.
         """
         if test_status == "error":
             self.error_status = True
@@ -158,7 +159,8 @@ class ResultManager:
 
         Parameters
         ----------
-        result: TestResult to update the statistics.
+        result
+            TestResult to update the statistics.
         """
         result.categories = [
             " ".join(word.upper() if word.lower() in ACRONYM_CATEGORIES else word.title() for word in category.split()) for category in result.categories
@@ -194,7 +196,8 @@ class ResultManager:
 
         Parameters
         ----------
-        result: TestResult to add to the ResultManager instance.
+        result
+            TestResult to add to the ResultManager instance.
         """
         self._result_entries.append(result)
         self._update_status(result.result)
@@ -210,12 +213,14 @@ class ResultManager:
 
         Parameters
         ----------
-        status: Optional set of AntaTestStatus enum members to filter the results.
-        sort_by: Optional list of TestResult fields to sort the results.
+        status
+            Optional set of AntaTestStatus enum members to filter the results.
+        sort_by
+            Optional list of TestResult fields to sort the results.
 
         Returns
         -------
-        List of TestResult.
+        List[TestResult]
         """
         # Return all results if no status is provided, otherwise return results for multiple statuses
         results = self._result_entries if status is None else list(chain.from_iterable(self.results_by_status.get(status, []) for status in status))
@@ -236,11 +241,13 @@ class ResultManager:
 
         Parameters
         ----------
-        status: Optional set of AntaTestStatus enum members to filter the results.
+        status
+            Optional set of AntaTestStatus enum members to filter the results.
 
         Returns
         -------
-        Total number of results.
+        int
+            Total number of results.
         """
         if status is None:
             # Return the total number of results
@@ -258,11 +265,13 @@ class ResultManager:
 
         Parameters
         ----------
-        hide: Set of AntaTestStatus enum members to select tests to hide based on their status.
+        hide
+            Set of AntaTestStatus enum members to select tests to hide based on their status.
 
         Returns
         -------
-        A filtered `ResultManager`.
+        ResultManager
+            A filtered `ResultManager`.
         """
         possible_statuses = set(AntaTestStatus)
         manager = ResultManager()
@@ -274,11 +283,13 @@ class ResultManager:
 
         Parameters
         ----------
-        tests: Set of test names to filter the results.
+        tests
+            Set of test names to filter the results.
 
         Returns
         -------
-        A filtered `ResultManager`.
+        ResultManager
+            A filtered `ResultManager`.
         """
         manager = ResultManager()
         manager.results = [result for result in self._result_entries if result.test in tests]
@@ -304,7 +315,8 @@ class ResultManager:
 
         Returns
         -------
-        Set of test names.
+        set[str]
+            Set of test names.
         """
         return {str(result.test) for result in self._result_entries}
 
@@ -313,6 +325,7 @@ class ResultManager:
 
         Returns
         -------
-        Set of device names.
+        set[str]
+            Set of device names.
         """
         return {str(result.name) for result in self._result_entries}

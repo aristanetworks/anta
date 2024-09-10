@@ -33,13 +33,20 @@ class TestResult(BaseModel):
 
     Attributes
     ----------
-    name: Name of the device where the test was run.
-    test: Name of the test run on the device.
-    categories: List of categories the TestResult belongs to. Defaults to the AntaTest categories.
-    description: Description of the TestResult. Defaults to the AntaTest description.
-    result: Result of the test. Must be one of the AntaTestStatus Enum values: unset, success, failure, error or skipped.
-    messages: Messages to report after the test, if any.
-    custom_field: Custom field to store a string for flexibility in integrating with ANTA.
+    name : str
+        Name of the device where the test was run.
+    test : str
+        Name of the test run on the device.
+    categories : list[str]
+        List of categories the TestResult belongs to. Defaults to the AntaTest categories.
+    description : str
+        Description of the TestResult. Defaults to the AntaTest description.
+    result : AntaTestStatus
+        Result of the test. Must be one of the AntaTestStatus Enum values: unset, success, failure, error or skipped.
+    messages : list[str]
+        Messages to report after the test, if any.
+    custom_field : str | None
+        Custom field to store a string for flexibility in integrating with ANTA.
 
     """
 
@@ -56,7 +63,8 @@ class TestResult(BaseModel):
 
         Parameters
         ----------
-        message: Optional message related to the test
+        message
+            Optional message related to the test
 
         """
         self._set_status(AntaTestStatus.SUCCESS, message)
@@ -66,7 +74,8 @@ class TestResult(BaseModel):
 
         Parameters
         ----------
-        message: Optional message related to the test
+        message
+            Optional message related to the test
 
         """
         self._set_status(AntaTestStatus.FAILURE, message)
@@ -76,7 +85,8 @@ class TestResult(BaseModel):
 
         Parameters
         ----------
-        message: Optional message related to the test
+        message
+            Optional message related to the test
 
         """
         self._set_status(AntaTestStatus.SKIPPED, message)
@@ -86,7 +96,8 @@ class TestResult(BaseModel):
 
         Parameters
         ----------
-        message: Optional message related to the test
+        message
+            Optional message related to the test
 
         """
         self._set_status(AntaTestStatus.ERROR, message)
@@ -96,8 +107,10 @@ class TestResult(BaseModel):
 
         Parameters
         ----------
-        status: status of the test
-        message: optional message
+        status
+            status of the test
+        message
+            optional message
 
         """
         self.result = status
