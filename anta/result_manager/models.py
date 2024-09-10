@@ -15,13 +15,13 @@ class TestResult(BaseModel):
 
     Attributes
     ----------
-        name: Device name where the test has run.
-        test: Test name runs on the device.
-        categories: List of categories the TestResult belongs to, by default the AntaTest categories.
-        description: TestResult description, by default the AntaTest description.
-        result: Result of the test. Can be one of "unset", "success", "failure", "error" or "skipped".
-        messages: Message to report after the test if any.
-        custom_field: Custom field to store a string for flexibility in integrating with ANTA
+    name: Device name where the test has run.
+    test: Test name runs on the device.
+    categories: List of categories the TestResult belongs to, by default the AntaTest categories.
+    description: TestResult description, by default the AntaTest description.
+    result: Result of the test. Can be one of "unset", "success", "failure", "error" or "skipped".
+    messages: Message to report after the test if any.
+    custom_field: Custom field to store a string for flexibility in integrating with ANTA
 
     """
 
@@ -38,7 +38,7 @@ class TestResult(BaseModel):
 
         Parameters
         ----------
-            message: Optional message related to the test
+        message: Optional message related to the test
 
         """
         self._set_status("success", message)
@@ -48,7 +48,7 @@ class TestResult(BaseModel):
 
         Parameters
         ----------
-            message: Optional message related to the test
+        message: Optional message related to the test
 
         """
         self._set_status("failure", message)
@@ -58,7 +58,7 @@ class TestResult(BaseModel):
 
         Parameters
         ----------
-            message: Optional message related to the test
+        message: Optional message related to the test
 
         """
         self._set_status("skipped", message)
@@ -68,7 +68,7 @@ class TestResult(BaseModel):
 
         Parameters
         ----------
-            message: Optional message related to the test
+        message: Optional message related to the test
 
         """
         self._set_status("error", message)
@@ -78,8 +78,8 @@ class TestResult(BaseModel):
 
         Parameters
         ----------
-            status: status of the test
-            message: optional message
+        status: status of the test
+        message: optional message
 
         """
         self.result = status

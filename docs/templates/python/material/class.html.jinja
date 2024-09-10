@@ -1,4 +1,4 @@
-{% extends "_base/class.html" %}
+{% extends "_base/class.html.jinja" %}
 {% set anta_test = namespace(found=false) %}
 {% for base in class.bases %}
 {%   set basestr = base | string %}
@@ -10,7 +10,7 @@
 {%   if anta_test.found %}
   {% set root = False %}
   {% set heading_level = heading_level + 1 %}
-  {% include "anta_test.html" with context %}
+  {% include "anta_test.html.jinja" with context %}
   {# render source after children - TODO make add flag to respect disabling it.. though do we want to disable?#}
 	<details class="quote">
 	<summary>Source code in <code>

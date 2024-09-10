@@ -46,12 +46,12 @@ class ReportTable:
 
         Parameters
         ----------
-            usr_list (list[str]): List of string to concatenate
-            delimiter (str, optional): A delimiter to use to start string. Defaults to None.
+        usr_list (list[str]): List of string to concatenate
+        delimiter (str, optional): A delimiter to use to start string. Defaults to None.
 
         Returns
         -------
-            str: Multi-lines string
+        str: Multi-lines string
 
         """
         if delimiter is not None:
@@ -65,12 +65,12 @@ class ReportTable:
 
         Parameters
         ----------
-            headers: List of headers.
-            table: A rich Table instance.
+        headers: List of headers.
+        table: A rich Table instance.
 
         Returns
         -------
-            A rich `Table` instance with headers.
+        A rich `Table` instance with headers.
 
         """
         for idx, header in enumerate(headers):
@@ -85,7 +85,7 @@ class ReportTable:
 
         Parameters
         ----------
-            status (TestStatus): status value to color.
+        status (TestStatus): status value to color.
 
         Returns
         -------
@@ -102,12 +102,12 @@ class ReportTable:
 
         Parameters
         ----------
-            manager: A ResultManager instance.
-            title: Title for the report. Defaults to 'All tests results'.
+        manager: A ResultManager instance.
+        title: Title for the report. Defaults to 'All tests results'.
 
         Returns
         -------
-            A fully populated rich `Table`
+        A fully populated rich `Table`
 
         """
         table = Table(title=title, show_lines=True)
@@ -136,13 +136,13 @@ class ReportTable:
 
         Parameters
         ----------
-            manager: A ResultManager instance.
-            tests: List of test names to include. None to select all tests.
-            title: Title of the report.
+        manager: A ResultManager instance.
+        tests: List of test names to include. None to select all tests.
+        title: Title of the report.
 
         Returns
         -------
-            A fully populated rich `Table`.
+        A fully populated rich `Table`.
         """
         table = Table(title=title, show_lines=True)
         headers = [
@@ -184,13 +184,13 @@ class ReportTable:
 
         Parameters
         ----------
-            manager: A ResultManager instance.
-            devices: List of device names to include. None to select all devices.
-            title: Title of the report.
+        manager: A ResultManager instance.
+        devices: List of device names to include. None to select all devices.
+        title: Title of the report.
 
         Returns
         -------
-            A fully populated rich `Table`.
+        A fully populated rich `Table`.
         """
         table = Table(title=title, show_lines=True)
         headers = [
@@ -252,13 +252,13 @@ class ReportJinja:
 
         Parameters
         ----------
-            data: List of results from ResultManager.results
-            trim_blocks: enable trim_blocks for J2 rendering.
-            lstrip_blocks: enable lstrip_blocks for J2 rendering.
+        data: List of results from ResultManager.results
+        trim_blocks: enable trim_blocks for J2 rendering.
+        lstrip_blocks: enable lstrip_blocks for J2 rendering.
 
         Returns
         -------
-            Rendered template
+        Rendered template
 
         """
         with self.template_path.open(encoding="utf-8") as file_:

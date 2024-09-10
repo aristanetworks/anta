@@ -46,8 +46,8 @@ class AntaInventory(dict[str, AntaDevice]):
 
         Parameters
         ----------
-            inventory_disable_cache: The value of disable_cache in the inventory
-            kwargs: The kwargs to instantiate the device
+        inventory_disable_cache: The value of disable_cache in the inventory
+        kwargs: The kwargs to instantiate the device
 
         """
         updated_kwargs = kwargs.copy()
@@ -64,9 +64,9 @@ class AntaInventory(dict[str, AntaDevice]):
 
         Parameters
         ----------
-            inventory_input: AntaInventoryInput used to parse the devices
-            inventory: AntaInventory to add the parsed devices to
-            **kwargs: Additional keyword arguments to pass to the device constructor
+        inventory_input: AntaInventoryInput used to parse the devices
+        inventory: AntaInventory to add the parsed devices to
+        **kwargs: Additional keyword arguments to pass to the device constructor
 
         """
         if inventory_input.hosts is None:
@@ -93,13 +93,13 @@ class AntaInventory(dict[str, AntaDevice]):
 
         Parameters
         ----------
-            inventory_input: AntaInventoryInput used to parse the devices
-            inventory: AntaInventory to add the parsed devices to
-            **kwargs: Additional keyword arguments to pass to the device constructor
+        inventory_input: AntaInventoryInput used to parse the devices
+        inventory: AntaInventory to add the parsed devices to
+        **kwargs: Additional keyword arguments to pass to the device constructor
 
         Raises
         ------
-            InventoryIncorrectSchemaError: Inventory file is not following AntaInventory Schema.
+        InventoryIncorrectSchemaError: Inventory file is not following AntaInventory Schema.
 
         """
         if inventory_input.networks is None:
@@ -126,13 +126,13 @@ class AntaInventory(dict[str, AntaDevice]):
 
         Parameters
         ----------
-            inventory_input: AntaInventoryInput used to parse the devices
-            inventory: AntaInventory to add the parsed devices to
-            **kwargs: Additional keyword arguments to pass to the device constructor
+        inventory_input: AntaInventoryInput used to parse the devices
+        inventory: AntaInventory to add the parsed devices to
+        **kwargs: Additional keyword arguments to pass to the device constructor
 
         Raises
         ------
-            InventoryIncorrectSchemaError: Inventory file is not following AntaInventory Schema.
+        InventoryIncorrectSchemaError: Inventory file is not following AntaInventory Schema.
 
         """
         if inventory_input.ranges is None:
@@ -177,19 +177,19 @@ class AntaInventory(dict[str, AntaDevice]):
 
         Parameters
         ----------
-            filename: Path to device inventory YAML file.
-            username: Username to use to connect to devices.
-            password: Password to use to connect to devices.
-            enable_password: Enable password to use if required.
-            timeout: Timeout value in seconds for outgoing API calls.
-            enable: Whether or not the commands need to be run in enable mode towards the devices.
-            insecure: Disable SSH Host Key validation.
-            disable_cache: Disable cache globally.
+        filename: Path to device inventory YAML file.
+        username: Username to use to connect to devices.
+        password: Password to use to connect to devices.
+        enable_password: Enable password to use if required.
+        timeout: Timeout value in seconds for outgoing API calls.
+        enable: Whether or not the commands need to be run in enable mode towards the devices.
+        insecure: Disable SSH Host Key validation.
+        disable_cache: Disable cache globally.
 
         Raises
         ------
-            InventoryRootKeyError: Root key of inventory is missing.
-            InventoryIncorrectSchemaError: Inventory file is not following AntaInventory Schema.
+        InventoryRootKeyError: Root key of inventory is missing.
+        InventoryIncorrectSchemaError: Inventory file is not following AntaInventory Schema.
 
         """
         inventory = AntaInventory()
@@ -256,13 +256,13 @@ class AntaInventory(dict[str, AntaDevice]):
 
         Parameters
         ----------
-            established_only: Whether or not to include only established devices.
-            tags: Tags to filter devices.
-            devices: Names to filter devices.
+        established_only: Whether or not to include only established devices.
+        tags: Tags to filter devices.
+        devices: Names to filter devices.
 
         Returns
         -------
-            An inventory with filtered AntaDevice objects.
+        An inventory with filtered AntaDevice objects.
         """
 
         def _filter_devices(device: AntaDevice) -> bool:
@@ -295,7 +295,7 @@ class AntaInventory(dict[str, AntaDevice]):
 
         Parameters
         ----------
-            device: Device object to be added
+        device: Device object to be added
 
         """
         self[device.name] = device

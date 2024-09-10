@@ -265,8 +265,8 @@ class AntaCatalog:
 
         Parameters
         ----------
-            tests: A list of AntaTestDefinition instances.
-            filename: The path from which the catalog is loaded.
+        tests: A list of AntaTestDefinition instances.
+        filename: The path from which the catalog is loaded.
 
         """
         self._tests: list[AntaTestDefinition] = []
@@ -312,8 +312,8 @@ class AntaCatalog:
 
         Parameters
         ----------
-            filename: Path to test catalog YAML or JSON fil
-            file_format: Format of the file, either 'yaml' or 'json'
+        filename: Path to test catalog YAML or JSON fil
+        file_format: Format of the file, either 'yaml' or 'json'
 
         """
         if file_format not in ["yaml", "json"]:
@@ -341,8 +341,8 @@ class AntaCatalog:
 
         Parameters
         ----------
-            data: Python dictionary used to instantiate the AntaCatalog instance
-            filename: value to be set as AntaCatalog instance attribute
+        data: Python dictionary used to instantiate the AntaCatalog instance
+        filename: value to be set as AntaCatalog instance attribute
 
         """
         tests: list[AntaTestDefinition] = []
@@ -375,7 +375,7 @@ class AntaCatalog:
 
         Parameters
         ----------
-            data: Python list used to instantiate the AntaCatalog instance
+        data: Python list used to instantiate the AntaCatalog instance
 
         """
         tests: list[AntaTestDefinition] = []
@@ -391,7 +391,7 @@ class AntaCatalog:
 
         Parameters
         ----------
-            catalog: AntaCatalog instance to merge to this instance.
+        catalog: AntaCatalog instance to merge to this instance.
 
         Returns
         -------
@@ -443,8 +443,8 @@ class AntaCatalog:
 
         Parameters
         ----------
-            tags: The tags to filter tests by. If empty, return all tests without tags.
-            strict: If True, returns only tests that contain all specified tags (intersection).
+        tags: The tags to filter tests by. If empty, return all tests without tags.
+        strict: If True, returns only tests that contain all specified tags (intersection).
                     If False, returns tests that contain any of the specified tags (union).
 
         Returns

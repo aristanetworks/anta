@@ -26,13 +26,13 @@ def _add_bgp_failures(failures: dict[tuple[str, str | None], dict[str, Any]], af
 
     Parameters
     ----------
-        failures: The dictionary to which the failure will be added.
-        afi: The address family identifier.
-        vrf: The VRF name.
-        safi: The subsequent address family identifier.
-        issue: A description of the issue. Can be of any type.
+    failures: The dictionary to which the failure will be added.
+    afi: The address family identifier.
+    vrf: The VRF name.
+    safi: The subsequent address family identifier.
+    issue: A description of the issue. Can be of any type.
 
-    Example:
+    Example
     -------
     The `failures` dictionary will have the following structure:
         {
@@ -65,17 +65,17 @@ def _check_peer_issues(peer_data: dict[str, Any] | None) -> dict[str, Any]:
 
     Parameters
     ----------
-        peer_data: The BGP peer data dictionary nested in the `show bgp <afi> <safi> summary` command.
+    peer_data: The BGP peer data dictionary nested in the `show bgp <afi> <safi> summary` command.
 
     Returns
     -------
-        dict: Dictionary with keys indicating issues or an empty dictionary if no issues.
+    dict: Dictionary with keys indicating issues or an empty dictionary if no issues.
 
     Raises
     ------
         ValueError: If any of the required keys ("peerState", "inMsgQueue", "outMsgQueue") are missing in `peer_data`, i.e. invalid BGP peer data.
 
-    Example:
+    Example
     -------
         {"peerNotFound": True}
         {"peerState": "Idle", "inMsgQueue": 2, "outMsgQueue": 0}
@@ -106,15 +106,15 @@ def _add_bgp_routes_failure(
 
     Parameters
     ----------
-        bgp_routes: The list of expected routes.
-        bgp_output: The BGP output from the device.
-        peer: The IP address of the BGP peer.
-        vrf: The name of the VRF for which the routes need to be verified.
-        route_type: The type of BGP routes. Defaults to 'advertised_routes'.
+    bgp_routes: The list of expected routes.
+    bgp_output: The BGP output from the device.
+    peer: The IP address of the BGP peer.
+    vrf: The name of the VRF for which the routes need to be verified.
+    route_type: The type of BGP routes. Defaults to 'advertised_routes'.
 
     Returns
     -------
-        dict[str, dict[str, dict[str, dict[str, list[str]]]]]: A dictionary containing the missing routes and invalid or inactive routes.
+    dict[str, dict[str, dict[str, dict[str, list[str]]]]]: A dictionary containing the missing routes and invalid or inactive routes.
 
     """
     # Prepare the failure routes dictionary

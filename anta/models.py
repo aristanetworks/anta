@@ -97,7 +97,7 @@ class AntaTemplate:
 
         Parameters
         ----------
-            params: dictionary of variables with string values to render the Python f-string
+        params: dictionary of variables with string values to render the Python f-string
 
         Returns
         -------
@@ -247,8 +247,8 @@ class AntaTemplateRenderError(RuntimeError):
 
         Parameters
         ----------
-            template: The AntaTemplate instance that failed to render
-            key: Key that has not been provided to render the template
+        template: The AntaTemplate instance that failed to render
+        key: Key that has not been provided to render the template
 
         """
         self.template = template
@@ -383,10 +383,10 @@ class AntaTest(ABC):
 
         Parameters
         ----------
-            device: AntaDevice instance on which the test will be run
-            inputs: dictionary of attributes used to instantiate the AntaTest.Input instance
-            eos_data: Populate outputs of the test commands instead of collecting from devices.
-                      This list must have the same length and order than the `instance_commands` instance attribute.
+        device: AntaDevice instance on which the test will be run
+        inputs: dictionary of attributes used to instantiate the AntaTest.Input instance
+        eos_data: Populate outputs of the test commands instead of collecting from devices.
+                  This list must have the same length and order than the `instance_commands` instance attribute.
         """
         self.logger: logging.Logger = logging.getLogger(f"{self.module}.{self.__class__.__name__}")
         self.device: AntaDevice = device
@@ -558,10 +558,10 @@ class AntaTest(ABC):
 
             Parameters
             ----------
-                self: The test instance.
-                eos_data: Populate outputs of the test commands instead of collecting from devices.
-                          This list must have the same length and order than the `instance_commands` instance attribute.
-                kwargs: Any keyword argument to pass to the test.
+            self: The test instance.
+            eos_data: Populate outputs of the test commands instead of collecting from devices.
+                      This list must have the same length and order than the `instance_commands` instance attribute.
+            kwargs: Any keyword argument to pass to the test.
 
             Returns
             -------

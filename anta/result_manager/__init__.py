@@ -121,7 +121,7 @@ class ResultManager:
 
         Parameters
         ----------
-            result: TestResult to add to the ResultManager instance.
+        result: TestResult to add to the ResultManager instance.
         """
 
         def _update_status(test_status: TestStatus) -> None:
@@ -147,11 +147,11 @@ class ResultManager:
 
         Parameters
         ----------
-            hide: set of TestStatus literals to select tests to hide based on their status.
+        hide: set of TestStatus literals to select tests to hide based on their status.
 
         Returns
         -------
-            A filtered `ResultManager`.
+        A filtered `ResultManager`.
         """
         manager = ResultManager()
         manager.results = [test for test in self._result_entries if test.result not in hide]
@@ -162,11 +162,11 @@ class ResultManager:
 
         Parameters
         ----------
-            tests: Set of test names to filter the results.
+        tests: Set of test names to filter the results.
 
         Returns
         -------
-            A filtered `ResultManager`.
+        A filtered `ResultManager`.
         """
         manager = ResultManager()
         manager.results = [result for result in self._result_entries if result.test in tests]
@@ -177,7 +177,7 @@ class ResultManager:
 
         Parameters
         ----------
-            devices: Set of device names to filter the results.
+        devices: Set of device names to filter the results.
 
         Returns
         -------

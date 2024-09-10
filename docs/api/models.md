@@ -6,8 +6,6 @@
 
 # Test definition
 
-## UML Diagram
-
 ![](../imgs/uml/anta.models.AntaTest.jpeg)
 
 ### ::: anta.models.AntaTest
@@ -16,9 +14,8 @@
 
 # Command definition
 
-## UML Diagram
-
 ![](../imgs/uml/anta.models.AntaCommand.jpeg)
+
 ### ::: anta.models.AntaCommand
 
 !!! warning
@@ -29,8 +26,6 @@
       - Write: `^wr\w*\s*\w+`
 
 # Template definition
-
-## UML Diagram
 
 ![](../imgs/uml/anta.models.AntaTemplate.jpeg)
 
