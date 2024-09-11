@@ -21,52 +21,52 @@ class ResultManager:
 
     Examples
     --------
-        Create Inventory:
+    Create Inventory:
 
-            inventory_anta = AntaInventory.parse(
-                filename='examples/inventory.yml',
-                username='ansible',
-                password='ansible',
+        inventory_anta = AntaInventory.parse(
+            filename='examples/inventory.yml',
+            username='ansible',
+            password='ansible',
+        )
+
+    Create Result Manager:
+
+        manager = ResultManager()
+
+    Run tests for all connected devices:
+
+        for device in inventory_anta.get_inventory().devices:
+            manager.add(
+                VerifyNTP(device=device).test()
+            )
+            manager.add(
+                VerifyEOSVersion(device=device).test(version='4.28.3M')
             )
 
-        Create Result Manager:
+    Print result in native format:
 
-            manager = ResultManager()
-
-        Run tests for all connected devices:
-
-            for device in inventory_anta.get_inventory().devices:
-                manager.add(
-                    VerifyNTP(device=device).test()
-                )
-                manager.add(
-                    VerifyEOSVersion(device=device).test(version='4.28.3M')
-                )
-
-        Print result in native format:
-
-            manager.results
-            [
-                TestResult(
-                    name="pf1",
-                    test="VerifyZeroTouch",
-                    categories=["configuration"],
-                    description="Verifies ZeroTouch is disabled",
-                    result="success",
-                    messages=[],
-                    custom_field=None,
-                ),
-                TestResult(
-                    name="pf1",
-                    test='VerifyNTP',
-                    categories=["software"],
-                    categories=['system'],
-                    description='Verifies if NTP is synchronised.',
-                    result='failure',
-                    messages=["The device is not synchronized with the configured NTP server(s): 'NTP is disabled.'"],
-                    custom_field=None,
-                ),
-            ]
+        manager.results
+        [
+            TestResult(
+                name="pf1",
+                test="VerifyZeroTouch",
+                categories=["configuration"],
+                description="Verifies ZeroTouch is disabled",
+                result="success",
+                messages=[],
+                custom_field=None,
+            ),
+            TestResult(
+                name="pf1",
+                test='VerifyNTP',
+                categories=["software"],
+                categories=['system'],
+                description='Verifies if NTP is synchronised.',
+                result='failure',
+                messages=["The device is not synchronized with the configured NTP server(s): 'NTP is disabled.'"],
+                custom_field=None,
+            ),
+        ]
     """
 
     def __init__(self) -> None:
@@ -143,7 +143,8 @@ class ResultManager:
 
         Parameters
         ----------
-            test_status: AntaTestStatus to update the ResultManager status.
+        test_status
+            AntaTestStatus to update the ResultManager status.
         """
         if test_status == "error":
             self.error_status = True
@@ -158,7 +159,8 @@ class ResultManager:
 
         Parameters
         ----------
-            result: TestResult to update the statistics.
+        result
+            TestResult to update the statistics.
         """
         result.categories = [
             " ".join(word.upper() if word.lower() in ACRONYM_CATEGORIES else word.title() for word in category.split()) for category in result.categories
@@ -194,7 +196,8 @@ class ResultManager:
 
         Parameters
         ----------
-            result: TestResult to add to the ResultManager instance.
+        result
+            TestResult to add to the ResultManager instance.
         """
         self._result_entries.append(result)
         self._update_status(result.result)
@@ -210,12 +213,15 @@ class ResultManager:
 
         Parameters
         ----------
-            status: Optional set of AntaTestStatus enum members to filter the results.
-            sort_by: Optional list of TestResult fields to sort the results.
+        status
+            Optional set of AntaTestStatus enum members to filter the results.
+        sort_by
+            Optional list of TestResult fields to sort the results.
 
         Returns
         -------
-            List of TestResult.
+        list[TestResult]
+            List of results.
         """
         # Return all results if no status is provided, otherwise return results for multiple statuses
         results = self._result_entries if status is None else list(chain.from_iterable(self.results_by_status.get(status, []) for status in status))
@@ -236,10 +242,12 @@ class ResultManager:
 
         Parameters
         ----------
-            status: Optional set of AntaTestStatus enum members to filter the results.
+        status
+            Optional set of AntaTestStatus enum members to filter the results.
 
         Returns
         -------
+        int
             Total number of results.
         """
         if status is None:
@@ -258,10 +266,12 @@ class ResultManager:
 
         Parameters
         ----------
-            hide: Set of AntaTestStatus enum members to select tests to hide based on their status.
+        hide
+            Set of AntaTestStatus enum members to select tests to hide based on their status.
 
         Returns
         -------
+        ResultManager
             A filtered `ResultManager`.
         """
         possible_statuses = set(AntaTestStatus)
@@ -274,10 +284,12 @@ class ResultManager:
 
         Parameters
         ----------
-            tests: Set of test names to filter the results.
+        tests
+            Set of test names to filter the results.
 
         Returns
         -------
+        ResultManager
             A filtered `ResultManager`.
         """
         manager = ResultManager()
@@ -289,10 +301,11 @@ class ResultManager:
 
         Parameters
         ----------
-            devices: Set of device names to filter the results.
+        devices: Set of device names to filter the results.
 
         Returns
         -------
+        ResultManager
             A filtered `ResultManager`.
         """
         manager = ResultManager()
@@ -304,6 +317,7 @@ class ResultManager:
 
         Returns
         -------
+        set[str]
             Set of test names.
         """
         return {str(result.test) for result in self._result_entries}
@@ -313,6 +327,7 @@ class ResultManager:
 
         Returns
         -------
+        set[str]
             Set of device names.
         """
         return {str(result.name) for result in self._result_entries}

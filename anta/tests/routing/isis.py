@@ -20,13 +20,15 @@ from anta.tools import get_value
 def _count_isis_neighbor(isis_neighbor_json: dict[str, Any]) -> int:
     """Count the number of isis neighbors.
 
-    Args
-    ----
-      isis_neighbor_json: The JSON output of the `show isis neighbors` command.
+    Parameters
+    ----------
+    isis_neighbor_json
+        The JSON output of the `show isis neighbors` command.
 
     Returns
     -------
-      int: The number of isis neighbors.
+    int
+        The number of isis neighbors.
 
     """
     count = 0
@@ -39,13 +41,15 @@ def _count_isis_neighbor(isis_neighbor_json: dict[str, Any]) -> int:
 def _get_not_full_isis_neighbors(isis_neighbor_json: dict[str, Any]) -> list[dict[str, Any]]:
     """Return the isis neighbors whose adjacency state is not `up`.
 
-    Args
-    ----
-      isis_neighbor_json: The JSON output of the `show isis neighbors` command.
+    Parameters
+    ----------
+    isis_neighbor_json
+        The JSON output of the `show isis neighbors` command.
 
     Returns
     -------
-      list[dict[str, Any]]: A list of isis neighbors whose adjacency state is not `UP`.
+    list[dict[str, Any]]
+        A list of isis neighbors whose adjacency state is not `UP`.
 
     """
     return [
@@ -66,14 +70,17 @@ def _get_not_full_isis_neighbors(isis_neighbor_json: dict[str, Any]) -> list[dic
 def _get_full_isis_neighbors(isis_neighbor_json: dict[str, Any], neighbor_state: Literal["up", "down"] = "up") -> list[dict[str, Any]]:
     """Return the isis neighbors whose adjacency state is `up`.
 
-    Args
-    ----
-      isis_neighbor_json: The JSON output of the `show isis neighbors` command.
-      neighbor_state: Value of the neihbor state we are looking for. Default up
+    Parameters
+    ----------
+    isis_neighbor_json
+        The JSON output of the `show isis neighbors` command.
+    neighbor_state
+        Value of the neihbor state we are looking for. Defaults to `up`.
 
     Returns
     -------
-      list[dict[str, Any]]: A list of isis neighbors whose adjacency state is not `UP`.
+    list[dict[str, Any]]
+        A list of isis neighbors whose adjacency state is not `UP`.
 
     """
     return [
