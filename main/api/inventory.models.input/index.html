@@ -977,7 +977,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../test.flow_tracking.md" class="md-nav__link">
+      <a href="../tests.flow_tracking/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2237,9 +2237,7 @@
   ~ that can be found in the LICENSE file.
   -->
 
-  
 
-  
 
 <div class="doc doc-object doc-class">
 
@@ -2300,11 +2298,11 @@
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code>    The YAML representation string of this model.</code>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>
             </td>
             <td>
               <div class="doc-md-description">
-                
+                <p>The YAML representation string of this model.</p>
               </div>
             </td>
           </tr>
@@ -2313,22 +2311,24 @@
 
             <details class="quote">
               <summary>Source code in <code>anta/inventory/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">88</span>
-<span class="normal">89</span>
-<span class="normal">90</span>
-<span class="normal">91</span>
-<span class="normal">92</span>
-<span class="normal">93</span>
-<span class="normal">94</span>
-<span class="normal">95</span>
-<span class="normal">96</span>
-<span class="normal">97</span>
-<span class="normal">98</span>
-<span class="normal">99</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a YAML representation string of this model.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
+<span class="sd">    str</span>
 <span class="sd">        The YAML representation string of this model.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># TODO: Pydantic and YAML serialization/deserialization is not supported natively.</span>
@@ -2349,9 +2349,7 @@
 
     </div>
 
-</div>  
-
-  
+</div>
 
 <div class="doc doc-object doc-class">
 
@@ -2385,14 +2383,55 @@
           <tr class="doc-section-item">
             <td><code><span title="anta.inventory.models.AntaInventoryHost.host">host</span></code></td>
             <td>
-                  <code>IP Address or FQDN of the device.</code>
+                  <code><a class="autorefs autorefs-internal" title="anta.custom_types.Hostname" href="../types/#anta.custom_types.Hostname">Hostname</a> | <span title="pydantic.IPvAnyAddress">IPvAnyAddress</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>port: Custom eAPI port to use.
-name: Custom name of the device.
-tags: Tags of the device.
-disable_cache: Disable cache for this device.</p>
+                <p>IP Address or FQDN of the device.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="anta.inventory.models.AntaInventoryHost.port">port</span></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="anta.custom_types.Port" href="../types/#anta.custom_types.Port">Port</a> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Custom eAPI port to use.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="anta.inventory.models.AntaInventoryHost.name">name</span></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Custom name of the device.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="anta.inventory.models.AntaInventoryHost.tags">tags</span></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#set">set</a>[<a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Tags of the device.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="anta.inventory.models.AntaInventoryHost.disable_cache">disable_cache</span></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Disable cache for this device.</p>
               </div>
             </td>
           </tr>
@@ -2420,9 +2459,7 @@ disable_cache: Disable cache for this device.</p>
 
     </div>
 
-</div>  
-
-  
+</div>
 
 <div class="doc doc-object doc-class">
 
@@ -2456,12 +2493,33 @@ disable_cache: Disable cache for this device.</p>
           <tr class="doc-section-item">
             <td><code><span title="anta.inventory.models.AntaInventoryNetwork.network">network</span></code></td>
             <td>
-                  <code>Subnet to use for scanning.</code>
+                  <code><span title="pydantic.IPvAnyNetwork">IPvAnyNetwork</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>tags: Tags of the devices in this network.
-disable_cache: Disable cache for all devices in this network.</p>
+                <p>Subnet to use for scanning.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="anta.inventory.models.AntaInventoryNetwork.tags">tags</span></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#set">set</a>[<a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Tags of the devices in this network.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="anta.inventory.models.AntaInventoryNetwork.disable_cache">disable_cache</span></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Disable cache for all devices in this network.</p>
               </div>
             </td>
           </tr>
@@ -2489,9 +2547,7 @@ disable_cache: Disable cache for all devices in this network.</p>
 
     </div>
 
-</div>  
-
-  
+</div>
 
 <div class="doc doc-object doc-class">
 
@@ -2525,13 +2581,44 @@ disable_cache: Disable cache for all devices in this network.</p>
           <tr class="doc-section-item">
             <td><code><span title="anta.inventory.models.AntaInventoryRange.start">start</span></code></td>
             <td>
-                  <code>IPv4 or IPv6 address for the beginning of the range.</code>
+                  <code><span title="pydantic.IPvAnyAddress">IPvAnyAddress</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>stop: IPv4 or IPv6 address for the end of the range.
-tags: Tags of the devices in this IP range.
-disable_cache: Disable cache for all devices in this IP range.</p>
+                <p>IPv4 or IPv6 address for the beginning of the range.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="anta.inventory.models.AntaInventoryRange.stop">stop</span></code></td>
+            <td>
+                  <code><span title="pydantic.IPvAnyAddress">IPvAnyAddress</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>IPv4 or IPv6 address for the end of the range.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="anta.inventory.models.AntaInventoryRange.tags">tags</span></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#set">set</a>[<a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Tags of the devices in this IP range.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="anta.inventory.models.AntaInventoryRange.disable_cache">disable_cache</span></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Disable cache for all devices in this IP range.</p>
               </div>
             </td>
           </tr>

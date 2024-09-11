@@ -977,7 +977,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/test.flow_tracking.md" class="md-nav__link">
+      <a href="../api/tests.flow_tracking/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1962,8 +1962,6 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
-        
-      
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
           
@@ -1992,8 +1990,6 @@
   
   
   
-    
-  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -2002,6 +1998,20 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#troubleshooting-anta" class="md-nav__link">
+      <span class="md-ellipsis">
+        Troubleshooting ANTA
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="Troubleshooting ANTA">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
     <a href="#capturing-logs" class="md-nav__link">
       <span class="md-ellipsis">
@@ -2038,6 +2048,12 @@
     </a>
 
     <!-- Table of contents list -->
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
     
   </li>
           
@@ -2112,8 +2128,6 @@
   
   
   
-    
-  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -2122,6 +2136,20 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#troubleshooting-anta" class="md-nav__link">
+      <span class="md-ellipsis">
+        Troubleshooting ANTA
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="Troubleshooting ANTA">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
     <a href="#capturing-logs" class="md-nav__link">
       <span class="md-ellipsis">
@@ -2166,6 +2194,12 @@
       </nav>
     
   </li>
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
       
     </ul>
   
@@ -2185,13 +2219,17 @@
   
 
 
+  
+    <h1>Troubleshooting</h1>
+  
+
 <!--
   ~ Copyright (c) 2024 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
   ~ that can be found in the LICENSE file.
   -->
 
-<h1 id="troubleshooting-anta">Troubleshooting ANTA<a class="headerlink" href="#troubleshooting-anta" title="Permanent link">&para;</a></h1>
+<h2 id="troubleshooting-anta">Troubleshooting ANTA<a class="headerlink" href="#troubleshooting-anta" title="Permanent link">&para;</a></h2>
 <p>A couple of things to check when hitting an issue with ANTA:</p>
 <pre class="mermaid"><code>flowchart LR
     A&gt;Hitting an issue with ANTA] --&gt; B{Is my issue &lt;br &gt;listed in the FAQ?}
@@ -2211,7 +2249,7 @@
     click E "https://github.com/aristanetworks/anta/issues"
     click H "https://github.com/aristanetworks/anta/issues"
     style A stroke:#f00,stroke-width:2px</code></pre>
-<h2 id="capturing-logs">Capturing logs<a class="headerlink" href="#capturing-logs" title="Permanent link">&para;</a></h2>
+<h3 id="capturing-logs">Capturing logs<a class="headerlink" href="#capturing-logs" title="Permanent link">&para;</a></h3>
 <p>To help document the issue in Github, it is important to capture some logs so the developers can understand what is affecting your system. No logs mean that the first question asked on the issue will probably be <em>&ldquo;Can you share some logs please?&rdquo;</em>.</p>
 <p>ANTA provides very verbose logs when using the <code>DEBUG</code> level.  When using DEBUG log level with a log file, the DEBUG logging level is not sent to stdout, but only to the file.</p>
 <div class="admonition danger">
@@ -2232,7 +2270,7 @@ similarly, all the <code>nrfu</code> options MUST be set between the <code>nrfu<
 <p>As an example, for the <code>nrfu</code> command, it would look like:</p>
 <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>-l<span class="w"> </span>DEBUG<span class="w"> </span>--log-file<span class="w"> </span>anta.log<span class="w"> </span>nrfu<span class="w"> </span>--enable<span class="w"> </span>--username<span class="w"> </span>username<span class="w"> </span>--password<span class="w"> </span>arista<span class="w"> </span>--inventory<span class="w"> </span>inventory.yml<span class="w"> </span>-c<span class="w"> </span>nrfu.yml<span class="w"> </span>text
 </code></pre></div>
-<h3 id="anta_debug-environment-variable"><code>ANTA_DEBUG</code> environment variable<a class="headerlink" href="#anta_debug-environment-variable" title="Permanent link">&para;</a></h3>
+<h4 id="anta_debug-environment-variable"><code>ANTA_DEBUG</code> environment variable<a class="headerlink" href="#anta_debug-environment-variable" title="Permanent link">&para;</a></h4>
 <details class="warning">
 <summary>Warning</summary>
 <p>Do not use this if you do not know why. This produces a lot of logs and can create confusion if you do not know what to look for.</p>
@@ -2242,7 +2280,7 @@ similarly, all the <code>nrfu</code> options MUST be set between the <code>nrfu<
 <p>Example:</p>
 <div class="highlight"><pre><span></span><code><span class="nv">ANTA_DEBUG</span><span class="o">=</span><span class="nb">true</span><span class="w"> </span>anta<span class="w"> </span>-l<span class="w"> </span>DEBUG<span class="w"> </span>--log-file<span class="w"> </span>anta.log<span class="w"> </span>nrfu<span class="w"> </span>--enable<span class="w"> </span>--username<span class="w"> </span>username<span class="w"> </span>--password<span class="w"> </span>arista<span class="w"> </span>--inventory<span class="w"> </span>inventory.yml<span class="w"> </span>-c<span class="w"> </span>nrfu.yml<span class="w"> </span>text
 </code></pre></div>
-<h3 id="troubleshooting-on-eos">Troubleshooting on EOS<a class="headerlink" href="#troubleshooting-on-eos" title="Permanent link">&para;</a></h3>
+<h4 id="troubleshooting-on-eos">Troubleshooting on EOS<a class="headerlink" href="#troubleshooting-on-eos" title="Permanent link">&para;</a></h4>
 <p>ANTA is using a specific ID in eAPI requests towards EOS. This allows for easier eAPI requests debugging on the device using EOS configuration <code>trace CapiApp setting UwsgiRequestContext/4,CapiUwsgiServer/4</code> to set up CapiApp agent logs.</p>
 <p>Then, you can view agent logs using:
 <div class="highlight"><pre><span></span><code>bash<span class="w"> </span>tail<span class="w"> </span>-f<span class="w"> </span>/var/log/agents/CapiApp-*

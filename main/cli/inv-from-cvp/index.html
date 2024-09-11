@@ -499,8 +499,6 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
-        
-      
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
           
@@ -529,8 +527,6 @@
   
   
   
-    
-  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -539,6 +535,20 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#create-an-inventory-from-cloudvision" class="md-nav__link">
+      <span class="md-ellipsis">
+        Create an Inventory from CloudVision
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="Create an Inventory from CloudVision">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
     <a href="#command-overview" class="md-nav__link">
       <span class="md-ellipsis">
@@ -549,8 +559,10 @@
     <!-- Table of contents list -->
     
   </li>
-      
-        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
     <a href="#creating-an-inventory-from-multiple-containers" class="md-nav__link">
       <span class="md-ellipsis">
@@ -559,6 +571,12 @@
     </a>
 
     <!-- Table of contents list -->
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
     
   </li>
       
@@ -1043,7 +1061,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api/test.flow_tracking.md" class="md-nav__link">
+      <a href="../../api/tests.flow_tracking/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2092,8 +2110,6 @@
   
   
   
-    
-  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -2102,6 +2118,20 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#create-an-inventory-from-cloudvision" class="md-nav__link">
+      <span class="md-ellipsis">
+        Create an Inventory from CloudVision
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="Create an Inventory from CloudVision">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
     <a href="#command-overview" class="md-nav__link">
       <span class="md-ellipsis">
@@ -2112,8 +2142,10 @@
     <!-- Table of contents list -->
     
   </li>
-      
-        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
     <a href="#creating-an-inventory-from-multiple-containers" class="md-nav__link">
       <span class="md-ellipsis">
@@ -2122,6 +2154,12 @@
     </a>
 
     <!-- Table of contents list -->
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
     
   </li>
       
@@ -2143,19 +2181,23 @@
   
 
 
+  
+    <h1>Inventory from CVP</h1>
+  
+
 <!--
   ~ Copyright (c) 2023-2024 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
   ~ that can be found in the LICENSE file.
   -->
 
-<h1 id="create-an-inventory-from-cloudvision">Create an Inventory from CloudVision<a class="headerlink" href="#create-an-inventory-from-cloudvision" title="Permanent link">&para;</a></h1>
+<h2 id="create-an-inventory-from-cloudvision">Create an Inventory from CloudVision<a class="headerlink" href="#create-an-inventory-from-cloudvision" title="Permanent link">&para;</a></h2>
 <p>In large setups, it might be beneficial to construct your inventory based on CloudVision. The <code>from-cvp</code> entrypoint of the <code>get</code> command enables the user to create an ANTA inventory from CloudVision.</p>
 <div class="admonition info">
 <p class="admonition-title">Info</p>
 <p>The current implementation only works with on-premises CloudVision instances, not with CloudVision as a Service (CVaaS).</p>
 </div>
-<h3 id="command-overview">Command overview<a class="headerlink" href="#command-overview" title="Permanent link">&para;</a></h3>
+<h4 id="command-overview">Command overview<a class="headerlink" href="#command-overview" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code>Usage:<span class="w"> </span>anta<span class="w"> </span>get<span class="w"> </span>from-cvp<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
 
 <span class="w">  </span>Build<span class="w"> </span>ANTA<span class="w"> </span>inventory<span class="w"> </span>from<span class="w"> </span>CloudVision.
@@ -2193,7 +2235,7 @@ Options:
 <p class="admonition-title">Warning</p>
 <p>The current implementation only considers devices directly attached to a specific container when using the <code>--cvp-container</code> option.</p>
 </div>
-<h3 id="creating-an-inventory-from-multiple-containers">Creating an inventory from multiple containers<a class="headerlink" href="#creating-an-inventory-from-multiple-containers" title="Permanent link">&para;</a></h3>
+<h4 id="creating-an-inventory-from-multiple-containers">Creating an inventory from multiple containers<a class="headerlink" href="#creating-an-inventory-from-multiple-containers" title="Permanent link">&para;</a></h4>
 <p>If you need to create an inventory from multiple containers, you can use a bash command and then manually concatenate files to create a single inventory file:</p>
 <div class="highlight"><pre><span></span><code>$<span class="w"> </span><span class="k">for</span><span class="w"> </span>container<span class="w"> </span><span class="k">in</span><span class="w"> </span>pod01<span class="w"> </span>pod02<span class="w"> </span>spines<span class="p">;</span><span class="w"> </span><span class="k">do</span><span class="w"> </span>anta<span class="w"> </span>get<span class="w"> </span>from-cvp<span class="w"> </span>-ip<span class="w"> </span>&lt;cvp-ip&gt;<span class="w"> </span>-u<span class="w"> </span>cvpadmin<span class="w"> </span>-p<span class="w"> </span>cvpadmin<span class="w"> </span>-c<span class="w"> </span><span class="nv">$container</span><span class="w"> </span>-d<span class="w"> </span>test-inventory<span class="p">;</span><span class="w"> </span><span class="k">done</span>
 

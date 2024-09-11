@@ -583,8 +583,6 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
-        
-      
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
           
@@ -613,8 +611,6 @@
   
   
   
-    
-  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -623,6 +619,20 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta-debug-commands" class="md-nav__link">
+      <span class="md-ellipsis">
+        ANTA debug commands
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="ANTA debug commands">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
     <a href="#executing-an-eos-command" class="md-nav__link">
       <span class="md-ellipsis">
@@ -667,8 +677,10 @@
       </nav>
     
   </li>
-      
-        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
     <a href="#executing-an-eos-command-using-templates" class="md-nav__link">
       <span class="md-ellipsis">
@@ -719,6 +731,12 @@
     </a>
 
     <!-- Table of contents list -->
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
     
   </li>
           
@@ -1125,7 +1143,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api/test.flow_tracking.md" class="md-nav__link">
+      <a href="../../api/tests.flow_tracking/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2174,8 +2192,6 @@
   
   
   
-    
-  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -2184,6 +2200,20 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta-debug-commands" class="md-nav__link">
+      <span class="md-ellipsis">
+        ANTA debug commands
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="ANTA debug commands">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
     <a href="#executing-an-eos-command" class="md-nav__link">
       <span class="md-ellipsis">
@@ -2228,8 +2258,10 @@
       </nav>
     
   </li>
-      
-        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
     <a href="#executing-an-eos-command-using-templates" class="md-nav__link">
       <span class="md-ellipsis">
@@ -2288,6 +2320,12 @@
       </nav>
     
   </li>
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
       
     </ul>
   
@@ -2307,13 +2345,17 @@
   
 
 
+  
+    <h1>Helpers</h1>
+  
+
 <!--
   ~ Copyright (c) 2023-2024 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
   ~ that can be found in the LICENSE file.
   -->
 
-<h1 id="anta-debug-commands">ANTA debug commands<a class="headerlink" href="#anta-debug-commands" title="Permanent link">&para;</a></h1>
+<h2 id="anta-debug-commands">ANTA debug commands<a class="headerlink" href="#anta-debug-commands" title="Permanent link">&para;</a></h2>
 <p>The ANTA CLI includes a set of debugging tools, making it easier to build and test ANTA content. This functionality is accessed via the <code>debug</code> subcommand and offers the following options:</p>
 <ul>
 <li>Executing a command on a device from your inventory and retrieving the result.</li>
@@ -2322,11 +2364,11 @@
 <p>These tools are especially helpful in building the tests, as they give a visual access to the output received from the eAPI. They also facilitate the extraction of output content for use in unit tests, as described in our <a href="../../contribution/">contribution guide</a>.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>The <code>debug</code> tools require a device from your inventory. Thus, you MUST use a valid <a href="../../usage-inventory-catalog/#create-an-inventory-file">ANTA Inventory</a>.</p>
+<p>The <code>debug</code> tools require a device from your inventory. Thus, you MUST use a valid <a href="../../usage-inventory-catalog/#device-inventory">ANTA Inventory</a>.</p>
 </div>
-<h2 id="executing-an-eos-command">Executing an EOS command<a class="headerlink" href="#executing-an-eos-command" title="Permanent link">&para;</a></h2>
+<h3 id="executing-an-eos-command">Executing an EOS command<a class="headerlink" href="#executing-an-eos-command" title="Permanent link">&para;</a></h3>
 <p>You can use the <code>run-cmd</code> entrypoint to run a command, which includes the following options:</p>
-<h3 id="command-overview">Command overview<a class="headerlink" href="#command-overview" title="Permanent link">&para;</a></h3>
+<h4 id="command-overview">Command overview<a class="headerlink" href="#command-overview" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code>Usage:<span class="w"> </span>anta<span class="w"> </span>debug<span class="w"> </span>run-cmd<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
 
 <span class="w">  </span>Run<span class="w"> </span>arbitrary<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>an<span class="w"> </span>ANTA<span class="w"> </span>device.
@@ -2366,7 +2408,7 @@ Options:
 <blockquote>
 <p><code>username</code>, <code>password</code>, <code>enable-password</code>, <code>enable</code>, <code>timeout</code> and <code>insecure</code> values are the same for all devices</p>
 </blockquote>
-<h3 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h3>
+<h4 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h4>
 <p>This example illustrates how to run the <code>show interfaces description</code> command with a <code>JSON</code> format (default):</p>
 <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>debug<span class="w"> </span>run-cmd<span class="w"> </span>--command<span class="w"> </span><span class="s2">&quot;show interfaces description&quot;</span><span class="w"> </span>--device<span class="w"> </span>DC1-SPINE1
 Run<span class="w"> </span><span class="nb">command</span><span class="w"> </span>show<span class="w"> </span>interfaces<span class="w"> </span>description<span class="w"> </span>on<span class="w"> </span>DC1-SPINE1
@@ -2381,9 +2423,9 @@ Run<span class="w"> </span><span class="nb">command</span><span class="w"> </spa
 <span class="w">    </span><span class="o">}</span>
 <span class="o">}</span>
 </code></pre></div>
-<h2 id="executing-an-eos-command-using-templates">Executing an EOS command using templates<a class="headerlink" href="#executing-an-eos-command-using-templates" title="Permanent link">&para;</a></h2>
+<h3 id="executing-an-eos-command-using-templates">Executing an EOS command using templates<a class="headerlink" href="#executing-an-eos-command-using-templates" title="Permanent link">&para;</a></h3>
 <p>The <code>run-template</code> entrypoint allows the user to provide an <a href="https://realpython.com/python-f-strings/#f-strings-a-new-and-improved-way-to-format-strings-in-python"><code>f-string</code></a> templated command. It is followed by a list of arguments (key-value pairs) that build a dictionary used as template parameters.</p>
-<h3 id="command-overview_1">Command overview<a class="headerlink" href="#command-overview_1" title="Permanent link">&para;</a></h3>
+<h4 id="command-overview_1">Command overview<a class="headerlink" href="#command-overview_1" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code>Usage:<span class="w"> </span>anta<span class="w"> </span>debug<span class="w"> </span>run-template<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>PARAMS...
 
 <span class="w">  </span>Run<span class="w"> </span>arbitrary<span class="w"> </span>templated<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>an<span class="w"> </span>ANTA<span class="w"> </span>device.
@@ -2431,7 +2473,7 @@ Options:
 <blockquote>
 <p><code>username</code>, <code>password</code>, <code>enable-password</code>, <code>enable</code>, <code>timeout</code> and <code>insecure</code> values are the same for all devices</p>
 </blockquote>
-<h3 id="example_1">Example<a class="headerlink" href="#example_1" title="Permanent link">&para;</a></h3>
+<h4 id="example_1">Example<a class="headerlink" href="#example_1" title="Permanent link">&para;</a></h4>
 <p>This example uses the <code>show vlan {vlan_id}</code> command in a <code>JSON</code> format:</p>
 <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>debug<span class="w"> </span>run-template<span class="w"> </span>--template<span class="w"> </span><span class="s2">&quot;show vlan {vlan_id}&quot;</span><span class="w"> </span>vlan_id<span class="w"> </span><span class="m">10</span><span class="w"> </span>--device<span class="w"> </span>DC1-LEAF1A
 Run<span class="w"> </span>templated<span class="w"> </span><span class="nb">command</span><span class="w"> </span><span class="s1">&#39;show vlan {vlan_id}&#39;</span><span class="w"> </span>with<span class="w"> </span><span class="o">{</span><span class="s1">&#39;vlan_id&#39;</span>:<span class="w"> </span><span class="s1">&#39;10&#39;</span><span class="o">}</span><span class="w"> </span>on<span class="w"> </span>DC1-LEAF1A
@@ -2455,7 +2497,7 @@ Run<span class="w"> </span>templated<span class="w"> </span><span class="nb">com
 <p class="admonition-title">Warning</p>
 <p>If multiple arguments of the same key are provided, only the last argument value will be kept in the template parameters.</p>
 </div>
-<h3 id="example-of-multiple-arguments">Example of multiple arguments<a class="headerlink" href="#example-of-multiple-arguments" title="Permanent link">&para;</a></h3>
+<h4 id="example-of-multiple-arguments">Example of multiple arguments<a class="headerlink" href="#example-of-multiple-arguments" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>-log<span class="w"> </span>DEBUG<span class="w"> </span>debug<span class="w"> </span>run-template<span class="w"> </span>--template<span class="w"> </span><span class="s2">&quot;ping {dst} source {src}&quot;</span><span class="w"> </span>dst<span class="w"> </span><span class="s2">&quot;8.8.8.8&quot;</span><span class="w"> </span>src<span class="w"> </span>Loopback0<span class="w"> </span>--device<span class="w"> </span>DC1-SPINE1<span class="w">    </span>
 &gt;<span class="w"> </span><span class="o">{</span><span class="s1">&#39;dst&#39;</span>:<span class="w"> </span><span class="s1">&#39;8.8.8.8&#39;</span>,<span class="w"> </span><span class="s1">&#39;src&#39;</span>:<span class="w"> </span><span class="s1">&#39;Loopback0&#39;</span><span class="o">}</span>
 
@@ -2483,7 +2525,7 @@ anta<span class="w"> </span>-log<span class="w"> </span>DEBUG<span class="w"> </
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 30, 2024</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 11, 2024</span>
   </span>
 
     

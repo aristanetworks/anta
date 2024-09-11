@@ -541,8 +541,6 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
-        
-      
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
           
@@ -571,8 +569,6 @@
   
   
   
-    
-  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -581,6 +577,20 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#retrieving-inventory-information" class="md-nav__link">
+      <span class="md-ellipsis">
+        Retrieving Inventory Information
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="Retrieving Inventory Information">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
     <a href="#inventory-used-of-examples" class="md-nav__link">
       <span class="md-ellipsis">
@@ -591,8 +601,10 @@
     <!-- Table of contents list -->
     
   </li>
-      
-        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
     <a href="#obtaining-all-configured-tags" class="md-nav__link">
       <span class="md-ellipsis">
@@ -637,8 +649,10 @@
       </nav>
     
   </li>
-      
-        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
     <a href="#list-devices-in-inventory" class="md-nav__link">
       <span class="md-ellipsis">
@@ -675,6 +689,12 @@
     </a>
 
     <!-- Table of contents list -->
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
     
   </li>
           
@@ -1123,7 +1143,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api/test.flow_tracking.md" class="md-nav__link">
+      <a href="../../api/tests.flow_tracking/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2172,8 +2192,6 @@
   
   
   
-    
-  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -2182,6 +2200,20 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#retrieving-inventory-information" class="md-nav__link">
+      <span class="md-ellipsis">
+        Retrieving Inventory Information
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="Retrieving Inventory Information">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
     <a href="#inventory-used-of-examples" class="md-nav__link">
       <span class="md-ellipsis">
@@ -2192,8 +2224,10 @@
     <!-- Table of contents list -->
     
   </li>
-      
-        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
     <a href="#obtaining-all-configured-tags" class="md-nav__link">
       <span class="md-ellipsis">
@@ -2238,8 +2272,10 @@
       </nav>
     
   </li>
-      
-        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
     <a href="#list-devices-in-inventory" class="md-nav__link">
       <span class="md-ellipsis">
@@ -2284,6 +2320,12 @@
       </nav>
     
   </li>
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
       
     </ul>
   
@@ -2303,15 +2345,19 @@
   
 
 
+  
+    <h1>Get Inventory Information</h1>
+  
+
 <!--
   ~ Copyright (c) 2023-2024 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
   ~ that can be found in the LICENSE file.
   -->
 
-<h1 id="retrieving-inventory-information">Retrieving Inventory Information<a class="headerlink" href="#retrieving-inventory-information" title="Permanent link">&para;</a></h1>
+<h2 id="retrieving-inventory-information">Retrieving Inventory Information<a class="headerlink" href="#retrieving-inventory-information" title="Permanent link">&para;</a></h2>
 <p>The ANTA CLI offers multiple entrypoints to access data from your local inventory.</p>
-<h2 id="inventory-used-of-examples">Inventory used of examples<a class="headerlink" href="#inventory-used-of-examples" title="Permanent link">&para;</a></h2>
+<h3 id="inventory-used-of-examples">Inventory used of examples<a class="headerlink" href="#inventory-used-of-examples" title="Permanent link">&para;</a></h3>
 <p>Let&rsquo;s consider the following inventory:</p>
 <div class="highlight"><pre><span></span><code><span class="nn">---</span>
 <span class="nt">anta_inventory</span><span class="p">:</span>
@@ -2364,9 +2410,9 @@
 <span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DC2-BL2</span>
 <span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;BL&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;DC2&quot;</span><span class="p p-Indicator">]</span>
 </code></pre></div>
-<h2 id="obtaining-all-configured-tags">Obtaining all configured tags<a class="headerlink" href="#obtaining-all-configured-tags" title="Permanent link">&para;</a></h2>
+<h3 id="obtaining-all-configured-tags">Obtaining all configured tags<a class="headerlink" href="#obtaining-all-configured-tags" title="Permanent link">&para;</a></h3>
 <p>As most of ANTA&rsquo;s commands accommodate tag filtering, this particular command is useful for enumerating all tags configured in the inventory. Running the <code>anta get tags</code> command will return a list of all tags that have been configured in the inventory.</p>
-<h3 id="command-overview">Command overview<a class="headerlink" href="#command-overview" title="Permanent link">&para;</a></h3>
+<h4 id="command-overview">Command overview<a class="headerlink" href="#command-overview" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code>Usage:<span class="w"> </span>anta<span class="w"> </span>get<span class="w"> </span>tags<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
 
 <span class="w">  </span>Get<span class="w"> </span>list<span class="w"> </span>of<span class="w"> </span>configured<span class="w"> </span>tags<span class="w"> </span><span class="k">in</span><span class="w"> </span>user<span class="w"> </span>inventory.
@@ -2397,7 +2443,7 @@ Options:
 <span class="w">                          </span>tag1,tag2,tag3.<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:<span class="w"> </span>ANTA_TAGS<span class="o">]</span>
 <span class="w">  </span>--help<span class="w">                  </span>Show<span class="w"> </span>this<span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span>exit.
 </code></pre></div>
-<h3 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h3>
+<h4 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h4>
 <p>To get the list of all configured tags in the inventory, run the following command:</p>
 <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>get<span class="w"> </span>tags
 Tags<span class="w"> </span>found:
@@ -2415,9 +2461,9 @@ Tags<span class="w"> </span>found:
 <p class="admonition-title">Note</p>
 <p>Even if you haven&rsquo;t explicitly configured the <code>all</code> tag in the inventory, it is automatically added. This default tag allows to execute commands on all devices in the inventory when no tag is specified.</p>
 </div>
-<h2 id="list-devices-in-inventory">List devices in inventory<a class="headerlink" href="#list-devices-in-inventory" title="Permanent link">&para;</a></h2>
+<h3 id="list-devices-in-inventory">List devices in inventory<a class="headerlink" href="#list-devices-in-inventory" title="Permanent link">&para;</a></h3>
 <p>This command will list all devices available in the inventory. Using the <code>--tags</code> option, you can filter this list to only include devices with specific tags. The <code>--connected</code> option allows to display only the devices where a connection has been established.</p>
-<h3 id="command-overview_1">Command overview<a class="headerlink" href="#command-overview_1" title="Permanent link">&para;</a></h3>
+<h4 id="command-overview_1">Command overview<a class="headerlink" href="#command-overview_1" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code>Usage:<span class="w"> </span>anta<span class="w"> </span>get<span class="w"> </span>inventory<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
 
 <span class="w">  </span>Show<span class="w"> </span>inventory<span class="w"> </span>loaded<span class="w"> </span><span class="k">in</span><span class="w"> </span>ANTA.
@@ -2457,7 +2503,7 @@ Options:
 <p class="admonition-title">Tip</p>
 <p>In its default mode, <code>anta get inventory</code> provides only information that doesn&rsquo;t rely on a device connection. If you are interested in obtaining connection-dependent details, like the hardware model, please use the <code>--connected</code> option.</p>
 </div>
-<h3 id="example_1">Example<a class="headerlink" href="#example_1" title="Permanent link">&para;</a></h3>
+<h4 id="example_1">Example<a class="headerlink" href="#example_1" title="Permanent link">&para;</a></h4>
 <p>To retrieve a comprehensive list of all devices along with their details, execute the following command. It will provide all the data loaded into the ANTA inventory from your <a href="../../usage-inventory-catalog/">inventory file</a>.</p>
 <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>get<span class="w"> </span>inventory<span class="w"> </span>--tags<span class="w"> </span>SPINE
 Current<span class="w"> </span>inventory<span class="w"> </span>content<span class="w"> </span>is:

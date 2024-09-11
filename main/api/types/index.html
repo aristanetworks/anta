@@ -977,7 +977,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../test.flow_tracking.md" class="md-nav__link">
+      <a href="../tests.flow_tracking/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -4138,11 +4138,12 @@
 
 <details class="example" open>
   <summary>Examples</summary>
-        <div class="codehilite"><pre><span></span><code>- IPv4 Unicast
-- L2vpnEVPN
-- ipv4 MPLS Labels
-- ipv4Mplsvpn
-</code></pre></div>
+        <ul>
+<li>IPv4 Unicast</li>
+<li>L2vpnEVPN</li>
+<li>ipv4 MPLS Labels</li>
+<li>ipv4Mplsvpn</li>
+</ul>
 </details>
             <details class="quote">
               <summary>Source code in <code>anta/custom_types.py</code></summary>
@@ -4174,10 +4175,10 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">        - IPv4 Unicast</span>
-<span class="sd">        - L2vpnEVPN</span>
-<span class="sd">        - ipv4 MPLS Labels</span>
-<span class="sd">        - ipv4Mplsvpn</span>
+<span class="sd">    - IPv4 Unicast</span>
+<span class="sd">    - L2vpnEVPN</span>
+<span class="sd">    - ipv4 MPLS Labels</span>
+<span class="sd">    - ipv4Mplsvpn</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">patterns</span> <span class="o">=</span> <span class="p">{</span>
@@ -4280,10 +4281,11 @@
 
 <details class="example" open>
   <summary>Examples</summary>
-        <div class="codehilite"><pre><span></span><code><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">ethernet</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Ethernet</span>
-<span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">vlan</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Vlan</span>
-<span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">loopback</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Loopback</span>
-</code></pre></div>
+        <ul>
+<li>ethernet -&gt; Ethernet</li>
+<li>vlan -&gt; Vlan</li>
+<li>loopback -&gt; Loopback</li>
+</ul>
 </details>
             <details class="quote">
               <summary>Source code in <code>anta/custom_types.py</code></summary>
@@ -4304,9 +4306,9 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">         - ethernet -&gt; Ethernet</span>
-<span class="sd">         - vlan -&gt; Vlan</span>
-<span class="sd">         - loopback -&gt; Loopback</span>
+<span class="sd">    - ethernet -&gt; Ethernet</span>
+<span class="sd">    - vlan -&gt; Vlan</span>
+<span class="sd">    - loopback -&gt; Loopback</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">v</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">isupper</span><span class="p">():</span>

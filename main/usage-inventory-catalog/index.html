@@ -359,8 +359,6 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
-        
-      
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
           
@@ -389,8 +387,6 @@
   
   
   
-    
-  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -399,6 +395,20 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#inventory-and-catalog" class="md-nav__link">
+      <span class="md-ellipsis">
+        Inventory and Catalog
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="Inventory and Catalog">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
     <a href="#device-inventory" class="md-nav__link">
       <span class="md-ellipsis">
@@ -443,8 +453,10 @@
       </nav>
     
   </li>
-      
-        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
     <a href="#test-catalog" class="md-nav__link">
       <span class="md-ellipsis">
@@ -551,6 +563,12 @@
     </a>
 
     <!-- Table of contents list -->
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
     
   </li>
           
@@ -1179,7 +1197,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api/test.flow_tracking.md" class="md-nav__link">
+      <a href="../api/tests.flow_tracking/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2228,8 +2246,6 @@
   
   
   
-    
-  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -2238,6 +2254,20 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#inventory-and-catalog" class="md-nav__link">
+      <span class="md-ellipsis">
+        Inventory and Catalog
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="Inventory and Catalog">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
     <a href="#device-inventory" class="md-nav__link">
       <span class="md-ellipsis">
@@ -2282,8 +2312,10 @@
       </nav>
     
   </li>
-      
-        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
     <a href="#test-catalog" class="md-nav__link">
       <span class="md-ellipsis">
@@ -2398,6 +2430,12 @@
       </nav>
     
   </li>
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
       
     </ul>
   
@@ -2417,18 +2455,22 @@
   
 
 
+  
+    <h1>Inventory & Tests catalog</h1>
+  
+
 <!--
   ~ Copyright (c) 2023-2024 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
   ~ that can be found in the LICENSE file.
   -->
 
-<h1 id="inventory-and-catalog">Inventory and Catalog<a class="headerlink" href="#inventory-and-catalog" title="Permanent link">&para;</a></h1>
+<h2 id="inventory-and-catalog">Inventory and Catalog<a class="headerlink" href="#inventory-and-catalog" title="Permanent link">&para;</a></h2>
 <p>The ANTA framework needs 2 important inputs from the user to run: a <strong>device inventory</strong> and a <strong>test catalog</strong>.</p>
 <p>Both inputs can be defined in a file or programmatically.</p>
-<h2 id="device-inventory">Device Inventory<a class="headerlink" href="#device-inventory" title="Permanent link">&para;</a></h2>
+<h3 id="device-inventory">Device Inventory<a class="headerlink" href="#device-inventory" title="Permanent link">&para;</a></h3>
 <p>A device inventory is an instance of the <a href="../api/inventory/#anta.inventory.AntaInventory">AntaInventory</a> class.</p>
-<h3 id="device-inventory-file">Device Inventory File<a class="headerlink" href="#device-inventory-file" title="Permanent link">&para;</a></h3>
+<h4 id="device-inventory-file">Device Inventory File<a class="headerlink" href="#device-inventory-file" title="Permanent link">&para;</a></h4>
 <p>The ANTA device inventory can easily be defined as a YAML file.
 The file must comply with the following structure:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">anta_inventory</span><span class="p">:</span>
@@ -2459,7 +2501,7 @@ The file must comply with the following structure:</p>
 <p class="admonition-title">Info</p>
 <p>Caching can be disabled per device, network or range by setting the <code>disable_cache</code> key to <code>True</code> in the inventory file. For more details about how caching is implemented in ANTA, please refer to <a href="../advanced_usages/caching/">Caching in ANTA</a>.</p>
 </div>
-<h3 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h3>
+<h4 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code><span class="nn">---</span>
 <span class="nt">anta_inventory</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">hosts</span><span class="p">:</span>
@@ -2477,9 +2519,9 @@ The file must comply with the following structure:</p>
 <span class="w">    </span><span class="nt">end</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.0.0.11</span>
 <span class="w">    </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;fabric&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;l2leaf&#39;</span><span class="p p-Indicator">]</span>
 </code></pre></div>
-<h2 id="test-catalog">Test Catalog<a class="headerlink" href="#test-catalog" title="Permanent link">&para;</a></h2>
+<h3 id="test-catalog">Test Catalog<a class="headerlink" href="#test-catalog" title="Permanent link">&para;</a></h3>
 <p>A test catalog is an instance of the <a href="../api/catalog/#anta.catalog.AntaCatalog">AntaCatalog</a> class.</p>
-<h3 id="test-catalog-file">Test Catalog File<a class="headerlink" href="#test-catalog-file" title="Permanent link">&para;</a></h3>
+<h4 id="test-catalog-file">Test Catalog File<a class="headerlink" href="#test-catalog-file" title="Permanent link">&para;</a></h4>
 <p>In addition to the inventory file, you also have to define a catalog of tests to execute against your devices. This catalog list all your tests, their inputs and their tags.</p>
 <p>A valid test catalog file must have the following structure in either YAML or JSON:
 <div class="highlight"><pre><span></span><code><span class="nn">---</span>
@@ -2495,7 +2537,7 @@ The file must comply with the following structure:</p>
 <span class="w">  </span><span class="p">]</span>
 <span class="p">}</span>
 </code></pre></div>
-<h3 id="example_1">Example<a class="headerlink" href="#example_1" title="Permanent link">&para;</a></h3>
+<h4 id="example_1">Example<a class="headerlink" href="#example_1" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code><span class="nn">---</span>
 <span class="nt">anta.tests.connectivity</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyReachability</span><span class="p">:</span>
@@ -2568,7 +2610,7 @@ The file must comply with the following structure:</p>
 <span class="w">          </span><span class="nt">custom_field</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Test</span><span class="nv"> </span><span class="s">run</span><span class="nv"> </span><span class="s">by</span><span class="nv"> </span><span class="s">John</span><span class="nv"> </span><span class="s">Doe&quot;</span>
 </code></pre></div></p>
 <p><a href="https://github.com/aristanetworks/anta/blob/main/examples/tests.yaml">This test catalog example</a> is maintained with all the tests defined in the <code>anta.tests</code> Python module.</p>
-<h3 id="test-tags">Test tags<a class="headerlink" href="#test-tags" title="Permanent link">&para;</a></h3>
+<h4 id="test-tags">Test tags<a class="headerlink" href="#test-tags" title="Permanent link">&para;</a></h4>
 <p>All tests can be defined with a list of user defined tags. These tags will be mapped with device tags: when at least one tag is defined for a test, this test will only be executed on devices with the same tag. If a test is defined in the catalog without any tags, the test will be executed on all devices.</p>
 <div class="highlight"><pre><span></span><code><span class="nt">anta.tests.system</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyUptime</span><span class="p">:</span>
@@ -2586,7 +2628,7 @@ The file must comply with the following structure:</p>
 <p class="admonition-title">Info</p>
 <p>When using the CLI, you can filter the NRFU execution using tags. Refer to <a href="../cli/tag-management/">this section</a> of the CLI documentation.</p>
 </div>
-<h3 id="tests-available-in-anta">Tests available in ANTA<a class="headerlink" href="#tests-available-in-anta" title="Permanent link">&para;</a></h3>
+<h4 id="tests-available-in-anta">Tests available in ANTA<a class="headerlink" href="#tests-available-in-anta" title="Permanent link">&para;</a></h4>
 <p>All tests available as part of the ANTA framework are defined under the <code>anta.tests</code> Python module and are categorised per family (Python submodule).
 The complete list of the tests and their respective inputs is available at the <a href="../api/tests/">tests section</a> of this website.</p>
 <p>To run test to verify the EOS software version, you can do:</p>
@@ -2637,7 +2679,7 @@ The complete list of the tests and their respective inputs is available at the <
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyZeroTouch</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyRunningConfigDiffs</span><span class="p">:</span>
 </code></pre></div>
-<h3 id="catalog-with-custom-tests">Catalog with custom tests<a class="headerlink" href="#catalog-with-custom-tests" title="Permanent link">&para;</a></h3>
+<h4 id="catalog-with-custom-tests">Catalog with custom tests<a class="headerlink" href="#catalog-with-custom-tests" title="Permanent link">&para;</a></h4>
 <p>In case you want to leverage your own tests collection, use your own Python package in the test catalog.
 So for instance, if my custom tests are defined in the <code>custom.tests.system</code> Python module, the test catalog will be:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">custom.tests.system</span><span class="p">:</span>
@@ -2648,7 +2690,7 @@ So for instance, if my custom tests are defined in the <code>custom.tests.system
 <p class="admonition-title">How to create custom tests</p>
 <p>To create your custom tests, you should refer to this <a href="../advanced_usages/custom-tests/">documentation</a></p>
 </div>
-<h3 id="customize-test-description-and-categories">Customize test description and categories<a class="headerlink" href="#customize-test-description-and-categories" title="Permanent link">&para;</a></h3>
+<h4 id="customize-test-description-and-categories">Customize test description and categories<a class="headerlink" href="#customize-test-description-and-categories" title="Permanent link">&para;</a></h4>
 <p>It might be interesting to use your own categories and customized test description to build a better report for your environment. ANTA comes with a handy feature to define your own <code>categories</code> and <code>description</code> in the report.</p>
 <p>In your test catalog, use <code>result_overwrite</code> dictionary with <code>categories</code> and <code>description</code> to just overwrite this values in your report:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">anta.tests.configuration</span><span class="p">:</span>
@@ -2669,7 +2711,7 @@ So for instance, if my custom tests are defined in the <code>custom.tests.system
 │<span class="w"> </span>spine01<span class="w">   </span>│<span class="w"> </span>VerifyInterfaceUtilization<span class="w"> </span>│<span class="w"> </span>success<span class="w">     </span>│<span class="w">            </span>│<span class="w"> </span>Verifies<span class="w"> </span>interfaces<span class="w"> </span>utilization<span class="w"> </span>is<span class="w"> </span>below<span class="w"> </span><span class="m">75</span>%.<span class="w"> </span>│<span class="w"> </span>interfaces<span class="w">    </span>│
 └───────────┴────────────────────────────┴─────────────┴────────────┴───────────────────────────────────────────────┴───────────────┘
 </code></pre></div>
-<h3 id="example-script-to-merge-catalogs">Example script to merge catalogs<a class="headerlink" href="#example-script-to-merge-catalogs" title="Permanent link">&para;</a></h3>
+<h4 id="example-script-to-merge-catalogs">Example script to merge catalogs<a class="headerlink" href="#example-script-to-merge-catalogs" title="Permanent link">&para;</a></h4>
 <p>The following script reads all the files in <code>intended/test_catalogs/</code> with names <code>&lt;device_name&gt;-catalog.yml</code> and merge them together inside one big catalog <code>anta-catalog.yml</code> using the new <code>AntaCatalog.merge_catalogs()</code> class method.</p>
 <div class="highlight"><pre><span></span><code><span class="ch">#!/usr/bin/env python</span>
 <span class="kn">from</span> <span class="nn">anta.catalog</span> <span class="kn">import</span> <span class="n">AntaCatalog</span>
