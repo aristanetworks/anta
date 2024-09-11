@@ -68,9 +68,9 @@ def interface_case_sensitivity(v: str) -> str:
 
     Examples
     --------
-         - ethernet -> Ethernet
-         - vlan -> Vlan
-         - loopback -> Loopback
+    - ethernet -> Ethernet
+    - vlan -> Vlan
+    - loopback -> Loopback
 
     """
     if isinstance(v, str) and v != "" and not v[0].isupper():
@@ -83,10 +83,10 @@ def bgp_multiprotocol_capabilities_abbreviations(value: str) -> str:
 
     Examples
     --------
-        - IPv4 Unicast
-        - L2vpnEVPN
-        - ipv4 MPLS Labels
-        - ipv4Mplsvpn
+    - IPv4 Unicast
+    - L2vpnEVPN
+    - ipv4 MPLS Labels
+    - ipv4Mplsvpn
 
     """
     patterns = {

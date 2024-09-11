@@ -48,11 +48,16 @@ class AntaTemplate:
 
     Attributes
     ----------
-        template: Python f-string. Example: 'show vlan {vlan_id}'
-        version: eAPI version - valid values are 1 or "latest".
-        revision: Revision of the command. Valid values are 1 to 99. Revision has precedence over version.
-        ofmt: eAPI output - json or text.
-        use_cache: Enable or disable caching for this AntaTemplate if the AntaDevice supports it.
+    template
+        Python f-string. Example: 'show vlan {vlan_id}'.
+    version
+        eAPI version - valid values are 1 or "latest".
+    revision
+        Revision of the command. Valid values are 1 to 99. Revision has precedence over version.
+    ofmt
+        eAPI output - json or text.
+    use_cache
+        Enable or disable caching for this AntaTemplate if the AntaDevice supports it.
     """
 
     # pylint: disable=too-few-public-methods
@@ -97,18 +102,20 @@ class AntaTemplate:
 
         Parameters
         ----------
-            params: dictionary of variables with string values to render the Python f-string
+        params
+            Dictionary of variables with string values to render the Python f-string.
 
         Returns
         -------
+        AntaCommand
             The rendered AntaCommand.
             This AntaCommand instance have a template attribute that references this
             AntaTemplate instance.
 
         Raises
         ------
-            AntaTemplateRenderError
-                If a parameter is missing to render the AntaTemplate instance.
+        AntaTemplateRenderError
+            If a parameter is missing to render the AntaTemplate instance.
         """
         try:
             command = self.template.format(**params)
@@ -141,15 +148,24 @@ class AntaCommand(BaseModel):
 
     Attributes
     ----------
-        command: Device command
-        version: eAPI version - valid values are 1 or "latest".
-        revision: eAPI revision of the command. Valid values are 1 to 99. Revision has precedence over version.
-        ofmt: eAPI output - json or text.
-        output: Output of the command. Only defined if there was no errors.
-        template: AntaTemplate object used to render this command.
-        errors: If the command execution fails, eAPI returns a list of strings detailing the error(s).
-        params: Pydantic Model containing the variables values used to render the template.
-        use_cache: Enable or disable caching for this AntaCommand if the AntaDevice supports it.
+    command
+        Device command.
+    version
+        eAPI version - valid values are 1 or "latest".
+    revision
+        eAPI revision of the command. Valid values are 1 to 99. Revision has precedence over version.
+    ofmt
+        eAPI output - json or text.
+    output
+        Output of the command. Only defined if there was no errors.
+    template
+        AntaTemplate object used to render this command.
+    errors
+        If the command execution fails, eAPI returns a list of strings detailing the error(s).
+    params
+        Pydantic Model containing the variables values used to render the template.
+    use_cache
+        Enable or disable caching for this AntaCommand if the AntaDevice supports it.
 
     """
 
@@ -214,9 +230,9 @@ class AntaCommand(BaseModel):
 
         Raises
         ------
-            RuntimeError
-                If the command has not been collected and has not returned an error.
-                AntaDevice.collect() must be called before this property.
+        RuntimeError
+            If the command has not been collected and has not returned an error.
+            AntaDevice.collect() must be called before this property.
         """
         if not self.collected and not self.error:
             msg = f"Command '{self.command}' has not been collected and has not returned an error. Call AntaDevice.collect()."
@@ -229,9 +245,9 @@ class AntaCommand(BaseModel):
 
         Raises
         ------
-            RuntimeError
-                If the command has not been collected and has not returned an error.
-                AntaDevice.collect() must be called before this property.
+        RuntimeError
+            If the command has not been collected and has not returned an error.
+            AntaDevice.collect() must be called before this property.
         """
         if not self.collected and not self.error:
             msg = f"Command '{self.command}' has not been collected and has not returned an error. Call AntaDevice.collect()."
@@ -247,8 +263,10 @@ class AntaTemplateRenderError(RuntimeError):
 
         Parameters
         ----------
-            template: The AntaTemplate instance that failed to render
-            key: Key that has not been provided to render the template
+        template
+            The AntaTemplate instance that failed to render.
+        key
+            Key that has not been provided to render the template.
 
         """
         self.template = template
@@ -297,11 +315,16 @@ class AntaTest(ABC):
 
     Attributes
     ----------
-        device: AntaDevice instance on which this test is run
-        inputs: AntaTest.Input instance carrying the test inputs
-        instance_commands: List of AntaCommand instances of this test
-        result: TestResult instance representing the result of this test
-        logger: Python logger for this test instance
+    device
+        AntaDevice instance on which this test is run.
+    inputs
+        AntaTest.Input instance carrying the test inputs.
+    instance_commands
+        List of AntaCommand instances of this test.
+    result
+        TestResult instance representing the result of this test.
+    logger
+        Python logger for this test instance.
     """
 
     # Mandatory class attributes
@@ -332,7 +355,8 @@ class AntaTest(ABC):
 
         Attributes
         ----------
-            result_overwrite: Define fields to overwrite in the TestResult object
+        result_overwrite
+            Define fields to overwrite in the TestResult object.
         """
 
         model_config = ConfigDict(extra="forbid")
@@ -351,9 +375,12 @@ class AntaTest(ABC):
 
             Attributes
             ----------
-                description: overwrite TestResult.description
-                categories: overwrite TestResult.categories
-                custom_field: a free string that will be included in the TestResult object
+            description
+                Overwrite `TestResult.description`.
+            categories
+                Overwrite `TestResult.categories`.
+            custom_field
+                A free string that will be included in the TestResult object.
 
             """
 
@@ -367,7 +394,8 @@ class AntaTest(ABC):
 
             Attributes
             ----------
-                tags: Tag of devices on which to run the test.
+            tags
+                Tag of devices on which to run the test.
             """
 
             model_config = ConfigDict(extra="forbid")
@@ -383,10 +411,13 @@ class AntaTest(ABC):
 
         Parameters
         ----------
-            device: AntaDevice instance on which the test will be run
-            inputs: dictionary of attributes used to instantiate the AntaTest.Input instance
-            eos_data: Populate outputs of the test commands instead of collecting from devices.
-                      This list must have the same length and order than the `instance_commands` instance attribute.
+        device
+            AntaDevice instance on which the test will be run.
+        inputs
+            Dictionary of attributes used to instantiate the AntaTest.Input instance.
+        eos_data
+            Populate outputs of the test commands instead of collecting from devices.
+            This list must have the same length and order than the `instance_commands` instance attribute.
         """
         self.logger: logging.Logger = logging.getLogger(f"{self.module}.{self.__class__.__name__}")
         self.device: AntaDevice = device
@@ -558,14 +589,18 @@ class AntaTest(ABC):
 
             Parameters
             ----------
-                self: The test instance.
-                eos_data: Populate outputs of the test commands instead of collecting from devices.
-                          This list must have the same length and order than the `instance_commands` instance attribute.
-                kwargs: Any keyword argument to pass to the test.
+            self
+                The test instance.
+            eos_data
+                Populate outputs of the test commands instead of collecting from devices.
+                This list must have the same length and order than the `instance_commands` instance attribute.
+            kwargs
+                Any keyword argument to pass to the test.
 
             Returns
             -------
-                result: TestResult instance attribute populated with error status if any
+            TestResult
+                The TestResult instance attribute populated with error status if any.
 
             """
             if self.result.result != "unset":

@@ -27,12 +27,15 @@ def _get_logging_states(logger: logging.Logger, command_output: str) -> str:
 
     Parameters
     ----------
-        logger: The logger object.
-        command_output: The `show logging` output.
+    logger
+        The logger object.
+    command_output
+        The `show logging` output.
 
     Returns
     -------
-        str: The operational logging states.
+    str
+        The operational logging states.
 
     """
     log_states = command_output.partition("\n\nExternal configuration:")[0]
