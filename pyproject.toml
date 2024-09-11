@@ -328,6 +328,9 @@ target-version = "py39"
 [tool.ruff.lint]
 # select all cause we like being suffering
 select = ["ALL",
+    # By enabling a convention for docstrings, ruff automatically ignore some rules that need to be
+    # added back if we want them.
+    # https://docs.astral.sh/ruff/faq/#does-ruff-support-numpy-or-google-style-docstrings
     # TODO: Augment the numpy convention rules to make sure we add all the params
     #       Uncomment below D417
     "D415",
