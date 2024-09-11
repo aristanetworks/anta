@@ -2459,8 +2459,6 @@ DATA: list[dict[str, Any]] = [
                                     "synchronization": True,
                                     "collecting": True,
                                     "distributing": True,
-                                    "defaulted": False,
-                                    "expired": False,
                                 },
                                 "actorPortState": {
                                     "activity": True,
@@ -2469,8 +2467,6 @@ DATA: list[dict[str, Any]] = [
                                     "synchronization": True,
                                     "collecting": True,
                                     "distributing": True,
-                                    "defaulted": False,
-                                    "expired": False,
                                 },
                             }
                         }
@@ -2538,8 +2534,6 @@ DATA: list[dict[str, Any]] = [
                                     "synchronization": False,
                                     "collecting": True,
                                     "distributing": True,
-                                    "defaulted": False,
-                                    "expired": False,
                                 },
                                 "actorPortState": {
                                     "activity": False,
@@ -2548,8 +2542,6 @@ DATA: list[dict[str, Any]] = [
                                     "synchronization": False,
                                     "collecting": True,
                                     "distributing": True,
-                                    "defaulted": False,
-                                    "expired": False,
                                 },
                             }
                         }
