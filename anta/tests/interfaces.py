@@ -891,7 +891,7 @@ class VerifyLACPInterfacesStatus(AntaTest):
     - Verifies that the interface is a member of the LACP port channel.
     - Ensures that the synchronization is established.
     - Ensures the interfaces are in the correct state for collecting and distributing traffic.
-    - Validates that LACP settings, such as timeouts, are correctly configured.
+    - Validates that LACP settings, such as timeouts, are correctly configured. (i.e The long timeout mode, also known as "slow" mode, is the default setting.)
 
     Expected Results
     ----------------
@@ -937,6 +937,9 @@ class VerifyLACPInterfacesStatus(AntaTest):
         """Main test function for VerifyLACPInterfacesStatus."""
         self.result.is_success()
 
+        # Member port verification parameters.
+        member_port_details = ["activity", "aggregation", "synchronization", "collecting", "distributing", "timeout"]
+
         # Iterating over command output for different interfaces
         for command, input_entry in zip(self.instance_commands, self.inputs.interfaces):
             interface = input_entry.name
@@ -950,7 +953,7 @@ class VerifyLACPInterfacesStatus(AntaTest):
             # Verify the interface is bundled in port channel.
             actor_port_status = interface_details.get("actorPortStatus")
             if actor_port_status != "bundled":
-                message = f"For Interface {interface}:\nExpected `bundled` as the `local port status`, but found `{actor_port_status}` instead.\n"
+                message = f"For Interface {interface}:\nExpected `bundled` as the local port status, but found `{actor_port_status}` instead.\n"
                 self.result.is_failure(message)
                 continue
 
@@ -960,43 +963,13 @@ class VerifyLACPInterfacesStatus(AntaTest):
 
             # Collecting actual interface details
             actual_interface_output = {
-                "actor_port_details": {
-                    "activity": actor_port_details.get("activity", "NotFound"),
-                    "aggregation": actor_port_details.get("aggregation", "NotFound"),
-                    "synchronization": actor_port_details.get("synchronization", "NotFound"),
-                    "collecting": actor_port_details.get("collecting", "NotFound"),
-                    "distributing": actor_port_details.get("distributing", "NotFound"),
-                    "timeout": actor_port_details.get("timeout", "NotFound"),
-                },
-                "partner_port_details": {
-                    "activity": partner_port_details.get("activity", "NotFound"),
-                    "aggregation": partner_port_details.get("aggregation", "NotFound"),
-                    "synchronization": partner_port_details.get("synchronization", "NotFound"),
-                    "collecting": partner_port_details.get("collecting", "NotFound"),
-                    "distributing": partner_port_details.get("distributing", "NotFound"),
-                    "timeout": partner_port_details.get("timeout", "NotFound"),
-                },
+                "actor_port_details": {param: actor_port_details.get(param, "NotFound") for param in member_port_details},
+                "partner_port_details": {param: partner_port_details.get(param, "NotFound") for param in member_port_details},
             }
 
             # Forming expected interface details
-            expected_interface_output = {
-                "actor_port_details": {
-                    "activity": True,
-                    "aggregation": True,
-                    "synchronization": True,
-                    "collecting": True,
-                    "distributing": True,
-                    "timeout": False,
-                },
-                "partner_port_details": {
-                    "activity": True,
-                    "aggregation": True,
-                    "synchronization": True,
-                    "collecting": True,
-                    "distributing": True,
-                    "timeout": False,
-                },
-            }
+            expected_details = {param: param != "timeout" for param in member_port_details}
+            expected_interface_output = {"actor_port_details": expected_details, "partner_port_details": expected_details}
 
             # Forming failure message
             if actual_interface_output != expected_interface_output:

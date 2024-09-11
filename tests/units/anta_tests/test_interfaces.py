@@ -2501,10 +2501,10 @@ DATA: list[dict[str, Any]] = [
                 "orphanPorts": {},
             }
         ],
-        "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "Port-Channel5"}]},
+        "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "Po5"}]},
         "expected": {
             "result": "failure",
-            "messages": ["For Interface Ethernet5:\nExpected `bundled` as the `local port status`, but found `No Aggregate` instead.\n"],
+            "messages": ["For Interface Ethernet5:\nExpected `bundled` as the local port status, but found `No Aggregate` instead.\n"],
         },
     },
     {
@@ -2515,7 +2515,7 @@ DATA: list[dict[str, Any]] = [
                 "portChannels": {"Port-Channel5": {"interfaces": {}}},
             }
         ],
-        "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "Port-Channel5"}]},
+        "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "Po 5"}]},
         "expected": {
             "result": "failure",
             "messages": ["Interface 'Ethernet5' is not configured to be a member of LACP 'Port-Channel5'."],
@@ -2559,7 +2559,7 @@ DATA: list[dict[str, Any]] = [
                 "orphanPorts": {},
             }
         ],
-        "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "Port-Channel5"}]},
+        "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "port-channel 5"}]},
         "expected": {
             "result": "failure",
             "messages": [
