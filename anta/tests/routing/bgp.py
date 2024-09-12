@@ -1491,8 +1491,8 @@ class VerifyBGPPeerGroup(AntaTest):
         failures: dict[Any, Any] = {}
 
         for command, input_entry in zip(self.instance_commands, self.inputs.bgp_peers):
-            peer = command.params.peer
-            vrf = command.params.vrf
+            peer = str(input_entry.peer_address)
+            vrf = input_entry.vrf
             peer_group = input_entry.peer_group
 
             # Verify BGP peer.
@@ -1504,7 +1504,7 @@ class VerifyBGPPeerGroup(AntaTest):
                 failure_log = f"Expected `{peer_group}` as the configured peer-group, but found `{actual_peer_group}` instead."
                 if not actual_peer_group:
                     failure_log = "Peer-group not configured."
-                failures[peer] = failure_log
+                failures[peer] = {vrf: failure_log}
 
         # Check if any failures
         if not failures:

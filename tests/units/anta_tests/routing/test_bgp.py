@@ -4658,11 +4658,11 @@ DATA: list[dict[str, Any]] = [
             "result": "failure",
             "messages": [
                 "The following BGP peer(s) are not configured or have incorrect peer-group configured:\n"
-                "{'10.100.0.8': 'Expected `IPv4-UNDERLAY-PEERS` as the configured peer-group, but found `UNDERLAY-PEERS` instead.', "
-                "'10.100.0.10': 'Expected `IPv4-UNDERLAY-PEERS` as the configured peer-group, but found `UNDERLAY-PEERS` instead.', "
-                "'10.100.1.1': 'Expected `EVPN-OVERLAY-PEERS` as the configured peer-group, but found `OVERLAY-PEERS` instead.', "
-                "'10.100.1.2': 'Expected `EVPN-OVERLAY-PEERS` as the configured peer-group, but found `OVERLAY-PEERS` instead.', "
-                "'10.100.4.5': 'Expected `MLAG-IPv4-UNDERLAY-PEER` as the configured peer-group, but found `UNDERLAY-PEER` instead.'}"
+                "{'10.100.0.8': {'default': 'Expected `IPv4-UNDERLAY-PEERS` as the configured peer-group, but found `UNDERLAY-PEERS` instead.'}, "
+                "'10.100.0.10': {'MGMT': 'Expected `IPv4-UNDERLAY-PEERS` as the configured peer-group, but found `UNDERLAY-PEERS` instead.'}, "
+                "'10.100.1.1': {'default': 'Expected `EVPN-OVERLAY-PEERS` as the configured peer-group, but found `OVERLAY-PEERS` instead.'}, "
+                "'10.100.1.2': {'MGMT': 'Expected `EVPN-OVERLAY-PEERS` as the configured peer-group, but found `OVERLAY-PEERS` instead.'}, "
+                "'10.100.4.5': {'default': 'Expected `MLAG-IPv4-UNDERLAY-PEER` as the configured peer-group, but found `UNDERLAY-PEER` instead.'}}"
             ],
         },
     },
@@ -4787,8 +4787,9 @@ DATA: list[dict[str, Any]] = [
             "result": "failure",
             "messages": [
                 "The following BGP peer(s) are not configured or have incorrect peer-group configured:\n"
-                "{'10.100.0.8': 'Peer-group not configured.', '10.100.0.10': 'Peer-group not configured.', '10.100.1.1': "
-                "'Peer-group not configured.', '10.100.1.2': 'Peer-group not configured.', '10.100.4.5': 'Peer-group not configured.'}"
+                "{'10.100.0.8': {'default': 'Peer-group not configured.'}, '10.100.0.10': {'MGMT': 'Peer-group not configured.'}, '10.100.1.1': "
+                "{'default': 'Peer-group not configured.'}, '10.100.1.2': {'MGMT': 'Peer-group not configured.'}, "
+                "'10.100.4.5': {'default': 'Peer-group not configured.'}}"
             ],
         },
     },
