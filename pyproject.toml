@@ -68,6 +68,8 @@ dev = [
   "pytest-asyncio>=0.21.1",
   "pytest-cov>=4.1.0",
   "pytest-dependency",
+  "pytest-codspeed>=2.2.0",
+  "respx",
   "pytest-html>=3.2.0",
   "pytest-httpx>=0.30.0",
   "pytest-metadata>=3.0.0",
@@ -171,6 +173,7 @@ render_collapsed = true
 testpaths = ["tests"]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
+norecursedirs = ["tests/benchmark"] # Do not run performance testing outside of Codspeed
 filterwarnings = [
   # cvprac is raising the next warning
   "default:pkg_resources is deprecated:DeprecationWarning",

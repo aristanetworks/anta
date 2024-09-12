@@ -133,3 +133,20 @@ jobs:
         run: pip install .[doc]
       - name: "Build mkdocs documentation offline"
         run: mkdocs build
+  benchmarks:
+    name: Benchmark ANTA for Python 3.12
+    runs-on: ubuntu-latest
+    needs: [test-python]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: pip install .[dev]
+      - name: Run benchmarks
+        uses: CodSpeedHQ/action@v3
+        with:
+          token: ${{ secrets.CODSPEED_TOKEN }}
+          run: pytest --codspeed --no-cov --log-cli-level INFO tests/benchmark

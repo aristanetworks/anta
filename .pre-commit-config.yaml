@@ -69,6 +69,7 @@ repos:
           - types-pyOpenSSL
           - pylint_pydantic
           - pytest
+          - pytest-codspeed
           - respx
 
   - repo: https://github.com/codespell-project/codespell
