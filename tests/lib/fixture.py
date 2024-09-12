@@ -21,7 +21,6 @@ from anta.device import AntaDevice, AsyncEOSDevice
 from anta.inventory import AntaInventory
 from anta.result_manager import ResultManager
 from anta.result_manager.models import TestResult
-from tests.lib.utils import default_anta_env
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -61,6 +60,16 @@ MOCK_CLI_TEXT: dict[str, asynceapi.EapiCommandError | str] = {
     "bash timeout 10 ls -1t /mnt/flash/schedule/tech-support | head -1": "dummy_tech-support_2023-12-01.1115.log.gz",
     "show running-config | include aaa authorization exec default": "aaa authorization exec default local",
 }
+
+
+def default_anta_env() -> dict[str, str | None]:
+    """Return a default_anta_environement which can be passed to a cliRunner.invoke method."""
+    return {
+        "ANTA_USERNAME": "anta",
+        "ANTA_PASSWORD": "formica",
+        "ANTA_INVENTORY": str(Path(__file__).parent.parent / "data" / "test_inventory.yml"),
+        "ANTA_CATALOG": str(Path(__file__).parent.parent / "data" / "test_catalog.yml"),
+    }
 
 
 @pytest.fixture
@@ -212,8 +221,13 @@ def click_runner(capsys: pytest.CaptureFixture[str]) -> Iterator[CliRunner]:  # 
             *args: Any,  # noqa: ANN401
             **kwargs: Any,  # noqa: ANN401
         ) -> Result:
-            # Inject default env if not provided
-            kwargs["env"] = kwargs["env"] if "env" in kwargs else default_anta_env()
+            # Inject default env vars if not provided
+            if "env" not in kwargs:
+                kwargs["env"] = default_anta_env()
+            else:
+                for var, value in default_anta_env().items():
+                    if var not in kwargs["env"]:
+                        kwargs["env"][var] = value
             # Deterministic terminal width
             kwargs["env"]["COLUMNS"] = "165"
 
