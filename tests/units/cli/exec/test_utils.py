@@ -23,7 +23,6 @@ if TYPE_CHECKING:
 
 
 # TODO: complete test cases
-@pytest.mark.asyncio
 @pytest.mark.parametrize(
     ("inventory_state", "per_device_command_output", "tags"),
     [

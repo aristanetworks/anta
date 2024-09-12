@@ -168,8 +168,9 @@ addopts = "-ra -q -vv --cov --cov-report term:skip-covered --color yes"
 log_level = "WARNING"
 render_collapsed = true
 testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
 filterwarnings = [
-  "error",
   # cvprac is raising the next warning
   "default:pkg_resources is deprecated:DeprecationWarning",
   # Need to investigate the following - only occuring when running the full pytest suite
@@ -337,7 +338,8 @@ select = ["ALL",
     # "D417",
 ]
 ignore = [
-  "ANN101",  # Missing type annotation for `self` in method - we know what self is..
+  "D203",    # Ignoring conflicting D* warnings - one-blank-line-before-class
+  "D213",    # Ignoring conflicting D* warnings - multi-line-summary-second-line
   "COM812",  # Ignoring conflicting rules that may cause conflicts when used with the formatter
   "ISC001",  # Ignoring conflicting rules that may cause conflicts when used with the formatter
   "TD002",   # We don't have require authors in TODO
