@@ -23,7 +23,7 @@ from tests.lib.fixture import COMMAND_OUTPUT
 if TYPE_CHECKING:
     from _pytest.mark.structures import ParameterSet
 
-INIT_DATA: list[ParameterSet] = [
+INIT_PARAMS: list[ParameterSet] = [
     pytest.param({"host": "42.42.42.42", "username": "anta", "password": "anta"}, {"name": "42.42.42.42"}, id="no name, no port"),
     pytest.param({"host": "42.42.42.42", "username": "anta", "password": "anta", "port": 666}, {"name": "42.42.42.42:666"}, id="no name, port"),
     pytest.param(
@@ -33,7 +33,7 @@ INIT_DATA: list[ParameterSet] = [
         {"host": "42.42.42.42", "username": "anta", "password": "anta", "name": "test.anta.ninja", "insecure": True}, {"name": "test.anta.ninja"}, id="insecure"
     ),
 ]
-EQUALITY_DATA: list[ParameterSet] = [
+EQUALITY_PARAMS: list[ParameterSet] = [
     pytest.param({"host": "42.42.42.42", "username": "anta", "password": "anta"}, {"host": "42.42.42.42", "username": "anta", "password": "blah"}, True, id="equal"),
     pytest.param(
         {"host": "42.42.42.42", "username": "anta", "password": "anta", "name": "device1"},
@@ -51,7 +51,7 @@ EQUALITY_DATA: list[ParameterSet] = [
         {"host": "42.42.42.41", "username": "anta", "password": "anta"}, {"host": "42.42.42.42", "username": "anta", "password": "anta"}, False, id="not-equal-host"
     ),
 ]
-ASYNCEAPI_COLLECT_DATA: list[ParameterSet] = [
+ASYNCEAPI_COLLECT_PARAMS: list[ParameterSet] = [
     pytest.param(
         {},
         {
@@ -302,12 +302,12 @@ ASYNCEAPI_COLLECT_DATA: list[ParameterSet] = [
         id="httpx.ConnectError",
     ),
 ]
-ASYNCEAPI_COPY_DATA: list[ParameterSet] = [
+ASYNCEAPI_COPY_PARAMS: list[ParameterSet] = [
     pytest.param({}, {"sources": [Path("/mnt/flash"), Path("/var/log/agents")], "destination": Path(), "direction": "from"}, id="from"),
     pytest.param({}, {"sources": [Path("/mnt/flash"), Path("/var/log/agents")], "destination": Path(), "direction": "to"}, id="to"),
     pytest.param({}, {"sources": [Path("/mnt/flash"), Path("/var/log/agents")], "destination": Path(), "direction": "wrong"}, id="wrong"),
 ]
-REFRESH_DATA: list[ParameterSet] = [
+REFRESH_PARAMS: list[ParameterSet] = [
     pytest.param(
         {},
         (
@@ -431,7 +431,7 @@ REFRESH_DATA: list[ParameterSet] = [
         id="httpx.ConnectError",
     ),
 ]
-COLLECT_DATA: list[ParameterSet] = [
+COLLECT_PARAMS: list[ParameterSet] = [
     pytest.param(
         {"disable_cache": False},
         {"command": "show version", "use_cache": True},
@@ -459,7 +459,7 @@ COLLECT_DATA: list[ParameterSet] = [
     ),
     pytest.param({"disable_cache": True}, {"command": "show version", "use_cache": False}, {}, id="device cache disabled, command cache disabled"),
 ]
-CACHE_STATS_DATA: list[ParameterSet] = [
+CACHE_STATS_PARAMS: list[ParameterSet] = [
     pytest.param({"disable_cache": False}, {"total_commands_sent": 0, "cache_hits": 0, "cache_hit_ratio": "0.00%"}, id="with_cache"),
     pytest.param({"disable_cache": True}, None, id="without_cache"),
 ]
@@ -468,7 +468,7 @@ CACHE_STATS_DATA: list[ParameterSet] = [
 class TestAntaDevice:
     """Test for anta.device.AntaDevice Abstract class."""
 
-    @pytest.mark.parametrize(("device", "command", "expected"), COLLECT_DATA, indirect=["device"])
+    @pytest.mark.parametrize(("device", "command", "expected"), COLLECT_PARAMS, indirect=["device"])
     async def test_collect(self, device: AntaDevice, command: dict[str, Any], expected: dict[str, Any]) -> None:
         """Test AntaDevice.collect behavior."""
         cmd = AntaCommand(command=command["command"], use_cache=command["use_cache"])
@@ -503,7 +503,7 @@ class TestAntaDevice:
             assert device.cache is None
             device._collect.assert_called_once_with(command=cmd, collection_id=None)  # type: ignore[attr-defined]  # pylint: disable=protected-access
 
-    @pytest.mark.parametrize(("device", "expected"), CACHE_STATS_DATA, indirect=["device"])
+    @pytest.mark.parametrize(("device", "expected"), CACHE_STATS_PARAMS, indirect=["device"])
     def test_cache_statistics(self, device: AntaDevice, expected: dict[str, Any] | None) -> None:
         """Verify that when cache statistics attribute does not exist.
 
@@ -515,7 +515,7 @@ class TestAntaDevice:
 class TestAsyncEOSDevice:
     """Test for anta.device.AsyncEOSDevice."""
 
-    @pytest.mark.parametrize(("device", "expected"), INIT_DATA)
+    @pytest.mark.parametrize(("device", "expected"), INIT_PARAMS)
     def test__init__(self, device: dict[str, Any], expected: dict[str, Any]) -> None:
         """Test the AsyncEOSDevice constructor."""
         dev = AsyncEOSDevice(**device)
@@ -532,7 +532,7 @@ class TestAsyncEOSDevice:
         with patch("anta.device.__DEBUG__", new=True):
             rprint(dev)
 
-    @pytest.mark.parametrize(("device1", "device2", "expected"), EQUALITY_DATA)
+    @pytest.mark.parametrize(("device1", "device2", "expected"), EQUALITY_PARAMS)
     def test__eq(self, device1: dict[str, Any], device2: dict[str, Any], expected: bool) -> None:
         """Test the AsyncEOSDevice equality."""
         dev1 = AsyncEOSDevice(**device1)
@@ -544,7 +544,7 @@ class TestAsyncEOSDevice:
 
     @pytest.mark.parametrize(
         ("async_device", "patch_kwargs", "expected"),
-        REFRESH_DATA,
+        REFRESH_PARAMS,
         indirect=["async_device"],
     )
     async def test_refresh(self, async_device: AsyncEOSDevice, patch_kwargs: list[dict[str, Any]], expected: dict[str, Any]) -> None:
@@ -561,7 +561,7 @@ class TestAsyncEOSDevice:
 
     @pytest.mark.parametrize(
         ("async_device", "command", "expected"),
-        ASYNCEAPI_COLLECT_DATA,
+        ASYNCEAPI_COLLECT_PARAMS,
         indirect=["async_device"],
     )
     async def test__collect(self, async_device: AsyncEOSDevice, command: dict[str, Any], expected: dict[str, Any]) -> None:
@@ -592,7 +592,7 @@ class TestAsyncEOSDevice:
 
     @pytest.mark.parametrize(
         ("async_device", "copy"),
-        ASYNCEAPI_COPY_DATA,
+        ASYNCEAPI_COPY_PARAMS,
         indirect=["async_device"],
     )
     async def test_copy(self, async_device: AsyncEOSDevice, copy: dict[str, Any]) -> None:
