@@ -116,7 +116,7 @@ Test example for `anta.tests.system.VerifyUptime` AntaTest.
 
 ``` python
 # Import the generic test function
-from tests.lib.anta import test  # noqa: F401
+from tests.units.anta_tests import test  # noqa: F401
 
 # Import your AntaTest
 from anta.tests.system import VerifyUptime

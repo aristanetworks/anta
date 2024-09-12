@@ -19,7 +19,7 @@ pytest_plugins = [
 
 # Enable nice assert messages
 # https://docs.pytest.org/en/7.1.x/how-to/writing_plugins.html#assertion-rewriting
-pytest.register_assert_rewrite("tests.lib.anta")
+pytest.register_assert_rewrite("tests.unit.anta_tests")
 
 # Placeholder to disable logging of some external libs
 for _ in ("asyncio", "httpx"):
