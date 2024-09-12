@@ -13,11 +13,139 @@ from pydantic import ValidationError
 
 from anta.inventory import AntaInventory
 from anta.inventory.exceptions import InventoryIncorrectSchemaError, InventoryRootKeyError
-from tests.data.json_data import ANTA_INVENTORY_TESTS_INVALID, ANTA_INVENTORY_TESTS_VALID
 from tests.lib.utils import generate_test_ids_dict
 
 if TYPE_CHECKING:
     from pathlib import Path
+
+
+ANTA_INVENTORY_TESTS_VALID = [
+    {
+        "name": "ValidInventory_with_host_only",
+        "input": {"anta_inventory": {"hosts": [{"host": "192.168.0.17"}, {"host": "192.168.0.2"}, {"host": "my.awesome.host.com"}]}},
+        "expected_result": "valid",
+        "parameters": {
+            "ipaddress_in_scope": "192.168.0.17",
+            "ipaddress_out_of_scope": "192.168.1.1",
+            "nb_hosts": 2,
+        },
+    },
+    {
+        "name": "ValidInventory_with_networks_only",
+        "input": {"anta_inventory": {"networks": [{"network": "192.168.0.0/24"}]}},
+        "expected_result": "valid",
+        "parameters": {
+            "ipaddress_in_scope": "192.168.0.1",
+            "ipaddress_out_of_scope": "192.168.1.1",
+            "nb_hosts": 256,
+        },
+    },
+    {
+        "name": "ValidInventory_with_ranges_only",
+        "input": {
+            "anta_inventory": {
+                "ranges": [
+                    {"start": "10.0.0.1", "end": "10.0.0.11"},
+                    {"start": "10.0.0.101", "end": "10.0.0.111"},
+                ],
+            },
+        },
+        "expected_result": "valid",
+        "parameters": {
+            "ipaddress_in_scope": "10.0.0.10",
+            "ipaddress_out_of_scope": "192.168.1.1",
+            "nb_hosts": 22,
+        },
+    },
+    {
+        "name": "ValidInventory_with_host_port",
+        "input": {"anta_inventory": {"hosts": [{"host": "192.168.0.17", "port": 443}, {"host": "192.168.0.2", "port": 80}]}},
+        "expected_result": "valid",
+        "parameters": {
+            "ipaddress_in_scope": "192.168.0.17",
+            "ipaddress_out_of_scope": "192.168.1.1",
+            "nb_hosts": 2,
+        },
+    },
+    {
+        "name": "ValidInventory_with_host_tags",
+        "input": {"anta_inventory": {"hosts": [{"host": "192.168.0.17", "tags": ["leaf"]}, {"host": "192.168.0.2", "tags": ["spine"]}]}},
+        "expected_result": "valid",
+        "parameters": {
+            "ipaddress_in_scope": "192.168.0.17",
+            "ipaddress_out_of_scope": "192.168.1.1",
+            "nb_hosts": 2,
+        },
+    },
+    {
+        "name": "ValidInventory_with_networks_tags",
+        "input": {"anta_inventory": {"networks": [{"network": "192.168.0.0/24", "tags": ["leaf"]}]}},
+        "expected_result": "valid",
+        "parameters": {
+            "ipaddress_in_scope": "192.168.0.1",
+            "ipaddress_out_of_scope": "192.168.1.1",
+            "nb_hosts": 256,
+        },
+    },
+    {
+        "name": "ValidInventory_with_ranges_tags",
+        "input": {
+            "anta_inventory": {
+                "ranges": [
+                    {"start": "10.0.0.1", "end": "10.0.0.11", "tags": ["leaf"]},
+                    {"start": "10.0.0.101", "end": "10.0.0.111", "tags": ["spine"]},
+                ],
+            },
+        },
+        "expected_result": "valid",
+        "parameters": {
+            "ipaddress_in_scope": "10.0.0.10",
+            "ipaddress_out_of_scope": "192.168.1.1",
+            "nb_hosts": 22,
+        },
+    },
+]
+
+
+ANTA_INVENTORY_TESTS_INVALID = [
+    {
+        "name": "InvalidInventory_with_host_only",
+        "input": {"anta_inventory": {"hosts": [{"host": "192.168.0.17/32"}, {"host": "192.168.0.2"}]}},
+        "expected_result": "invalid",
+    },
+    {
+        "name": "InvalidInventory_wrong_network_bits",
+        "input": {"anta_inventory": {"networks": [{"network": "192.168.42.0/8"}]}},
+        "expected_result": "invalid",
+    },
+    {
+        "name": "InvalidInventory_wrong_network",
+        "input": {"anta_inventory": {"networks": [{"network": "toto"}]}},
+        "expected_result": "invalid",
+    },
+    {
+        "name": "InvalidInventory_wrong_range",
+        "input": {"anta_inventory": {"ranges": [{"start": "toto", "end": "192.168.42.42"}]}},
+        "expected_result": "invalid",
+    },
+    {
+        "name": "InvalidInventory_wrong_range_type_mismatch",
+        "input": {"anta_inventory": {"ranges": [{"start": "fe80::cafe", "end": "192.168.42.42"}]}},
+        "expected_result": "invalid",
+    },
+    {
+        "name": "Invalid_Root_Key",
+        "input": {
+            "inventory": {
+                "ranges": [
+                    {"start": "10.0.0.1", "end": "10.0.0.11"},
+                    {"start": "10.0.0.100", "end": "10.0.0.111"},
+                ],
+            },
+        },
+        "expected_result": "invalid",
+    },
+]
 
 
 class TestAntaInventory:

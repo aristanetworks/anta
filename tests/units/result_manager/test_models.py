@@ -10,14 +10,19 @@ from typing import TYPE_CHECKING, Any, Callable
 import pytest
 
 from anta.result_manager.models import AntaTestStatus
-
-# Import as Result to avoid pytest collection
-from tests.data.json_data import TEST_RESULT_SET_STATUS
 from tests.lib.fixture import DEVICE_NAME
 from tests.lib.utils import generate_test_ids_dict
 
 if TYPE_CHECKING:
     from anta.result_manager.models import TestResult as Result
+
+TEST_RESULT_SET_STATUS = [
+    {"name": "set_success", "target": "success", "message": "success"},
+    {"name": "set_error", "target": "error", "message": "error"},
+    {"name": "set_failure", "target": "failure", "message": "failure"},
+    {"name": "set_skipped", "target": "skipped", "message": "skipped"},
+    {"name": "set_unset", "target": "unset", "message": "unset"},
+]
 
 
 class TestTestResultModels:

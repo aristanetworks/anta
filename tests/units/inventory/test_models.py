@@ -13,22 +13,126 @@ from pydantic import ValidationError
 
 from anta.device import AsyncEOSDevice
 from anta.inventory.models import AntaInventoryHost, AntaInventoryInput, AntaInventoryNetwork, AntaInventoryRange
-from tests.data.json_data import (
-    INVENTORY_DEVICE_MODEL_INVALID,
-    INVENTORY_DEVICE_MODEL_VALID,
-    INVENTORY_MODEL_HOST_CACHE,
-    INVENTORY_MODEL_HOST_INVALID,
-    INVENTORY_MODEL_HOST_VALID,
-    INVENTORY_MODEL_INVALID,
-    INVENTORY_MODEL_NETWORK_CACHE,
-    INVENTORY_MODEL_NETWORK_INVALID,
-    INVENTORY_MODEL_NETWORK_VALID,
-    INVENTORY_MODEL_RANGE_CACHE,
-    INVENTORY_MODEL_RANGE_INVALID,
-    INVENTORY_MODEL_RANGE_VALID,
-    INVENTORY_MODEL_VALID,
-)
 from tests.lib.utils import generate_test_ids_dict
+
+INVENTORY_MODEL_HOST_VALID = [
+    {"name": "validIPv4", "input": "1.1.1.1", "expected_result": "valid"},
+    {
+        "name": "validIPv6",
+        "input": "fe80::cc62:a9ff:feef:932a",
+    },
+]
+
+INVENTORY_MODEL_HOST_INVALID = [
+    {
+        "name": "invalidIPv4_with_netmask",
+        "input": "1.1.1.1/32",
+    },
+    {
+        "name": "invalidIPv6_with_netmask",
+        "input": "fe80::cc62:a9ff:feef:932a/128",
+    },
+    {"name": "invalidHost_format", "input": "@", "expected_result": "invalid"},
+    {
+        "name": "invalidIPv6_format",
+        "input": "fe80::cc62:a9ff:feef:",
+    },
+]
+
+INVENTORY_MODEL_HOST_CACHE = [
+    {"name": "Host cache default", "input": {"host": "1.1.1.1"}, "expected_result": False},
+    {"name": "Host cache enabled", "input": {"host": "1.1.1.1", "disable_cache": False}, "expected_result": False},
+    {"name": "Host cache disabled", "input": {"host": "1.1.1.1", "disable_cache": True}, "expected_result": True},
+]
+
+INVENTORY_MODEL_NETWORK_VALID = [
+    {"name": "ValidIPv4_Subnet", "input": "1.1.1.0/24", "expected_result": "valid"},
+    {"name": "ValidIPv6_Subnet", "input": "2001:db8::/32", "expected_result": "valid"},
+]
+
+INVENTORY_MODEL_NETWORK_INVALID = [
+    {"name": "ValidIPv4_Subnet", "input": "1.1.1.0/17", "expected_result": "invalid"},
+    {
+        "name": "InvalidIPv6_Subnet",
+        "input": "2001:db8::/16",
+        "expected_result": "invalid",
+    },
+]
+
+INVENTORY_MODEL_NETWORK_CACHE = [
+    {"name": "Network cache default", "input": {"network": "1.1.1.0/24"}, "expected_result": False},
+    {"name": "Network cache enabled", "input": {"network": "1.1.1.0/24", "disable_cache": False}, "expected_result": False},
+    {"name": "Network cache disabled", "input": {"network": "1.1.1.0/24", "disable_cache": True}, "expected_result": True},
+]
+
+INVENTORY_MODEL_RANGE_VALID = [
+    {
+        "name": "ValidIPv4_Range",
+        "input": {"start": "10.1.0.1", "end": "10.1.0.10"},
+        "expected_result": "valid",
+    },
+]
+
+INVENTORY_MODEL_RANGE_INVALID = [
+    {
+        "name": "InvalidIPv4_Range_name",
+        "input": {"start": "toto", "end": "10.1.0.1"},
+        "expected_result": "invalid",
+    },
+]
+
+INVENTORY_MODEL_RANGE_CACHE = [
+    {"name": "Range cache default", "input": {"start": "1.1.1.1", "end": "1.1.1.10"}, "expected_result": False},
+    {"name": "Range cache enabled", "input": {"start": "1.1.1.1", "end": "1.1.1.10", "disable_cache": False}, "expected_result": False},
+    {"name": "Range cache disabled", "input": {"start": "1.1.1.1", "end": "1.1.1.10", "disable_cache": True}, "expected_result": True},
+]
+
+INVENTORY_MODEL_VALID = [
+    {
+        "name": "Valid_Host_Only",
+        "input": {"hosts": [{"host": "192.168.0.17"}, {"host": "192.168.0.2"}]},
+        "expected_result": "valid",
+    },
+    {
+        "name": "Valid_Networks_Only",
+        "input": {"networks": [{"network": "192.168.0.0/16"}, {"network": "192.168.1.0/24"}]},
+        "expected_result": "valid",
+    },
+    {
+        "name": "Valid_Ranges_Only",
+        "input": {
+            "ranges": [
+                {"start": "10.1.0.1", "end": "10.1.0.10"},
+                {"start": "10.2.0.1", "end": "10.2.1.10"},
+            ],
+        },
+        "expected_result": "valid",
+    },
+]
+
+INVENTORY_MODEL_INVALID = [
+    {
+        "name": "Host_with_Invalid_entry",
+        "input": {"hosts": [{"host": "192.168.0.17"}, {"host": "192.168.0.2/32"}]},
+        "expected_result": "invalid",
+    },
+]
+
+INVENTORY_DEVICE_MODEL_VALID = [
+    {
+        "name": "Valid_Inventory",
+        "input": [{"host": "1.1.1.1", "username": "arista", "password": "arista123!"}, {"host": "1.1.1.2", "username": "arista", "password": "arista123!"}],
+        "expected_result": "valid",
+    },
+]
+
+INVENTORY_DEVICE_MODEL_INVALID = [
+    {
+        "name": "Invalid_Inventory",
+        "input": [{"host": "1.1.1.1", "password": "arista123!"}, {"host": "1.1.1.1", "username": "arista"}],
+        "expected_result": "invalid",
+    },
+]
 
 
 class TestInventoryUnitModels:
