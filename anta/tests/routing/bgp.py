@@ -182,22 +182,19 @@ def _get_inconsistent_peers(peer_details: dict[Any, Any], bgp_peers: list[IPv4Ad
 
     # Update the peer details as per input peer addresses for verification.
     if bgp_peers:
-        details: dict[Any, Any] = {}
+        input_peers_detail: dict[Any, Any] = {}
         for peer in bgp_peers:
             if not (peer_detail := peer_details.get(str(peer))):
                 failure[str(peer)] = "Not Configured"
             else:
-                details[str(peer)] = peer_detail
-        peer_details = details
+                input_peers_detail[str(peer)] = peer_detail
+        peer_details = input_peers_detail
 
     # Iterate over each peer and verify the prefix(s) consistency.
     for peer, peer_detail in peer_details.items():
         prefix_rcv = peer_detail.get("prefixReceived", "Not Found")
         prefix_acc = peer_detail.get("prefixAccepted", "Not Found")
-        if (prefix_acc and prefix_rcv) == "Not Found":
-            failure[peer] = {"prefix received": prefix_rcv, "prefix accepted": prefix_acc}
-            continue
-        if prefix_rcv != prefix_acc:
+        if (prefix_acc and prefix_rcv) == "Not Found" or prefix_rcv != prefix_acc:
             failure[peer] = {"prefix received": prefix_rcv, "prefix accepted": prefix_acc}
 
     return failure
@@ -1586,7 +1583,7 @@ class VerifyBGPPeerPrefixes(AntaTest):
             afi = input_entry.afi
             safi = input_entry.safi
             afi_vrf = input_entry.vrf
-            peers = input_entry.peers
+            input_peers = input_entry.peers
 
             # Update failures dictionary for `afi`, later on removing the same if no failure found.
             if not failures.get(afi):
@@ -1600,7 +1597,7 @@ class VerifyBGPPeerPrefixes(AntaTest):
                 continue
 
             # Verify the received and accepted prefix(s).
-            failure_logs = _get_inconsistent_peers(peer_details, peers)
+            failure_logs = _get_inconsistent_peers(peer_details, input_peers)
 
             # Update failures if any.
             if failure_logs:
