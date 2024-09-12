@@ -3,6 +3,7 @@ __pycache__
 .pages
 .coverage
 .pytest_cache
+.mypy_cache
 build
 dist
 *.egg-info
@@ -53,7 +54,6 @@ coverage.xml
 *.cover
 *.py,cover
 .hypothesis/
-.pytest_cache/
 cover/
 report.html
 
@@ -108,6 +108,3 @@ tech-support/*
 
 # direnv file
 .envrc
-
-clab-atd-anta/*
-clab-atd-anta/
