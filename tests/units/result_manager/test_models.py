@@ -5,63 +5,64 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Callable
 
 import pytest
 
 from anta.result_manager.models import AntaTestStatus
 from tests.lib.fixture import DEVICE_NAME
-from tests.lib.utils import generate_test_ids_dict
 
 if TYPE_CHECKING:
+    from _pytest.mark.structures import ParameterSet
+
     from anta.result_manager.models import TestResult as Result
 
-TEST_RESULT_SET_STATUS = [
-    {"name": "set_success", "target": "success", "message": "success"},
-    {"name": "set_error", "target": "error", "message": "error"},
-    {"name": "set_failure", "target": "failure", "message": "failure"},
-    {"name": "set_skipped", "target": "skipped", "message": "skipped"},
-    {"name": "set_unset", "target": "unset", "message": "unset"},
+TEST_RESULT_SET_STATUS: list[ParameterSet] = [
+    pytest.param(AntaTestStatus.SUCCESS, "success", id="set_success"),
+    pytest.param(AntaTestStatus.ERROR, "error", id="set_error"),
+    pytest.param(AntaTestStatus.FAILURE, "failure", id="set_failure"),
+    pytest.param(AntaTestStatus.SKIPPED, "skipped", id="set_skipped"),
+    pytest.param(AntaTestStatus.UNSET, "unset", id="set_unset"),
 ]
 
 
 class TestTestResultModels:
     """Test components of anta.result_manager.models."""
 
-    @pytest.mark.parametrize("data", TEST_RESULT_SET_STATUS, ids=generate_test_ids_dict)
-    def test__is_status_foo(self, test_result_factory: Callable[[int], Result], data: dict[str, Any]) -> None:
+    @pytest.mark.parametrize(("target", "message"), TEST_RESULT_SET_STATUS)
+    def test__is_status_foo(self, test_result_factory: Callable[[int], Result], target: AntaTestStatus, message: str) -> None:
         """Test TestResult.is_foo methods."""
         testresult = test_result_factory(1)
-        assert testresult.result == "unset"
+        assert testresult.result == AntaTestStatus.UNSET
         assert len(testresult.messages) == 0
-        if data["target"] == "success":
-            testresult.is_success(data["message"])
-            assert testresult.result == data["target"]
-            assert data["message"] in testresult.messages
-        if data["target"] == "failure":
-            testresult.is_failure(data["message"])
-            assert testresult.result == data["target"]
-            assert data["message"] in testresult.messages
-        if data["target"] == "error":
-            testresult.is_error(data["message"])
-            assert testresult.result == data["target"]
-            assert data["message"] in testresult.messages
-        if data["target"] == "skipped":
-            testresult.is_skipped(data["message"])
-            assert testresult.result == data["target"]
-            assert data["message"] in testresult.messages
+        if target == AntaTestStatus.SUCCESS:
+            testresult.is_success(message)
+            assert testresult.result == target
+            assert message in testresult.messages
+        if target == AntaTestStatus.FAILURE:
+            testresult.is_failure(message)
+            assert testresult.result == target
+            assert message in testresult.messages
+        if target == AntaTestStatus.ERROR:
+            testresult.is_error(message)
+            assert testresult.result == target
+            assert message in testresult.messages
+        if target == AntaTestStatus.SKIPPED:
+            testresult.is_skipped(message)
+            assert testresult.result == target
+            assert message in testresult.messages
         # no helper for unset, testing _set_status
-        if data["target"] == "unset":
-            testresult._set_status(AntaTestStatus.UNSET, data["message"])  # pylint: disable=W0212
-            assert testresult.result == data["target"]
-            assert data["message"] in testresult.messages
+        if target == AntaTestStatus.UNSET:
+            testresult._set_status(AntaTestStatus.UNSET, message)  # pylint: disable=W0212
+            assert testresult.result == target
+            assert message in testresult.messages
 
-    @pytest.mark.parametrize("data", TEST_RESULT_SET_STATUS, ids=generate_test_ids_dict)
-    def test____str__(self, test_result_factory: Callable[[int], Result], data: dict[str, Any]) -> None:
+    @pytest.mark.parametrize(("target", "message"), TEST_RESULT_SET_STATUS)
+    def test____str__(self, test_result_factory: Callable[[int], Result], target: AntaTestStatus, message: str) -> None:
         """Test TestResult.__str__."""
         testresult = test_result_factory(1)
-        assert testresult.result == "unset"
+        assert testresult.result == AntaTestStatus.UNSET
         assert len(testresult.messages) == 0
-        testresult._set_status(data["target"], data["message"])  # pylint: disable=W0212
-        assert testresult.result == data["target"]
-        assert str(testresult) == f"Test 'VerifyTest1' (on '{DEVICE_NAME}'): Result '{data['target']}'\nMessages: {[data['message']]}"
+        testresult._set_status(target, message)  # pylint: disable=W0212
+        assert testresult.result == target
+        assert str(testresult) == f"Test 'VerifyTest1' (on '{DEVICE_NAME}'): Result '{target}'\nMessages: {[message]}"
