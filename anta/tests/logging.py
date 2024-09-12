@@ -100,13 +100,13 @@ class VerifyLoggingSourceIntf(AntaTest):
     ```
     """
 
-    name = "VerifyLoggingSourceInt"
+    name = "VerifyLoggingSourceIntf"
     description = "Verifies logging source-interface for a specified VRF."
     categories: ClassVar[list[str]] = ["logging"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show logging", ofmt="text")]
 
     class Input(AntaTest.Input):
-        """Input model for the VerifyLoggingSourceInt test."""
+        """Input model for the VerifyLoggingSourceIntf test."""
 
         interface: str
         """Source-interface to use as source IP of log messages."""
@@ -115,7 +115,7 @@ class VerifyLoggingSourceIntf(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """Main test function for VerifyLoggingSourceInt."""
+        """Main test function for VerifyLoggingSourceIntf."""
         output = self.instance_commands[0].text_output
         pattern = rf"Logging source-interface '{self.inputs.interface}'.*VRF {self.inputs.vrf}"
         if re.search(pattern, _get_logging_states(self.logger, output)):
