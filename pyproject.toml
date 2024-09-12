@@ -338,8 +338,6 @@ select = ["ALL",
     # "D417",
 ]
 ignore = [
-  "D203",    # Ignoring conflicting D* warnings - one-blank-line-before-class
-  "D213",    # Ignoring conflicting D* warnings - multi-line-summary-second-line
   "COM812",  # Ignoring conflicting rules that may cause conflicts when used with the formatter
   "ISC001",  # Ignoring conflicting rules that may cause conflicts when used with the formatter
   "TD002",   # We don't have require authors in TODO
