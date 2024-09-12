@@ -4312,31 +4312,6 @@ DATA: list[dict[str, Any]] = [
         },
     },
     {
-        "name": "failure-not-found",
-        "test": VerifyBGPPeerUpdateErrors,
-        "eos_data": [
-            {
-                "vrfs": {},
-            },
-            {
-                "vrfs": {},
-            },
-        ],
-        "inputs": {
-            "bgp_peers": [
-                {"peer_address": "10.100.0.8", "vrf": "default", "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
-                {"peer_address": "10.100.0.9", "vrf": "MGMT", "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
-            ]
-        },
-        "expected": {
-            "result": "failure",
-            "messages": [
-                "The following BGP peers are not configured or have non-zero update error counters:\n"
-                "{'10.100.0.8': {'default': 'Not configured'}, '10.100.0.9': {'MGMT': 'Not configured'}}"
-            ],
-        },
-    },
-    {
         "name": "success-all-error-counters",
         "test": VerifyBGPPeerUpdateErrors,
         "eos_data": [

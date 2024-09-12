@@ -295,14 +295,14 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
-        "name": "failure",
+        "name": "failure-no-interfaces",
         "test": VerifyPtpPortModeStatus,
         "eos_data": [{"ptpIntfSummaries": {}}],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["No interfaces are PTP enabled"]},
     },
     {
-        "name": "failure",
+        "name": "failure-invalid-state",
         "test": VerifyPtpPortModeStatus,
         "eos_data": [
             {
