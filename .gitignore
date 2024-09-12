@@ -1,9 +1,10 @@
 __pycache__
 *.pyc
 .pages
-.coverage
 .pytest_cache
 .mypy_cache
+.ruff_cache
+.cache
 build
 dist
 *.egg-info
@@ -47,8 +48,8 @@ htmlcov/
 .tox/
 .nox/
 .coverage
+coverage_html_report
 .coverage.*
-.cache
 nosetests.xml
 coverage.xml
 *.cover
@@ -98,13 +99,3 @@ venv.bak/
 
 # VScode settings
 .vscode
-test.env
-tech-support/
-tech-support/*
-2*
-
-**/report.html
-.*report.html
-
-# direnv file
-.envrc
