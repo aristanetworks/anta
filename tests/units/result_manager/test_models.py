@@ -46,7 +46,7 @@ class TestTestResultModels:
             assert message in testresult.messages
         if target == AntaTestStatus.ERROR:
             testresult.is_error(message)
-            assert testresult.result == target
+            assert testresult.result == "error"
             assert message in testresult.messages
         if target == AntaTestStatus.SKIPPED:
             testresult.is_skipped(message)

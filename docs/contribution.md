@@ -174,7 +174,6 @@ Checks for common misspellings in text files.............................Passed
 Check typing with mypy...................................................Passed
 ```
 
-> NOTE:
 
 ## Configure MYPYPATH
 
