@@ -134,8 +134,8 @@ async def collect_show_tech(inv: AntaInventory, root_dir: Path, *, configure: bo
                 if not isinstance(device, AsyncEOSDevice):
                     msg = "anta exec collect-tech-support is only supported with AsyncEOSDevice for now."
                     raise UsageError(msg)
-                if device.enable and device._enable_password is not None:  # pylint: disable=protected-access
-                    commands.append({"cmd": "enable", "input": device._enable_password})  # pylint: disable=protected-access
+                if device.enable and device._enable_password is not None:
+                    commands.append({"cmd": "enable", "input": device._enable_password})
                 elif device.enable:
                     commands.append({"cmd": "enable"})
                 commands.extend(
@@ -146,7 +146,7 @@ async def collect_show_tech(inv: AntaInventory, root_dir: Path, *, configure: bo
                 )
                 logger.warning("Configuring 'aaa authorization exec default local' on device %s", device.name)
                 command = AntaCommand(command="show running-config | include aaa authorization exec default local", ofmt="text")
-                await device._session.cli(commands=commands)  # pylint: disable=protected-access
+                await device._session.cli(commands=commands)
                 logger.info("Configured 'aaa authorization exec default local' on device %s", device.name)
 
             logger.debug("'aaa authorization exec default local' is already configured on device %s", device.name)

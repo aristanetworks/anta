@@ -133,5 +133,5 @@ def click_runner(capsys: pytest.CaptureFixture[str], anta_env: dict[str, str]) -
             "asyncssh.scp",
         ),
     ):
-        console._color_system = None  # pylint: disable=protected-access
+        console._color_system = None
         yield AntaCliRunner()

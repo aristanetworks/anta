@@ -47,7 +47,6 @@ class TestReportTable:
     )
     def test__split_list_to_txt_list(self, usr_list: list[str], delimiter: str | None, expected_output: str) -> None:
         """Test _split_list_to_txt_list."""
-        # pylint: disable=protected-access
         report = ReportTable()
         assert report._split_list_to_txt_list(usr_list, delimiter) == expected_output
 
@@ -61,7 +60,6 @@ class TestReportTable:
     )
     def test__build_headers(self, headers: list[str]) -> None:
         """Test _build_headers."""
-        # pylint: disable=protected-access
         report = ReportTable()
         table = Table()
         table_column_before = len(table.columns)
@@ -82,7 +80,6 @@ class TestReportTable:
     )
     def test__color_result(self, status: AntaTestStatus, expected_status: str) -> None:
         """Test _build_headers."""
-        # pylint: disable=protected-access
         report = ReportTable()
         assert report._color_result(status) == expected_status
 
@@ -103,7 +100,6 @@ class TestReportTable:
         expected_length: int,
     ) -> None:
         """Test report_all."""
-        # pylint: disable=too-many-arguments
         manager = result_manager_factory(number_of_tests)
 
         report = ReportTable()
@@ -132,7 +128,6 @@ class TestReportTable:
         expected_length: int,
     ) -> None:
         """Test report_summary_tests."""
-        # pylint: disable=too-many-arguments
         # TODO: refactor this later... this is injecting double test results by modyfing the device name
         # should be a fixture
         manager = result_manager_factory(number_of_tests)
@@ -167,7 +162,6 @@ class TestReportTable:
         expected_length: int,
     ) -> None:
         """Test report_summary_devices."""
-        # pylint: disable=too-many-arguments
         # TODO: refactor this later... this is injecting double test results by modyfing the device name
         # should be a fixture
         manager = result_manager_factory(number_of_tests)

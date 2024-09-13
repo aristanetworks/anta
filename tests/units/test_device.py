@@ -493,7 +493,7 @@ class TestAntaDevice:
                     assert current_cached_data == COMMAND_OUTPUT
                     assert device.cache.hit_miss_ratio["hits"] == 1
             else:  # command is not allowed to use cache
-                device._collect.assert_called_once_with(command=cmd, collection_id=None)  # type: ignore[attr-defined]  # pylint: disable=protected-access
+                device._collect.assert_called_once_with(command=cmd, collection_id=None)  # type: ignore[attr-defined]
                 assert cmd.output == COMMAND_OUTPUT
                 if expected["cache_hit"] is True:
                     assert current_cached_data == cached_output
@@ -501,7 +501,7 @@ class TestAntaDevice:
                     assert current_cached_data is None
         else:  # device is disabled
             assert device.cache is None
-            device._collect.assert_called_once_with(command=cmd, collection_id=None)  # type: ignore[attr-defined]  # pylint: disable=protected-access
+            device._collect.assert_called_once_with(command=cmd, collection_id=None)  # type: ignore[attr-defined]
 
     @pytest.mark.parametrize(("device", "expected"), CACHE_STATS_PARAMS, indirect=["device"])
     def test_cache_statistics(self, device: AntaDevice, expected: dict[str, Any] | None) -> None:
@@ -548,7 +548,6 @@ class TestAsyncEOSDevice:
         indirect=["async_device"],
     )
     async def test_refresh(self, async_device: AsyncEOSDevice, patch_kwargs: list[dict[str, Any]], expected: dict[str, Any]) -> None:
-        # pylint: disable=protected-access
         """Test AsyncEOSDevice.refresh()."""
         with patch.object(async_device._session, "check_connection", **patch_kwargs[0]), patch.object(async_device._session, "cli", **patch_kwargs[1]):
             await async_device.refresh()
@@ -565,7 +564,6 @@ class TestAsyncEOSDevice:
         indirect=["async_device"],
     )
     async def test__collect(self, async_device: AsyncEOSDevice, command: dict[str, Any], expected: dict[str, Any]) -> None:
-        # pylint: disable=protected-access
         """Test AsyncEOSDevice._collect()."""
         cmd = AntaCommand(command=command["command"], revision=command["revision"]) if "revision" in command else AntaCommand(command=command["command"])
         with patch.object(async_device._session, "cli", **command["patch_kwargs"]):

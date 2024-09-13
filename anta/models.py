@@ -71,7 +71,6 @@ class AntaTemplate:
         *,
         use_cache: bool = True,
     ) -> None:
-        # pylint: disable=too-many-arguments
         self.template = template
         self.version = version
         self.revision = revision

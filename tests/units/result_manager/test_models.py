@@ -54,7 +54,7 @@ class TestTestResultModels:
             assert message in testresult.messages
         if target == AntaTestStatus.UNSET:
             # no helper for unset, testing _set_status
-            testresult._set_status(AntaTestStatus.UNSET, message)  # pylint: disable=W0212
+            testresult._set_status(AntaTestStatus.UNSET, message)
             assert testresult.result == "unset"
             assert message in testresult.messages
 
@@ -64,6 +64,6 @@ class TestTestResultModels:
         testresult = test_result_factory(1)
         assert testresult.result == AntaTestStatus.UNSET
         assert len(testresult.messages) == 0
-        testresult._set_status(target, message)  # pylint: disable=W0212
+        testresult._set_status(target, message)
         assert testresult.result == target
         assert str(testresult) == f"Test 'VerifyTest1' (on '{DEVICE_NAME}'): Result '{target}'\nMessages: {[message]}"

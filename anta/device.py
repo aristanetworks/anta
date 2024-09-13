@@ -244,7 +244,6 @@ class AsyncEOSDevice(AntaDevice):
 
     """
 
-    # pylint: disable=R0913
     def __init__(
         self,
         host: str,

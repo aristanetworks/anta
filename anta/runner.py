@@ -212,7 +212,6 @@ async def main(  # noqa: PLR0913
     established_only: bool = True,
     dry_run: bool = False,
 ) -> None:
-    # pylint: disable=too-many-arguments
     """Run ANTA.
 
     Use this as an entrypoint to the test framework in your script.

@@ -38,7 +38,6 @@ def test_run_cmd(
     failed: bool,
 ) -> None:
     """Test `anta debug run-cmd`."""
-    # pylint: disable=too-many-arguments
     cli_args = ["-l", "debug", "debug", "run-cmd", "--command", command, "--device", device]
 
     # ofmt

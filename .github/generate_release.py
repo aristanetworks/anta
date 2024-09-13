@@ -30,7 +30,7 @@ class SafeDumper(yaml.SafeDumper):
     https://github.com/yaml/pyyaml/issues/234#issuecomment-765894586.
     """
 
-    # pylint: disable=R0901,W0613,W1113
+    # pylint: disable=R0901
 
     def increase_indent(self, flow=False, *args, **kwargs):
         return super().increase_indent(flow=flow, indentless=False)

@@ -40,7 +40,7 @@ def anta_env() -> dict[str, str]:
 def device(request: pytest.FixtureRequest) -> Iterator[AntaDevice]:
     """Return an AntaDevice instance with mocked abstract method."""
 
-    def _collect(command: AntaCommand, *args: Any, **kwargs: Any) -> None:  # noqa: ARG001, ANN401 #pylint: disable=unused-argument
+    def _collect(command: AntaCommand, *args: Any, **kwargs: Any) -> None:  # noqa: ARG001, ANN401
         command.output = COMMAND_OUTPUT
 
     kwargs = {"name": DEVICE_NAME, "hw_model": DEVICE_HW_MODEL}

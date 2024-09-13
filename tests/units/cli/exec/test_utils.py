@@ -84,7 +84,7 @@ async def test_clear_counters(
             device.established = inventory_state[name].get("established", device.is_online)
             device.hw_model = inventory_state[name].get("hw_model", "dummy")
 
-    async def collect(self: AntaDevice, command: AntaCommand, *args: Any, **kwargs: Any) -> None:  # noqa: ARG001, ANN401 #pylint: disable=unused-argument
+    async def collect(self: AntaDevice, command: AntaCommand, *args: Any, **kwargs: Any) -> None:  # noqa: ARG001, ANN401
         """Mock collect coroutine."""
         command.output = per_device_command_output.get(self.name, "")
 

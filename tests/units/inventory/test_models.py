@@ -234,7 +234,7 @@ class TestAntaInventoryHost:
     """Test anta.inventory.models.AntaInventoryHost."""
 
     @pytest.mark.parametrize(("name", "host", "port", "tags", "disable_cache"), INVENTORY_HOST_VALID_PARAMS)
-    def test_valid(self, name: str, host: str, port: int, tags: set[str], disable_cache: bool | None) -> None:  # pylint: disable=too-many-arguments
+    def test_valid(self, name: str, host: str, port: int, tags: set[str], disable_cache: bool | None) -> None:
         """Valid model parameters."""
         params: dict[str, Any] = {"name": name, "host": host, "port": port, "tags": tags}
         if disable_cache is not None:
@@ -251,7 +251,7 @@ class TestAntaInventoryHost:
             assert inventory_host.disable_cache == disable_cache
 
     @pytest.mark.parametrize(("name", "host", "port", "tags", "disable_cache"), INVENTORY_HOST_INVALID_PARAMS)
-    def test_invalid(self, name: str, host: str, port: int, tags: set[str], disable_cache: bool | None) -> None:  # pylint: disable=too-many-arguments
+    def test_invalid(self, name: str, host: str, port: int, tags: set[str], disable_cache: bool | None) -> None:
         """Invalid model parameters."""
         with pytest.raises(ValidationError):
             AntaInventoryHost.model_validate({"name": name, "host": host, "port": port, "tags": tags, "disable_cache": disable_cache})

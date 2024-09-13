@@ -82,7 +82,6 @@ def custom_division(numerator: float, denominator: float) -> int | float:
     return int(result) if result.is_integer() else result
 
 
-# pylint: disable=too-many-arguments
 def get_dict_superset(
     list_of_dicts: list[dict[Any, Any]],
     input_dict: dict[Any, Any],
@@ -142,7 +141,6 @@ def get_dict_superset(
     return default
 
 
-# pylint: disable=too-many-arguments
 def get_value(
     dictionary: dict[Any, Any],
     key: str,
@@ -199,7 +197,6 @@ def get_value(
     return value
 
 
-# pylint: disable=too-many-arguments
 def get_item(
     list_of_dicts: list[dict[Any, Any]],
     key: Any,

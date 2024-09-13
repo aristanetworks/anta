@@ -155,7 +155,7 @@ class TestAntaCatalog:
                 assert inputs == catalog.tests[test_id].inputs
 
     @pytest.mark.parametrize(("filename", "file_format", "tests"), INIT_CATALOG_PARAMS)
-    def test_from_list(  # pylint: disable=unused-argument
+    def test_from_list(
         self, filename: str, file_format: Literal["yaml", "json"], tests: list[tuple[type[AntaTest], AntaTest.Input | dict[str, Any] | None]]
     ) -> None:
         """Instantiate AntaCatalog from a list."""
@@ -233,7 +233,7 @@ class TestAntaCatalog:
         assert catalog.filename == Path("test")
 
     @pytest.mark.parametrize(("filename", "file_format", "tests"), INIT_CATALOG_PARAMS)
-    def test__tests_setter_success(  # pylint: disable=unused-argument
+    def test__tests_setter_success(
         self,
         filename: str,
         file_format: Literal["yaml", "json"],
