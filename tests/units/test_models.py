@@ -14,8 +14,8 @@ import pytest
 
 from anta.decorators import deprecated_test, skip_on_platforms
 from anta.models import AntaCommand, AntaTemplate, AntaTest
-from tests.lib.fixture import DEVICE_HW_MODEL
-from tests.lib.utils import generate_test_ids
+from tests.units.anta_tests.conftest import build_test_id
+from tests.units.conftest import DEVICE_HW_MODEL
 
 if TYPE_CHECKING:
     from anta.device import AntaDevice
@@ -581,14 +581,14 @@ class TestAntaTest:
             for result_msg, expected_msg in zip(test.result.messages, expected["messages"]):  # NOTE: zip(strict=True) has been added in Python 3.10
                 assert expected_msg in result_msg
 
-    @pytest.mark.parametrize("data", ANTATEST_DATA, ids=generate_test_ids(ANTATEST_DATA))
+    @pytest.mark.parametrize("data", ANTATEST_DATA, ids=build_test_id)
     def test__init__(self, device: AntaDevice, data: dict[str, Any]) -> None:
         """Test the AntaTest constructor."""
         expected = data["expected"]["__init__"]
         test = data["test"](device, inputs=data["inputs"])
         self._assert_test(test, expected)
 
-    @pytest.mark.parametrize("data", ANTATEST_DATA, ids=generate_test_ids(ANTATEST_DATA))
+    @pytest.mark.parametrize("data", ANTATEST_DATA, ids=build_test_id)
     def test_test(self, device: AntaDevice, data: dict[str, Any]) -> None:
         """Test the AntaTest.test method."""
         expected = data["expected"]["test"]
