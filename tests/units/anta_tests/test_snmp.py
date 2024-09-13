@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from anta.tests.snmp import VerifySnmpContact, VerifySnmpIPv4Acl, VerifySnmpIPv6Acl, VerifySnmpLocation, VerifySnmpStatus
+from anta.tests.snmp import VerifySnmpContact, VerifySnmpIPv4Acl, VerifySnmpIPv6Acl, VerifySnmpLocation, VerifySNMPPDUs, VerifySnmpStatus
 from tests.lib.anta import test  # noqa: F401; pylint: disable=W0611
 
 DATA: list[dict[str, Any]] = [
@@ -151,5 +151,67 @@ DATA: list[dict[str, Any]] = [
             "result": "failure",
             "messages": ["SNMP contact is not configured."],
         },
+    },
+    {
+        "name": "success",
+        "test": VerifySNMPPDUs,
+        "eos_data": [
+            {
+                "counters": {
+                    "inGetPdus": 3,
+                    "inGetNextPdus": 2,
+                    "inSetPdus": 3,
+                    "outGetResponsePdus": 3,
+                    "outTrapPdus": 9,
+                },
+            }
+        ],
+        "inputs": {},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-specific-pdus",
+        "test": VerifySNMPPDUs,
+        "eos_data": [
+            {
+                "counters": {
+                    "inGetPdus": 3,
+                    "inGetNextPdus": 0,
+                    "inSetPdus": 0,
+                    "outGetResponsePdus": 0,
+                    "outTrapPdus": 9,
+                },
+            }
+        ],
+        "inputs": {"pdus": ["inGetPdus", "outTrapPdus"]},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-counters-not-found",
+        "test": VerifySNMPPDUs,
+        "eos_data": [
+            {
+                "counters": {},
+            }
+        ],
+        "inputs": {},
+        "expected": {"result": "failure", "messages": ["SNMP counter details not found."]},
+    },
+    {
+        "name": "failure-incorrect-counters",
+        "test": VerifySNMPPDUs,
+        "eos_data": [
+            {
+                "counters": {
+                    "inGetPdus": 0,
+                    "inGetNextPdus": 2,
+                    "inSetPdus": 0,
+                    "outGetResponsePdus": 3,
+                    "outTrapPdus": 9,
+                },
+            }
+        ],
+        "inputs": {},
+        "expected": {"result": "failure", "messages": ["The following SNMP PDU(s) are not found or have zero PDU counter:\ninGetPdus, inSetPdus"]},
     },
 ]
