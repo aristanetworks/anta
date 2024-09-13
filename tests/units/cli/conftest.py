@@ -70,11 +70,7 @@ def click_runner(capsys: pytest.CaptureFixture[str], anta_env: dict[str, str]) -
     class AntaCliRunner(CliRunner):
         """Override CliRunner to inject specific variables for ANTA."""
 
-        def invoke(
-            self,
-            *args: Any,  # noqa: ANN401
-            **kwargs: Any,  # noqa: ANN401
-        ) -> Result:
+        def invoke(self, *args: Any, **kwargs: Any) -> Result:  # noqa: ANN401
             # Inject default env vars if not provided
             kwargs["env"] = anta_env | kwargs.get("env", {})
             # Deterministic terminal width
