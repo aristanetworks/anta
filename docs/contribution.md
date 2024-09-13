@@ -159,7 +159,6 @@ pre-commit install
 When running a commit or a pre-commit check:
 
 ``` bash
-❯ echo "import foobaz" > test.py && git add test.py
 ❯ pre-commit
 trim trailing whitespace.................................................Passed
 fix end of files.........................................................Passed
