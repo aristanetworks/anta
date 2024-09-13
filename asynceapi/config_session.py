@@ -52,8 +52,10 @@ class SessionConfig:
 
         Parameters
         ----------
-            device: The associated device instance
-            name: The name of the config session
+        device
+            The associated device instance
+        name
+            The name of the config session
         """
         self._device = device
         self._cli = device.cli
@@ -87,30 +89,35 @@ class SessionConfig:
 
         Returns
         -------
-            Dict object of native EOS eAPI response; see `status` method for
+        dict[str, Any]
+            Dictionary of native EOS eAPI response; see `status` method for
             details.
 
         Examples
         --------
-                {
-                    "maxSavedSessions": 1,
-                    "maxOpenSessions": 5,
-                    "sessions": {
-                        "jeremy1": {
-                            "instances": {},
-                            "state": "pending",
-                            "commitUser": "",
-                            "description": ""
-                        },
-                        "ansible_167510439362": {
-                            "instances": {},
-                            "state": "completed",
-                            "commitUser": "joe.bob",
-                            "description": "",
-                            "completedTime": 1675104396.4500246
-                        }
-                    }
+        Return example:
+
+        ```
+        {
+            "maxSavedSessions": 1,
+            "maxOpenSessions": 5,
+            "sessions": {
+                "jeremy1": {
+                    "instances": {},
+                    "state": "pending",
+                    "commitUser": "",
+                    "description": ""
+                },
+                "ansible_167510439362": {
+                    "instances": {},
+                    "state": "completed",
+                    "commitUser": "joe.bob",
+                    "description": "",
+                    "completedTime": 1675104396.4500246
                 }
+            }
+        }
+        ```
         """
         return await self._cli("show configuration sessions detail")  # type: ignore[return-value] # json outformat returns dict[str, Any]
 
@@ -126,41 +133,47 @@ class SessionConfig:
 
         Returns
         -------
-            Dict instance of the session status. If the session does not exist,
+        dict[str, Any] | None
+            Dictionary instance of the session status. If the session does not exist,
             then this method will return None.
-
-            The native eAPI results from JSON output, see example:
 
         Examples
         --------
-            all results:
-                {
-                    "maxSavedSessions": 1,
-                    "maxOpenSessions": 5,
-                    "sessions": {
-                        "jeremy1": {
-                            "instances": {},
-                            "state": "pending",
-                            "commitUser": "",
-                            "description": ""
-                        },
-                        "ansible_167510439362": {
-                            "instances": {},
-                            "state": "completed",
-                            "commitUser": "joe.bob",
-                            "description": "",
-                            "completedTime": 1675104396.4500246
-                        }
+        The return is the native eAPI results from JSON output:
+
+        ```
+        all results:
+            {
+                "maxSavedSessions": 1,
+                "maxOpenSessions": 5,
+                "sessions": {
+                    "jeremy1": {
+                        "instances": {},
+                        "state": "pending",
+                        "commitUser": "",
+                        "description": ""
+                    },
+                    "ansible_167510439362": {
+                        "instances": {},
+                        "state": "completed",
+                        "commitUser": "joe.bob",
+                        "description": "",
+                        "completedTime": 1675104396.4500246
                     }
                 }
+            }
+        ```
 
-            if the session name was 'jeremy1', then this method would return
-                {
-                    "instances": {},
-                    "state": "pending",
-                    "commitUser": "",
-                    "description": ""
-                }
+        If the session name was 'jeremy1', then this method would return:
+
+        ```
+        {
+            "instances": {},
+            "state": "pending",
+            "commitUser": "",
+            "description": ""
+        }
+        ```
         """
         res = await self.status_all()
         return res["sessions"].get(self.name)
@@ -174,15 +187,15 @@ class SessionConfig:
 
         Parameters
         ----------
-            content:
-                The text configuration CLI commands, as a list of strings, that
-                will be sent to the device.  If the parameter is a string, and not
-                a list, then split the string across linebreaks.  In either case
-                any empty lines will be discarded before they are send to the
-                device.
-            replace:
-                When True, the content will replace the existing configuration
-                on the device.
+        content
+            The text configuration CLI commands, as a list of strings, that
+            will be sent to the device.  If the parameter is a string, and not
+            a list, then split the string across linebreaks.  In either case
+            any empty lines will be discarded before they are send to the
+            device.
+        replace
+            When True, the content will replace the existing configuration
+            on the device.
         """
         # if given s string, we need to break it up into individual command
         # lines.
@@ -212,10 +225,13 @@ class SessionConfig:
             # configure session <name>
             # commit
 
-        If the timer is specified, format is "hh:mm:ss", then a commit timer is
-        started.  A second commit action must be made to confirm the config
-        session before the timer expires; otherwise the config-session is
-        automatically aborted.
+        Parameters
+        ----------
+        timer
+            If the timer is specified, format is "hh:mm:ss", then a commit timer is
+            started.  A second commit action must be made to confirm the config
+            session before the timer expires; otherwise the config-session is
+            automatically aborted.
         """
         command = f"{self._cli_config_session} commit"
 
@@ -242,6 +258,7 @@ class SessionConfig:
 
         Returns
         -------
+        str
             Return a string in diff-patch format.
 
         References
@@ -258,17 +275,18 @@ class SessionConfig:
 
         Parameters
         ----------
-            filename:
-                The name of the configuration file.  The caller is required to
-                specify the filesystem, for example, the
-                filename="flash:thisfile.cfg"
+        filename
+            The name of the configuration file.  The caller is required to
+            specify the filesystem, for example, the
+            filename="flash:thisfile.cfg"
 
-            replace:
-                When True, the contents of the file will completely replace the
-                session config for a load-replace behavior.
+        replace
+            When True, the contents of the file will completely replace the
+            session config for a load-replace behavior.
 
         Raises
         ------
+        RuntimeError
             If there are any issues with loading the configuration file then a
             RuntimeError is raised with the error messages content.
         """
