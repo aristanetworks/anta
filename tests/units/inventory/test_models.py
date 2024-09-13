@@ -5,86 +5,197 @@
 
 from __future__ import annotations
 
-import logging
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import pytest
 from pydantic import ValidationError
 
-from anta.device import AsyncEOSDevice
-from anta.inventory.models import AntaInventoryHost, AntaInventoryInput, AntaInventoryNetwork, AntaInventoryRange
-from tests.lib.utils import generate_test_ids_dict
+from anta.inventory.models import AntaInventoryHost, AntaInventoryNetwork, AntaInventoryRange
 
-INVENTORY_MODEL_HOST_VALID = [
-    {"name": "validIPv4", "input": "1.1.1.1", "expected_result": "valid"},
-    {
-        "name": "validIPv6",
-        "input": "fe80::cc62:a9ff:feef:932a",
-    },
+if TYPE_CHECKING:
+    from _pytest.mark.structures import ParameterSet
+
+INVENTORY_HOST_VALID_PARAMS: list[ParameterSet] = [
+    pytest.param(
+        None,
+        "1.1.1.1",
+        None,
+        None,
+        None,
+        id="IPv4",
+    ),
+    pytest.param(
+        None,
+        "fe80::cc62:a9ff:feef:932a",
+        None,
+        None,
+        None,
+        id="IPv6",
+    ),
+    pytest.param(
+        None,
+        "1.1.1.1",
+        666,
+        None,
+        None,
+        id="IPv4_with_port",
+    ),
+    pytest.param(
+        None,
+        "1.1.1.1",
+        None,
+        None,
+        True,
+        id="cache_enabled",
+    ),
+    pytest.param(
+        None,
+        "1.1.1.1",
+        None,
+        None,
+        False,
+        id="cache_disabled",
+    ),
 ]
 
-INVENTORY_MODEL_HOST_INVALID = [
-    {
-        "name": "invalidIPv4_with_netmask",
-        "input": "1.1.1.1/32",
-    },
-    {
-        "name": "invalidIPv6_with_netmask",
-        "input": "fe80::cc62:a9ff:feef:932a/128",
-    },
-    {"name": "invalidHost_format", "input": "@", "expected_result": "invalid"},
-    {
-        "name": "invalidIPv6_format",
-        "input": "fe80::cc62:a9ff:feef:",
-    },
+INVENTORY_HOST_INVALID_PARAMS: list[ParameterSet] = [
+    pytest.param(
+        None,
+        "1.1.1.1/32",
+        None,
+        None,
+        False,
+        id="IPv4_with_netmask",
+    ),
+    pytest.param(
+        None,
+        "1.1.1.1",
+        66666,
+        None,
+        False,
+        id="IPv4_with_wrong_port",
+    ),
+    pytest.param(
+        None,
+        "fe80::cc62:a9ff:feef:932a/128",
+        None,
+        None,
+        False,
+        id="IPv6_with_netmask",
+    ),
+    pytest.param(
+        None,
+        "fe80::cc62:a9ff:feef:",
+        None,
+        None,
+        False,
+        id="invalid_IPv6",
+    ),
+    pytest.param(
+        None,
+        "@",
+        None,
+        None,
+        False,
+        id="special_char",
+    ),
+    pytest.param(
+        None,
+        "1.1.1.1",
+        None,
+        None,
+        None,
+        id="cache_is_None",
+    ),
 ]
 
-INVENTORY_MODEL_HOST_CACHE = [
-    {"name": "Host cache default", "input": {"host": "1.1.1.1"}, "expected_result": False},
-    {"name": "Host cache enabled", "input": {"host": "1.1.1.1", "disable_cache": False}, "expected_result": False},
-    {"name": "Host cache disabled", "input": {"host": "1.1.1.1", "disable_cache": True}, "expected_result": True},
+INVENTORY_NETWORK_VALID_PARAMS: list[ParameterSet] = [
+    pytest.param(
+        "1.1.1.0/24",
+        None,
+        None,
+        id="IPv4_subnet",
+    ),
+    pytest.param(
+        "2001:db8::/32",
+        None,
+        None,
+        id="IPv6_subnet",
+    ),
+    pytest.param(
+        "1.1.1.0/24",
+        None,
+        False,
+        id="cache_enabled",
+    ),
+    pytest.param(
+        "1.1.1.0/24",
+        None,
+        True,
+        id="cache_disabled",
+    ),
 ]
 
-INVENTORY_MODEL_NETWORK_VALID = [
-    {"name": "ValidIPv4_Subnet", "input": "1.1.1.0/24", "expected_result": "valid"},
-    {"name": "ValidIPv6_Subnet", "input": "2001:db8::/32", "expected_result": "valid"},
+INVENTORY_NETWORK_INVALID_PARAMS: list[ParameterSet] = [
+    pytest.param(
+        "1.1.1.0/17",
+        None,
+        False,
+        id="IPv4_subnet",
+    ),
+    pytest.param(
+        "2001:db8::/16",
+        None,
+        False,
+        id="IPv6_subnet",
+    ),
+    pytest.param(
+        "1.1.1.0/24",
+        None,
+        None,
+        id="cache_is_None",
+    ),
 ]
 
-INVENTORY_MODEL_NETWORK_INVALID = [
-    {"name": "ValidIPv4_Subnet", "input": "1.1.1.0/17", "expected_result": "invalid"},
-    {
-        "name": "InvalidIPv6_Subnet",
-        "input": "2001:db8::/16",
-        "expected_result": "invalid",
-    },
+INVENTORY_RANGE_VALID_PARAMS: list[ParameterSet] = [
+    pytest.param(
+        "10.1.0.1",
+        "10.1.0.10",
+        None,
+        None,
+        id="IPv4_range",
+    ),
+    pytest.param(
+        "10.1.0.1",
+        "10.1.0.10",
+        None,
+        True,
+        id="cache_enabled",
+    ),
+    pytest.param(
+        "10.1.0.1",
+        "10.1.0.10",
+        None,
+        False,
+        id="cache_disabled",
+    ),
 ]
 
-INVENTORY_MODEL_NETWORK_CACHE = [
-    {"name": "Network cache default", "input": {"network": "1.1.1.0/24"}, "expected_result": False},
-    {"name": "Network cache enabled", "input": {"network": "1.1.1.0/24", "disable_cache": False}, "expected_result": False},
-    {"name": "Network cache disabled", "input": {"network": "1.1.1.0/24", "disable_cache": True}, "expected_result": True},
-]
-
-INVENTORY_MODEL_RANGE_VALID = [
-    {
-        "name": "ValidIPv4_Range",
-        "input": {"start": "10.1.0.1", "end": "10.1.0.10"},
-        "expected_result": "valid",
-    },
-]
-
-INVENTORY_MODEL_RANGE_INVALID = [
-    {
-        "name": "InvalidIPv4_Range_name",
-        "input": {"start": "toto", "end": "10.1.0.1"},
-        "expected_result": "invalid",
-    },
-]
-
-INVENTORY_MODEL_RANGE_CACHE = [
-    {"name": "Range cache default", "input": {"start": "1.1.1.1", "end": "1.1.1.10"}, "expected_result": False},
-    {"name": "Range cache enabled", "input": {"start": "1.1.1.1", "end": "1.1.1.10", "disable_cache": False}, "expected_result": False},
-    {"name": "Range cache disabled", "input": {"start": "1.1.1.1", "end": "1.1.1.10", "disable_cache": True}, "expected_result": True},
+INVENTORY_RANGE_INVALID_PARAMS: list[ParameterSet] = [
+    pytest.param(
+        "toto",
+        "10.1.0.10",
+        None,
+        False,
+        id="IPv4_range",
+    ),
+    pytest.param(
+        "10.1.0.1",
+        "10.1.0.10",
+        None,
+        None,
+        id="cache_is_None",
+    ),
 ]
 
 INVENTORY_MODEL_VALID = [
@@ -118,378 +229,80 @@ INVENTORY_MODEL_INVALID = [
     },
 ]
 
-INVENTORY_DEVICE_MODEL_VALID = [
-    {
-        "name": "Valid_Inventory",
-        "input": [{"host": "1.1.1.1", "username": "arista", "password": "arista123!"}, {"host": "1.1.1.2", "username": "arista", "password": "arista123!"}],
-        "expected_result": "valid",
-    },
-]
 
-INVENTORY_DEVICE_MODEL_INVALID = [
-    {
-        "name": "Invalid_Inventory",
-        "input": [{"host": "1.1.1.1", "password": "arista123!"}, {"host": "1.1.1.1", "username": "arista"}],
-        "expected_result": "invalid",
-    },
-]
+class TestAntaInventoryHost:
+    """Test anta.inventory.models.AntaInventoryHost."""
 
+    @pytest.mark.parametrize(("name", "host", "port", "tags", "disable_cache"), INVENTORY_HOST_VALID_PARAMS)
+    def test_valid(self, name: str, host: str, port: int, tags: set[str], disable_cache: bool | None) -> None:  # pylint: disable=too-many-arguments
+        """Valid model parameters."""
+        params: dict[str, Any] = {"name": name, "host": host, "port": port, "tags": tags}
+        if disable_cache is not None:
+            params = params | {"disable_cache": disable_cache}
+        inventory_host = AntaInventoryHost.model_validate(params)
+        assert host == str(inventory_host.host)
+        assert port == inventory_host.port
+        assert name == inventory_host.name
+        assert tags == inventory_host.tags
+        if disable_cache is None:
+            # Check cache default value
+            assert inventory_host.disable_cache is False
+        else:
+            assert inventory_host.disable_cache == disable_cache
 
-class TestInventoryUnitModels:
-    """Test components of AntaInventoryInput model."""
-
-    @pytest.mark.parametrize("test_definition", INVENTORY_MODEL_HOST_VALID, ids=generate_test_ids_dict)
-    def test_anta_inventory_host_valid(self, test_definition: dict[str, Any]) -> None:
-        """Test host input model.
-
-        Test structure:
-        ---------------
-
-        {
-            'name': 'ValidIPv4_Host',
-            'input': '1.1.1.1',
-            'expected_result': 'valid'
-         }
-
-        """
-        try:
-            host_inventory = AntaInventoryHost(host=test_definition["input"])
-        except ValidationError as exc:
-            logging.warning("Error: %s", str(exc))
-            raise AssertionError from exc
-        assert test_definition["input"] == str(host_inventory.host)
-
-    @pytest.mark.parametrize("test_definition", INVENTORY_MODEL_HOST_INVALID, ids=generate_test_ids_dict)
-    def test_anta_inventory_host_invalid(self, test_definition: dict[str, Any]) -> None:
-        """Test host input model.
-
-        Test structure:
-        ---------------
-
-        {
-            'name': 'ValidIPv4_Host',
-            'input': '1.1.1.1/32',
-            'expected_result': 'invalid'
-         }
-
-        """
+    @pytest.mark.parametrize(("name", "host", "port", "tags", "disable_cache"), INVENTORY_HOST_INVALID_PARAMS)
+    def test_invalid(self, name: str, host: str, port: int, tags: set[str], disable_cache: bool | None) -> None:  # pylint: disable=too-many-arguments
+        """Invalid model parameters."""
         with pytest.raises(ValidationError):
-            AntaInventoryHost(host=test_definition["input"])
+            AntaInventoryHost.model_validate({"name": name, "host": host, "port": port, "tags": tags, "disable_cache": disable_cache})
 
-    @pytest.mark.parametrize("test_definition", INVENTORY_MODEL_HOST_CACHE, ids=generate_test_ids_dict)
-    def test_anta_inventory_host_cache(self, test_definition: dict[str, Any]) -> None:
-        """Test host disable_cache.
 
-        Test structure:
-        ---------------
+class TestAntaInventoryNetwork:
+    """Test anta.inventory.models.AntaInventoryNetwork."""
 
-        {
-            'name': 'Cache',
-            'input': {"host": '1.1.1.1', "disable_cache": True},
-            'expected_result': True
-         }
-
-        """
-        if "disable_cache" in test_definition["input"]:
-            host_inventory = AntaInventoryHost(host=test_definition["input"]["host"], disable_cache=test_definition["input"]["disable_cache"])
+    @pytest.mark.parametrize(("network", "tags", "disable_cache"), INVENTORY_NETWORK_VALID_PARAMS)
+    def test_valid(self, network: str, tags: set[str], disable_cache: bool | None) -> None:
+        """Valid model parameters."""
+        params: dict[str, Any] = {"network": network, "tags": tags}
+        if disable_cache is not None:
+            params = params | {"disable_cache": disable_cache}
+        inventory_network = AntaInventoryNetwork.model_validate(params)
+        assert network == str(inventory_network.network)
+        assert tags == inventory_network.tags
+        if disable_cache is None:
+            # Check cache default value
+            assert inventory_network.disable_cache is False
         else:
-            host_inventory = AntaInventoryHost(host=test_definition["input"]["host"])
-        assert test_definition["expected_result"] == host_inventory.disable_cache
+            assert inventory_network.disable_cache == disable_cache
 
-    @pytest.mark.parametrize("test_definition", INVENTORY_MODEL_NETWORK_VALID, ids=generate_test_ids_dict)
-    def test_anta_inventory_network_valid(self, test_definition: dict[str, Any]) -> None:
-        """Test Network input model with valid data.
+    @pytest.mark.parametrize(("network", "tags", "disable_cache"), INVENTORY_NETWORK_INVALID_PARAMS)
+    def test_invalid(self, network: str, tags: set[str], disable_cache: bool | None) -> None:
+        """Invalid model parameters."""
+        with pytest.raises(ValidationError):
+            AntaInventoryNetwork.model_validate({"network": network, "tags": tags, "disable_cache": disable_cache})
 
-        Test structure:
-        ---------------
 
-        {
-            'name': 'ValidIPv4_Subnet',
-            'input': '1.1.1.0/24',
-            'expected_result': 'valid'
-         }
+class TestAntaInventoryRange:
+    """Test anta.inventory.models.AntaInventoryRange."""
 
-        """
-        try:
-            network_inventory = AntaInventoryNetwork(network=test_definition["input"])
-        except ValidationError as exc:
-            logging.warning("Error: %s", str(exc))
-            raise AssertionError from exc
-        assert test_definition["input"] == str(network_inventory.network)
-
-    @pytest.mark.parametrize("test_definition", INVENTORY_MODEL_NETWORK_INVALID, ids=generate_test_ids_dict)
-    def test_anta_inventory_network_invalid(self, test_definition: dict[str, Any]) -> None:
-        """Test Network input model with invalid data.
-
-        Test structure:
-        ---------------
-
-        {
-            'name': 'ValidIPv4_Subnet',
-            'input': '1.1.1.0/16',
-            'expected_result': 'invalid'
-         }
-
-        """
-        try:
-            AntaInventoryNetwork(network=test_definition["input"])
-        except ValidationError as exc:
-            logging.warning("Error: %s", str(exc))
+    @pytest.mark.parametrize(("start", "end", "tags", "disable_cache"), INVENTORY_RANGE_VALID_PARAMS)
+    def test_valid(self, start: str, end: str, tags: set[str], disable_cache: bool | None) -> None:
+        """Valid model parameters."""
+        params: dict[str, Any] = {"start": start, "end": end, "tags": tags}
+        if disable_cache is not None:
+            params = params | {"disable_cache": disable_cache}
+        inventory_range = AntaInventoryRange.model_validate(params)
+        assert start == str(inventory_range.start)
+        assert end == str(inventory_range.end)
+        assert tags == inventory_range.tags
+        if disable_cache is None:
+            # Check cache default value
+            assert inventory_range.disable_cache is False
         else:
-            raise AssertionError
+            assert inventory_range.disable_cache == disable_cache
 
-    @pytest.mark.parametrize("test_definition", INVENTORY_MODEL_NETWORK_CACHE, ids=generate_test_ids_dict)
-    def test_anta_inventory_network_cache(self, test_definition: dict[str, Any]) -> None:
-        """Test network disable_cache.
-
-        Test structure:
-        ---------------
-
-        {
-            'name': 'Cache',
-            'input': {"network": '1.1.1.1/24', "disable_cache": True},
-            'expected_result': True
-         }
-
-        """
-        if "disable_cache" in test_definition["input"]:
-            network_inventory = AntaInventoryNetwork(network=test_definition["input"]["network"], disable_cache=test_definition["input"]["disable_cache"])
-        else:
-            network_inventory = AntaInventoryNetwork(network=test_definition["input"]["network"])
-        assert test_definition["expected_result"] == network_inventory.disable_cache
-
-    @pytest.mark.parametrize("test_definition", INVENTORY_MODEL_RANGE_VALID, ids=generate_test_ids_dict)
-    def test_anta_inventory_range_valid(self, test_definition: dict[str, Any]) -> None:
-        """Test range input model.
-
-        Test structure:
-        ---------------
-
-        {
-            'name': 'ValidIPv4_Range',
-            'input': {'start':'10.1.0.1', 'end':'10.1.0.10'},
-            'expected_result': 'valid'
-         }
-
-        """
-        try:
-            range_inventory = AntaInventoryRange(
-                start=test_definition["input"]["start"],
-                end=test_definition["input"]["end"],
-            )
-        except ValidationError as exc:
-            logging.warning("Error: %s", str(exc))
-            raise AssertionError from exc
-        assert test_definition["input"]["start"] == str(range_inventory.start)
-        assert test_definition["input"]["end"] == str(range_inventory.end)
-
-    @pytest.mark.parametrize("test_definition", INVENTORY_MODEL_RANGE_INVALID, ids=generate_test_ids_dict)
-    def test_anta_inventory_range_invalid(self, test_definition: dict[str, Any]) -> None:
-        """Test range input model.
-
-        Test structure:
-        ---------------
-
-        {
-            'name': 'ValidIPv4_Range',
-            'input': {'start':'10.1.0.1', 'end':'10.1.0.10/32'},
-            'expected_result': 'invalid'
-         }
-
-        """
-        try:
-            AntaInventoryRange(
-                start=test_definition["input"]["start"],
-                end=test_definition["input"]["end"],
-            )
-        except ValidationError as exc:
-            logging.warning("Error: %s", str(exc))
-        else:
-            raise AssertionError
-
-    @pytest.mark.parametrize("test_definition", INVENTORY_MODEL_RANGE_CACHE, ids=generate_test_ids_dict)
-    def test_anta_inventory_range_cache(self, test_definition: dict[str, Any]) -> None:
-        """Test range disable_cache.
-
-        Test structure:
-        ---------------
-
-        {
-            'name': 'Cache',
-            'input': {"start": '1.1.1.1', "end": "1.1.1.10", "disable_cache": True},
-            'expected_result': True
-         }
-
-        """
-        if "disable_cache" in test_definition["input"]:
-            range_inventory = AntaInventoryRange(
-                start=test_definition["input"]["start"],
-                end=test_definition["input"]["end"],
-                disable_cache=test_definition["input"]["disable_cache"],
-            )
-        else:
-            range_inventory = AntaInventoryRange(start=test_definition["input"]["start"], end=test_definition["input"]["end"])
-        assert test_definition["expected_result"] == range_inventory.disable_cache
-
-
-class TestAntaInventoryInputModel:
-    """Unit test of AntaInventoryInput model."""
-
-    def test_inventory_input_structure(self) -> None:
-        """Test inventory keys are those expected."""
-        inventory = AntaInventoryInput()
-        logging.info("Inventory keys are: %s", str(inventory.model_dump().keys()))
-        assert all(elem in inventory.model_dump() for elem in ["hosts", "networks", "ranges"])
-
-    @pytest.mark.parametrize("inventory_def", INVENTORY_MODEL_VALID, ids=generate_test_ids_dict)
-    def test_anta_inventory_intput_valid(self, inventory_def: dict[str, Any]) -> None:
-        """Test loading valid data to inventory class.
-
-        Test structure:
-        ---------------
-
-        {
-            "name": "Valid_Host_Only",
-            "input": {
-                "hosts": [
-                    {
-                        "host": "192.168.0.17"
-                    },
-                    {
-                        "host": "192.168.0.2"
-                    }
-                ]
-            },
-            "expected_result": "valid"
-        }
-
-        """
-        try:
-            inventory = AntaInventoryInput(**inventory_def["input"])
-        except ValidationError as exc:
-            logging.warning("Error: %s", str(exc))
-            raise AssertionError from exc
-        logging.info("Checking if all root keys are correctly lodaded")
-        assert all(elem in inventory.model_dump() for elem in inventory_def["input"])
-
-    @pytest.mark.parametrize("inventory_def", INVENTORY_MODEL_INVALID, ids=generate_test_ids_dict)
-    def test_anta_inventory_intput_invalid(self, inventory_def: dict[str, Any]) -> None:
-        """Test loading invalid data to inventory class.
-
-        Test structure:
-        ---------------
-
-        {
-            "name": "Valid_Host_Only",
-            "input": {
-                "hosts": [
-                    {
-                        "host": "192.168.0.17"
-                    },
-                    {
-                        "host": "192.168.0.2/32"
-                    }
-                ]
-            },
-            "expected_result": "invalid"
-        }
-
-        """
-        try:
-            if "hosts" in inventory_def["input"]:
-                logging.info(
-                    "Loading %s into AntaInventoryInput hosts section",
-                    str(inventory_def["input"]["hosts"]),
-                )
-                AntaInventoryInput(hosts=inventory_def["input"]["hosts"])
-            if "networks" in inventory_def["input"]:
-                logging.info(
-                    "Loading %s into AntaInventoryInput networks section",
-                    str(inventory_def["input"]["networks"]),
-                )
-                AntaInventoryInput(networks=inventory_def["input"]["networks"])
-            if "ranges" in inventory_def["input"]:
-                logging.info(
-                    "Loading %s into AntaInventoryInput ranges section",
-                    str(inventory_def["input"]["ranges"]),
-                )
-                AntaInventoryInput(ranges=inventory_def["input"]["ranges"])
-        except ValidationError as exc:
-            logging.warning("Error: %s", str(exc))
-        else:
-            raise AssertionError
-
-
-class TestInventoryDeviceModel:
-    """Unit test of InventoryDevice model."""
-
-    @pytest.mark.parametrize("test_definition", INVENTORY_DEVICE_MODEL_VALID, ids=generate_test_ids_dict)
-    def test_inventory_device_valid(self, test_definition: dict[str, Any]) -> None:
-        """Test loading valid data to InventoryDevice class.
-
-         Test structure:
-         ---------------
-
-        {
-             "name": "Valid_Inventory",
-             "input": [
-                 {
-                     'host': '1.1.1.1',
-                     'username': 'arista',
-                     'password': 'arista123!'
-                 },
-                 {
-                     'host': '1.1.1.1',
-                     'username': 'arista',
-                     'password': 'arista123!'
-                 }
-             ],
-             "expected_result": "valid"
-         }
-
-        """
-        if test_definition["expected_result"] == "invalid":
-            pytest.skip("Not concerned by the test")
-
-        try:
-            for entity in test_definition["input"]:
-                AsyncEOSDevice(**entity)
-        except TypeError as exc:
-            logging.warning("Error: %s", str(exc))
-            raise AssertionError from exc
-
-    @pytest.mark.parametrize("test_definition", INVENTORY_DEVICE_MODEL_INVALID, ids=generate_test_ids_dict)
-    def test_inventory_device_invalid(self, test_definition: dict[str, Any]) -> None:
-        """Test loading invalid data to InventoryDevice class.
-
-         Test structure:
-         ---------------
-
-        {
-             "name": "Valid_Inventory",
-             "input": [
-                 {
-                     'host': '1.1.1.1',
-                     'username': 'arista',
-                     'password': 'arista123!'
-                 },
-                 {
-                     'host': '1.1.1.1',
-                     'username': 'arista',
-                     'password': 'arista123!'
-                 }
-             ],
-             "expected_result": "valid"
-         }
-
-        """
-        if test_definition["expected_result"] == "valid":
-            pytest.skip("Not concerned by the test")
-
-        try:
-            for entity in test_definition["input"]:
-                AsyncEOSDevice(**entity)
-        except TypeError as exc:
-            logging.info("Error: %s", str(exc))
-        else:
-            raise AssertionError
+    @pytest.mark.parametrize(("start", "end", "tags", "disable_cache"), INVENTORY_RANGE_INVALID_PARAMS)
+    def test_invalid(self, start: str, end: str, tags: set[str], disable_cache: bool | None) -> None:
+        """Invalid model parameters."""
+        with pytest.raises(ValidationError):
+            AntaInventoryRange.model_validate({"start": start, "end": end, "tags": tags, "disable_cache": disable_cache})
