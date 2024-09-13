@@ -16,186 +16,44 @@ if TYPE_CHECKING:
     from _pytest.mark.structures import ParameterSet
 
 INVENTORY_HOST_VALID_PARAMS: list[ParameterSet] = [
-    pytest.param(
-        None,
-        "1.1.1.1",
-        None,
-        None,
-        None,
-        id="IPv4",
-    ),
-    pytest.param(
-        None,
-        "fe80::cc62:a9ff:feef:932a",
-        None,
-        None,
-        None,
-        id="IPv6",
-    ),
-    pytest.param(
-        None,
-        "1.1.1.1",
-        666,
-        None,
-        None,
-        id="IPv4_with_port",
-    ),
-    pytest.param(
-        None,
-        "1.1.1.1",
-        None,
-        None,
-        True,
-        id="cache_enabled",
-    ),
-    pytest.param(
-        None,
-        "1.1.1.1",
-        None,
-        None,
-        False,
-        id="cache_disabled",
-    ),
+    pytest.param(None, "1.1.1.1", None, None, None, id="IPv4"),
+    pytest.param(None, "fe80::cc62:a9ff:feef:932a", None, None, None, id="IPv6"),
+    pytest.param(None, "1.1.1.1", 666, None, None, id="IPv4_with_port"),
+    pytest.param(None, "1.1.1.1", None, None, True, id="cache_enabled"),
+    pytest.param(None, "1.1.1.1", None, None, False, id="cache_disabled"),
 ]
 
 INVENTORY_HOST_INVALID_PARAMS: list[ParameterSet] = [
-    pytest.param(
-        None,
-        "1.1.1.1/32",
-        None,
-        None,
-        False,
-        id="IPv4_with_netmask",
-    ),
-    pytest.param(
-        None,
-        "1.1.1.1",
-        66666,
-        None,
-        False,
-        id="IPv4_with_wrong_port",
-    ),
-    pytest.param(
-        None,
-        "fe80::cc62:a9ff:feef:932a/128",
-        None,
-        None,
-        False,
-        id="IPv6_with_netmask",
-    ),
-    pytest.param(
-        None,
-        "fe80::cc62:a9ff:feef:",
-        None,
-        None,
-        False,
-        id="invalid_IPv6",
-    ),
-    pytest.param(
-        None,
-        "@",
-        None,
-        None,
-        False,
-        id="special_char",
-    ),
-    pytest.param(
-        None,
-        "1.1.1.1",
-        None,
-        None,
-        None,
-        id="cache_is_None",
-    ),
+    pytest.param(None, "1.1.1.1/32", None, None, False, id="IPv4_with_netmask"),
+    pytest.param(None, "1.1.1.1", 66666, None, False, id="IPv4_with_wrong_port"),
+    pytest.param(None, "fe80::cc62:a9ff:feef:932a/128", None, None, False, id="IPv6_with_netmask"),
+    pytest.param(None, "fe80::cc62:a9ff:feef:", None, None, False, id="invalid_IPv6"),
+    pytest.param(None, "@", None, None, False, id="special_char"),
+    pytest.param(None, "1.1.1.1", None, None, None, id="cache_is_None"),
 ]
 
 INVENTORY_NETWORK_VALID_PARAMS: list[ParameterSet] = [
-    pytest.param(
-        "1.1.1.0/24",
-        None,
-        None,
-        id="IPv4_subnet",
-    ),
-    pytest.param(
-        "2001:db8::/32",
-        None,
-        None,
-        id="IPv6_subnet",
-    ),
-    pytest.param(
-        "1.1.1.0/24",
-        None,
-        False,
-        id="cache_enabled",
-    ),
-    pytest.param(
-        "1.1.1.0/24",
-        None,
-        True,
-        id="cache_disabled",
-    ),
+    pytest.param("1.1.1.0/24", None, None, id="IPv4_subnet"),
+    pytest.param("2001:db8::/32", None, None, id="IPv6_subnet"),
+    pytest.param("1.1.1.0/24", None, False, id="cache_enabled"),
+    pytest.param("1.1.1.0/24", None, True, id="cache_disabled"),
 ]
 
 INVENTORY_NETWORK_INVALID_PARAMS: list[ParameterSet] = [
-    pytest.param(
-        "1.1.1.0/17",
-        None,
-        False,
-        id="IPv4_subnet",
-    ),
-    pytest.param(
-        "2001:db8::/16",
-        None,
-        False,
-        id="IPv6_subnet",
-    ),
-    pytest.param(
-        "1.1.1.0/24",
-        None,
-        None,
-        id="cache_is_None",
-    ),
+    pytest.param("1.1.1.0/17", None, False, id="IPv4_subnet"),
+    pytest.param("2001:db8::/16", None, False, id="IPv6_subnet"),
+    pytest.param("1.1.1.0/24", None, None, id="cache_is_None"),
 ]
 
 INVENTORY_RANGE_VALID_PARAMS: list[ParameterSet] = [
-    pytest.param(
-        "10.1.0.1",
-        "10.1.0.10",
-        None,
-        None,
-        id="IPv4_range",
-    ),
-    pytest.param(
-        "10.1.0.1",
-        "10.1.0.10",
-        None,
-        True,
-        id="cache_enabled",
-    ),
-    pytest.param(
-        "10.1.0.1",
-        "10.1.0.10",
-        None,
-        False,
-        id="cache_disabled",
-    ),
+    pytest.param("10.1.0.1", "10.1.0.10", None, None, id="IPv4_range"),
+    pytest.param("10.1.0.1", "10.1.0.10", None, True, id="cache_enabled"),
+    pytest.param("10.1.0.1", "10.1.0.10", None, False, id="cache_disabled"),
 ]
 
 INVENTORY_RANGE_INVALID_PARAMS: list[ParameterSet] = [
-    pytest.param(
-        "toto",
-        "10.1.0.10",
-        None,
-        False,
-        id="IPv4_range",
-    ),
-    pytest.param(
-        "10.1.0.1",
-        "10.1.0.10",
-        None,
-        None,
-        id="cache_is_None",
-    ),
+    pytest.param("toto", "10.1.0.10", None, False, id="IPv4_range"),
+    pytest.param("10.1.0.1", "10.1.0.10", None, None, id="cache_is_None"),
 ]
 
 INVENTORY_MODEL_VALID = [
