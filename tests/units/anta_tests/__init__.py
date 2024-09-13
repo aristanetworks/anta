@@ -21,7 +21,7 @@ def test(device: AntaDevice, data: dict[str, Any]) -> None:
     # Run the test() method
     asyncio.run(test_instance.test())
     # Assert expected result
-    assert test_instance.result.result == data["expected"]["result"], f"Expected '{data["expected"]["result"]}' result, got '{test_instance.result.result}'"
+    assert test_instance.result.result == data["expected"]["result"], f"Expected '{data['expected']['result']}' result, got '{test_instance.result.result}'"
     if "messages" in data["expected"]:
         # We expect messages in test result
         assert len(test_instance.result.messages) == len(data["expected"]["messages"])
