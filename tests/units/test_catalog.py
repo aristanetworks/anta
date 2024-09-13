@@ -140,7 +140,7 @@ TESTS_SETTER_FAIL_PARAMS: list[ParameterSet] = [
 
 
 class TestAntaCatalog:
-    """Test for anta.catalog.AntaCatalog."""
+    """Tests for anta.catalog.AntaCatalog."""
 
     @pytest.mark.parametrize(("filename", "file_format", "tests"), INIT_CATALOG_PARAMS)
     def test_parse(self, filename: str, file_format: Literal["yaml", "json"], tests: list[tuple[type[AntaTest], AntaTest.Input | dict[str, Any] | None]]) -> None:

@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING, Callable
 import pytest
 
 from anta.result_manager.models import AntaTestStatus
-from tests.lib.fixture import DEVICE_NAME
+from tests.units.conftest import DEVICE_NAME
 
 if TYPE_CHECKING:
     from _pytest.mark.structures import ParameterSet

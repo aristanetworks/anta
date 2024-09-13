@@ -18,7 +18,7 @@ from rich import print as rprint
 from anta.device import AntaDevice, AsyncEOSDevice
 from anta.models import AntaCommand
 from asynceapi import EapiCommandError
-from tests.lib.fixture import COMMAND_OUTPUT
+from tests.units.conftest import COMMAND_OUTPUT
 
 if TYPE_CHECKING:
     from _pytest.mark.structures import ParameterSet
