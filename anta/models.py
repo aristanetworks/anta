@@ -480,7 +480,7 @@ class AntaTest(ABC):
                     except NotImplementedError as e:
                         self.result.is_error(message=e.args[0])
                         return
-                    except Exception as e:  # pylint: disable=broad-exception-caught
+                    except Exception as e:  # noqa: BLE001
                         # render() is user-defined code.
                         # We need to catch everything if we want the AntaTest object
                         # to live until the reporting
@@ -558,7 +558,7 @@ class AntaTest(ABC):
         try:
             if self.blocked is False:
                 await self.device.collect_commands(self.instance_commands, collection_id=self.name)
-        except Exception as e:  # pylint: disable=broad-exception-caught
+        except Exception as e:  # noqa: BLE001
             # device._collect() is user-defined code.
             # We need to catch everything if we want the AntaTest object
             # to live until the reporting
@@ -630,7 +630,7 @@ class AntaTest(ABC):
 
             try:
                 function(self, **kwargs)
-            except Exception as e:  # pylint: disable=broad-exception-caught
+            except Exception as e:  # noqa: BLE001
                 # test() is user-defined code.
                 # We need to catch everything if we want the AntaTest object
                 # to live until the reporting

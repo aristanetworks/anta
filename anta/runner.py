@@ -187,7 +187,7 @@ def get_coroutines(selected_tests: defaultdict[AntaDevice, set[AntaTestDefinitio
             try:
                 test_instance = test.test(device=device, inputs=test.inputs)
                 coros.append(test_instance.test())
-            except Exception as e:  # noqa: PERF203, pylint: disable=broad-exception-caught
+            except Exception as e:  # noqa: PERF203, BLE001
                 # An AntaTest instance is potentially user-defined code.
                 # We need to catch everything and exit gracefully with an error message.
                 message = "\n".join(

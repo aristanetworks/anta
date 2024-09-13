@@ -345,7 +345,7 @@ class AsyncEOSDevice(AntaDevice):
         """
         return (self._session.host, self._session.port)
 
-    async def _collect(self, command: AntaCommand, *, collection_id: str | None = None) -> None:  # noqa: C901  function is too complex - because of many required except blocks #pylint: disable=line-too-long
+    async def _collect(self, command: AntaCommand, *, collection_id: str | None = None) -> None:  # noqa: C901  function is too complex - because of many required except blocks
         """Collect device command output from EOS using aio-eapi.
 
         Supports outformat `json` and `text` as output structure.

@@ -513,11 +513,9 @@ class TestAntaTest:
 
     def test__init_subclass__name(self) -> None:
         """Test __init_subclass__."""
-        # Pylint detects all the classes in here as unused which is on purpose
-        # pylint: disable=unused-variable
         with pytest.raises(NotImplementedError) as exec_info:
 
-            class WrongTestNoName(AntaTest):
+            class _WrongTestNoName(AntaTest):
                 """ANTA test that is missing a name."""
 
                 description = "ANTA test that is missing a name"
@@ -528,11 +526,11 @@ class TestAntaTest:
                 def test(self) -> None:
                     self.result.is_success()
 
-        assert exec_info.value.args[0] == "Class tests.units.test_models.WrongTestNoName is missing required class attribute name"
+        assert exec_info.value.args[0] == "Class tests.units.test_models._WrongTestNoName is missing required class attribute name"
 
         with pytest.raises(NotImplementedError) as exec_info:
 
-            class WrongTestNoDescription(AntaTest):
+            class _WrongTestNoDescription(AntaTest):
                 """ANTA test that is missing a description."""
 
                 name = "WrongTestNoDescription"
@@ -543,11 +541,11 @@ class TestAntaTest:
                 def test(self) -> None:
                     self.result.is_success()
 
-        assert exec_info.value.args[0] == "Class tests.units.test_models.WrongTestNoDescription is missing required class attribute description"
+        assert exec_info.value.args[0] == "Class tests.units.test_models._WrongTestNoDescription is missing required class attribute description"
 
         with pytest.raises(NotImplementedError) as exec_info:
 
-            class WrongTestNoCategories(AntaTest):
+            class _WrongTestNoCategories(AntaTest):
                 """ANTA test that is missing categories."""
 
                 name = "WrongTestNoCategories"
@@ -558,11 +556,11 @@ class TestAntaTest:
                 def test(self) -> None:
                     self.result.is_success()
 
-        assert exec_info.value.args[0] == "Class tests.units.test_models.WrongTestNoCategories is missing required class attribute categories"
+        assert exec_info.value.args[0] == "Class tests.units.test_models._WrongTestNoCategories is missing required class attribute categories"
 
         with pytest.raises(NotImplementedError) as exec_info:
 
-            class WrongTestNoCommands(AntaTest):
+            class _WrongTestNoCommands(AntaTest):
                 """ANTA test that is missing commands."""
 
                 name = "WrongTestNoCommands"
@@ -573,7 +571,7 @@ class TestAntaTest:
                 def test(self) -> None:
                     self.result.is_success()
 
-        assert exec_info.value.args[0] == "Class tests.units.test_models.WrongTestNoCommands is missing required class attribute commands"
+        assert exec_info.value.args[0] == "Class tests.units.test_models._WrongTestNoCommands is missing required class attribute commands"
 
     def _assert_test(self, test: AntaTest, expected: dict[str, Any]) -> None:
         assert test.result.result == expected["result"]
@@ -627,7 +625,6 @@ class TestAntaComamnd:
     """Test for anta.models.AntaCommand."""
 
     # ruff: noqa: B018
-    # pylint: disable=pointless-statement
 
     def test_empty_output_access(self) -> None:
         """Test for both json and text ofmt."""

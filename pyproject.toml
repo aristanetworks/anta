@@ -383,7 +383,6 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.In
 ]
 "tests/units/*" = [
   "ARG002",  # Sometimes we need to declare unused arguments when a parameter is not used but declared in @pytest.mark.parametrize
-  "BLE001",  # Do not catch blind exception: `Exception` - already disabling this in pylint
   "FBT001",  # Boolean-typed positional argument in function definition
   "PLR0913", # Too many arguments to function call
   "PLR2004", # Magic value used in comparison, consider replacing {value} with a constant variable
@@ -398,7 +397,6 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.In
   "F401",  # In this module, we import tests.units.anta_tests.test without using it to auto-generate tests
 ]
 "anta/*" = [
-  "BLE001",  # Do not catch blind exception: `Exception` - caught by other linter
   "TRY400",  # Use `logging.exception` instead of `logging.error` - we know what we are doing
 ]
 "anta/cli/exec/utils.py" = [
@@ -450,7 +448,13 @@ disable = [ # Any rule listed here can be disabled: https://github.com/astral-sh
     "unused-argument",
     "keyword-arg-before-vararg",
     "protected-access",
-    "too-many-arguments"
+    "too-many-arguments",
+    "wrong-import-position",
+    "pointless-statement",
+    "broad-exception-caught",
+    "line-too-long",
+    "unused-variable",
+    "redefined-builtin"
 ]
 max-statements=61
 max-returns=8

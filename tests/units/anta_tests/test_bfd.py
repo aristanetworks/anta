@@ -8,8 +8,6 @@ from __future__ import annotations
 
 from typing import Any
 
-# pylint: disable=C0413
-# because of the patch above
 from anta.tests.bfd import VerifyBFDPeersHealth, VerifyBFDPeersIntervals, VerifyBFDPeersRegProtocols, VerifyBFDSpecificPeers
 
 DATA: list[dict[str, Any]] = [
