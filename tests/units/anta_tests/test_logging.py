@@ -17,7 +17,6 @@ from anta.tests.logging import (
     VerifyLoggingSourceIntf,
     VerifyLoggingTimestamp,
 )
-from tests.units.anta_tests import test  # noqa: F401; pylint: disable=W0611
 
 DATA: list[dict[str, Any]] = [
     {

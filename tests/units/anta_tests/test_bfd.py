@@ -11,7 +11,6 @@ from typing import Any
 # pylint: disable=C0413
 # because of the patch above
 from anta.tests.bfd import VerifyBFDPeersHealth, VerifyBFDPeersIntervals, VerifyBFDPeersRegProtocols, VerifyBFDSpecificPeers
-from tests.units.anta_tests import test  # noqa: F401; pylint: disable=W0611
 
 DATA: list[dict[str, Any]] = [
     {

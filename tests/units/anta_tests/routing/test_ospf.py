@@ -8,7 +8,6 @@ from __future__ import annotations
 from typing import Any
 
 from anta.tests.routing.ospf import VerifyOSPFMaxLSA, VerifyOSPFNeighborCount, VerifyOSPFNeighborState
-from tests.units.anta_tests import test  # noqa: F401; pylint: disable=W0611
 
 DATA: list[dict[str, Any]] = [
     {

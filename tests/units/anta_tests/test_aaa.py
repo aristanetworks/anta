@@ -16,7 +16,6 @@ from anta.tests.aaa import (
     VerifyTacacsServers,
     VerifyTacacsSourceIntf,
 )
-from tests.units.anta_tests import test  # noqa: F401; pylint: disable=unused-import
 
 DATA: list[dict[str, Any]] = [
     {

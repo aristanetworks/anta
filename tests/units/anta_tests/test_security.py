@@ -24,7 +24,6 @@ from anta.tests.security import (
     VerifySSHStatus,
     VerifyTelnetStatus,
 )
-from tests.units.anta_tests import test  # noqa: F401; pylint: disable=W0611
 
 DATA: list[dict[str, Any]] = [
     {
