@@ -9,6 +9,7 @@ from __future__ import annotations
 from typing import Any
 
 from anta.tests.bfd import VerifyBFDPeersHealth, VerifyBFDPeersIntervals, VerifyBFDPeersRegProtocols, VerifyBFDSpecificPeers
+from tests.units.anta_tests import test
 
 DATA: list[dict[str, Any]] = [
     {

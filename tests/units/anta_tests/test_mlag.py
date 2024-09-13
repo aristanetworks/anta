@@ -8,6 +8,7 @@ from __future__ import annotations
 from typing import Any
 
 from anta.tests.mlag import VerifyMlagConfigSanity, VerifyMlagDualPrimary, VerifyMlagInterfaces, VerifyMlagPrimaryPriority, VerifyMlagReloadDelay, VerifyMlagStatus
+from tests.units.anta_tests import test
 
 DATA: list[dict[str, Any]] = [
     {

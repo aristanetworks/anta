@@ -20,6 +20,7 @@ from anta.tests.routing.isis import (
     VerifyISISSegmentRoutingTunnels,
     _get_interface_data,
 )
+from tests.units.anta_tests import test
 
 DATA: list[dict[str, Any]] = [
     {

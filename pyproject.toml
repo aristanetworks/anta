@@ -393,7 +393,7 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.In
 "tests/units/anta_tests/test_interfaces.py" = [
   "S104",  # False positive for 0.0.0.0 bindings in test inputs
 ]
-"tests/units/anta_tests" = [
+"tests/units/anta_tests/*" = [
   "F401",  # In this module, we import tests.units.anta_tests.test without using it to auto-generate tests
 ]
 "anta/*" = [

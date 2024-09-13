@@ -8,6 +8,7 @@ from __future__ import annotations
 from typing import Any
 
 from anta.tests.field_notices import VerifyFieldNotice44Resolution, VerifyFieldNotice72Resolution
+from tests.units.anta_tests import test
 
 DATA: list[dict[str, Any]] = [
     {

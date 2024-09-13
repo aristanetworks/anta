@@ -8,6 +8,7 @@ from __future__ import annotations
 from typing import Any
 
 from anta.tests.snmp import VerifySnmpContact, VerifySnmpIPv4Acl, VerifySnmpIPv6Acl, VerifySnmpLocation, VerifySnmpStatus
+from tests.units.anta_tests import test
 
 DATA: list[dict[str, Any]] = [
     {

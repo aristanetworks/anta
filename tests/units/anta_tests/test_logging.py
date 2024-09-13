@@ -17,6 +17,7 @@ from anta.tests.logging import (
     VerifyLoggingSourceIntf,
     VerifyLoggingTimestamp,
 )
+from tests.units.anta_tests import test
 
 DATA: list[dict[str, Any]] = [
     {

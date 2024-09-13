@@ -16,6 +16,7 @@ from anta.tests.aaa import (
     VerifyTacacsServers,
     VerifyTacacsSourceIntf,
 )
+from tests.units.anta_tests import test
 
 DATA: list[dict[str, Any]] = [
     {

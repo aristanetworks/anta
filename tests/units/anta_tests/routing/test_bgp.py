@@ -23,6 +23,7 @@ from anta.tests.routing.bgp import (
     VerifyBGPTimers,
     VerifyEVPNType2Route,
 )
+from tests.units.anta_tests import test
 
 DATA: list[dict[str, Any]] = [
     {
