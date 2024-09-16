@@ -53,9 +53,9 @@ class SessionConfig:
         Parameters
         ----------
         device
-            The associated device instance
+            The associated device instance.
         name
-            The name of the config session
+            The name of the config session.
         """
         self._device = device
         self._cli = device.cli
