@@ -106,7 +106,7 @@ class AntaDevice(ABC):
 
     @property
     def cache_statistics(self) -> dict[str, Any] | None:
-        """Returns the device cache statistics for logging purposes."""
+        """Return the device cache statistics for logging purposes."""
         # Need to ignore pylint no-member as Cache is a proxy class and pylint is not smart enough
         # https://github.com/pylint-dev/pylint/issues/7258
         if self.cache is not None:
@@ -125,6 +125,17 @@ class AntaDevice(ABC):
         yield "is_online", self.is_online
         yield "established", self.established
         yield "disable_cache", self.cache is None
+
+    def __repr__(self) -> str:
+        """Return a printable representation of an AntaDevice."""
+        return (
+            f"AntaDevice({self.name!r}, "
+            f"tags={self.tags!r}, "
+            f"hw_model={self.hw_model!r}, "
+            f"is_online={self.is_online!r}, "
+            f"established={self.established!r}, "
+            f"disable_cache={self.cache is None!r})"
+        )
 
     @abstractmethod
     async def _collect(self, command: AntaCommand, *, collection_id: str | None = None) -> None:
@@ -336,6 +347,22 @@ class AsyncEOSDevice(AntaDevice):
             _ssh_opts["kwargs"]["password"] = removed_pw
             yield ("_session", vars(self._session))
             yield ("_ssh_opts", _ssh_opts)
+
+    def __repr__(self) -> str:
+        """Return a printable representation of an AsyncEOSDevice."""
+        return (
+            f"AsyncEOSDevice({self.name!r}, "
+            f"tags={self.tags!r}, "
+            f"hw_model={self.hw_model!r}, "
+            f"is_online={self.is_online!r}, "
+            f"established={self.established!r}, "
+            f"disable_cache={self.cache is None!r}, "
+            f"host={self._session.host!r}, "
+            f"eapi_port={self._session.port!r}, "
+            f"username={self._ssh_opts.username!r}, "
+            f"enable={self.enable!r}, "
+            f"insecure={self._ssh_opts.known_hosts is None!r})"
+        )
 
     @property
     def _keys(self) -> tuple[Any, ...]:

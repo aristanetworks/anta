@@ -24,53 +24,58 @@ if TYPE_CHECKING:
 
 # TODO: complete test cases
 @pytest.mark.parametrize(
-    ("inventory_state", "per_device_command_output", "tags"),
+    ("inventory", "inventory_state", "per_device_command_output", "tags"),
     [
         pytest.param(
+            {"count": 3},
             {
-                "dummy": {"is_online": False},
-                "dummy2": {"is_online": False},
-                "dummy3": {"is_online": False},
+                "device-0": {"is_online": False},
+                "device-1": {"is_online": False},
+                "device-2": {"is_online": False},
             },
             {},
             None,
             id="no_connected_device",
         ),
         pytest.param(
+            {"count": 3},
             {
-                "dummy": {"is_online": True, "hw_model": "cEOSLab"},
-                "dummy2": {"is_online": True, "hw_model": "vEOS-lab"},
-                "dummy3": {"is_online": False},
+                "device-0": {"is_online": True, "hw_model": "cEOSLab"},
+                "device-1": {"is_online": True, "hw_model": "vEOS-lab"},
+                "device-2": {"is_online": False},
             },
             {},
             None,
             id="cEOSLab and vEOS-lab devices",
         ),
         pytest.param(
+            {"count": 3},
             {
-                "dummy": {"is_online": True},
-                "dummy2": {"is_online": True},
-                "dummy3": {"is_online": False},
+                "device-0": {"is_online": True},
+                "device-1": {"is_online": True},
+                "device-2": {"is_online": False},
             },
-            {"dummy": None},  # None means the command failed to collect
+            {"device-0": None},  # None means the command failed to collect
             None,
             id="device with error",
         ),
         pytest.param(
+            {"count": 3},
             {
-                "dummy": {"is_online": True},
-                "dummy2": {"is_online": True},
-                "dummy3": {"is_online": True},
+                "device-0": {"is_online": True},
+                "device-1": {"is_online": True},
+                "device-2": {"is_online": True},
             },
             {},
             ["spine"],
             id="tags",
         ),
     ],
+    indirect=["inventory"],
 )
 async def test_clear_counters(
     caplog: pytest.LogCaptureFixture,
-    test_inventory: AntaInventory,
+    inventory: AntaInventory,
     inventory_state: dict[str, Any],
     per_device_command_output: dict[str, Any],
     tags: set[str] | None,
@@ -79,7 +84,7 @@ async def test_clear_counters(
 
     async def mock_connect_inventory() -> None:
         """Mock connect_inventory coroutine."""
-        for name, device in test_inventory.items():
+        for name, device in inventory.items():
             device.is_online = inventory_state[name].get("is_online", True)
             device.established = inventory_state[name].get("established", device.is_online)
             device.hw_model = inventory_state[name].get("hw_model", "dummy")
@@ -96,10 +101,10 @@ async def test_clear_counters(
             side_effect=mock_connect_inventory,
         ) as mocked_connect_inventory,
     ):
-        await clear_counters(test_inventory, tags=tags)
+        await clear_counters(inventory, tags=tags)
 
     mocked_connect_inventory.assert_awaited_once()
-    devices_established = test_inventory.get_inventory(established_only=True, tags=tags).devices
+    devices_established = inventory.get_inventory(established_only=True, tags=tags).devices
     if devices_established:
         # Building the list of calls
         calls = []

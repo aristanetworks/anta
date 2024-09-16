@@ -46,7 +46,7 @@ INIT_CATALOG_PARAMS: list[ParameterSet] = [
                 VerifyUptime,
                 VerifyUptime.Input(
                     minimum=10,
-                    filters=VerifyUptime.Input.Filters(tags={"fabric"}),
+                    filters=VerifyUptime.Input.Filters(tags={"spine"}),
                 ),
             ),
             (
@@ -56,15 +56,15 @@ INIT_CATALOG_PARAMS: list[ParameterSet] = [
                     filters=VerifyUptime.Input.Filters(tags={"leaf"}),
                 ),
             ),
-            (VerifyReloadCause, {"filters": {"tags": ["leaf", "spine"]}}),
+            (VerifyReloadCause, {"filters": {"tags": ["spine", "leaf"]}}),
             (VerifyCoredump, VerifyCoredump.Input()),
             (VerifyAgentLogs, AntaTest.Input()),
-            (VerifyCPUUtilization, VerifyCPUUtilization.Input(filters=VerifyCPUUtilization.Input.Filters(tags={"leaf"}))),
-            (VerifyMemoryUtilization, VerifyMemoryUtilization.Input(filters=VerifyMemoryUtilization.Input.Filters(tags={"testdevice"}))),
+            (VerifyCPUUtilization, None),
+            (VerifyMemoryUtilization, None),
             (VerifyFileSystemUtilization, None),
             (VerifyNTP, {}),
-            (VerifyMlagStatus, None),
-            (VerifyL3MTU, {"mtu": 1500, "filters": {"tags": ["demo"]}}),
+            (VerifyMlagStatus, {"filters": {"tags": ["leaf"]}}),
+            (VerifyL3MTU, {"mtu": 1500, "filters": {"tags": ["spine"]}}),
         ],
         id="test_catalog_with_tags",
     ),
@@ -260,7 +260,7 @@ class TestAntaCatalog:
         """Test AntaCatalog.build_indexes()."""
         catalog: AntaCatalog = AntaCatalog.parse(DATA_DIR / "test_catalog_with_tags.yml")
         catalog.build_indexes()
-        assert len(catalog.tests_without_tags) == 5
+        assert len(catalog.tests_without_tags) == 6
         assert "leaf" in catalog.tag_to_tests
         assert len(catalog.tag_to_tests["leaf"]) == 3
         all_unique_tests = catalog.tests_without_tags

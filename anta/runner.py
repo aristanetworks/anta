@@ -147,14 +147,15 @@ def prepare_tests(
     # Create AntaTestRunner tuples from the tags
     for device in inventory.devices:
         if tags:
-            # If there are CLI tags, only execute tests with matching tags
-            device_to_tests[device].update(catalog.get_tests_by_tags(tags))
+            if not any(tag in device.tags for tag in tags):
+                # The device does not have any selected tag, skipping
+                continue
         else:
             # If there is no CLI tags, execute all tests that do not have any tags
             device_to_tests[device].update(catalog.tag_to_tests[None])
 
-            # Then add the tests with matching tags from device tags
-            device_to_tests[device].update(catalog.get_tests_by_tags(device.tags))
+        # Add the tests with matching tags from device tags
+        device_to_tests[device].update(catalog.get_tests_by_tags(device.tags))
 
         catalog.final_tests_count += len(device_to_tests[device])
 

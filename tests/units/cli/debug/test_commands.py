@@ -19,12 +19,12 @@ if TYPE_CHECKING:
 @pytest.mark.parametrize(
     ("command", "ofmt", "version", "revision", "device", "failed"),
     [
-        pytest.param("show version", "json", None, None, "dummy", False, id="json command"),
-        pytest.param("show version", "text", None, None, "dummy", False, id="text command"),
-        pytest.param("show version", None, "latest", None, "dummy", False, id="version-latest"),
-        pytest.param("show version", None, "1", None, "dummy", False, id="version"),
-        pytest.param("show version", None, None, 3, "dummy", False, id="revision"),
-        pytest.param("undefined", None, None, None, "dummy", True, id="command fails"),
+        pytest.param("show version", "json", None, None, "leaf1", False, id="json command"),
+        pytest.param("show version", "text", None, None, "leaf1", False, id="text command"),
+        pytest.param("show version", None, "latest", None, "leaf1", False, id="version-latest"),
+        pytest.param("show version", None, "1", None, "leaf1", False, id="version"),
+        pytest.param("show version", None, None, 3, "leaf1", False, id="revision"),
+        pytest.param("undefined", None, None, None, "leaf1", True, id="command fails"),
         pytest.param("undefined", None, None, None, "doesnotexist", True, id="Device does not exist"),
     ],
 )

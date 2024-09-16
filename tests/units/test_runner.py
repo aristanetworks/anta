@@ -43,19 +43,26 @@ async def test_empty_inventory(caplog: pytest.LogCaptureFixture) -> None:
     assert "The inventory is empty, exiting" in caplog.records[1].message
 
 
-async def test_no_selected_device(caplog: pytest.LogCaptureFixture, test_inventory: AntaInventory) -> None:
+@pytest.mark.parametrize(
+    ("inventory", "tags", "devices"),
+    [
+        pytest.param({"count": 1, "reachable": False}, None, None, id="not-reachable"),
+        pytest.param({"filename": "test_inventory_with_tags.yml", "reachable": False}, {"leaf"}, None, id="not-reachable-with-tag"),
+        pytest.param({"count": 1, "reachable": True}, {"invalid-tag"}, None, id="reachable-with-invalid-tag"),
+        pytest.param({"filename": "test_inventory_with_tags.yml", "reachable": True}, None, {"invalid-device"}, id="reachable-with-invalid-device"),
+        pytest.param({"filename": "test_inventory_with_tags.yml", "reachable": False}, None, {"leaf1"}, id="not-reachable-with-device"),
+        pytest.param({"filename": "test_inventory_with_tags.yml", "reachable": False}, {"leaf"}, {"leaf1"}, id="not-reachable-with-device-and-tag"),
+        pytest.param({"filename": "test_inventory_with_tags.yml", "reachable": False}, {"invalid"}, {"invalid-device"}, id="reachable-with-invalid-tag-and-device"),
+    ],
+    indirect=["inventory"],
+)
+async def test_no_selected_device(caplog: pytest.LogCaptureFixture, inventory: AntaInventory, tags: set[str], devices: set[str]) -> None:
     """Test that when the list of established devices is empty a log is raised."""
-    caplog.set_level(logging.INFO)
+    caplog.set_level(logging.WARNING)
     manager = ResultManager()
-    await main(manager, test_inventory, FAKE_CATALOG)
-
-    assert "No reachable device was found." in [record.message for record in caplog.records]
-
-    #  Reset logs and run with tags
-    caplog.clear()
-    await main(manager, test_inventory, FAKE_CATALOG, tags={"toto"})
-
-    assert "No reachable device matching the tags {'toto'} was found." in [record.message for record in caplog.records]
+    await main(manager, inventory, FAKE_CATALOG, tags=tags, devices=devices)
+    msg = f'No reachable device {f"matching the tags {tags} " if tags else ""}was found.{f" Selected devices: {devices} " if devices is not None else ""}'
+    assert msg in caplog.messages
 
 
 def test_adjust_rlimit_nofile_valid_env(caplog: pytest.LogCaptureFixture) -> None:
@@ -123,46 +130,31 @@ def test_adjust_rlimit_nofile_invalid_env(caplog: pytest.LogCaptureFixture) -> N
 
 
 @pytest.mark.parametrize(
-    ("tags", "expected_tests_count", "expected_devices_count"),
+    ("inventory", "tags", "tests", "devices_count", "tests_count"),
     [
-        (None, 22, 3),
-        ({"leaf"}, 9, 3),
-        ({"invalid_tag"}, 0, 0),
+        pytest.param({"filename": "test_inventory_with_tags.yml"}, None, None, 3, 27, id="all-tests"),
+        pytest.param({"filename": "test_inventory_with_tags.yml"}, {"leaf"}, None, 2, 6, id="1-tag"),
+        pytest.param({"filename": "test_inventory_with_tags.yml"}, {"leaf", "spine"}, None, 3, 9, id="2-tags"),
+        pytest.param({"filename": "test_inventory_with_tags.yml"}, None, {"VerifyMlagStatus", "VerifyUptime"}, 3, 5, id="filtered-tests"),
+        pytest.param({"filename": "test_inventory_with_tags.yml"}, {"leaf"}, {"VerifyMlagStatus", "VerifyUptime"}, 2, 4, id="1-tag-filtered-tests"),
+        pytest.param({"filename": "test_inventory_with_tags.yml"}, {"invalid"}, None, 0, 0, id="invalid-tag"),
     ],
-    ids=["no_tags", "leaf_tag", "invalid_tag"],
+    indirect=["inventory"],
 )
 async def test_prepare_tests(
-    caplog: pytest.LogCaptureFixture,
-    test_inventory: AntaInventory,
-    tags: set[str] | None,
-    expected_tests_count: int,
-    expected_devices_count: int,
+    caplog: pytest.LogCaptureFixture, inventory: AntaInventory, tags: set[str], tests: set[str], devices_count: int, tests_count: int
 ) -> None:
-    """Test the runner prepare_tests function."""
-    caplog.set_level(logging.INFO)
-
-    catalog: AntaCatalog = AntaCatalog.parse(str(DATA_DIR / "test_catalog_with_tags.yml"))
-    selected_tests = prepare_tests(inventory=test_inventory, catalog=catalog, tags=tags, tests=None)
-
-    if selected_tests is None:
-        assert expected_tests_count == 0
-        expected_log = f"There are no tests matching the tags {tags} to run in the current test catalog and device inventory, please verify your inputs."
-        assert expected_log in caplog.text
-    else:
-        assert len(selected_tests) == expected_devices_count
-        assert sum(len(tests) for tests in selected_tests.values()) == expected_tests_count
-
-
-async def test_prepare_tests_with_specific_tests(caplog: pytest.LogCaptureFixture, test_inventory: AntaInventory) -> None:
     """Test the runner prepare_tests function with specific tests."""
-    caplog.set_level(logging.INFO)
-
+    caplog.set_level(logging.WARNING)
     catalog: AntaCatalog = AntaCatalog.parse(str(DATA_DIR / "test_catalog_with_tags.yml"))
-    selected_tests = prepare_tests(inventory=test_inventory, catalog=catalog, tags=None, tests={"VerifyMlagStatus", "VerifyUptime"})
-
+    selected_tests = prepare_tests(inventory=inventory, catalog=catalog, tags=tags, tests=tests)
+    if selected_tests is None:
+        msg = f"There are no tests matching the tags {tags} to run in the current test catalog and device inventory, please verify your inputs."
+        assert msg in caplog.messages
+        return
     assert selected_tests is not None
-    assert len(selected_tests) == 3
-    assert sum(len(tests) for tests in selected_tests.values()) == 5
+    assert len(selected_tests) == devices_count
+    assert sum(len(tests) for tests in selected_tests.values()) == tests_count
 
 
 async def test_dry_run(caplog: pytest.LogCaptureFixture, inventory: AntaInventory) -> None:

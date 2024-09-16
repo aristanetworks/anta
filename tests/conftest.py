@@ -5,6 +5,7 @@
 
 import asyncio
 from collections.abc import Iterator
+from pathlib import Path
 from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
@@ -13,30 +14,43 @@ import respx
 from anta.device import AsyncEOSDevice
 from anta.inventory import AntaInventory
 
+DATA_DIR: Path = Path(__file__).parent.resolve() / "data"
 
-@pytest.fixture(params=[{"count": 1, "disable_cache": True}])
+
+@pytest.fixture(params=[{"count": 1}])
 def inventory(request: pytest.FixtureRequest) -> Iterator[AntaInventory]:
     """Generate an ANTA inventory."""
-    inv = AntaInventory()
-    for i in range(request.param["count"]):
-        inv.add_device(
-            AsyncEOSDevice(
-                host=f"device-{i}.anta.arista.com",
-                username="admin",
-                password="admin",  # noqa: S106
-                name=f"device-{i}",
-                disable_cache=request.param["disable_cache"],
+    user = "admin"
+    password = "password"  # noqa: S105
+    disable_cache = request.param.get("disable_cache", True)
+    reachable = request.param.get("reachable", True)
+    if "filename" in request.param:
+        inv = AntaInventory.parse(DATA_DIR / request.param["filename"], username=user, password=password, disable_cache=disable_cache)
+    else:
+        inv = AntaInventory()
+        for i in range(request.param["count"]):
+            inv.add_device(
+                AsyncEOSDevice(
+                    host=f"device-{i}.anta.arista.com",
+                    username=user,
+                    password=password,
+                    name=f"device-{i}",
+                    disable_cache=disable_cache,
+                )
             )
-        )
-    # This context manager makes all devices reachable
-    with patch("asyncio.open_connection", AsyncMock(spec=asyncio.open_connection, return_value=(Mock(), Mock()))), respx.mock:
-        respx.post(path="/command-api", headers={"Content-Type": "application/json-rpc"}, json__params__cmds__0__cmd="show version").respond(
-            json={
-                "result": [
-                    {
-                        "modelName": "pytest",
-                    }
-                ],
-            }
-        )
-        yield inv
+    if reachable:
+        # This context manager makes all devices reachable
+        with patch("asyncio.open_connection", AsyncMock(spec=asyncio.open_connection, return_value=(Mock(), Mock()))), respx.mock:
+            respx.post(path="/command-api", headers={"Content-Type": "application/json-rpc"}, json__params__cmds__0__cmd="show version").respond(
+                json={
+                    "result": [
+                        {
+                            "modelName": "pytest",
+                        }
+                    ],
+                }
+            )
+            yield inv
+    else:
+        with patch("asyncio.open_connection", AsyncMock(spec=asyncio.open_connection, side_effect=TimeoutError)):
+            yield inv

@@ -13,7 +13,6 @@ import pytest
 import yaml
 
 from anta.device import AntaDevice, AsyncEOSDevice
-from anta.inventory import AntaInventory
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -25,13 +24,13 @@ DEVICE_NAME = "pytest"
 COMMAND_OUTPUT = "retrieved"
 
 
-@pytest.fixture
-def anta_env() -> dict[str, str]:
+@pytest.fixture(name="anta_env")
+def anta_env_fixture() -> dict[str, str]:
     """Return an ANTA environment for testing."""
     return {
         "ANTA_USERNAME": "anta",
         "ANTA_PASSWORD": "formica",
-        "ANTA_INVENTORY": str(Path(__file__).parent.parent / "data" / "test_inventory.yml"),
+        "ANTA_INVENTORY": str(Path(__file__).parent.parent / "data" / "test_inventory_with_tags.yml"),
         "ANTA_CATALOG": str(Path(__file__).parent.parent / "data" / "test_catalog.yml"),
     }
 
@@ -54,19 +53,6 @@ def device(request: pytest.FixtureRequest) -> Iterator[AntaDevice]:
         dev = AntaDevice(**kwargs)  # type: ignore[abstract, arg-type]
         dev.hw_model = hw_model
         yield dev
-
-
-@pytest.fixture
-def test_inventory(anta_env: dict[str, str]) -> AntaInventory:  # pylint: disable=redefined-outer-name
-    """Return the test_inventory."""
-    assert anta_env["ANTA_INVENTORY"]
-    assert anta_env["ANTA_USERNAME"]
-    assert anta_env["ANTA_PASSWORD"] is not None
-    return AntaInventory.parse(
-        filename=anta_env["ANTA_INVENTORY"],
-        username=anta_env["ANTA_USERNAME"],
-        password=anta_env["ANTA_PASSWORD"],
-    )
 
 
 @pytest.fixture
