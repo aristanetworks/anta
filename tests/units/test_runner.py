@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import logging
 import resource
+import sys
 from pathlib import Path
 from unittest.mock import patch
 
@@ -178,8 +179,13 @@ async def test_cannot_create_test(caplog: pytest.LogCaptureFixture, inventory: A
     manager = ResultManager()
     catalog = AntaCatalog.from_list([(FakeTestWithMissingTest, None)])  # type: ignore[type-abstract]
     await main(manager, inventory, catalog)
-    assert (
+    msg = (
         "There is an error when creating test tests.units.test_models.FakeTestWithMissingTest.\nIf this is not a custom test implementation: "
         "Please reach out to the maintainer team or open an issue on Github: https://github.com/aristanetworks/anta.\nTypeError: "
-        "Can't instantiate abstract class FakeTestWithMissingTest without an implementation for abstract method 'test'" in caplog.messages
     )
+    msg += (
+        "Can't instantiate abstract class FakeTestWithMissingTest without an implementation for abstract method 'test'"
+        if sys.version_info >= (3, 12)
+        else "Can't instantiate abstract class FakeTestWithMissingTest with abstract method test"
+    )
+    assert msg in caplog.messages

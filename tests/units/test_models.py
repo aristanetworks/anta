@@ -8,6 +8,7 @@
 from __future__ import annotations
 
 import asyncio
+import sys
 from typing import TYPE_CHECKING, Any, ClassVar
 
 import pytest
@@ -586,7 +587,12 @@ class TestAntaTest:
         """Test that an error is raised if AntaTest is not implemented."""
         with pytest.raises(TypeError) as exec_info:
             FakeTestWithMissingTest()  # type: ignore[abstract,call-arg]
-        assert exec_info.value.args[0] == "Can't instantiate abstract class FakeTestWithMissingTest without an implementation for abstract method 'test'"
+        msg = (
+            "Can't instantiate abstract class FakeTestWithMissingTest without an implementation for abstract method 'test'"
+            if sys.version_info >= (3, 12)
+            else "Can't instantiate abstract class FakeTestWithMissingTest with abstract method test"
+        )
+        assert exec_info.value.args[0] == msg
 
     def _assert_test(self, test: AntaTest, expected: dict[str, Any]) -> None:
         assert test.result.result == expected["result"]
