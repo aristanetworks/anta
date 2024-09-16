@@ -12,54 +12,38 @@ from unittest.mock import patch
 
 import pytest
 
-from anta import logger
 from anta.catalog import AntaCatalog
 from anta.inventory import AntaInventory
 from anta.result_manager import ResultManager
 from anta.runner import adjust_rlimit_nofile, main, prepare_tests
 
-from .test_models import FakeTest
+from .test_models import FakeTest, FakeTestWithMissingTest
 
 DATA_DIR: Path = Path(__file__).parent.parent.resolve() / "data"
 FAKE_CATALOG: AntaCatalog = AntaCatalog.from_list([(FakeTest, None)])
 
 
-async def test_runner_empty_tests(caplog: pytest.LogCaptureFixture, test_inventory: AntaInventory) -> None:
-    """Test that when the list of tests is empty, a log is raised.
-
-    caplog is the pytest fixture to capture logs
-    test_inventory is a fixture that gives a default inventory for tests
-    """
-    logger.setup_logging(logger.Log.INFO)
+async def test_empty_tests(caplog: pytest.LogCaptureFixture, inventory: AntaInventory) -> None:
+    """Test that when the list of tests is empty, a log is raised."""
     caplog.set_level(logging.INFO)
     manager = ResultManager()
-    await main(manager, test_inventory, AntaCatalog())
+    await main(manager, inventory, AntaCatalog())
 
     assert len(caplog.record_tuples) == 1
     assert "The list of tests is empty, exiting" in caplog.records[0].message
 
 
-async def test_runner_empty_inventory(caplog: pytest.LogCaptureFixture) -> None:
-    """Test that when the Inventory is empty, a log is raised.
-
-    caplog is the pytest fixture to capture logs
-    """
-    logger.setup_logging(logger.Log.INFO)
+async def test_empty_inventory(caplog: pytest.LogCaptureFixture) -> None:
+    """Test that when the Inventory is empty, a log is raised."""
     caplog.set_level(logging.INFO)
     manager = ResultManager()
-    inventory = AntaInventory()
-    await main(manager, inventory, FAKE_CATALOG)
+    await main(manager, AntaInventory(), FAKE_CATALOG)
     assert len(caplog.record_tuples) == 3
     assert "The inventory is empty, exiting" in caplog.records[1].message
 
 
-async def test_runner_no_selected_device(caplog: pytest.LogCaptureFixture, test_inventory: AntaInventory) -> None:
-    """Test that when the list of established device.
-
-    caplog is the pytest fixture to capture logs
-    test_inventory is a fixture that gives a default inventory for tests
-    """
-    logger.setup_logging(logger.Log.INFO)
+async def test_no_selected_device(caplog: pytest.LogCaptureFixture, test_inventory: AntaInventory) -> None:
+    """Test that when the list of established device."""
     caplog.set_level(logging.INFO)
     manager = ResultManager()
     await main(manager, test_inventory, FAKE_CATALOG)
@@ -154,7 +138,6 @@ async def test_prepare_tests(
     expected_devices_count: int,
 ) -> None:
     """Test the runner prepare_tests function."""
-    logger.setup_logging(logger.Log.INFO)
     caplog.set_level(logging.INFO)
 
     catalog: AntaCatalog = AntaCatalog.parse(str(DATA_DIR / "test_catalog_with_tags.yml"))
@@ -171,7 +154,6 @@ async def test_prepare_tests(
 
 async def test_prepare_tests_with_specific_tests(caplog: pytest.LogCaptureFixture, test_inventory: AntaInventory) -> None:
     """Test the runner prepare_tests function with specific tests."""
-    logger.setup_logging(logger.Log.INFO)
     caplog.set_level(logging.INFO)
 
     catalog: AntaCatalog = AntaCatalog.parse(str(DATA_DIR / "test_catalog_with_tags.yml"))
@@ -182,19 +164,22 @@ async def test_prepare_tests_with_specific_tests(caplog: pytest.LogCaptureFixtur
     assert sum(len(tests) for tests in selected_tests.values()) == 5
 
 
-async def test_runner_dry_run(caplog: pytest.LogCaptureFixture, test_inventory: AntaInventory) -> None:
-    """Test that when dry_run is True, no tests are run.
-
-    caplog is the pytest fixture to capture logs
-    test_inventory is a fixture that gives a default inventory for tests
-    """
-    logger.setup_logging(logger.Log.INFO)
+async def test_dry_run(caplog: pytest.LogCaptureFixture, inventory: AntaInventory) -> None:
+    """Test that when dry_run is True, no tests are run."""
     caplog.set_level(logging.INFO)
     manager = ResultManager()
-    catalog_path = Path(__file__).parent.parent / "data" / "test_catalog.yml"
-    catalog = AntaCatalog.parse(catalog_path)
+    await main(manager, inventory, FAKE_CATALOG, dry_run=True)
+    assert "Dry-run mode, exiting before running the tests." in caplog.records[-1].message
 
-    await main(manager, test_inventory, catalog, dry_run=True)
 
-    # Check that the last log contains Dry-run
-    assert "Dry-run" in caplog.records[-1].message
+async def test_cannot_create_test(caplog: pytest.LogCaptureFixture, inventory: AntaInventory) -> None:
+    """Test that when an Exception is raised during test instantiation, it is caught and a log is raised."""
+    caplog.set_level(logging.CRITICAL)
+    manager = ResultManager()
+    catalog = AntaCatalog.from_list([(FakeTestWithMissingTest, None)])  # type: ignore[type-abstract]
+    await main(manager, inventory, catalog)
+    assert (
+        "There is an error when creating test tests.units.test_models.FakeTestWithMissingTest.\nIf this is not a custom test implementation: "
+        "Please reach out to the maintainer team or open an issue on Github: https://github.com/aristanetworks/anta.\nTypeError: "
+        "Can't instantiate abstract class FakeTestWithMissingTest without an implementation for abstract method 'test'" in caplog.messages
+    )

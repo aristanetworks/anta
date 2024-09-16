@@ -192,7 +192,7 @@ def get_coroutines(selected_tests: defaultdict[AntaDevice, set[AntaTestDefinitio
                 # We need to catch everything and exit gracefully with an error message.
                 message = "\n".join(
                     [
-                        f"There is an error when creating test {test.test.module}.{test.test.__name__}.",
+                        f"There is an error when creating test {test.test.__module__}.{test.test.__name__}.",
                         f"If this is not a custom test implementation: {GITHUB_SUGGESTION}",
                     ],
                 )

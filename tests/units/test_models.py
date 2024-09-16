@@ -302,6 +302,15 @@ class DeprecatedTestWithNewTest(AntaTest):
         self.result.is_success()
 
 
+class FakeTestWithMissingTest(AntaTest):
+    """ANTA test with missing test() method implementation."""
+
+    name = "FakeTestWithMissingTest"
+    description = "ANTA test with missing test() method implementation"
+    categories: ClassVar[list[str]] = []
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = []
+
+
 ANTATEST_DATA: list[dict[str, Any]] = [
     {
         "name": "no input",
@@ -511,7 +520,7 @@ ANTATEST_DATA: list[dict[str, Any]] = [
 class TestAntaTest:
     """Test for anta.models.AntaTest."""
 
-    def test__init_subclass__name(self) -> None:
+    def test__init_subclass__(self) -> None:
         """Test __init_subclass__."""
         with pytest.raises(NotImplementedError) as exec_info:
 
@@ -572,6 +581,12 @@ class TestAntaTest:
                     self.result.is_success()
 
         assert exec_info.value.args[0] == "Class tests.units.test_models._WrongTestNoCommands is missing required class attribute commands"
+
+    def test_abc(self) -> None:
+        """Test that an error is raised if AntaTest is not implemented."""
+        with pytest.raises(TypeError) as exec_info:
+            FakeTestWithMissingTest()  # type: ignore[abstract,call-arg]
+        assert exec_info.value.args[0] == "Can't instantiate abstract class FakeTestWithMissingTest without an implementation for abstract method 'test'"
 
     def _assert_test(self, test: AntaTest, expected: dict[str, Any]) -> None:
         assert test.result.result == expected["result"]

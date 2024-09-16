@@ -51,7 +51,7 @@ def device(request: pytest.FixtureRequest) -> Iterator[AntaDevice]:
     with patch.object(AntaDevice, "__abstractmethods__", set()), patch("anta.device.AntaDevice._collect", side_effect=_collect):
         # AntaDevice constructor does not have hw_model argument
         hw_model = kwargs.pop("hw_model")
-        dev = AntaDevice(**kwargs)  # type: ignore[abstract, arg-type]  # pylint: disable=abstract-class-instantiated, unexpected-keyword-arg
+        dev = AntaDevice(**kwargs)  # type: ignore[abstract, arg-type]
         dev.hw_model = hw_model
         yield dev
 
@@ -69,7 +69,6 @@ def test_inventory(anta_env: dict[str, str]) -> AntaInventory:  # pylint: disabl
     )
 
 
-# tests.unit.test_device.py fixture
 @pytest.fixture
 def async_device(request: pytest.FixtureRequest) -> AsyncEOSDevice:
     """Return an AsyncEOSDevice instance."""

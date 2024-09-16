@@ -72,6 +72,7 @@ dev = [
   "pytest-httpx>=0.30.0",
   "pytest-metadata>=3.0.0",
   "pytest>=7.4.0",
+  "respx>=0.21.1",
   "ruff>=0.5.4,<0.7.0",
   "tox>=4.10.0,<5.0.0",
   "types-PyYAML",
@@ -454,7 +455,10 @@ disable = [ # Any rule listed here can be disabled: https://github.com/astral-sh
     "broad-exception-caught",
     "line-too-long",
     "unused-variable",
-    "redefined-builtin"
+    "redefined-builtin",
+    "abstract-class-instantiated", # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-instantiation-of-abstract-classes-abstract
+    "unexpected-keyword-arg", # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-arguments-in-calls-call-arg and other rules
+    "no-value-for-parameter" # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-arguments-in-calls-call-arg
 ]
 max-statements=61
 max-returns=8

@@ -81,7 +81,6 @@ CATALOG_PARSE_FAIL_PARAMS: list[ParameterSet] = [
     pytest.param("test_catalog_invalid_json.json", "json", "JSONDecodeError", id="invalid_json"),
     pytest.param("test_catalog_with_undefined_tests.yml", "yaml", "FakeTest is not defined in Python module anta.tests.software", id="undefined_tests"),
     pytest.param("test_catalog_with_undefined_module.yml", "yaml", "Module named anta.tests.undefined cannot be imported", id="undefined_module"),
-    pytest.param("test_catalog_with_undefined_module.yml", "yaml", "Module named anta.tests.undefined cannot be imported", id="undefined_module"),
     pytest.param(
         "test_catalog_with_syntax_error_module.yml",
         "yaml",
