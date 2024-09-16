@@ -328,6 +328,10 @@ class AntaCatalog:
         file_format
             Format of the file, either 'yaml' or 'json'.
 
+        Returns
+        -------
+        AntaCatalog
+            An AntaCatalog populated with the file content.
         """
         if file_format not in ["yaml", "json"]:
             message = f"'{file_format}' is not a valid format for an AntaCatalog file. Only 'yaml' and 'json' are supported."
@@ -356,8 +360,13 @@ class AntaCatalog:
         ----------
         data
             Python dictionary used to instantiate the AntaCatalog instance.
-            filename: value to be set as AntaCatalog instance attribute
+        filename
+            value to be set as AntaCatalog instance attribute
 
+        Returns
+        -------
+        AntaCatalog
+            An AntaCatalog populated with the 'data' dictionary content.
         """
         tests: list[AntaTestDefinition] = []
         if data is None:
@@ -392,6 +401,10 @@ class AntaCatalog:
         data
             Python list used to instantiate the AntaCatalog instance.
 
+        Returns
+        -------
+        AntaCatalog
+            An AntaCatalog populated with the 'data' list content.
         """
         tests: list[AntaTestDefinition] = []
         try:
