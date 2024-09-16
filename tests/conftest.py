@@ -21,7 +21,7 @@ def inventory(request: pytest.FixtureRequest) -> Iterator[AntaInventory]:
     for i in range(request.param["count"]):
         inv.add_device(
             AsyncEOSDevice(
-                host=f"device-{i}.avd.arista.com",
+                host=f"device-{i}.anta.arista.com",
                 username="admin",
                 password="admin",  # noqa: S106
                 name=f"device-{i}",
