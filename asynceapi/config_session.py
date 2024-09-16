@@ -278,7 +278,7 @@ class SessionConfig:
         filename
             The name of the configuration file.  The caller is required to
             specify the filesystem, for example, the
-            filename="flash:thisfile.cfg"
+            filename="flash:thisfile.cfg".
 
         replace
             When True, the contents of the file will completely replace the

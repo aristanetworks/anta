@@ -214,7 +214,7 @@ class Device(httpx.AsyncClient):
         Parameters
         ----------
         commands
-            A list of commands to execute; results in a list of output responses
+            A list of commands to execute; results in a list of output responses.
         ofmt
             Either 'json' or 'text'; indicates the output format for the CLI commands.
         version
@@ -333,7 +333,7 @@ class Device(httpx.AsyncClient):
         Parameters
         ----------
         name
-            The config-session name
+            The config-session name.
 
         Returns
         -------
