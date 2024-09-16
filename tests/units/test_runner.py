@@ -44,7 +44,7 @@ async def test_empty_inventory(caplog: pytest.LogCaptureFixture) -> None:
 
 
 async def test_no_selected_device(caplog: pytest.LogCaptureFixture, test_inventory: AntaInventory) -> None:
-    """Test that when the list of established device."""
+    """Test that when the list of established devices is empty a log is raised."""
     caplog.set_level(logging.INFO)
     manager = ResultManager()
     await main(manager, test_inventory, FAKE_CATALOG)
