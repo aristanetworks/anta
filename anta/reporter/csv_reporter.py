@@ -42,12 +42,15 @@ class ReportCsv:
 
         Parameters
         ----------
-            usr_list: List of string to concatenate
-            delimiter: A delimiter to use to start string. Defaults to None.
+        usr_list
+            List of string to concatenate.
+        delimiter
+            A delimiter to use to start string. Defaults to None.
 
         Returns
         -------
-            str: Multi-lines string
+        str
+            Multi-lines string.
 
         """
         return f"{delimiter}".join(f"{line}" for line in usr_list)
@@ -57,9 +60,15 @@ class ReportCsv:
         """
         Convert a TestResult into a list of string for creating file content.
 
-        Args:
-        ----
-            results: A TestResult to convert into list.
+        Parameters
+        ----------
+        results
+            A TestResult to convert into list.
+
+        Returns
+        -------
+        list[str]
+            TestResult converted into a list.
         """
         message = cls.split_list_to_txt_list(result.messages) if len(result.messages) > 0 else ""
         categories = cls.split_list_to_txt_list(result.categories) if len(result.categories) > 0 else "None"
@@ -76,14 +85,17 @@ class ReportCsv:
     def generate(cls, results: ResultManager, csv_filename: pathlib.Path) -> None:
         """Build CSV flle with tests results.
 
-        Parameter
-        ---------
-            results: A ResultManager instance.
-            csv_filename: File path where to save CSV data.
+        Parameters
+        ----------
+        results
+            A ResultManager instance.
+        csv_filename
+            File path where to save CSV data.
 
-        Raise
-        -----
-            OSError if any is raised while writing the CSV file.
+        Raises
+        ------
+        OSError
+            if any is raised while writing the CSV file.
         """
         headers = [
             cls.Headers.device,

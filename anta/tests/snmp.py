@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING, ClassVar
 
 from anta.custom_types import PositiveInteger
 from anta.models import AntaCommand, AntaTest
+from anta.tools import get_value
 
 if TYPE_CHECKING:
     from anta.models import AntaTemplate
@@ -183,8 +184,12 @@ class VerifySnmpLocation(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifySnmpLocation."""
-        location = self.instance_commands[0].json_output["location"]["location"]
+        # Verifies the SNMP location is configured.
+        if not (location := get_value(self.instance_commands[0].json_output, "location.location")):
+            self.result.is_failure("SNMP location is not configured.")
+            return
 
+        # Verifies the expected SNMP location.
         if location != self.inputs.location:
             self.result.is_failure(f"Expected `{self.inputs.location}` as the location, but found `{location}` instead.")
         else:
@@ -222,8 +227,12 @@ class VerifySnmpContact(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifySnmpContact."""
-        contact = self.instance_commands[0].json_output["contact"]["contact"]
+        # Verifies the SNMP contact is configured.
+        if not (contact := get_value(self.instance_commands[0].json_output, "contact.contact")):
+            self.result.is_failure("SNMP contact is not configured.")
+            return
 
+        # Verifies the expected SNMP contact.
         if contact != self.inputs.contact:
             self.result.is_failure(f"Expected `{self.inputs.contact}` as the contact, but found `{contact}` instead.")
         else:

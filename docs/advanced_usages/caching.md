@@ -47,7 +47,7 @@ There might be scenarios where caching is not wanted. You can disable caching in
     ```bash
     anta --disable-cache --username arista --password arista nrfu table
     ```
-2. Caching can be disabled per device, network or range by setting the `disable_cache` key to `True` when defining the ANTA [Inventory](../usage-inventory-catalog.md#create-an-inventory-file) file:
+2. Caching can be disabled per device, network or range by setting the `disable_cache` key to `True` when defining the ANTA [Inventory](../usage-inventory-catalog.md#device-inventory) file:
     ```yaml
     anta_inventory:
       hosts:

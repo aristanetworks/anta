@@ -20,11 +20,13 @@ def _count_ospf_neighbor(ospf_neighbor_json: dict[str, Any]) -> int:
 
     Parameters
     ----------
-      ospf_neighbor_json: The JSON output of the `show ip ospf neighbor` command.
+    ospf_neighbor_json
+        The JSON output of the `show ip ospf neighbor` command.
 
     Returns
     -------
-      int: The number of OSPF neighbors.
+    int
+        The number of OSPF neighbors.
 
     """
     count = 0
@@ -39,11 +41,13 @@ def _get_not_full_ospf_neighbors(ospf_neighbor_json: dict[str, Any]) -> list[dic
 
     Parameters
     ----------
-      ospf_neighbor_json: The JSON output of the `show ip ospf neighbor` command.
+    ospf_neighbor_json
+        The JSON output of the `show ip ospf neighbor` command.
 
     Returns
     -------
-      list[dict[str, Any]]: A list of OSPF neighbors whose adjacency state is not `full`.
+    list[dict[str, Any]]
+        A list of OSPF neighbors whose adjacency state is not `full`.
 
     """
     return [
@@ -65,11 +69,13 @@ def _get_ospf_max_lsa_info(ospf_process_json: dict[str, Any]) -> list[dict[str, 
 
     Parameters
     ----------
-      ospf_process_json: OSPF process information in JSON format.
+    ospf_process_json
+        OSPF process information in JSON format.
 
     Returns
     -------
-      list[dict[str, Any]]: A list of dictionaries containing OSPF LSAs information.
+    list[dict[str, Any]]
+        A list of dictionaries containing OSPF LSAs information.
 
     """
     return [

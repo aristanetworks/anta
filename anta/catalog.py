@@ -39,8 +39,12 @@ ListAntaTestTuples = list[tuple[type[AntaTest], Optional[Union[AntaTest.Input, d
 class AntaTestDefinition(BaseModel):
     """Define a test with its associated inputs.
 
-    test: An AntaTest concrete subclass
-    inputs: The associated AntaTest.Input subclass instance
+    Attributes
+    ----------
+    test
+        An AntaTest concrete subclass.
+    inputs
+        The associated AntaTest.Input subclass instance.
     """
 
     model_config = ConfigDict(frozen=True)
@@ -60,6 +64,7 @@ class AntaTestDefinition(BaseModel):
 
         Returns
         -------
+        dict
             A dictionary representing the model.
         """
         return {self.test.__name__: self.inputs}
@@ -132,14 +137,14 @@ class AntaTestDefinition(BaseModel):
 class AntaCatalogFile(RootModel[dict[ImportString[Any], list[AntaTestDefinition]]]):  # pylint: disable=too-few-public-methods
     """Represents an ANTA Test Catalog File.
 
-    Example:
+    Example
     -------
-        A valid test catalog file must have the following structure:
-        ```
-        <Python module>:
-            - <AntaTest subclass>:
-                <AntaTest.Input compliant dictionary>
-        ```
+    A valid test catalog file must have the following structure:
+    ```
+    <Python module>:
+        - <AntaTest subclass>:
+            <AntaTest.Input compliant dictionary>
+    ```
 
     """
 
@@ -149,16 +154,16 @@ class AntaCatalogFile(RootModel[dict[ImportString[Any], list[AntaTestDefinition]
     def flatten_modules(data: dict[str, Any], package: str | None = None) -> dict[ModuleType, list[Any]]:
         """Allow the user to provide a data structure with nested Python modules.
 
-        Example:
+        Example
         -------
-            ```
-            anta.tests.routing:
-              generic:
-                - <AntaTestDefinition>
-              bgp:
-                - <AntaTestDefinition>
-            ```
-            `anta.tests.routing.generic` and `anta.tests.routing.bgp` are importable Python modules.
+        ```
+        anta.tests.routing:
+          generic:
+            - <AntaTestDefinition>
+          bgp:
+            - <AntaTestDefinition>
+        ```
+        `anta.tests.routing.generic` and `anta.tests.routing.bgp` are importable Python modules.
 
         """
         modules: dict[ModuleType, list[Any]] = {}
@@ -234,6 +239,7 @@ class AntaCatalogFile(RootModel[dict[ImportString[Any], list[AntaTestDefinition]
 
         Returns
         -------
+        str
             The YAML representation string of this model.
         """
         # TODO: Pydantic and YAML serialization/deserialization is not supported natively.
@@ -247,6 +253,7 @@ class AntaCatalogFile(RootModel[dict[ImportString[Any], list[AntaTestDefinition]
 
         Returns
         -------
+        str
             The JSON representation string of this model.
         """
         return self.model_dump_json(serialize_as_any=True, exclude_unset=True, indent=2)
@@ -267,8 +274,10 @@ class AntaCatalog:
 
         Parameters
         ----------
-            tests: A list of AntaTestDefinition instances.
-            filename: The path from which the catalog is loaded.
+        tests
+            A list of AntaTestDefinition instances.
+        filename
+            The path from which the catalog is loaded.
 
         """
         self._tests: list[AntaTestDefinition] = []
@@ -314,8 +323,10 @@ class AntaCatalog:
 
         Parameters
         ----------
-            filename: Path to test catalog YAML or JSON fil
-            file_format: Format of the file, either 'yaml' or 'json'
+        filename
+            Path to test catalog YAML or JSON file.
+        file_format
+            Format of the file, either 'yaml' or 'json'.
 
         """
         if file_format not in ["yaml", "json"]:
@@ -343,7 +354,8 @@ class AntaCatalog:
 
         Parameters
         ----------
-            data: Python dictionary used to instantiate the AntaCatalog instance
+        data
+            Python dictionary used to instantiate the AntaCatalog instance.
             filename: value to be set as AntaCatalog instance attribute
 
         """
@@ -377,7 +389,8 @@ class AntaCatalog:
 
         Parameters
         ----------
-            data: Python list used to instantiate the AntaCatalog instance
+        data
+            Python list used to instantiate the AntaCatalog instance.
 
         """
         tests: list[AntaTestDefinition] = []
@@ -394,10 +407,12 @@ class AntaCatalog:
 
         Parameters
         ----------
-            catalogs: A list of AntaCatalog instances to merge.
+        catalogs
+            A list of AntaCatalog instances to merge.
 
         Returns
         -------
+        AntaCatalog
             A new AntaCatalog instance containing the tests of all the input catalogs.
         """
         combined_tests = list(chain(*(catalog.tests for catalog in catalogs)))
@@ -406,12 +421,18 @@ class AntaCatalog:
     def merge(self, catalog: AntaCatalog) -> AntaCatalog:
         """Merge two AntaCatalog instances.
 
+        Warning
+        -------
+        This method is deprecated and will be removed in ANTA v2.0. Use `AntaCatalog.merge_catalogs()` instead.
+
         Parameters
         ----------
-            catalog: AntaCatalog instance to merge to this instance.
+        catalog
+            AntaCatalog instance to merge to this instance.
 
         Returns
         -------
+        AntaCatalog
             A new AntaCatalog instance containing the tests of the two instances.
         """
         # TODO: Use a decorator to deprecate this method instead. See https://github.com/aristanetworks/anta/issues/754
@@ -427,6 +448,7 @@ class AntaCatalog:
 
         Returns
         -------
+        AntaCatalogFile
             An AntaCatalogFile instance containing tests of this AntaCatalog instance.
         """
         root: dict[ImportString[Any], list[AntaTestDefinition]] = {}
@@ -441,7 +463,9 @@ class AntaCatalog:
         If a `filtered_tests` set is provided, only the tests in this set will be indexed.
 
         This method populates two attributes:
+
         - tag_to_tests: A dictionary mapping each tag to a set of tests that contain it.
+
         - tests_without_tags: A set of tests that do not have any tags.
 
         Once the indexes are built, the `indexes_built` attribute is set to True.
@@ -466,17 +490,21 @@ class AntaCatalog:
 
         Parameters
         ----------
-            tags: The tags to filter tests by. If empty, return all tests without tags.
-            strict: If True, returns only tests that contain all specified tags (intersection).
-                    If False, returns tests that contain any of the specified tags (union).
+        tags
+            The tags to filter tests by. If empty, return all tests without tags.
+        strict
+            If True, returns only tests that contain all specified tags (intersection).
+            If False, returns tests that contain any of the specified tags (union).
 
         Returns
         -------
-            set[AntaTestDefinition]: A set of tests that match the given tags.
+        set[AntaTestDefinition]
+            A set of tests that match the given tags.
 
         Raises
         ------
-            ValueError: If the indexes have not been built prior to method call.
+        ValueError
+            If the indexes have not been built prior to method call.
         """
         if not self.indexes_built:
             msg = "Indexes have not been built yet. Call build_indexes() first."

@@ -126,10 +126,8 @@
     line-height: 1em;
     font-size: 1.3rem;
     margin: 1em 0;
-    /* font-weight: 700; */
     letter-spacing: -.01em;
     color: var(--md-default-fg-color--light);
-    text-transform: capitalize;
     font-style: normal;
     font-weight: bold;
   }
@@ -142,19 +140,15 @@
     line-height: 1em;
     color: var(--md-default-fg-color--light);
     font-style: italic;
-    text-transform: capitalize;
   }
 
   .md-typeset h5,
   .md-typeset h6 {
     font-size: 0.9rem;
     margin: 1em 0;
-    /* font-weight: 700; */
     letter-spacing: -.01em;
-    /* line-height: 2em; */
     color: var(--md-default-fg-color--light);
     font-style: italic;
-    text-transform: capitalize;
     text-decoration: underline;
   }
 
@@ -163,17 +157,13 @@
     padding: .6rem .8rem;
     color: var(--md-default-fg-color);
     vertical-align: top;
-    /* background-color: var(--md-accent-bg-color); */
     text-align: left;
-    /* min-width: 100%; */
-    /* display: table; */
   }
   .md-typeset table:not([class]) td {
     /* padding: .9375em 1.25em; */
     border-collapse: collapse;
     vertical-align: center;
     text-align: left;
-    /* border-bottom: 1px solid var(--md-default-fg-color--light); */
   }
   .md-typeset code {
     padding: 0 .2941176471em;
@@ -249,4 +239,8 @@
 div.doc-contents {
   padding-left: 25px;
   border-left: .05rem solid var(--md-typeset-table-color);
+}
+h5.doc-heading {
+  /* Avoid to capitalize h5 headers for mkdocstrings */
+  text-transform: none;
 }

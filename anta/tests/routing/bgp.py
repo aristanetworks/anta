@@ -26,31 +26,38 @@ def _add_bgp_failures(failures: dict[tuple[str, str | None], dict[str, Any]], af
 
     Parameters
     ----------
-        failures: The dictionary to which the failure will be added.
-        afi: The address family identifier.
-        vrf: The VRF name.
-        safi: The subsequent address family identifier.
-        issue: A description of the issue. Can be of any type.
+    failures
+        The dictionary to which the failure will be added.
+    afi
+        The address family identifier.
+    vrf
+        The VRF name.
+    safi
+        The subsequent address family identifier.
+    issue
+        A description of the issue. Can be of any type.
 
-    Example:
+    Example
     -------
     The `failures` dictionary will have the following structure:
-        {
-            ('afi1', 'safi1'): {
-                'afi': 'afi1',
-                'safi': 'safi1',
-                'vrfs': {
-                    'vrf1': issue1,
-                    'vrf2': issue2
-                }
-            },
-            ('afi2', None): {
-                'afi': 'afi2',
-                'vrfs': {
-                    'vrf1': issue3
-                }
+    ```
+    {
+        ('afi1', 'safi1'): {
+            'afi': 'afi1',
+            'safi': 'safi1',
+            'vrfs': {
+                'vrf1': issue1,
+                'vrf2': issue2
+            }
+        },
+        ('afi2', None): {
+            'afi': 'afi2',
+            'vrfs': {
+                'vrf1': issue3
             }
         }
+    }
+    ```
 
     """
     key = (afi, safi)
@@ -65,21 +72,27 @@ def _check_peer_issues(peer_data: dict[str, Any] | None) -> dict[str, Any]:
 
     Parameters
     ----------
-        peer_data: The BGP peer data dictionary nested in the `show bgp <afi> <safi> summary` command.
+    peer_data
+        The BGP peer data dictionary nested in the `show bgp <afi> <safi> summary` command.
 
     Returns
     -------
-        dict: Dictionary with keys indicating issues or an empty dictionary if no issues.
+    dict
+        Dictionary with keys indicating issues or an empty dictionary if no issues.
 
     Raises
     ------
-        ValueError: If any of the required keys ("peerState", "inMsgQueue", "outMsgQueue") are missing in `peer_data`, i.e. invalid BGP peer data.
+    ValueError
+        If any of the required keys ("peerState", "inMsgQueue", "outMsgQueue") are missing in `peer_data`, i.e. invalid BGP peer data.
 
-    Example:
+    Example
     -------
-        {"peerNotFound": True}
-        {"peerState": "Idle", "inMsgQueue": 2, "outMsgQueue": 0}
-        {}
+    This can for instance return
+    ```
+    {"peerNotFound": True}
+    {"peerState": "Idle", "inMsgQueue": 2, "outMsgQueue": 0}
+    {}
+    ```
 
     """
     if peer_data is None:
@@ -106,15 +119,21 @@ def _add_bgp_routes_failure(
 
     Parameters
     ----------
-        bgp_routes: The list of expected routes.
-        bgp_output: The BGP output from the device.
-        peer: The IP address of the BGP peer.
-        vrf: The name of the VRF for which the routes need to be verified.
-        route_type: The type of BGP routes. Defaults to 'advertised_routes'.
+    bgp_routes
+        The list of expected routes.
+    bgp_output
+        The BGP output from the device.
+    peer
+        The IP address of the BGP peer.
+    vrf
+        The name of the VRF for which the routes need to be verified.
+    route_type
+        The type of BGP routes. Defaults to 'advertised_routes'.
 
     Returns
     -------
-        dict[str, dict[str, dict[str, dict[str, list[str]]]]]: A dictionary containing the missing routes and invalid or inactive routes.
+    dict[str, dict[str, dict[str, dict[str, list[str]]]]]
+        A dictionary containing the missing routes and invalid or inactive routes.
 
     """
     # Prepare the failure routes dictionary
@@ -685,6 +704,8 @@ class VerifyBGPExchangedRoutes(AntaTest):
 class VerifyBGPPeerMPCaps(AntaTest):
     """Verifies the multiprotocol capabilities of a BGP peer in a specified VRF.
 
+    Supports `strict: True` to verify that only the specified capabilities are configured, requiring an exact match.
+
     Expected Results
     ----------------
     * Success: The test will pass if the BGP peer's multiprotocol capabilities are advertised, received, and enabled in the specified VRF.
@@ -699,6 +720,7 @@ class VerifyBGPPeerMPCaps(AntaTest):
             bgp_peers:
               - peer_address: 172.30.11.1
                 vrf: default
+                strict: False
                 capabilities:
                   - ipv4Unicast
     ```
@@ -722,6 +744,8 @@ class VerifyBGPPeerMPCaps(AntaTest):
             """IPv4 address of a BGP peer."""
             vrf: str = "default"
             """Optional VRF for BGP peer. If not provided, it defaults to `default`."""
+            strict: bool = False
+            """If True, requires exact matching of provided capabilities. Defaults to False."""
             capabilities: list[MultiProtocolCaps]
             """List of multiprotocol capabilities to be verified."""
 
@@ -730,14 +754,14 @@ class VerifyBGPPeerMPCaps(AntaTest):
         """Main test function for VerifyBGPPeerMPCaps."""
         failures: dict[str, Any] = {"bgp_peers": {}}
 
-        # Iterate over each bgp peer
+        # Iterate over each bgp peer.
         for bgp_peer in self.inputs.bgp_peers:
             peer = str(bgp_peer.peer_address)
             vrf = bgp_peer.vrf
             capabilities = bgp_peer.capabilities
             failure: dict[str, dict[str, dict[str, Any]]] = {"bgp_peers": {peer: {vrf: {}}}}
 
-            # Check if BGP output exists
+            # Check if BGP output exists.
             if (
                 not (bgp_output := get_value(self.instance_commands[0].json_output, f"vrfs.{vrf}.peerList"))
                 or (bgp_output := get_item(bgp_output, "peerAddress", peer)) is None
@@ -746,8 +770,17 @@ class VerifyBGPPeerMPCaps(AntaTest):
                 failures = deep_update(failures, failure)
                 continue
 
-            # Check each capability
+            # Fetching the capabilities output.
             bgp_output = get_value(bgp_output, "neighborCapabilities.multiprotocolCaps")
+
+            if bgp_peer.strict and sorted(capabilities) != sorted(bgp_output):
+                failure["bgp_peers"][peer][vrf] = {
+                    "status": f"Expected only `{', '.join(capabilities)}` capabilities should be listed but found `{', '.join(bgp_output)}` instead."
+                }
+                failures = deep_update(failures, failure)
+                continue
+
+            # Check each capability
             for capability in capabilities:
                 capability_output = bgp_output.get(capability)
 

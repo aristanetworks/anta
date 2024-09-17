@@ -21,11 +21,16 @@ class AntaInventoryHost(BaseModel):
 
     Attributes
     ----------
-        host: IP Address or FQDN of the device.
-        port: Custom eAPI port to use.
-        name: Custom name of the device.
-        tags: Tags of the device.
-        disable_cache: Disable cache for this device.
+    host : Hostname | IPvAnyAddress
+        IP Address or FQDN of the device.
+    port : Port | None
+        Custom eAPI port to use.
+    name : str | None
+        Custom name of the device.
+    tags : set[str]
+        Tags of the device.
+    disable_cache : bool
+        Disable cache for this device.
 
     """
 
@@ -43,9 +48,12 @@ class AntaInventoryNetwork(BaseModel):
 
     Attributes
     ----------
-        network: Subnet to use for scanning.
-        tags: Tags of the devices in this network.
-        disable_cache: Disable cache for all devices in this network.
+    network : IPvAnyNetwork
+        Subnet to use for scanning.
+    tags : set[str]
+        Tags of the devices in this network.
+    disable_cache : bool
+        Disable cache for all devices in this network.
 
     """
 
@@ -61,10 +69,14 @@ class AntaInventoryRange(BaseModel):
 
     Attributes
     ----------
-        start: IPv4 or IPv6 address for the beginning of the range.
-        stop: IPv4 or IPv6 address for the end of the range.
-        tags: Tags of the devices in this IP range.
-        disable_cache: Disable cache for all devices in this IP range.
+    start : IPvAnyAddress
+        IPv4 or IPv6 address for the beginning of the range.
+    stop : IPvAnyAddress
+        IPv4 or IPv6 address for the end of the range.
+    tags : set[str]
+        Tags of the devices in this IP range.
+    disable_cache : bool
+        Disable cache for all devices in this IP range.
 
     """
 
@@ -90,6 +102,7 @@ class AntaInventoryInput(BaseModel):
 
         Returns
         -------
+        str
             The YAML representation string of this model.
         """
         # TODO: Pydantic and YAML serialization/deserialization is not supported natively.
