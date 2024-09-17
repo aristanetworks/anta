@@ -1447,12 +1447,10 @@ class VerifyBGPPeerRouteLimit(AntaTest):
             """IPv4 address of a BGP peer."""
             vrf: str = "default"
             """Optional VRF for BGP peer. If not provided, it defaults to `default`."""
-            maximum_routes: int
-            """The maximum allowable number of BGP routes.
-            Upto `4294967294` routes can be configured and `0` means unlimited."""
-            warning_limit: int | None = None
-            """An optional threshold which, if exceeded, triggers a warning.
-            Upto `4294967294` maximum number of routes after which a warning is issued and 0 means never warn."""
+            maximum_routes: int = Field(ge=0, le=4294967294)
+            """The maximum allowable number of BGP routes, `0` means unlimited."""
+            warning_limit: int = Field(default=0, ge=0, le=4294967294)
+            """Optional maximum routes warning limit. If not provided, it defaults to `0` meaning no warning limit."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each BGP peer in the input list."""
