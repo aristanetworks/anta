@@ -1685,6 +1685,58 @@
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#anta.tests.routing.bgp.VerifyBGPPeerRouteLimit" class="md-nav__link">
+      <span class="md-ellipsis">
+        VerifyBGPPeerRouteLimit
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="VerifyBGPPeerRouteLimit">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.routing.bgp.VerifyBGPPeerRouteLimit-attributes" class="md-nav__link">
+      <span class="md-ellipsis">
+        Inputs
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="Inputs">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.routing.bgp.VerifyBGPPeerRouteLimit-attributes" class="md-nav__link">
+      <span class="md-ellipsis">
+        BgpPeer
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#anta.tests.routing.bgp.VerifyBGPPeerRouteRefreshCap" class="md-nav__link">
       <span class="md-ellipsis">
         VerifyBGPPeerRouteRefreshCap
@@ -3180,6 +3232,58 @@
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
     <a href="#anta.tests.routing.bgp.VerifyBGPPeerMPCaps-attributes" class="md-nav__link">
+      <span class="md-ellipsis">
+        BgpPeer
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.routing.bgp.VerifyBGPPeerRouteLimit" class="md-nav__link">
+      <span class="md-ellipsis">
+        VerifyBGPPeerRouteLimit
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="VerifyBGPPeerRouteLimit">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.routing.bgp.VerifyBGPPeerRouteLimit-attributes" class="md-nav__link">
+      <span class="md-ellipsis">
+        Inputs
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="Inputs">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.routing.bgp.VerifyBGPPeerRouteLimit-attributes" class="md-nav__link">
       <span class="md-ellipsis">
         BgpPeer
       </span>
@@ -6023,6 +6127,340 @@ An optional list of specific drop statistics can be provided for granular testin
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Following BGP peer multiprotocol capabilities are not found or not ok:</span><span class="se">\n</span><span class="si">{</span><span class="n">failures</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+  </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="anta.tests.routing.bgp.VerifyBGPPeerRouteLimit" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">VerifyBGPPeerRouteLimit</span>
+
+
+<a href="#anta.tests.routing.bgp.VerifyBGPPeerRouteLimit" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+
+  
+        <p>Verifies the maximum routes and optionally verifies the maximum routes warning limit for the provided BGP IPv4 peer(s).</p>
+
+
+<details class="expected-results" open>
+  <summary>Expected Results</summary>
+  <ul>
+<li>Success: The test will pass if the BGP peer&rsquo;s maximum routes and, if provided, the maximum routes warning limit are equal to the given limits.</li>
+<li>Failure: The test will fail if the BGP peer&rsquo;s maximum routes do not match the given limit, or if the maximum routes warning limit is provided
+and does not match the given limit, or if the peer is not configured.</li>
+</ul>
+</details>
+
+
+<details class="example" open>
+  <summary>Examples</summary>
+        <div class="highlight"><pre><span></span><code><span class="nt">anta.tests.routing</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">bgp</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyBGPPeerRouteLimit</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">bgp_peers</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">peer_address</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.30.11.1</span>
+<span class="w">            </span><span class="nt">vrf</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
+<span class="w">            </span><span class="nt">maximum_routes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12000</span>
+<span class="w">            </span><span class="nt">warning_limit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10000</span>
+</code></pre></div>
+</details>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+<h3 id="anta.tests.routing.bgp.VerifyBGPPeerRouteLimit-attributes">Inputs<a href="#anta.tests.routing.bgp.VerifyBGPPeerRouteLimit-attributes" class="headerlink" title="Permanent link">&para;</a></h3>  
+
+  <div class="doc doc-children">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Description</th>
+              <th>Default</th>
+            </tr>
+          </thead>
+          <tbody>
+              <tr>
+                <td><code>bgp_peers</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<span title="anta.tests.routing.bgp.VerifyBGPPeerRouteLimit.Input.BgpPeer">BgpPeer</span>]</code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    List of BGP peers
+                  </div>
+                </td>
+                <td>
+                    <em>-</em>
+                </td>
+              </tr>
+          </tbody>
+        </table>
+<h4 id="anta.tests.routing.bgp.VerifyBGPPeerRouteLimit-attributes">BgpPeer<a href="#anta.tests.routing.bgp.VerifyBGPPeerRouteLimit-attributes" class="headerlink" title="Permanent link">&para;</a></h4>          <div class="doc doc-children doc-contents">
+  
+
+  <div class="doc doc-children">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Description</th>
+              <th>Default</th>
+            </tr>
+          </thead>
+          <tbody>
+              <tr>
+                <td><code>peer_address</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" title="ipaddress.IPv4Address" href="https://docs.python.org/3/library/ipaddress.html#ipaddress.IPv4Address">IPv4Address</a></code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    IPv4 address of a BGP peer.
+                  </div>
+                </td>
+                <td>
+                    <em>-</em>
+                </td>
+              </tr>
+              <tr>
+                <td><code>vrf</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    Optional VRF for BGP peer. If not provided, it defaults to `default`.
+                  </div>
+                </td>
+                <td>
+                      <code>&#39;default&#39;</code>
+                </td>
+              </tr>
+              <tr>
+                <td><code>maximum_routes</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    The maximum allowable number of BGP routes, `0` means unlimited.
+                  </div>
+                </td>
+                <td>
+                      <code><span title="pydantic.Field">Field</span>(ge=0, le=4294967294)</code>
+                </td>
+              </tr>
+              <tr>
+                <td><code>warning_limit</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    Optional maximum routes warning limit. If not provided, it defaults to `0` meaning no warning limit.
+                  </div>
+                </td>
+                <td>
+                      <code><span title="pydantic.Field">Field</span>(default=0, ge=0, le=4294967294)</code>
+                </td>
+              </tr>
+          </tbody>
+        </table>
+  </div>
+          </div>
+  </div>
+
+
+
+
+
+  </div>
+	<details class="quote">
+	<summary>Source code in <code>anta/tests/routing/bgp.py</code></summary>
+	<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1539</span>
+<span class="normal">1540</span>
+<span class="normal">1541</span>
+<span class="normal">1542</span>
+<span class="normal">1543</span>
+<span class="normal">1544</span>
+<span class="normal">1545</span>
+<span class="normal">1546</span>
+<span class="normal">1547</span>
+<span class="normal">1548</span>
+<span class="normal">1549</span>
+<span class="normal">1550</span>
+<span class="normal">1551</span>
+<span class="normal">1552</span>
+<span class="normal">1553</span>
+<span class="normal">1554</span>
+<span class="normal">1555</span>
+<span class="normal">1556</span>
+<span class="normal">1557</span>
+<span class="normal">1558</span>
+<span class="normal">1559</span>
+<span class="normal">1560</span>
+<span class="normal">1561</span>
+<span class="normal">1562</span>
+<span class="normal">1563</span>
+<span class="normal">1564</span>
+<span class="normal">1565</span>
+<span class="normal">1566</span>
+<span class="normal">1567</span>
+<span class="normal">1568</span>
+<span class="normal">1569</span>
+<span class="normal">1570</span>
+<span class="normal">1571</span>
+<span class="normal">1572</span>
+<span class="normal">1573</span>
+<span class="normal">1574</span>
+<span class="normal">1575</span>
+<span class="normal">1576</span>
+<span class="normal">1577</span>
+<span class="normal">1578</span>
+<span class="normal">1579</span>
+<span class="normal">1580</span>
+<span class="normal">1581</span>
+<span class="normal">1582</span>
+<span class="normal">1583</span>
+<span class="normal">1584</span>
+<span class="normal">1585</span>
+<span class="normal">1586</span>
+<span class="normal">1587</span>
+<span class="normal">1588</span>
+<span class="normal">1589</span>
+<span class="normal">1590</span>
+<span class="normal">1591</span>
+<span class="normal">1592</span>
+<span class="normal">1593</span>
+<span class="normal">1594</span>
+<span class="normal">1595</span>
+<span class="normal">1596</span>
+<span class="normal">1597</span>
+<span class="normal">1598</span>
+<span class="normal">1599</span>
+<span class="normal">1600</span>
+<span class="normal">1601</span>
+<span class="normal">1602</span>
+<span class="normal">1603</span>
+<span class="normal">1604</span>
+<span class="normal">1605</span>
+<span class="normal">1606</span>
+<span class="normal">1607</span>
+<span class="normal">1608</span>
+<span class="normal">1609</span>
+<span class="normal">1610</span>
+<span class="normal">1611</span>
+<span class="normal">1612</span>
+<span class="normal">1613</span>
+<span class="normal">1614</span>
+<span class="normal">1615</span>
+<span class="normal">1616</span>
+<span class="normal">1617</span>
+<span class="normal">1618</span>
+<span class="normal">1619</span>
+<span class="normal">1620</span>
+<span class="normal">1621</span>
+<span class="normal">1622</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyBGPPeerRouteLimit</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the maximum routes and optionally verifies the maximum routes warning limit for the provided BGP IPv4 peer(s).</span>
+
+<span class="sd">    Expected Results</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    * Success: The test will pass if the BGP peer&#39;s maximum routes and, if provided, the maximum routes warning limit are equal to the given limits.</span>
+<span class="sd">    * Failure: The test will fail if the BGP peer&#39;s maximum routes do not match the given limit, or if the maximum routes warning limit is provided</span>
+<span class="sd">    and does not match the given limit, or if the peer is not configured.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    ```yaml</span>
+<span class="sd">    anta.tests.routing:</span>
+<span class="sd">      bgp:</span>
+<span class="sd">        - VerifyBGPPeerRouteLimit:</span>
+<span class="sd">            bgp_peers:</span>
+<span class="sd">              - peer_address: 172.30.11.1</span>
+<span class="sd">                vrf: default</span>
+<span class="sd">                maximum_routes: 12000</span>
+<span class="sd">                warning_limit: 10000</span>
+<span class="sd">    ```</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;VerifyBGPPeerRouteLimit&quot;</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Verifies maximum routes and maximum routes warning limit for the provided BGP IPv4 peer(s).&quot;</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;bgp&quot;</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">&quot;show bgp neighbors </span><span class="si">{peer}</span><span class="s2"> vrf </span><span class="si">{vrf}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">3</span><span class="p">)]</span>
+
+    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyBGPPeerRouteLimit test.&quot;&quot;&quot;</span>
+
+        <span class="n">bgp_peers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BgpPeer</span><span class="p">]</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of BGP peers&quot;&quot;&quot;</span>
+
+        <span class="k">class</span> <span class="nc">BgpPeer</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Model for a BGP peer.&quot;&quot;&quot;</span>
+
+            <span class="n">peer_address</span><span class="p">:</span> <span class="n">IPv4Address</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;IPv4 address of a BGP peer.&quot;&quot;&quot;</span>
+            <span class="n">vrf</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Optional VRF for BGP peer. If not provided, it defaults to `default`.&quot;&quot;&quot;</span>
+            <span class="n">maximum_routes</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">4294967294</span><span class="p">)</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;The maximum allowable number of BGP routes, `0` means unlimited.&quot;&quot;&quot;</span>
+            <span class="n">warning_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">4294967294</span><span class="p">)</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Optional maximum routes warning limit. If not provided, it defaults to `0` meaning no warning limit.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">AntaTemplate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Render the template for each BGP peer in the input list.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">peer</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">bgp_peer</span><span class="o">.</span><span class="n">peer_address</span><span class="p">),</span> <span class="n">vrf</span><span class="o">=</span><span class="n">bgp_peer</span><span class="o">.</span><span class="n">vrf</span><span class="p">)</span> <span class="k">for</span> <span class="n">bgp_peer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">bgp_peers</span><span class="p">]</span>
+
+    <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyBGPPeerRouteLimit.&quot;&quot;&quot;</span>
+        <span class="n">failures</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">command</span><span class="p">,</span> <span class="n">input_entry</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">bgp_peers</span><span class="p">):</span>
+            <span class="n">peer</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">input_entry</span><span class="o">.</span><span class="n">peer_address</span><span class="p">)</span>
+            <span class="n">vrf</span> <span class="o">=</span> <span class="n">input_entry</span><span class="o">.</span><span class="n">vrf</span>
+            <span class="n">maximum_routes</span> <span class="o">=</span> <span class="n">input_entry</span><span class="o">.</span><span class="n">maximum_routes</span>
+            <span class="n">warning_limit</span> <span class="o">=</span> <span class="n">input_entry</span><span class="o">.</span><span class="n">warning_limit</span>
+            <span class="n">failure</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+            <span class="c1"># Verify BGP peer.</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">peer_list</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">json_output</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;vrfs.</span><span class="si">{</span><span class="n">vrf</span><span class="si">}</span><span class="s2">.peerList&quot;</span><span class="p">))</span> <span class="ow">or</span> <span class="p">(</span><span class="n">peer_detail</span> <span class="o">:=</span> <span class="n">get_item</span><span class="p">(</span><span class="n">peer_list</span><span class="p">,</span> <span class="s2">&quot;peerAddress&quot;</span><span class="p">,</span> <span class="n">peer</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">failures</span><span class="p">[</span><span class="n">peer</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">vrf</span><span class="p">:</span> <span class="s2">&quot;Not configured&quot;</span><span class="p">}</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># Verify maximum routes configured.</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">actual_routes</span> <span class="o">:=</span> <span class="n">peer_detail</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;maxTotalRoutes&quot;</span><span class="p">,</span> <span class="s2">&quot;Not Found&quot;</span><span class="p">))</span> <span class="o">!=</span> <span class="n">maximum_routes</span><span class="p">:</span>
+                <span class="n">failure</span><span class="p">[</span><span class="s2">&quot;Maximum total routes&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">actual_routes</span>
+
+            <span class="c1"># Verify warning limit if given.</span>
+            <span class="k">if</span> <span class="n">warning_limit</span> <span class="ow">and</span> <span class="p">(</span><span class="n">actual_warning_limit</span> <span class="o">:=</span> <span class="n">peer_detail</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;totalRoutesWarnLimit&quot;</span><span class="p">,</span> <span class="s2">&quot;Not Found&quot;</span><span class="p">))</span> <span class="o">!=</span> <span class="n">warning_limit</span><span class="p">:</span>
+                <span class="n">failure</span><span class="p">[</span><span class="s2">&quot;Warning limit&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">actual_warning_limit</span>
+
+            <span class="c1"># Updated failures if any.</span>
+            <span class="k">if</span> <span class="n">failure</span><span class="p">:</span>
+                <span class="n">failures</span><span class="p">[</span><span class="n">peer</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">vrf</span><span class="p">:</span> <span class="n">failure</span><span class="p">}</span>
+
+        <span class="c1"># Check if any failures</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">failures</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The following BGP peer(s) are not configured or maximum routes and maximum routes warning limit is not correct:</span><span class="se">\n</span><span class="si">{</span><span class="n">failures</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
