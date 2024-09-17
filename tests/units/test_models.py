@@ -15,6 +15,7 @@ import pytest
 
 from anta.decorators import deprecated_test, skip_on_platforms
 from anta.models import AntaCommand, AntaTemplate, AntaTest
+from anta.result_manager.models import AntaTestStatus
 from tests.units.anta_tests.conftest import build_test_id
 from tests.units.conftest import DEVICE_HW_MODEL
 
@@ -517,6 +518,8 @@ ANTATEST_DATA: list[dict[str, Any]] = [
     },
 ]
 
+BLACKLIST_COMMANDS_PARAMS = ["reload", "reload --force", "write", "wr mem"]
+
 
 class TestAntaTest:
     """Test for anta.models.AntaTest."""
@@ -597,6 +600,7 @@ class TestAntaTest:
     def _assert_test(self, test: AntaTest, expected: dict[str, Any]) -> None:
         assert test.result.result == expected["result"]
         if "messages" in expected:
+            assert len(test.result.messages) == len(expected["messages"])
             for result_msg, expected_msg in zip(test.result.messages, expected["messages"]):  # NOTE: zip(strict=True) has been added in Python 3.10
                 assert expected_msg in result_msg
 
@@ -615,31 +619,36 @@ class TestAntaTest:
         asyncio.run(test.test())
         self._assert_test(test, expected)
 
+    @pytest.mark.parametrize("command", BLACKLIST_COMMANDS_PARAMS)
+    def test_blacklist(self, device: AntaDevice, command: str) -> None:
+        """Test that blacklisted commands are not collected."""
 
-ANTATEST_BLACKLIST_DATA = ["reload", "reload --force", "write", "wr mem"]
+        class FakeTestWithBlacklist(AntaTest):
+            """Fake Test for blacklist."""
 
+            name = "FakeTestWithBlacklist"
+            description = "ANTA test that has blacklisted command"
+            categories: ClassVar[list[str]] = []
+            commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command=command)]
 
-@pytest.mark.parametrize("data", ANTATEST_BLACKLIST_DATA)
-def test_blacklist(device: AntaDevice, data: str) -> None:
-    """Test for blacklisting function."""
+            @AntaTest.anta_test
+            def test(self) -> None:
+                self.result.is_success()
 
-    class FakeTestWithBlacklist(AntaTest):
-        """Fake Test for blacklist."""
+        test = FakeTestWithBlacklist(device)
+        asyncio.run(test.test())
+        assert test.result.result == AntaTestStatus.ERROR
+        assert f"<{command}> is blocked for security reason" in test.result.messages
+        assert test.instance_commands[0].collected is False
 
-        name = "FakeTestWithBlacklist"
-        description = "ANTA test that has blacklisted command"
-        categories: ClassVar[list[str]] = []
-        commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command=data)]
-
-        @AntaTest.anta_test
-        def test(self) -> None:
-            self.result.is_success()
-
-    test_instance = FakeTestWithBlacklist(device)
-
-    # Run the test() method
-    asyncio.run(test_instance.test())
-    assert test_instance.result.result == "error"
+    def test_result_overwrite(self, device: AntaDevice) -> None:
+        """Test the AntaTest.Input.ResultOverwrite model."""
+        test = FakeTest(device, inputs={"result_overwrite": {"categories": ["hardware"], "description": "a description", "custom_field": "a custom field"}})
+        asyncio.run(test.test())
+        assert test.result.result == AntaTestStatus.SUCCESS
+        assert "hardware" in test.result.categories
+        assert test.result.description == "a description"
+        assert test.result.custom_field == "a custom field"
 
 
 class TestAntaComamnd:
@@ -674,16 +683,20 @@ class TestAntaComamnd:
             text_cmd_2.json_output
 
     def test_supported(self) -> None:
-        """Test if the supported property."""
+        """Test the supported property."""
         command = AntaCommand(command="show hardware counter drop", errors=["Unavailable command (not supported on this hardware platform) (at token 2: 'counter')"])
         assert command.supported is False
         command = AntaCommand(
             command="show hardware counter drop", output={"totalAdverseDrops": 0, "totalCongestionDrops": 0, "totalPacketProcessorDrops": 0, "dropEvents": {}}
         )
         assert command.supported is True
+        command = AntaCommand(command="show hardware counter drop")
+        with pytest.raises(RuntimeError) as exec_info:
+            command.supported
+        assert exec_info.value.args[0] == "Command 'show hardware counter drop' has not been collected and has not returned an error. Call AntaDevice.collect()."
 
     def test_requires_privileges(self) -> None:
-        """Test if the requires_privileges property."""
+        """Test the requires_privileges property."""
         command = AntaCommand(command="show aaa methods accounting", errors=["Invalid input (privileged mode required)"])
         assert command.requires_privileges is True
         command = AntaCommand(
@@ -696,3 +709,7 @@ class TestAntaComamnd:
             },
         )
         assert command.requires_privileges is False
+        command = AntaCommand(command="show aaa methods accounting")
+        with pytest.raises(RuntimeError) as exec_info:
+            command.requires_privileges
+        assert exec_info.value.args[0] == "Command 'show aaa methods accounting' has not been collected and has not returned an error. Call AntaDevice.collect()."
