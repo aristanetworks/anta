@@ -1411,7 +1411,7 @@ class VerifyBgpRouteMaps(AntaTest):
 
     Expected Results
     ----------------
-    * Success: The test will pass if the correct route maps are applied in the correct direction(inbound or outbound) for IPv4 BGP peers in the specified VRF.
+    * Success: The test will pass if the correct route maps are applied in the correct direction (inbound or outbound) for IPv4 BGP peers in the specified VRF.
     * Failure: The test will fail if BGP peers are not configured or any neighbor has an incorrect or missing route map in either the inbound or outbound direction.
 
     Examples
@@ -1458,7 +1458,7 @@ class VerifyBgpRouteMaps(AntaTest):
                 At least one of 'inbound' or 'outbound' route-map must be provided.
                 """
                 if not (self.inbound_route_map or self.outbound_route_map):
-                    msg = "At least one of 'inbound' or 'outbound' route-map must be provided."
+                    msg = "At least one of 'inbound_route_map' or 'outbound_route_map' must be provided."
                     raise ValueError(msg)
                 return self
 
