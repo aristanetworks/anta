@@ -40,8 +40,11 @@ The [AntaInventory](../api/inventory.md#anta.inventory.AntaInventory) class is a
 - The [connect_inventory()](../api/inventory.md#anta.inventory.AntaInventory.connect_inventory) coroutine will execute the [refresh()](../api/device.md#anta.device.AntaDevice.refresh) coroutines of all the devices in the inventory.
 - The [parse()](../api/inventory.md#anta.inventory.AntaInventory.parse) static method creates an [AntaInventory](../api/inventory.md#anta.inventory.AntaInventory) instance from a YAML file and returns it. The devices are [AsyncEOSDevice](../api/device.md#anta.device.AsyncEOSDevice) instances.
 
+## Examples
 
-To parse a YAML inventory file and print the devices connection status:
+##### Parse an ANTA inventory file
+
+> This script parses an ANTA inventory file, connects to devices and print their status
 
 ```python
 """
@@ -81,7 +84,10 @@ if __name__ == "__main__":
 ??? note "How to create your inventory file"
     Please visit this [dedicated section](../usage-inventory-catalog.md) for how to use inventory and catalog files.
 
-To run an EOS commands list on the reachable devices from the inventory:
+##### Run EOS commands
+
+> This script runs a list of EOS commands on reachable devices
+
 ```python
 """
 Example
