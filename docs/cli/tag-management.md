@@ -104,9 +104,9 @@ anta.tests.interfaces:
 
 | Command | Description |
 | ------- | ----------- |
-| No `--tags` option | Run all tests on all devices according `tag` definition in your inventory and test catalog.<br/> Tests without tag are executed on all devices. |
-| `--tags leaf` | Run all tests marked with `leaf` tag on all devices configured with `leaf` tag.<br/> All other tests are ignored. |
-| `--tags leaf,spine` | Run all tests marked with `leaf` tag on all devices configured with `leaf` tag.<br/>Run all tests marked with `spine` tag on all devices configured with `spine` tag.<br/> All other tests are ignored. |
+| No `--tags` option | Run all tests on all devices according to the `tag` definitions in your inventory and test catalog.<br/> Tests without tags are executed on all devices. |
+| `--tags leaf` | Run all tests marked with the `leaf` tag on all devices configured with the `leaf` tag.<br/> All other tests are ignored. |
+| `--tags leaf,spine` | Run all tests marked with the `leaf` tag on all devices configured with the `leaf` tag.<br/>Run all tests marked with the `spine` tag on all devices configured with the `spine` tag.<br/> All other tests are ignored. |
 
 ### Examples
 
@@ -114,7 +114,7 @@ The following examples use the inventory and test catalog defined above.
 
 ##### No `--tags` option
 
-Tests without tag are run on all devices.
+Tests without tags are run on all devices.
 Tests with tags will only run on devices with matching tags.
 
 ```bash
