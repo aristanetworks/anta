@@ -22,6 +22,7 @@ from anta.tests.routing.bgp import (
     VerifyBGPPeerRouteRefreshCap,
     VerifyBGPPeersHealth,
     VerifyBGPPeerUpdateErrors,
+    VerifyBgpRouteMaps,
     VerifyBGPSpecificPeers,
     VerifyBGPTimers,
     VerifyEVPNType2Route,
@@ -2202,6 +2203,152 @@ DATA: list[dict[str, Any]] = [
         },
     },
     {
+        "name": "success-strict",
+        "test": VerifyBGPPeerMPCaps,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.1",
+                                "neighborCapabilities": {
+                                    "multiprotocolCaps": {
+                                        "ipv4Unicast": {
+                                            "advertised": True,
+                                            "received": True,
+                                            "enabled": True,
+                                        },
+                                        "ipv4MplsLabels": {
+                                            "advertised": True,
+                                            "received": True,
+                                            "enabled": True,
+                                        },
+                                    }
+                                },
+                            }
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.10",
+                                "neighborCapabilities": {
+                                    "multiprotocolCaps": {
+                                        "ipv4Unicast": {
+                                            "advertised": True,
+                                            "received": True,
+                                            "enabled": True,
+                                        },
+                                        "ipv4MplsVpn": {
+                                            "advertised": True,
+                                            "received": True,
+                                            "enabled": True,
+                                        },
+                                    }
+                                },
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "172.30.11.1",
+                    "vrf": "default",
+                    "strict": True,
+                    "capabilities": ["Ipv4 Unicast", "ipv4 Mpls labels"],
+                },
+                {
+                    "peer_address": "172.30.11.10",
+                    "vrf": "MGMT",
+                    "strict": True,
+                    "capabilities": ["ipv4 Unicast", "ipv4 MplsVpn"],
+                },
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-srict",
+        "test": VerifyBGPPeerMPCaps,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.1",
+                                "neighborCapabilities": {
+                                    "multiprotocolCaps": {
+                                        "ipv4Unicast": {
+                                            "advertised": True,
+                                            "received": True,
+                                            "enabled": True,
+                                        },
+                                        "ipv4MplsLabels": {
+                                            "advertised": True,
+                                            "received": True,
+                                            "enabled": True,
+                                        },
+                                    }
+                                },
+                            }
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.10",
+                                "neighborCapabilities": {
+                                    "multiprotocolCaps": {
+                                        "ipv4Unicast": {
+                                            "advertised": True,
+                                            "received": True,
+                                            "enabled": True,
+                                        },
+                                        "ipv4MplsVpn": {
+                                            "advertised": False,
+                                            "received": True,
+                                            "enabled": True,
+                                        },
+                                    }
+                                },
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "172.30.11.1",
+                    "vrf": "default",
+                    "strict": True,
+                    "capabilities": ["Ipv4 Unicast"],
+                },
+                {
+                    "peer_address": "172.30.11.10",
+                    "vrf": "MGMT",
+                    "strict": True,
+                    "capabilities": ["ipv4MplsVpn", "L2vpnEVPN"],
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Following BGP peer multiprotocol capabilities are not found or not ok:\n{'bgp_peers': {'172.30.11.1': "
+                "{'default': {'status': 'Expected only `ipv4Unicast` capabilities should be listed but found `ipv4Unicast, ipv4MplsLabels` instead.'}},"
+                " '172.30.11.10': {'MGMT': {'status': 'Expected only `ipv4MplsVpn, l2VpnEvpn` capabilities should be listed but found `ipv4Unicast, "
+                "ipv4MplsVpn` instead.'}}}}"
+            ],
+        },
+    },
+    {
         "name": "success",
         "test": VerifyBGPPeerASNCap,
         "eos_data": [
@@ -4355,6 +4502,207 @@ DATA: list[dict[str, Any]] = [
                 "The following BGP peers are not configured or have non-zero update error counters:\n"
                 "{'10.100.0.8': {'default': {'inUpdErrWithdraw': 'Not Found', 'disabledAfiSafi': 'ipv4Unicast'}}, "
                 "'10.100.0.9': {'MGMT': {'inUpdErrWithdraw': 1, 'inUpdErrDisableAfiSafi': 'Not Found'}}}"
+            ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifyBgpRouteMaps,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "routeMapInbound": "RM-MLAG-PEER-IN",
+                                "routeMapOutbound": "RM-MLAG-PEER-OUT",
+                            }
+                        ]
+                    },
+                },
+            },
+            {
+                "vrfs": {
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.10",
+                                "routeMapInbound": "RM-MLAG-PEER-IN",
+                                "routeMapOutbound": "RM-MLAG-PEER-OUT",
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default", "inbound_route_map": "RM-MLAG-PEER-IN", "outbound_route_map": "RM-MLAG-PEER-OUT"},
+                {"peer_address": "10.100.0.10", "vrf": "MGMT", "inbound_route_map": "RM-MLAG-PEER-IN", "outbound_route_map": "RM-MLAG-PEER-OUT"},
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-incorrect-route-map",
+        "test": VerifyBgpRouteMaps,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "routeMapInbound": "RM-MLAG-PEER",
+                                "routeMapOutbound": "RM-MLAG-PEER",
+                            }
+                        ]
+                    },
+                },
+            },
+            {
+                "vrfs": {
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.10",
+                                "routeMapInbound": "RM-MLAG-PEER",
+                                "routeMapOutbound": "RM-MLAG-PEER",
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default", "inbound_route_map": "RM-MLAG-PEER-IN", "outbound_route_map": "RM-MLAG-PEER-OUT"},
+                {"peer_address": "10.100.0.10", "vrf": "MGMT", "inbound_route_map": "RM-MLAG-PEER-IN", "outbound_route_map": "RM-MLAG-PEER-OUT"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following BGP peers are not configured or has an incorrect or missing route map in either the inbound or outbound direction:\n"
+                "{'10.100.0.8': {'default': {'Inbound route-map': 'RM-MLAG-PEER', 'Outbound route-map': 'RM-MLAG-PEER'}}, "
+                "'10.100.0.10': {'MGMT': {'Inbound route-map': 'RM-MLAG-PEER', 'Outbound route-map': 'RM-MLAG-PEER'}}}"
+            ],
+        },
+    },
+    {
+        "name": "failure-incorrect-inbound-map",
+        "test": VerifyBgpRouteMaps,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "routeMapInbound": "RM-MLAG-PEER",
+                                "routeMapOutbound": "RM-MLAG-PEER",
+                            }
+                        ]
+                    },
+                },
+            },
+            {
+                "vrfs": {
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.10",
+                                "routeMapInbound": "RM-MLAG-PEER",
+                                "routeMapOutbound": "RM-MLAG-PEER",
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default", "inbound_route_map": "RM-MLAG-PEER-IN"},
+                {"peer_address": "10.100.0.10", "vrf": "MGMT", "inbound_route_map": "RM-MLAG-PEER-IN"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following BGP peers are not configured or has an incorrect or missing route map in either the inbound or outbound direction:\n"
+                "{'10.100.0.8': {'default': {'Inbound route-map': 'RM-MLAG-PEER'}}, '10.100.0.10': {'MGMT': {'Inbound route-map': 'RM-MLAG-PEER'}}}"
+            ],
+        },
+    },
+    {
+        "name": "failure-route-maps-not-configured",
+        "test": VerifyBgpRouteMaps,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                            }
+                        ]
+                    },
+                },
+            },
+            {
+                "vrfs": {
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.10",
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default", "inbound_route_map": "RM-MLAG-PEER-IN", "outbound_route_map": "RM-MLAG-PEER-OUT"},
+                {"peer_address": "10.100.0.10", "vrf": "MGMT", "inbound_route_map": "RM-MLAG-PEER-IN", "outbound_route_map": "RM-MLAG-PEER-OUT"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following BGP peers are not configured or has an incorrect or missing route map in either the inbound or outbound direction:\n"
+                "{'10.100.0.8': {'default': {'Inbound route-map': 'Not Configured', 'Outbound route-map': 'Not Configured'}}, "
+                "'10.100.0.10': {'MGMT': {'Inbound route-map': 'Not Configured', 'Outbound route-map': 'Not Configured'}}}"
+            ],
+        },
+    },
+    {
+        "name": "failure-peer-not-found",
+        "test": VerifyBgpRouteMaps,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {"peerList": []},
+                },
+            },
+            {
+                "vrfs": {
+                    "MGMT": {"peerList": []},
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default", "inbound_route_map": "RM-MLAG-PEER-IN"},
+                {"peer_address": "10.100.0.10", "vrf": "MGMT", "inbound_route_map": "RM-MLAG-PEER-IN"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following BGP peers are not configured or has an incorrect or missing route map in either the inbound or outbound direction:\n"
+                "{'10.100.0.8': {'default': 'Not configured'}, '10.100.0.10': {'MGMT': 'Not configured'}}"
             ],
         },
     },

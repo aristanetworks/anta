@@ -45,12 +45,15 @@ class ReportTable:
 
         Parameters
         ----------
-            usr_list (list[str]): List of string to concatenate
-            delimiter (str, optional): A delimiter to use to start string. Defaults to None.
+        usr_list : list[str]
+            List of string to concatenate.
+        delimiter : str, optional
+            A delimiter to use to start string. Defaults to None.
 
         Returns
         -------
-            str: Multi-lines string
+        str
+            Multi-lines string.
 
         """
         if delimiter is not None:
@@ -64,11 +67,14 @@ class ReportTable:
 
         Parameters
         ----------
-            headers: List of headers.
-            table: A rich Table instance.
+        headers
+            List of headers.
+        table
+            A rich Table instance.
 
         Returns
         -------
+        Table
             A rich `Table` instance with headers.
 
         """
@@ -84,11 +90,11 @@ class ReportTable:
 
         Parameters
         ----------
-            status: AntaTestStatus enum to color.
+        status: AntaTestStatus enum to color.
 
         Returns
         -------
-            The colored string.
+        The colored string.
 
         """
         color = RICH_COLOR_THEME.get(str(status), "")
@@ -101,11 +107,14 @@ class ReportTable:
 
         Parameters
         ----------
-            manager: A ResultManager instance.
-            title: Title for the report. Defaults to 'All tests results'.
+        manager
+            A ResultManager instance.
+        title
+            Title for the report. Defaults to 'All tests results'.
 
         Returns
         -------
+        Table
             A fully populated rich `Table`
 
         """
@@ -135,12 +144,16 @@ class ReportTable:
 
         Parameters
         ----------
-            manager: A ResultManager instance.
-            tests: List of test names to include. None to select all tests.
-            title: Title of the report.
+        manager
+            A ResultManager instance.
+        tests
+            List of test names to include. None to select all tests.
+        title
+            Title of the report.
 
         Returns
         -------
+        Table
             A fully populated rich `Table`.
         """
         table = Table(title=title, show_lines=True)
@@ -177,12 +190,16 @@ class ReportTable:
 
         Parameters
         ----------
-            manager: A ResultManager instance.
-            devices: List of device names to include. None to select all devices.
-            title: Title of the report.
+        manager
+            A ResultManager instance.
+        devices
+            List of device names to include. None to select all devices.
+        title
+            Title of the report.
 
         Returns
         -------
+        Table
             A fully populated rich `Table`.
         """
         table = Table(title=title, show_lines=True)
@@ -225,6 +242,9 @@ class ReportJinja:
         Report is built based on a J2 template provided by user.
         Data structure sent to template is:
 
+        Example
+        -------
+        ```
         >>> print(ResultManager.json)
         [
             {
@@ -236,15 +256,20 @@ class ReportJinja:
                 description: ...,
             }
         ]
+        ```
 
         Parameters
         ----------
-            data: List of results from ResultManager.results
-            trim_blocks: enable trim_blocks for J2 rendering.
-            lstrip_blocks: enable lstrip_blocks for J2 rendering.
+        data
+            List of results from `ResultManager.results`.
+        trim_blocks
+            enable trim_blocks for J2 rendering.
+        lstrip_blocks
+            enable lstrip_blocks for J2 rendering.
 
         Returns
         -------
+        str
             Rendered template
 
         """
