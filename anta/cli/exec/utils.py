@@ -10,16 +10,15 @@ import asyncio
 import itertools
 import json
 import logging
-import re
 from pathlib import Path
 from typing import TYPE_CHECKING, Literal
 
 from click.exceptions import UsageError
 from httpx import ConnectError, HTTPError
 
-from anta.custom_types import REGEXP_PATH_MARKERS
 from anta.device import AntaDevice, AsyncEOSDevice
 from anta.models import AntaCommand
+from anta.tools import safe_command
 from asynceapi import EapiCommandError
 
 if TYPE_CHECKING:
@@ -52,7 +51,7 @@ async def clear_counters(anta_inventory: AntaInventory, tags: set[str] | None = 
 
 async def collect_commands(
     inv: AntaInventory,
-    commands: dict[str, str],
+    commands: dict[str, list[str]],
     root_dir: Path,
     tags: set[str] | None = None,
 ) -> None:
@@ -61,17 +60,16 @@ async def collect_commands(
     async def collect(dev: AntaDevice, command: str, outformat: Literal["json", "text"]) -> None:
         outdir = Path() / root_dir / dev.name / outformat
         outdir.mkdir(parents=True, exist_ok=True)
-        safe_command = re.sub(rf"{REGEXP_PATH_MARKERS}", "_", command)
         c = AntaCommand(command=command, ofmt=outformat)
         await dev.collect(c)
         if not c.collected:
             logger.error("Could not collect commands on device %s: %s", dev.name, c.errors)
             return
         if c.ofmt == "json":
-            outfile = outdir / f"{safe_command}.json"
+            outfile = outdir / f"{safe_command(command)}.json"
             content = json.dumps(c.json_output, indent=2)
         elif c.ofmt == "text":
-            outfile = outdir / f"{safe_command}.log"
+            outfile = outdir / f"{safe_command(command)}.log"
             content = c.text_output
         else:
             logger.error("Command outformat is not in ['json', 'text'] for command '%s'", command)
@@ -83,6 +81,9 @@ async def collect_commands(
     logger.info("Connecting to devices...")
     await inv.connect_inventory()
     devices = inv.get_inventory(established_only=True, tags=tags).devices
+    if not devices:
+        logger.info("No online device found. Exiting")
+        return
     logger.info("Collecting commands from remote devices")
     coros = []
     if "json_format" in commands:
