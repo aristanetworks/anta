@@ -54,7 +54,7 @@ class Device(httpx.AsyncClient):
     EAPI_OFMT_OPTIONS = ("json", "text")
     EAPI_DEFAULT_OFMT = "json"
 
-    def __init__(  # pylint: disable=too-many-arguments
+    def __init__(
         self,
         host: str | None = None,
         username: str | None = None,
@@ -115,7 +115,7 @@ class Device(httpx.AsyncClient):
         """
         return await port_check_url(self.base_url)
 
-    async def cli(  # noqa: PLR0913  # pylint: disable=too-many-arguments
+    async def cli(  # noqa: PLR0913
         self,
         command: str | dict[str, Any] | None = None,
         commands: Sequence[str | dict[str, Any]] | None = None,
@@ -189,7 +189,7 @@ class Device(httpx.AsyncClient):
                 return None
             raise
 
-    def _jsonrpc_command(  # noqa: PLR0913  # pylint: disable=too-many-arguments
+    def _jsonrpc_command(  # noqa: PLR0913
         self,
         commands: Sequence[str | dict[str, Any]] | None = None,
         ofmt: str | None = None,

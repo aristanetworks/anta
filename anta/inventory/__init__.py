@@ -171,7 +171,6 @@ class AntaInventory(dict[str, AntaDevice]):
             anta_log_exception(e, message, logger)
             raise InventoryIncorrectSchemaError(message) from e
 
-    # pylint: disable=too-many-arguments
     @staticmethod
     def parse(
         filename: str | Path,

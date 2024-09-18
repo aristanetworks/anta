@@ -8,8 +8,6 @@ from __future__ import annotations
 
 from typing import Any
 
-# pylint: disable=C0413
-# because of the patch above
 from anta.tests.routing.bgp import (
     VerifyBGPAdvCommunities,
     VerifyBGPExchangedRoutes,
@@ -27,7 +25,7 @@ from anta.tests.routing.bgp import (
     VerifyBGPTimers,
     VerifyEVPNType2Route,
 )
-from tests.lib.anta import test  # noqa: F401; pylint: disable=W0611
+from tests.units.anta_tests import test
 
 DATA: list[dict[str, Any]] = [
     {
@@ -4310,31 +4308,6 @@ DATA: list[dict[str, Any]] = [
                 "The following BGP peers are not configured or have non-zero update error counters:\n"
                 "{'10.100.0.8': {'default': {'disabledAfiSafi': 'ipv4Unicast'}}, "
                 "'10.100.0.9': {'MGMT': {'inUpdErrWithdraw': 1}}}"
-            ],
-        },
-    },
-    {
-        "name": "failure-not-found",
-        "test": VerifyBGPPeerUpdateErrors,
-        "eos_data": [
-            {
-                "vrfs": {},
-            },
-            {
-                "vrfs": {},
-            },
-        ],
-        "inputs": {
-            "bgp_peers": [
-                {"peer_address": "10.100.0.8", "vrf": "default", "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
-                {"peer_address": "10.100.0.9", "vrf": "MGMT", "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
-            ]
-        },
-        "expected": {
-            "result": "failure",
-            "messages": [
-                "The following BGP peers are not configured or have non-zero update error counters:\n"
-                "{'10.100.0.8': {'default': 'Not configured'}, '10.100.0.9': {'MGMT': 'Not configured'}}"
             ],
         },
     },

@@ -199,6 +199,22 @@ class <YourTestName>(AntaTest):
     ]
 ```
 
+!!! tip "Command revision and version"
+    * Most of EOS commands return a JSON structure according to a model (some commands may not be modeled hence the necessity to use `text` outformat sometimes.
+    * The model can change across time (adding feature, ... ) and when the model is changed in a non backward-compatible way, the __revision__ number is bumped. The initial model starts with __revision__ 1.
+    * A __revision__ applies to a particular CLI command whereas a __version__ is global to an eAPI call. The __version__ is internally translated to a specific __revision__ for each CLI command in the RPC call. The currently supported __version__ values  are `1` and `latest`.
+    * A __revision takes precedence over a version__ (e.g. if a command is run with version="latest" and revision=1, the first revision of the model is returned)
+    * By default, eAPI returns the first revision of each model to ensure that when upgrading, integrations with existing tools are not broken. This is done by using by default `version=1` in eAPI calls.
+
+    By default, ANTA uses `version="latest"` in AntaCommand, but when developing tests, the revision MUST be provided when the outformat of the command is `json`. As explained earlier, this is to ensure that the eAPI always returns the same output model and that the test remains always valid from the day it was created. For some commands, you may also want to run them with a different revision or version.
+
+    For instance, the `VerifyBFDPeersHealth` test leverages the first revision of `show bfd peers`:
+
+    ```
+    # revision 1 as later revision introduce additional nesting for type
+    commands = [AntaCommand(command="show bfd peers", revision=1)]
+    ```
+
 ### Inputs definition
 
 If the user needs to provide inputs for your test, you need to define a [pydantic model](https://docs.pydantic.dev/latest/usage/models/) that defines the schema of the test inputs:
