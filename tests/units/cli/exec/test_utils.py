@@ -155,7 +155,7 @@ async def test_clear_counters(
     ("inventory", "inventory_state", "commands", "tags"),
     [
         pytest.param(
-            {},
+            {"count": 1},
             {
                 "device-0": {"is_online": False},
             },
