@@ -71,23 +71,31 @@ class Device(httpx.AsyncClient):
 
         Parameters
         ----------
-            host: The EOS target device, either hostname (DNS) or ipaddress.
-            username: The login user-name; requires the password parameter.
-            password: The login password; requires the username parameter.
-            proto: The protocol, http or https, to communicate eAPI with the device.
-            port: If not provided, the proto value is used to look up the associated
+        host
+            The EOS target device, either hostname (DNS) or ipaddress.
+        username
+            The login user-name; requires the password parameter.
+        password
+            The login password; requires the username parameter.
+        proto
+            The protocol, http or https, to communicate eAPI with the device.
+        port
+            If not provided, the proto value is used to look up the associated
                   port (http=80, https=443). If provided, overrides the port used to
                   communite with the device.
+        kwargs
+            Other named keyword arguments, some of them are being used in the function
+            cf Other Parameters section below, others are just passed as is to the httpx.AsyncClient.
 
         Other Parameters
         ----------------
-            base_url: str
-                If provided, the complete URL to the device eAPI endpoint.
+        base_url : str
+            If provided, the complete URL to the device eAPI endpoint.
 
-            auth:
-                If provided, used as the httpx authorization initializer value. If
-                not provided, then username+password is assumed by the Caller and
-                used to create a BasicAuth instance.
+        auth :
+            If provided, used as the httpx authorization initializer value. If
+            not provided, then username+password is assumed by the Caller and
+            used to create a BasicAuth instance.
         """
         self.port = port or getservbyname(proto)
         self.host = host
@@ -111,6 +119,7 @@ class Device(httpx.AsyncClient):
 
         Returns
         -------
+        bool
             True when the device eAPI is accessible, False otherwise.
         """
         return await port_check_url(self.base_url)
@@ -132,18 +141,18 @@ class Device(httpx.AsyncClient):
 
         Parameters
         ----------
-        command:
-            A single command to execute; results in a single output response
-        commands:
-            A list of commands to execute; results in a list of output responses
-        ofmt:
+        command
+            A single command to execute; results in a single output response.
+        commands
+            A list of commands to execute; results in a list of output responses.
+        ofmt
             Either 'json' or 'text'; indicates the output format for the CLI commands.
-        version:
+        version
             By default the eAPI will use "version 1" for all API object models.
             This driver will, by default, always set version to "latest" so
             that the behavior matches the CLI of the device.  The caller can
             override the "latest" behavior by explicitly setting the version.
-        suppress_error:
+        suppress_error
             When not False, then if the execution of the command would-have
             raised an EapiCommandError, rather than raising this exception this
             routine will return the value None.
@@ -152,13 +161,13 @@ class Device(httpx.AsyncClient):
             EapiCommandError, now response would be set to None instead.
 
                 response = dev.cli(..., suppress_error=True)
-        auto_complete:
+        auto_complete
             Enabled/disables the command auto-compelete feature of the EAPI.  Per the
             documentation:
                 Allows users to use shorthand commands in eAPI calls. With this
                 parameter included a user can send 'sh ver' via eAPI to get the
                 output of 'show version'.
-        expand_aliases:
+        expand_aliases
             Enables/disables the command use of User defined alias.  Per the
             documentation:
                 Allowed users to provide the expandAliases parameter to eAPI
@@ -166,11 +175,12 @@ class Device(httpx.AsyncClient):
                 For example if an alias is configured as 'sv' for 'show version'
                 then an API call with sv and the expandAliases parameter will
                 return the output of show version.
-        req_id:
+        req_id
             A unique identifier that will be echoed back by the switch. May be a string or number.
 
         Returns
         -------
+        list[dict[str, Any] | str] | dict[str, Any] | str | None
             One or List of output responses, per the description above.
         """
         if not any((command, commands)):
@@ -199,7 +209,42 @@ class Device(httpx.AsyncClient):
         expand_aliases: bool = False,
         req_id: int | str | None = None,
     ) -> dict[str, Any]:
-        """Create the JSON-RPC command dictionary object."""
+        """Create the JSON-RPC command dictionary object.
+
+        Parameters
+        ----------
+        commands
+            A list of commands to execute; results in a list of output responses.
+        ofmt
+            Either 'json' or 'text'; indicates the output format for the CLI commands.
+        version
+            By default the eAPI will use "version 1" for all API object models.
+            This driver will, by default, always set version to "latest" so
+            that the behavior matches the CLI of the device.  The caller can
+            override the "latest" behavior by explicitly setting the version.
+        auto_complete
+            Enabled/disables the command auto-compelete feature of the EAPI.  Per the
+            documentation:
+                Allows users to use shorthand commands in eAPI calls. With this
+                parameter included a user can send 'sh ver' via eAPI to get the
+                output of 'show version'.
+        expand_aliases
+            Enables/disables the command use of User defined alias.  Per the
+            documentation:
+                Allowed users to provide the expandAliases parameter to eAPI
+                calls. This allows users to use aliased commands via the API.
+                For example if an alias is configured as 'sv' for 'show version'
+                then an API call with sv and the expandAliases parameter will
+                return the output of show version.
+        req_id
+            A unique identifier that will be echoed back by the switch. May be a string or number.
+
+        Returns
+        -------
+        dict[str, Any]:
+            dict containing the JSON payload to run the command.
+
+        """
         cmd: dict[str, Any] = {
             "jsonrpc": "2.0",
             "method": "runCmds",
@@ -224,16 +269,17 @@ class Device(httpx.AsyncClient):
 
         Parameters
         ----------
-            jsonrpc:
-                The JSON-RPC as created by the `meth`:_jsonrpc_command().
+        jsonrpc
+            The JSON-RPC as created by the `meth`:_jsonrpc_command().
 
         Raises
         ------
-            EapiCommandError
-                In the event that a command resulted in an error response.
+        EapiCommandError
+            In the event that a command resulted in an error response.
 
         Returns
         -------
+        list[dict[str, Any] | str]
             The list of command results; either dict or text depending on the
             JSON-RPC format parameter.
         """
@@ -282,11 +328,16 @@ class Device(httpx.AsyncClient):
         )
 
     def config_session(self, name: str) -> SessionConfig:
-        """
-        return a SessionConfig instance bound to this device with the given session name.
+        """Return a SessionConfig instance bound to this device with the given session name.
 
         Parameters
         ----------
-            name: The config-session name
+        name
+            The config-session name.
+
+        Returns
+        -------
+        SessionConfig
+            SessionConfig instance bound to this device with the given session name.
         """
         return SessionConfig(self, name)

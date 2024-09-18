@@ -336,7 +336,7 @@ select = ["ALL",
     # TODO: Augment the numpy convention rules to make sure we add all the params
     #       Uncomment below D417
     "D415",
-    # "D417",
+    "D417",
 ]
 ignore = [
   "COM812",  # Ignoring conflicting rules that may cause conflicts when used with the formatter
