@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.34">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.35">
     
     
       
@@ -3389,13 +3389,13 @@
 <span class="sd">    ```</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;VerifyLoggingSourceInt&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;VerifyLoggingSourceIntf&quot;</span>
     <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Verifies logging source-interface for a specified VRF.&quot;</span>
     <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;logging&quot;</span><span class="p">]</span>
     <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show logging&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="p">)]</span>
 
     <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyLoggingSourceInt test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyLoggingSourceIntf test.&quot;&quot;&quot;</span>
 
         <span class="n">interface</span><span class="p">:</span> <span class="nb">str</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Source-interface to use as source IP of log messages.&quot;&quot;&quot;</span>
@@ -3404,7 +3404,7 @@
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyLoggingSourceInt.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyLoggingSourceIntf.&quot;&quot;&quot;</span>
         <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text_output</span>
         <span class="n">pattern</span> <span class="o">=</span> <span class="sa">rf</span><span class="s2">&quot;Logging source-interface &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">interface</span><span class="si">}</span><span class="s2">&#39;.*VRF </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">_get_logging_states</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span> <span class="n">output</span><span class="p">)):</span>
@@ -3802,7 +3802,7 @@
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.07f07601.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable"], "provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable"], "provider": "mike"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.56dfad97.min.js"></script>

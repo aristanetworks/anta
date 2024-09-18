@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.34">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.35">
     
     
       
@@ -3146,7 +3146,8 @@ This list must have the same length and order than the <code>instance_commands</
 
                     <details class="quote">
                     <summary>Source code in <code>anta/models.py</code></summary>
-                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">404</span>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">403</span>
+<span class="normal">404</span>
 <span class="normal">405</span>
 <span class="normal">406</span>
 <span class="normal">407</span>
@@ -3175,8 +3176,7 @@ This list must have the same length and order than the <code>instance_commands</
 <span class="normal">430</span>
 <span class="normal">431</span>
 <span class="normal">432</span>
-<span class="normal">433</span>
-<span class="normal">434</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">433</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">device</span><span class="p">:</span> <span class="n">AntaDevice</span><span class="p">,</span>
     <span class="n">inputs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -3205,7 +3205,7 @@ This list must have the same length and order than the <code>instance_commands</
         <span class="n">description</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_init_inputs</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;unset&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">result</span> <span class="o">==</span> <span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">UNSET</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_commands</span><span class="p">(</span><span class="n">eos_data</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
                   </details>
@@ -3557,12 +3557,12 @@ This list must have the same length and order than the <code>instance_commands</
 
             <details class="quote">
               <summary>Source code in <code>anta/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">366</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">365</span>
+<span class="normal">366</span>
 <span class="normal">367</span>
 <span class="normal">368</span>
 <span class="normal">369</span>
-<span class="normal">370</span>
-<span class="normal">371</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="normal">370</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Implement generic hashing for AntaTest.Input.</span>
 
 <span class="sd">    This will work in most cases but this does not consider 2 lists with different ordering as equal.</span>
@@ -3612,7 +3612,8 @@ This list must have the same length and order than the <code>instance_commands</
 
             <details class="quote">
               <summary>Source code in <code>anta/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">570</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">569</span>
+<span class="normal">570</span>
 <span class="normal">571</span>
 <span class="normal">572</span>
 <span class="normal">573</span>
@@ -3687,8 +3688,7 @@ This list must have the same length and order than the <code>instance_commands</
 <span class="normal">642</span>
 <span class="normal">643</span>
 <span class="normal">644</span>
-<span class="normal">645</span>
-<span class="normal">646</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">645</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">anta_test</span><span class="p">(</span><span class="n">function</span><span class="p">:</span> <span class="n">F</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Coroutine</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TestResult</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Decorate the `test()` method in child classes.</span>
 
@@ -3752,7 +3752,7 @@ This list must have the same length and order than the <code>instance_commands</
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># pylint: disable=broad-exception-caught</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># noqa: BLE001</span>
             <span class="c1"># test() is user-defined code.</span>
             <span class="c1"># We need to catch everything if we want the AntaTest object</span>
             <span class="c1"># to live until the reporting</span>
@@ -3792,7 +3792,8 @@ This list must have the same length and order than the <code>instance_commands</
 
             <details class="quote">
               <summary>Source code in <code>anta/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">557</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">556</span>
+<span class="normal">557</span>
 <span class="normal">558</span>
 <span class="normal">559</span>
 <span class="normal">560</span>
@@ -3802,13 +3803,12 @@ This list must have the same length and order than the <code>instance_commands</
 <span class="normal">564</span>
 <span class="normal">565</span>
 <span class="normal">566</span>
-<span class="normal">567</span>
-<span class="normal">568</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">collect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">567</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">collect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Collect outputs of all commands of this test class from the device of this test instance.&quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">blocked</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
             <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">collect_commands</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">,</span> <span class="n">collection_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># pylint: disable=broad-exception-caught</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># noqa: BLE001</span>
         <span class="c1"># device._collect() is user-defined code.</span>
         <span class="c1"># We need to catch everything if we want the AntaTest object</span>
         <span class="c1"># to live until the reporting</span>
@@ -3840,15 +3840,15 @@ no AntaTemplate for this test.</p>
 
             <details class="quote">
               <summary>Source code in <code>anta/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">531</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">530</span>
+<span class="normal">531</span>
 <span class="normal">532</span>
 <span class="normal">533</span>
 <span class="normal">534</span>
 <span class="normal">535</span>
 <span class="normal">536</span>
 <span class="normal">537</span>
-<span class="normal">538</span>
-<span class="normal">539</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">AntaTemplate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]:</span>
+<span class="normal">538</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">AntaTemplate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Render an AntaTemplate instance of this AntaTest using the provided AntaTest.Input instance at self.inputs.</span>
 
 <span class="sd">    This is not an abstract method because it does not need to be implemented if there is</span>
@@ -3880,7 +3880,8 @@ no AntaTemplate for this test.</p>
 
             <details class="quote">
               <summary>Source code in <code>anta/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">497</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">496</span>
+<span class="normal">497</span>
 <span class="normal">498</span>
 <span class="normal">499</span>
 <span class="normal">500</span>
@@ -3888,8 +3889,7 @@ no AntaTemplate for this test.</p>
 <span class="normal">502</span>
 <span class="normal">503</span>
 <span class="normal">504</span>
-<span class="normal">505</span>
-<span class="normal">506</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">save_commands_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eos_data</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">505</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">save_commands_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eos_data</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Populate output of all AntaCommand instances in `instance_commands`.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">eos_data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_error</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="s2">&quot;Test initialization error: Trying to save more data than there are commands for the test&quot;</span><span class="p">)</span>
@@ -3941,7 +3941,8 @@ It must set the correct status of the <code>result</code> instance attribute wit
 </details>
             <details class="quote">
               <summary>Source code in <code>anta/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">654</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">653</span>
+<span class="normal">654</span>
 <span class="normal">655</span>
 <span class="normal">656</span>
 <span class="normal">657</span>
@@ -3959,8 +3960,7 @@ It must set the correct status of the <code>result</code> instance attribute wit
 <span class="normal">669</span>
 <span class="normal">670</span>
 <span class="normal">671</span>
-<span class="normal">672</span>
-<span class="normal">673</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
+<span class="normal">672</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
 <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Coroutine</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TestResult</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Core of the test logic.</span>
 
@@ -4490,8 +4490,7 @@ AntaDevice.collect() must be called before this property.</p>
 <span class="normal">85</span>
 <span class="normal">86</span>
 <span class="normal">87</span>
-<span class="normal">88</span>
-<span class="normal">89</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">88</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">template</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">version</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;latest&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;latest&quot;</span><span class="p">,</span>
@@ -4500,7 +4499,6 @@ AntaDevice.collect() must be called before this property.</p>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">use_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="c1"># pylint: disable=too-many-arguments</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">template</span> <span class="o">=</span> <span class="n">template</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="n">version</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">revision</span> <span class="o">=</span> <span class="n">revision</span>
@@ -4550,12 +4548,12 @@ AntaDevice.collect() must be called before this property.</p>
 
             <details class="quote">
               <summary>Source code in <code>anta/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">91</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">90</span>
+<span class="normal">91</span>
 <span class="normal">92</span>
 <span class="normal">93</span>
 <span class="normal">94</span>
-<span class="normal">95</span>
-<span class="normal">96</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">95</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the representation of the class.</span>
 
 <span class="sd">    Copying pydantic model style, excluding `params_schema`</span>
@@ -4662,7 +4660,8 @@ AntaTemplate instance.</p>
 
             <details class="quote">
               <summary>Source code in <code>anta/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 98</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 97</span>
+<span class="normal"> 98</span>
 <span class="normal"> 99</span>
 <span class="normal">100</span>
 <span class="normal">101</span>
@@ -4695,8 +4694,7 @@ AntaTemplate instance.</p>
 <span class="normal">128</span>
 <span class="normal">129</span>
 <span class="normal">130</span>
-<span class="normal">131</span>
-<span class="normal">132</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaCommand</span><span class="p">:</span>
+<span class="normal">131</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaCommand</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Render an AntaCommand from an AntaTemplate instance.</span>
 
 <span class="sd">    Keep the parameters used in the AntaTemplate instance.</span>
@@ -4861,7 +4859,7 @@ AntaTemplate instance.</p>
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.07f07601.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable"], "provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable"], "provider": "mike"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.56dfad97.min.js"></script>

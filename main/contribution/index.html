@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.34">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.35">
     
     
       
@@ -2559,40 +2559,42 @@ default<span class="w"> </span>environments:
 clean<span class="w">  </span>-&gt;<span class="w"> </span>Erase<span class="w"> </span>previous<span class="w"> </span>coverage<span class="w"> </span>reports
 lint<span class="w">   </span>-&gt;<span class="w"> </span>Check<span class="w"> </span>the<span class="w"> </span>code<span class="w"> </span>style
 <span class="nb">type</span><span class="w">   </span>-&gt;<span class="w"> </span>Check<span class="w"> </span>typing
-py38<span class="w">   </span>-&gt;<span class="w"> </span>Run<span class="w"> </span>pytest<span class="w"> </span>with<span class="w"> </span>py38
 py39<span class="w">   </span>-&gt;<span class="w"> </span>Run<span class="w"> </span>pytest<span class="w"> </span>with<span class="w"> </span>py39
 py310<span class="w">  </span>-&gt;<span class="w"> </span>Run<span class="w"> </span>pytest<span class="w"> </span>with<span class="w"> </span>py310
 py311<span class="w">  </span>-&gt;<span class="w"> </span>Run<span class="w"> </span>pytest<span class="w"> </span>with<span class="w"> </span>py311
+py312<span class="w">  </span>-&gt;<span class="w"> </span>Run<span class="w"> </span>pytest<span class="w"> </span>with<span class="w"> </span>py312
 report<span class="w"> </span>-&gt;<span class="w"> </span>Generate<span class="w"> </span>coverage<span class="w"> </span>report
 </code></pre></div>
 <h4 id="code-linting">Code linting<a class="headerlink" href="#code-linting" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code>tox<span class="w"> </span>-e<span class="w"> </span>lint
 <span class="o">[</span>...<span class="o">]</span>
-lint:<span class="w"> </span>commands<span class="o">[</span><span class="m">0</span><span class="o">]</span>&gt;<span class="w"> </span>black<span class="w"> </span>--check<span class="w"> </span>--diff<span class="w"> </span>--color<span class="w"> </span>.
-All<span class="w"> </span><span class="k">done</span>!<span class="w"> </span>✨<span class="w"> </span>🍰<span class="w"> </span>✨
-<span class="m">104</span><span class="w"> </span>files<span class="w"> </span>would<span class="w"> </span>be<span class="w"> </span>left<span class="w"> </span>unchanged.
-lint:<span class="w"> </span>commands<span class="o">[</span><span class="m">1</span><span class="o">]</span>&gt;<span class="w"> </span>isort<span class="w"> </span>--check<span class="w"> </span>--diff<span class="w"> </span>--color<span class="w"> </span>.
-Skipped<span class="w"> </span><span class="m">7</span><span class="w"> </span>files
-lint:<span class="w"> </span>commands<span class="o">[</span><span class="m">2</span><span class="o">]</span>&gt;<span class="w"> </span>flake8<span class="w"> </span>--max-line-length<span class="o">=</span><span class="m">165</span><span class="w"> </span>--config<span class="o">=</span>/dev/null<span class="w"> </span>anta
-lint:<span class="w"> </span>commands<span class="o">[</span><span class="m">3</span><span class="o">]</span>&gt;<span class="w"> </span>flake8<span class="w"> </span>--max-line-length<span class="o">=</span><span class="m">165</span><span class="w"> </span>--config<span class="o">=</span>/dev/null<span class="w"> </span>tests
-lint:<span class="w"> </span>commands<span class="o">[</span><span class="m">4</span><span class="o">]</span>&gt;<span class="w"> </span>pylint<span class="w"> </span>anta
+lint:<span class="w"> </span>commands<span class="o">[</span><span class="m">0</span><span class="o">]</span>&gt;<span class="w"> </span>ruff<span class="w"> </span>check<span class="w"> </span>.
+All<span class="w"> </span>checks<span class="w"> </span>passed!
+lint:<span class="w"> </span>commands<span class="o">[</span><span class="m">1</span><span class="o">]</span>&gt;<span class="w"> </span>ruff<span class="w"> </span>format<span class="w"> </span>.<span class="w"> </span>--check
+<span class="m">158</span><span class="w"> </span>files<span class="w"> </span>already<span class="w"> </span>formatted
+lint:<span class="w"> </span>commands<span class="o">[</span><span class="m">2</span><span class="o">]</span>&gt;<span class="w"> </span>pylint<span class="w"> </span>anta
 
 --------------------------------------------------------------------
 Your<span class="w"> </span>code<span class="w"> </span>has<span class="w"> </span>been<span class="w"> </span>rated<span class="w"> </span>at<span class="w"> </span><span class="m">10</span>.00/10<span class="w"> </span><span class="o">(</span>previous<span class="w"> </span>run:<span class="w"> </span><span class="m">10</span>.00/10,<span class="w"> </span>+0.00<span class="o">)</span>
 
-.pkg:<span class="w"> </span>_exit&gt;<span class="w"> </span>python<span class="w"> </span>/Users/guillaumemulocher/.pyenv/versions/3.8.13/envs/anta/lib/python3.8/site-packages/pyproject_api/_backend.py<span class="w"> </span>True<span class="w"> </span>setuptools.build_meta
-<span class="w">  </span>lint:<span class="w"> </span>OK<span class="w"> </span><span class="o">(</span><span class="m">19</span>.26<span class="o">=</span>setup<span class="o">[</span><span class="m">5</span>.83<span class="o">]</span>+cmd<span class="o">[</span><span class="m">1</span>.50,0.76,1.19,1.20,8.77<span class="o">]</span><span class="w"> </span>seconds<span class="o">)</span>
-<span class="w">  </span>congratulations<span class="w"> </span>:<span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="m">19</span>.56<span class="w"> </span>seconds<span class="o">)</span>
+lint:<span class="w"> </span>commands<span class="o">[</span><span class="m">3</span><span class="o">]</span>&gt;<span class="w"> </span>pylint<span class="w"> </span>tests
+
+--------------------------------------------------------------------
+Your<span class="w"> </span>code<span class="w"> </span>has<span class="w"> </span>been<span class="w"> </span>rated<span class="w"> </span>at<span class="w"> </span><span class="m">10</span>.00/10<span class="w"> </span><span class="o">(</span>previous<span class="w"> </span>run:<span class="w"> </span><span class="m">10</span>.00/10,<span class="w"> </span>+0.00<span class="o">)</span>
+
+<span class="w">  </span>lint:<span class="w"> </span>OK<span class="w"> </span><span class="o">(</span><span class="m">22</span>.69<span class="o">=</span>setup<span class="o">[</span><span class="m">2</span>.19<span class="o">]</span>+cmd<span class="o">[</span><span class="m">0</span>.02,0.02,9.71,10.75<span class="o">]</span><span class="w"> </span>seconds<span class="o">)</span>
+<span class="w">  </span>congratulations<span class="w"> </span>:<span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="m">22</span>.72<span class="w"> </span>seconds<span class="o">)</span>
 </code></pre></div>
 <h4 id="code-typing">Code Typing<a class="headerlink" href="#code-typing" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code>tox<span class="w"> </span>-e<span class="w"> </span><span class="nb">type</span>
 
 <span class="o">[</span>...<span class="o">]</span>
 type:<span class="w"> </span>commands<span class="o">[</span><span class="m">0</span><span class="o">]</span>&gt;<span class="w"> </span>mypy<span class="w"> </span>--config-file<span class="o">=</span>pyproject.toml<span class="w"> </span>anta
-Success:<span class="w"> </span>no<span class="w"> </span>issues<span class="w"> </span>found<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">52</span><span class="w"> </span><span class="nb">source</span><span class="w"> </span>files
-.pkg:<span class="w"> </span>_exit&gt;<span class="w"> </span>python<span class="w"> </span>/Users/guillaumemulocher/.pyenv/versions/3.8.13/envs/anta/lib/python3.8/site-packages/pyproject_api/_backend.py<span class="w"> </span>True<span class="w"> </span>setuptools.build_meta
-<span class="w">  </span>type:<span class="w"> </span>OK<span class="w"> </span><span class="o">(</span><span class="m">46</span>.66<span class="o">=</span>setup<span class="o">[</span><span class="m">24</span>.20<span class="o">]</span>+cmd<span class="o">[</span><span class="m">22</span>.46<span class="o">]</span><span class="w"> </span>seconds<span class="o">)</span>
-<span class="w">  </span>congratulations<span class="w"> </span>:<span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="m">47</span>.01<span class="w"> </span>seconds<span class="o">)</span>
+Success:<span class="w"> </span>no<span class="w"> </span>issues<span class="w"> </span>found<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">68</span><span class="w"> </span><span class="nb">source</span><span class="w"> </span>files
+type:<span class="w"> </span>commands<span class="o">[</span><span class="m">1</span><span class="o">]</span>&gt;<span class="w"> </span>mypy<span class="w"> </span>--config-file<span class="o">=</span>pyproject.toml<span class="w"> </span>tests
+Success:<span class="w"> </span>no<span class="w"> </span>issues<span class="w"> </span>found<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">82</span><span class="w"> </span><span class="nb">source</span><span class="w"> </span>files
+<span class="w">  </span>type:<span class="w"> </span>OK<span class="w"> </span><span class="o">(</span><span class="m">31</span>.15<span class="o">=</span>setup<span class="o">[</span><span class="m">14</span>.62<span class="o">]</span>+cmd<span class="o">[</span><span class="m">6</span>.05,10.48<span class="o">]</span><span class="w"> </span>seconds<span class="o">)</span>
+<span class="w">  </span>congratulations<span class="w"> </span>:<span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="m">31</span>.18<span class="w"> </span>seconds<span class="o">)</span>
 </code></pre></div>
 <blockquote>
 <p>NOTE: Typing is configured quite strictly, do not hesitate to reach out if you have any questions, struggles, nightmares.</p>
@@ -2602,7 +2604,7 @@ Success:<span class="w"> </span>no<span class="w"> </span>issues<span class="w">
 <p>All submodule should have its own pytest section under <code>tests/units/anta_tests/&lt;submodule-name&gt;.py</code>.</p>
 <h4 id="how-to-write-a-unit-test-for-an-antatest-subclass">How to write a unit test for an AntaTest subclass<a class="headerlink" href="#how-to-write-a-unit-test-for-an-antatest-subclass" title="Permanent link">&para;</a></h4>
 <p>The Python modules in the <code>tests/units/anta_tests</code> folder  define test parameters for AntaTest subclasses unit tests.
-A generic test function is written for all unit tests in <code>tests.lib.anta</code> module.</p>
+A generic test function is written for all unit tests in <code>tests.units.anta_tests</code> module.</p>
 <p>The <code>pytest_generate_tests</code> function definition in <code>conftest.py</code> is called during test collection.</p>
 <p>The <code>pytest_generate_tests</code> function will parametrize the generic test function based on the <code>DATA</code> data structure defined in <code>tests.units.anta_tests</code> modules.</p>
 <p>See <a href="https://docs.pytest.org/en/7.3.x/how-to/parametrize.html#basic-pytest-generate-tests-example">https://docs.pytest.org/en/7.3.x/how-to/parametrize.html#basic-pytest-generate-tests-example</a></p>
@@ -2618,7 +2620,7 @@ A generic test function is written for all unit tests in <code>tests.lib.anta</c
 <p>In order for your unit tests to be correctly collected, you need to import the generic test function even if not used in the Python module.</p>
 <p>Test example for <code>anta.tests.system.VerifyUptime</code> AntaTest.</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># Import the generic test function</span>
-<span class="kn">from</span> <span class="nn">tests.lib.anta</span> <span class="kn">import</span> <span class="n">test</span>  <span class="c1"># noqa: F401</span>
+<span class="kn">from</span> <span class="nn">tests.units.anta_tests</span> <span class="kn">import</span> <span class="n">test</span>
 
 <span class="c1"># Import your AntaTest</span>
 <span class="kn">from</span> <span class="nn">anta.tests.system</span> <span class="kn">import</span> <span class="n">VerifyUptime</span>
@@ -2653,20 +2655,19 @@ A generic test function is written for all unit tests in <code>tests.lib.anta</c
 pre-commit<span class="w"> </span>install
 </code></pre></div>
 <p>When running a commit or a pre-commit check:</p>
-<div class="highlight"><pre><span></span><code>❯<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;import foobaz&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>test.py<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>git<span class="w"> </span>add<span class="w"> </span>test.py
-❯<span class="w"> </span>pre-commit
-pylint...................................................................Failed
--<span class="w"> </span>hook<span class="w"> </span>id:<span class="w"> </span>pylint
--<span class="w"> </span><span class="nb">exit</span><span class="w"> </span>code:<span class="w"> </span><span class="m">22</span>
-
-*************<span class="w"> </span>Module<span class="w"> </span><span class="nb">test</span>
-test.py:1:0:<span class="w"> </span>C0114:<span class="w"> </span>Missing<span class="w"> </span>module<span class="w"> </span>docstring<span class="w"> </span><span class="o">(</span>missing-module-docstring<span class="o">)</span>
-test.py:1:0:<span class="w"> </span>E0401:<span class="w"> </span>Unable<span class="w"> </span>to<span class="w"> </span>import<span class="w"> </span><span class="s1">&#39;foobaz&#39;</span><span class="w"> </span><span class="o">(</span>import-error<span class="o">)</span>
-test.py:1:0:<span class="w"> </span>W0611:<span class="w"> </span>Unused<span class="w"> </span>import<span class="w"> </span>foobaz<span class="w"> </span><span class="o">(</span>unused-import<span class="o">)</span>
+<div class="highlight"><pre><span></span><code>❯<span class="w"> </span>pre-commit
+trim<span class="w"> </span>trailing<span class="w"> </span>whitespace.................................................Passed
+fix<span class="w"> </span>end<span class="w"> </span>of<span class="w"> </span>files.........................................................Passed
+check<span class="w"> </span><span class="k">for</span><span class="w"> </span>added<span class="w"> </span>large<span class="w"> </span>files..............................................Passed
+check<span class="w"> </span><span class="k">for</span><span class="w"> </span>merge<span class="w"> </span>conflicts................................................Passed
+Check<span class="w"> </span>and<span class="w"> </span>insert<span class="w"> </span>license<span class="w"> </span>on<span class="w"> </span>Python<span class="w"> </span>files.................................Passed
+Check<span class="w"> </span>and<span class="w"> </span>insert<span class="w"> </span>license<span class="w"> </span>on<span class="w"> </span>Markdown<span class="w"> </span>files...............................Passed
+Run<span class="w"> </span>Ruff<span class="w"> </span>linter..........................................................Passed
+Run<span class="w"> </span>Ruff<span class="w"> </span>formatter.......................................................Passed
+Check<span class="w"> </span>code<span class="w"> </span>style<span class="w"> </span>with<span class="w"> </span>pylint.............................................Passed
+Checks<span class="w"> </span><span class="k">for</span><span class="w"> </span>common<span class="w"> </span>misspellings<span class="w"> </span><span class="k">in</span><span class="w"> </span>text<span class="w"> </span>files.............................Passed
+Check<span class="w"> </span>typing<span class="w"> </span>with<span class="w"> </span>mypy...................................................Passed
 </code></pre></div>
-<blockquote>
-<p>NOTE: It could happen that pre-commit and tox disagree on something, in that case please open an issue on Github so we can take a look.. It is most probably wrong configuration on our side.</p>
-</blockquote>
 <h3 id="configure-mypypath">Configure MYPYPATH<a class="headerlink" href="#configure-mypypath" title="Permanent link">&para;</a></h3>
 <p>In some cases, mypy can complain about not having <code>MYPYPATH</code> configured in your shell. It is especially the case when you update both an anta test and its unit test. So you can configure this environment variable with:</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># Option 1: use local folder</span>
@@ -2719,7 +2720,7 @@ test.py:1:0:<span class="w"> </span>W0611:<span class="w"> </span>Unused<span cl
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 12, 2024</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 18, 2024</span>
   </span>
 
     
@@ -2815,7 +2816,7 @@ test.py:1:0:<span class="w"> </span>W0611:<span class="w"> </span>Unused<span cl
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes", "content.tabs.link"], "search": "../assets/javascripts/workers/search.07f07601.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable"], "provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes", "content.tabs.link"], "search": "../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable"], "provider": "mike"}}</script>
     
     
       <script src="../assets/javascripts/bundle.56dfad97.min.js"></script>

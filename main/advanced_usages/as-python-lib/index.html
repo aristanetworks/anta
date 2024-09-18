@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.34">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.35">
     
     
       
@@ -798,23 +798,23 @@
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
-    <a href="#use-tests-from-anta" class="md-nav__link">
+    <a href="#examples" class="md-nav__link">
       <span class="md-ellipsis">
-        Use tests from ANTA
+        Examples
       </span>
     </a>
 
     <!-- Table of contents list -->
     
-      <nav class="md-nav" aria-label="Use tests from ANTA">
+      <nav class="md-nav" aria-label="Examples">
         <ul class="md-nav__list">
           
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
-    <a href="#test-structure" class="md-nav__link">
+    <a href="#parse-an-anta-inventory-file" class="md-nav__link">
       <span class="md-ellipsis">
-        Test structure
+        Parse an ANTA inventory file
       </span>
     </a>
 
@@ -826,47 +826,13 @@
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
-    <a href="#classes-for-commands" class="md-nav__link">
+    <a href="#run-eos-commands" class="md-nav__link">
       <span class="md-ellipsis">
-        Classes for commands
+        Run EOS commands
       </span>
     </a>
 
     <!-- Table of contents list -->
-    
-      <nav class="md-nav" aria-label="Classes for commands">
-        <ul class="md-nav__list">
-          
-          
-            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#antacommand-class" class="md-nav__link">
-      <span class="md-ellipsis">
-        AntaCommand Class
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-  </li>
-          
-          
-          
-            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#antatemplate-class" class="md-nav__link">
-      <span class="md-ellipsis">
-        AntaTemplate Class
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-  </li>
-          
-          
-        </ul>
-      </nav>
     
   </li>
           
@@ -2241,23 +2207,23 @@
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
-    <a href="#use-tests-from-anta" class="md-nav__link">
+    <a href="#examples" class="md-nav__link">
       <span class="md-ellipsis">
-        Use tests from ANTA
+        Examples
       </span>
     </a>
 
     <!-- Table of contents list -->
     
-      <nav class="md-nav" aria-label="Use tests from ANTA">
+      <nav class="md-nav" aria-label="Examples">
         <ul class="md-nav__list">
           
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
-    <a href="#test-structure" class="md-nav__link">
+    <a href="#parse-an-anta-inventory-file" class="md-nav__link">
       <span class="md-ellipsis">
-        Test structure
+        Parse an ANTA inventory file
       </span>
     </a>
 
@@ -2269,47 +2235,13 @@
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
-    <a href="#classes-for-commands" class="md-nav__link">
+    <a href="#run-eos-commands" class="md-nav__link">
       <span class="md-ellipsis">
-        Classes for commands
+        Run EOS commands
       </span>
     </a>
 
     <!-- Table of contents list -->
-    
-      <nav class="md-nav" aria-label="Classes for commands">
-        <ul class="md-nav__list">
-          
-          
-            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#antacommand-class" class="md-nav__link">
-      <span class="md-ellipsis">
-        AntaCommand Class
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-  </li>
-          
-          
-          
-            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#antatemplate-class" class="md-nav__link">
-      <span class="md-ellipsis">
-        AntaTemplate Class
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-  </li>
-          
-          
-        </ul>
-      </nav>
     
   </li>
           
@@ -2377,7 +2309,11 @@ It uses the <a href="https://github.com/jeremyschulman/aio-eapi">aio-eapi</a> eA
 <li>The <a href="../../api/inventory/#anta.inventory.AntaInventory.connect_inventory">connect_inventory()</a> coroutine will execute the <a href="../../api/device/#anta.device.AntaDevice.refresh">refresh()</a> coroutines of all the devices in the inventory.</li>
 <li>The <a href="../../api/inventory/#anta.inventory.AntaInventory.parse">parse()</a> static method creates an <a href="../../api/inventory/#anta.inventory.AntaInventory">AntaInventory</a> instance from a YAML file and returns it. The devices are <a href="../../api/device/#anta.device.AsyncEOSDevice">AsyncEOSDevice</a> instances.</li>
 </ul>
-<p>To parse a YAML inventory file and print the devices connection status:</p>
+<h3 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h3>
+<h6 id="parse-an-anta-inventory-file">Parse an ANTA inventory file<a class="headerlink" href="#parse-an-anta-inventory-file" title="Permanent link">&para;</a></h6>
+<blockquote>
+<p>This script parses an ANTA inventory file, connects to devices and print their status</p>
+</blockquote>
 <div class="highlight"><pre><span></span><code><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Example</span>
 <span class="sd">&quot;&quot;&quot;</span>
@@ -2415,7 +2351,10 @@ It uses the <a href="https://github.com/jeremyschulman/aio-eapi">aio-eapi</a> eA
 <summary>How to create your inventory file</summary>
 <p>Please visit this <a href="../../usage-inventory-catalog/">dedicated section</a> for how to use inventory and catalog files.</p>
 </details>
-<p>To run an EOS commands list on the reachable devices from the inventory:
+<h6 id="run-eos-commands">Run EOS commands<a class="headerlink" href="#run-eos-commands" title="Permanent link">&para;</a></h6>
+<blockquote>
+<p>This script runs a list of EOS commands on reachable devices</p>
+</blockquote>
 <div class="highlight"><pre><span></span><code><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Example</span>
 <span class="sd">&quot;&quot;&quot;</span>
@@ -2470,152 +2409,7 @@ It uses the <a href="https://github.com/jeremyschulman/aio-eapi">aio-eapi</a> eA
     <span class="n">res</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">(</span><span class="n">inventory</span><span class="p">,</span> <span class="n">commands</span><span class="p">))</span>
 
     <span class="n">pprint</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
-</code></pre></div></p>
-<h3 id="use-tests-from-anta">Use tests from ANTA<a class="headerlink" href="#use-tests-from-anta" title="Permanent link">&para;</a></h3>
-<p>All the test classes inherit from the same abstract Base Class AntaTest. The Class definition indicates which commands are required for the test and the user should focus only on writing the <code>test</code> function with optional keywords argument. The instance of the class upon creation instantiates a TestResult object that can be accessed later on to check the status of the test ([unset, skipped, success, failure, error]).</p>
-<h4 id="test-structure">Test structure<a class="headerlink" href="#test-structure" title="Permanent link">&para;</a></h4>
-<p>All tests are built on a class named <code>AntaTest</code> which provides a complete toolset for a test:</p>
-<ul>
-<li>Object creation</li>
-<li>Test definition</li>
-<li>TestResult definition</li>
-<li>Abstracted method to collect data</li>
-</ul>
-<p>This approach means each time you create a test it will be based on this <code>AntaTest</code> class. Besides that, you will have to provide some elements:</p>
-<ul>
-<li><code>name</code>: Name of the test</li>
-<li><code>description</code>: A human readable description of your test</li>
-<li><code>categories</code>: a list of categories to sort test.</li>
-<li><code>commands</code>: a list of command to run. This list <em>must</em> be a list of <code>AntaCommand</code> which is described in the next part of this document.</li>
-</ul>
-<p>Here is an example of a hardware test related to device temperature:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
-
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">cast</span>
-
-<span class="kn">from</span> <span class="nn">anta.models</span> <span class="kn">import</span> <span class="n">AntaTest</span><span class="p">,</span> <span class="n">AntaCommand</span>
-
-
-<span class="k">class</span> <span class="nc">VerifyTemperature</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Verifies device temparture is currently OK.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="c1"># The test name</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;VerifyTemperature&quot;</span>
-    <span class="c1"># A small description of the test, usually the first line of the class docstring</span>
-    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Verifies device temparture is currently OK&quot;</span>
-    <span class="c1"># The category of the test, usually the module name</span>
-    <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;hardware&quot;</span><span class="p">]</span>
-    <span class="c1"># The command(s) used for the test. Could be a template instead</span>
-    <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show system environment temperature&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)]</span>
-
-    <span class="c1"># Decorator</span>
-    <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
-    <span class="c1"># abstract method that must be defined by the child Test class</span>
-    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run VerifyTemperature validation&quot;&quot;&quot;</span>
-        <span class="n">command_output</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
-        <span class="n">temperature_status</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;systemStatus&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;systemStatus&quot;</span> <span class="ow">in</span> <span class="n">command_output</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">temperature_status</span> <span class="o">==</span> <span class="s2">&quot;temperatureOk&quot;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Device temperature is not OK, systemStatus: </span><span class="si">{</span><span class="n">temperature_status</span><span class="w"> </span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div>
-<p>When you run the test, object will automatically call its <code>anta.models.AntaTest.collect()</code> method to get device output for each command if no pre-collected data was given to the test. This method does a loop to call <code>anta.inventory.models.InventoryDevice.collect()</code> methods which is in charge of managing device connection and how to get data.</p>
-<details class="info">
-<summary>run test offline</summary>
-<p>You can also pass eos data directly to your test if you want to validate data collected in a different workflow. An example is provided below just for information:</p>
-<div class="highlight"><pre><span></span><code><span class="n">test</span> <span class="o">=</span> <span class="n">VerifyTemperature</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">eos_data</span><span class="o">=</span><span class="n">test_data</span><span class="p">[</span><span class="s2">&quot;eos_data&quot;</span><span class="p">])</span>
-<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">test</span><span class="o">.</span><span class="n">test</span><span class="p">())</span>
-</code></pre></div>
-</details>
-<p>The <code>test</code> function is always the same and <strong>must</strong> be defined with the <code>@AntaTest.anta_test</code> decorator. This function takes at least one argument which is a <code>anta.inventory.models.InventoryDevice</code> object.
-In some cases a test would rely on some additional inputs from the user, for instance the number of expected peers or some expected numbers. All parameters <strong>must</strong> come with a default value and the test function <strong>should</strong> validate the parameters values (at this stage this is the only place where validation can be done but there are future plans to make this better).</p>
-<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyTemperature</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-    <span class="o">...</span>
-    <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
-    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">pass</span>
-
-<span class="k">class</span> <span class="nc">VerifyTransceiversManufacturers</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-    <span class="o">...</span>
-    <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
-    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">manufacturers</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="c1"># validate the manufactures parameter</span>
-        <span class="k">pass</span>
-</code></pre></div>
-<p>The test itself does not return any value, but the result is directly available from your AntaTest object and exposes a <code>anta.result_manager.models.TestResult</code> object with result, name of the test and optional messages:</p>
-<ul>
-<li><code>name</code> (str): Device name where the test has run.</li>
-<li><code>test</code> (str): Test name runs on the device.</li>
-<li><code>categories</code> (List[str]): List of categories the TestResult belongs to, by default the AntaTest categories.</li>
-<li><code>description</code> (str): TestResult description, by default the AntaTest description.</li>
-<li><code>results</code> (str): Result of the test. Can be one of [&ldquo;unset&rdquo;, &ldquo;success&rdquo;, &ldquo;failure&rdquo;, &ldquo;error&rdquo;, &ldquo;skipped&rdquo;].</li>
-<li><code>message</code> (str, optional): Message to report after the test if any.</li>
-<li><code>custom_field</code> (str, optional): Custom field to store a string for flexibility in integrating with ANTA</li>
-</ul>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">anta.tests.hardware</span> <span class="kn">import</span> <span class="n">VerifyTemperature</span>
-
-<span class="n">test</span> <span class="o">=</span> <span class="n">VerifyTemperature</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">eos_data</span><span class="o">=</span><span class="n">test_data</span><span class="p">[</span><span class="s2">&quot;eos_data&quot;</span><span class="p">])</span>
-<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">test</span><span class="o">.</span><span class="n">test</span><span class="p">())</span>
-<span class="k">assert</span> <span class="n">test</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;success&quot;</span>
-</code></pre></div>
-<h4 id="classes-for-commands">Classes for commands<a class="headerlink" href="#classes-for-commands" title="Permanent link">&para;</a></h4>
-<p>To make it easier to get data, ANTA defines 2 different classes to manage commands to send to devices:</p>
-<h5 id="antacommand-class"><a href="../../api/models/#anta.models.AntaCommand">AntaCommand</a> Class<a class="headerlink" href="#antacommand-class" title="Permanent link">&para;</a></h5>
-<p>Represent a command with following information:</p>
-<ul>
-<li>Command to run</li>
-<li>Output format expected</li>
-<li>eAPI version</li>
-<li>Output of the command</li>
-</ul>
-<p>Usage example:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">anta.models</span> <span class="kn">import</span> <span class="n">AntaCommand</span>
-
-<span class="n">cmd1</span> <span class="o">=</span> <span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show zerotouch&quot;</span><span class="p">)</span>
-<span class="n">cmd2</span> <span class="o">=</span> <span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show running-config diffs&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="p">)</span>
-</code></pre></div>
-<div class="admonition tip">
-<p class="admonition-title">Command revision and version</p>
-<ul>
-<li>Most of EOS commands return a JSON structure according to a model (some commands may not be modeled hence the necessity to use <code>text</code> outformat sometimes.</li>
-<li>The model can change across time (adding feature, &hellip; ) and when the model is changed in a non backward-compatible way, the <strong>revision</strong> number is bumped. The initial model starts with <strong>revision</strong> 1.</li>
-<li>A <strong>revision</strong> applies to a particular CLI command whereas a <strong>version</strong> is global to an eAPI call. The <strong>version</strong> is internally translated to a specific <strong>revision</strong> for each CLI command in the RPC call. The currently supported <strong>version</strong> values  are <code>1</code> and <code>latest</code>.</li>
-<li>A <strong>revision takes precedence over a version</strong> (e.g. if a command is run with version=&rdquo;latest&rdquo; and revision=1, the first revision of the model is returned)</li>
-<li>By default, eAPI returns the first revision of each model to ensure that when upgrading, integrations with existing tools are not broken. This is done by using by default <code>version=1</code> in eAPI calls.</li>
-</ul>
-<p>By default, ANTA uses <code>version="latest"</code> in AntaCommand, but when developing tests, the revision MUST be provided when the outformat of the command is <code>json</code>. As explained earlier, this is to ensure that the eAPI always returns the same output model and that the test remains always valid from the day it was created. For some commands, you may also want to run them with a different revision or version.</p>
-<p>For instance, the <code>VerifyBFDPeersHealth</code> test leverages the first revision of <code>show bfd peers</code>:</p>
-<div class="highlight"><pre><span></span><code># revision 1 as later revision introduce additional nesting for type
-commands = [AntaCommand(command=&quot;show bfd peers&quot;, revision=1)]
-</code></pre></div>
-</div>
-<h5 id="antatemplate-class"><a href="../../api/models/#anta.models.AntaTemplate">AntaTemplate</a> Class<a class="headerlink" href="#antatemplate-class" title="Permanent link">&para;</a></h5>
-<p>Because some command can require more dynamic than just a command with no parameter provided by user, ANTA supports command template: you define a template in your test class and user provide parameters when creating test object.</p>
-<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">RunArbitraryTemplateCommand</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Run an EOS command and return result</span>
-<span class="sd">    Based on AntaTest to build relevant output for pytest</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Run aributrary EOS command&quot;</span>
-    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;To be used only with anta debug commands&quot;</span>
-    <span class="n">template</span> <span class="o">=</span> <span class="n">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">&quot;show interfaces </span><span class="si">{ifd}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;debug&quot;</span><span class="p">]</span>
-
-    <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
-    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">errdisabled_interfaces</span> <span class="o">=</span> <span class="p">[</span><span class="n">interface</span> <span class="k">for</span> <span class="n">interface</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;interfaceStatuses&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">value</span><span class="p">[</span><span class="s2">&quot;linkStatus&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;errdisabled&quot;</span><span class="p">]</span>
-        <span class="o">...</span>
-
-
-<span class="n">params</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;ifd&quot;</span><span class="p">:</span> <span class="s2">&quot;Ethernet2&quot;</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;ifd&quot;</span><span class="p">:</span> <span class="s2">&quot;Ethernet49/1&quot;</span><span class="p">}]</span>
-<span class="n">run_command1</span> <span class="o">=</span> <span class="n">RunArbitraryTemplateCommand</span><span class="p">(</span><span class="n">device_anta</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
-</code></pre></div>
-<p>In this example, test waits for interfaces to check from user setup and will only check for interfaces in <code>params</code></p>
 
 
 
@@ -2636,7 +2430,7 @@ commands = [AntaCommand(command=&quot;show bfd peers&quot;, revision=1)]
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 11, 2024</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 18, 2024</span>
   </span>
 
     
@@ -2732,7 +2526,7 @@ commands = [AntaCommand(command=&quot;show bfd peers&quot;, revision=1)]
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.07f07601.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable"], "provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable"], "provider": "mike"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.56dfad97.min.js"></script>
