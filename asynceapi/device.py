@@ -142,9 +142,9 @@ class Device(httpx.AsyncClient):
         Parameters
         ----------
         command
-            A single command to execute; results in a single output response
+            A single command to execute; results in a single output response.
         commands
-            A list of commands to execute; results in a list of output responses
+            A list of commands to execute; results in a list of output responses.
         ofmt
             Either 'json' or 'text'; indicates the output format for the CLI commands.
         version
