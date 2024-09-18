@@ -39,10 +39,10 @@ default environments:
 clean  -> Erase previous coverage reports
 lint   -> Check the code style
 type   -> Check typing
-py38   -> Run pytest with py38
 py39   -> Run pytest with py39
 py310  -> Run pytest with py310
 py311  -> Run pytest with py311
+py312  -> Run pytest with py312
 report -> Generate coverage report
 ```
 
@@ -51,21 +51,22 @@ report -> Generate coverage report
 ```bash
 tox -e lint
 [...]
-lint: commands[0]> black --check --diff --color .
-All done! ✨ 🍰 ✨
-104 files would be left unchanged.
-lint: commands[1]> isort --check --diff --color .
-Skipped 7 files
-lint: commands[2]> flake8 --max-line-length=165 --config=/dev/null anta
-lint: commands[3]> flake8 --max-line-length=165 --config=/dev/null tests
-lint: commands[4]> pylint anta
+lint: commands[0]> ruff check .
+All checks passed!
+lint: commands[1]> ruff format . --check
+158 files already formatted
+lint: commands[2]> pylint anta
 
 --------------------------------------------------------------------
 Your code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)
 
-.pkg: _exit> python /Users/guillaumemulocher/.pyenv/versions/3.8.13/envs/anta/lib/python3.8/site-packages/pyproject_api/_backend.py True setuptools.build_meta
-  lint: OK (19.26=setup[5.83]+cmd[1.50,0.76,1.19,1.20,8.77] seconds)
-  congratulations :) (19.56 seconds)
+lint: commands[3]> pylint tests
+
+--------------------------------------------------------------------
+Your code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)
+
+  lint: OK (22.69=setup[2.19]+cmd[0.02,0.02,9.71,10.75] seconds)
+  congratulations :) (22.72 seconds)
 ```
 
 ### Code Typing
@@ -75,10 +76,11 @@ tox -e type
 
 [...]
 type: commands[0]> mypy --config-file=pyproject.toml anta
-Success: no issues found in 52 source files
-.pkg: _exit> python /Users/guillaumemulocher/.pyenv/versions/3.8.13/envs/anta/lib/python3.8/site-packages/pyproject_api/_backend.py True setuptools.build_meta
-  type: OK (46.66=setup[24.20]+cmd[22.46] seconds)
-  congratulations :) (47.01 seconds)
+Success: no issues found in 68 source files
+type: commands[1]> mypy --config-file=pyproject.toml tests
+Success: no issues found in 82 source files
+  type: OK (31.15=setup[14.62]+cmd[6.05,10.48] seconds)
+  congratulations :) (31.18 seconds)
 ```
 
 > NOTE: Typing is configured quite strictly, do not hesitate to reach out if you have any questions, struggles, nightmares.
@@ -92,7 +94,7 @@ All submodule should have its own pytest section under `tests/units/anta_tests/<
 ### How to write a unit test for an AntaTest subclass
 
 The Python modules in the `tests/units/anta_tests` folder  define test parameters for AntaTest subclasses unit tests.
-A generic test function is written for all unit tests in `tests.lib.anta` module.
+A generic test function is written for all unit tests in `tests.units.anta_tests` module.
 
 The `pytest_generate_tests` function definition in `conftest.py` is called during test collection.
 
@@ -116,7 +118,7 @@ Test example for `anta.tests.system.VerifyUptime` AntaTest.
 
 ``` python
 # Import the generic test function
-from tests.lib.anta import test  # noqa: F401
+from tests.units.anta_tests import test
 
 # Import your AntaTest
 from anta.tests.system import VerifyUptime
@@ -157,19 +159,20 @@ pre-commit install
 When running a commit or a pre-commit check:
 
 ``` bash
-❯ echo "import foobaz" > test.py && git add test.py
 ❯ pre-commit
-pylint...................................................................Failed
-- hook id: pylint
-- exit code: 22
-
-************* Module test
-test.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-test.py:1:0: E0401: Unable to import 'foobaz' (import-error)
-test.py:1:0: W0611: Unused import foobaz (unused-import)
+trim trailing whitespace.................................................Passed
+fix end of files.........................................................Passed
+check for added large files..............................................Passed
+check for merge conflicts................................................Passed
+Check and insert license on Python files.................................Passed
+Check and insert license on Markdown files...............................Passed
+Run Ruff linter..........................................................Passed
+Run Ruff formatter.......................................................Passed
+Check code style with pylint.............................................Passed
+Checks for common misspellings in text files.............................Passed
+Check typing with mypy...................................................Passed
 ```
 
-> NOTE: It could happen that pre-commit and tox disagree on something, in that case please open an issue on Github so we can take a look.. It is most probably wrong configuration on our side.
 
 ## Configure MYPYPATH
 

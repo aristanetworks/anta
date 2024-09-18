@@ -18,7 +18,7 @@ from pydantic import BaseModel, ConfigDict, ValidationError, create_model
 from anta import GITHUB_SUGGESTION
 from anta.custom_types import REGEXP_EOS_BLACKLIST_CMDS, Revision
 from anta.logger import anta_log_exception, exc_to_str
-from anta.result_manager.models import TestResult
+from anta.result_manager.models import AntaTestStatus, TestResult
 
 if TYPE_CHECKING:
     from collections.abc import Coroutine
@@ -71,7 +71,6 @@ class AntaTemplate:
         *,
         use_cache: bool = True,
     ) -> None:
-        # pylint: disable=too-many-arguments
         self.template = template
         self.version = version
         self.revision = revision
@@ -430,7 +429,7 @@ class AntaTest(ABC):
             description=self.description,
         )
         self._init_inputs(inputs)
-        if self.result.result == "unset":
+        if self.result.result == AntaTestStatus.UNSET:
             self._init_commands(eos_data)
 
     def _init_inputs(self, inputs: dict[str, Any] | AntaTest.Input | None) -> None:
@@ -481,7 +480,7 @@ class AntaTest(ABC):
                     except NotImplementedError as e:
                         self.result.is_error(message=e.args[0])
                         return
-                    except Exception as e:  # pylint: disable=broad-exception-caught
+                    except Exception as e:  # noqa: BLE001
                         # render() is user-defined code.
                         # We need to catch everything if we want the AntaTest object
                         # to live until the reporting
@@ -559,7 +558,7 @@ class AntaTest(ABC):
         try:
             if self.blocked is False:
                 await self.device.collect_commands(self.instance_commands, collection_id=self.name)
-        except Exception as e:  # pylint: disable=broad-exception-caught
+        except Exception as e:  # noqa: BLE001
             # device._collect() is user-defined code.
             # We need to catch everything if we want the AntaTest object
             # to live until the reporting
@@ -631,7 +630,7 @@ class AntaTest(ABC):
 
             try:
                 function(self, **kwargs)
-            except Exception as e:  # pylint: disable=broad-exception-caught
+            except Exception as e:  # noqa: BLE001
                 # test() is user-defined code.
                 # We need to catch everything if we want the AntaTest object
                 # to live until the reporting

@@ -173,7 +173,7 @@ class AntaCatalogFile(RootModel[dict[ImportString[Any], list[AntaTestDefinition]
                 module_name = f".{module_name}"  # noqa: PLW2901
             try:
                 module: ModuleType = importlib.import_module(name=module_name, package=package)
-            except Exception as e:  # pylint: disable=broad-exception-caught
+            except Exception as e:
                 # A test module is potentially user-defined code.
                 # We need to catch everything if we want to have meaningful logs
                 module_str = f"{module_name[1:] if module_name.startswith('.') else module_name}{f' from package {package}' if package else ''}"

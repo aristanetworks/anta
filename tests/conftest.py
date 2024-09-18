@@ -1,53 +1,56 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""conftest.py - used to store anta specific fixtures used for tests."""
+"""See https://docs.pytest.org/en/stable/reference/fixtures.html#conftest-py-sharing-fixtures-across-multiple-files."""
 
-from __future__ import annotations
-
-import logging
-from typing import Any
+import asyncio
+from collections.abc import Iterator
+from pathlib import Path
+from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
+import respx
 
-# Load fixtures from dedicated file tests/lib/fixture.py
-# As well as pytest_asyncio plugin to test co-routines
-pytest_plugins = [
-    "tests.lib.fixture",
-    "pytest_asyncio",
-]
+from anta.device import AsyncEOSDevice
+from anta.inventory import AntaInventory
 
-# Enable nice assert messages
-# https://docs.pytest.org/en/7.1.x/how-to/writing_plugins.html#assertion-rewriting
-pytest.register_assert_rewrite("tests.lib.anta")
-
-# Placeholder to disable logging of some external libs
-for _ in ("asyncio", "httpx"):
-    logging.getLogger(_).setLevel(logging.CRITICAL)
+DATA_DIR: Path = Path(__file__).parent.resolve() / "data"
 
 
-def build_test_id(val: dict[str, Any]) -> str:
-    """Build id for a unit test of an AntaTest subclass.
-
-    {
-        "name": "meaniful test name",
-        "test": <AntaTest instance>,
-        ...
-    }
-    """
-    return f"{val['test'].module}.{val['test'].__name__}-{val['name']}"
-
-
-def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
-    """Generate ANTA testts unit tests dynamically during test collection.
-
-    It will parametrize test cases based on the `DATA` data structure defined in `tests.units.anta_tests` modules.
-    See `tests/units/anta_tests/README.md` for more information on how to use it.
-    Test IDs are generated using the `build_test_id` function above.
-
-    Checking that only the function "test" is parametrized with data to allow for writing tests for helper functions
-    in each module.
-    """
-    if "tests.units.anta_tests" in metafunc.module.__package__ and metafunc.function.__name__ == "test":
-        # This is a unit test for an AntaTest subclass
-        metafunc.parametrize("data", metafunc.module.DATA, ids=build_test_id)
+@pytest.fixture(params=[{"count": 1}])
+def inventory(request: pytest.FixtureRequest) -> Iterator[AntaInventory]:
+    """Generate an ANTA inventory."""
+    user = "admin"
+    password = "password"  # noqa: S105
+    disable_cache = request.param.get("disable_cache", True)
+    reachable = request.param.get("reachable", True)
+    if "filename" in request.param:
+        inv = AntaInventory.parse(DATA_DIR / request.param["filename"], username=user, password=password, disable_cache=disable_cache)
+    else:
+        inv = AntaInventory()
+        for i in range(request.param["count"]):
+            inv.add_device(
+                AsyncEOSDevice(
+                    host=f"device-{i}.anta.arista.com",
+                    username=user,
+                    password=password,
+                    name=f"device-{i}",
+                    disable_cache=disable_cache,
+                )
+            )
+    if reachable:
+        # This context manager makes all devices reachable
+        with patch("asyncio.open_connection", AsyncMock(spec=asyncio.open_connection, return_value=(Mock(), Mock()))), respx.mock:
+            respx.post(path="/command-api", headers={"Content-Type": "application/json-rpc"}, json__params__cmds__0__cmd="show version").respond(
+                json={
+                    "result": [
+                        {
+                            "modelName": "pytest",
+                        }
+                    ],
+                }
+            )
+            yield inv
+    else:
+        with patch("asyncio.open_connection", AsyncMock(spec=asyncio.open_connection, side_effect=TimeoutError)):
+            yield inv
