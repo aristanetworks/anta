@@ -4812,7 +4812,15 @@
 <span class="normal">739</span>
 <span class="normal">740</span>
 <span class="normal">741</span>
-<span class="normal">742</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyISISSegmentRoutingTunnels</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">742</span>
+<span class="normal">743</span>
+<span class="normal">744</span>
+<span class="normal">745</span>
+<span class="normal">746</span>
+<span class="normal">747</span>
+<span class="normal">748</span>
+<span class="normal">749</span>
+<span class="normal">750</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyISISSegmentRoutingTunnels</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Verify ISIS-SR tunnels computed by device.</span>
 
@@ -4887,10 +4895,6 @@
 
 <span class="sd">        This method performs the main test logic for verifying ISIS Segment Routing tunnels.</span>
 <span class="sd">        It checks the command output, initiates defaults, and performs various checks on the tunnels.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">            None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
@@ -4930,12 +4934,15 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">            via_input (VerifyISISSegmentRoutingTunnels.Input.Entry.Vias): The input tunnel type to check.</span>
-<span class="sd">            eos_entry (dict[str, Any]): The EOS entry containing the tunnel types.</span>
+<span class="sd">        via_input : VerifyISISSegmentRoutingTunnels.Input.Entry.Vias</span>
+<span class="sd">            The input tunnel type to check.</span>
+<span class="sd">        eos_entry : dict[str, Any]</span>
+<span class="sd">            The EOS entry containing the tunnel types.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">            bool: True if the tunnel type matches any of the tunnel types in `eos_entry`, False otherwise.</span>
+<span class="sd">        bool</span>
+<span class="sd">            True if the tunnel type matches any of the tunnel types in `eos_entry`, False otherwise.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">via_input</span><span class="o">.</span><span class="n">type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">any</span><span class="p">(</span>
@@ -4955,12 +4962,15 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">            via_input (VerifyISISSegmentRoutingTunnels.Input.Entry.Vias): The input via object.</span>
-<span class="sd">            eos_entry (dict[str, Any]): The EOS entry dictionary.</span>
+<span class="sd">        via_input : VerifyISISSegmentRoutingTunnels.Input.Entry.Vias</span>
+<span class="sd">            The input via object.</span>
+<span class="sd">        eos_entry : dict[str, Any]</span>
+<span class="sd">            The EOS entry dictionary.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">            bool: True if the tunnel nexthop matches, False otherwise.</span>
+<span class="sd">        bool</span>
+<span class="sd">            True if the tunnel nexthop matches, False otherwise.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">via_input</span><span class="o">.</span><span class="n">nexthop</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">any</span><span class="p">(</span>
@@ -4980,12 +4990,15 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">            via_input (VerifyISISSegmentRoutingTunnels.Input.Entry.Vias): The input via object.</span>
-<span class="sd">            eos_entry (dict[str, Any]): The EOS entry dictionary.</span>
+<span class="sd">        via_input : VerifyISISSegmentRoutingTunnels.Input.Entry.Vias</span>
+<span class="sd">            The input via object.</span>
+<span class="sd">        eos_entry : dict[str, Any]</span>
+<span class="sd">            The EOS entry dictionary.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">            bool: True if the tunnel interface exists, False otherwise.</span>
+<span class="sd">        bool</span>
+<span class="sd">            True if the tunnel interface exists, False otherwise.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">via_input</span><span class="o">.</span><span class="n">interface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">any</span><span class="p">(</span>
@@ -5005,12 +5018,15 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">            via_input (VerifyISISSegmentRoutingTunnels.Input.Entry.Vias): The input vias to check.</span>
-<span class="sd">            eos_entry (dict[str, Any]): The EOS entry to compare against.</span>
+<span class="sd">        via_input : VerifyISISSegmentRoutingTunnels.Input.Entry.Vias</span>
+<span class="sd">            The input vias to check.</span>
+<span class="sd">        eos_entry : dict[str, Any])</span>
+<span class="sd">            The EOS entry to compare against.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">            bool: True if the tunnel ID matches any of the tunnel IDs in the EOS entry&#39;s vias, False otherwise.</span>
+<span class="sd">        bool</span>
+<span class="sd">            True if the tunnel ID matches any of the tunnel IDs in the EOS entry&#39;s vias, False otherwise.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">via_input</span><span class="o">.</span><span class="n">tunnel_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">any</span><span class="p">(</span>
