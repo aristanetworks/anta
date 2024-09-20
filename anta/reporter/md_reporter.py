@@ -12,6 +12,7 @@ from typing import TYPE_CHECKING, ClassVar
 
 from anta.constants import MD_REPORT_TOC
 from anta.logger import anta_log_exception
+from anta.result_manager.models import AntaTestStatus
 
 if TYPE_CHECKING:
     from collections.abc import Generator
@@ -40,8 +41,10 @@ class MDReportGenerator:
 
         Parameters
         ----------
-            results: The ResultsManager instance containing all test results.
-            md_filename: The path to the markdown file to write the report into.
+        results
+            The ResultsManager instance containing all test results.
+        md_filename
+            The path to the markdown file to write the report into.
         """
         try:
             with md_filename.open("w", encoding="utf-8") as mdfile:
@@ -73,8 +76,10 @@ class MDReportBase(ABC):
 
         Parameters
         ----------
-            mdfile: An open file object to write the markdown data into.
-            results: The ResultsManager instance containing all test results.
+        mdfile
+            An open file object to write the markdown data into.
+        results
+            The ResultsManager instance containing all test results.
         """
         self.mdfile = mdfile
         self.results = results
@@ -101,12 +106,13 @@ class MDReportBase(ABC):
 
         Returns
         -------
-            str: Formatted header name.
+        str
+            Formatted header name.
 
         Example
         -------
-            - `ANTAReport` will become ANTA Report.
-            - `TestResultsSummary` will become Test Results Summary.
+        - `ANTAReport` will become ANTA Report.
+        - `TestResultsSummary` will become Test Results Summary.
         """
         class_name = self.__class__.__name__
 
@@ -123,8 +129,10 @@ class MDReportBase(ABC):
 
         Parameters
         ----------
-            table_heading: List of strings to join for the table heading.
-            last_table: Flag to determine if it's the last table of the markdown file to avoid unnecessary new line. Defaults to False.
+        table_heading
+            List of strings to join for the table heading.
+        last_table
+            Flag to determine if it's the last table of the markdown file to avoid unnecessary new line. Defaults to False.
         """
         self.mdfile.write("\n".join(table_heading) + "\n")
         for row in self.generate_rows():
@@ -139,11 +147,12 @@ class MDReportBase(ABC):
 
         Parameters
         ----------
-            heading_level: The level of the heading (1-6).
+        heading_level
+            The level of the heading (1-6).
 
         Example
         -------
-            ## Test Results Summary
+        ## Test Results Summary
         """
         # Ensure the heading level is within the valid range of 1 to 6
         heading_level = max(1, min(heading_level, 6))
@@ -156,11 +165,13 @@ class MDReportBase(ABC):
 
         Parameters
         ----------
-            text: The text to escape markdown characters from.
+        text
+            The text to escape markdown characters from.
 
         Returns
         -------
-            str: The text with escaped markdown characters.
+        str
+            The text with escaped markdown characters.
         """
         # Custom field from a TestResult object can be None
         if text is None:
@@ -203,10 +214,10 @@ class SummaryTotals(MDReportBase):
         """Generate the rows of the summary totals table."""
         yield (
             f"| {self.results.get_total_results()} "
-            f"| {self.results.get_total_results({'success'})} "
-            f"| {self.results.get_total_results({'skipped'})} "
-            f"| {self.results.get_total_results({'failure'})} "
-            f"| {self.results.get_total_results({'error'})} |\n"
+            f"| {self.results.get_total_results({AntaTestStatus.SUCCESS})} "
+            f"| {self.results.get_total_results({AntaTestStatus.SKIPPED})} "
+            f"| {self.results.get_total_results({AntaTestStatus.FAILURE})} "
+            f"| {self.results.get_total_results({AntaTestStatus.ERROR})} |\n"
         )
 
     def generate_section(self) -> None:

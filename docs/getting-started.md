@@ -72,7 +72,7 @@ anta_inventory:
     tags: ['fabric', 'leaf']
 ```
 
-> You can read more details about how to build your inventory [here](usage-inventory-catalog.md#create-an-inventory-file)
+> You can read more details about how to build your inventory [here](usage-inventory-catalog.md#device-inventory)
 
 ## Test Catalog
 

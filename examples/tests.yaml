@@ -221,6 +221,12 @@ anta.tests.interfaces:
         - name: Eth2
           auto: False
           speed: 2.5
+  - VerifyLACPInterfacesStatus:
+      interfaces:
+        - name: Ethernet5
+          portchannel: Port-Channel5
+        - name: Ethernet6
+          portchannel: Port-Channel5
 
 anta.tests.lanz:
   - VerifyLANZ:
@@ -447,6 +453,15 @@ anta.tests.system:
   - VerifyMemoryUtilization:
   - VerifyFileSystemUtilization:
   - VerifyNTP:
+  - VerifyNTPAssociations:
+      ntp_servers:
+        - server_address: 1.1.1.1
+          preferred: True
+          stratum: 1
+        - server_address: 2.2.2.2
+          stratum: 1
+        - server_address: 3.3.3.3
+          stratum: 1
 
 anta.tests.vlan:
   - VerifyVlanInternalPolicy:
@@ -539,6 +554,7 @@ anta.tests.routing:
         bgp_peers:
           - peer_address: 172.30.11.1
             vrf: default
+            strict: False
             capabilities:
               - ipv4Unicast
     - VerifyBGPPeerASNCap:
@@ -595,6 +611,18 @@ anta.tests.routing:
             update_errors:
               - inUpdErrWithdraw
               - inUpdErrIgnore
+    - VerifyBgpRouteMaps:
+        bgp_peers:
+          - peer_address: 10.100.4.1
+            vrf: default
+            inbound_route_map: RM-MLAG-PEER-IN
+            outbound_route_map: RM-MLAG-PEER-IN
+    - VerifyBGPPeerRouteLimit:
+        bgp_peers:
+          - peer_address: 10.100.0.8
+            vrf: default
+            maximum_routes: 12000
+            warning_limit: 10000
   ospf:
     - VerifyOSPFNeighborState:
     - VerifyOSPFNeighborCount:

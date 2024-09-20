@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING, Any, Callable
 
 import click
 
-from anta.cli.utils import ExitCode, inventory_options
+from anta.cli.utils import ExitCode, core_options
 
 if TYPE_CHECKING:
     from anta.inventory import AntaInventory
@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 def debug_options(f: Callable[..., Any]) -> Callable[..., Any]:
     """Click common options required to execute a command on a specific device."""
 
-    @inventory_options
+    @core_options
     @click.option(
         "--ofmt",
         type=click.Choice(["json", "text"]),
@@ -44,12 +44,10 @@ def debug_options(f: Callable[..., Any]) -> Callable[..., Any]:
         ctx: click.Context,
         *args: tuple[Any],
         inventory: AntaInventory,
-        tags: set[str] | None,
         device: str,
         **kwargs: Any,
     ) -> Any:
         # TODO: @gmuloc - tags come from context https://github.com/aristanetworks/anta/issues/584
-        # pylint: disable=unused-argument
         # ruff: noqa: ARG001
         if (d := inventory.get(device)) is None:
             logger.error("Device '%s' does not exist in Inventory", device)

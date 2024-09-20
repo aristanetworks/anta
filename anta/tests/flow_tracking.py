@@ -19,13 +19,17 @@ def validate_record_export(record_export: dict[str, str], tracker_info: dict[str
     """
     Validate the record export configuration against the tracker info.
 
-    Args:
-        record_export (dict): The expected record export configuration.
-        tracker_info (dict): The actual tracker info from the command output.
+    Parameters
+    ----------
+    record_export
+        The expected record export configuration.
+    tracker_info
+        The actual tracker info from the command output.
 
     Returns
     -------
-        str : A failure message if the record export configuration does not match, otherwise blank string.
+    str
+        A failure message if the record export configuration does not match, otherwise blank string.
     """
     failed_log = ""
     actual_export = {"inactive timeout": tracker_info.get("inactiveTimeout"), "interval": tracker_info.get("activeInterval")}
@@ -39,13 +43,17 @@ def validate_exporters(exporters: list[dict[str, str]], tracker_info: dict[str, 
     """
     Validate the exporter configurations against the tracker info.
 
-    Args:
-        exporters (list[dict]): The list of expected exporter configurations.
-        tracker_info (dict): The actual tracker info from the command output.
+    Parameters
+    ----------
+    exporters
+        The list of expected exporter configurations.
+    tracker_info
+        The actual tracker info from the command output.
 
     Returns
     -------
-        str: Failure message if any exporter configuration does not match.
+    str
+        Failure message if any exporter configuration does not match.
     """
     failed_log = ""
     for exporter in exporters:

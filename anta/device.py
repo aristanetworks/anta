@@ -42,13 +42,20 @@ class AntaDevice(ABC):
 
     Attributes
     ----------
-        name: Device name
-        is_online: True if the device IP is reachable and a port can be open.
-        established: True if remote command execution succeeds.
-        hw_model: Hardware model of the device.
-        tags: Tags for this device.
-        cache: In-memory cache from aiocache library for this device (None if cache is disabled).
-        cache_locks: Dictionary mapping keys to asyncio locks to guarantee exclusive access to the cache if not disabled.
+    name : str
+        Device name.
+    is_online : bool
+        True if the device IP is reachable and a port can be open.
+    established : bool
+        True if remote command execution succeeds.
+    hw_model : str
+        Hardware model of the device.
+    tags : set[str]
+        Tags for this device.
+    cache : Cache | None
+        In-memory cache from aiocache library for this device (None if cache is disabled).
+    cache_locks : dict
+        Dictionary mapping keys to asyncio locks to guarantee exclusive access to the cache if not disabled.
 
     """
 
@@ -57,9 +64,12 @@ class AntaDevice(ABC):
 
         Parameters
         ----------
-            name: Device name.
-            tags: Tags for this device.
-            disable_cache: Disable caching for all commands for this device.
+        name
+            Device name.
+        tags
+            Tags for this device.
+        disable_cache
+            Disable caching for all commands for this device.
 
         """
         self.name: str = name
@@ -96,7 +106,7 @@ class AntaDevice(ABC):
 
     @property
     def cache_statistics(self) -> dict[str, Any] | None:
-        """Returns the device cache statistics for logging purposes."""
+        """Return the device cache statistics for logging purposes."""
         # Need to ignore pylint no-member as Cache is a proxy class and pylint is not smart enough
         # https://github.com/pylint-dev/pylint/issues/7258
         if self.cache is not None:
@@ -116,6 +126,17 @@ class AntaDevice(ABC):
         yield "established", self.established
         yield "disable_cache", self.cache is None
 
+    def __repr__(self) -> str:
+        """Return a printable representation of an AntaDevice."""
+        return (
+            f"AntaDevice({self.name!r}, "
+            f"tags={self.tags!r}, "
+            f"hw_model={self.hw_model!r}, "
+            f"is_online={self.is_online!r}, "
+            f"established={self.established!r}, "
+            f"disable_cache={self.cache is None!r})"
+        )
+
     @abstractmethod
     async def _collect(self, command: AntaCommand, *, collection_id: str | None = None) -> None:
         """Collect device command output.
@@ -132,8 +153,10 @@ class AntaDevice(ABC):
 
         Parameters
         ----------
-            command: The command to collect.
-            collection_id: An identifier used to build the eAPI request ID.
+        command
+            The command to collect.
+        collection_id
+            An identifier used to build the eAPI request ID.
         """
 
     async def collect(self, command: AntaCommand, *, collection_id: str | None = None) -> None:
@@ -149,8 +172,10 @@ class AntaDevice(ABC):
 
         Parameters
         ----------
-            command: The command to collect.
-            collection_id: An identifier used to build the eAPI request ID.
+        command
+            The command to collect.
+        collection_id
+            An identifier used to build the eAPI request ID.
         """
         # Need to ignore pylint no-member as Cache is a proxy class and pylint is not smart enough
         # https://github.com/pylint-dev/pylint/issues/7258
@@ -172,8 +197,10 @@ class AntaDevice(ABC):
 
         Parameters
         ----------
-            commands: The commands to collect.
-            collection_id: An identifier used to build the eAPI request ID.
+        commands
+            The commands to collect.
+        collection_id
+            An identifier used to build the eAPI request ID.
         """
         await asyncio.gather(*(self.collect(command=command, collection_id=collection_id) for command in commands))
 
@@ -182,9 +209,12 @@ class AntaDevice(ABC):
         """Update attributes of an AntaDevice instance.
 
         This coroutine must update the following attributes of AntaDevice:
-            - `is_online`: When the device IP is reachable and a port can be open
-            - `established`: When a command execution succeeds
-            - `hw_model`: The hardware model of the device
+
+        - `is_online`: When the device IP is reachable and a port can be open.
+
+        - `established`: When a command execution succeeds.
+
+        - `hw_model`: The hardware model of the device.
         """
 
     async def copy(self, sources: list[Path], destination: Path, direction: Literal["to", "from"] = "from") -> None:
@@ -194,9 +224,12 @@ class AntaDevice(ABC):
 
         Parameters
         ----------
-            sources: List of files to copy to or from the device.
-            destination: Local or remote destination when copying the files. Can be a folder.
-            direction: Defines if this coroutine copies files to or from the device.
+        sources
+            List of files to copy to or from the device.
+        destination
+            Local or remote destination when copying the files. Can be a folder.
+        direction
+            Defines if this coroutine copies files to or from the device.
 
         """
         _ = (sources, destination, direction)
@@ -209,15 +242,19 @@ class AsyncEOSDevice(AntaDevice):
 
     Attributes
     ----------
-        name: Device name
-        is_online: True if the device IP is reachable and a port can be open
-        established: True if remote command execution succeeds
-        hw_model: Hardware model of the device
-        tags: Tags for this device
+    name : str
+        Device name.
+    is_online : bool
+        True if the device IP is reachable and a port can be open.
+    established : bool
+        True if remote command execution succeeds.
+    hw_model : str
+        Hardware model of the device.
+    tags : set[str]
+        Tags for this device.
 
     """
 
-    # pylint: disable=R0913
     def __init__(
         self,
         host: str,
@@ -239,19 +276,32 @@ class AsyncEOSDevice(AntaDevice):
 
         Parameters
         ----------
-            host: Device FQDN or IP.
-            username: Username to connect to eAPI and SSH.
-            password: Password to connect to eAPI and SSH.
-            name: Device name.
-            enable: Collect commands using privileged mode.
-            enable_password: Password used to gain privileged access on EOS.
-            port: eAPI port. Defaults to 80 is proto is 'http' or 443 if proto is 'https'.
-            ssh_port: SSH port.
-            tags: Tags for this device.
-            timeout: Timeout value in seconds for outgoing API calls.
-            insecure: Disable SSH Host Key validation.
-            proto: eAPI protocol. Value can be 'http' or 'https'.
-            disable_cache: Disable caching for all commands for this device.
+        host
+            Device FQDN or IP.
+        username
+            Username to connect to eAPI and SSH.
+        password
+            Password to connect to eAPI and SSH.
+        name
+            Device name.
+        enable
+            Collect commands using privileged mode.
+        enable_password
+            Password used to gain privileged access on EOS.
+        port
+            eAPI port. Defaults to 80 is proto is 'http' or 443 if proto is 'https'.
+        ssh_port
+            SSH port.
+        tags
+            Tags for this device.
+        timeout
+            Timeout value in seconds for outgoing API calls.
+        insecure
+            Disable SSH Host Key validation.
+        proto
+            eAPI protocol. Value can be 'http' or 'https'.
+        disable_cache
+            Disable caching for all commands for this device.
 
         """
         if host is None:
@@ -298,6 +348,22 @@ class AsyncEOSDevice(AntaDevice):
             yield ("_session", vars(self._session))
             yield ("_ssh_opts", _ssh_opts)
 
+    def __repr__(self) -> str:
+        """Return a printable representation of an AsyncEOSDevice."""
+        return (
+            f"AsyncEOSDevice({self.name!r}, "
+            f"tags={self.tags!r}, "
+            f"hw_model={self.hw_model!r}, "
+            f"is_online={self.is_online!r}, "
+            f"established={self.established!r}, "
+            f"disable_cache={self.cache is None!r}, "
+            f"host={self._session.host!r}, "
+            f"eapi_port={self._session.port!r}, "
+            f"username={self._ssh_opts.username!r}, "
+            f"enable={self.enable!r}, "
+            f"insecure={self._ssh_opts.known_hosts is None!r})"
+        )
+
     @property
     def _keys(self) -> tuple[Any, ...]:
         """Two AsyncEOSDevice objects are equal if the hostname and the port are the same.
@@ -306,7 +372,7 @@ class AsyncEOSDevice(AntaDevice):
         """
         return (self._session.host, self._session.port)
 
-    async def _collect(self, command: AntaCommand, *, collection_id: str | None = None) -> None:  # noqa: C901  function is too complex - because of many required except blocks #pylint: disable=line-too-long
+    async def _collect(self, command: AntaCommand, *, collection_id: str | None = None) -> None:  # noqa: C901  function is too complex - because of many required except blocks
         """Collect device command output from EOS using aio-eapi.
 
         Supports outformat `json` and `text` as output structure.
@@ -315,8 +381,10 @@ class AsyncEOSDevice(AntaDevice):
 
         Parameters
         ----------
-            command: The command to collect.
-            collection_id: An identifier used to build the eAPI request ID.
+        command
+            The command to collect.
+        collection_id
+            An identifier used to build the eAPI request ID.
         """
         commands: list[dict[str, str | int]] = []
         if self.enable and self._enable_password is not None:
@@ -407,9 +475,12 @@ class AsyncEOSDevice(AntaDevice):
 
         Parameters
         ----------
-            sources: List of files to copy to or from the device.
-            destination: Local or remote destination when copying the files. Can be a folder.
-            direction: Defines if this coroutine copies files to or from the device.
+        sources
+            List of files to copy to or from the device.
+        destination
+            Local or remote destination when copying the files. Can be a folder.
+        direction
+            Defines if this coroutine copies files to or from the device.
 
         """
         async with asyncssh.connect(

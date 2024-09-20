@@ -147,8 +147,10 @@ def save_markdown_report(ctx: click.Context, md_output: pathlib.Path) -> None:
 
     Parameters
     ----------
-        ctx: Click context containing the result manager.
-        md_output: Path to save the markdown report.
+    ctx
+        Click context containing the result manager.
+    md_output
+        Path to save the markdown report.
     """
     try:
         MDReportGenerator.generate(results=_get_result_manager(ctx), md_filename=md_output)

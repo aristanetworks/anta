@@ -35,7 +35,6 @@ def run_cmd(
     version: Literal["1", "latest"],
     revision: int,
 ) -> None:
-    # pylint: disable=too-many-arguments
     """Run arbitrary command to an ANTA device."""
     console.print(f"Run command [green]{command}[/green] on [red]{device.name}[/red]")
     # I do not assume the following line, but click make me do it
@@ -71,14 +70,16 @@ def run_template(
     version: Literal["1", "latest"],
     revision: int,
 ) -> None:
-    # pylint: disable=too-many-arguments
+    # Using \b for click
+    # ruff: noqa: D301
     """Run arbitrary templated command to an ANTA device.
 
     Takes a list of arguments (keys followed by a value) to build a dictionary used as template parameters.
 
-    Example:
+    \b
+    Example
     -------
-    anta debug run-template -d leaf1a -t 'show vlan {vlan_id}' vlan_id 1
+        anta debug run-template -d leaf1a -t 'show vlan {vlan_id}' vlan_id 1
 
     """
     template_params = dict(zip(params[::2], params[1::2]))

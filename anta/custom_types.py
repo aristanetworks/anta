@@ -21,6 +21,8 @@ REGEXP_TYPE_EOS_INTERFACE = r"^(Dps|Ethernet|Fabric|Loopback|Management|Port-Cha
 """Match EOS interface types like Ethernet1/1, Vlan1, Loopback1, etc."""
 REGEXP_TYPE_VXLAN_SRC_INTERFACE = r"^(Loopback)([0-9]|[1-9][0-9]{1,2}|[1-7][0-9]{3}|8[01][0-9]{2}|819[01])$"
 """Match Vxlan source interface like Loopback10."""
+REGEX_TYPE_PORTCHANNEL = r"^Port-Channel[0-9]{1,6}$"
+"""Match Port Channel interface like Port-Channel5."""
 REGEXP_TYPE_HOSTNAME = r"^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$"
 """Match hostname like `my-hostname`, `my-hostname-1`, `my-hostname-1-2`."""
 
@@ -66,9 +68,9 @@ def interface_case_sensitivity(v: str) -> str:
 
     Examples
     --------
-         - ethernet -> Ethernet
-         - vlan -> Vlan
-         - loopback -> Loopback
+    - ethernet -> Ethernet
+    - vlan -> Vlan
+    - loopback -> Loopback
 
     """
     if isinstance(v, str) and v != "" and not v[0].isupper():
@@ -81,10 +83,10 @@ def bgp_multiprotocol_capabilities_abbreviations(value: str) -> str:
 
     Examples
     --------
-        - IPv4 Unicast
-        - L2vpnEVPN
-        - ipv4 MPLS Labels
-        - ipv4Mplsvpn
+    - IPv4 Unicast
+    - L2vpnEVPN
+    - ipv4 MPLS Labels
+    - ipv4Mplsvpn
 
     """
     patterns = {
@@ -112,9 +114,6 @@ def validate_regex(value: str) -> str:
     return value
 
 
-# ANTA framework
-TestStatus = Literal["unset", "success", "failure", "error", "skipped"]
-
 # AntaTest.Input types
 AAAAuthMethod = Annotated[str, AfterValidator(aaa_group_prefix)]
 Vlan = Annotated[int, Field(ge=0, le=4094)]
@@ -135,6 +134,12 @@ EthernetInterface = Annotated[
 VxlanSrcIntf = Annotated[
     str,
     Field(pattern=REGEXP_TYPE_VXLAN_SRC_INTERFACE),
+    BeforeValidator(interface_autocomplete),
+    BeforeValidator(interface_case_sensitivity),
+]
+PortChannelInterface = Annotated[
+    str,
+    Field(pattern=REGEX_TYPE_PORTCHANNEL),
     BeforeValidator(interface_autocomplete),
     BeforeValidator(interface_case_sensitivity),
 ]

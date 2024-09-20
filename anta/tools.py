@@ -8,10 +8,12 @@ from __future__ import annotations
 import cProfile
 import os
 import pstats
+import re
 from functools import wraps
 from time import perf_counter
 from typing import TYPE_CHECKING, Any, Callable, TypeVar, cast
 
+from anta.custom_types import REGEXP_PATH_MARKERS
 from anta.logger import format_td
 
 if TYPE_CHECKING:
@@ -34,12 +36,15 @@ def get_failed_logs(expected_output: dict[Any, Any], actual_output: dict[Any, An
 
     Parameters
     ----------
-    expected_output (dict): Expected output of a test.
-    actual_output (dict): Actual output of a test
+    expected_output
+        Expected output of a test.
+    actual_output
+        Actual output of a test
 
     Returns
     -------
-    str: Failed log of a test.
+    str
+        Failed log of a test.
 
     """
     failed_logs = []
@@ -65,18 +70,20 @@ def custom_division(numerator: float, denominator: float) -> int | float:
 
     Parameters
     ----------
-    numerator: The numerator.
-    denominator: The denominator.
+    numerator
+        The numerator.
+    denominator
+        The denominator.
 
     Returns
     -------
-    Union[int, float]: The result of the division.
+    Union[int, float]
+        The result of the division.
     """
     result = numerator / denominator
     return int(result) if result.is_integer() else result
 
 
-# pylint: disable=too-many-arguments
 def get_dict_superset(
     list_of_dicts: list[dict[Any, Any]],
     input_dict: dict[Any, Any],
@@ -136,7 +143,6 @@ def get_dict_superset(
     return default
 
 
-# pylint: disable=too-many-arguments
 def get_value(
     dictionary: dict[Any, Any],
     key: str,
@@ -193,7 +199,6 @@ def get_value(
     return value
 
 
-# pylint: disable=too-many-arguments
 def get_item(
     list_of_dicts: list[dict[Any, Any]],
     key: Any,
@@ -304,11 +309,13 @@ def cprofile(sort_by: str = "cumtime") -> Callable[[F], F]:
 
     Parameters
     ----------
-        sort_by (str): The criterion to sort the profiling results. Default is 'cumtime'.
+    sort_by
+        The criterion to sort the profiling results. Default is 'cumtime'.
 
     Returns
     -------
-        Callable: The decorated function with conditional profiling.
+    Callable
+        The decorated function with conditional profiling.
     """
 
     def decorator(func: F) -> F:
@@ -320,11 +327,14 @@ def cprofile(sort_by: str = "cumtime") -> Callable[[F], F]:
 
             Parameters
             ----------
-                *args: Arbitrary positional arguments.
-                **kwargs: Arbitrary keyword arguments.
+            *args
+                Arbitrary positional arguments.
+            **kwargs
+                Arbitrary keyword arguments.
 
             Returns
             -------
+            Any
                 The result of the function call.
             """
             cprofile_file = os.environ.get("ANTA_CPROFILE")
@@ -346,3 +356,19 @@ def cprofile(sort_by: str = "cumtime") -> Callable[[F], F]:
         return cast(F, wrapper)
 
     return decorator
+
+
+def safe_command(command: str) -> str:
+    """Return a sanitized command.
+
+    Parameters
+    ----------
+    command
+        The command to sanitize.
+
+    Returns
+    -------
+    str
+        The sanitized command.
+    """
+    return re.sub(rf"{REGEXP_PATH_MARKERS}", "_", command)

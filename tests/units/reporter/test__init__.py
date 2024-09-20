@@ -13,9 +13,9 @@ from rich.table import Table
 
 from anta import RICH_COLOR_PALETTE
 from anta.reporter import ReportJinja, ReportTable
+from anta.result_manager.models import AntaTestStatus
 
 if TYPE_CHECKING:
-    from anta.custom_types import TestStatus
     from anta.result_manager import ResultManager
 
 
@@ -47,7 +47,6 @@ class TestReportTable:
     )
     def test__split_list_to_txt_list(self, usr_list: list[str], delimiter: str | None, expected_output: str) -> None:
         """Test _split_list_to_txt_list."""
-        # pylint: disable=protected-access
         report = ReportTable()
         assert report._split_list_to_txt_list(usr_list, delimiter) == expected_output
 
@@ -61,7 +60,6 @@ class TestReportTable:
     )
     def test__build_headers(self, headers: list[str]) -> None:
         """Test _build_headers."""
-        # pylint: disable=protected-access
         report = ReportTable()
         table = Table()
         table_column_before = len(table.columns)
@@ -73,17 +71,15 @@ class TestReportTable:
     @pytest.mark.parametrize(
         ("status", "expected_status"),
         [
-            pytest.param("unknown", "unknown", id="unknown status"),
-            pytest.param("unset", "[grey74]unset", id="unset status"),
-            pytest.param("skipped", "[bold orange4]skipped", id="skipped status"),
-            pytest.param("failure", "[bold red]failure", id="failure status"),
-            pytest.param("error", "[indian_red]error", id="error status"),
-            pytest.param("success", "[green4]success", id="success status"),
+            pytest.param(AntaTestStatus.UNSET, "[grey74]unset", id="unset status"),
+            pytest.param(AntaTestStatus.SKIPPED, "[bold orange4]skipped", id="skipped status"),
+            pytest.param(AntaTestStatus.FAILURE, "[bold red]failure", id="failure status"),
+            pytest.param(AntaTestStatus.ERROR, "[indian_red]error", id="error status"),
+            pytest.param(AntaTestStatus.SUCCESS, "[green4]success", id="success status"),
         ],
     )
-    def test__color_result(self, status: TestStatus, expected_status: str) -> None:
+    def test__color_result(self, status: AntaTestStatus, expected_status: str) -> None:
         """Test _build_headers."""
-        # pylint: disable=protected-access
         report = ReportTable()
         assert report._color_result(status) == expected_status
 
@@ -104,7 +100,6 @@ class TestReportTable:
         expected_length: int,
     ) -> None:
         """Test report_all."""
-        # pylint: disable=too-many-arguments
         manager = result_manager_factory(number_of_tests)
 
         report = ReportTable()
@@ -133,14 +128,13 @@ class TestReportTable:
         expected_length: int,
     ) -> None:
         """Test report_summary_tests."""
-        # pylint: disable=too-many-arguments
         # TODO: refactor this later... this is injecting double test results by modyfing the device name
         # should be a fixture
         manager = result_manager_factory(number_of_tests)
         new_results = [result.model_copy() for result in manager.results]
         for result in new_results:
             result.name = "test_device"
-            result.result = "failure"
+            result.result = AntaTestStatus.FAILURE
 
         report = ReportTable()
         kwargs = {"tests": [test] if test is not None else None, "title": title}
@@ -168,14 +162,13 @@ class TestReportTable:
         expected_length: int,
     ) -> None:
         """Test report_summary_devices."""
-        # pylint: disable=too-many-arguments
         # TODO: refactor this later... this is injecting double test results by modyfing the device name
         # should be a fixture
         manager = result_manager_factory(number_of_tests)
         new_results = [result.model_copy() for result in manager.results]
         for result in new_results:
             result.name = dev or "test_device"
-            result.result = "failure"
+            result.result = AntaTestStatus.FAILURE
         manager.results = new_results
 
         report = ReportTable()
