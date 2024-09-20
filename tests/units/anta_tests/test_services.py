@@ -8,7 +8,7 @@ from __future__ import annotations
 from typing import Any
 
 from anta.tests.services import VerifyDNSLookup, VerifyDNSServers, VerifyErrdisableRecovery, VerifyHostname
-from tests.lib.anta import test  # noqa: F401; pylint: disable=W0611
+from tests.units.anta_tests import test
 
 DATA: list[dict[str, Any]] = [
     {

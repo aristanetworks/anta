@@ -3,28 +3,13 @@
   "ruff.configuration": "pyproject.toml",
   "python.testing.unittestEnabled": false,
   "python.testing.pytestEnabled": true,
-  "pylint.importStrategy": "fromEnvironment",
-  "pylint.severity": {
-    "refactor": "Warning"
-  },
-  "pylint.args": [
-    "--load-plugins",
-    "pylint_pydantic",
-    "--rcfile=pyproject.toml"
-  ],
   "python.testing.pytestArgs": [
     "tests"
   ],
-  "autoDocstring.docstringFormat": "numpy",
-  "autoDocstring.includeName": false,
-  "autoDocstring.includeExtendedSummary": true,
-  "autoDocstring.startOnNewLine": true,
-  "autoDocstring.guessTypes": true,
   "python.languageServer": "Pylance",
   "githubIssues.issueBranchTitle": "issues/${issueNumber}-${issueTitle}",
   "editor.formatOnPaste": true,
   "files.trimTrailingWhitespace": true,
-  "mypy.configFile": "pyproject.toml",
   "workbench.remoteIndicator.showExtensionRecommendations": true,
 
 }

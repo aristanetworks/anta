@@ -18,7 +18,6 @@ if TYPE_CHECKING:
     from pytest_httpx import HTTPXMock
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize(
     "cmds",
     [
@@ -44,7 +43,6 @@ async def test_jsonrpc_exec_success(
     assert result == SUCCESS_EAPI_RESPONSE["result"]
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize(
     "cmds",
     [
@@ -76,7 +74,6 @@ async def test_jsonrpc_exec_eapi_command_error(
     assert exc_info.value.not_exec == [jsonrpc_request["params"]["cmds"][2]]
 
 
-@pytest.mark.asyncio
 async def test_jsonrpc_exec_http_status_error(asynceapi_device: Device, httpx_mock: HTTPXMock) -> None:
     """Test the Device.jsonrpc_exec method with an HTTPStatusError."""
     jsonrpc_request: dict[str, Any] = JSONRPC_REQUEST_TEMPLATE.copy()

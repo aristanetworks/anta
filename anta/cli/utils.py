@@ -40,7 +40,6 @@ class ExitCode(enum.IntEnum):
 
 
 def parse_tags(ctx: click.Context, param: Option, value: str | None) -> set[str] | None:
-    # pylint: disable=unused-argument
     # ruff: noqa: ARG001
     """Click option callback to parse an ANTA inventory tags."""
     if value is not None:
@@ -207,7 +206,6 @@ def core_options(f: Callable[..., Any]) -> Callable[..., Any]:
         disable_cache: bool,
         **kwargs: dict[str, Any],
     ) -> Any:
-        # pylint: disable=too-many-arguments
         # If help is invoke somewhere, do not parse inventory
         if ctx.obj.get("_anta_help"):
             return f(*args, inventory=None, **kwargs)
@@ -272,7 +270,6 @@ def inventory_options(f: Callable[..., Any]) -> Callable[..., Any]:
         tags: set[str] | None,
         **kwargs: dict[str, Any],
     ) -> Any:
-        # pylint: disable=too-many-arguments
         # If help is invoke somewhere, do not parse inventory
         if ctx.obj.get("_anta_help"):
             return f(*args, tags=tags, **kwargs)

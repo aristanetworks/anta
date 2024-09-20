@@ -301,7 +301,8 @@ class ResultManager:
 
         Parameters
         ----------
-        devices: Set of device names to filter the results.
+        devices
+            Set of device names to filter the results.
 
         Returns
         -------
