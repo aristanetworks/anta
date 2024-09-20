@@ -287,8 +287,8 @@ class VerifyStpTopologyChanges(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyStpTopologyChanges test."""
 
-        threshold: int = 10
-        """The threshold number of changes in the STP topology. Defaults to 10."""
+        threshold: int
+        """The threshold number of changes in the STP topology."""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -296,12 +296,15 @@ class VerifyStpTopologyChanges(AntaTest):
         failures: dict[str, Any] = {"topologies": {}}
 
         command_output = self.instance_commands[0].json_output
-        if not (stp_topologies := command_output.get("topologies")):
-            self.result.is_failure("None of STP topology is configured.")
-            return
+        stp_topologies = command_output.get("topologies", {})
 
         # verifies all available topologies except the "NoStp" topology.
         stp_topologies.pop("NoStp", None)
+
+        # Verify the STP topology(s).
+        if not stp_topologies:
+            self.result.is_failure("None of STP topology is configured.")
+            return
 
         # Verifies the number of changes across all interfaces
         for topology, topology_details in stp_topologies.items():

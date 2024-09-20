@@ -8,7 +8,7 @@ from __future__ import annotations
 from typing import Any
 
 from anta.tests.stp import VerifySTPBlockedPorts, VerifySTPCounters, VerifySTPForwardingPorts, VerifySTPMode, VerifySTPRootPriority, VerifyStpTopologyChanges
-from tests.lib.anta import test
+from tests.units.anta_tests import test
 
 DATA: list[dict[str, Any]] = [
     {
@@ -325,7 +325,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "failure", "messages": ["The following instance(s) have the wrong STP root priority configured: ['VL20', 'VL30']"]},
     },
     {
-        "name": "success",
+        "name": "success-mstp",
         "test": VerifyStpTopologyChanges,
         "eos_data": [
             {
@@ -346,7 +346,32 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": {},
+        "inputs": {"threshold": 10},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-rstp",
+        "test": VerifyStpTopologyChanges,
+        "eos_data": [
+            {
+                "unmappedVlans": [],
+                "topologies": {
+                    "Cist": {
+                        "interfaces": {
+                            "Vxlan1": {"state": "forwarding", "numChanges": 1, "lastChange": 1723990624.735365},
+                            "PeerEthernet3": {"state": "forwarding", "numChanges": 1, "lastChange": 1723990624.7353542},
+                        }
+                    },
+                    "NoStp": {
+                        "interfaces": {
+                            "Cpu": {"state": "forwarding", "numChanges": 1, "lastChange": 1723990624.735365},
+                            "Ethernet1": {"state": "forwarding", "numChanges": 15, "lastChange": 1723990624.7353542},
+                        }
+                    },
+                },
+            },
+        ],
+        "inputs": {"threshold": 10},
         "expected": {"result": "success"},
     },
     {
@@ -365,7 +390,7 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": {},
+        "inputs": {"threshold": 10},
         "expected": {
             "result": "failure",
             "messages": [
@@ -378,9 +403,19 @@ DATA: list[dict[str, Any]] = [
         "name": "failure-topologies-not-configured",
         "test": VerifyStpTopologyChanges,
         "eos_data": [
-            {"unmappedVlans": [], "topologies": {}},
+            {
+                "unmappedVlans": [],
+                "topologies": {
+                    "NoStp": {
+                        "interfaces": {
+                            "Cpu": {"state": "forwarding", "numChanges": 1, "lastChange": 1723990624.735365},
+                            "Ethernet1": {"state": "forwarding", "numChanges": 15, "lastChange": 1723990624.7353542},
+                        }
+                    }
+                },
+            },
         ],
-        "inputs": {},
+        "inputs": {"threshold": 10},
         "expected": {"result": "failure", "messages": ["None of STP topology is configured."]},
     },
 ]
