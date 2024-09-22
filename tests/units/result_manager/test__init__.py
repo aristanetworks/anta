@@ -152,7 +152,6 @@ class TestResultManager:
         expected_status: str,
         expected_raise: AbstractContextManager[Exception],
     ) -> None:
-        # pylint: disable=too-many-arguments
         """Test ResultManager_update_status."""
         result_manager = ResultManager()
         result_manager.status = AntaTestStatus(starting_status)

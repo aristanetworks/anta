@@ -144,7 +144,6 @@ def test_create_inventory_from_ansible(
     expected_inv_length: int,
 ) -> None:
     """Test anta.get.utils.create_inventory_from_ansible."""
-    # pylint: disable=R0913
     target_file = tmp_path / "inventory.yml"
     inventory_file_path = DATA_DIR / inventory_filename
 

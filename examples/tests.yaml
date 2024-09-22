@@ -609,6 +609,18 @@ anta.tests.routing:
             update_errors:
               - inUpdErrWithdraw
               - inUpdErrIgnore
+    - VerifyBgpRouteMaps:
+        bgp_peers:
+          - peer_address: 10.100.4.1
+            vrf: default
+            inbound_route_map: RM-MLAG-PEER-IN
+            outbound_route_map: RM-MLAG-PEER-IN
+    - VerifyBGPPeerRouteLimit:
+        bgp_peers:
+          - peer_address: 10.100.0.8
+            vrf: default
+            maximum_routes: 12000
+            warning_limit: 10000
     - VerifyBGPPeerGroup:
         bgp_peers:
           - peer_address: 10.100.0.8

@@ -48,7 +48,6 @@ def debug_options(f: Callable[..., Any]) -> Callable[..., Any]:
         **kwargs: Any,
     ) -> Any:
         # TODO: @gmuloc - tags come from context https://github.com/aristanetworks/anta/issues/584
-        # pylint: disable=unused-argument
         # ruff: noqa: ARG001
         if (d := inventory.get(device)) is None:
             logger.error("Device '%s' does not exist in Inventory", device)

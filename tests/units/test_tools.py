@@ -313,7 +313,6 @@ def test_get_dict_superset(
     expected_raise: AbstractContextManager[Exception],
 ) -> None:
     """Test get_dict_superset."""
-    # pylint: disable=too-many-arguments
     with expected_raise:
         assert get_dict_superset(list_of_dicts, input_dict, default, var_name, custom_error_msg, required=required) == expected_result
 
@@ -421,7 +420,6 @@ def test_get_value(
     expected_raise: AbstractContextManager[Exception],
 ) -> None:
     """Test get_value."""
-    # pylint: disable=too-many-arguments
     kwargs = {
         "default": default,
         "required": required,
@@ -485,7 +483,6 @@ def test_get_item(
     expected_raise: AbstractContextManager[Exception],
 ) -> None:
     """Test get_item."""
-    # pylint: disable=too-many-arguments
     with expected_raise:
         assert get_item(list_of_dicts, key, value, default, var_name, custom_error_msg, required=required, case_sensitive=case_sensitive) == expected_result
 

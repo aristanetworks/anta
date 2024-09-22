@@ -62,7 +62,7 @@ class ReportCsv:
 
         Parameters
         ----------
-        results
+        result
             A TestResult to convert into list.
 
         Returns

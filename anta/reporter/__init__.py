@@ -90,12 +90,13 @@ class ReportTable:
 
         Parameters
         ----------
-        status: AntaTestStatus enum to color.
+        status
+            AntaTestStatus enum to color.
 
         Returns
         -------
-        The colored string.
-
+        str
+            The colored string.
         """
         color = RICH_COLOR_THEME.get(str(status), "")
         return f"[{color}]{status}" if color != "" else str(status)
@@ -115,8 +116,7 @@ class ReportTable:
         Returns
         -------
         Table
-            A fully populated rich `Table`
-
+            A fully populated rich `Table`.
         """
         table = Table(title=title, show_lines=True)
         headers = ["Device", "Test Name", "Test Status", "Message(s)", "Test description", "Test category"]
