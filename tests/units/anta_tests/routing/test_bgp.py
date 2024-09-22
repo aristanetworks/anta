@@ -14,6 +14,7 @@ from anta.tests.routing.bgp import (
     VerifyBGPPeerASNCap,
     VerifyBGPPeerCount,
     VerifyBGPPeerDropStats,
+    VerifyBGPPeerGroup,
     VerifyBGPPeerMD5Auth,
     VerifyBGPPeerMPCaps,
     VerifyBGPPeerRouteLimit,
@@ -24,7 +25,6 @@ from anta.tests.routing.bgp import (
     VerifyBGPSpecificPeers,
     VerifyBGPTimers,
     VerifyEVPNType2Route,
-    VerifyBGPPeerGroup,
 )
 from tests.units.anta_tests import test
 
