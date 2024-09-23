@@ -61,7 +61,7 @@ def cli() -> None:
     """Entrypoint for pyproject.toml."""
     try:
         anta(obj={}, auto_envvar_prefix="ANTA")
-    except Exception as exc:  # pylint: disable=broad-exception-caught
+    except Exception as exc:  # noqa: BLE001
         anta_log_exception(
             exc,
             f"Uncaught Exception when running ANTA CLI\n{GITHUB_SUGGESTION}",

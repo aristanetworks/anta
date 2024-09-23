@@ -8,7 +8,7 @@ from __future__ import annotations
 from typing import Any
 
 from anta.tests.ptp import VerifyPtpGMStatus, VerifyPtpLockStatus, VerifyPtpModeStatus, VerifyPtpOffset, VerifyPtpPortModeStatus
-from tests.lib.anta import test  # noqa: F401; pylint: disable=W0611
+from tests.units.anta_tests import test
 
 DATA: list[dict[str, Any]] = [
     {
@@ -295,14 +295,14 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
-        "name": "failure",
+        "name": "failure-no-interfaces",
         "test": VerifyPtpPortModeStatus,
         "eos_data": [{"ptpIntfSummaries": {}}],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["No interfaces are PTP enabled"]},
     },
     {
-        "name": "failure",
+        "name": "failure-invalid-state",
         "test": VerifyPtpPortModeStatus,
         "eos_data": [
             {

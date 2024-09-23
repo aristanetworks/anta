@@ -51,8 +51,10 @@ def setup_logging(level: LogLevel = Log.INFO, file: Path | None = None) -> None:
 
     Parameters
     ----------
-        level: ANTA logging level
-        file: Send logs to a file
+    level
+        ANTA logging level
+    file
+        Send logs to a file
 
     """
     # Init root logger
@@ -106,9 +108,12 @@ def anta_log_exception(exception: BaseException, message: str | None = None, cal
 
     Parameters
     ----------
-        exception: The Exception being logged.
-        message: An optional message.
-        calling_logger: A logger to which the exception should be logged. If not present, the logger in this file is used.
+    exception
+        The Exception being logged.
+    message
+        An optional message.
+    calling_logger
+        A logger to which the exception should be logged. If not present, the logger in this file is used.
 
     """
     if calling_logger is None:

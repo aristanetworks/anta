@@ -8,7 +8,7 @@ from __future__ import annotations
 from typing import Any
 
 from anta.tests.vxlan import VerifyVxlan1ConnSettings, VerifyVxlan1Interface, VerifyVxlanConfigSanity, VerifyVxlanVniBinding, VerifyVxlanVtep
-from tests.lib.anta import test  # noqa: F401; pylint: disable=W0611
+from tests.units.anta_tests import test
 
 DATA: list[dict[str, Any]] = [
     {
@@ -26,21 +26,21 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "skipped", "messages": ["Vxlan1 interface is not configured"]},
     },
     {
-        "name": "failure",
+        "name": "failure-down-up",
         "test": VerifyVxlan1Interface,
         "eos_data": [{"interfaceDescriptions": {"Vxlan1": {"lineProtocolStatus": "down", "interfaceStatus": "up"}}}],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["Vxlan1 interface is down/up"]},
     },
     {
-        "name": "failure",
+        "name": "failure-up-down",
         "test": VerifyVxlan1Interface,
         "eos_data": [{"interfaceDescriptions": {"Vxlan1": {"lineProtocolStatus": "up", "interfaceStatus": "down"}}}],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["Vxlan1 interface is up/down"]},
     },
     {
-        "name": "failure",
+        "name": "failure-down-down",
         "test": VerifyVxlan1Interface,
         "eos_data": [{"interfaceDescriptions": {"Vxlan1": {"lineProtocolStatus": "down", "interfaceStatus": "down"}}}],
         "inputs": None,

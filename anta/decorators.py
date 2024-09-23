@@ -22,11 +22,13 @@ def deprecated_test(new_tests: list[str] | None = None) -> Callable[[F], F]:
 
     Parameters
     ----------
-        new_tests: A list of new test classes that should replace the deprecated test.
+    new_tests
+        A list of new test classes that should replace the deprecated test.
 
     Returns
     -------
-        Callable[[F], F]: A decorator that can be used to wrap test functions.
+    Callable[[F], F]
+        A decorator that can be used to wrap test functions.
 
     """
 
@@ -35,11 +37,13 @@ def deprecated_test(new_tests: list[str] | None = None) -> Callable[[F], F]:
 
         Parameters
         ----------
-            function: The test function to be decorated.
+        function
+            The test function to be decorated.
 
         Returns
         -------
-            F: The decorated function.
+        F
+            The decorated function.
 
         """
 
@@ -66,11 +70,13 @@ def skip_on_platforms(platforms: list[str]) -> Callable[[F], F]:
 
     Parameters
     ----------
-        platforms: List of hardware models on which the test should be skipped.
+    platforms
+        List of hardware models on which the test should be skipped.
 
     Returns
     -------
-        Callable[[F], F]: A decorator that can be used to wrap test functions.
+    Callable[[F], F]
+        A decorator that can be used to wrap test functions.
 
     """
 
@@ -79,11 +85,13 @@ def skip_on_platforms(platforms: list[str]) -> Callable[[F], F]:
 
         Parameters
         ----------
-            function: The test function to be decorated.
+        function
+            The test function to be decorated.
 
         Returns
         -------
-            F: The decorated function.
+        F
+            The decorated function.
 
         """
 

@@ -31,7 +31,7 @@
             {% endif %}
             {% with heading_level = heading_level + extra_level %}
               {% for attribute in attributes|order_members(config.members_order, members_list) %}
-                {% if members_list is not none or attribute.is_public(check_name=False) %}
+                {% if members_list is not none or attribute.is_public %}
                   {% include attribute|get_template with context %}
                 {% endif %}
               {% endfor %}
@@ -60,7 +60,7 @@
                   {% include "attributes_table.html" with context %}
                   {% set obj = old_obj %}
                 {% else %}
-                  {% if members_list is not none or class.is_public(check_name=False) %}
+                  {% if members_list is not none or class.is_public %}
                     {% include class|get_template with context %}
                   {% endif %}
                 {% endif %}
@@ -82,7 +82,7 @@
             {% with heading_level = heading_level + extra_level %}
               {% for function in functions|order_members(config.members_order, members_list) %}
                 {% if not (obj.kind.value == "class" and function.name == "__init__" and config.merge_init_into_class) %}
-                  {% if members_list is not none or function.is_public(check_name=False) %}
+                  {% if members_list is not none or function.is_public %}
                     {% include function|get_template with context %}
                   {% endif %}
                 {% endif %}
@@ -104,7 +104,7 @@
               {% endif %}
               {% with heading_level = heading_level + extra_level %}
                 {% for module in modules|order_members(config.members_order.alphabetical, members_list) %}
-                  {% if members_list is not none or module.is_public(check_name=False) %}
+                  {% if members_list is not none or module.is_public %}
                     {% include module|get_template with context %}
                   {% endif %}
                 {% endfor %}
@@ -129,7 +129,7 @@
 
         {% if not (obj.is_class and child.name == "__init__" and config.merge_init_into_class) %}
 
-          {% if members_list is not none or child.is_public(check_name=False) %}
+          {% if members_list is not none or child.is_public %}
             {% if child.is_attribute %}
               {% with attribute = child %}
                 {% include attribute|get_template with context %}

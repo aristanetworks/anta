@@ -42,7 +42,6 @@ def test_from_cvp(
     cv_token_failure: bool,
     cvp_connect_failure: bool,
 ) -> None:
-    # pylint: disable=too-many-arguments
     # ruff: noqa: C901
     """Test `anta get from-cvp`.
 
@@ -144,7 +143,6 @@ def test_from_ansible(
     expected_exit: int,
     expected_log: str | None,
 ) -> None:
-    # pylint: disable=too-many-arguments
     """Test `anta get from-ansible`.
 
     This test verifies:
@@ -230,7 +228,6 @@ def test_from_ansible_overwrite(
     expected_exit: int,
     expected_log: str | None,
 ) -> None:
-    # pylint: disable=too-many-arguments
     """Test `anta get from-ansible` overwrite mechanism.
 
     The test uses a static ansible-inventory and output as these are tested in other functions

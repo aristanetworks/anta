@@ -8,7 +8,7 @@ from __future__ import annotations
 from typing import Any
 
 from anta.tests.avt import VerifyAVTPathHealth, VerifyAVTRole, VerifyAVTSpecificPath
-from tests.lib.anta import test  # noqa: F401; pylint: disable=unused-import
+from tests.units.anta_tests import test
 
 DATA: list[dict[str, Any]] = [
     {

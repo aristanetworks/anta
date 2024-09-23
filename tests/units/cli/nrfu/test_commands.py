@@ -52,7 +52,7 @@ def test_anta_nrfu_table(click_runner: CliRunner) -> None:
     """Test anta nrfu, catalog is given via env."""
     result = click_runner.invoke(anta, ["nrfu", "table"])
     assert result.exit_code == ExitCode.OK
-    assert "dummy  │ VerifyEOSVersion │ success" in result.output
+    assert "leaf1  │ VerifyEOSVersion │ success" in result.output
 
 
 def test_anta_nrfu_table_group_by_device(click_runner: CliRunner) -> None:
@@ -73,7 +73,7 @@ def test_anta_nrfu_text(click_runner: CliRunner) -> None:
     """Test anta nrfu, catalog is given via env."""
     result = click_runner.invoke(anta, ["nrfu", "text"])
     assert result.exit_code == ExitCode.OK
-    assert "dummy :: VerifyEOSVersion :: SUCCESS" in result.output
+    assert "leaf1 :: VerifyEOSVersion :: SUCCESS" in result.output
 
 
 def test_anta_nrfu_json(click_runner: CliRunner) -> None:
@@ -85,7 +85,7 @@ def test_anta_nrfu_json(click_runner: CliRunner) -> None:
     assert match is not None
     result_list = json.loads(match.group())
     for res in result_list:
-        if res["name"] == "dummy":
+        if res["name"] == "leaf1":
             assert res["test"] == "VerifyEOSVersion"
             assert res["result"] == "success"
 
@@ -131,7 +131,7 @@ def test_anta_nrfu_template(click_runner: CliRunner) -> None:
     """Test anta nrfu, catalog is given via env."""
     result = click_runner.invoke(anta, ["nrfu", "tpl-report", "--template", str(DATA_DIR / "template.j2")])
     assert result.exit_code == ExitCode.OK
-    assert "* VerifyEOSVersion is SUCCESS for dummy" in result.output
+    assert "* VerifyEOSVersion is SUCCESS for leaf1" in result.output
 
 
 def test_anta_nrfu_csv(click_runner: CliRunner, tmp_path: Path) -> None:

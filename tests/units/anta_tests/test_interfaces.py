@@ -21,12 +21,13 @@ from anta.tests.interfaces import (
     VerifyIpVirtualRouterMac,
     VerifyL2MTU,
     VerifyL3MTU,
+    VerifyLACPInterfacesStatus,
     VerifyLoopbackCount,
     VerifyPortChannels,
     VerifyStormControlDrops,
     VerifySVI,
 )
-from tests.lib.anta import test  # noqa: F401; pylint: disable=W0611
+from tests.units.anta_tests import test
 
 DATA: list[dict[str, Any]] = [
     {
@@ -2438,6 +2439,129 @@ DATA: list[dict[str, Any]] = [
                 "Expected `100Gbps` as the speed, but found `10Gbps` instead.",
                 "For interface Ethernet4:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.\n"
                 "Expected `2.5Gbps` as the speed, but found `25Gbps` instead.",
+            ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifyLACPInterfacesStatus,
+        "eos_data": [
+            {
+                "portChannels": {
+                    "Port-Channel5": {
+                        "interfaces": {
+                            "Ethernet5": {
+                                "actorPortStatus": "bundled",
+                                "partnerPortState": {
+                                    "activity": True,
+                                    "timeout": False,
+                                    "aggregation": True,
+                                    "synchronization": True,
+                                    "collecting": True,
+                                    "distributing": True,
+                                },
+                                "actorPortState": {
+                                    "activity": True,
+                                    "timeout": False,
+                                    "aggregation": True,
+                                    "synchronization": True,
+                                    "collecting": True,
+                                    "distributing": True,
+                                },
+                            }
+                        }
+                    }
+                },
+                "interface": "Ethernet5",
+                "orphanPorts": {},
+            }
+        ],
+        "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "Port-Channel5"}]},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-not-bundled",
+        "test": VerifyLACPInterfacesStatus,
+        "eos_data": [
+            {
+                "portChannels": {
+                    "Port-Channel5": {
+                        "interfaces": {
+                            "Ethernet5": {
+                                "actorPortStatus": "No Aggregate",
+                            }
+                        }
+                    }
+                },
+                "interface": "Ethernet5",
+                "orphanPorts": {},
+            }
+        ],
+        "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "Po5"}]},
+        "expected": {
+            "result": "failure",
+            "messages": ["For Interface Ethernet5:\nExpected `bundled` as the local port status, but found `No Aggregate` instead.\n"],
+        },
+    },
+    {
+        "name": "failure-no-details-found",
+        "test": VerifyLACPInterfacesStatus,
+        "eos_data": [
+            {
+                "portChannels": {"Port-Channel5": {"interfaces": {}}},
+            }
+        ],
+        "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "Po 5"}]},
+        "expected": {
+            "result": "failure",
+            "messages": ["Interface 'Ethernet5' is not configured to be a member of LACP 'Port-Channel5'."],
+        },
+    },
+    {
+        "name": "failure-lacp-params",
+        "test": VerifyLACPInterfacesStatus,
+        "eos_data": [
+            {
+                "portChannels": {
+                    "Port-Channel5": {
+                        "interfaces": {
+                            "Ethernet5": {
+                                "actorPortStatus": "bundled",
+                                "partnerPortState": {
+                                    "activity": False,
+                                    "timeout": False,
+                                    "aggregation": False,
+                                    "synchronization": False,
+                                    "collecting": True,
+                                    "distributing": True,
+                                },
+                                "actorPortState": {
+                                    "activity": False,
+                                    "timeout": False,
+                                    "aggregation": False,
+                                    "synchronization": False,
+                                    "collecting": True,
+                                    "distributing": True,
+                                },
+                            }
+                        }
+                    }
+                },
+                "interface": "Ethernet5",
+                "orphanPorts": {},
+            }
+        ],
+        "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "port-channel 5"}]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "For Interface Ethernet5:\n"
+                "Actor port details:\nExpected `True` as the activity, but found `False` instead."
+                "\nExpected `True` as the aggregation, but found `False` instead."
+                "\nExpected `True` as the synchronization, but found `False` instead."
+                "\nPartner port details:\nExpected `True` as the activity, but found `False` instead.\n"
+                "Expected `True` as the aggregation, but found `False` instead.\n"
+                "Expected `True` as the synchronization, but found `False` instead.\n"
             ],
         },
     },

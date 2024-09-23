@@ -20,13 +20,15 @@ from anta.tools import get_value
 def _count_isis_neighbor(isis_neighbor_json: dict[str, Any]) -> int:
     """Count the number of isis neighbors.
 
-    Args
-    ----
-      isis_neighbor_json: The JSON output of the `show isis neighbors` command.
+    Parameters
+    ----------
+    isis_neighbor_json
+        The JSON output of the `show isis neighbors` command.
 
     Returns
     -------
-      int: The number of isis neighbors.
+    int
+        The number of isis neighbors.
 
     """
     count = 0
@@ -39,13 +41,15 @@ def _count_isis_neighbor(isis_neighbor_json: dict[str, Any]) -> int:
 def _get_not_full_isis_neighbors(isis_neighbor_json: dict[str, Any]) -> list[dict[str, Any]]:
     """Return the isis neighbors whose adjacency state is not `up`.
 
-    Args
-    ----
-      isis_neighbor_json: The JSON output of the `show isis neighbors` command.
+    Parameters
+    ----------
+    isis_neighbor_json
+        The JSON output of the `show isis neighbors` command.
 
     Returns
     -------
-      list[dict[str, Any]]: A list of isis neighbors whose adjacency state is not `UP`.
+    list[dict[str, Any]]
+        A list of isis neighbors whose adjacency state is not `UP`.
 
     """
     return [
@@ -66,14 +70,17 @@ def _get_not_full_isis_neighbors(isis_neighbor_json: dict[str, Any]) -> list[dic
 def _get_full_isis_neighbors(isis_neighbor_json: dict[str, Any], neighbor_state: Literal["up", "down"] = "up") -> list[dict[str, Any]]:
     """Return the isis neighbors whose adjacency state is `up`.
 
-    Args
-    ----
-      isis_neighbor_json: The JSON output of the `show isis neighbors` command.
-      neighbor_state: Value of the neihbor state we are looking for. Default up
+    Parameters
+    ----------
+    isis_neighbor_json
+        The JSON output of the `show isis neighbors` command.
+    neighbor_state
+        Value of the neihbor state we are looking for. Defaults to `up`.
 
     Returns
     -------
-      list[dict[str, Any]]: A list of isis neighbors whose adjacency state is not `UP`.
+    list[dict[str, Any]]
+        A list of isis neighbors whose adjacency state is not `UP`.
 
     """
     return [
@@ -597,10 +604,6 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
 
         This method performs the main test logic for verifying ISIS Segment Routing tunnels.
         It checks the command output, initiates defaults, and performs various checks on the tunnels.
-
-        Returns
-        -------
-            None
         """
         command_output = self.instance_commands[0].json_output
         self.result.is_success()
@@ -640,12 +643,15 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
 
         Parameters
         ----------
-            via_input (VerifyISISSegmentRoutingTunnels.Input.Entry.Vias): The input tunnel type to check.
-            eos_entry (dict[str, Any]): The EOS entry containing the tunnel types.
+        via_input : VerifyISISSegmentRoutingTunnels.Input.Entry.Vias
+            The input tunnel type to check.
+        eos_entry : dict[str, Any]
+            The EOS entry containing the tunnel types.
 
         Returns
         -------
-            bool: True if the tunnel type matches any of the tunnel types in `eos_entry`, False otherwise.
+        bool
+            True if the tunnel type matches any of the tunnel types in `eos_entry`, False otherwise.
         """
         if via_input.type is not None:
             return any(
@@ -665,12 +671,15 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
 
         Parameters
         ----------
-            via_input (VerifyISISSegmentRoutingTunnels.Input.Entry.Vias): The input via object.
-            eos_entry (dict[str, Any]): The EOS entry dictionary.
+        via_input : VerifyISISSegmentRoutingTunnels.Input.Entry.Vias
+            The input via object.
+        eos_entry : dict[str, Any]
+            The EOS entry dictionary.
 
         Returns
         -------
-            bool: True if the tunnel nexthop matches, False otherwise.
+        bool
+            True if the tunnel nexthop matches, False otherwise.
         """
         if via_input.nexthop is not None:
             return any(
@@ -690,12 +699,15 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
 
         Parameters
         ----------
-            via_input (VerifyISISSegmentRoutingTunnels.Input.Entry.Vias): The input via object.
-            eos_entry (dict[str, Any]): The EOS entry dictionary.
+        via_input : VerifyISISSegmentRoutingTunnels.Input.Entry.Vias
+            The input via object.
+        eos_entry : dict[str, Any]
+            The EOS entry dictionary.
 
         Returns
         -------
-            bool: True if the tunnel interface exists, False otherwise.
+        bool
+            True if the tunnel interface exists, False otherwise.
         """
         if via_input.interface is not None:
             return any(
@@ -715,12 +727,15 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
 
         Parameters
         ----------
-            via_input (VerifyISISSegmentRoutingTunnels.Input.Entry.Vias): The input vias to check.
-            eos_entry (dict[str, Any]): The EOS entry to compare against.
+        via_input : VerifyISISSegmentRoutingTunnels.Input.Entry.Vias
+            The input vias to check.
+        eos_entry : dict[str, Any])
+            The EOS entry to compare against.
 
         Returns
         -------
-            bool: True if the tunnel ID matches any of the tunnel IDs in the EOS entry's vias, False otherwise.
+        bool
+            True if the tunnel ID matches any of the tunnel IDs in the EOS entry's vias, False otherwise.
         """
         if via_input.tunnel_id is not None:
             return any(

@@ -103,7 +103,6 @@ HIDE_STATUS.remove("unset")
     is_flag=True,
     default=False,
 )
-# pylint: disable=too-many-arguments
 def nrfu(
     ctx: click.Context,
     inventory: AntaInventory,
