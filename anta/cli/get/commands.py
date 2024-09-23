@@ -45,7 +45,6 @@ logger = logging.getLogger(__name__)
     default=False,
 )
 def from_cvp(ctx: click.Context, output: Path, host: str, username: str, password: str, container: str | None, *, ignore_cert: bool) -> None:
-    # pylint: disable=too-many-arguments
     """Build ANTA inventory from CloudVision.
 
     NOTE: Only username/password authentication is supported for on-premises CloudVision instances.
@@ -127,7 +126,6 @@ def inventory(inventory: AntaInventory, tags: set[str] | None, *, connected: boo
 @click.command
 @inventory_options
 def tags(inventory: AntaInventory, **kwargs: Any) -> None:
-    # pylint: disable=unused-argument
     """Get list of configured tags in user inventory."""
     tags: set[str] = set()
     for device in inventory.values():

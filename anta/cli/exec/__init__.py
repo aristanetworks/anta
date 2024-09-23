@@ -9,7 +9,7 @@ from anta.cli.exec import commands
 
 
 @click.group("exec")
-def _exec() -> None:  # pylint: disable=redefined-builtin
+def _exec() -> None:
     """Commands to execute various scripts on EOS devices."""
 
 

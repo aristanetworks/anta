@@ -9,7 +9,6 @@ from typing import TYPE_CHECKING
 
 from anta.cli import anta
 from anta.cli.utils import ExitCode
-from tests.lib.utils import default_anta_env
 
 if TYPE_CHECKING:
     from click.testing import CliRunner
@@ -58,8 +57,7 @@ def test_anta_nrfu_wrong_catalog_format(click_runner: CliRunner) -> None:
 
 def test_anta_password_required(click_runner: CliRunner) -> None:
     """Test that password is provided."""
-    env = default_anta_env()
-    env["ANTA_PASSWORD"] = None
+    env = {"ANTA_PASSWORD": None}
     result = click_runner.invoke(anta, ["nrfu"], env=env)
 
     assert result.exit_code == ExitCode.USAGE_ERROR
@@ -68,8 +66,7 @@ def test_anta_password_required(click_runner: CliRunner) -> None:
 
 def test_anta_password(click_runner: CliRunner) -> None:
     """Test that password can be provided either via --password or --prompt."""
-    env = default_anta_env()
-    env["ANTA_PASSWORD"] = None
+    env = {"ANTA_PASSWORD": None}
     result = click_runner.invoke(anta, ["nrfu", "--password", "secret"], env=env)
     assert result.exit_code == ExitCode.OK
     result = click_runner.invoke(anta, ["nrfu", "--prompt"], input="password\npassword\n", env=env)
