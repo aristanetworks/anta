@@ -20,8 +20,8 @@ from anta.tests.routing.bgp import (
     VerifyBGPPeerRouteRefreshCap,
     VerifyBGPPeersHealth,
     VerifyBGPPeerUpdateErrors,
-    VerifyBGPRouteOrigin,
     VerifyBgpRouteMaps,
+    VerifyBGPRouteOrigin,
     VerifyBGPSpecificPeers,
     VerifyBGPTimers,
     VerifyEVPNType2Route,
@@ -4895,9 +4895,13 @@ DATA: list[dict[str, Any]] = [
                 {
                     "prefix": "10.100.0.128/31",
                     "vrf": "default",
-                    "paths": [{"nexthop": "10.100.0.10", "origin": "Igp"}, {"nexthop": "10.100.4.5", "origin": "Incomplete"}],
+                    "route_paths": [{"nexthop": "10.100.0.10", "origin": "Igp"}, {"nexthop": "10.100.4.5", "origin": "Incomplete"}],
                 },
-                {"prefix": "10.100.0.130/31", "vrf": "MGMT", "paths": [{"nexthop": "10.100.0.8", "origin": "Igp"}, {"nexthop": "10.100.0.10", "origin": "Igp"}]},
+                {
+                    "prefix": "10.100.0.130/31",
+                    "vrf": "MGMT",
+                    "route_paths": [{"nexthop": "10.100.0.8", "origin": "Igp"}, {"nexthop": "10.100.0.10", "origin": "Igp"}],
+                },
             ]
         },
         "expected": {"result": "success"},
@@ -4960,12 +4964,12 @@ DATA: list[dict[str, Any]] = [
                 {
                     "prefix": "10.100.0.128/31",
                     "vrf": "default",
-                    "paths": [{"nexthop": "10.100.0.10", "origin": "Incomplete"}, {"nexthop": "10.100.4.5", "origin": "Igp"}],
+                    "route_paths": [{"nexthop": "10.100.0.10", "origin": "Incomplete"}, {"nexthop": "10.100.4.5", "origin": "Igp"}],
                 },
                 {
                     "prefix": "10.100.0.130/31",
                     "vrf": "MGMT",
-                    "paths": [{"nexthop": "10.100.0.8", "origin": "Incomplete"}, {"nexthop": "10.100.0.10", "origin": "Incomplete"}],
+                    "route_paths": [{"nexthop": "10.100.0.8", "origin": "Incomplete"}, {"nexthop": "10.100.0.10", "origin": "Incomplete"}],
                 },
             ]
         },
@@ -5026,12 +5030,12 @@ DATA: list[dict[str, Any]] = [
                 {
                     "prefix": "10.100.0.128/31",
                     "vrf": "default",
-                    "paths": [{"nexthop": "10.100.0.10", "origin": "Incomplete"}, {"nexthop": "10.100.4.5", "origin": "Igp"}],
+                    "route_paths": [{"nexthop": "10.100.0.10", "origin": "Incomplete"}, {"nexthop": "10.100.4.5", "origin": "Igp"}],
                 },
                 {
                     "prefix": "10.100.0.130/31",
                     "vrf": "MGMT",
-                    "paths": [{"nexthop": "10.100.0.8", "origin": "Incomplete"}, {"nexthop": "10.100.0.10", "origin": "Incomplete"}],
+                    "route_paths": [{"nexthop": "10.100.0.8", "origin": "Incomplete"}, {"nexthop": "10.100.0.10", "origin": "Incomplete"}],
                 },
             ]
         },
@@ -5056,12 +5060,12 @@ DATA: list[dict[str, Any]] = [
                 {
                     "prefix": "10.100.0.128/31",
                     "vrf": "default",
-                    "paths": [{"nexthop": "10.100.0.10", "origin": "Incomplete"}, {"nexthop": "10.100.4.5", "origin": "Igp"}],
+                    "route_paths": [{"nexthop": "10.100.0.10", "origin": "Incomplete"}, {"nexthop": "10.100.4.5", "origin": "Igp"}],
                 },
                 {
                     "prefix": "10.100.0.130/31",
                     "vrf": "MGMT",
-                    "paths": [{"nexthop": "10.100.0.8", "origin": "Incomplete"}, {"nexthop": "10.100.0.10", "origin": "Incomplete"}],
+                    "route_paths": [{"nexthop": "10.100.0.8", "origin": "Incomplete"}, {"nexthop": "10.100.0.10", "origin": "Incomplete"}],
                 },
             ]
         },

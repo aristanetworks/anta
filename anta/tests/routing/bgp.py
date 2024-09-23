@@ -1637,14 +1637,13 @@ class VerifyBGPRouteOrigin(AntaTest):
       bgp:
         - VerifyBGPRouteOrigin:
             route_entries:
-              - prefix: 10.100.0.128/31
-                vrf: default
-                nexthop: 10.100.0.10
-                origin: Igp
-              - prefix: 10.100.0.130/31
-                vrf: default
-                nexthop: 10.100.0.8
-                origin: Egp
+                - prefix: 10.100.0.128/31
+                  vrf: default
+                  route_paths:
+                    - nexthop: 10.100.0.10
+                      origin: Igp
+                    - nexthop: 10.100.4.5
+                      origin: Incomplete
     ```
     """
 
@@ -1666,7 +1665,7 @@ class VerifyBGPRouteOrigin(AntaTest):
             """IPv4 network address"""
             vrf: str = "default"
             """Optional VRF. If not provided, it defaults to `default`."""
-            paths: list[dict[str, IPv4Address | Literal["Igp", "Egp", "Incomplete"]]]
+            route_paths: list[dict[str, IPv4Address | Literal["Igp", "Egp", "Incomplete"]]]
             """A list of dictionaries represents a BGP path.
             - `nexthop`: The next-hop IP address for the path.
             - `origin`: The origin of the route."""
@@ -1683,7 +1682,7 @@ class VerifyBGPRouteOrigin(AntaTest):
         for command, input_entry in zip(self.instance_commands, self.inputs.route_entries):
             prefix = str(command.params.prefix)
             vrf = command.params.vrf
-            paths = input_entry.paths
+            paths = input_entry.route_paths
 
             # Verify if a BGP peer is configured with the provided vrf
             if not (bgp_routes := get_value(command.json_output, f"vrfs..{vrf}..bgpRouteEntries..{prefix}..bgpRoutePaths", separator="..")):
