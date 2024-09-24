@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from anta.tests.routing.generic import VerifyRoutingProtocolModel, VerifyRoutingTableEntry, VerifyRoutingTableSize
+from anta.tests.routing.generic import VerifyRouteEntry, VerifyRoutingProtocolModel, VerifyRoutingTableEntry, VerifyRoutingTableSize
 from tests.units.anta_tests import test
 
 DATA: list[dict[str, Any]] = [
@@ -316,5 +316,104 @@ DATA: list[dict[str, Any]] = [
         "eos_data": {},
         "inputs": {"vrf": "default", "routes": ["10.1.0.1", "10.1.0.2"], "collect": "not-valid"},
         "expected": {"result": "error", "messages": ["Inputs are not valid"]},
+    },
+    {
+        "name": "success",
+        "test": VerifyRouteEntry,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "routes": {
+                            "10.10.0.1/32": {
+                                "vias": [{"nexthopAddr": "10.100.0.8", "interface": "Ethernet1"}, {"nexthopAddr": "10.100.0.10", "interface": "Ethernet2"}],
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "MGMT": {
+                        "routes": {
+                            "10.100.0.128/31": {
+                                "vias": [{"nexthopAddr": "10.100.0.8", "interface": "Ethernet1"}, {"nexthopAddr": "10.100.0.10", "interface": "Ethernet2"}],
+                            }
+                        }
+                    }
+                }
+            },
+        ],
+        "inputs": {
+            "route_entries": [
+                {"prefix": "10.10.0.1/32", "vrf": "default", "strict": True, "nexthops": ["10.100.0.8", "10.100.0.10"]},
+                {"prefix": "10.100.0.128/31", "vrf": "MGMT", "strict": True, "nexthops": ["10.100.0.8", "10.100.0.10"]},
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-not-configured",
+        "test": VerifyRouteEntry,
+        "eos_data": [
+            {"vrfs": {"default": {"routes": {}}}},
+            {"vrfs": {"MGMT": {"routes": {}}}},
+        ],
+        "inputs": {
+            "route_entries": [
+                {"prefix": "10.10.0.1/32", "vrf": "default", "strict": True, "nexthops": ["10.100.0.8", "10.100.0.10"]},
+                {"prefix": "10.100.0.128/31", "vrf": "MGMT", "strict": True, "nexthops": ["10.100.0.8", "10.100.0.10"]},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Following route entry(s) or nexthop path(s) not found or not correct:\n"
+                "{'10.10.0.1/32': {'default': 'Not configured'}, '10.100.0.128/31': {'MGMT': 'Not configured'}}"
+            ],
+        },
+    },
+    {
+        "name": "failure-strict-failed",
+        "test": VerifyRouteEntry,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "routes": {
+                            "10.10.0.1/32": {
+                                "vias": [{"nexthopAddr": "10.100.0.8", "interface": "Ethernet1"}, {"nexthopAddr": "10.100.0.10", "interface": "Ethernet2"}],
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "MGMT": {
+                        "routes": {
+                            "10.100.0.128/31": {
+                                "vias": [{"nexthopAddr": "10.100.0.8", "interface": "Ethernet1"}, {"nexthopAddr": "10.100.0.10", "interface": "Ethernet2"}],
+                            }
+                        }
+                    }
+                }
+            },
+        ],
+        "inputs": {
+            "route_entries": [
+                {"prefix": "10.10.0.1/32", "vrf": "default", "strict": True, "nexthops": ["10.100.0.8", "10.100.0.10", "10.100.0.11"]},
+                {"prefix": "10.100.0.128/31", "vrf": "MGMT", "strict": True, "nexthops": ["10.100.0.8", "10.100.0.10", "10.100.0.11"]},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Following route entry(s) or nexthop path(s) not found or not correct:\n"
+                "{'10.10.0.1/32': {'default': 'Expected only `10.100.0.8, 10.100.0.10, 10.100.0.11` nexthops should be listed but "
+                "found `10.100.0.8, 10.100.0.10` instead.'}, '10.100.0.128/31': {'MGMT': 'Expected only `10.100.0.8, 10.100.0.10, "
+                "10.100.0.11` nexthops should be listed but found `10.100.0.8, 10.100.0.10` instead.'}}"
+            ],
+        },
     },
 ]

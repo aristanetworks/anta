@@ -8,12 +8,13 @@
 from __future__ import annotations
 
 from functools import cache
-from ipaddress import IPv4Address, IPv4Interface
-from typing import ClassVar, Literal
+from ipaddress import IPv4Address, IPv4Interface, IPv4Network
+from typing import Any, ClassVar, Literal
 
-from pydantic import model_validator
+from pydantic import BaseModel, model_validator
 
 from anta.models import AntaCommand, AntaTemplate, AntaTest
+from anta.tools import get_item, get_value
 
 
 class VerifyRoutingProtocolModel(AntaTest):
@@ -178,3 +179,90 @@ class VerifyRoutingTableEntry(AntaTest):
             self.result.is_success()
         else:
             self.result.is_failure(f"The following route(s) are missing from the routing table of VRF {self.inputs.vrf}: {missing_routes}")
+
+
+class VerifyRouteEntry(AntaTest):
+    """Verifies the route entries of given IPv4 network(s).
+
+    Supports `strict: True` to verify that only the specified nexthops by which routes are learned, requiring an exact match.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the route entry with given nexthop(s) present for given network(s).
+    * Failure: The test will fail if the routes not found or route entry with given nexthop(s) not present for given network(s).
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      generic:
+        - VerifyRouteEntry:
+            route_entries:
+                - prefix: 10.10.0.1/32
+                  vrf: default
+                  nexthops:
+                    - 10.100.0.8
+                    - 10.100.0.10
+    ```
+    """
+
+    name = "VerifyRouteEntry"
+    description = "Verifies the route entry(s) for the provided IPv4 Network(s)."
+    categories: ClassVar[list[str]] = ["routing"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show ip route {prefix}", revision=4)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyRouteEntry test."""
+
+        route_entries: list[Route]
+        """List of route(s)"""
+
+        class Route(BaseModel):
+            """Model for a route(s)."""
+
+            prefix: IPv4Network
+            """IPv4 network address"""
+            vrf: str = "default"
+            """Optional VRF. If not provided, it defaults to `default`."""
+            nexthops: list[IPv4Address]
+            """A list of the next-hop IP address for the path."""
+            strict: bool = False
+            """If True, requires exact matching of provided nexthop(s). Defaults to False."""
+
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        """Render the template for each route entry in the input list."""
+        return [template.render(prefix=route.prefix) for route in self.inputs.route_entries]
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyRouteEntry."""
+        failures: dict[Any, Any] = {}
+
+        for command, input_entry in zip(self.instance_commands, self.inputs.route_entries):
+            prefix = str(input_entry.prefix)
+            vrf = input_entry.vrf
+            nexthops = input_entry.nexthops
+            strict = input_entry.strict
+
+            # Verify if a BGP peer is configured with the provided vrf
+            if not (routes := get_value(command.json_output, f"vrfs..{vrf}..routes..{prefix}..vias", separator="..")):
+                failures[prefix] = {vrf: "Not configured"}
+                continue
+
+            # Verify the nexthop addresses.
+            actual_nexthops = [route.get("nexthopAddr") for route in routes]
+
+            if strict and len(nexthops) != len(actual_nexthops):
+                exp_nexthops = ", ".join([str(nexthop) for nexthop in nexthops])
+                failures[prefix] = {vrf: f"Expected only `{exp_nexthops}` nexthops should be listed but found `{', '.join(actual_nexthops)}` instead."}
+
+            else:
+                nexthop_not_ok = [str(nexthop) for nexthop in nexthops if not get_item(routes, "nexthopAddr", str(nexthop))]
+                if nexthop_not_ok:
+                    failures[prefix] = {vrf: nexthop_not_ok}
+
+        # Check if any failures
+        if not failures:
+            self.result.is_success()
+        else:
+            self.result.is_failure(f"Following route entry(s) or nexthop path(s) not found or not correct:\n{failures}")

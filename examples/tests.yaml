@@ -494,6 +494,13 @@ anta.tests.routing:
         routes:
           - 10.1.0.1
           - 10.1.0.2
+    - VerifyRouteEntry:
+        route_entries:
+          - prefix: 10.10.0.1/32
+            vrf: default
+            nexthops:
+              - 10.100.0.8
+              - 10.100.0.10
   bgp:
     - VerifyBGPPeerCount:
         address_families:
