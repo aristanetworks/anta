@@ -41,7 +41,8 @@ def test_anta_dry_run(benchmark: BenchmarkFixture, catalog: AntaCatalog, invento
         asyncio.run(main(manager, inventory, catalog, dry_run=True))
         return manager
 
-    manager = benchmark(lambda: bench())  # pylint: disable=unnecessary-lambda
+    manager = benchmark(bench)
+
     logging.disable(logging.NOTSET)
     if len(manager.results) != 0:
         pytest.fail("ANTA Dry-Run mode should not return any result", pytrace=False)
@@ -75,7 +76,8 @@ def test_anta(benchmark: BenchmarkFixture, catalog: AntaCatalog, inventory: Anta
         asyncio.run(main(manager, inventory, catalog))
         return manager
 
-    manager = benchmark(lambda: bench())  # pylint: disable=unnecessary-lambda
+    manager = benchmark(bench)
+
     logging.disable(logging.NOTSET)
 
     if len(catalog.tests) * len(inventory) != len(manager.results):
