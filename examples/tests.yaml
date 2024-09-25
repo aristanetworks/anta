@@ -398,6 +398,10 @@ anta.tests.snmp:
       location: New York
   - VerifySnmpContact:
       contact: Jon@example.com
+  - VerifySNMPErrors:
+      error_counters:
+        - inVersionErrs
+        - inBadCommunityNames
 
 anta.tests.software:
   - VerifyEOSVersion:

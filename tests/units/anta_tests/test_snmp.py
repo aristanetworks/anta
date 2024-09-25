@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from anta.tests.snmp import VerifySnmpContact, VerifySnmpIPv4Acl, VerifySnmpIPv6Acl, VerifySnmpLocation, VerifySnmpStatus
+from anta.tests.snmp import VerifySnmpContact, VerifySNMPErrors, VerifySnmpIPv4Acl, VerifySnmpIPv6Acl, VerifySnmpLocation, VerifySnmpStatus
 from tests.units.anta_tests import test
 
 DATA: list[dict[str, Any]] = [
@@ -150,6 +150,80 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": ["SNMP contact is not configured."],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifySNMPErrors,
+        "eos_data": [
+            {
+                "counters": {
+                    "inVersionErrs": 0,
+                    "inBadCommunityNames": 0,
+                    "inBadCommunityUses": 0,
+                    "inParseErrs": 0,
+                    "outTooBigErrs": 0,
+                    "outNoSuchNameErrs": 0,
+                    "outBadValueErrs": 0,
+                    "outGeneralErrs": 0,
+                },
+            }
+        ],
+        "inputs": {},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-specific-counters",
+        "test": VerifySNMPErrors,
+        "eos_data": [
+            {
+                "counters": {
+                    "inVersionErrs": 0,
+                    "inBadCommunityNames": 0,
+                    "inBadCommunityUses": 0,
+                    "inParseErrs": 0,
+                    "outTooBigErrs": 5,
+                    "outNoSuchNameErrs": 0,
+                    "outBadValueErrs": 10,
+                    "outGeneralErrs": 1,
+                },
+            }
+        ],
+        "inputs": {"error_counters": ["inVersionErrs", "inParseErrs"]},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-counters-not-found",
+        "test": VerifySNMPErrors,
+        "eos_data": [
+            {
+                "counters": {},
+            }
+        ],
+        "inputs": {},
+        "expected": {"result": "failure", "messages": ["SNMP counter details not found."]},
+    },
+    {
+        "name": "failure-incorrect-counters",
+        "test": VerifySNMPErrors,
+        "eos_data": [
+            {
+                "counters": {
+                    "inVersionErrs": 1,
+                    "inBadCommunityNames": 0,
+                    "inBadCommunityUses": 0,
+                    "inParseErrs": 2,
+                    "outTooBigErrs": 0,
+                    "outNoSuchNameErrs": 0,
+                    "outBadValueErrs": 2,
+                    "outGeneralErrs": 0,
+                },
+            }
+        ],
+        "inputs": {},
+        "expected": {
+            "result": "failure",
+            "messages": ["The following SNMP error counter(s) are not found or have non-zero counter:\ninVersionErrs, inParseErrs, outBadValueErrs"],
         },
     },
 ]
