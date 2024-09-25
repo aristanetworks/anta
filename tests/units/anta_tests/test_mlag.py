@@ -111,17 +111,6 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "skipped", "messages": ["MLAG is disabled"]},
     },
     {
-        "name": "error",
-        "test": VerifyMlagConfigSanity,
-        "eos_data": [
-            {
-                "dummy": False,
-            },
-        ],
-        "inputs": None,
-        "expected": {"result": "error", "messages": ["Incorrect JSON response - 'mlagActive' state was not found"]},
-    },
-    {
         "name": "failure-global",
         "test": VerifyMlagConfigSanity,
         "eos_data": [

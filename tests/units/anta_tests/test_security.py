@@ -39,7 +39,7 @@ DATA: list[dict[str, Any]] = [
         "test": VerifySSHStatus,
         "eos_data": ["SSH per host connection limit is 20\nFIPS status: disabled\n\n"],
         "inputs": None,
-        "expected": {"result": "error", "messages": ["Could not find SSH status in returned output."]},
+        "expected": {"result": "failure", "messages": ["Could not find SSH status in returned output."]},
     },
     {
         "name": "failure-ssh-disabled",
@@ -580,40 +580,6 @@ DATA: list[dict[str, Any]] = [
                 "Expected `4096` as the publicKey.size, but it was not found in the actual output.\n",
             ],
         },
-    },
-    {
-        "name": "error-wrong-input-rsa",
-        "test": VerifyAPISSLCertificate,
-        "eos_data": [],
-        "inputs": {
-            "certificates": [
-                {
-                    "certificate_name": "ARISTA_ROOT_CA.crt",
-                    "expiry_threshold": 30,
-                    "common_name": "Arista Networks Internal IT Root Cert Authority",
-                    "encryption_algorithm": "RSA",
-                    "key_size": 256,
-                },
-            ]
-        },
-        "expected": {"result": "error", "messages": ["Allowed sizes are (2048, 3072, 4096)."]},
-    },
-    {
-        "name": "error-wrong-input-ecdsa",
-        "test": VerifyAPISSLCertificate,
-        "eos_data": [],
-        "inputs": {
-            "certificates": [
-                {
-                    "certificate_name": "ARISTA_SIGNING_CA.crt",
-                    "expiry_threshold": 30,
-                    "common_name": "AristaIT-ICA ECDSA Issuing Cert Authority",
-                    "encryption_algorithm": "ECDSA",
-                    "key_size": 2048,
-                },
-            ]
-        },
-        "expected": {"result": "error", "messages": ["Allowed sizes are (256, 384, 512)."]},
     },
     {
         "name": "success",

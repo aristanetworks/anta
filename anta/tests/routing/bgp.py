@@ -8,7 +8,7 @@
 from __future__ import annotations
 
 from ipaddress import IPv4Address, IPv4Network, IPv6Address
-from typing import Any, ClassVar
+from typing import Any, ClassVar, Self
 
 from pydantic import BaseModel, Field, PositiveInt, model_validator
 from pydantic.v1.utils import deep_update
@@ -235,7 +235,7 @@ class VerifyBGPPeerCount(AntaTest):
             """Number of expected BGP peer(s)."""
 
             @model_validator(mode="after")
-            def validate_inputs(self: BaseModel) -> BaseModel:
+            def validate_inputs(self) -> Self:
                 """Validate the inputs provided to the BgpAfi class.
 
                 If afi is either ipv4 or ipv6, safi must be provided.
@@ -375,7 +375,7 @@ class VerifyBGPPeersHealth(AntaTest):
             """
 
             @model_validator(mode="after")
-            def validate_inputs(self: BaseModel) -> BaseModel:
+            def validate_inputs(self) -> Self:
                 """Validate the inputs provided to the BgpAfi class.
 
                 If afi is either ipv4 or ipv6, safi must be provided.
@@ -522,7 +522,7 @@ class VerifyBGPSpecificPeers(AntaTest):
             """List of BGP IPv4 or IPv6 peer."""
 
             @model_validator(mode="after")
-            def validate_inputs(self: BaseModel) -> BaseModel:
+            def validate_inputs(self) -> Self:
                 """Validate the inputs provided to the BgpAfi class.
 
                 If afi is either ipv4 or ipv6, safi must be provided and vrf must NOT be all.
@@ -1485,7 +1485,7 @@ class VerifyBgpRouteMaps(AntaTest):
             """Outbound route map applied, defaults to None."""
 
             @model_validator(mode="after")
-            def validate_inputs(self: BaseModel) -> BaseModel:
+            def validate_inputs(self) -> Self:
                 """Validate the inputs provided to the BgpPeer class.
 
                 At least one of 'inbound' or 'outbound' route-map must be provided.

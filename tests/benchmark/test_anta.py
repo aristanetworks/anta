@@ -106,3 +106,5 @@ def test_anta(benchmark: BenchmarkFixture, catalog: AntaCatalog, inventory: Anta
         "---------------------------------------"
     )
     logger.info(bench_info)
+    assert manager.get_total_results({AntaTestStatus.ERROR}) == 0
+    assert manager.get_total_results({AntaTestStatus.UNSET}) == 0

@@ -4,9 +4,9 @@
 """Module that provides predefined types for AntaTest.Input instances."""
 
 import re
-from typing import Annotated, Literal
+from typing import Annotated, Literal, Self, get_args
 
-from pydantic import Field
+from pydantic import BaseModel, Field, model_validator
 from pydantic.functional_validators import AfterValidator, BeforeValidator
 
 # Regular Expression definition
@@ -204,3 +204,36 @@ BgpDropStats = Literal[
 ]
 BgpUpdateError = Literal["inUpdErrWithdraw", "inUpdErrIgnore", "inUpdErrDisableAfiSafi", "disabledAfiSafi", "lastUpdErrTime"]
 BfdProtocol = Literal["bgp", "isis", "lag", "ospf", "ospfv3", "pim", "route-input", "static-bfd", "static-route", "vrrp", "vxlan"]
+
+
+class APISSLCertificate(BaseModel):
+    """Model for an API SSL certificate."""
+
+    certificate_name: str
+    """The name of the certificate to be verified."""
+    expiry_threshold: int
+    """The expiry threshold of the certificate in days."""
+    common_name: str
+    """The common subject name of the certificate."""
+    encryption_algorithm: EncryptionAlgorithm
+    """The encryption algorithm of the certificate."""
+    key_size: RsaKeySize | EcdsaKeySize
+    """The encryption algorithm key size of the certificate."""
+
+    @model_validator(mode="after")
+    def validate_inputs(self) -> Self:
+        """Validate the key size provided to the APISSLCertificates class.
+
+        If encryption_algorithm is RSA then key_size should be in {2048, 3072, 4096}.
+
+        If encryption_algorithm is ECDSA then key_size should be in {256, 384, 521}.
+        """
+        if self.encryption_algorithm == "RSA" and self.key_size not in get_args(RsaKeySize):
+            msg = f"`{self.certificate_name}` key size {self.key_size} is invalid for RSA encryption. Allowed sizes are {get_args(RsaKeySize)}."
+            raise ValueError(msg)
+
+        if self.encryption_algorithm == "ECDSA" and self.key_size not in get_args(EcdsaKeySize):
+            msg = f"`{self.certificate_name}` key size {self.key_size} is invalid for ECDSA encryption. Allowed sizes are {get_args(EcdsaKeySize)}."
+            raise ValueError(msg)
+
+        return self

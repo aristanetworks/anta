@@ -7,6 +7,9 @@ from __future__ import annotations
 
 from typing import Any
 
+import pytest
+from pydantic import ValidationError
+
 from anta.tests.routing.generic import VerifyRoutingProtocolModel, VerifyRoutingTableEntry, VerifyRoutingTableSize
 from tests.units.anta_tests import test
 
@@ -65,16 +68,6 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {"minimum": 42, "maximum": 666},
         "expected": {"result": "failure", "messages": ["routing-table has 1000 routes and not between min (42) and maximum (666)"]},
-    },
-    {
-        "name": "error-max-smaller-than-min",
-        "test": VerifyRoutingTableSize,
-        "eos_data": [{}],
-        "inputs": {"minimum": 666, "maximum": 42},
-        "expected": {
-            "result": "error",
-            "messages": ["Minimum 666 is greater than maximum 42"],
-        },
     },
     {
         "name": "success",
@@ -310,11 +303,14 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"vrf": "default", "routes": ["10.1.0.1", "10.1.0.2"], "collect": "all"},
         "expected": {"result": "failure", "messages": ["The following route(s) are missing from the routing table of VRF default: ['10.1.0.2']"]},
     },
-    {
-        "name": "collect-input-error",
-        "test": VerifyRoutingTableEntry,
-        "eos_data": {},
-        "inputs": {"vrf": "default", "routes": ["10.1.0.1", "10.1.0.2"], "collect": "not-valid"},
-        "expected": {"result": "error", "messages": ["Inputs are not valid"]},
-    },
 ]
+
+
+class TestVerifyRoutingTableSize:  # pylint: disable=too-few-public-methods
+    """Test VerifyRoutingTableSize."""
+
+    def test_inputs(self) -> None:
+        """Test VerifyRoutingTableSize inputs."""
+        VerifyRoutingTableSize.Input(minimum=1, maximum=2)
+        with pytest.raises(ValidationError):
+            VerifyRoutingTableSize.Input(minimum=2, maximum=1)

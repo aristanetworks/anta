@@ -13,7 +13,6 @@ import pkgutil
 from typing import TYPE_CHECKING, Any
 
 import httpx
-from pydantic import ValidationError
 
 from anta.catalog import AntaCatalog, AntaTestDefinition
 from anta.models import AntaCommand, AntaTest
@@ -91,15 +90,10 @@ class AntaMockEnvironment:  # pylint: disable=too-few-public-methods
             for test_data in module.DATA:
                 test = test_data["test"]
                 result_overwrite = AntaTest.Input.ResultOverwrite(custom_field=test_data["name"])
-                # Some unit tests purposely have invalid inputs, we just skip them
-                try:
-                    if test_data["inputs"] is None:
-                        inputs = test.Input(result_overwrite=result_overwrite)
-                    else:
-                        inputs = test.Input(**test_data["inputs"], result_overwrite=result_overwrite)
-                except ValidationError:
-                    continue
-
+                if test_data["inputs"] is None:
+                    inputs = test.Input(result_overwrite=result_overwrite)
+                else:
+                    inputs = test.Input(**test_data["inputs"], result_overwrite=result_overwrite)
                 test_definition = AntaTestDefinition(
                     test=test,
                     inputs=inputs,

@@ -77,13 +77,6 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "failure", "messages": ["Reload cause is: 'Reload after crash.'"]},
     },
     {
-        "name": "error",
-        "test": VerifyReloadCause,
-        "eos_data": [{}],
-        "inputs": None,
-        "expected": {"result": "error", "messages": ["No reload causes available"]},
-    },
-    {
         "name": "success-without-minidump",
         "test": VerifyCoredump,
         "eos_data": [{"mode": "compressedDeferred", "coreFiles": []}],

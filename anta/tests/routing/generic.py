@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from functools import cache
 from ipaddress import IPv4Address, IPv4Interface
-from typing import ClassVar, Literal
+from typing import ClassVar, Literal, Self
 
 from pydantic import model_validator
 
@@ -89,8 +89,8 @@ class VerifyRoutingTableSize(AntaTest):
         maximum: int
         """Expected maximum routing table size."""
 
-        @model_validator(mode="after")  # type: ignore[misc]
-        def check_min_max(self) -> AntaTest.Input:
+        @model_validator(mode="after")
+        def check_min_max(self) -> Self:
             """Validate that maximum is greater than minimum."""
             if self.minimum > self.maximum:
                 msg = f"Minimum {self.minimum} is greater than maximum {self.maximum}"
