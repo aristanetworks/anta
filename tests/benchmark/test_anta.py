@@ -5,7 +5,7 @@
 
 import asyncio
 import logging
-from unittest.mock import AsyncMock, Mock, patch
+from unittest.mock import patch
 
 import pytest
 import respx
@@ -25,8 +25,8 @@ logger = logging.getLogger(__name__)
 @pytest.mark.parametrize(
     "inventory",
     [
-        pytest.param({"count": 1, "cache": False}, id="1 device"),
-        pytest.param({"count": 2, "cache": False}, id="2 devices"),
+        pytest.param({"count": 1, "disable_cache": True, "reachable": False}, id="1 device"),
+        pytest.param({"count": 2, "disable_cache": True, "reachable": False}, id="2 devices"),
     ],
     indirect=True,
 )
@@ -45,17 +45,22 @@ def test_anta_dry_run(benchmark: BenchmarkFixture, catalog: AntaCatalog, invento
     logging.disable(logging.NOTSET)
     if len(manager.results) != 0:
         pytest.fail("ANTA Dry-Run mode should not return any result", pytrace=False)
+    if catalog.final_tests_count != len(inventory) * len(catalog.tests):
+        pytest.fail(f"Expected {len(inventory) * len(catalog.tests)} selected tests but got {catalog.final_tests_count}", pytrace=False)
+    bench_info = (
+        "\n--- ANTA NRFU Dry-Run Benchmark Information ---\n" f"Selected tests: {catalog.final_tests_count}\n" "-----------------------------------------------"
+    )
+    logger.info(bench_info)
 
 
 @pytest.mark.parametrize(
     "inventory",
     [
-        pytest.param({"count": 1, "cache": False}, id="1 device"),
-        pytest.param({"count": 2, "cache": False}, id="2 devices"),
+        pytest.param({"count": 1, "disable_cache": True}, id="1 device"),
+        pytest.param({"count": 2, "disable_cache": True}, id="2 devices"),
     ],
     indirect=True,
 )
-@patch("asyncio.open_connection", AsyncMock(spec=asyncio.open_connection, return_value=(Mock(), Mock())))  # We just want all devices to be reachable
 @patch("anta.models.AntaTest.collect", collect)
 @patch("anta.device.AntaDevice.collect_commands", collect_commands)
 @respx.mock  # Mock eAPI responses

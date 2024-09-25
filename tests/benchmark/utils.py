@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import asyncio
+import copy
 import importlib
 import json
 import pkgutil
@@ -60,7 +61,16 @@ class AntaMockEnvironment:  # pylint: disable=too-few-public-methods
     """
 
     def __init__(self) -> None:
-        self.catalog, self.eos_data_catalog = self._generate_catalog()
+        self._catalog, self.eos_data_catalog = self._generate_catalog()
+        self.tests_count = len(self._catalog.tests)
+
+    @property
+    def catalog(self) -> AntaCatalog:
+        """AntaMockEnvironment object will always return a new AntaCatalog object based on the initial parsing.
+
+        This is because AntaCatalog objects store indexes when tests are run and we want a new object each time a test is run.
+        """
+        return copy.deepcopy(self._catalog)
 
     def _generate_catalog(self) -> tuple[AntaCatalog, dict[tuple[str, str], list[dict[str, Any]]]]:
         """Generate the `catalog` and `eos_data_catalog` attributes."""
