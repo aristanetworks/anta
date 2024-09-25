@@ -18,6 +18,9 @@ from anta.custom_types import Afi, BgpDropStats, BgpUpdateError, MultiProtocolCa
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_item, get_value
 
+# pylint: disable=C0302
+# TODO: Refactor to reduce the number of lines in this module later
+
 
 def _add_bgp_failures(failures: dict[tuple[str, str | None], dict[str, Any]], afi: Afi, safi: Safi | None, vrf: str, issue: str | dict[str, Any]) -> None:
     """Add a BGP failure entry to the given `failures` dictionary.
@@ -1627,8 +1630,8 @@ class VerifyBGPRouteOrigin(AntaTest):
 
     Expected Results
     ----------------
-    * Success: The test will pass if the BGP route's origin matches expected origin type.
-    * Failure: The test will fail if the BGP route's origin does not matches with expected origin type or BGP route entry(s) not found.
+    * Success: The test will pass if the BGP route's origin matches expected origin type and next-hop address.
+    * Failure: The test will fail if the BGP route's origin does not matches with expected origin type, next-hop address or BGP route entry(s) not found.
 
     Examples
     --------
