@@ -303,7 +303,7 @@ class VerifyStpTopologyChanges(AntaTest):
 
         # Verify the STP topology(s).
         if not stp_topologies:
-            self.result.is_failure("None of STP topology is configured.")
+            self.result.is_failure("STP is not configured.")
             return
 
         # Verifies the number of changes across all interfaces
@@ -317,8 +317,6 @@ class VerifyStpTopologyChanges(AntaTest):
                 failures["topologies"][topology] = interfaces
 
         if failures["topologies"]:
-            self.result.is_failure(
-                f"The following Spanning Tree Protocol (STP) topology(s) are not configured or number of changes not within the threshold:{failures}"
-            )
+            self.result.is_failure(f"The following STP topologies are not configured or number of changes not within the threshold:\n{failures}")
         else:
             self.result.is_success()
