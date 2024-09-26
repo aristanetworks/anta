@@ -238,3 +238,4 @@ IPv4RouteType = Literal[
     "Route Cache Route",
     "CBF Leaked Route",
 ]
+SnmpVersion = Literal["v1", "v2c", "v3"]
