@@ -7,7 +7,7 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from typing import ClassVar, Literal
+from typing import Any, ClassVar, Literal
 
 from pydantic import Field
 
@@ -257,5 +257,66 @@ class VerifySTPRootPriority(AntaTest):
         ]
         if wrong_priority_instances:
             self.result.is_failure(f"The following instance(s) have the wrong STP root priority configured: {wrong_priority_instances}")
+        else:
+            self.result.is_success()
+
+
+class VerifyStpTopologyChanges(AntaTest):
+    """Verifies the number of changes across all interfaces in the Spanning Tree Protocol (STP) topology is below a threshold.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the total number of changes across all interfaces is less than the specified threshold.
+    * Failure: The test will fail if the total number of changes across all interfaces meets or exceeds the specified threshold,
+    indicating potential instability in the topology.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.stp:
+      - VerifyStpTopologyChanges:
+          threshold: 10
+    ```
+    """
+
+    name = "VerifyStpTopologyChanges"
+    description = "Verifies the number of changes across all interfaces in the Spanning Tree Protocol (STP) topology is below a threshold."
+    categories: ClassVar[list[str]] = ["stp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show spanning-tree topology status detail", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyStpTopologyChanges test."""
+
+        threshold: int
+        """The threshold number of changes in the STP topology."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyStpTopologyChanges."""
+        failures: dict[str, Any] = {"topologies": {}}
+
+        command_output = self.instance_commands[0].json_output
+        stp_topologies = command_output.get("topologies", {})
+
+        # verifies all available topologies except the "NoStp" topology.
+        stp_topologies.pop("NoStp", None)
+
+        # Verify the STP topology(s).
+        if not stp_topologies:
+            self.result.is_failure("STP is not configured.")
+            return
+
+        # Verifies the number of changes across all interfaces
+        for topology, topology_details in stp_topologies.items():
+            interfaces = {
+                interface: {"Number of changes": num_of_changes}
+                for interface, details in topology_details.get("interfaces", {}).items()
+                if (num_of_changes := details.get("numChanges")) > self.inputs.threshold
+            }
+            if interfaces:
+                failures["topologies"][topology] = interfaces
+
+        if failures["topologies"]:
+            self.result.is_failure(f"The following STP topologies are not configured or number of changes not within the threshold:\n{failures}")
         else:
             self.result.is_success()
