@@ -25,7 +25,13 @@ from anta.logger import anta_log_exception
 from anta.models import AntaTest
 
 if TYPE_CHECKING:
+    import sys
     from types import ModuleType
+
+    if sys.version_info >= (3, 11):
+        from typing import Self
+    else:
+        from typing_extensions import Self
 
 logger = logging.getLogger(__name__)
 
@@ -123,7 +129,7 @@ class AntaTestDefinition(BaseModel):
         raise ValueError(msg)
 
     @model_validator(mode="after")
-    def check_inputs(self) -> AntaTestDefinition:
+    def check_inputs(self) -> Self:
         """Check the `inputs` field typing.
 
         The `inputs` class attribute needs to be an instance of the AntaTest.Input subclass defined in the class `test`.

@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+import sys
 from typing import Any
 
 import pytest
@@ -306,11 +307,30 @@ DATA: list[dict[str, Any]] = [
 ]
 
 
-class TestVerifyRoutingTableSize:  # pylint: disable=too-few-public-methods
-    """Test VerifyRoutingTableSize."""
+class TestVerifyRoutingTableSizeInputs:
+    """Test anta.tests.routing.generic.VerifyRoutingTableSize.Input."""
 
-    def test_inputs(self) -> None:
-        """Test VerifyRoutingTableSize inputs."""
-        VerifyRoutingTableSize.Input(minimum=1, maximum=2)
+    @pytest.mark.parametrize(
+        ("minimum", "maximum"),
+        [
+            pytest.param(0, 0, id="zero"),
+            pytest.param(1, 2, id="1<2"),
+            pytest.param(0, sys.maxsize, id="max"),
+        ],
+    )
+    def test_valid(self, minimum: int, maximum: int) -> None:
+        """Test VerifyRoutingTableSize valid inputs."""
+        VerifyRoutingTableSize.Input(minimum=minimum, maximum=maximum)
+
+    @pytest.mark.parametrize(
+        ("minimum", "maximum"),
+        [
+            pytest.param(-2, -1, id="negative"),
+            pytest.param(2, 1, id="2<1"),
+            pytest.param(sys.maxsize, 0, id="max"),
+        ],
+    )
+    def test_invalid(self, minimum: int, maximum: int) -> None:
+        """Test VerifyRoutingTableSize invalid inputs."""
         with pytest.raises(ValidationError):
-            VerifyRoutingTableSize.Input(minimum=2, maximum=1)
+            VerifyRoutingTableSize.Input(minimum=minimum, maximum=maximum)

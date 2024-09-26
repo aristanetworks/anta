@@ -11,10 +11,8 @@ TODO: Expand later.
 from __future__ import annotations
 
 import re
-from typing import Any
 
 import pytest
-from pydantic import ValidationError
 
 from anta.custom_types import (
     REGEX_BGP_IPV4_MPLS_VPN,
@@ -28,7 +26,6 @@ from anta.custom_types import (
     REGEXP_TYPE_EOS_INTERFACE,
     REGEXP_TYPE_HOSTNAME,
     REGEXP_TYPE_VXLAN_SRC_INTERFACE,
-    APISSLCertificate,
     aaa_group_prefix,
     bgp_multiprotocol_capabilities_abbreviations,
     interface_autocomplete,
@@ -318,40 +315,3 @@ def test_validate_regex_invalid(str_input: str, error: str) -> None:
     """Test validate_regex with invalid regex."""
     with pytest.raises(ValueError, match=error):
         validate_regex(str_input)
-
-
-class TestAPISSLCertificate:  # pylint: disable=too-few-public-methods
-    """Test anta.custom_types.APISSLCertificate."""
-
-    @pytest.mark.parametrize(
-        ("model_params", "error"),
-        [
-            pytest.param(
-                {
-                    "certificate_name": "ARISTA_ROOT_CA.crt",
-                    "expiry_threshold": 30,
-                    "common_name": "Arista Networks Internal IT Root Cert Authority",
-                    "encryption_algorithm": "RSA",
-                    "key_size": 256,
-                },
-                "Value error, `ARISTA_ROOT_CA.crt` key size 256 is invalid for RSA encryption. Allowed sizes are (2048, 3072, 4096).",
-                id="RSA_wrong_size",
-            ),
-            pytest.param(
-                {
-                    "certificate_name": "ARISTA_SIGNING_CA.crt",
-                    "expiry_threshold": 30,
-                    "common_name": "AristaIT-ICA ECDSA Issuing Cert Authority",
-                    "encryption_algorithm": "ECDSA",
-                    "key_size": 2048,
-                },
-                "Value error, `ARISTA_SIGNING_CA.crt` key size 2048 is invalid for ECDSA encryption. Allowed sizes are (256, 384, 512).",
-                id="ECDSA_wrong_size",
-            ),
-        ],
-    )
-    def test_invalid(self, model_params: dict[str, Any], error: str) -> None:
-        """Test invalid inputs for anta.custom_types.APISSLCertificate."""
-        with pytest.raises(ValidationError) as exec_info:
-            APISSLCertificate.model_validate(model_params)
-        assert error == exec_info.value.errors()[0]["msg"]

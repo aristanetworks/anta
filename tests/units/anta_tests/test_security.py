@@ -7,6 +7,9 @@ from __future__ import annotations
 
 from typing import Any
 
+import pytest
+from pydantic import ValidationError
+
 from anta.tests.security import (
     VerifyAPIHttpsSSL,
     VerifyAPIHttpStatus,
@@ -1195,3 +1198,69 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "failure", "messages": ["Hardware entropy generation is disabled."]},
     },
 ]
+
+
+class TestAPISSLCertificate:
+    """Test anta.tests.security.VerifyAPISSLCertificate.Input.APISSLCertificate."""
+
+    @pytest.mark.parametrize(
+        ("model_params", "error"),
+        [
+            pytest.param(
+                {
+                    "certificate_name": "ARISTA_ROOT_CA.crt",
+                    "expiry_threshold": 30,
+                    "common_name": "Arista Networks Internal IT Root Cert Authority",
+                    "encryption_algorithm": "RSA",
+                    "key_size": 256,
+                },
+                "Value error, `ARISTA_ROOT_CA.crt` key size 256 is invalid for RSA encryption. Allowed sizes are (2048, 3072, 4096).",
+                id="RSA_wrong_size",
+            ),
+            pytest.param(
+                {
+                    "certificate_name": "ARISTA_SIGNING_CA.crt",
+                    "expiry_threshold": 30,
+                    "common_name": "AristaIT-ICA ECDSA Issuing Cert Authority",
+                    "encryption_algorithm": "ECDSA",
+                    "key_size": 2048,
+                },
+                "Value error, `ARISTA_SIGNING_CA.crt` key size 2048 is invalid for ECDSA encryption. Allowed sizes are (256, 384, 512).",
+                id="ECDSA_wrong_size",
+            ),
+        ],
+    )
+    def test_invalid(self, model_params: dict[str, Any], error: str) -> None:
+        """Test invalid inputs for anta.tests.security.VerifyAPISSLCertificate.Input.APISSLCertificate."""
+        with pytest.raises(ValidationError) as exec_info:
+            VerifyAPISSLCertificate.Input.APISSLCertificate.model_validate(model_params)
+        assert error == exec_info.value.errors()[0]["msg"]
+
+    @pytest.mark.parametrize(
+        "model_params",
+        [
+            pytest.param(
+                {
+                    "certificate_name": "ARISTA_SIGNING_CA.crt",
+                    "expiry_threshold": 30,
+                    "common_name": "AristaIT-ICA ECDSA Issuing Cert Authority",
+                    "encryption_algorithm": "ECDSA",
+                    "key_size": 256,
+                },
+                id="ECDSA",
+            ),
+            pytest.param(
+                {
+                    "certificate_name": "ARISTA_ROOT_CA.crt",
+                    "expiry_threshold": 30,
+                    "common_name": "Arista Networks Internal IT Root Cert Authority",
+                    "encryption_algorithm": "RSA",
+                    "key_size": 4096,
+                },
+                id="RSA",
+            ),
+        ],
+    )
+    def test_valid(self, model_params: dict[str, Any]) -> None:
+        """Test valid inputs for anta.tests.security.VerifyAPISSLCertificate.Input.APISSLCertificate."""
+        VerifyAPISSLCertificate.Input.APISSLCertificate.model_validate(model_params)

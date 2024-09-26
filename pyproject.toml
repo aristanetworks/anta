@@ -453,7 +453,7 @@ disable = [ # Any rule listed here can be disabled: https://github.com/astral-sh
     "keyword-arg-before-vararg",
     "protected-access",
     "too-many-arguments",
-    "too-many-positional-arguments",  # New in pylint 3.3.0
+    "too-many-positional-arguments",
     "wrong-import-position",
     "pointless-statement",
     "broad-exception-caught",
@@ -461,6 +461,9 @@ disable = [ # Any rule listed here can be disabled: https://github.com/astral-sh
     "unused-variable",
     "redefined-builtin",
     "global-statement",
+    "reimported",
+    "wrong-import-order",
+    "wrong-import-position",
     "abstract-class-instantiated", # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-instantiation-of-abstract-classes-abstract
     "unexpected-keyword-arg", # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-arguments-in-calls-call-arg and other rules
     "no-value-for-parameter" # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-arguments-in-calls-call-arg
