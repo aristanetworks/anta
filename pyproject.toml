@@ -450,6 +450,7 @@ disable = [ # Any rule listed here can be disabled: https://github.com/astral-sh
     "keyword-arg-before-vararg",
     "protected-access",
     "too-many-arguments",
+    "too-many-positional-arguments",  # New in pylint 3.3.0
     "wrong-import-position",
     "pointless-statement",
     "broad-exception-caught",
