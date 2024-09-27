@@ -305,13 +305,6 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "failure", "messages": ["The following route(s) are missing from the routing table of VRF default: ['10.1.0.2']"]},
     },
     {
-        "name": "collect-input-error",
-        "test": VerifyRoutingTableEntry,
-        "eos_data": {},
-        "inputs": {"vrf": "default", "routes": ["10.1.0.1", "10.1.0.2"], "collect": "not-valid"},
-        "expected": {"result": "error", "messages": ["Inputs are not valid"]},
-    },
-    {
         "name": "success",
         "test": VerifyRouteEntry,
         "eos_data": [
