@@ -60,14 +60,4 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"regex_patterns": ["bla", "bleh"]},
         "expected": {"result": "failure", "messages": ["Following patterns were not found: 'bla','bleh'"]},
     },
-    {
-        "name": "failure-invalid-regex",
-        "test": VerifyRunningConfigLines,
-        "eos_data": ["enable password something\nsome other line"],
-        "inputs": {"regex_patterns": ["["]},
-        "expected": {
-            "result": "error",
-            "messages": ["1 validation error for Input\nregex_patterns.0\n  Value error, Invalid regex: unterminated character set at position 0"],
-        },
-    },
 ]

@@ -5,7 +5,11 @@
 
 from __future__ import annotations
 
+import sys
 from typing import Any
+
+import pytest
+from pydantic import ValidationError
 
 from anta.tests.routing.generic import VerifyRouteEntry, VerifyRoutingProtocolModel, VerifyRoutingTableEntry, VerifyRoutingTableSize
 from tests.units.anta_tests import test
@@ -65,16 +69,6 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {"minimum": 42, "maximum": 666},
         "expected": {"result": "failure", "messages": ["routing-table has 1000 routes and not between min (42) and maximum (666)"]},
-    },
-    {
-        "name": "error-max-smaller-than-min",
-        "test": VerifyRoutingTableSize,
-        "eos_data": [{}],
-        "inputs": {"minimum": 666, "maximum": 42},
-        "expected": {
-            "result": "error",
-            "messages": ["Minimum 666 is greater than maximum 42"],
-        },
     },
     {
         "name": "success",
@@ -417,3 +411,32 @@ DATA: list[dict[str, Any]] = [
         },
     },
 ]
+
+
+class TestVerifyRoutingTableSizeInputs:
+    """Test anta.tests.routing.generic.VerifyRoutingTableSize.Input."""
+
+    @pytest.mark.parametrize(
+        ("minimum", "maximum"),
+        [
+            pytest.param(0, 0, id="zero"),
+            pytest.param(1, 2, id="1<2"),
+            pytest.param(0, sys.maxsize, id="max"),
+        ],
+    )
+    def test_valid(self, minimum: int, maximum: int) -> None:
+        """Test VerifyRoutingTableSize valid inputs."""
+        VerifyRoutingTableSize.Input(minimum=minimum, maximum=maximum)
+
+    @pytest.mark.parametrize(
+        ("minimum", "maximum"),
+        [
+            pytest.param(-2, -1, id="negative"),
+            pytest.param(2, 1, id="2<1"),
+            pytest.param(sys.maxsize, 0, id="max"),
+        ],
+    )
+    def test_invalid(self, minimum: int, maximum: int) -> None:
+        """Test VerifyRoutingTableSize invalid inputs."""
+        with pytest.raises(ValidationError):
+            VerifyRoutingTableSize.Input(minimum=minimum, maximum=maximum)

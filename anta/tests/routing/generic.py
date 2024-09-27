@@ -9,12 +9,21 @@ from __future__ import annotations
 
 from functools import cache
 from ipaddress import IPv4Address, IPv4Interface, IPv4Network
-from typing import Any, ClassVar, Literal
+from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
 from pydantic import BaseModel, model_validator
 
+from anta.custom_types import PositiveInteger
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_item, get_value
+
+if TYPE_CHECKING:
+    import sys
+
+    if sys.version_info >= (3, 11):
+        from typing import Self
+    else:
+        from typing_extensions import Self
 
 
 class VerifyRoutingProtocolModel(AntaTest):
@@ -85,13 +94,13 @@ class VerifyRoutingTableSize(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyRoutingTableSize test."""
 
-        minimum: int
+        minimum: PositiveInteger
         """Expected minimum routing table size."""
-        maximum: int
+        maximum: PositiveInteger
         """Expected maximum routing table size."""
 
-        @model_validator(mode="after")  # type: ignore[misc]
-        def check_min_max(self) -> AntaTest.Input:
+        @model_validator(mode="after")
+        def check_min_max(self) -> Self:
             """Validate that maximum is greater than minimum."""
             if self.minimum > self.maximum:
                 msg = f"Minimum {self.minimum} is greater than maximum {self.maximum}"

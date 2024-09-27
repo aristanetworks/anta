@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from anta.tests.stp import VerifySTPBlockedPorts, VerifySTPCounters, VerifySTPForwardingPorts, VerifySTPMode, VerifySTPRootPriority
+from anta.tests.stp import VerifySTPBlockedPorts, VerifySTPCounters, VerifySTPForwardingPorts, VerifySTPMode, VerifySTPRootPriority, VerifyStpTopologyChanges
 from tests.units.anta_tests import test
 
 DATA: list[dict[str, Any]] = [
@@ -323,5 +323,167 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {"priority": 32768, "instances": [10, 20, 30]},
         "expected": {"result": "failure", "messages": ["The following instance(s) have the wrong STP root priority configured: ['VL20', 'VL30']"]},
+    },
+    {
+        "name": "success-mstp",
+        "test": VerifyStpTopologyChanges,
+        "eos_data": [
+            {
+                "unmappedVlans": [],
+                "topologies": {
+                    "Cist": {
+                        "interfaces": {
+                            "Cpu": {"state": "forwarding", "numChanges": 1, "lastChange": 1723990624.735365},
+                            "Port-Channel5": {"state": "forwarding", "numChanges": 1, "lastChange": 1723990624.7353542},
+                        }
+                    },
+                    "NoStp": {
+                        "interfaces": {
+                            "Cpu": {"state": "forwarding", "numChanges": 1, "lastChange": 1723990624.735365},
+                            "Ethernet1": {"state": "forwarding", "numChanges": 15, "lastChange": 1723990624.7353542},
+                        }
+                    },
+                },
+            },
+        ],
+        "inputs": {"threshold": 10},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-rstp",
+        "test": VerifyStpTopologyChanges,
+        "eos_data": [
+            {
+                "unmappedVlans": [],
+                "topologies": {
+                    "Cist": {
+                        "interfaces": {
+                            "Vxlan1": {"state": "forwarding", "numChanges": 1, "lastChange": 1723990624.735365},
+                            "PeerEthernet3": {"state": "forwarding", "numChanges": 1, "lastChange": 1723990624.7353542},
+                        }
+                    },
+                    "NoStp": {
+                        "interfaces": {
+                            "Cpu": {"state": "forwarding", "numChanges": 1, "lastChange": 1723990624.735365},
+                            "Ethernet1": {"state": "forwarding", "numChanges": 15, "lastChange": 1723990624.7353542},
+                        }
+                    },
+                },
+            },
+        ],
+        "inputs": {"threshold": 10},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-rapid-pvst",
+        "test": VerifyStpTopologyChanges,
+        "eos_data": [
+            {
+                "unmappedVlans": [],
+                "topologies": {
+                    "NoStp": {
+                        "vlans": [4094, 4093, 1006],
+                        "interfaces": {
+                            "PeerEthernet2": {"state": "forwarding", "numChanges": 1, "lastChange": 1727151356.1330667},
+                        },
+                    },
+                    "Vl1": {"vlans": [1], "interfaces": {"Port-Channel5": {"state": "forwarding", "numChanges": 1, "lastChange": 1727326710.0615358}}},
+                    "Vl10": {
+                        "vlans": [10],
+                        "interfaces": {
+                            "Cpu": {"state": "forwarding", "numChanges": 1, "lastChange": 1727326710.0673406},
+                            "Vxlan1": {"state": "forwarding", "numChanges": 1, "lastChange": 1727326710.0677001},
+                            "Port-Channel5": {"state": "forwarding", "numChanges": 1, "lastChange": 1727326710.0728855},
+                            "Ethernet3": {"state": "forwarding", "numChanges": 3, "lastChange": 1727326730.255137},
+                        },
+                    },
+                    "Vl1198": {
+                        "vlans": [1198],
+                        "interfaces": {
+                            "Cpu": {"state": "forwarding", "numChanges": 1, "lastChange": 1727326710.074386},
+                            "Vxlan1": {"state": "forwarding", "numChanges": 1, "lastChange": 1727326710.0743902},
+                            "Port-Channel5": {"state": "forwarding", "numChanges": 1, "lastChange": 1727326710.0743942},
+                        },
+                    },
+                    "Vl1199": {
+                        "vlans": [1199],
+                        "interfaces": {
+                            "Cpu": {"state": "forwarding", "numChanges": 1, "lastChange": 1727326710.0744},
+                            "Vxlan1": {"state": "forwarding", "numChanges": 1, "lastChange": 1727326710.07453},
+                            "Port-Channel5": {"state": "forwarding", "numChanges": 1, "lastChange": 1727326710.074535},
+                        },
+                    },
+                    "Vl20": {
+                        "vlans": [20],
+                        "interfaces": {
+                            "Cpu": {"state": "forwarding", "numChanges": 1, "lastChange": 1727326710.073489},
+                            "Vxlan1": {"state": "forwarding", "numChanges": 1, "lastChange": 1727326710.0743747},
+                            "Port-Channel5": {"state": "forwarding", "numChanges": 1, "lastChange": 1727326710.0743794},
+                            "Ethernet3": {"state": "forwarding", "numChanges": 3, "lastChange": 1727326730.2551405},
+                        },
+                    },
+                    "Vl3009": {
+                        "vlans": [3009],
+                        "interfaces": {
+                            "Cpu": {"state": "forwarding", "numChanges": 1, "lastChange": 1727326710.074541},
+                            "Port-Channel5": {"state": "forwarding", "numChanges": 1, "lastChange": 1727326710.0745454},
+                        },
+                    },
+                    "Vl3019": {
+                        "vlans": [3019],
+                        "interfaces": {
+                            "Cpu": {"state": "forwarding", "numChanges": 1, "lastChange": 1727326710.0745502},
+                            "Port-Channel5": {"state": "forwarding", "numChanges": 1, "lastChange": 1727326710.0745537},
+                        },
+                    },
+                },
+            },
+        ],
+        "inputs": {"threshold": 10},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-unstable-topology",
+        "test": VerifyStpTopologyChanges,
+        "eos_data": [
+            {
+                "unmappedVlans": [],
+                "topologies": {
+                    "Cist": {
+                        "interfaces": {
+                            "Cpu": {"state": "forwarding", "numChanges": 15, "lastChange": 1723990624.735365},
+                            "Port-Channel5": {"state": "forwarding", "numChanges": 15, "lastChange": 1723990624.7353542},
+                        }
+                    },
+                },
+            },
+        ],
+        "inputs": {"threshold": 10},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following STP topologies are not configured or number of changes not within the threshold:\n"
+                "{'topologies': {'Cist': {'Cpu': {'Number of changes': 15}, 'Port-Channel5': {'Number of changes': 15}}}}"
+            ],
+        },
+    },
+    {
+        "name": "failure-topologies-not-configured",
+        "test": VerifyStpTopologyChanges,
+        "eos_data": [
+            {
+                "unmappedVlans": [],
+                "topologies": {
+                    "NoStp": {
+                        "interfaces": {
+                            "Cpu": {"state": "forwarding", "numChanges": 1, "lastChange": 1723990624.735365},
+                            "Ethernet1": {"state": "forwarding", "numChanges": 15, "lastChange": 1723990624.7353542},
+                        }
+                    }
+                },
+            },
+        ],
+        "inputs": {"threshold": 10},
+        "expected": {"result": "failure", "messages": ["STP is not configured."]},
     },
 ]
