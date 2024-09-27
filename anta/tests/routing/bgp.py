@@ -10,7 +10,6 @@ from __future__ import annotations
 from ipaddress import IPv4Address, IPv4Network, IPv6Address
 from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
-
 from pydantic import BaseModel, Field, PositiveInt, model_validator
 from pydantic.v1.utils import deep_update
 from pydantic_extra_types.mac_address import MacAddress
@@ -18,7 +17,6 @@ from pydantic_extra_types.mac_address import MacAddress
 from anta.custom_types import Afi, BgpDropStats, BgpUpdateError, MultiProtocolCaps, Safi, Vni
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_item, get_value
-
 
 if TYPE_CHECKING:
     import sys
@@ -31,6 +29,7 @@ if TYPE_CHECKING:
 
 # pylint: disable=C0302
 # TODO: Refactor to reduce the number of lines in this module later
+
 
 def _add_bgp_failures(failures: dict[tuple[str, str | None], dict[str, Any]], afi: Afi, safi: Safi | None, vrf: str, issue: str | dict[str, Any]) -> None:
     """Add a BGP failure entry to the given `failures` dictionary.
