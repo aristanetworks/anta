@@ -346,7 +346,7 @@ class VerifySNMPNotificationHost(AntaTest):
                 actual_host_details["user"] = host_details.get("v3Params", {}).get("user", "Not Found")
 
             # Verify the VRF for SNMP Hosts. If vrf is default then command output consists empty string.
-            actual_host_details["vrf"] = "default" if (vrf_name := host_details.get("vrf")) == "" else "Not Found" if vrf_name is None else vrf_name
+            actual_host_details["vrf"] = "default" if (vrf_name := host_details.get("vrf", "Not Found")) == "" else vrf_name
 
             # Collecting failures logs if any.
             failure_logs = get_failed_logs(expected_host_details, actual_host_details)
