@@ -245,10 +245,14 @@ class VerifySnmpContact(AntaTest):
 class VerifySNMPNotificationHost(AntaTest):
     """Verifies the SNMP notification host (SNMP manager) configurations.
 
+    - Verifies that the valid notification type and VRF name.
+    - Ensures that UDP port provided matches the expected value.
+    - Ensures that the community_string is properly set for SNMP v1/v2 and for SNMP v3, the user field is included, aligning with version-specific requirements.
+
     Expected Results
     ----------------
-    * Success: The test will pass if the SNMP PDU counter(s) are non-zero/greater than zero.
-    * Failure: The test will fail if the SNMP PDU counter(s) are zero/None/Not Found.
+    * Success: The test will pass if the provided SNMP notification host and all specified parameters are correctly configured.
+    * Failure: The test will fail if the provided SNMP notification host is not configured or specified parameters are not correctly configured.
 
     Examples
     --------
@@ -281,7 +285,7 @@ class VerifySNMPNotificationHost(AntaTest):
             """Model for a SNMP Manager."""
 
             hostname: IPv4Address
-            """IP address of the SNMP notification host."""
+            """IPv4 address of the SNMP notification host."""
             vrf: str = "default"
             """Optional VRF for SNMP Hosts. If not provided, it defaults to `default`."""
             notification_type: Literal["trap", "inform"]
@@ -314,7 +318,13 @@ class VerifySNMPNotificationHost(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifySNMPNotificationHost."""
+        self.result.is_success()
         failures: str = ""
+
+        # Verify SNMP host details.
+        if not (snmp_hosts := get_value(self.instance_commands[0].json_output, "hosts")):
+            self.result.is_failure("SNMP is not configured.")
+            return
 
         for host in self.inputs.notification_hosts:
             hostname = str(host.hostname)
@@ -326,8 +336,8 @@ class VerifySNMPNotificationHost(AntaTest):
             user = host.user
 
             # Verify SNMP host details.
-            if not (host_details := get_item(self.instance_commands[0].json_output["hosts"], "hostname", hostname)):
-                failures += f"Details not found for SNMP host '{hostname}'.\n"
+            if not (host_details := get_item(snmp_hosts, "hostname", hostname)):
+                failures += f"SNMP host '{hostname}' is not configured.\n"
                 continue
 
             # Update expected host details.
@@ -354,7 +364,5 @@ class VerifySNMPNotificationHost(AntaTest):
                 failures += f"For SNMP host {hostname}:{failure_logs}\n"
 
         # Check if there are any failures.
-        if not failures:
-            self.result.is_success()
-        else:
+        if failures:
             self.result.is_failure(failures)

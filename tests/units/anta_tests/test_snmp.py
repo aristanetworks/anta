@@ -186,7 +186,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
-        "name": "failure-details-not-found",
+        "name": "failure-not-configured",
         "test": VerifySNMPNotificationHost,
         "eos_data": [{"hosts": []}],
         "inputs": {
@@ -195,7 +195,32 @@ DATA: list[dict[str, Any]] = [
                 {"hostname": "192.168.1.101", "vrf": "default", "notification_type": "trap", "version": "v2c", "udp_port": 162, "community_string": "public"},
             ]
         },
-        "expected": {"result": "failure", "messages": ["Details not found for SNMP host '192.168.1.100'.\nDetails not found for SNMP host '192.168.1.101'.\n"]},
+        "expected": {"result": "failure", "messages": ["SNMP is not configured."]},
+    },
+    {
+        "name": "failure-details-not-found",
+        "test": VerifySNMPNotificationHost,
+        "eos_data": [
+            {
+                "hosts": [
+                    {
+                        "hostname": "192.168.1.100",
+                        "port": 162,
+                        "vrf": "",
+                        "notificationType": "trap",
+                        "protocolVersion": "v3",
+                        "v3Params": {"user": "public", "securityLevel": "authNoPriv"},
+                    },
+                ]
+            }
+        ],
+        "inputs": {
+            "notification_hosts": [
+                {"hostname": "192.168.1.100", "vrf": "default", "notification_type": "trap", "version": "v3", "udp_port": 162, "user": "public"},
+                {"hostname": "192.168.1.101", "vrf": "default", "notification_type": "trap", "version": "v2c", "udp_port": 162, "community_string": "public"},
+            ]
+        },
+        "expected": {"result": "failure", "messages": ["SNMP host '192.168.1.101' is not configured.\n"]},
     },
     {
         "name": "failure-incorrect-config",
