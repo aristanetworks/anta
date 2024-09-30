@@ -132,3 +132,36 @@ def tags(inventory: AntaInventory, **kwargs: Any) -> None:
         tags.update(device.tags)
     console.print("Tags found:")
     console.print_json(json.dumps(sorted(tags), indent=2))
+
+
+@click.command
+def tests() -> None:
+    """Show all builtin ANTA tests with an example output retrieved from each test documentation."""
+    console.print("Current builtin ANTA tests are:", style="white on blue")
+    import importlib
+    import inspect
+    import pkgutil
+
+    from numpydoc.docscrape import NumpyDocString
+
+    from anta.models import AntaTest
+
+    # TODO: with this method need to disable warning for unknown section in numpydoc
+    # Would be better to not use numpydoc
+    def explore_package(module_name, level=2):
+        loader = pkgutil.get_loader(module_name)
+        path = Path(loader.get_filename()).parent
+        for sub_module in pkgutil.walk_packages([str(path)]):
+            _, sub_module_name, _ = sub_module
+            qname = module_name + "." + sub_module_name
+            if sub_module.ispkg:
+                explore_package(qname, level=3)
+            else:
+                console.print(f"{qname}:")
+                qname_module = importlib.import_module(qname)
+                for name, obj in inspect.getmembers(qname_module):
+                    if inspect.isclass(obj) and issubclass(obj, AntaTest) and obj != AntaTest:
+                        doc = NumpyDocString(obj.__doc__)
+                        print("\n".join(l[2 * level :] for l in doc["Examples"][level:-1]))
+
+    explore_package("anta.tests")

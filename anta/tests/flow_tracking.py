@@ -16,8 +16,7 @@ from anta.tools import get_failed_logs
 
 
 def validate_record_export(record_export: dict[str, str], tracker_info: dict[str, str]) -> str:
-    """
-    Validate the record export configuration against the tracker info.
+    """Validate the record export configuration against the tracker info.
 
     Parameters
     ----------
@@ -40,8 +39,7 @@ def validate_record_export(record_export: dict[str, str], tracker_info: dict[str
 
 
 def validate_exporters(exporters: list[dict[str, str]], tracker_info: dict[str, str]) -> str:
-    """
-    Validate the exporter configurations against the tracker info.
+    """Validate the exporter configurations against the tracker info.
 
     Parameters
     ----------
@@ -73,8 +71,7 @@ def validate_exporters(exporters: list[dict[str, str]], tracker_info: dict[str, 
 
 
 class VerifyHardwareFlowTrackerStatus(AntaTest):
-    """
-    Verifies if hardware flow tracking is running and an input tracker is active.
+    """Verifies if hardware flow tracking is running and an input tracker is active.
 
     This test optionally verifies the tracker interval/timeout and exporter configuration.
 

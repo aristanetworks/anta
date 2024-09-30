@@ -18,8 +18,7 @@ from anta.tools import get_value
 
 
 class VerifyAVTPathHealth(AntaTest):
-    """
-    Verifies the status of all Adaptive Virtual Topology (AVT) paths for all VRFs.
+    """Verifies the status of all Adaptive Virtual Topology (AVT) paths for all VRFs.
 
     Expected Results
     ----------------
@@ -73,8 +72,7 @@ class VerifyAVTPathHealth(AntaTest):
 
 
 class VerifyAVTSpecificPath(AntaTest):
-    """
-    Verifies the status and type of an Adaptive Virtual Topology (AVT) path for a specified VRF.
+    """Verifies the status and type of an Adaptive Virtual Topology (AVT) path for a specified VRF.
 
     Expected Results
     ----------------
@@ -191,8 +189,7 @@ class VerifyAVTSpecificPath(AntaTest):
 
 
 class VerifyAVTRole(AntaTest):
-    """
-    Verifies the Adaptive Virtual Topology (AVT) role of a device.
+    """Verifies the Adaptive Virtual Topology (AVT) role of a device.
 
     Expected Results
     ----------------

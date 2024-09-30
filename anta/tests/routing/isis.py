@@ -446,8 +446,7 @@ class VerifyISISSegmentRoutingAdjacencySegments(AntaTest):
 
 
 class VerifyISISSegmentRoutingDataplane(AntaTest):
-    """
-    Verify dataplane of a list of ISIS-SR instances.
+    """Verify dataplane of a list of ISIS-SR instances.
 
     Expected Results
     ----------------
@@ -530,8 +529,7 @@ class VerifyISISSegmentRoutingDataplane(AntaTest):
 
 
 class VerifyISISSegmentRoutingTunnels(AntaTest):
-    """
-    Verify ISIS-SR tunnels computed by device.
+    """Verify ISIS-SR tunnels computed by device.
 
     Expected Results
     ----------------
@@ -543,7 +541,7 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
     --------
     ```yaml
     anta.tests.routing:
-    isis:
+      isis:
         - VerifyISISSegmentRoutingTunnels:
             entries:
             # Check only endpoint
@@ -638,8 +636,7 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
             self.result.is_failure("\n".join(failure_message))
 
     def _check_tunnel_type(self, via_input: VerifyISISSegmentRoutingTunnels.Input.Entry.Vias, eos_entry: dict[str, Any]) -> bool:
-        """
-        Check if the tunnel type specified in `via_input` matches any of the tunnel types in `eos_entry`.
+        """Check if the tunnel type specified in `via_input` matches any of the tunnel types in `eos_entry`.
 
         Parameters
         ----------
@@ -666,8 +663,7 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
         return True
 
     def _check_tunnel_nexthop(self, via_input: VerifyISISSegmentRoutingTunnels.Input.Entry.Vias, eos_entry: dict[str, Any]) -> bool:
-        """
-        Check if the tunnel nexthop matches the given input.
+        """Check if the tunnel nexthop matches the given input.
 
         Parameters
         ----------
@@ -694,8 +690,7 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
         return True
 
     def _check_tunnel_interface(self, via_input: VerifyISISSegmentRoutingTunnels.Input.Entry.Vias, eos_entry: dict[str, Any]) -> bool:
-        """
-        Check if the tunnel interface exists in the given EOS entry.
+        """Check if the tunnel interface exists in the given EOS entry.
 
         Parameters
         ----------
@@ -722,8 +717,7 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
         return True
 
     def _check_tunnel_id(self, via_input: VerifyISISSegmentRoutingTunnels.Input.Entry.Vias, eos_entry: dict[str, Any]) -> bool:
-        """
-        Check if the tunnel ID matches any of the tunnel IDs in the EOS entry's vias.
+        """Check if the tunnel ID matches any of the tunnel IDs in the EOS entry's vias.
 
         Parameters
         ----------

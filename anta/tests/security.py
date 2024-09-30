@@ -669,8 +669,7 @@ class VerifyIPv4ACL(AntaTest):
 
 
 class VerifyIPSecConnHealth(AntaTest):
-    """
-    Verifies all IPv4 security connections.
+    """Verifies all IPv4 security connections.
 
     Expected Results
     ----------------
@@ -716,8 +715,7 @@ class VerifyIPSecConnHealth(AntaTest):
 
 
 class VerifySpecificIPSecConn(AntaTest):
-    """
-    Verifies the state of IPv4 security connections for a specified peer.
+    """Verifies the state of IPv4 security connections for a specified peer.
 
     It optionally allows for the verification of a specific path for a peer by providing source and destination addresses.
     If these addresses are not provided, it will verify all paths for the specified peer.
@@ -831,8 +829,7 @@ class VerifySpecificIPSecConn(AntaTest):
 
 
 class VerifyHardwareEntropy(AntaTest):
-    """
-    Verifies hardware entropy generation is enabled on device.
+    """Verifies hardware entropy generation is enabled on device.
 
     Expected Results
     ----------------
