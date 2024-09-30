@@ -268,8 +268,6 @@ class VerifyVxlan1ConnSettings(AntaTest):
 
         # Check vxlan1 source interface and udp port
         if src_intf != self.inputs.source_interface:
-            self.result.is_failure(
-                f"Source interface is not correct. Expected `{self.inputs.source_interface}` as source interface but found `{src_intf}` instead."
-            )
+            self.result.is_failure(f"Source interface is not correct. Expected `{self.inputs.source_interface}` as source interface but found `{src_intf}` instead.")
         if port != self.inputs.udp_port:
             self.result.is_failure(f"UDP port is not correct. Expected `{self.inputs.udp_port}` as UDP port but found `{port}` instead.")
