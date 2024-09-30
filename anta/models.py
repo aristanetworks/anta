@@ -515,10 +515,10 @@ class AntaTest(ABC):
         if not hasattr(cls, "name"):
             cls.name = cls.__name__
         if not hasattr(cls, "description"):
-            if not cls.test.__doc__:
+            if not cls.__doc__:
                 # No doctsring - raise
                 raise Exception("TODO")
-            cls.description = cls.test.__doc__.split(sep="\n")[0]
+            cls.description = cls.__doc__.split(sep="\n", maxsplit=1)[0]
 
     @property
     def module(self) -> str:
