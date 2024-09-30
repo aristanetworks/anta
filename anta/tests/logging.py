@@ -59,8 +59,6 @@ class VerifyLoggingPersistent(AntaTest):
     ```
     """
 
-    name = "VerifyLoggingPersistent"
-    description = "Verifies if logging persistent is enabled and logs are saved in flash."
     categories: ClassVar[list[str]] = ["logging"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
         AntaCommand(command="show logging", ofmt="text"),
@@ -100,8 +98,6 @@ class VerifyLoggingSourceIntf(AntaTest):
     ```
     """
 
-    name = "VerifyLoggingSourceIntf"
-    description = "Verifies logging source-interface for a specified VRF."
     categories: ClassVar[list[str]] = ["logging"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show logging", ofmt="text")]
 
@@ -144,8 +140,6 @@ class VerifyLoggingHosts(AntaTest):
     ```
     """
 
-    name = "VerifyLoggingHosts"
-    description = "Verifies logging hosts (syslog servers) for a specified VRF."
     categories: ClassVar[list[str]] = ["logging"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show logging", ofmt="text")]
 
@@ -189,8 +183,6 @@ class VerifyLoggingLogsGeneration(AntaTest):
     ```
     """
 
-    name = "VerifyLoggingLogsGeneration"
-    description = "Verifies if logs are generated."
     categories: ClassVar[list[str]] = ["logging"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
         AntaCommand(command="send log level informational message ANTA VerifyLoggingLogsGeneration validation", ofmt="text"),
@@ -226,8 +218,6 @@ class VerifyLoggingHostname(AntaTest):
     ```
     """
 
-    name = "VerifyLoggingHostname"
-    description = "Verifies if logs are generated with the device FQDN."
     categories: ClassVar[list[str]] = ["logging"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
         AntaCommand(command="show hostname", revision=1),
@@ -270,8 +260,6 @@ class VerifyLoggingTimestamp(AntaTest):
     ```
     """
 
-    name = "VerifyLoggingTimestamp"
-    description = "Verifies if logs are generated with the riate timestamp."
     categories: ClassVar[list[str]] = ["logging"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
         AntaCommand(command="send log level informational message ANTA VerifyLoggingTimestamp validation", ofmt="text"),
@@ -312,8 +300,6 @@ class VerifyLoggingAccounting(AntaTest):
     ```
     """
 
-    name = "VerifyLoggingAccounting"
-    description = "Verifies if AAA accounting logs are generated."
     categories: ClassVar[list[str]] = ["logging"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show aaa accounting logs | tail", ofmt="text")]
 
@@ -344,8 +330,6 @@ class VerifyLoggingErrors(AntaTest):
     ```
     """
 
-    name = "VerifyLoggingErrors"
-    description = "Verifies there are no syslog messages with a severity of ERRORS or higher."
     categories: ClassVar[list[str]] = ["logging"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show logging threshold errors", ofmt="text")]
 

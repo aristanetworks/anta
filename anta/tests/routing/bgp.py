@@ -209,8 +209,6 @@ class VerifyBGPPeerCount(AntaTest):
     ```
     """
 
-    name = "VerifyBGPPeerCount"
-    description = "Verifies the count of BGP peers."
     categories: ClassVar[list[str]] = ["bgp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
         AntaTemplate(template="show bgp {afi} {safi} summary vrf {vrf}", revision=3),
@@ -351,8 +349,6 @@ class VerifyBGPPeersHealth(AntaTest):
     ```
     """
 
-    name = "VerifyBGPPeersHealth"
-    description = "Verifies the health of BGP peers"
     categories: ClassVar[list[str]] = ["bgp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
         AntaTemplate(template="show bgp {afi} {safi} summary vrf {vrf}", revision=3),
@@ -494,8 +490,6 @@ class VerifyBGPSpecificPeers(AntaTest):
     ```
     """
 
-    name = "VerifyBGPSpecificPeers"
-    description = "Verifies the health of specific BGP peer(s)."
     categories: ClassVar[list[str]] = ["bgp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
         AntaTemplate(template="show bgp {afi} {safi} summary vrf {vrf}", revision=3),
@@ -642,8 +636,6 @@ class VerifyBGPExchangedRoutes(AntaTest):
     ```
     """
 
-    name = "VerifyBGPExchangedRoutes"
-    description = "Verifies the advertised and received routes of BGP peers."
     categories: ClassVar[list[str]] = ["bgp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
         AntaTemplate(template="show bgp neighbors {peer} advertised-routes vrf {vrf}", revision=3),
@@ -734,8 +726,6 @@ class VerifyBGPPeerMPCaps(AntaTest):
     ```
     """
 
-    name = "VerifyBGPPeerMPCaps"
-    description = "Verifies the multiprotocol capabilities of a BGP peer."
     categories: ClassVar[list[str]] = ["bgp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=3)]
 
@@ -829,8 +819,6 @@ class VerifyBGPPeerASNCap(AntaTest):
     ```
     """
 
-    name = "VerifyBGPPeerASNCap"
-    description = "Verifies the four octet asn capabilities of a BGP peer."
     categories: ClassVar[list[str]] = ["bgp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=3)]
 
@@ -907,8 +895,6 @@ class VerifyBGPPeerRouteRefreshCap(AntaTest):
     ```
     """
 
-    name = "VerifyBGPPeerRouteRefreshCap"
-    description = "Verifies the route refresh capabilities of a BGP peer."
     categories: ClassVar[list[str]] = ["bgp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=3)]
 
@@ -987,8 +973,6 @@ class VerifyBGPPeerMD5Auth(AntaTest):
     ```
     """
 
-    name = "VerifyBGPPeerMD5Auth"
-    description = "Verifies the MD5 authentication and state of a BGP peer."
     categories: ClassVar[list[str]] = ["bgp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=3)]
 
@@ -1062,8 +1046,6 @@ class VerifyEVPNType2Route(AntaTest):
     ```
     """
 
-    name = "VerifyEVPNType2Route"
-    description = "Verifies the EVPN Type-2 routes for a given IPv4 or MAC address and VNI."
     categories: ClassVar[list[str]] = ["bgp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show bgp evpn route-type mac-ip {address} vni {vni}", revision=2)]
 
@@ -1139,8 +1121,6 @@ class VerifyBGPAdvCommunities(AntaTest):
     ```
     """
 
-    name = "VerifyBGPAdvCommunities"
-    description = "Verifies the advertised communities of a BGP peer."
     categories: ClassVar[list[str]] = ["bgp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=3)]
 
@@ -1216,8 +1196,6 @@ class VerifyBGPTimers(AntaTest):
     ```
     """
 
-    name = "VerifyBGPTimers"
-    description = "Verifies the timers of a BGP peer."
     categories: ClassVar[list[str]] = ["bgp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=3)]
 
@@ -1295,8 +1273,6 @@ class VerifyBGPPeerDropStats(AntaTest):
     ```
     """
 
-    name = "VerifyBGPPeerDropStats"
-    description = "Verifies the NLRI drop statistics of a BGP IPv4 peer(s)."
     categories: ClassVar[list[str]] = ["bgp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show bgp neighbors {peer} vrf {vrf}", revision=3)]
 
@@ -1384,8 +1360,6 @@ class VerifyBGPPeerUpdateErrors(AntaTest):
     ```
     """
 
-    name = "VerifyBGPPeerUpdateErrors"
-    description = "Verifies the update error counters of a BGP IPv4 peer."
     categories: ClassVar[list[str]] = ["bgp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show bgp neighbors {peer} vrf {vrf}", revision=3)]
 
@@ -1469,8 +1443,6 @@ class VerifyBgpRouteMaps(AntaTest):
     ```
     """
 
-    name = "VerifyBgpRouteMaps"
-    description = "Verifies BGP inbound and outbound route-maps of BGP IPv4 peer(s)."
     categories: ClassVar[list[str]] = ["bgp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show bgp neighbors {peer} vrf {vrf}", revision=3)]
 
@@ -1567,8 +1539,6 @@ class VerifyBGPPeerRouteLimit(AntaTest):
     ```
     """
 
-    name = "VerifyBGPPeerRouteLimit"
-    description = "Verifies maximum routes and maximum routes warning limit for the provided BGP IPv4 peer(s)."
     categories: ClassVar[list[str]] = ["bgp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show bgp neighbors {peer} vrf {vrf}", revision=3)]
 
