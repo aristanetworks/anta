@@ -44,13 +44,9 @@ def test_anta_dry_run(benchmark: BenchmarkFixture, catalog: AntaCatalog, invento
     manager = benchmark(bench)
 
     logging.disable(logging.NOTSET)
-    if len(manager.results) != 0:
-        pytest.fail("ANTA Dry-Run mode should not return any result", pytrace=False)
-    if catalog.final_tests_count != len(inventory) * len(catalog.tests):
-        pytest.fail(f"Expected {len(inventory) * len(catalog.tests)} selected tests but got {catalog.final_tests_count}", pytrace=False)
-    bench_info = (
-        "\n--- ANTA NRFU Dry-Run Benchmark Information ---\n" f"Selected tests: {catalog.final_tests_count}\n" "-----------------------------------------------"
-    )
+    if len(manager.results) != len(inventory) * len(catalog.tests):
+        pytest.fail(f"Expected {len(inventory) * len(catalog.tests)} selected tests but got {len(manager.results)}", pytrace=False)
+    bench_info = "\n--- ANTA NRFU Dry-Run Benchmark Information ---\n" f"Selected tests: {len(manager.results)}\n" "-----------------------------------------------"
     logger.info(bench_info)
 
 

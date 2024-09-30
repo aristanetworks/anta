@@ -300,7 +300,6 @@ class AntaCatalog:
         self.tag_to_tests: defaultdict[str | None, set[AntaTestDefinition]] = defaultdict(set)
         self.tests_without_tags: set[AntaTestDefinition] = set()
         self.indexes_built: bool = False
-        self.final_tests_count: int = 0
 
     @property
     def filename(self) -> Path | None:
