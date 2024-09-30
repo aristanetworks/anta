@@ -35,8 +35,6 @@ class VerifyTacacsSourceIntf(AntaTest):
     ```
     """
 
-    name = "VerifyTacacsSourceIntf"
-    description = "Verifies TACACS source-interface for a specified VRF."
     categories: ClassVar[list[str]] = ["aaa"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show tacacs", revision=1)]
 
@@ -81,8 +79,6 @@ class VerifyTacacsServers(AntaTest):
     ```
     """
 
-    name = "VerifyTacacsServers"
-    description = "Verifies TACACS servers are configured for a specified VRF."
     categories: ClassVar[list[str]] = ["aaa"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show tacacs", revision=1)]
 
