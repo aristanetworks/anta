@@ -123,8 +123,7 @@ class VerifySpecificPath(AntaTest):
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each router path."""
         return [
-            template.render(peer=path.peer, group=path.path_group, source=path.source_address, destination=path.destination_address)
-            for path in self.inputs.paths
+            template.render(peer=path.peer, group=path.path_group, source=path.source_address, destination=path.destination_address) for path in self.inputs.paths
         ]
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
@@ -153,9 +152,7 @@ class VerifySpecificPath(AntaTest):
 
             # If the state of the path is not 'ipsecEstablished' or 'routeResolved', or the telemetry state is 'inactive', the test fails
             if path_state not in ["ipsecEstablished", "routeResolved"]:
-                self.result.is_failure(
-                    f"Path state for `peer: {peer} source: {source} destination: {destination}` in path-group {path_group} is `{path_state}`."
-                )
+                self.result.is_failure(f"Path state for `peer: {peer} source: {source} destination: {destination}` in path-group {path_group} is `{path_state}`.")
             elif not session:
                 self.result.is_failure(
                     f"Telemetry state for path `peer: {peer} source: {source} destination: {destination}` in path-group {path_group} is `inactive`."

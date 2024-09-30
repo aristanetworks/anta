@@ -616,9 +616,7 @@ class TestAntaComamnd:
 
     def test_supported(self) -> None:
         """Test the supported property."""
-        command = AntaCommand(
-            command="show hardware counter drop", errors=["Unavailable command (not supported on this hardware platform) (at token 2: 'counter')"]
-        )
+        command = AntaCommand(command="show hardware counter drop", errors=["Unavailable command (not supported on this hardware platform) (at token 2: 'counter')"])
         assert command.supported is False
         command = AntaCommand(
             command="show hardware counter drop", output={"totalAdverseDrops": 0, "totalCongestionDrops": 0, "totalPacketProcessorDrops": 0, "dropEvents": {}}
@@ -627,9 +625,7 @@ class TestAntaComamnd:
         command = AntaCommand(command="show hardware counter drop")
         with pytest.raises(RuntimeError) as exec_info:
             command.supported
-        assert (
-            exec_info.value.args[0] == "Command 'show hardware counter drop' has not been collected and has not returned an error. Call AntaDevice.collect()."
-        )
+        assert exec_info.value.args[0] == "Command 'show hardware counter drop' has not been collected and has not returned an error. Call AntaDevice.collect()."
 
     def test_requires_privileges(self) -> None:
         """Test the requires_privileges property."""
@@ -648,6 +644,4 @@ class TestAntaComamnd:
         command = AntaCommand(command="show aaa methods accounting")
         with pytest.raises(RuntimeError) as exec_info:
             command.requires_privileges
-        assert (
-            exec_info.value.args[0] == "Command 'show aaa methods accounting' has not been collected and has not returned an error. Call AntaDevice.collect()."
-        )
+        assert exec_info.value.args[0] == "Command 'show aaa methods accounting' has not been collected and has not returned an error. Call AntaDevice.collect()."
