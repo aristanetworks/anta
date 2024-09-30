@@ -162,7 +162,7 @@ def prepare_tests(
 
         final_tests_count += len(device_to_tests[device])
 
-    if final_tests_count == 0:
+    if len(device_to_tests.values()) == 0:
         msg = (
             f"There are no tests{f' matching the tags {tags} ' if tags else ' '}to run in the current test catalog and device inventory, please verify your inputs."
         )
@@ -283,6 +283,8 @@ async def main(  # noqa: PLR0913
 
     if dry_run:
         logger.info("Dry-run mode, exiting before running the tests.")
+        for coro in coroutines:
+            coro.close()
         return
 
     if AntaTest.progress is not None:

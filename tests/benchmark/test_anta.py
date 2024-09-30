@@ -38,6 +38,7 @@ def test_anta_dry_run(benchmark: BenchmarkFixture, catalog: AntaCatalog, invento
     def bench() -> ResultManager:
         """Need to wrap the ANTA Runner to instantiate a new ResultManger for each benchmark run."""
         manager = ResultManager()
+        catalog.clear_indexes()
         asyncio.run(main(manager, inventory, catalog, dry_run=True))
         return manager
 
@@ -45,8 +46,8 @@ def test_anta_dry_run(benchmark: BenchmarkFixture, catalog: AntaCatalog, invento
 
     logging.disable(logging.NOTSET)
     if len(manager.results) != len(inventory) * len(catalog.tests):
-        pytest.fail(f"Expected {len(inventory) * len(catalog.tests)} selected tests but got {len(manager.results)}", pytrace=False)
-    bench_info = "\n--- ANTA NRFU Dry-Run Benchmark Information ---\n" f"Selected tests: {len(manager.results)}\n" "-----------------------------------------------"
+        pytest.fail(f"Expected {len(inventory) * len(catalog.tests)} tests but got {len(manager.results)}", pytrace=False)
+    bench_info = "\n--- ANTA NRFU Dry-Run Benchmark Information ---\n" f"Test count: {len(manager.results)}\n" "-----------------------------------------------"
     logger.info(bench_info)
 
 
@@ -69,6 +70,7 @@ def test_anta(benchmark: BenchmarkFixture, catalog: AntaCatalog, inventory: Anta
     def bench() -> ResultManager:
         """Need to wrap the ANTA Runner to instantiate a new ResultManger for each benchmark run."""
         manager = ResultManager()
+        catalog.clear_indexes()
         asyncio.run(main(manager, inventory, catalog))
         return manager
 
@@ -90,7 +92,7 @@ def test_anta(benchmark: BenchmarkFixture, catalog: AntaCatalog, inventory: Anta
             for test in dupes:
                 msg = f"Found duplicate in test catalog: {test}"
                 logger.error(msg)
-        pytest.fail(f"Expected {len(catalog.tests) * len(inventory)} test results but got {len(manager.results)}", pytrace=False)
+        pytest.fail(f"Expected {len(catalog.tests) * len(inventory)} tests but got {len(manager.results)}", pytrace=False)
     bench_info = (
         "\n--- ANTA NRFU Benchmark Information ---\n"
         f"Test results: {len(manager.results)}\n"
