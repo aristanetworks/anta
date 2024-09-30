@@ -1715,7 +1715,7 @@ class VerifyBGPRouteOrigin(AntaTest):
 
             # Updating failures.
             if failure:
-                failures[prefix] = failure
+                failures[prefix] = {vrf: failure}
 
         # Check if any failures
         if not failures:

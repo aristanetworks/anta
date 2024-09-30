@@ -4977,10 +4977,10 @@ DATA: list[dict[str, Any]] = [
             "result": "failure",
             "messages": [
                 "Following BGP route entry(s) or nexthop path(s) not found or origin type is not correct:\n"
-                "{'10.100.0.128/31': {'10.100.0.10': 'Expected `Incomplete` as the origin, but found `Igp` instead.', "
-                "'10.100.4.5': 'Expected `Igp` as the origin, but found `Incomplete` instead.'}, "
-                "'10.100.0.130/31': {'10.100.0.8': 'Expected `Incomplete` as the origin, but found `Igp` instead.', "
-                "'10.100.0.10': 'Expected `Incomplete` as the origin, but found `Igp` instead.'}}"
+                "{'10.100.0.128/31': {'default': {'10.100.0.10': 'Expected `Incomplete` as the origin, but found `Igp` instead.', "
+                "'10.100.4.5': 'Expected `Igp` as the origin, but found `Incomplete` instead.'}}, "
+                "'10.100.0.130/31': {'MGMT': {'10.100.0.8': 'Expected `Incomplete` as the origin, but found `Igp` instead.', "
+                "'10.100.0.10': 'Expected `Incomplete` as the origin, but found `Igp` instead.'}}}"
             ],
         },
     },
@@ -5043,8 +5043,8 @@ DATA: list[dict[str, Any]] = [
             "result": "failure",
             "messages": [
                 "Following BGP route entry(s) or nexthop path(s) not found or origin type is not correct:\n"
-                "{'10.100.0.128/31': {'10.100.0.10': 'Path not found.', '10.100.4.5': 'Path not found.'}, "
-                "'10.100.0.130/31': {'10.100.0.8': 'Path not found.', '10.100.0.10': 'Path not found.'}}"
+                "{'10.100.0.128/31': {'default': {'10.100.0.10': 'Path not found.', '10.100.4.5': 'Path not found.'}}, "
+                "'10.100.0.130/31': {'MGMT': {'10.100.0.8': 'Path not found.', '10.100.0.10': 'Path not found.'}}}"
             ],
         },
     },
