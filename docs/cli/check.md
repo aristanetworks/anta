@@ -1,10 +1,11 @@
+---
+anta_title: ANTA check commands
+---
 <!--
   ~ Copyright (c) 2023-2024 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
   ~ that can be found in the LICENSE file.
   -->
-
-# ANTA check commands
 
 The ANTA check command allow to execute some checks on the ANTA input files.
 Only checking the catalog is currently supported.
