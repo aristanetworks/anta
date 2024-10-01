@@ -1770,6 +1770,7 @@ class VerifyBGPPeerPrefixes(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyBGPPeerPrefixes."""
+        self.result.is_success()
         failures: dict[Any, Any] = {}
 
         for command, input_entry in zip(self.instance_commands, self.inputs.address_families):
@@ -1794,19 +1795,17 @@ class VerifyBGPPeerPrefixes(AntaTest):
             failure_logs = _get_inconsistent_peers(peer_details, input_peers)
 
             # Update failures if any.
-            if failure_logs:
-                if safi:
-                    failures[afi].update({safi: failure_logs})
-                else:
-                    failures[afi].update(failure_logs)
+            if failure_logs and safi:
+                failures[afi].update({safi: failure_logs})
+            elif failure_logs and not safi:
+                failures[afi].update(failure_logs)
+
             # Remove AFI from failures if empty.
             if not failures.get(afi):
                 failures.pop(afi, None)
 
         # Check if any failures
-        if not failures:
-            self.result.is_success()
-        else:
+        if failures:
             self.result.is_failure(
                 f"The following BGP address family(s), peers are not configured or prefix(s) received and accepted are not consistent:\n{failures}"
             )
