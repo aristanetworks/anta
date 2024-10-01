@@ -26,6 +26,9 @@ if TYPE_CHECKING:
     else:
         from typing_extensions import Self
 
+# pylint: disable=C0302
+# TODO: Refactor to reduce the number of lines in this module later
+
 
 def _add_bgp_failures(failures: dict[tuple[str, str | None], dict[str, Any]], afi: Afi, safi: Safi | None, vrf: str, issue: str | dict[str, Any]) -> None:
     """Add a BGP failure entry to the given `failures` dictionary.
@@ -174,16 +177,16 @@ def _add_bgp_routes_failure(
 def _get_inconsistent_peers(peer_details: dict[Any, Any], bgp_peers: list[IPv4Address] | None) -> dict[Any, Any]:
     """Identify BGP peers with inconsistency of prefix(s) received and accepted in a BGP session.
 
-    bgp_peers: list of IPv4 address of a BGP peer to be verified. If not provided, test will verifies all the BGP peers.
-
     Parameters
     ----------
-        peer_details: The BGP peer data dictionary.
-        bgp_peers: The list of IPv4 address of a BGP peer(s) to be verified.
+    peer_details: dict[Any, Any]
+        The BGP peer data dictionary.
+    bgp_peers: list[IPv4Address] | None
+        List of IPv4 address of a BGP peer to be verified. If not provided, test will verifies all the BGP peers.
 
     Returns
     -------
-        dict[Any, Any]: A dictionary containing the BGP peer(s) with inconsistent prefix(s).
+    dict[Any, Any]: A dictionary containing the BGP peer(s) with inconsistent prefix(s).
 
     """
     failure: dict[Any, Any] = {}
