@@ -652,7 +652,7 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {"threshold": 70.0},
         "expected": {
-            "result": "error",
+            "result": "failure",
             "messages": ["Interface Ethernet1/1 or one of its member interfaces is not Full-Duplex. VerifyInterfaceUtilization has not been implemented."],
         },
     },
@@ -797,7 +797,7 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {"threshold": 70.0},
         "expected": {
-            "result": "error",
+            "result": "failure",
             "messages": ["Interface Port-Channel31 or one of its member interfaces is not Full-Duplex. VerifyInterfaceUtilization has not been implemented."],
         },
     },

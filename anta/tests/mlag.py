@@ -123,10 +123,7 @@ class VerifyMlagConfigSanity(AntaTest):
     def test(self) -> None:
         """Main test function for VerifyMlagConfigSanity."""
         command_output = self.instance_commands[0].json_output
-        if (mlag_status := get_value(command_output, "mlagActive")) is None:
-            self.result.is_error(message="Incorrect JSON response - 'mlagActive' state was not found")
-            return
-        if mlag_status is False:
+        if command_output["mlagActive"] is False:
             self.result.is_skipped("MLAG is disabled")
             return
         keys_to_verify = ["globalConfiguration", "interfaceConfiguration"]

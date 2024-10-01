@@ -430,6 +430,8 @@ anta.tests.stp:
       instances:
         - 10
         - 20
+  - VerifyStpTopologyChanges:
+      threshold: 10
 
 anta.tests.stun:
   - VerifyStunClient:
