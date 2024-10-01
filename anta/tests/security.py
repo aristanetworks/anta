@@ -9,13 +9,21 @@ from __future__ import annotations
 # mypy: disable-error-code=attr-defined
 from datetime import datetime, timezone
 from ipaddress import IPv4Address
-from typing import ClassVar
+from typing import TYPE_CHECKING, ClassVar, get_args
 
 from pydantic import BaseModel, Field, model_validator
 
 from anta.custom_types import EcdsaKeySize, EncryptionAlgorithm, PositiveInteger, RsaKeySize
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_failed_logs, get_item, get_value
+
+if TYPE_CHECKING:
+    import sys
+
+    if sys.version_info >= (3, 11):
+        from typing import Self
+    else:
+        from typing_extensions import Self
 
 
 class VerifySSHStatus(AntaTest):
@@ -47,7 +55,7 @@ class VerifySSHStatus(AntaTest):
         try:
             line = next(line for line in command_output.split("\n") if line.startswith("SSHD status"))
         except StopIteration:
-            self.result.is_error("Could not find SSH status in returned output.")
+            self.result.is_failure("Could not find SSH status in returned output.")
             return
         status = line.split("is ")[1]
 
@@ -416,19 +424,19 @@ class VerifyAPISSLCertificate(AntaTest):
             """The encryption algorithm key size of the certificate."""
 
             @model_validator(mode="after")
-            def validate_inputs(self: BaseModel) -> BaseModel:
+            def validate_inputs(self) -> Self:
                 """Validate the key size provided to the APISSLCertificates class.
 
                 If encryption_algorithm is RSA then key_size should be in {2048, 3072, 4096}.
 
                 If encryption_algorithm is ECDSA then key_size should be in {256, 384, 521}.
                 """
-                if self.encryption_algorithm == "RSA" and self.key_size not in RsaKeySize.__args__:
-                    msg = f"`{self.certificate_name}` key size {self.key_size} is invalid for RSA encryption. Allowed sizes are {RsaKeySize.__args__}."
+                if self.encryption_algorithm == "RSA" and self.key_size not in get_args(RsaKeySize):
+                    msg = f"`{self.certificate_name}` key size {self.key_size} is invalid for RSA encryption. Allowed sizes are {get_args(RsaKeySize)}."
                     raise ValueError(msg)
 
-                if self.encryption_algorithm == "ECDSA" and self.key_size not in EcdsaKeySize.__args__:
-                    msg = f"`{self.certificate_name}` key size {self.key_size} is invalid for ECDSA encryption. Allowed sizes are {EcdsaKeySize.__args__}."
+                if self.encryption_algorithm == "ECDSA" and self.key_size not in get_args(EcdsaKeySize):
+                    msg = f"`{self.certificate_name}` key size {self.key_size} is invalid for ECDSA encryption. Allowed sizes are {get_args(EcdsaKeySize)}."
                     raise ValueError(msg)
 
                 return self

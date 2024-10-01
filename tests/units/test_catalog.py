@@ -260,10 +260,10 @@ class TestAntaCatalog:
         """Test AntaCatalog.build_indexes()."""
         catalog: AntaCatalog = AntaCatalog.parse(DATA_DIR / "test_catalog_with_tags.yml")
         catalog.build_indexes()
-        assert len(catalog.tests_without_tags) == 6
+        assert len(catalog._tests_without_tags) == 6
         assert "leaf" in catalog.tag_to_tests
         assert len(catalog.tag_to_tests["leaf"]) == 3
-        all_unique_tests = catalog.tests_without_tags
+        all_unique_tests = catalog._tests_without_tags
         for tests in catalog.tag_to_tests.values():
             all_unique_tests.update(tests)
         assert len(all_unique_tests) == 11
@@ -275,8 +275,8 @@ class TestAntaCatalog:
         catalog.build_indexes({"VerifyUptime", "VerifyCoredump", "VerifyL3MTU"})
         assert "leaf" in catalog.tag_to_tests
         assert len(catalog.tag_to_tests["leaf"]) == 1
-        assert len(catalog.tests_without_tags) == 1
-        all_unique_tests = catalog.tests_without_tags
+        assert len(catalog._tests_without_tags) == 1
+        all_unique_tests = catalog._tests_without_tags
         for tests in catalog.tag_to_tests.values():
             all_unique_tests.update(tests)
         assert len(all_unique_tests) == 4

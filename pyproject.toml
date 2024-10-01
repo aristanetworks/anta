@@ -68,6 +68,8 @@ dev = [
   "pytest-asyncio>=0.21.1",
   "pytest-cov>=4.1.0",
   "pytest-dependency",
+  "pytest-codspeed>=2.2.0",
+  "respx",
   "pytest-html>=3.2.0",
   "pytest-httpx>=0.30.0",
   "pytest-metadata>=3.0.0",
@@ -171,6 +173,7 @@ render_collapsed = true
 testpaths = ["tests"]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
+norecursedirs = ["tests/benchmark"] # Do not run performance testing outside of Codspeed
 filterwarnings = [
   # cvprac is raising the next warning
   "default:pkg_resources is deprecated:DeprecationWarning",
@@ -450,12 +453,17 @@ disable = [ # Any rule listed here can be disabled: https://github.com/astral-sh
     "keyword-arg-before-vararg",
     "protected-access",
     "too-many-arguments",
+    "too-many-positional-arguments",
     "wrong-import-position",
     "pointless-statement",
     "broad-exception-caught",
     "line-too-long",
     "unused-variable",
     "redefined-builtin",
+    "global-statement",
+    "reimported",
+    "wrong-import-order",
+    "wrong-import-position",
     "abstract-class-instantiated", # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-instantiation-of-abstract-classes-abstract
     "unexpected-keyword-arg", # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-arguments-in-calls-call-arg and other rules
     "no-value-for-parameter" # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-arguments-in-calls-call-arg

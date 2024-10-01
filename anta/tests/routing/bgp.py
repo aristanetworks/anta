@@ -8,7 +8,7 @@
 from __future__ import annotations
 
 from ipaddress import IPv4Address, IPv4Network, IPv6Address
-from typing import Any, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from pydantic import BaseModel, Field, PositiveInt, model_validator
 from pydantic.v1.utils import deep_update
@@ -17,6 +17,14 @@ from pydantic_extra_types.mac_address import MacAddress
 from anta.custom_types import Afi, BgpDropStats, BgpUpdateError, MultiProtocolCaps, Safi, Vni
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_item, get_value
+
+if TYPE_CHECKING:
+    import sys
+
+    if sys.version_info >= (3, 11):
+        from typing import Self
+    else:
+        from typing_extensions import Self
 
 
 def _add_bgp_failures(failures: dict[tuple[str, str | None], dict[str, Any]], afi: Afi, safi: Safi | None, vrf: str, issue: str | dict[str, Any]) -> None:
@@ -272,7 +280,7 @@ class VerifyBGPPeerCount(AntaTest):
             """Number of expected BGP peer(s)."""
 
             @model_validator(mode="after")
-            def validate_inputs(self: BaseModel) -> BaseModel:
+            def validate_inputs(self) -> Self:
                 """Validate the inputs provided to the BgpAfi class.
 
                 If afi is either ipv4 or ipv6, safi must be provided.
@@ -412,7 +420,7 @@ class VerifyBGPPeersHealth(AntaTest):
             """
 
             @model_validator(mode="after")
-            def validate_inputs(self: BaseModel) -> BaseModel:
+            def validate_inputs(self) -> Self:
                 """Validate the inputs provided to the BgpAfi class.
 
                 If afi is either ipv4 or ipv6, safi must be provided.
@@ -559,7 +567,7 @@ class VerifyBGPSpecificPeers(AntaTest):
             """List of BGP IPv4 or IPv6 peer."""
 
             @model_validator(mode="after")
-            def validate_inputs(self: BaseModel) -> BaseModel:
+            def validate_inputs(self) -> Self:
                 """Validate the inputs provided to the BgpAfi class.
 
                 If afi is either ipv4 or ipv6, safi must be provided and vrf must NOT be all.
@@ -1522,7 +1530,7 @@ class VerifyBgpRouteMaps(AntaTest):
             """Outbound route map applied, defaults to None."""
 
             @model_validator(mode="after")
-            def validate_inputs(self: BaseModel) -> BaseModel:
+            def validate_inputs(self) -> Self:
                 """Validate the inputs provided to the BgpPeer class.
 
                 At least one of 'inbound' or 'outbound' route-map must be provided.

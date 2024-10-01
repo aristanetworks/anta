@@ -358,8 +358,8 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": None,
         "expected": {
-            "result": "error",
-            "messages": ["Error in running test - FixedSystemvrm1 not found"],
+            "result": "failure",
+            "messages": ["Error in running test - Component FixedSystemvrm1 not found in 'show version'"],
         },
     },
 ]

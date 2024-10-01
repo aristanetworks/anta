@@ -30,6 +30,7 @@ from anta.custom_types import (
     bgp_multiprotocol_capabilities_abbreviations,
     interface_autocomplete,
     interface_case_sensitivity,
+    validate_regex,
 )
 
 # ------------------------------------------------------------------------------
@@ -281,3 +282,36 @@ def test_interface_case_sensitivity_uppercase() -> None:
     assert interface_case_sensitivity("ETHERNET") == "ETHERNET"
     assert interface_case_sensitivity("VLAN") == "VLAN"
     assert interface_case_sensitivity("LOOPBACK") == "LOOPBACK"
+
+
+@pytest.mark.parametrize(
+    "str_input",
+    [
+        REGEX_BGP_IPV4_MPLS_VPN,
+        REGEX_BGP_IPV4_UNICAST,
+        REGEX_TYPE_PORTCHANNEL,
+        REGEXP_BGP_IPV4_MPLS_LABELS,
+        REGEXP_BGP_L2VPN_AFI,
+        REGEXP_INTERFACE_ID,
+        REGEXP_PATH_MARKERS,
+        REGEXP_TYPE_EOS_INTERFACE,
+        REGEXP_TYPE_HOSTNAME,
+        REGEXP_TYPE_VXLAN_SRC_INTERFACE,
+    ],
+)
+def test_validate_regex_valid(str_input: str) -> None:
+    """Test validate_regex with valid regex."""
+    assert validate_regex(str_input) == str_input
+
+
+@pytest.mark.parametrize(
+    ("str_input", "error"),
+    [
+        pytest.param("[", "Invalid regex: unterminated character set at position 0", id="unterminated character"),
+        pytest.param("\\", r"Invalid regex: bad escape \(end of pattern\) at position 0", id="bad escape"),
+    ],
+)
+def test_validate_regex_invalid(str_input: str, error: str) -> None:
+    """Test validate_regex with invalid regex."""
+    with pytest.raises(ValueError, match=error):
+        validate_regex(str_input)
