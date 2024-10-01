@@ -398,7 +398,7 @@ anta.tests.snmp:
       location: New York
   - VerifySnmpContact:
       contact: Jon@example.com
-  - VerifySNMPErrors:
+  - VerifySnmpErrors:
       error_counters:
         - inVersionErrs
         - inBadCommunityNames

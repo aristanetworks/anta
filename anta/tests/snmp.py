@@ -7,7 +7,9 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar, Literal
+from typing import TYPE_CHECKING, ClassVar
+
+from pydantic import BaseModel, model_validator
 
 from anta.custom_types import PositiveInteger
 from anta.models import AntaCommand, AntaTest
@@ -251,7 +253,7 @@ class VerifySnmpContact(AntaTest):
             self.result.is_success()
 
 
-class VerifySNMPErrors(AntaTest):
+class VerifySnmpErrors(AntaTest):
     """Verifies the number of SNMP error counter(s) processed.
 
     By default, all  error counters will be checked for any non-zero values.
@@ -266,56 +268,55 @@ class VerifySNMPErrors(AntaTest):
     --------
     ```yaml
     anta.tests.snmp:
-      - VerifySNMPErrors:
+      - VerifySnmpErrors:
           error_counters:
             - inVersionErrs
             - inBadCommunityNames
     """
 
-    name = "VerifySNMPErrors"
+    name = "VerifySnmpErrors"
     description = "Verifies the number of SNMP error counter(s) processed."
     categories: ClassVar[list[str]] = ["snmp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show snmp", revision=1)]
 
     class Input(AntaTest.Input):
-        """Input model for the VerifySNMPErrors test."""
+        """Input model for the VerifySnmpErrors test."""
 
-        error_counters: (
-            list[
-                Literal[
-                    "inVersionErrs",
-                    "inBadCommunityNames",
-                    "inBadCommunityUses",
-                    "inParseErrs",
-                    "outTooBigErrs",
-                    "outNoSuchNameErrs",
-                    "outBadValueErrs",
-                    "outGeneralErrs",
-                ]
-            ]
-            | None
-        ) = None
+        error_counters: list[str] | None = None
         """Optional list of SNMP error counters to be verified. If not provided, test will verifies all the counters."""
+
+        @model_validator(mode="after")
+        def validate_inputs(self: BaseModel) -> BaseModel:
+            """Validate the inputs provided to the VerifySnmpErrors test.
+
+            The valid SNMP error counter must be provided.
+            """
+            if self.error_counters:
+                for error_counter in self.error_counters:
+                    if error_counter not in SNMP_COUNTERS:
+                        msg = f"Invalid Error counter {error_counter}. Must be one of {SNMP_COUNTERS}."
+                        raise ValueError(msg)
+            return self
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """Main test function for VerifySNMPPDUs."""
+        """Main test function for VerifySnmpErrors."""
         error_counters = self.inputs.error_counters
         command_output = self.instance_commands[0].json_output
 
         # Verify SNMP PDU counters.
         if not (snmp_counters := get_value(command_output, "counters")):
-            self.result.is_failure("SNMP counter details not found.")
+            self.result.is_failure("SNMP counter details are not found.")
             return
 
         # In case SNMP error counters not provided, It will check all the error counters.
         if not error_counters:
             error_counters = SNMP_COUNTERS
 
-        error_counters_not_ok = [counter for counter in error_counters if snmp_counters.get(counter)]
+        error_counters_not_ok = {counter: value for counter in error_counters if (value := snmp_counters.get(counter))}
 
         # Check if any failures
         if not error_counters_not_ok:
             self.result.is_success()
         else:
-            self.result.is_failure(f"The following SNMP error counter(s) are not found or have non-zero counter:\n{', '.join(error_counters_not_ok)}")
+            self.result.is_failure(f"The following SNMP error counter(s) are not found or have non-zero counter:\n{error_counters_not_ok}")

@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from anta.tests.snmp import VerifySnmpContact, VerifySNMPErrors, VerifySnmpIPv4Acl, VerifySnmpIPv6Acl, VerifySnmpLocation, VerifySnmpStatus
+from anta.tests.snmp import VerifySnmpContact, VerifySnmpErrors, VerifySnmpIPv4Acl, VerifySnmpIPv6Acl, VerifySnmpLocation, VerifySnmpStatus
 from tests.units.anta_tests import test
 
 DATA: list[dict[str, Any]] = [
@@ -154,7 +154,7 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "success",
-        "test": VerifySNMPErrors,
+        "test": VerifySnmpErrors,
         "eos_data": [
             {
                 "counters": {
@@ -174,7 +174,7 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "success-specific-counters",
-        "test": VerifySNMPErrors,
+        "test": VerifySnmpErrors,
         "eos_data": [
             {
                 "counters": {
@@ -194,18 +194,18 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "failure-counters-not-found",
-        "test": VerifySNMPErrors,
+        "test": VerifySnmpErrors,
         "eos_data": [
             {
                 "counters": {},
             }
         ],
         "inputs": {},
-        "expected": {"result": "failure", "messages": ["SNMP counter details not found."]},
+        "expected": {"result": "failure", "messages": ["SNMP counter details are not found."]},
     },
     {
         "name": "failure-incorrect-counters",
-        "test": VerifySNMPErrors,
+        "test": VerifySnmpErrors,
         "eos_data": [
             {
                 "counters": {
@@ -223,7 +223,9 @@ DATA: list[dict[str, Any]] = [
         "inputs": {},
         "expected": {
             "result": "failure",
-            "messages": ["The following SNMP error counter(s) are not found or have non-zero counter:\ninVersionErrs, inParseErrs, outBadValueErrs"],
+            "messages": [
+                "The following SNMP error counter(s) are not found or have non-zero counter:\n{'inVersionErrs': 1, 'inParseErrs': 2, 'outBadValueErrs': 2}"
+            ],
         },
     },
 ]
