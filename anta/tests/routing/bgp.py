@@ -1797,7 +1797,7 @@ class VerifyBGPPeerPrefixes(AntaTest):
             # Update failures if any.
             if failure_logs and safi:
                 failures[afi].update({safi: failure_logs})
-            elif failure_logs and not safi:
+            elif failure_logs:
                 failures[afi].update(failure_logs)
 
             # Remove AFI from failures if empty.
