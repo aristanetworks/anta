@@ -25,7 +25,13 @@ from anta.logger import anta_log_exception
 from anta.models import AntaTest
 
 if TYPE_CHECKING:
+    import sys
     from types import ModuleType
+
+    if sys.version_info >= (3, 11):
+        from typing import Self
+    else:
+        from typing_extensions import Self
 
 logger = logging.getLogger(__name__)
 
@@ -123,7 +129,7 @@ class AntaTestDefinition(BaseModel):
         raise ValueError(msg)
 
     @model_validator(mode="after")
-    def check_inputs(self) -> AntaTestDefinition:
+    def check_inputs(self) -> Self:
         """Check the `inputs` field typing.
 
         The `inputs` class attribute needs to be an instance of the AntaTest.Input subclass defined in the class `test`.
@@ -290,11 +296,16 @@ class AntaCatalog:
             else:
                 self._filename = Path(filename)
 
-        # Default indexes for faster access
-        self.tag_to_tests: defaultdict[str | None, set[AntaTestDefinition]] = defaultdict(set)
-        self.tests_without_tags: set[AntaTestDefinition] = set()
-        self.indexes_built: bool = False
-        self.final_tests_count: int = 0
+        self.indexes_built: bool
+        self.tag_to_tests: defaultdict[str | None, set[AntaTestDefinition]]
+        self._tests_without_tags: set[AntaTestDefinition]
+        self._init_indexes()
+
+    def _init_indexes(self) -> None:
+        """Init indexes related variables."""
+        self.tag_to_tests = defaultdict(set)
+        self._tests_without_tags = set()
+        self.indexes_built = False
 
     @property
     def filename(self) -> Path | None:
@@ -479,7 +490,7 @@ class AntaCatalog:
 
         - tag_to_tests: A dictionary mapping each tag to a set of tests that contain it.
 
-        - tests_without_tags: A set of tests that do not have any tags.
+        - _tests_without_tags: A set of tests that do not have any tags.
 
         Once the indexes are built, the `indexes_built` attribute is set to True.
         """
@@ -493,10 +504,14 @@ class AntaCatalog:
                 for tag in test_tags:
                     self.tag_to_tests[tag].add(test)
             else:
-                self.tests_without_tags.add(test)
+                self._tests_without_tags.add(test)
 
-        self.tag_to_tests[None] = self.tests_without_tags
+        self.tag_to_tests[None] = self._tests_without_tags
         self.indexes_built = True
+
+    def clear_indexes(self) -> None:
+        """Clear this AntaCatalog instance indexes."""
+        self._init_indexes()
 
     def get_tests_by_tags(self, tags: set[str], *, strict: bool = False) -> set[AntaTestDefinition]:
         """Return all tests that match a given set of tags, according to the specified strictness.

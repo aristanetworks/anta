@@ -71,7 +71,7 @@ class VerifyInterfaceUtilization(AntaTest):
             if ((duplex := (interface := interfaces["interfaces"][intf]).get("duplex", None)) is not None and duplex != duplex_full) or (
                 (members := interface.get("memberInterfaces", None)) is not None and any(stats["duplex"] != duplex_full for stats in members.values())
             ):
-                self.result.is_error(f"Interface {intf} or one of its member interfaces is not Full-Duplex. VerifyInterfaceUtilization has not been implemented.")
+                self.result.is_failure(f"Interface {intf} or one of its member interfaces is not Full-Duplex. VerifyInterfaceUtilization has not been implemented.")
                 return
 
             if (bandwidth := interfaces["interfaces"][intf]["bandwidth"]) == 0:
@@ -705,7 +705,7 @@ class VerifyInterfaceIPv4(AntaTest):
                     input_interface_detail = interface
                     break
             else:
-                self.result.is_error(f"Could not find `{intf}` in the input interfaces. {GITHUB_SUGGESTION}")
+                self.result.is_failure(f"Could not find `{intf}` in the input interfaces. {GITHUB_SUGGESTION}")
                 continue
 
             input_primary_ip = str(input_interface_detail.primary_ip)
