@@ -170,7 +170,7 @@ nav:
   - Home: README.md
   - Getting Started: getting-started.md
   - Installation: requirements-and-installation.md
-  - Inventory & Tests catalog: usage-inventory-catalog.md
+  - Inventory and Test catalog: usage-inventory-catalog.md
   - ANTA CLI:
     - Overview: cli/overview.md
     - NRFU: cli/nrfu.md
@@ -178,8 +178,8 @@ nav:
     - Inventory from CVP: cli/inv-from-cvp.md
     - Inventory from Ansible: cli/inv-from-ansible.md
     - Get Inventory Information: cli/get-inventory-information.md
-    - Check: cli/check.md
-    - Helpers: cli/debug.md
+    - Check commands: cli/check.md
+    - Debug commands: cli/debug.md
     - Tag Management: cli/tag-management.md
   - Advanced Usages:
     - Caching in ANTA: advanced_usages/caching.md
@@ -232,6 +232,6 @@ nav:
       - Result Manager models: api/result_manager_models.md
     - Report Manager: api/report_manager.md
     - Runner: api/runner.md
-  - Troubleshooting: troubleshooting.md
+  - Troubleshooting ANTA: troubleshooting.md
   - Contributions: contribution.md
   - FAQ: faq.md

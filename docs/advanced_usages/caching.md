@@ -10,7 +10,7 @@ ANTA is a streamlined Python framework designed for efficient interaction with n
 
 By default, ANTA utilizes [aiocache](https://github.com/aio-libs/aiocache)'s memory cache backend, also called [`SimpleMemoryCache`](https://aiocache.aio-libs.org/en/v0.12.2/caches.html#simplememorycache). This library aims for simplicity and supports asynchronous operations to go along with Python `asyncio` used in ANTA.
 
-The `_init_cache()` method of the [AntaDevice](../advanced_usages/as-python-lib.md#antadevice-abstract-class) abstract class initializes the cache. Child classes can override this method to tweak the cache configuration:
+The `_init_cache()` method of the [AntaDevice](../api/device.md#anta.device.AntaDevice) abstract class initializes the cache. Child classes can override this method to tweak the cache configuration:
 
 ```python
 def _init_cache(self) -> None:
@@ -29,7 +29,7 @@ The cache is initialized per `AntaDevice` and uses the following cache key desig
 
 `<device_name>:<uid>`
 
-The `uid` is an attribute of [AntaCommand](../advanced_usages/as-python-lib.md#antacommand-class), which is a unique identifier generated from the command, version, revision and output format.
+The `uid` is an attribute of [AntaCommand](../api/models.md#anta.models.AntaCommand), which is a unique identifier generated from the command, version, revision and output format.
 
 Each UID has its own asyncio lock. This design allows coroutines that need to access the cache for different UIDs to do so concurrently. The locks are managed by the `self.cache_locks` dictionary.
 
@@ -44,10 +44,13 @@ Caching is enabled by default in ANTA following the previous configuration and m
 There might be scenarios where caching is not wanted. You can disable caching in multiple ways in ANTA:
 
 1. Caching can be disabled globally, for **ALL** commands on **ALL** devices, using the `--disable-cache` global flag when invoking anta at the [CLI](../cli/overview.md#invoking-anta-cli):
+
     ```bash
     anta --disable-cache --username arista --password arista nrfu table
     ```
+
 2. Caching can be disabled per device, network or range by setting the `disable_cache` key to `True` when defining the ANTA [Inventory](../usage-inventory-catalog.md#device-inventory) file:
+
     ```yaml
     anta_inventory:
       hosts:
@@ -69,9 +72,10 @@ There might be scenarios where caching is not wanted. You can disable caching in
         end: 172.22.22.19
         disable_cache: True
     ```
+
     This approach effectively disables caching for **ALL** commands sent to devices targeted by the `disable_cache` key.
 
-3. For tests developers, caching can be disabled for a specific [`AntaCommand`](../advanced_usages/as-python-lib.md#antacommand-class) or [`AntaTemplate`](../advanced_usages/as-python-lib.md#antatemplate-class) by setting the `use_cache` attribute to `False`. That means the command output will always be collected on the device and therefore, never use caching.
+3. For tests developers, caching can be disabled for a specific [`AntaCommand`](../api/models.md#anta.models.AntaCommand) or [`AntaTemplate`](../api/models.md#anta.models.AntaTemplate) by setting the `use_cache` attribute to `False`. That means the command output will always be collected on the device and therefore, never use caching.
 
 ### Disable caching in a child class of `AntaDevice`
 
