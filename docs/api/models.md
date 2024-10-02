@@ -6,17 +6,18 @@
 
 # Test definition
 
-![](../imgs/uml/anta.models.AntaTest.jpeg)
+![AntaTest UML model](../imgs/uml/anta.models.AntaTest.jpeg)
 
-### ::: anta.models.AntaTest
+## ::: anta.models.AntaTest
+
     options:
         filters: ["!^_[^_]", "!__init_subclass__", "!update_progress"]
 
 # Command definition
 
-![](../imgs/uml/anta.models.AntaCommand.jpeg)
+![AntaCommand UML model](../imgs/uml/anta.models.AntaCommand.jpeg)
 
-### ::: anta.models.AntaCommand
+## ::: anta.models.AntaCommand
 
 !!! warning
     CLI commands are protected to avoid execution of critical commands such as `reload` or `write erase`.
@@ -27,6 +28,6 @@
 
 # Template definition
 
-![](../imgs/uml/anta.models.AntaTemplate.jpeg)
+![AntaTemplate UML model](../imgs/uml/anta.models.AntaTemplate.jpeg)
 
-### ::: anta.models.AntaTemplate
+## ::: anta.models.AntaTemplate

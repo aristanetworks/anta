@@ -1,10 +1,11 @@
+---
+anta_title: Retrieving Inventory Information
+---
 <!--
   ~ Copyright (c) 2023-2024 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
   ~ that can be found in the LICENSE file.
   -->
-
-# Retrieving Inventory Information
 
 The ANTA CLI offers multiple entrypoints to access data from your local inventory.
 
@@ -166,7 +167,6 @@ Options:
                                  created
   --help                         Show this message and exit.
 ```
-
 
 !!! tip
     In its default mode, `anta get inventory` provides only information that doesn't rely on a device connection. If you are interested in obtaining connection-dependent details, like the hardware model, please use the `--connected` option.

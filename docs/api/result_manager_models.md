@@ -6,8 +6,9 @@
 
 # Test Result model
 
-![](../imgs/uml/anta.result_manager.models.TestResult.jpeg)
+![TestResult UML model](../imgs/uml/anta.result_manager.models.TestResult.jpeg)
 
-### ::: anta.result_manager.models.TestResult
+## ::: anta.result_manager.models.TestResult
+
     options:
         filters: ["!^_[^_]", "!__str__"]
