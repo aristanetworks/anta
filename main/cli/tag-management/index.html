@@ -89,7 +89,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#overview" class="md-skip">
+        <a href="#defining-tags" class="md-skip">
           Skip to content
         </a>
       
@@ -357,7 +357,7 @@
         
   
   <span class="md-ellipsis">
-    Inventory & Tests catalog
+    Inventory and Test catalog
   </span>
   
 
@@ -560,7 +560,7 @@
         
   
   <span class="md-ellipsis">
-    Check
+    Check commands
   </span>
   
 
@@ -581,7 +581,7 @@
         
   
   <span class="md-ellipsis">
-    Helpers
+    Debug commands
   </span>
   
 
@@ -638,18 +638,6 @@
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#overview" class="md-nav__link">
-      <span class="md-ellipsis">
-        Overview
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-  </li>
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
@@ -2136,7 +2124,7 @@
         
   
   <span class="md-ellipsis">
-    Troubleshooting
+    Troubleshooting ANTA
   </span>
   
 
@@ -2208,18 +2196,6 @@
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#overview" class="md-nav__link">
-      <span class="md-ellipsis">
-        Overview
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-  </li>
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
@@ -2374,7 +2350,7 @@
   ~ Use of this source code is governed by the Apache License 2.0
   ~ that can be found in the LICENSE file.
   -->
-<h3 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h3>
+
 <p>ANTA commands can be used with a <code>--tags</code> option. This option <strong>filters the inventory</strong> with the specified tag(s) when running the command.</p>
 <p>Tags can also be used to <strong>restrict a specific test</strong> to a set of devices when using <code>anta nrfu</code>.</p>
 <h3 id="defining-tags">Defining tags<a class="headerlink" href="#defining-tags" title="Permanent link">&para;</a></h3>
@@ -2483,7 +2459,7 @@ Current<span class="w"> </span>inventory<span class="w"> </span>content<span cla
 </table>
 <h4 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h4>
 <p>The following examples use the inventory and test catalog defined above.</p>
-<h6 id="no-tags-option">No <code>--tags</code> option<a class="headerlink" href="#no-tags-option" title="Permanent link">&para;</a></h6>
+<h5 id="no-tags-option">No <code>--tags</code> option<a class="headerlink" href="#no-tags-option" title="Permanent link">&para;</a></h5>
 <p>Tests without tags are run on all devices.
 Tests with tags will only run on devices with matching tags.</p>
 <div class="highlight"><pre><span></span><code>$<span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> </span>table<span class="w"> </span>--group-by<span class="w"> </span>device
@@ -2507,7 +2483,7 @@ Total<span class="w"> </span>number<span class="w"> </span>of<span class="w"> </
 │<span class="w"> </span>spine1<span class="w"> </span>│<span class="w"> </span><span class="m">9</span><span class="w">            </span>│<span class="w"> </span><span class="m">0</span><span class="w">            </span>│<span class="w"> </span><span class="m">0</span><span class="w">            </span>│<span class="w"> </span><span class="m">0</span><span class="w">           </span>│<span class="w">                                    </span>│
 └────────┴──────────────┴──────────────┴──────────────┴─────────────┴────────────────────────────────────┘
 </code></pre></div>
-<h6 id="single-tag">Single tag<a class="headerlink" href="#single-tag" title="Permanent link">&para;</a></h6>
+<h5 id="single-tag">Single tag<a class="headerlink" href="#single-tag" title="Permanent link">&para;</a></h5>
 <p>With a tag specified, only tests matching this tag will be run on matching devices.</p>
 <div class="highlight"><pre><span></span><code>$<span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> </span>--tags<span class="w"> </span>leaf<span class="w"> </span>text
 ╭──────────────────────<span class="w"> </span>Settings<span class="w"> </span>──────────────────────╮
@@ -2528,7 +2504,7 @@ leaf2<span class="w"> </span>::<span class="w"> </span>VerifyUptime<span class="
 leaf2<span class="w"> </span>::<span class="w"> </span>VerifyMlagStatus<span class="w"> </span>::<span class="w"> </span>SKIPPED<span class="w"> </span><span class="o">(</span>MLAG<span class="w"> </span>is<span class="w"> </span>disabled<span class="o">)</span>
 </code></pre></div>
 <p>In this case, only <code>leaf</code> devices defined in the inventory are used to run tests marked with the <code>leaf</code> in the test catalog.</p>
-<h6 id="multiple-tags">Multiple tags<a class="headerlink" href="#multiple-tags" title="Permanent link">&para;</a></h6>
+<h5 id="multiple-tags">Multiple tags<a class="headerlink" href="#multiple-tags" title="Permanent link">&para;</a></h5>
 <p>It is possible to use multiple tags using the <code>--tags tag1,tag2</code> syntax.</p>
 <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>--tags<span class="w"> </span>leaf,spine<span class="w"> </span>text
 ╭──────────────────────<span class="w"> </span>Settings<span class="w"> </span>──────────────────────╮
@@ -2577,7 +2553,7 @@ spine1<span class="w"> </span>::<span class="w"> </span>VerifyUptime<span class=
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 18, 2024</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 2, 2024</span>
   </span>
 
     

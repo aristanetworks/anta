@@ -24,7 +24,7 @@
     
     
       
-        <title>Inventory & Tests catalog - Arista Network Test Automation - ANTA</title>
+        <title>Inventory and Test catalog - Arista Network Test Automation - ANTA</title>
       
     
     
@@ -89,7 +89,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#inventory-and-catalog" class="md-skip">
+        <a href="#device-inventory" class="md-skip">
           Skip to content
         </a>
       
@@ -150,7 +150,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Inventory & Tests catalog
+              Inventory and Test catalog
             
           </span>
         </div>
@@ -364,7 +364,7 @@
           
   
   <span class="md-ellipsis">
-    Inventory & Tests catalog
+    Inventory and Test catalog
   </span>
   
 
@@ -375,7 +375,7 @@
         
   
   <span class="md-ellipsis">
-    Inventory & Tests catalog
+    Inventory and Test catalog
   </span>
   
 
@@ -395,20 +395,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#inventory-and-catalog" class="md-nav__link">
-      <span class="md-ellipsis">
-        Inventory and Catalog
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-      <nav class="md-nav" aria-label="Inventory and Catalog">
-        <ul class="md-nav__list">
-          
-          
-            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
     <a href="#device-inventory" class="md-nav__link">
       <span class="md-ellipsis">
@@ -453,10 +439,8 @@
       </nav>
     
   </li>
-          
-          
-          
-            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
     <a href="#test-catalog" class="md-nav__link">
       <span class="md-ellipsis">
@@ -563,12 +547,6 @@
     </a>
 
     <!-- Table of contents list -->
-    
-  </li>
-          
-          
-        </ul>
-      </nav>
     
   </li>
           
@@ -778,7 +756,7 @@
         
   
   <span class="md-ellipsis">
-    Check
+    Check commands
   </span>
   
 
@@ -799,7 +777,7 @@
         
   
   <span class="md-ellipsis">
-    Helpers
+    Debug commands
   </span>
   
 
@@ -2180,7 +2158,7 @@
         
   
   <span class="md-ellipsis">
-    Troubleshooting
+    Troubleshooting ANTA
   </span>
   
 
@@ -2255,20 +2233,6 @@
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
-    <a href="#inventory-and-catalog" class="md-nav__link">
-      <span class="md-ellipsis">
-        Inventory and Catalog
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-      <nav class="md-nav" aria-label="Inventory and Catalog">
-        <ul class="md-nav__list">
-          
-          
-            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
     <a href="#device-inventory" class="md-nav__link">
       <span class="md-ellipsis">
         Device Inventory
@@ -2312,10 +2276,8 @@
       </nav>
     
   </li>
-          
-          
-          
-            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
     <a href="#test-catalog" class="md-nav__link">
       <span class="md-ellipsis">
@@ -2430,12 +2392,6 @@
       </nav>
     
   </li>
-          
-          
-        </ul>
-      </nav>
-    
-  </li>
       
     </ul>
   
@@ -2456,7 +2412,7 @@
 
 
   
-    <h1>Inventory & Tests catalog</h1>
+    <h1>Inventory and Test catalog</h1>
   
 
 <!--
@@ -2465,8 +2421,11 @@
   ~ that can be found in the LICENSE file.
   -->
 
-<h2 id="inventory-and-catalog">Inventory and Catalog<a class="headerlink" href="#inventory-and-catalog" title="Permanent link">&para;</a></h2>
-<p>The ANTA framework needs 2 important inputs from the user to run: a <strong>device inventory</strong> and a <strong>test catalog</strong>.</p>
+<p>The ANTA framework needs 2 important inputs from the user to run:</p>
+<ol>
+<li>A <strong>device inventory</strong></li>
+<li>A <strong>test catalog</strong>.</li>
+</ol>
 <p>Both inputs can be defined in a file or programmatically.</p>
 <h3 id="device-inventory">Device Inventory<a class="headerlink" href="#device-inventory" title="Permanent link">&para;</a></h3>
 <p>A device inventory is an instance of the <a href="../api/inventory/#anta.inventory.AntaInventory">AntaInventory</a> class.</p>
@@ -2523,12 +2482,12 @@ The file must comply with the following structure:</p>
 <p>A test catalog is an instance of the <a href="../api/catalog/#anta.catalog.AntaCatalog">AntaCatalog</a> class.</p>
 <h4 id="test-catalog-file">Test Catalog File<a class="headerlink" href="#test-catalog-file" title="Permanent link">&para;</a></h4>
 <p>In addition to the inventory file, you also have to define a catalog of tests to execute against your devices. This catalog list all your tests, their inputs and their tags.</p>
-<p>A valid test catalog file must have the following structure in either YAML or JSON:
+<p>A valid test catalog file must have the following structure in either YAML or JSON:</p>
 <div class="highlight"><pre><span></span><code><span class="nn">---</span>
 <span class="nt">&lt;Python module&gt;</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">&lt;AntaTest subclass&gt;</span><span class="p">:</span>
 <span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">&lt;AntaTest.Input compliant dictionary&gt;</span>
-</code></pre></div></p>
+</code></pre></div>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;&lt;Python module&gt;&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">    </span><span class="p">{</span>
@@ -2590,7 +2549,7 @@ The file must comply with the following structure:</p>
 <span class="w">  </span><span class="p">]</span>
 <span class="p">}</span>
 </code></pre></div>
-<p>It is also possible to nest Python module definition:
+<p>It is also possible to nest Python module definition:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">anta.tests</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">connectivity</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyReachability</span><span class="p">:</span>
@@ -2608,7 +2567,7 @@ The file must comply with the following structure:</p>
 <span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;Overwritten</span><span class="nv"> </span><span class="s">category</span><span class="nv"> </span><span class="s">1&quot;</span>
 <span class="w">          </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Test</span><span class="nv"> </span><span class="s">with</span><span class="nv"> </span><span class="s">overwritten</span><span class="nv"> </span><span class="s">description&quot;</span>
 <span class="w">          </span><span class="nt">custom_field</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Test</span><span class="nv"> </span><span class="s">run</span><span class="nv"> </span><span class="s">by</span><span class="nv"> </span><span class="s">John</span><span class="nv"> </span><span class="s">Doe&quot;</span>
-</code></pre></div></p>
+</code></pre></div>
 <p><a href="https://github.com/aristanetworks/anta/blob/main/examples/tests.yaml">This test catalog example</a> is maintained with all the tests defined in the <code>anta.tests</code> Python module.</p>
 <h4 id="test-tags">Test tags<a class="headerlink" href="#test-tags" title="Permanent link">&para;</a></h4>
 <p>All tests can be defined with a list of user defined tags. These tags will be mapped with device tags: when at least one tag is defined for a test, this test will only be executed on devices with the same tag. If a test is defined in the catalog without any tags, the test will be executed on all devices.</p>
@@ -2765,7 +2724,7 @@ So for instance, if my custom tests are defined in the <code>custom.tests.system
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 29, 2024</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 2, 2024</span>
   </span>
 
     

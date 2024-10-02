@@ -357,7 +357,7 @@
         
   
   <span class="md-ellipsis">
-    Inventory & Tests catalog
+    Inventory and Test catalog
   </span>
   
 
@@ -558,7 +558,7 @@
         
   
   <span class="md-ellipsis">
-    Check
+    Check commands
   </span>
   
 
@@ -579,7 +579,7 @@
         
   
   <span class="md-ellipsis">
-    Helpers
+    Debug commands
   </span>
   
 
@@ -2066,7 +2066,7 @@
         
   
   <span class="md-ellipsis">
-    Troubleshooting
+    Troubleshooting ANTA
   </span>
   
 
@@ -2238,7 +2238,7 @@
 <p>ANTA is a streamlined Python framework designed for efficient interaction with network devices. This section outlines how ANTA incorporates caching mechanisms to collect command outputs from network devices.</p>
 <h3 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h3>
 <p>By default, ANTA utilizes <a href="https://github.com/aio-libs/aiocache">aiocache</a>&rsquo;s memory cache backend, also called <a href="https://aiocache.aio-libs.org/en/v0.12.2/caches.html#simplememorycache"><code>SimpleMemoryCache</code></a>. This library aims for simplicity and supports asynchronous operations to go along with Python <code>asyncio</code> used in ANTA.</p>
-<p>The <code>_init_cache()</code> method of the <a href="../as-python-lib/#antadevice-abstract-class">AntaDevice</a> abstract class initializes the cache. Child classes can override this method to tweak the cache configuration:</p>
+<p>The <code>_init_cache()</code> method of the <a href="../../api/device/#anta.device.AntaDevice">AntaDevice</a> abstract class initializes the cache. Child classes can override this method to tweak the cache configuration:</p>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">_init_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Initialize cache for the device, can be overridden by subclasses to manipulate how it works</span>
@@ -2250,7 +2250,7 @@
 <h3 id="cache-key-design">Cache key design<a class="headerlink" href="#cache-key-design" title="Permanent link">&para;</a></h3>
 <p>The cache is initialized per <code>AntaDevice</code> and uses the following cache key design:</p>
 <p><code>&lt;device_name&gt;:&lt;uid&gt;</code></p>
-<p>The <code>uid</code> is an attribute of <a href="../as-python-lib/#antacommand-class">AntaCommand</a>, which is a unique identifier generated from the command, version, revision and output format.</p>
+<p>The <code>uid</code> is an attribute of <a href="../../api/models/#anta.models.AntaCommand">AntaCommand</a>, which is a unique identifier generated from the command, version, revision and output format.</p>
 <p>Each UID has its own asyncio lock. This design allows coroutines that need to access the cache for different UIDs to do so concurrently. The locks are managed by the <code>self.cache_locks</code> dictionary.</p>
 <h3 id="mechanisms">Mechanisms<a class="headerlink" href="#mechanisms" title="Permanent link">&para;</a></h3>
 <p>By default, once the cache is initialized, it is used in the <code>collect()</code> method of <code>AntaDevice</code>. The <code>collect()</code> method prioritizes retrieving the output of the command from the cache. If the output is not in the cache, the private <code>_collect()</code> method will retrieve and then store it for future access.</p>
@@ -2258,12 +2258,14 @@
 <p>Caching is enabled by default in ANTA following the previous configuration and mechanisms.</p>
 <p>There might be scenarios where caching is not wanted. You can disable caching in multiple ways in ANTA:</p>
 <ol>
-<li>Caching can be disabled globally, for <strong>ALL</strong> commands on <strong>ALL</strong> devices, using the <code>--disable-cache</code> global flag when invoking anta at the <a href="../../cli/overview/#invoking-anta-cli">CLI</a>:
-    <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>--disable-cache<span class="w"> </span>--username<span class="w"> </span>arista<span class="w"> </span>--password<span class="w"> </span>arista<span class="w"> </span>nrfu<span class="w"> </span>table
-</code></pre></div></li>
 <li>
-<p>Caching can be disabled per device, network or range by setting the <code>disable_cache</code> key to <code>True</code> when defining the ANTA <a href="../../usage-inventory-catalog/#device-inventory">Inventory</a> file:
-    <div class="highlight"><pre><span></span><code><span class="nt">anta_inventory</span><span class="p">:</span>
+<p>Caching can be disabled globally, for <strong>ALL</strong> commands on <strong>ALL</strong> devices, using the <code>--disable-cache</code> global flag when invoking anta at the <a href="../../cli/overview/#invoking-anta-cli">CLI</a>:</p>
+<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>--disable-cache<span class="w"> </span>--username<span class="w"> </span>arista<span class="w"> </span>--password<span class="w"> </span>arista<span class="w"> </span>nrfu<span class="w"> </span>table
+</code></pre></div>
+</li>
+<li>
+<p>Caching can be disabled per device, network or range by setting the <code>disable_cache</code> key to <code>True</code> when defining the ANTA <a href="../../usage-inventory-catalog/#device-inventory">Inventory</a> file:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">anta_inventory</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">hosts</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.20.20.101</span>
 <span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DC1-SPINE1</span>
@@ -2283,10 +2285,10 @@
 <span class="w">    </span><span class="nt">end</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.22.22.19</span>
 <span class="w">    </span><span class="nt">disable_cache</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
 </code></pre></div>
-    This approach effectively disables caching for <strong>ALL</strong> commands sent to devices targeted by the <code>disable_cache</code> key.</p>
+<p>This approach effectively disables caching for <strong>ALL</strong> commands sent to devices targeted by the <code>disable_cache</code> key.</p>
 </li>
 <li>
-<p>For tests developers, caching can be disabled for a specific <a href="../as-python-lib/#antacommand-class"><code>AntaCommand</code></a> or <a href="../as-python-lib/#antatemplate-class"><code>AntaTemplate</code></a> by setting the <code>use_cache</code> attribute to <code>False</code>. That means the command output will always be collected on the device and therefore, never use caching.</p>
+<p>For tests developers, caching can be disabled for a specific <a href="../../api/models/#anta.models.AntaCommand"><code>AntaCommand</code></a> or <a href="../../api/models/#anta.models.AntaTemplate"><code>AntaTemplate</code></a> by setting the <code>use_cache</code> attribute to <code>False</code>. That means the command output will always be collected on the device and therefore, never use caching.</p>
 </li>
 </ol>
 <h4 id="disable-caching-in-a-child-class-of-antadevice">Disable caching in a child class of <code>AntaDevice</code><a class="headerlink" href="#disable-caching-in-a-child-class-of-antadevice" title="Permanent link">&para;</a></h4>
@@ -2318,7 +2320,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 11, 2024</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 2, 2024</span>
   </span>
 
     

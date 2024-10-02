@@ -24,7 +24,7 @@
     
     
       
-        <title>Troubleshooting - Arista Network Test Automation - ANTA</title>
+        <title>Troubleshooting ANTA - Arista Network Test Automation - ANTA</title>
       
     
     
@@ -89,7 +89,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#troubleshooting-anta" class="md-skip">
+        <a href="#capturing-logs" class="md-skip">
           Skip to content
         </a>
       
@@ -150,7 +150,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Troubleshooting
+              Troubleshooting ANTA
             
           </span>
         </div>
@@ -357,7 +357,7 @@
         
   
   <span class="md-ellipsis">
-    Inventory & Tests catalog
+    Inventory and Test catalog
   </span>
   
 
@@ -558,7 +558,7 @@
         
   
   <span class="md-ellipsis">
-    Check
+    Check commands
   </span>
   
 
@@ -579,7 +579,7 @@
         
   
   <span class="md-ellipsis">
-    Helpers
+    Debug commands
   </span>
   
 
@@ -1967,7 +1967,7 @@
           
   
   <span class="md-ellipsis">
-    Troubleshooting
+    Troubleshooting ANTA
   </span>
   
 
@@ -1978,7 +1978,7 @@
         
   
   <span class="md-ellipsis">
-    Troubleshooting
+    Troubleshooting ANTA
   </span>
   
 
@@ -1998,20 +1998,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#troubleshooting-anta" class="md-nav__link">
-      <span class="md-ellipsis">
-        Troubleshooting ANTA
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-      <nav class="md-nav" aria-label="Troubleshooting ANTA">
-        <ul class="md-nav__list">
-          
-          
-            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
     <a href="#capturing-logs" class="md-nav__link">
       <span class="md-ellipsis">
@@ -2048,12 +2034,6 @@
     </a>
 
     <!-- Table of contents list -->
-    
-  </li>
-          
-          
-        </ul>
-      </nav>
     
   </li>
           
@@ -2137,20 +2117,6 @@
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
-    <a href="#troubleshooting-anta" class="md-nav__link">
-      <span class="md-ellipsis">
-        Troubleshooting ANTA
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-      <nav class="md-nav" aria-label="Troubleshooting ANTA">
-        <ul class="md-nav__list">
-          
-          
-            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
     <a href="#capturing-logs" class="md-nav__link">
       <span class="md-ellipsis">
         Capturing logs
@@ -2194,12 +2160,6 @@
       </nav>
     
   </li>
-          
-          
-        </ul>
-      </nav>
-    
-  </li>
       
     </ul>
   
@@ -2220,7 +2180,7 @@
 
 
   
-    <h1>Troubleshooting</h1>
+    <h1>Troubleshooting ANTA</h1>
   
 
 <!--
@@ -2229,7 +2189,6 @@
   ~ that can be found in the LICENSE file.
   -->
 
-<h2 id="troubleshooting-anta">Troubleshooting ANTA<a class="headerlink" href="#troubleshooting-anta" title="Permanent link">&para;</a></h2>
 <p>A couple of things to check when hitting an issue with ANTA:</p>
 <pre class="mermaid"><code>flowchart LR
     A&gt;Hitting an issue with ANTA] --&gt; B{Is my issue &lt;br &gt;listed in the FAQ?}
@@ -2248,7 +2207,7 @@
     click B "../faq" "FAQ"
     click E "https://github.com/aristanetworks/anta/issues"
     click H "https://github.com/aristanetworks/anta/issues"
-    style A stroke:#f00,stroke-width:2px</code></pre>
+ style A stroke:#f00,stroke-width:2px</code></pre>
 <h3 id="capturing-logs">Capturing logs<a class="headerlink" href="#capturing-logs" title="Permanent link">&para;</a></h3>
 <p>To help document the issue in Github, it is important to capture some logs so the developers can understand what is affecting your system. No logs mean that the first question asked on the issue will probably be <em>&ldquo;Can you share some logs please?&rdquo;</em>.</p>
 <p>ANTA provides very verbose logs when using the <code>DEBUG</code> level.  When using DEBUG log level with a log file, the DEBUG logging level is not sent to stdout, but only to the file.</p>
@@ -2271,10 +2230,10 @@ similarly, all the <code>nrfu</code> options MUST be set between the <code>nrfu<
 <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>-l<span class="w"> </span>DEBUG<span class="w"> </span>--log-file<span class="w"> </span>anta.log<span class="w"> </span>nrfu<span class="w"> </span>--enable<span class="w"> </span>--username<span class="w"> </span>username<span class="w"> </span>--password<span class="w"> </span>arista<span class="w"> </span>--inventory<span class="w"> </span>inventory.yml<span class="w"> </span>-c<span class="w"> </span>nrfu.yml<span class="w"> </span>text
 </code></pre></div>
 <h4 id="anta_debug-environment-variable"><code>ANTA_DEBUG</code> environment variable<a class="headerlink" href="#anta_debug-environment-variable" title="Permanent link">&para;</a></h4>
-<details class="warning">
-<summary>Warning</summary>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
 <p>Do not use this if you do not know why. This produces a lot of logs and can create confusion if you do not know what to look for.</p>
-</details>
+</div>
 <p>The environment variable <code>ANTA_DEBUG=true</code> enable ANTA Debug Mode.</p>
 <p>This flag is used by various functions in ANTA: when set to true, the function will display or log more information. In particular, when an Exception occurs in the code and this variable is set, the logging function used by ANTA is different to also produce the Python traceback for debugging. This typically needs to be done when opening a GitHub issue and an Exception is seen at runtime.</p>
 <p>Example:</p>
@@ -2282,11 +2241,11 @@ similarly, all the <code>nrfu</code> options MUST be set between the <code>nrfu<
 </code></pre></div>
 <h4 id="troubleshooting-on-eos">Troubleshooting on EOS<a class="headerlink" href="#troubleshooting-on-eos" title="Permanent link">&para;</a></h4>
 <p>ANTA is using a specific ID in eAPI requests towards EOS. This allows for easier eAPI requests debugging on the device using EOS configuration <code>trace CapiApp setting UwsgiRequestContext/4,CapiUwsgiServer/4</code> to set up CapiApp agent logs.</p>
-<p>Then, you can view agent logs using:
+<p>Then, you can view agent logs using:</p>
 <div class="highlight"><pre><span></span><code>bash<span class="w"> </span>tail<span class="w"> </span>-f<span class="w"> </span>/var/log/agents/CapiApp-*
 
 <span class="m">2024</span>-05-15<span class="w"> </span><span class="m">15</span>:32:54.056166<span class="w">  </span><span class="m">1429</span><span class="w"> </span>UwsgiRequestContext<span class="w">  </span><span class="m">4</span><span class="w"> </span>request<span class="w"> </span>content<span class="w"> </span>b<span class="s1">&#39;{&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;method&quot;: &quot;runCmds&quot;, &quot;params&quot;: {&quot;version&quot;: &quot;latest&quot;, &quot;cmds&quot;: [{&quot;cmd&quot;: &quot;show ip route vrf default 10.255.0.3&quot;, &quot;revision&quot;: 4}], &quot;format&quot;: &quot;json&quot;, &quot;autoComplete&quot;: false, &quot;expandAliases&quot;: false}, &quot;id&quot;: &quot;ANTA-VerifyRoutingTableEntry-132366530677328&quot;}&#39;</span>
-</code></pre></div></p>
+</code></pre></div>
 
 
 
@@ -2307,7 +2266,7 @@ similarly, all the <code>nrfu</code> options MUST be set between the <code>nrfu<
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 11, 2024</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 2, 2024</span>
   </span>
 
     
