@@ -3,7 +3,6 @@
   ~ Use of this source code is governed by the Apache License 2.0
   ~ that can be found in the LICENSE file.
   -->
-## Overview
 
 ANTA commands can be used with a `--tags` option. This option **filters the inventory** with the specified tag(s) when running the command.
 
@@ -112,7 +111,7 @@ anta.tests.interfaces:
 
 The following examples use the inventory and test catalog defined above.
 
-##### No `--tags` option
+#### No `--tags` option
 
 Tests without tags are run on all devices.
 Tests with tags will only run on devices with matching tags.
@@ -140,7 +139,7 @@ Total number of selected tests: 27
 └────────┴──────────────┴──────────────┴──────────────┴─────────────┴────────────────────────────────────┘
 ```
 
-##### Single tag
+#### Single tag
 
 With a tag specified, only tests matching this tag will be run on matching devices.
 
@@ -166,7 +165,7 @@ leaf2 :: VerifyMlagStatus :: SKIPPED (MLAG is disabled)
 
 In this case, only `leaf` devices defined in the inventory are used to run tests marked with the `leaf` in the test catalog.
 
-##### Multiple tags
+#### Multiple tags
 
 It is possible to use multiple tags using the `--tags tag1,tag2` syntax.
 

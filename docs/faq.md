@@ -24,6 +24,7 @@ toc_depth: 2
 # Frequently Asked Questions (FAQ)
 
 ## A local OS error occurred while connecting to a device
+
 ???+ faq "A local OS error occurred while connecting to a device"
 
     When running ANTA, you can receive `A local OS error occurred while connecting to <device>` errors. The underlying [`OSError`](https://docs.python.org/3/library/exceptions.html#OSError) exception can have various reasons: `[Errno 24] Too many open files` or `[Errno 16] Device or resource busy`.
@@ -38,13 +39,13 @@ toc_depth: 2
     You can get the current hard limit for a user using the command `ulimit -n -H` while logged in.
     Create the file `/etc/security/limits.d/10-anta.conf` with the following content:
     ```
-    <user>	hard	nofile	<value>
+    <user> hard nofile <value>
     ```
     The `user` is the one with which the ANTA process is started.
     The `value` is the new hard limit. The maximum value depends on the system. A hard limit of 16384 should be sufficient for ANTA to run in most high scale scenarios. After creating this file, log out the current session and log in again.
 
-
 ## `Timeout` error in the logs
+
 ???+ faq "`Timeout` error in the logs"
 
     When running ANTA, you can receive `<Foo>Timeout` errors in the logs (could be ReadTimeout, WriteTimeout, ConnectTimeout or PoolTimeout). More details on the timeouts of the underlying library are available here: https://www.python-httpx.org/advanced/timeouts.
@@ -63,8 +64,8 @@ toc_depth: 2
     The timeout is increased to 50s to allow ANTA to wait for API calls a little longer.
 
 ## `ImportError` related to `urllib3`
-???+ faq "`ImportError` related to `urllib3` when running ANTA"
 
+???+ faq "`ImportError` related to `urllib3` when running ANTA"
 
     When running the `anta --help` command, some users might encounter the following error:
 
@@ -90,9 +91,9 @@ toc_depth: 2
 
             As per the [urllib3 v2 migration guide](https://urllib3.readthedocs.io/en/latest/v2-migration-guide.html), the root cause of this error is an incompatibility with older OpenSSL versions. For example, users on RHEL7 might consider upgrading to RHEL8, which supports the required OpenSSL version.
 
-##`AttributeError: module 'lib' has no attribute 'OpenSSL_add_all_algorithms'`
-???+ faq "`AttributeError: module 'lib' has no attribute 'OpenSSL_add_all_algorithms'` when running ANTA"
+## `AttributeError: module 'lib' has no attribute 'OpenSSL_add_all_algorithms'`
 
+???+ faq "`AttributeError: module 'lib' has no attribute 'OpenSSL_add_all_algorithms'` when running ANTA"
 
     When running the `anta` commands after installation, some users might encounter the following error:
 
@@ -111,8 +112,8 @@ toc_depth: 2
         ```
 
 ## `__NSCFConstantString initialize` error on OSX
-???+ faq "`__NSCFConstantString initialize` error on OSX"
 
+???+ faq "`__NSCFConstantString initialize` error on OSX"
 
     This error occurs because of added security to restrict multithreading in macOS High Sierra and later versions of macOS. https://www.wefearchange.org/2018/11/forkmacos.rst.html
 
