@@ -5,6 +5,7 @@
   -->
 
 ### ::: anta.catalog.AntaCatalog
+
     options:
         filters: ["!^_[^_]", "!__str__"]
 
