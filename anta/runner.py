@@ -15,7 +15,7 @@ from typing import TYPE_CHECKING, Any
 from anta import GITHUB_SUGGESTION
 from anta.logger import anta_log_exception, exc_to_str
 from anta.models import AntaTest
-from anta.tools import Catchtime, cprofile
+from anta.tools import Catchtime
 
 if TYPE_CHECKING:
     from collections.abc import Coroutine
@@ -207,7 +207,6 @@ def get_coroutines(selected_tests: defaultdict[AntaDevice, set[AntaTestDefinitio
     return coros
 
 
-@cprofile()
 async def main(  # noqa: PLR0913
     manager: ResultManager,
     inventory: AntaInventory,
