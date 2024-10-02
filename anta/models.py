@@ -284,8 +284,7 @@ class AntaTest(ABC):
     The following is an example of an AntaTest subclass implementation:
         ```python
             class VerifyReachability(AntaTest):
-                name = "VerifyReachability"
-                description = "Test the network reachability to one or many destination IP(s)."
+                '''Test the network reachability to one or many destination IP(s).'''
                 categories = ["connectivity"]
                 commands = [AntaTemplate(template="ping vrf {vrf} {dst} source {src} repeat 2")]
 
@@ -326,10 +325,11 @@ class AntaTest(ABC):
         Python logger for this test instance.
     """
 
-    # Mandatory class attributes
-    # TODO: find a way to tell mypy these are mandatory for child classes - maybe Protocol
+    # Optional class attributes
     name: ClassVar[str]
     description: ClassVar[str]
+    # Mandatory class attributes
+    # TODO: find a way to tell mypy these are mandatory for child classes - maybe Protocol
     categories: ClassVar[list[str]]
     commands: ClassVar[list[AntaTemplate | AntaCommand]]
     # Class attributes to handle the progress bar of ANTA CLI
@@ -505,19 +505,20 @@ class AntaTest(ABC):
             self.instance_commands[index].output = data
 
     def __init_subclass__(cls) -> None:
-        """Verify that the mandatory class attributes are defined."""
+        """Verify that the mandatory class attributes are defined and set name and description if not set."""
         mandatory_attributes = ["categories", "commands"]
         for attr in mandatory_attributes:
             if not hasattr(cls, attr):
                 msg = f"Class {cls.__module__}.{cls.__name__} is missing required class attribute {attr}"
                 raise NotImplementedError(msg)
-        # default_attributes = ["name", "description"]
+
         if not hasattr(cls, "name"):
             cls.name = cls.__name__
         if not hasattr(cls, "description"):
             if not cls.__doc__:
                 # No doctsring - raise
-                raise Exception("TODO")
+                msg = f"Cannot set the description for class {cls.name}, either set it in the class definition or add a docstring to the class."
+                raise AttributeError(msg)
             cls.description = cls.__doc__.split(sep="\n", maxsplit=1)[0]
 
     @property

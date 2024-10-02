@@ -520,6 +520,36 @@ class TestAntaTest:
 
         assert exec_info.value.args[0] == "Class tests.units.test_models._WrongTestNoCommands is missing required class attribute commands"
 
+        with pytest.raises(
+            AttributeError,
+            match="Cannot set the description for class _WrongTestNoDescription, either set it in the class definition or add a docstring to the class.",
+        ):
+
+            class _WrongTestNoDescription(AntaTest):
+                # ANTA test that is missing a description and does not have a doctstring.
+
+                commands: ClassVar[list[AntaCommand | AntaTemplate]] = []
+                categories: ClassVar[list[str]] = []
+
+                @AntaTest.anta_test
+                def test(self) -> None:
+                    self.result.is_success()
+
+        class _TestOverwriteNameAndDescription(AntaTest):
+            """ANTA test where both the test name and description are overwritten in the class definition."""
+
+            name: ClassVar[str] = "CustomName"
+            description: ClassVar[str] = "Custom description"
+            commands: ClassVar[list[AntaCommand | AntaTemplate]] = []
+            categories: ClassVar[list[str]] = []
+
+            @AntaTest.anta_test
+            def test(self) -> None:
+                self.result.is_success()
+
+        assert _TestOverwriteNameAndDescription.name == "CustomName"
+        assert _TestOverwriteNameAndDescription.description == "Custom description"
+
     def test_abc(self) -> None:
         """Test that an error is raised if AntaTest is not implemented."""
         with pytest.raises(TypeError) as exec_info:
@@ -616,7 +646,9 @@ class TestAntaComamnd:
 
     def test_supported(self) -> None:
         """Test the supported property."""
-        command = AntaCommand(command="show hardware counter drop", errors=["Unavailable command (not supported on this hardware platform) (at token 2: 'counter')"])
+        command = AntaCommand(
+            command="show hardware counter drop", errors=["Unavailable command (not supported on this hardware platform) (at token 2: 'counter')"]
+        )
         assert command.supported is False
         command = AntaCommand(
             command="show hardware counter drop", output={"totalAdverseDrops": 0, "totalCongestionDrops": 0, "totalPacketProcessorDrops": 0, "dropEvents": {}}
@@ -625,7 +657,9 @@ class TestAntaComamnd:
         command = AntaCommand(command="show hardware counter drop")
         with pytest.raises(RuntimeError) as exec_info:
             command.supported
-        assert exec_info.value.args[0] == "Command 'show hardware counter drop' has not been collected and has not returned an error. Call AntaDevice.collect()."
+        assert (
+            exec_info.value.args[0] == "Command 'show hardware counter drop' has not been collected and has not returned an error. Call AntaDevice.collect()."
+        )
 
     def test_requires_privileges(self) -> None:
         """Test the requires_privileges property."""
@@ -644,4 +678,6 @@ class TestAntaComamnd:
         command = AntaCommand(command="show aaa methods accounting")
         with pytest.raises(RuntimeError) as exec_info:
             command.requires_privileges
-        assert exec_info.value.args[0] == "Command 'show aaa methods accounting' has not been collected and has not returned an error. Call AntaDevice.collect()."
+        assert (
+            exec_info.value.args[0] == "Command 'show aaa methods accounting' has not been collected and has not returned an error. Call AntaDevice.collect()."
+        )
