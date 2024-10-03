@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING, ClassVar, Literal
 
 from pydantic import BaseModel, model_validator
 
-from anta.custom_types import Port, PositiveInteger
+from anta.custom_types import Port, PositiveInteger, SnmpVersion
 from anta.models import AntaCommand, AntaTest
 from anta.tools import get_failed_logs, get_item, get_value
 
@@ -282,7 +282,7 @@ class VerifySNMPNotificationHost(AntaTest):
         """List of SNMP hosts."""
 
         class SNMPHost(BaseModel):
-            """Model for a SNMP Manager."""
+            """Model for a SNMP Host."""
 
             hostname: IPv4Address
             """IPv4 address of the SNMP notification host."""
@@ -290,7 +290,7 @@ class VerifySNMPNotificationHost(AntaTest):
             """Optional VRF for SNMP Hosts. If not provided, it defaults to `default`."""
             notification_type: Literal["trap", "inform"]
             """Type of SNMP notification (trap or inform)."""
-            version: Literal["v1", "v2c", "v3"]
+            version: SnmpVersion
             """SNMP protocol version."""
             udp_port: Port | int = 162
             """UDP port for SNMP. If not provided then defaults to 162."""
@@ -323,7 +323,7 @@ class VerifySNMPNotificationHost(AntaTest):
 
         # Verify SNMP host details.
         if not (snmp_hosts := get_value(self.instance_commands[0].json_output, "hosts")):
-            self.result.is_failure("SNMP is not configured.")
+            self.result.is_failure("No SNMP host is configured.")
             return
 
         for host in self.inputs.notification_hosts:

@@ -195,7 +195,7 @@ DATA: list[dict[str, Any]] = [
                 {"hostname": "192.168.1.101", "vrf": "default", "notification_type": "trap", "version": "v2c", "udp_port": 162, "community_string": "public"},
             ]
         },
-        "expected": {"result": "failure", "messages": ["SNMP is not configured."]},
+        "expected": {"result": "failure", "messages": ["No SNMP host is configured."]},
     },
     {
         "name": "failure-details-not-found",
