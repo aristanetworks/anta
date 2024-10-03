@@ -398,6 +398,12 @@ anta.tests.snmp:
       location: New York
   - VerifySnmpContact:
       contact: Jon@example.com
+  - VerifySnmpLogging:
+      hosts:
+        - hostname: 192.168.1.100
+          vrf: default
+        - hostname: 192.168.1.103
+          vrf: MGMT
 
 anta.tests.software:
   - VerifyEOSVersion:
