@@ -45,7 +45,8 @@ logger = logging.getLogger(__name__)
     default=False,
 )
 def from_cvp(ctx: click.Context, output: Path, host: str, username: str, password: str, container: str | None, *, ignore_cert: bool) -> None:
-    """Build ANTA inventory from CloudVision.
+    """
+    Build ANTA inventory from CloudVision.
 
     NOTE: Only username/password authentication is supported for on-premises CloudVision instances.
     Token authentication for both on-premises and CloudVision as a Service (CVaaS) is not supported.
@@ -89,7 +90,8 @@ def from_cvp(ctx: click.Context, output: Path, host: str, username: str, passwor
     required=True,
 )
 def from_ansible(ctx: click.Context, output: Path, ansible_group: str, ansible_inventory: Path) -> None:
-    """Build ANTA inventory from an ansible inventory YAML file.
+    """
+    Build ANTA inventory from an ansible inventory YAML file.
 
     NOTE: This command does not support inline vaulted variables. Make sure to comment them out.
 
@@ -137,7 +139,7 @@ def tags(inventory: AntaInventory, **kwargs: Any) -> None:
 @click.command
 def tests() -> None:
     """Show all builtin ANTA tests with an example output retrieved from each test documentation."""
-    console.print("Current builtin ANTA tests are:", style="white on blue")
+    console.print("# Current builtin ANTA tests are:", style="white on blue")
     import importlib
     import inspect
     import pkgutil
@@ -149,7 +151,7 @@ def tests() -> None:
 
     # TODO: with this method need to disable warning for unknown section in numpydoc
     # Would be better to not use numpydoc
-    def explore_package(module_name: str, level: int = 2) -> None:
+    def explore_package(module_name: str, level: int = 0) -> None:
         loader = pkgutil.get_loader(module_name)
         if loader is None:
             # TODO: log something
@@ -159,7 +161,7 @@ def tests() -> None:
             _, sub_module_name, _ = sub_module
             qname = module_name + "." + sub_module_name
             if sub_module.ispkg:
-                explore_package(qname, level=3)
+                explore_package(qname, level=level + 1)
             else:
                 console.print(f"{qname}:")
                 qname_module = importlib.import_module(qname)
@@ -169,9 +171,9 @@ def tests() -> None:
                             warnings.filterwarnings("ignore", message="Unknown section Expected Results")
                             doc = NumpyDocString(obj.__doc__)
                         console.print(f"  - {obj.name}:")
-                        console.print(f"      # {obj.description}", soft_wrap=False)
+                        console.print(f"      # {obj.description}", soft_wrap=True)
                         # TODO: add info about when the test was added
-                        if len(doc["Examples"]) > 2 + level:
-                            console.print("\n".join(line[2 * level :] for line in doc["Examples"][level + 1 : -1]))
+                        if len(doc["Examples"]) > 4 + level:
+                            console.print("\n".join(line[2 * level :] for line in doc["Examples"][level + 3 : -1]))
 
     explore_package("anta.tests")

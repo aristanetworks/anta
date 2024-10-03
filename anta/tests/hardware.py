@@ -17,7 +17,8 @@ if TYPE_CHECKING:
 
 
 class VerifyTransceiversManufacturers(AntaTest):
-    """Verifies if all the transceivers come from approved manufacturers.
+    """
+    Verifies if all the transceivers come from approved manufacturers.
 
     Expected Results
     ----------------
@@ -62,7 +63,8 @@ class VerifyTransceiversManufacturers(AntaTest):
 
 
 class VerifyTemperature(AntaTest):
-    """Verifies if the device temperature is within acceptable limits.
+    """
+    Verifies if the device temperature is within acceptable limits.
 
     Expected Results
     ----------------
@@ -95,7 +97,8 @@ class VerifyTemperature(AntaTest):
 
 
 class VerifyTransceiversTemperature(AntaTest):
-    """Verifies if all the transceivers are operating at an acceptable temperature.
+    """
+    Verifies if all the transceivers are operating at an acceptable temperature.
 
     Expected Results
     ----------------
@@ -136,7 +139,8 @@ class VerifyTransceiversTemperature(AntaTest):
 
 
 class VerifyEnvironmentSystemCooling(AntaTest):
-    """Verifies the device's system cooling status.
+    """
+    Verifies the device's system cooling status.
 
     Expected Results
     ----------------
@@ -168,7 +172,8 @@ class VerifyEnvironmentSystemCooling(AntaTest):
 
 
 class VerifyEnvironmentCooling(AntaTest):
-    """Verifies the status of power supply fans and all fan trays.
+    """
+    Verifies the status of power supply fans and all fan trays.
 
     Expected Results
     ----------------
@@ -215,7 +220,8 @@ class VerifyEnvironmentCooling(AntaTest):
 
 
 class VerifyEnvironmentPower(AntaTest):
-    """Verifies the power supplies status.
+    """
+    Verifies the power supplies status.
 
     Expected Results
     ----------------
@@ -259,7 +265,8 @@ class VerifyEnvironmentPower(AntaTest):
 
 
 class VerifyAdverseDrops(AntaTest):
-    """Verifies there are no adverse drops on DCS-7280 and DCS-7500 family switches (Arad/Jericho chips).
+    """
+    Verifies there are no adverse drops on DCS-7280 and DCS-7500 family switches (Arad/Jericho chips).
 
     Expected Results
     ----------------

@@ -18,7 +18,8 @@ if TYPE_CHECKING:
 
 
 class VerifyVlanInternalPolicy(AntaTest):
-    """Verifies if the VLAN internal allocation policy is ascending or descending and if the VLANs are within the specified range.
+    """
+    Verifies if the VLAN internal allocation policy is ascending or descending and if the VLANs are within the specified range.
 
     Expected Results
     ----------------

@@ -105,3 +105,15 @@ repos:
           - --config=.github/markdownlint.yaml
           - --ignore-path=.github/markdownlintignore
           - --fix
+
+  - repo: local
+    hooks:
+      - id: examples-test
+        name: Generate examples/tests.yaml
+        entry: >-
+          docs/scripts/generate_examples_tests.py
+        language: system
+        types: [python]
+        files: anta/
+        verbose: true
+        pass_filenames: false

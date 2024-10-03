@@ -72,7 +72,8 @@ def run_template(
 ) -> None:
     # Using \b for click
     # ruff: noqa: D301
-    """Run arbitrary templated command to an ANTA device.
+    """
+    Run arbitrary templated command to an ANTA device.
 
     Takes a list of arguments (keys followed by a value) to build a dictionary used as template parameters.
 

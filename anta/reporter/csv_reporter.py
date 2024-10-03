@@ -38,7 +38,8 @@ class ReportCsv:
 
     @classmethod
     def split_list_to_txt_list(cls, usr_list: list[str], delimiter: str = " - ") -> str:
-        """Split list to multi-lines string.
+        """
+        Split list to multi-lines string.
 
         Parameters
         ----------
@@ -57,7 +58,8 @@ class ReportCsv:
 
     @classmethod
     def convert_to_list(cls, result: TestResult) -> list[str]:
-        """Convert a TestResult into a list of string for creating file content.
+        """
+        Convert a TestResult into a list of string for creating file content.
 
         Parameters
         ----------
@@ -82,7 +84,8 @@ class ReportCsv:
 
     @classmethod
     def generate(cls, results: ResultManager, csv_filename: pathlib.Path) -> None:
-        """Build CSV flle with tests results.
+        """
+        Build CSV flle with tests results.
 
         Parameters
         ----------

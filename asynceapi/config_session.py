@@ -29,7 +29,8 @@ __all__ = ["SessionConfig"]
 
 
 class SessionConfig:
-    """Send configuration to a device using the EOS session mechanism.
+    """
+    Send configuration to a device using the EOS session mechanism.
 
     This is the preferred way of managing configuration changes.
 
@@ -43,7 +44,8 @@ class SessionConfig:
     CLI_CFG_FACTORY_RESET = "rollback clean-config"
 
     def __init__(self, device: Device, name: str) -> None:
-        """Create a new instance of SessionConfig.
+        """
+        Create a new instance of SessionConfig.
 
         The session config instance bound
         to the given device instance, and using the session `name`.
@@ -79,7 +81,8 @@ class SessionConfig:
     # -------------------------------------------------------------------------
 
     async def status_all(self) -> dict[str, Any]:
-        """Get the status of all the session config on the device.
+        """
+        Get the status of all the session config on the device.
 
         Run the following command on the device:
             # show configuration sessions detail
@@ -119,7 +122,8 @@ class SessionConfig:
         return await self._cli("show configuration sessions detail")  # type: ignore[return-value] # json outformat returns dict[str, Any]
 
     async def status(self) -> dict[str, Any] | None:
-        """Get the status of a session config on the device.
+        """
+        Get the status of a session config on the device.
 
         Run the following command on the device:
             # show configuration sessions detail
@@ -175,7 +179,8 @@ class SessionConfig:
         return res["sessions"].get(self.name)
 
     async def push(self, content: list[str] | str, *, replace: bool = False) -> None:
-        """Send the configuration content to the device.
+        """
+        Send the configuration content to the device.
 
         If `replace` is true, then the command "rollback clean-config" is issued
         before sending the configuration content.
@@ -213,7 +218,8 @@ class SessionConfig:
         await self._cli(commands=commands)
 
     async def commit(self, timer: str | None = None) -> None:
-        """Commit the session config.
+        """
+        Commit the session config.
 
         Run the following command on the device:
             # configure session <name>
@@ -235,7 +241,8 @@ class SessionConfig:
         await self._cli(command)
 
     async def abort(self) -> None:
-        """Abort the configuration session.
+        """
+        Abort the configuration session.
 
         Run the following command on the device:
             # configure session <name> abort
@@ -243,7 +250,8 @@ class SessionConfig:
         await self._cli(f"{self._cli_config_session} abort")
 
     async def diff(self) -> str:
-        """Return the "diff" of the session config relative to the running config.
+        """
+        Return the "diff" of the session config relative to the running config.
 
         Run the following command on the device:
             # show session-config named <name> diffs
@@ -260,7 +268,8 @@ class SessionConfig:
         return await self._cli(f"show session-config named {self.name} diffs", ofmt="text")  # type: ignore[return-value] # text outformat returns str
 
     async def load_file(self, filename: str, *, replace: bool = False) -> None:
-        """Load the configuration from <filename> into the session configuration.
+        """
+        Load the configuration from <filename> into the session configuration.
 
         If the replace parameter is True then the file contents will replace the existing session config (load-replace).
 

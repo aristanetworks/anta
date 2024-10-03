@@ -18,7 +18,8 @@ from anta.tools import get_value
 
 
 class VerifyPathsHealth(AntaTest):
-    """Verifies the path and telemetry state of all paths under router path-selection.
+    """
+    Verifies the path and telemetry state of all paths under router path-selection.
 
     The expected states are 'IPsec established', 'Resolved' for path and 'active' for telemetry.
 
@@ -72,7 +73,8 @@ class VerifyPathsHealth(AntaTest):
 
 
 class VerifySpecificPath(AntaTest):
-    """Verifies the path and telemetry state of a specific path for an IPv4 peer under router path-selection.
+    """
+    Verifies the path and telemetry state of a specific path for an IPv4 peer under router path-selection.
 
     The expected states are 'IPsec established', 'Resolved' for path and 'active' for telemetry.
 

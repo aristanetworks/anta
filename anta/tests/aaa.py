@@ -18,7 +18,8 @@ if TYPE_CHECKING:
 
 
 class VerifyTacacsSourceIntf(AntaTest):
-    """Verifies TACACS source-interface for a specified VRF.
+    """
+    Verifies TACACS source-interface for a specified VRF.
 
     Expected Results
     ----------------
@@ -62,7 +63,8 @@ class VerifyTacacsSourceIntf(AntaTest):
 
 
 class VerifyTacacsServers(AntaTest):
-    """Verifies TACACS servers are configured for a specified VRF.
+    """
+    Verifies TACACS servers are configured for a specified VRF.
 
     Expected Results
     ----------------
@@ -116,7 +118,8 @@ class VerifyTacacsServers(AntaTest):
 
 
 class VerifyTacacsServerGroups(AntaTest):
-    """Verifies if the provided TACACS server group(s) are configured.
+    """
+    Verifies if the provided TACACS server group(s) are configured.
 
     Expected Results
     ----------------
@@ -161,7 +164,8 @@ class VerifyTacacsServerGroups(AntaTest):
 
 
 class VerifyAuthenMethods(AntaTest):
-    """Verifies the AAA authentication method lists for different authentication types (login, enable, dot1x).
+    """
+    Verifies the AAA authentication method lists for different authentication types (login, enable, dot1x).
 
     Expected Results
     ----------------
@@ -223,7 +227,8 @@ class VerifyAuthenMethods(AntaTest):
 
 
 class VerifyAuthzMethods(AntaTest):
-    """Verifies the AAA authorization method lists for different authorization types (commands, exec).
+    """
+    Verifies the AAA authorization method lists for different authorization types (commands, exec).
 
     Expected Results
     ----------------
@@ -277,7 +282,8 @@ class VerifyAuthzMethods(AntaTest):
 
 
 class VerifyAcctDefaultMethods(AntaTest):
-    """Verifies the AAA accounting default method lists for different accounting types (system, exec, commands, dot1x).
+    """
+    Verifies the AAA accounting default method lists for different accounting types (system, exec, commands, dot1x).
 
     Expected Results
     ----------------
@@ -340,7 +346,8 @@ class VerifyAcctDefaultMethods(AntaTest):
 
 
 class VerifyAcctConsoleMethods(AntaTest):
-    """Verifies the AAA accounting console method lists for different accounting types (system, exec, commands, dot1x).
+    """
+    Verifies the AAA accounting console method lists for different accounting types (system, exec, commands, dot1x).
 
     Expected Results
     ----------------

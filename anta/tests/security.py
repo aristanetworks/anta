@@ -27,7 +27,8 @@ if TYPE_CHECKING:
 
 
 class VerifySSHStatus(AntaTest):
-    """Verifies if the SSHD agent is disabled in the default VRF.
+    """
+    Verifies if the SSHD agent is disabled in the default VRF.
 
     Expected Results
     ----------------
@@ -66,7 +67,8 @@ class VerifySSHStatus(AntaTest):
 
 
 class VerifySSHIPv4Acl(AntaTest):
-    """Verifies if the SSHD agent has the right number IPv4 ACL(s) configured for a specified VRF.
+    """
+    Verifies if the SSHD agent has the right number IPv4 ACL(s) configured for a specified VRF.
 
     Expected Results
     ----------------
@@ -115,7 +117,8 @@ class VerifySSHIPv4Acl(AntaTest):
 
 
 class VerifySSHIPv6Acl(AntaTest):
-    """Verifies if the SSHD agent has the right number IPv6 ACL(s) configured for a specified VRF.
+    """
+    Verifies if the SSHD agent has the right number IPv6 ACL(s) configured for a specified VRF.
 
     Expected Results
     ----------------
@@ -164,7 +167,8 @@ class VerifySSHIPv6Acl(AntaTest):
 
 
 class VerifyTelnetStatus(AntaTest):
-    """Verifies if Telnet is disabled in the default VRF.
+    """
+    Verifies if Telnet is disabled in the default VRF.
 
     Expected Results
     ----------------
@@ -195,7 +199,8 @@ class VerifyTelnetStatus(AntaTest):
 
 
 class VerifyAPIHttpStatus(AntaTest):
-    """Verifies if eAPI HTTP server is disabled globally.
+    """
+    Verifies if eAPI HTTP server is disabled globally.
 
     Expected Results
     ----------------
@@ -226,7 +231,8 @@ class VerifyAPIHttpStatus(AntaTest):
 
 
 class VerifyAPIHttpsSSL(AntaTest):
-    """Verifies if eAPI HTTPS server SSL profile is configured and valid.
+    """
+    Verifies if eAPI HTTPS server SSL profile is configured and valid.
 
     Expected Results
     ----------------
@@ -268,7 +274,8 @@ class VerifyAPIHttpsSSL(AntaTest):
 
 
 class VerifyAPIIPv4Acl(AntaTest):
-    """Verifies if eAPI has the right number IPv4 ACL(s) configured for a specified VRF.
+    """
+    Verifies if eAPI has the right number IPv4 ACL(s) configured for a specified VRF.
 
     Expected Results
     ----------------
@@ -317,7 +324,8 @@ class VerifyAPIIPv4Acl(AntaTest):
 
 
 class VerifyAPIIPv6Acl(AntaTest):
-    """Verifies if eAPI has the right number IPv6 ACL(s) configured for a specified VRF.
+    """
+    Verifies if eAPI has the right number IPv6 ACL(s) configured for a specified VRF.
 
     Expected Results
     ----------------
@@ -367,7 +375,8 @@ class VerifyAPIIPv6Acl(AntaTest):
 
 
 class VerifyAPISSLCertificate(AntaTest):
-    """Verifies the eAPI SSL certificate expiry, common subject name, encryption algorithm and key size.
+    """
+    Verifies the eAPI SSL certificate expiry, common subject name, encryption algorithm and key size.
 
     Expected Results
     ----------------
@@ -425,7 +434,8 @@ class VerifyAPISSLCertificate(AntaTest):
 
             @model_validator(mode="after")
             def validate_inputs(self) -> Self:
-                """Validate the key size provided to the APISSLCertificates class.
+                """
+                Validate the key size provided to the APISSLCertificates class.
 
                 If encryption_algorithm is RSA then key_size should be in {2048, 3072, 4096}.
 
@@ -486,7 +496,8 @@ class VerifyAPISSLCertificate(AntaTest):
 
 
 class VerifyBannerLogin(AntaTest):
-    """Verifies the login banner of a device.
+    """
+    Verifies the login banner of a device.
 
     Expected Results
     ----------------
@@ -530,7 +541,8 @@ class VerifyBannerLogin(AntaTest):
 
 
 class VerifyBannerMotd(AntaTest):
-    """Verifies the motd banner of a device.
+    """
+    Verifies the motd banner of a device.
 
     Expected Results
     ----------------
@@ -574,7 +586,8 @@ class VerifyBannerMotd(AntaTest):
 
 
 class VerifyIPv4ACL(AntaTest):
-    """Verifies the configuration of IPv4 ACLs.
+    """
+    Verifies the configuration of IPv4 ACLs.
 
     Expected Results
     ----------------
@@ -669,7 +682,8 @@ class VerifyIPv4ACL(AntaTest):
 
 
 class VerifyIPSecConnHealth(AntaTest):
-    """Verifies all IPv4 security connections.
+    """
+    Verifies all IPv4 security connections.
 
     Expected Results
     ----------------
@@ -715,7 +729,8 @@ class VerifyIPSecConnHealth(AntaTest):
 
 
 class VerifySpecificIPSecConn(AntaTest):
-    """Verifies the state of IPv4 security connections for a specified peer.
+    """
+    Verifies the state of IPv4 security connections for a specified peer.
 
     It optionally allows for the verification of a specific path for a peer by providing source and destination addresses.
     If these addresses are not provided, it will verify all paths for the specified peer.
@@ -829,7 +844,8 @@ class VerifySpecificIPSecConn(AntaTest):
 
 
 class VerifyHardwareEntropy(AntaTest):
-    """Verifies hardware entropy generation is enabled on device.
+    """
+    Verifies hardware entropy generation is enabled on device.
 
     Expected Results
     ----------------

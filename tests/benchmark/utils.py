@@ -25,7 +25,8 @@ if TYPE_CHECKING:
 
 
 async def collect(self: AntaTest) -> None:
-    """Patched anta.models.AntaTest.collect() method.
+    """
+    Patched anta.models.AntaTest.collect() method.
 
     When generating the catalog, we inject a unit test case name in the custom_field input to be able to retrieve the eos_data for this specific test.
     We use this unit test case name in the eAPI request ID.
@@ -37,7 +38,8 @@ async def collect(self: AntaTest) -> None:
 
 
 async def collect_commands(self: AntaDevice, commands: list[AntaCommand], collection_id: str) -> None:
-    """Patched anta.device.AntaDevice.collect_commands() method.
+    """
+    Patched anta.device.AntaDevice.collect_commands() method.
 
     For the same reason as above, we inject the command index of the test to the eAPI request ID.
     """
@@ -45,7 +47,8 @@ async def collect_commands(self: AntaDevice, commands: list[AntaCommand], collec
 
 
 class AntaMockEnvironment:  # pylint: disable=too-few-public-methods
-    """Generate an ANTA test catalog from the unit tests data. It can be accessed using the `catalog` attribute of this class instance.
+    """
+    Generate an ANTA test catalog from the unit tests data. It can be accessed using the `catalog` attribute of this class instance.
 
     Also provide the attribute 'eos_data_catalog` with the output of all the commands used in the test catalog.
 
@@ -65,7 +68,8 @@ class AntaMockEnvironment:  # pylint: disable=too-few-public-methods
 
     @property
     def catalog(self) -> AntaCatalog:
-        """AntaMockEnvironment object will always return a new AntaCatalog object based on the initial parsing.
+        """
+        AntaMockEnvironment object will always return a new AntaCatalog object based on the initial parsing.
 
         This is because AntaCatalog objects store indexes when tests are run and we want a new object each time a test is run.
         """
@@ -104,7 +108,8 @@ class AntaMockEnvironment:  # pylint: disable=too-few-public-methods
         return (AntaCatalog(tests=test_definitions), eos_data_catalog)
 
     def eapi_response(self, request: httpx.Request) -> httpx.Response:
-        """Mock eAPI response.
+        """
+        Mock eAPI response.
 
         If the eAPI request ID has the format `ANTA-{test name}:{unit test name}:{command index}-{command ID}`,
         the function will return the eos_data from the unit test case.

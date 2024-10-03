@@ -18,7 +18,8 @@ F = TypeVar("F", bound=Callable[..., Any])
 
 
 def deprecated_test(new_tests: list[str] | None = None) -> Callable[[F], F]:
-    """Return a decorator to log a message of WARNING severity when a test is deprecated.
+    """
+    Return a decorator to log a message of WARNING severity when a test is deprecated.
 
     Parameters
     ----------
@@ -33,7 +34,8 @@ def deprecated_test(new_tests: list[str] | None = None) -> Callable[[F], F]:
     """
 
     def decorator(function: F) -> F:
-        """Actual decorator that logs the message.
+        """
+        Actual decorator that logs the message.
 
         Parameters
         ----------
@@ -63,7 +65,8 @@ def deprecated_test(new_tests: list[str] | None = None) -> Callable[[F], F]:
 
 
 def skip_on_platforms(platforms: list[str]) -> Callable[[F], F]:
-    """Return a decorator to skip a test based on the device's hardware model.
+    """
+    Return a decorator to skip a test based on the device's hardware model.
 
     This decorator factory generates a decorator that will check the hardware model of the device
     the test is run on. If the model is in the list of platforms specified, the test will be skipped.
@@ -81,7 +84,8 @@ def skip_on_platforms(platforms: list[str]) -> Callable[[F], F]:
     """
 
     def decorator(function: F) -> F:
-        """Actual decorator that either runs the test or skips it based on the device's hardware model.
+        """
+        Actual decorator that either runs the test or skips it based on the device's hardware model.
 
         Parameters
         ----------
@@ -97,7 +101,8 @@ def skip_on_platforms(platforms: list[str]) -> Callable[[F], F]:
 
         @wraps(function)
         async def wrapper(*args: Any, **kwargs: Any) -> TestResult:
-            """Check the device's hardware model and conditionally run or skip the test.
+            """
+            Check the device's hardware model and conditionally run or skip the test.
 
             This wrapper inspects the hardware model of the device the test is run on.
             If the model is in the list of specified platforms, the test is either skipped.

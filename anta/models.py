@@ -42,7 +42,8 @@ class AntaParamsBaseModel(BaseModel):
 
 
 class AntaTemplate:
-    """Class to define a command template as Python f-string.
+    """
+    Class to define a command template as Python f-string.
 
     Can render a command from parameters.
 
@@ -88,14 +89,16 @@ class AntaTemplate:
         )
 
     def __repr__(self) -> str:
-        """Return the representation of the class.
+        """
+        Return the representation of the class.
 
         Copying pydantic model style, excluding `params_schema`
         """
         return " ".join(f"{a}={v!r}" for a, v in vars(self).items() if a != "params_schema")
 
     def render(self, **params: str | int | bool) -> AntaCommand:
-        """Render an AntaCommand from an AntaTemplate instance.
+        """
+        Render an AntaCommand from an AntaTemplate instance.
 
         Keep the parameters used in the AntaTemplate instance.
 
@@ -132,7 +135,8 @@ class AntaTemplate:
 
 
 class AntaCommand(BaseModel):
-    """Class to define a command.
+    """
+    Class to define a command.
 
     !!! info
         eAPI models are revisioned, this means that if a model is modified in a non-backwards compatible way, then its revision will be bumped up
@@ -216,7 +220,8 @@ class AntaCommand(BaseModel):
 
     @property
     def collected(self) -> bool:
-        """Return True if the command has been collected, False otherwise.
+        """
+        Return True if the command has been collected, False otherwise.
 
         A command that has not been collected could have returned an error.
         See error property.
@@ -225,7 +230,8 @@ class AntaCommand(BaseModel):
 
     @property
     def requires_privileges(self) -> bool:
-        """Return True if the command requires privileged mode, False otherwise.
+        """
+        Return True if the command requires privileged mode, False otherwise.
 
         Raises
         ------
@@ -240,7 +246,8 @@ class AntaCommand(BaseModel):
 
     @property
     def supported(self) -> bool:
-        """Return True if the command is supported on the device hardware platform, False otherwise.
+        """
+        Return True if the command is supported on the device hardware platform, False otherwise.
 
         Raises
         ------
@@ -258,7 +265,8 @@ class AntaTemplateRenderError(RuntimeError):
     """Raised when an AntaTemplate object could not be rendered because of missing parameters."""
 
     def __init__(self, template: AntaTemplate, key: str) -> None:
-        """Initialize an AntaTemplateRenderError.
+        """
+        Initialize an AntaTemplateRenderError.
 
         Parameters
         ----------
@@ -274,7 +282,8 @@ class AntaTemplateRenderError(RuntimeError):
 
 
 class AntaTest(ABC):
-    """Abstract class defining a test in ANTA.
+    """
+    Abstract class defining a test in ANTA.
 
     The goal of this class is to handle the heavy lifting and make
     writing a test as simple as possible.
@@ -337,7 +346,8 @@ class AntaTest(ABC):
     nrfu_task: TaskID | None = None
 
     class Input(BaseModel):
-        """Class defining inputs for a test in ANTA.
+        """
+        Class defining inputs for a test in ANTA.
 
         Examples
         --------
@@ -363,14 +373,16 @@ class AntaTest(ABC):
         filters: Filters | None = None
 
         def __hash__(self) -> int:
-            """Implement generic hashing for AntaTest.Input.
+            """
+            Implement generic hashing for AntaTest.Input.
 
             This will work in most cases but this does not consider 2 lists with different ordering as equal.
             """
             return hash(self.model_dump_json())
 
         class ResultOverwrite(BaseModel):
-            """Test inputs model to overwrite result fields.
+            """
+            Test inputs model to overwrite result fields.
 
             Attributes
             ----------
@@ -389,7 +401,8 @@ class AntaTest(ABC):
             custom_field: str | None = None
 
         class Filters(BaseModel):
-            """Runtime filters to map tests with list of tags or devices.
+            """
+            Runtime filters to map tests with list of tags or devices.
 
             Attributes
             ----------
@@ -406,7 +419,8 @@ class AntaTest(ABC):
         inputs: dict[str, Any] | AntaTest.Input | None = None,
         eos_data: list[dict[Any, Any] | str] | None = None,
     ) -> None:
-        """AntaTest Constructor.
+        """
+        AntaTest Constructor.
 
         Parameters
         ----------
@@ -433,7 +447,8 @@ class AntaTest(ABC):
             self._init_commands(eos_data)
 
     def _init_inputs(self, inputs: dict[str, Any] | AntaTest.Input | None) -> None:
-        """Instantiate the `inputs` instance attribute with an `AntaTest.Input` instance to validate test inputs using the model.
+        """
+        Instantiate the `inputs` instance attribute with an `AntaTest.Input` instance to validate test inputs using the model.
 
         Overwrite result fields based on `ResultOverwrite` input definition.
 
@@ -459,7 +474,8 @@ class AntaTest(ABC):
             self.result.custom_field = res_ow.custom_field
 
     def _init_commands(self, eos_data: list[dict[Any, Any] | str] | None) -> None:
-        """Instantiate the `instance_commands` instance attribute from the `commands` class attribute.
+        """
+        Instantiate the `instance_commands` instance attribute from the `commands` class attribute.
 
         - Copy of the `AntaCommand` instances
         - Render all `AntaTemplate` instances using the `render()` method.
@@ -528,7 +544,8 @@ class AntaTest(ABC):
         return [command for command in self.instance_commands if command.error]
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
-        """Render an AntaTemplate instance of this AntaTest using the provided AntaTest.Input instance at self.inputs.
+        """
+        Render an AntaTemplate instance of this AntaTest using the provided AntaTest.Input instance at self.inputs.
 
         This is not an abstract method because it does not need to be implemented if there is
         no AntaTemplate for this test.
@@ -568,7 +585,8 @@ class AntaTest(ABC):
 
     @staticmethod
     def anta_test(function: F) -> Callable[..., Coroutine[Any, Any, TestResult]]:
-        """Decorate the `test()` method in child classes.
+        """
+        Decorate the `test()` method in child classes.
 
         This decorator implements (in this order):
 
@@ -584,7 +602,8 @@ class AntaTest(ABC):
             eos_data: list[dict[Any, Any] | str] | None = None,
             **kwargs: dict[str, Any],
         ) -> TestResult:
-            """Inner function for the anta_test decorator.
+            """
+            Inner function for the anta_test decorator.
 
             Parameters
             ----------
@@ -652,7 +671,8 @@ class AntaTest(ABC):
 
     @abstractmethod
     def test(self) -> Coroutine[Any, Any, TestResult]:
-        """Core of the test logic.
+        """
+        Core of the test logic.
 
         This is an abstractmethod that must be implemented by child classes.
         It must set the correct status of the `result` instance attribute with the appropriate outcome of the test.

@@ -43,7 +43,8 @@ __all__ = ["Device"]
 
 
 class Device(httpx.AsyncClient):
-    """Represent the async JSON-RPC client that communicates with an Arista EOS device.
+    """
+    Represent the async JSON-RPC client that communicates with an Arista EOS device.
 
     This class inherits directly from the
     httpx.AsyncClient, so any initialization options can be passed directly.
@@ -62,7 +63,8 @@ class Device(httpx.AsyncClient):
         port: str | int | None = None,
         **kwargs: Any,  # noqa: ANN401
     ) -> None:
-        """Initialize the Device class.
+        """
+        Initialize the Device class.
 
         As a subclass to httpx.AsyncClient, the caller can provide any of those initializers.
         Specific parameters for Device class are all optional and described below.
@@ -109,7 +111,8 @@ class Device(httpx.AsyncClient):
         self.headers["Content-Type"] = "application/json-rpc"
 
     async def check_connection(self) -> bool:
-        """Check the target device to ensure that the eAPI port is open and accepting connections.
+        """
+        Check the target device to ensure that the eAPI port is open and accepting connections.
 
         It is recommended that a Caller checks the connection before involving cli commands,
         but this step is not required.
@@ -133,7 +136,8 @@ class Device(httpx.AsyncClient):
         expand_aliases: bool = False,
         req_id: int | str | None = None,
     ) -> list[dict[str, Any] | str] | dict[str, Any] | str | None:
-        """Execute one or more CLI commands.
+        """
+        Execute one or more CLI commands.
 
         Parameters
         ----------
@@ -205,7 +209,8 @@ class Device(httpx.AsyncClient):
         expand_aliases: bool = False,
         req_id: int | str | None = None,
     ) -> dict[str, Any]:
-        """Create the JSON-RPC command dictionary object.
+        """
+        Create the JSON-RPC command dictionary object.
 
         Parameters
         ----------
@@ -260,7 +265,8 @@ class Device(httpx.AsyncClient):
         return cmd
 
     async def jsonrpc_exec(self, jsonrpc: dict[str, Any]) -> list[dict[str, Any] | str]:
-        """Execute the JSON-RPC dictionary object.
+        """
+        Execute the JSON-RPC dictionary object.
 
         Parameters
         ----------
@@ -323,7 +329,8 @@ class Device(httpx.AsyncClient):
         )
 
     def config_session(self, name: str) -> SessionConfig:
-        """Return a SessionConfig instance bound to this device with the given session name.
+        """
+        Return a SessionConfig instance bound to this device with the given session name.
 
         Parameters
         ----------

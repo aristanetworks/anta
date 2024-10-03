@@ -78,7 +78,8 @@ def inventory_output_options(f: Callable[..., Any]) -> Callable[..., Any]:
 
 
 def get_cv_token(cvp_ip: str, cvp_username: str, cvp_password: str, *, verify_cert: bool) -> str:
-    """Generate the authentication token from CloudVision using username and password.
+    """
+    Generate the authentication token from CloudVision using username and password.
 
     TODO: need to handle requests error
 
@@ -165,7 +166,8 @@ def deep_yaml_parsing(data: dict[str, Any], hosts: list[AntaInventoryHost] | Non
 
 
 def create_inventory_from_ansible(inventory: Path, output: Path, ansible_group: str = "all") -> None:
-    """Create an ANTA inventory from an Ansible inventory YAML file.
+    """
+    Create an ANTA inventory from an Ansible inventory YAML file.
 
     Parameters
     ----------

@@ -16,7 +16,8 @@ if TYPE_CHECKING:
 
 
 def _count_ospf_neighbor(ospf_neighbor_json: dict[str, Any]) -> int:
-    """Count the number of OSPF neighbors.
+    """
+    Count the number of OSPF neighbors.
 
     Parameters
     ----------
@@ -37,7 +38,8 @@ def _count_ospf_neighbor(ospf_neighbor_json: dict[str, Any]) -> int:
 
 
 def _get_not_full_ospf_neighbors(ospf_neighbor_json: dict[str, Any]) -> list[dict[str, Any]]:
-    """Return the OSPF neighbors whose adjacency state is not `full`.
+    """
+    Return the OSPF neighbors whose adjacency state is not `full`.
 
     Parameters
     ----------
@@ -65,7 +67,8 @@ def _get_not_full_ospf_neighbors(ospf_neighbor_json: dict[str, Any]) -> list[dic
 
 
 def _get_ospf_max_lsa_info(ospf_process_json: dict[str, Any]) -> list[dict[str, Any]]:
-    """Return information about OSPF instances and their LSAs.
+    """
+    Return information about OSPF instances and their LSAs.
 
     Parameters
     ----------
@@ -92,7 +95,8 @@ def _get_ospf_max_lsa_info(ospf_process_json: dict[str, Any]) -> list[dict[str, 
 
 
 class VerifyOSPFNeighborState(AntaTest):
-    """Verifies all OSPF neighbors are in FULL state.
+    """
+    Verifies all OSPF neighbors are in FULL state.
 
     Expected Results
     ----------------
@@ -128,7 +132,8 @@ class VerifyOSPFNeighborState(AntaTest):
 
 
 class VerifyOSPFNeighborCount(AntaTest):
-    """Verifies the number of OSPF neighbors in FULL state is the one we expect.
+    """
+    Verifies the number of OSPF neighbors in FULL state is the one we expect.
 
     Expected Results
     ----------------
@@ -173,7 +178,8 @@ class VerifyOSPFNeighborCount(AntaTest):
 
 
 class VerifyOSPFMaxLSA(AntaTest):
-    """Verifies LSAs present in the OSPF link state database did not cross the maximum LSA Threshold.
+    """
+    Verifies LSAs present in the OSPF link state database did not cross the maximum LSA Threshold.
 
     Expected Results
     ----------------

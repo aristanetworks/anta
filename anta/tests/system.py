@@ -26,7 +26,8 @@ DISK_SPACE_THRESHOLD = 75
 
 
 class VerifyUptime(AntaTest):
-    """Verifies if the device uptime is higher than the provided minimum uptime value.
+    """
+    Verifies if the device uptime is higher than the provided minimum uptime value.
 
     Expected Results
     ----------------
@@ -64,7 +65,8 @@ class VerifyUptime(AntaTest):
 
 
 class VerifyReloadCause(AntaTest):
-    """Verifies the last reload cause of the device.
+    """
+    Verifies the last reload cause of the device.
 
     Expected Results
     ----------------
@@ -105,7 +107,8 @@ class VerifyReloadCause(AntaTest):
 
 
 class VerifyCoredump(AntaTest):
-    """Verifies if there are core dump files in the /var/core directory.
+    """
+    Verifies if there are core dump files in the /var/core directory.
 
     Expected Results
     ----------------
@@ -143,7 +146,8 @@ class VerifyCoredump(AntaTest):
 
 
 class VerifyAgentLogs(AntaTest):
-    """Verifies that no agent crash reports are present on the device.
+    """
+    Verifies that no agent crash reports are present on the device.
 
     Expected Results
     ----------------
@@ -176,7 +180,8 @@ class VerifyAgentLogs(AntaTest):
 
 
 class VerifyCPUUtilization(AntaTest):
-    """Verifies whether the CPU utilization is below 75%.
+    """
+    Verifies whether the CPU utilization is below 75%.
 
     Expected Results
     ----------------
@@ -208,7 +213,8 @@ class VerifyCPUUtilization(AntaTest):
 
 
 class VerifyMemoryUtilization(AntaTest):
-    """Verifies whether the memory utilization is below 75%.
+    """
+    Verifies whether the memory utilization is below 75%.
 
     Expected Results
     ----------------
@@ -240,7 +246,8 @@ class VerifyMemoryUtilization(AntaTest):
 
 
 class VerifyFileSystemUtilization(AntaTest):
-    """Verifies that no partition is utilizing more than 75% of its disk space.
+    """
+    Verifies that no partition is utilizing more than 75% of its disk space.
 
     Expected Results
     ----------------
@@ -271,7 +278,8 @@ class VerifyFileSystemUtilization(AntaTest):
 
 
 class VerifyNTP(AntaTest):
-    """Verifies that the Network Time Protocol (NTP) is synchronized.
+    """
+    Verifies that the Network Time Protocol (NTP) is synchronized.
 
     Expected Results
     ----------------
@@ -303,7 +311,8 @@ class VerifyNTP(AntaTest):
 
 
 class VerifyNTPAssociations(AntaTest):
-    """Verifies the Network Time Protocol (NTP) associations.
+    """
+    Verifies the Network Time Protocol (NTP) associations.
 
     Expected Results
     ----------------

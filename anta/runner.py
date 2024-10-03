@@ -32,7 +32,8 @@ DEFAULT_NOFILE = 16384
 
 
 def adjust_rlimit_nofile() -> tuple[int, int]:
-    """Adjust the maximum number of open file descriptors for the ANTA process.
+    """
+    Adjust the maximum number of open file descriptors for the ANTA process.
 
     The limit is set to the lower of the current hard limit and the value of the ANTA_NOFILE environment variable.
 
@@ -58,7 +59,8 @@ def adjust_rlimit_nofile() -> tuple[int, int]:
 
 
 def log_cache_statistics(devices: list[AntaDevice]) -> None:
-    """Log cache statistics for each device in the inventory.
+    """
+    Log cache statistics for each device in the inventory.
 
     Parameters
     ----------
@@ -78,7 +80,8 @@ def log_cache_statistics(devices: list[AntaDevice]) -> None:
 
 
 async def setup_inventory(inventory: AntaInventory, tags: set[str] | None, devices: set[str] | None, *, established_only: bool) -> AntaInventory | None:
-    """Set up the inventory for the ANTA run.
+    """
+    Set up the inventory for the ANTA run.
 
     Parameters
     ----------
@@ -122,7 +125,8 @@ async def setup_inventory(inventory: AntaInventory, tags: set[str] | None, devic
 def prepare_tests(
     inventory: AntaInventory, catalog: AntaCatalog, tests: set[str] | None, tags: set[str] | None
 ) -> defaultdict[AntaDevice, set[AntaTestDefinition]] | None:
-    """Prepare the tests to run.
+    """
+    Prepare the tests to run.
 
     Parameters
     ----------
@@ -173,7 +177,8 @@ def prepare_tests(
 
 
 def get_coroutines(selected_tests: defaultdict[AntaDevice, set[AntaTestDefinition]], manager: ResultManager) -> list[Coroutine[Any, Any, TestResult]]:
-    """Get the coroutines for the ANTA run.
+    """
+    Get the coroutines for the ANTA run.
 
     Parameters
     ----------
@@ -219,7 +224,8 @@ async def main(  # noqa: PLR0913
     established_only: bool = True,
     dry_run: bool = False,
 ) -> None:
-    """Run ANTA.
+    """
+    Run ANTA.
 
     Use this as an entrypoint to the test framework in your script.
     ResultManager object gets updated with the test results.

@@ -12,7 +12,8 @@ import httpx
 
 
 class EapiCommandError(RuntimeError):
-    """Exception class for EAPI command errors.
+    """
+    Exception class for EAPI command errors.
 
     Attributes
     ----------

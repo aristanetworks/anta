@@ -18,7 +18,8 @@ if TYPE_CHECKING:
 
 
 class VerifyMlagStatus(AntaTest):
-    """Verifies the health status of the MLAG configuration.
+    """
+    Verifies the health status of the MLAG configuration.
 
     Expected Results
     ----------------
@@ -62,7 +63,8 @@ class VerifyMlagStatus(AntaTest):
 
 
 class VerifyMlagInterfaces(AntaTest):
-    """Verifies there are no inactive or active-partial MLAG ports.
+    """
+    Verifies there are no inactive or active-partial MLAG ports.
 
     Expected Results
     ----------------
@@ -97,7 +99,8 @@ class VerifyMlagInterfaces(AntaTest):
 
 
 class VerifyMlagConfigSanity(AntaTest):
-    """Verifies there are no MLAG config-sanity inconsistencies.
+    """
+    Verifies there are no MLAG config-sanity inconsistencies.
 
     Expected Results
     ----------------
@@ -135,7 +138,8 @@ class VerifyMlagConfigSanity(AntaTest):
 
 
 class VerifyMlagReloadDelay(AntaTest):
-    """Verifies the reload-delay parameters of the MLAG configuration.
+    """
+    Verifies the reload-delay parameters of the MLAG configuration.
 
     Expected Results
     ----------------
@@ -183,7 +187,8 @@ class VerifyMlagReloadDelay(AntaTest):
 
 
 class VerifyMlagDualPrimary(AntaTest):
-    """Verifies the dual-primary detection and its parameters of the MLAG configuration.
+    """
+    Verifies the dual-primary detection and its parameters of the MLAG configuration.
 
     Expected Results
     ----------------
@@ -245,7 +250,8 @@ class VerifyMlagDualPrimary(AntaTest):
 
 
 class VerifyMlagPrimaryPriority(AntaTest):
-    """Verify the MLAG (Multi-Chassis Link Aggregation) primary priority.
+    """
+    Verify the MLAG (Multi-Chassis Link Aggregation) primary priority.
 
     Expected Results
     ----------------

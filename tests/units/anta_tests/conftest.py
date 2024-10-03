@@ -9,7 +9,8 @@ import pytest
 
 
 def build_test_id(val: dict[str, Any]) -> str:
-    """Build id for a unit test of an AntaTest subclass.
+    """
+    Build id for a unit test of an AntaTest subclass.
 
     {
         "name": "meaniful test name",
@@ -21,7 +22,8 @@ def build_test_id(val: dict[str, Any]) -> str:
 
 
 def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
-    """Generate ANTA tests unit tests dynamically during test collection.
+    """
+    Generate ANTA tests unit tests dynamically during test collection.
 
     It will parametrize test cases based on the `DATA` data structure defined in `tests.units.anta_tests` modules.
     See `tests/units/anta_tests/README.md` for more information on how to use it.
