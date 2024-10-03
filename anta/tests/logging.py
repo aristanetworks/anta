@@ -282,7 +282,7 @@ class VerifyLoggingTimestamp(AntaTest):
     def test(self) -> None:
         """Main test function for VerifyLoggingTimestamp."""
         log_pattern = r"ANTA VerifyLoggingTimestamp validation"
-        timestamp_pattern = r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}[\+-]\d{2}:\d{2}"
+        timestamp_pattern = r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}[+-]\d{2}:\d{2}"
         output = self.instance_commands[1].text_output
         lines = output.strip().split("\n")[::-1]
         last_line_with_pattern = ""
