@@ -3,7 +3,6 @@
 # that can be found in the LICENSE file.
 """Benchmark tests for ANTA."""
 
-import asyncio
 import logging
 from unittest.mock import patch
 
@@ -30,19 +29,19 @@ logger = logging.getLogger(__name__)
     ],
     indirect=True,
 )
-def test_anta_dry_run(benchmark: BenchmarkFixture, catalog: AntaCatalog, inventory: AntaInventory) -> None:
+async def test_anta_dry_run(benchmark: BenchmarkFixture, catalog: AntaCatalog, inventory: AntaInventory) -> None:
     """Test and benchmark ANTA in Dry-Run Mode."""
     # Disable logging during ANTA execution to avoid having these function time in benchmarks
     logging.disable()
 
-    def bench() -> ResultManager:
+    async def bench() -> ResultManager:
         """Need to wrap the ANTA Runner to instantiate a new ResultManger for each benchmark run."""
         manager = ResultManager()
         catalog.clear_indexes()
-        asyncio.run(main(manager, inventory, catalog, dry_run=True))
+        await main(manager, inventory, catalog, dry_run=True)
         return manager
 
-    manager = benchmark(bench)
+    manager = await benchmark(bench)
 
     logging.disable(logging.NOTSET)
     if len(manager.results) != len(inventory) * len(catalog.tests):
@@ -62,19 +61,19 @@ def test_anta_dry_run(benchmark: BenchmarkFixture, catalog: AntaCatalog, invento
 @patch("anta.models.AntaTest.collect", collect)
 @patch("anta.device.AntaDevice.collect_commands", collect_commands)
 @respx.mock  # Mock eAPI responses
-def test_anta(benchmark: BenchmarkFixture, catalog: AntaCatalog, inventory: AntaInventory) -> None:
+async def test_anta(benchmark: BenchmarkFixture, catalog: AntaCatalog, inventory: AntaInventory) -> None:
     """Test and benchmark ANTA. Mock eAPI responses."""
     # Disable logging during ANTA execution to avoid having these function time in benchmarks
     logging.disable()
 
-    def bench() -> ResultManager:
+    async def bench() -> ResultManager:
         """Need to wrap the ANTA Runner to instantiate a new ResultManger for each benchmark run."""
         manager = ResultManager()
         catalog.clear_indexes()
-        asyncio.run(main(manager, inventory, catalog))
+        await main(manager, inventory, catalog)
         return manager
 
-    manager = benchmark(bench)
+    manager = await benchmark(bench)
 
     logging.disable(logging.NOTSET)
 
