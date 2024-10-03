@@ -271,7 +271,7 @@ class VerifyLoggingTimestamp(AntaTest):
     """
 
     name = "VerifyLoggingTimestamp"
-    description = "Verifies if logs are generated with the riate timestamp."
+    description = "Verifies if logs are generated with the appropriate timestamp."
     categories: ClassVar[list[str]] = ["logging"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
         AntaCommand(command="send log level informational message ANTA VerifyLoggingTimestamp validation", ofmt="text"),
