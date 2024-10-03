@@ -6,8 +6,9 @@
 
 # Result Manager definition
 
-![](../imgs/uml/anta.result_manager.ResultManager.jpeg)
+![ResultManager UML model](../imgs/uml/anta.result_manager.ResultManager.jpeg)
 
-### ::: anta.result_manager.ResultManager
+## ::: anta.result_manager.ResultManager
+
       options:
         filters: ["!^_[^_]", "!^__len__"]

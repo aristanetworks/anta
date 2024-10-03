@@ -1,14 +1,16 @@
+---
+anta_title: Executing Commands on Devices
+---
 <!--
   ~ Copyright (c) 2023-2024 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
   ~ that can be found in the LICENSE file.
   -->
 
-# Executing Commands on Devices
-
 ANTA CLI provides a set of entrypoints to facilitate remote command execution on EOS devices.
 
-### EXEC Command overview
+## EXEC command overview
+
 ```bash
 anta exec --help
 Usage: anta exec [OPTIONS] COMMAND [ARGS]...
@@ -133,6 +135,7 @@ json_format:
 text_format:
   - show bfd peers
 ```
+
 ### Example
 
 ```bash

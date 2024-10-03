@@ -1,10 +1,11 @@
+---
+anta_title: How to contribute to ANTA
+---
 <!--
   ~ Copyright (c) 2023-2024 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
   ~ that can be found in the LICENSE file.
   -->
-
-# How to contribute to ANTA
 
 Contribution model is based on a fork-model. Don't push to aristanetworks/anta directly. Always do a branch in your forked repository and create a PR.
 
@@ -104,13 +105,12 @@ See https://docs.pytest.org/en/7.3.x/how-to/parametrize.html#basic-pytest-genera
 
 The `DATA` structure is a list of dictionaries used to parametrize the test. The list elements have the following keys:
 
-  - `name` (str): Test name as displayed by Pytest.
-  - `test` (AntaTest): An AntaTest subclass imported in the test module - e.g. VerifyUptime.
-  - `eos_data` (list[dict]): List of data mocking EOS returned data to be passed to the test.
-  - `inputs` (dict): Dictionary to instantiate the `test` inputs as defined in the class from `test`.
-  - `expected` (dict): Expected test result structure, a dictionary containing a key
+- `name` (str): Test name as displayed by Pytest.
+- `test` (AntaTest): An AntaTest subclass imported in the test module - e.g. VerifyUptime.
+- `eos_data` (list[dict]): List of data mocking EOS returned data to be passed to the test.
+- `inputs` (dict): Dictionary to instantiate the `test` inputs as defined in the class from `test`.
+- `expected` (dict): Expected test result structure, a dictionary containing a key
     `result` containing one of the allowed status (`Literal['success', 'failure', 'unset', 'skipped', 'error']`) and optionally a key `messages` which is a list(str) and each message is expected to  be a substring of one of the actual messages in the TestResult object.
-
 
 In order for your unit tests to be correctly collected, you need to import the generic test function even if not used in the Python module.
 
@@ -171,8 +171,8 @@ Run Ruff formatter.......................................................Passed
 Check code style with pylint.............................................Passed
 Checks for common misspellings in text files.............................Passed
 Check typing with mypy...................................................Passed
+Check Markdown files style...............................................Passed
 ```
-
 
 ## Configure MYPYPATH
 
@@ -232,4 +232,4 @@ muffet -c 2 --color=always http://127.0.0.1:8000 -e fonts.gstatic.com -b 8192
 
 ## Continuous Integration
 
-GitHub actions is used to test git pushes and pull requests. The workflows are defined in this [directory](https://github.com/aristanetworks/anta/tree/main/.github/workflows). We can view the results [here](https://github.com/aristanetworks/anta/actions).
+GitHub actions is used to test git pushes and pull requests. The workflows are defined in this [directory](https://github.com/aristanetworks/anta/tree/main/.github/workflows). The results can be viewed [here](https://github.com/aristanetworks/anta/actions).

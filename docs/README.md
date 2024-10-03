@@ -39,7 +39,9 @@ If you plan to use ANTA only as a CLI tool you can use `pipx` to install it.
 [`pipx`](https://pipx.pypa.io/stable/)  is a tool to install and run python applications in isolated environments. Refer to `pipx` instructions to install on your system.
 `pipx` installs ANTA in an isolated python environment and makes it available globally.
 
+<!-- markdownlint-disable no-emphasis-as-heading -->
 **This is not recommended if you plan to contribute to ANTA**
+<!-- markdownlint-enable no-emphasis-as-heading -->
 
 ```bash
 # Install ANTA CLI with pipx
