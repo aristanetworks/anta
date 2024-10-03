@@ -356,7 +356,6 @@ class VerifyISISSegmentRoutingAdjacencySegments(AntaTest):
                   - interface: Ethernet2
                     address: 10.0.1.3
                     sid_origin: dynamic
-
     ```
     """
 

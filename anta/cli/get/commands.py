@@ -141,6 +141,7 @@ def tests() -> None:
     import importlib
     import inspect
     import pkgutil
+    import warnings
 
     from numpydoc.docscrape import NumpyDocString
 
@@ -148,8 +149,11 @@ def tests() -> None:
 
     # TODO: with this method need to disable warning for unknown section in numpydoc
     # Would be better to not use numpydoc
-    def explore_package(module_name, level=2):
+    def explore_package(module_name: str, level: int = 2) -> None:
         loader = pkgutil.get_loader(module_name)
+        if loader is None:
+            # TODO: log something
+            return
         path = Path(loader.get_filename()).parent
         for sub_module in pkgutil.walk_packages([str(path)]):
             _, sub_module_name, _ = sub_module
@@ -159,9 +163,15 @@ def tests() -> None:
             else:
                 console.print(f"{qname}:")
                 qname_module = importlib.import_module(qname)
-                for name, obj in inspect.getmembers(qname_module):
+                for _name, obj in inspect.getmembers(qname_module):
                     if inspect.isclass(obj) and issubclass(obj, AntaTest) and obj != AntaTest:
-                        doc = NumpyDocString(obj.__doc__)
-                        print("\n".join(l[2 * level :] for l in doc["Examples"][level:-1]))
+                        with warnings.catch_warnings():
+                            warnings.filterwarnings("ignore", message="Unknown section Expected Results")
+                            doc = NumpyDocString(obj.__doc__)
+                        console.print(f"  - {obj.name}:")
+                        console.print(f"      # {obj.description}", soft_wrap=False)
+                        # TODO: add info about when the test was added
+                        if len(doc["Examples"]) > 2 + level:
+                            console.print("\n".join(line[2 * level :] for line in doc["Examples"][level + 1 : -1]))
 
     explore_package("anta.tests")

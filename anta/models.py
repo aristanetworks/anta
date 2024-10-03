@@ -506,19 +506,11 @@ class AntaTest(ABC):
 
     def __init_subclass__(cls) -> None:
         """Verify that the mandatory class attributes are defined."""
-        mandatory_attributes = ["categories", "commands"]
+        mandatory_attributes = ["name", "description", "categories", "commands"]
         for attr in mandatory_attributes:
             if not hasattr(cls, attr):
                 msg = f"Class {cls.__module__}.{cls.__name__} is missing required class attribute {attr}"
                 raise NotImplementedError(msg)
-        # default_attributes = ["name", "description"]
-        if not hasattr(cls, "name"):
-            cls.name = cls.__name__
-        if not hasattr(cls, "description"):
-            if not cls.test.__doc__:
-                # No doctsring - raise
-                raise Exception("TODO")
-            cls.description = cls.test.__doc__.split(sep="\n")[0]
 
     @property
     def module(self) -> str:
