@@ -433,15 +433,16 @@ REFRESH_PARAMS: list[ParameterSet] = [
     pytest.param(
         {},
         (
-        {"return_value": True},
-        {
-            "return_value": [
-                {
-                    "mfgName": "Arista",
-                    "modelName": "",
-                }
-            ]
-        },),
+            {"return_value": True},
+            {
+                "return_value": [
+                    {
+                        "mfgName": "Arista",
+                        "modelName": "",
+                    }
+                ]
+            },
+        ),
         {"is_online": True, "established": False, "hw_model": ""},
         id="modelName empty string",
     ),
