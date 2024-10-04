@@ -5,6 +5,7 @@
   -->
 
 ### ::: anta.custom_types
+
     options:
       show_if_no_docstring: true
       show_root_full_path: true

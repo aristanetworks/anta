@@ -4,8 +4,6 @@
   ~ that can be found in the LICENSE file.
   -->
 
-# Troubleshooting ANTA
-
 A couple of things to check when hitting an issue with ANTA:
 
 ```mermaid
@@ -26,18 +24,18 @@ flowchart LR
     click B "../faq" "FAQ"
     click E "https://github.com/aristanetworks/anta/issues"
     click H "https://github.com/aristanetworks/anta/issues"
-	style A stroke:#f00,stroke-width:2px
+ style A stroke:#f00,stroke-width:2px
 ```
 
 ## Capturing logs
 
-To help document the issue in Github, it is important to capture some logs so the developers can understand what is affecting your system. No logs mean that the first question asked on the issue will probably be _"Can you share some logs please?"_.
+To help document the issue in Github, it is important to capture some logs so the developers can understand what is affecting your system. No logs mean that the first question asked on the issue will probably be *"Can you share some logs please?"*.
 
 ANTA provides very verbose logs when using the `DEBUG` level.  When using DEBUG log level with a log file, the DEBUG logging level is not sent to stdout, but only to the file.
 
 !!! danger
 
-	On real deployments, do not use DEBUG logging level without setting a log file at the same time.
+    On real deployments, do not use DEBUG logging level without setting a log file at the same time.
 
 To save the logs to a file called `anta.log`, use the following flags:
 
@@ -54,19 +52,17 @@ See `anta --help` for more information.  These have to precede the `nrfu` cmd.
     so the `-l` and `--log-file` MUST be between `anta` and the `ANTA_COMMAND`.
     similarly, all the `nrfu` options MUST be set between the `nrfu` and the `ANTA_NRFU_SUBCOMMAND` (`json`, `text`, `table` or `tpl-report`).
 
-
 As an example, for the `nrfu` command, it would look like:
 
 ```bash
 anta -l DEBUG --log-file anta.log nrfu --enable --username username --password arista --inventory inventory.yml -c nrfu.yml text
 ```
 
-
 ### `ANTA_DEBUG` environment variable
 
-??? warning
+!!! warning
 
-	Do not use this if you do not know why. This produces a lot of logs and can create confusion if you do not know what to look for.
+     Do not use this if you do not know why. This produces a lot of logs and can create confusion if you do not know what to look for.
 
 The environment variable `ANTA_DEBUG=true` enable ANTA Debug Mode.
 
@@ -83,6 +79,7 @@ ANTA_DEBUG=true anta -l DEBUG --log-file anta.log nrfu --enable --username usern
 ANTA is using a specific ID in eAPI requests towards EOS. This allows for easier eAPI requests debugging on the device using EOS configuration `trace CapiApp setting UwsgiRequestContext/4,CapiUwsgiServer/4` to set up CapiApp agent logs.
 
 Then, you can view agent logs using:
+
 ```bash
 bash tail -f /var/log/agents/CapiApp-*
 
