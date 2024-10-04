@@ -3,10 +3,8 @@
 # that can be found in the LICENSE file.
 """See https://docs.pytest.org/en/stable/reference/fixtures.html#conftest-py-sharing-fixtures-across-multiple-files."""
 
-import asyncio
 from collections.abc import Iterator
 from pathlib import Path
-from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 import respx
@@ -42,7 +40,8 @@ def inventory(request: pytest.FixtureRequest) -> Iterator[AntaInventory]:
             )
     if reachable:
         # This context manager makes all devices reachable
-        with patch("asyncio.open_connection", AsyncMock(spec=asyncio.open_connection, return_value=(Mock(), Mock()))), respx.mock:
+        with respx.mock:
+            respx.head(path="/command-api")
             respx.post(path="/command-api", headers={"Content-Type": "application/json-rpc"}, json__params__cmds__0__cmd="show version").respond(
                 json={
                     "result": [
@@ -54,5 +53,6 @@ def inventory(request: pytest.FixtureRequest) -> Iterator[AntaInventory]:
             )
             yield inv
     else:
-        with patch("asyncio.open_connection", AsyncMock(spec=asyncio.open_connection, side_effect=TimeoutError)):
+        with respx.mock:
+            respx.head(path="/command-api").respond(status_code=401)
             yield inv
