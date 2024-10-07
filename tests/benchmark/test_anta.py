@@ -3,6 +3,7 @@
 # that can be found in the LICENSE file.
 """Benchmark tests for ANTA."""
 
+import asyncio
 import logging
 from unittest.mock import patch
 
@@ -29,19 +30,19 @@ logger = logging.getLogger(__name__)
     ],
     indirect=True,
 )
-async def test_anta_dry_run(benchmark: BenchmarkFixture, catalog: AntaCatalog, inventory: AntaInventory) -> None:
+def test_anta_dry_run(benchmark: BenchmarkFixture, event_loop: asyncio.AbstractEventLoop, catalog: AntaCatalog, inventory: AntaInventory) -> None:
     """Test and benchmark ANTA in Dry-Run Mode."""
     # Disable logging during ANTA execution to avoid having these function time in benchmarks
     logging.disable()
 
-    async def bench() -> ResultManager:
+    def bench() -> ResultManager:
         """Need to wrap the ANTA Runner to instantiate a new ResultManger for each benchmark run."""
         manager = ResultManager()
         catalog.clear_indexes()
-        await main(manager, inventory, catalog, dry_run=True)
+        event_loop.run_until_complete(main(manager, inventory, catalog, dry_run=True))
         return manager
 
-    manager = await benchmark(bench)
+    manager = benchmark(bench)
 
     logging.disable(logging.NOTSET)
     if len(manager.results) != len(inventory) * len(catalog.tests):
@@ -61,19 +62,19 @@ async def test_anta_dry_run(benchmark: BenchmarkFixture, catalog: AntaCatalog, i
 @patch("anta.models.AntaTest.collect", collect)
 @patch("anta.device.AntaDevice.collect_commands", collect_commands)
 @respx.mock  # Mock eAPI responses
-async def test_anta(benchmark: BenchmarkFixture, catalog: AntaCatalog, inventory: AntaInventory) -> None:
+def test_anta(benchmark: BenchmarkFixture, event_loop: asyncio.AbstractEventLoop, catalog: AntaCatalog, inventory: AntaInventory) -> None:
     """Test and benchmark ANTA. Mock eAPI responses."""
     # Disable logging during ANTA execution to avoid having these function time in benchmarks
     logging.disable()
 
-    async def bench() -> ResultManager:
+    def bench() -> ResultManager:
         """Need to wrap the ANTA Runner to instantiate a new ResultManger for each benchmark run."""
         manager = ResultManager()
         catalog.clear_indexes()
-        await main(manager, inventory, catalog)
+        event_loop.run_until_complete(main(manager, inventory, catalog))
         return manager
 
-    manager = await benchmark(bench)
+    manager = benchmark(bench)
 
     logging.disable(logging.NOTSET)
 
