@@ -1,14 +1,15 @@
+---
+anta_title: Create an Inventory from Ansible inventory
+---
 <!--
   ~ Copyright (c) 2023-2024 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
   ~ that can be found in the LICENSE file.
   -->
 
-# Create an Inventory from Ansible inventory
-
 In large setups, it might be beneficial to construct your inventory based on your Ansible inventory. The `from-ansible` entrypoint of the `get` command enables the user to create an ANTA inventory from Ansible.
 
-### Command overview
+## Command overview
 
 ```bash
 $ anta get from-ansible --help
@@ -32,9 +33,8 @@ Options:
 
 !!! warning
 
-	`anta get from-ansible` does not support inline vaulted variables, comment them out to generate your inventory.
-	If the vaulted variable is necessary to build the inventory (e.g. `ansible_host`), it needs to be unvaulted for `from-ansible` command to work."
-
+ `anta get from-ansible` does not support inline vaulted variables, comment them out to generate your inventory.
+ If the vaulted variable is necessary to build the inventory (e.g. `ansible_host`), it needs to be unvaulted for `from-ansible` command to work."
 
 The output is an inventory where the name of the container is added as a tag for each host:
 
@@ -54,8 +54,7 @@ anta_inventory:
 
 By default, if user does not provide `--output` file, anta will save output to configured anta inventory (`anta --inventory`). If the output file has content, anta will ask user to overwrite when running in interactive console. This mechanism can be controlled by triggers in case of CI usage: `--overwrite` to force anta to overwrite file. If not set, anta will exit
 
-
-### Command output
+## Command output
 
 `host` value is coming from the `ansible_host` key in your inventory while `name` is the name you defined for your host. Below is an ansible inventory example used to generate previous inventory:
 

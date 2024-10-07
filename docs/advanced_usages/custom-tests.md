@@ -4,7 +4,7 @@
   ~ that can be found in the LICENSE file.
   -->
 
-!!! info ""
+!!! info
     This documentation applies for both creating tests in ANTA or creating your own test package.
 
 ANTA is not only a Python library with a CLI and a collection of built-in tests, it is also a framework you can extend by building your own tests.
@@ -64,7 +64,7 @@ Full AntaTest API documentation is available in the [API documentation section](
 - `name` (`str`): Name of the test. Used during reporting.
 - `description` (`str`): A human readable description of your test.
 - `categories` (`list[str]`): A list of categories in which the test belongs.
-- `commands` (`[list[AntaCommand | AntaTemplate]]`): A list of command to collect from devices. This list __must__ be a list of [AntaCommand](../api/models.md#anta.models.AntaCommand) or [AntaTemplate](../api/models.md#anta.models.AntaTemplate) instances. Rendering [AntaTemplate](../api/models.md#anta.models.AntaTemplate) instances will be discussed later.
+- `commands` (`[list[AntaCommand | AntaTemplate]]`): A list of command to collect from devices. This list **must** be a list of [AntaCommand](../api/models.md#anta.models.AntaCommand) or [AntaTemplate](../api/models.md#anta.models.AntaTemplate) instances. Rendering [AntaTemplate](../api/models.md#anta.models.AntaTemplate) instances will be discussed later.
 
 !!! info
     All these class attributes are mandatory. If any attribute is missing, a `NotImplementedError` exception will be raised during class instantiation.
@@ -86,7 +86,6 @@ Full AntaTest API documentation is available in the [API documentation section](
         show_source: false
         show_root_toc_entry: false
         heading_level: 10
-
 
 !!! note "Logger object"
     ANTA already provides comprehensive logging at every steps of a test execution. The [AntaTest](../api/models.md#anta.models.AntaTest) class also provides a `logger` attribute that is a Python logger specific to the test instance. See [Python documentation](https://docs.python.org/3/library/logging.html) for more information.
@@ -140,8 +139,8 @@ Full `ResultOverwrite` model documentation is available in [API documentation se
 
 ### Methods
 
-- [test(self) -> None](../api/models.md#anta.models.AntaTest.test): This is an abstract method that __must__ be implemented. It contains the test logic that can access the collected command outputs using the `instance_commands` instance attribute, access the test inputs using the `inputs` instance attribute and __must__ set the `result` instance attribute accordingly. It must be implemented using the `AntaTest.anta_test` decorator that provides logging and will collect commands before executing the `test()` method.
-- [render(self, template: AntaTemplate) -> list[AntaCommand]](../api/models.md#anta.models.AntaTest.render): This method only needs to be implemented if [AntaTemplate](../api/models.md#anta.models.AntaTemplate) instances are present in the `commands` class attribute. It will be called for every [AntaTemplate](../api/models.md#anta.models.AntaTemplate) occurrence and __must__ return a list of [AntaCommand](../api/models.md#anta.models.AntaCommand) using the [AntaTemplate.render()](../api/models.md#anta.models.AntaTemplate.render) method. It can access test inputs using the `inputs` instance attribute.
+- [test(self) -> None](../api/models.md#anta.models.AntaTest.test): This is an abstract method that **must** be implemented. It contains the test logic that can access the collected command outputs using the `instance_commands` instance attribute, access the test inputs using the `inputs` instance attribute and **must** set the `result` instance attribute accordingly. It must be implemented using the `AntaTest.anta_test` decorator that provides logging and will collect commands before executing the `test()` method.
+- [render(self, template: AntaTemplate) -> list[AntaCommand]](../api/models.md#anta.models.AntaTest.render): This method only needs to be implemented if [AntaTemplate](../api/models.md#anta.models.AntaTemplate) instances are present in the `commands` class attribute. It will be called for every [AntaTemplate](../api/models.md#anta.models.AntaTemplate) occurrence and **must** return a list of [AntaCommand](../api/models.md#anta.models.AntaCommand) using the [AntaTemplate.render()](../api/models.md#anta.models.AntaTemplate.render) method. It can access test inputs using the `inputs` instance attribute.
 
 ## Test execution
 
@@ -201,9 +200,9 @@ class <YourTestName>(AntaTest):
 
 !!! tip "Command revision and version"
     * Most of EOS commands return a JSON structure according to a model (some commands may not be modeled hence the necessity to use `text` outformat sometimes.
-    * The model can change across time (adding feature, ... ) and when the model is changed in a non backward-compatible way, the __revision__ number is bumped. The initial model starts with __revision__ 1.
-    * A __revision__ applies to a particular CLI command whereas a __version__ is global to an eAPI call. The __version__ is internally translated to a specific __revision__ for each CLI command in the RPC call. The currently supported __version__ values  are `1` and `latest`.
-    * A __revision takes precedence over a version__ (e.g. if a command is run with version="latest" and revision=1, the first revision of the model is returned)
+    * The model can change across time (adding feature, ... ) and when the model is changed in a non backward-compatible way, the **revision** number is bumped. The initial model starts with **revision** 1.
+    * A **revision** applies to a particular CLI command whereas a **version** is global to an eAPI call. The **version** is internally translated to a specific **revision** for each CLI command in the RPC call. The currently supported **version** values  are `1` and `latest`.
+    * A **revision takes precedence over a version** (e.g. if a command is run with version="latest" and revision=1, the first revision of the model is returned)
     * By default, eAPI returns the first revision of each model to ensure that when upgrading, integrations with existing tools are not broken. This is done by using by default `version=1` in eAPI calls.
 
     By default, ANTA uses `version="latest"` in AntaCommand, but when developing tests, the revision MUST be provided when the outformat of the command is `json`. As explained earlier, this is to ensure that the eAPI always returns the same output model and that the test remains always valid from the day it was created. For some commands, you may also want to run them with a different revision or version.
@@ -277,6 +276,7 @@ class <YourTestName>(AntaTest):
 ```
 
 The logic usually includes the following different stages:
+
 1. Parse the command outputs using the `self.instance_commands` instance attribute.
 2. If needed, access the test inputs using the `self.inputs` instance attribute and write your conditional logic.
 3. Set the `result` instance attribute to reflect the test result by either calling `self.result.is_success()` or `self.result.is_failure("<FAILURE REASON>")`. Sometimes, setting the test result to `skipped` using `self.result.is_skipped("<SKIPPED REASON>")` can make sense (e.g. testing the OSPF neighbor states but no neighbor was found). However, you should not need to catch any exception and set the test result to `error` since the error handling is done by the framework, see below.
@@ -357,6 +357,7 @@ anta_custom.dc_project:
   - VerifyFeatureX:
       minimum: 1
 ```
+
 And now you can run your NRFU tests with the CLI:
 
 ```bash

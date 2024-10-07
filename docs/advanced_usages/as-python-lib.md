@@ -32,7 +32,6 @@ It uses the [aio-eapi](https://github.com/jeremyschulman/aio-eapi) eAPI client a
 
 The [AntaInventory](../api/inventory.md#anta.inventory.AntaInventory) class is a subclass of the standard Python type [dict](https://docs.python.org/3/library/stdtypes.html#dict). The keys of this dictionary are the device names, the values are [AntaDevice](../api/device.md#anta.device.AntaDevice) instances.
 
-
 [AntaInventory](../api/inventory.md#anta.inventory.AntaInventory) provides methods to interact with the ANTA inventory:
 
 - The [add_device()](../api/inventory.md#anta.inventory.AntaInventory.add_device) method adds an [AntaDevice](../api/device.md#anta.device.AntaDevice) instance to the inventory. Adding an entry to [AntaInventory](../api/inventory.md#anta.inventory.AntaInventory) with a key different from the device name is not allowed.
@@ -42,13 +41,11 @@ The [AntaInventory](../api/inventory.md#anta.inventory.AntaInventory) class is a
 
 ## Examples
 
-##### Parse an ANTA inventory file
-
-> This script parses an ANTA inventory file, connects to devices and print their status
+### Parse an ANTA inventory file
 
 ```python
 """
-Example
+This script parses an ANTA inventory file, connects to devices and print their status.
 """
 import asyncio
 
@@ -84,13 +81,11 @@ if __name__ == "__main__":
 ??? note "How to create your inventory file"
     Please visit this [dedicated section](../usage-inventory-catalog.md) for how to use inventory and catalog files.
 
-##### Run EOS commands
-
-> This script runs a list of EOS commands on reachable devices
+### Run EOS commands
 
 ```python
 """
-Example
+This script runs a list of EOS commands on reachable devices.
 """
 # This is needed to run the script for python < 3.10 for typing annotations
 from __future__ import annotations
