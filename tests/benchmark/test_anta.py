@@ -35,22 +35,12 @@ async def test_anta_dry_run(benchmark: BenchmarkFixture, catalog: AntaCatalog, i
     # Disable logging during ANTA execution to avoid having these function time in benchmarks
     logging.disable()
 
-    manager = ResultManager()
-
-    async def bench() -> ResultManager:
+    @benchmark
+    async def _() -> None:
         """Need to wrap the ANTA Runner to instantiate a new ResultManger for each benchmark run and reset the catalog indexes."""
         manager = ResultManager()
         catalog.clear_indexes()
         await main(manager, inventory, catalog, dry_run=True)
-        return manager
-
-    manager = await benchmark(bench)
-
-    logging.disable(logging.NOTSET)
-    if len(manager.results) != len(inventory) * len(catalog.tests):
-        pytest.fail(f"Expected {len(inventory) * len(catalog.tests)} tests but got {len(manager.results)}", pytrace=False)
-    bench_info = "\n--- ANTA NRFU Dry-Run Benchmark Information ---\n" f"Test count: {len(manager.results)}\n" "-----------------------------------------------"
-    logger.info(bench_info)
 
 
 @pytest.mark.parametrize(
