@@ -30,20 +30,21 @@ logger = logging.getLogger(__name__)
     ],
     indirect=True,
 )
-def test_anta_dry_run(benchmark: BenchmarkFixture, event_loop: asyncio.AbstractEventLoop, catalog: AntaCatalog, inventory: AntaInventory) -> None:
+async def test_anta_dry_run(benchmark: BenchmarkFixture, catalog: AntaCatalog, inventory: AntaInventory) -> None:
     """Test and benchmark ANTA in Dry-Run Mode."""
     # Disable logging during ANTA execution to avoid having these function time in benchmarks
     logging.disable()
 
-    def bench() -> ResultManager:
-        """Need to wrap the ANTA Runner to instantiate a new ResultManger for each benchmark run."""
+    manager = ResultManager()
+
+    async def bench() -> ResultManager:
+        """Need to wrap the ANTA Runner to instantiate a new ResultManger for each benchmark run and reset the catalog indexes."""
         manager = ResultManager()
         catalog.clear_indexes()
-        t = event_loop.create_task(main(manager, inventory, catalog, dry_run=True), name="benchmark-anta-dry-run")
-        event_loop.run_until_complete(t)
+        await main(manager, inventory, catalog, dry_run=True)
         return manager
 
-    manager = benchmark(bench)
+    manager = await benchmark(bench)
 
     logging.disable(logging.NOTSET)
     if len(manager.results) != len(inventory) * len(catalog.tests):
@@ -69,7 +70,7 @@ def test_anta(benchmark: BenchmarkFixture, event_loop: asyncio.AbstractEventLoop
     logging.disable()
 
     def bench() -> ResultManager:
-        """Need to wrap the ANTA Runner to instantiate a new ResultManger for each benchmark run."""
+        """Need to wrap the ANTA Runner to instantiate a new ResultManger for each benchmark run and reset the catalog indexes."""
         manager = ResultManager()
         catalog.clear_indexes()
         event_loop.run_until_complete(main(manager, inventory, catalog))
