@@ -6,18 +6,20 @@
 
 # AntaDevice base class
 
-![](../imgs/uml/anta.device.AntaDevice.jpeg)
+![AntaDevice UML model](../imgs/uml/anta.device.AntaDevice.jpeg)
 
 ## ::: anta.device.AntaDevice
+
     options:
       filters: ["!^_[^_]", "!__(eq|rich_repr)__", "_collect"]
 
 # Async EOS device class
 
-![](../imgs/uml/anta.device.AsyncEOSDevice.jpeg)
+![AsyncEOSDevice UML model](../imgs/uml/anta.device.AsyncEOSDevice.jpeg)
 
 <!-- _collect must be last to be kept -->
 
 ## ::: anta.device.AsyncEOSDevice
+
     options:
       filters: ["!^_[^_]", "!__(eq|rich_repr)__", "_collect"]

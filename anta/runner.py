@@ -89,7 +89,7 @@ async def setup_inventory(inventory: AntaInventory, tags: set[str] | None, devic
     devices
         Devices on which to run tests. None means all devices.
     established_only
-       If True use return only devices where a connection is established.
+        If True use return only devices where a connection is established.
 
     Returns
     -------
