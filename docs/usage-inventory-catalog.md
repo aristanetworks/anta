@@ -4,9 +4,10 @@
   ~ that can be found in the LICENSE file.
   -->
 
-# Inventory and Catalog
+The ANTA framework needs 2 important inputs from the user to run:
 
-The ANTA framework needs 2 important inputs from the user to run: a **device inventory** and a **test catalog**.
+1. A **device inventory**
+2. A **test catalog**.
 
 Both inputs can be defined in a file or programmatically.
 
@@ -79,6 +80,7 @@ A test catalog is an instance of the [AntaCatalog](./api/catalog.md#anta.catalog
 In addition to the inventory file, you also have to define a catalog of tests to execute against your devices. This catalog list all your tests, their inputs and their tags.
 
 A valid test catalog file must have the following structure in either YAML or JSON:
+
 ```yaml
 ---
 <Python module>:
@@ -156,6 +158,7 @@ or equivalent in JSON:
 ```
 
 It is also possible to nest Python module definition:
+
 ```yaml
 anta.tests:
   connectivity:
@@ -203,7 +206,6 @@ anta.tests.system:
 
 All tests available as part of the ANTA framework are defined under the `anta.tests` Python module and are categorised per family (Python submodule).
 The complete list of the tests and their respective inputs is available at the [tests section](api/tests.md) of this website.
-
 
 To run test to verify the EOS software version, you can do:
 
@@ -340,5 +342,6 @@ if __name__ == "__main__":
     with open(Path('anta-catalog.yml'), "w") as f:
         f.write(merged_catalog.dump().yaml())
 ```
+
 !!! warning
     The `AntaCatalog.merge()` method is deprecated and will be removed in ANTA v2.0. Please use the `AntaCatalog.merge_catalogs()` class method instead.
