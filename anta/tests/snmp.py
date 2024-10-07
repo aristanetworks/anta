@@ -305,7 +305,7 @@ class VerifySnmpPDUs(AntaTest):
         if not snmp_pdus:
             snmp_pdus = SNMP_PDUS
 
-        failures = {pdu: value for pdu in snmp_pdus if not (value := pdu_counters.get(pdu))}
+        failures = {pdu: value for pdu in snmp_pdus if (value := pdu_counters.get(pdu, "Not Found")) == "Not Found" or value == 0}
 
         # Check if any failures
         if not failures:

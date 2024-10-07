@@ -214,4 +214,22 @@ DATA: list[dict[str, Any]] = [
         "inputs": {},
         "expected": {"result": "failure", "messages": ["The following SNMP PDU(s) are not found or have zero PDU counter:\n{'inGetPdus': 0, 'inSetPdus': 0}"]},
     },
+    {
+        "name": "failure-pdu-not-found",
+        "test": VerifySnmpPDUs,
+        "eos_data": [
+            {
+                "counters": {
+                    "inGetNextPdus": 0,
+                    "inSetPdus": 0,
+                    "outGetResponsePdus": 0,
+                },
+            }
+        ],
+        "inputs": {"pdus": ["inGetPdus", "outTrapPdus"]},
+        "expected": {
+            "result": "failure",
+            "messages": ["The following SNMP PDU(s) are not found or have zero PDU counter:\n{'inGetPdus': 'Not Found', 'outTrapPdus': 'Not Found'}"],
+        },
+    },
 ]
