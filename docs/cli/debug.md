@@ -1,10 +1,11 @@
+---
+anta_title: ANTA debug commands
+---
 <!--
   ~ Copyright (c) 2023-2024 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
   ~ that can be found in the LICENSE file.
   -->
-
-# ANTA debug commands
 
 The ANTA CLI includes a set of debugging tools, making it easier to build and test ANTA content. This functionality is accessed via the `debug` subcommand and offers the following options:
 
@@ -158,6 +159,7 @@ Run templated command 'show vlan {vlan_id}' with {'vlan_id': '10'} on DC1-LEAF1A
     'sourceDetail': ''
 }
 ```
+
 !!! warning
     If multiple arguments of the same key are provided, only the last argument value will be kept in the template parameters.
 
