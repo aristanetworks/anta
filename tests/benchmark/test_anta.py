@@ -39,8 +39,8 @@ def test_anta_dry_run(benchmark: BenchmarkFixture, event_loop: asyncio.AbstractE
         """Need to wrap the ANTA Runner to instantiate a new ResultManger for each benchmark run."""
         manager = ResultManager()
         catalog.clear_indexes()
-        event_loop.create_task(main(manager, inventory, catalog, dry_run=True), name="benchmark-anta-dry-run")
-        event_loop.run_forever()
+        t = event_loop.create_task(main(manager, inventory, catalog, dry_run=True), name="benchmark-anta-dry-run")
+        event_loop.run_until_complete(t)
         return manager
 
     manager = benchmark(bench)
