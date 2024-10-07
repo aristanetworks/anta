@@ -4,8 +4,6 @@
   ~ that can be found in the LICENSE file.
   -->
 
-# Getting Started
-
 This section shows how to use ANTA with basic configuration. All examples are based on Arista Test Drive (ATD) topology you can access by reaching out to your preferred SE.
 
 ## Installation
@@ -257,7 +255,7 @@ $ anta nrfu \
 ]
 ```
 
-You can find more information under the __usage__ section of the website
+You can find more information under the **usage** section of the website
 
 ### Basic usage in a Python script
 

@@ -1,17 +1,18 @@
+---
+anta_title: Create an Inventory from CloudVision
+---
 <!--
   ~ Copyright (c) 2023-2024 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
   ~ that can be found in the LICENSE file.
   -->
 
-# Create an Inventory from CloudVision
-
 In large setups, it might be beneficial to construct your inventory based on CloudVision. The `from-cvp` entrypoint of the `get` command enables the user to create an ANTA inventory from CloudVision.
 
 !!! info
     The current implementation only works with on-premises CloudVision instances, not with CloudVision as a Service (CVaaS).
 
-### Command overview
+## Command overview
 
 ```bash
 Usage: anta get from-cvp [OPTIONS]
@@ -54,7 +55,7 @@ anta_inventory:
 !!! warning
     The current implementation only considers devices directly attached to a specific container when using the `--cvp-container` option.
 
-### Creating an inventory from multiple containers
+## Creating an inventory from multiple containers
 
 If you need to create an inventory from multiple containers, you can use a bash command and then manually concatenate files to create a single inventory file:
 
