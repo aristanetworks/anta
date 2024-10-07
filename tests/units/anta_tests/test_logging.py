@@ -201,13 +201,26 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "failure", "messages": ["Logs are not generated with the device FQDN"]},
     },
     {
-        "name": "success",
+        "name": "success-negative-offset",
         "test": VerifyLoggingTimestamp,
         "eos_data": [
             "",
             "2023-05-10T15:41:44.680813-05:00 NW-CORE.example.org ConfigAgent: %SYS-6-LOGMSG_INFO: "
             "Message from arista on command-api (10.22.1.107): ANTA VerifyLoggingTimestamp validation\n"
             "2023-05-10T15:42:44.680813-05:00 NW-CORE.example.org ConfigAgent: %SYS-6-LOGMSG_INFO: "
+            "Other log\n",
+        ],
+        "inputs": None,
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-positive-offset",
+        "test": VerifyLoggingTimestamp,
+        "eos_data": [
+            "",
+            "2023-05-10T15:41:44.680813+05:00 NW-CORE.example.org ConfigAgent: %SYS-6-LOGMSG_INFO: "
+            "Message from arista on command-api (10.22.1.107): ANTA VerifyLoggingTimestamp validation\n"
+            "2023-05-10T15:42:44.680813+05:00 NW-CORE.example.org ConfigAgent: %SYS-6-LOGMSG_INFO: "
             "Other log\n",
         ],
         "inputs": None,
