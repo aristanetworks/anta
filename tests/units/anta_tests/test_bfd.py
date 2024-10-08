@@ -27,6 +27,7 @@ DATA: list[dict[str, Any]] = [
                                             "operTxInterval": 1200000,
                                             "operRxInterval": 1200000,
                                             "detectMult": 3,
+                                            "detectTime": 3600000,
                                         }
                                     }
                                 }
@@ -42,6 +43,7 @@ DATA: list[dict[str, Any]] = [
                                             "operTxInterval": 1200000,
                                             "operRxInterval": 1200000,
                                             "detectMult": 3,
+                                            "detectTime": 3600000,
                                         }
                                     }
                                 }
@@ -53,8 +55,8 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "bfd_peers": [
-                {"peer_address": "192.0.255.7", "vrf": "default", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3},
-                {"peer_address": "192.0.255.70", "vrf": "MGMT", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3},
+                {"peer_address": "192.0.255.7", "vrf": "default", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3, "detection_time": 3600},
+                {"peer_address": "192.0.255.70", "vrf": "MGMT", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3, "detection_time": 3600},
             ]
         },
         "expected": {"result": "success"},
@@ -74,6 +76,7 @@ DATA: list[dict[str, Any]] = [
                                             "operTxInterval": 1200000,
                                             "operRxInterval": 1200000,
                                             "detectMult": 3,
+                                            "detectTime": 3600000,
                                         }
                                     }
                                 }
@@ -89,6 +92,7 @@ DATA: list[dict[str, Any]] = [
                                             "operTxInterval": 1200000,
                                             "operRxInterval": 1200000,
                                             "detectMult": 3,
+                                            "detectTime": 3600000,
                                         }
                                     }
                                 }
@@ -100,8 +104,8 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "bfd_peers": [
-                {"peer_address": "192.0.255.7", "vrf": "CS", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3},
-                {"peer_address": "192.0.255.70", "vrf": "MGMT", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3},
+                {"peer_address": "192.0.255.7", "vrf": "CS", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3, "detection_time": 3600},
+                {"peer_address": "192.0.255.70", "vrf": "MGMT", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3, "detection_time": 3600},
             ]
         },
         "expected": {
@@ -127,6 +131,7 @@ DATA: list[dict[str, Any]] = [
                                             "operTxInterval": 1300000,
                                             "operRxInterval": 1200000,
                                             "detectMult": 4,
+                                            "detectTime": 4000000,
                                         }
                                     }
                                 }
@@ -142,6 +147,7 @@ DATA: list[dict[str, Any]] = [
                                             "operTxInterval": 120000,
                                             "operRxInterval": 120000,
                                             "detectMult": 5,
+                                            "detectTime": 4000000,
                                         }
                                     }
                                 }
@@ -153,8 +159,8 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "bfd_peers": [
-                {"peer_address": "192.0.255.7", "vrf": "default", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3},
-                {"peer_address": "192.0.255.70", "vrf": "MGMT", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3},
+                {"peer_address": "192.0.255.7", "vrf": "default", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3, "detection_time": 3600},
+                {"peer_address": "192.0.255.70", "vrf": "MGMT", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3, "detection_time": 3600},
             ]
         },
         "expected": {

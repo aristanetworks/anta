@@ -120,11 +120,13 @@ class VerifyBFDPeersIntervals(AntaTest):
               tx_interval: 1200
               rx_interval: 1200
               multiplier: 3
+              detection_time: 3600
             - peer_address: 192.0.255.7
               vrf: default
               tx_interval: 1200
               rx_interval: 1200
               multiplier: 3
+              detection_time: 3600
     ```
     """
 
@@ -145,12 +147,13 @@ class VerifyBFDPeersIntervals(AntaTest):
         self.result.is_success()
 
         # Iterating over BFD peers
-        for bfd_peer in self.inputs.bfd_peers:
-            peer = str(bfd_peer.peer_address)
-            vrf = bfd_peer.vrf
-            tx_interval = bfd_peer.tx_interval
-            rx_interval = bfd_peer.rx_interval
-            multiplier = bfd_peer.multiplier
+        for bfd_peers in self.inputs.bfd_peers:
+            peer = str(bfd_peers.peer_address)
+            vrf = bfd_peers.vrf
+            tx_interval = bfd_peers.tx_interval
+            rx_interval = bfd_peers.rx_interval
+            multiplier = bfd_peers.multiplier
+            detect_time = bfd_peers.detection_time
 
             # Check if BFD peer configured
             bfd_output = get_value(
@@ -166,10 +169,16 @@ class VerifyBFDPeersIntervals(AntaTest):
             bfd_details = bfd_output.get("peerStatsDetail", {})
             op_tx_interval = bfd_details.get("operTxInterval") // 1000
             op_rx_interval = bfd_details.get("operRxInterval") // 1000
+            op_detection_time = bfd_details.get("detectTime") // 1000
             detect_multiplier = bfd_details.get("detectMult")
 
-            if op_tx_interval != tx_interval:
-                self.result.is_failure(f"{bfd_peer} - Incorrect Transmit interval - Expected: {tx_interval} Actual: {op_tx_interval}")
+            intervals_ok = op_tx_interval == tx_interval and op_rx_interval == rx_interval and detect_multiplier == multiplier and op_detection_time == detect_time
+
+            # Check timers of BFD peer
+            if not intervals_ok:
+                failures[peer] = {
+                    vrf: {"tx_interval": op_tx_interval, "rx_interval": op_rx_interval, "multiplier": detect_multiplier, "detection_time": op_detection_time}
+                }
 
             if op_rx_interval != rx_interval:
                 self.result.is_failure(f"{bfd_peer} - Incorrect Receive interval - Expected: {rx_interval} Actual: {op_rx_interval}")

@@ -76,11 +76,13 @@ anta.tests.bfd:
           tx_interval: 1200
           rx_interval: 1200
           multiplier: 3
+          detection_time: 3600
         - peer_address: 192.0.255.7
           vrf: default
           tx_interval: 1200
           rx_interval: 1200
           multiplier: 3
+          detection_time: 3600
   - VerifyBFDPeersHealth:
       down_threshold: 2
   - VerifyBFDPeersRegProtocols:
