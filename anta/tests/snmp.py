@@ -7,19 +7,14 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, ClassVar, get_args
 
-from pydantic import BaseModel, model_validator
-
-from anta.custom_types import PositiveInteger
+from anta.custom_types import PositiveInteger, SnmpPdu
 from anta.models import AntaCommand, AntaTest
 from anta.tools import get_value
 
 if TYPE_CHECKING:
     from anta.models import AntaTemplate
-
-# Define the valid PDUs as a list
-SNMP_PDUS: list[str] = ["inGetPdus", "inGetNextPdus", "inSetPdus", "outGetResponsePdus", "outTrapPdus"]
 
 
 class VerifySnmpStatus(AntaTest):
@@ -244,8 +239,8 @@ class VerifySnmpContact(AntaTest):
             self.result.is_success()
 
 
-class VerifySnmpPDUs(AntaTest):
-    """Verifies the number of SNMP PDU(s) (Protocol Data Units) processed.
+class VerifySnmpPDUCounters(AntaTest):
+    """Verifies the SNMP PDU counters.
 
     By default, all SNMP PDU counters will be checked for any non-zero values.
     An optional list of specific SNMP PDU(s) can be provided for granular testing.
@@ -259,51 +254,38 @@ class VerifySnmpPDUs(AntaTest):
     --------
     ```yaml
     anta.tests.snmp:
-      - VerifySnmpPDUs:
+      - VerifySnmpPDUCounters:
           pdus:
             - outTrapPdus
             - inGetNextPdus
     ```
     """
 
-    name = "VerifySnmpPDUs"
-    description = "Verifies the number of SNMP PDU(s) (Protocol Data Units) processed."
+    name = "VerifySnmpPDUCounters"
+    description = "Verifies the SNMP PDU counters."
     categories: ClassVar[list[str]] = ["snmp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show snmp", revision=1)]
 
     class Input(AntaTest.Input):
-        """Input model for the VerifySnmpPDUs test."""
+        """Input model for the VerifySnmpPDUCounters test."""
 
-        pdus: list[str] | None = None
-        """Optional list of SNMP PDU counters to be verified. If not provided, test will verifies all the PDUs."""
-
-        @model_validator(mode="after")
-        def validate_inputs(self: BaseModel) -> BaseModel:
-            """Validate the inputs provided to the VerifySnmpPDUs test.
-
-            The valid SNMP PDU counter must be provided.
-            """
-            if self.pdus:
-                for pdu in self.pdus:
-                    if pdu not in SNMP_PDUS:
-                        msg = f"Invalid PDU counter {pdu}. Must be one of {SNMP_PDUS}."
-                        raise ValueError(msg)
-            return self
+        pdus: list[SnmpPdu] | None = None
+        """Optional list of SNMP PDU counters to be verified. If not provided, test will verifies all PDU counters."""
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """Main test function for VerifySnmpPDUs."""
+        """Main test function for VerifySnmpPDUCounters."""
         snmp_pdus = self.inputs.pdus
         command_output = self.instance_commands[0].json_output
 
         # Verify SNMP PDU counters.
         if not (pdu_counters := get_value(command_output, "counters")):
-            self.result.is_failure("SNMP counter details are not found.")
+            self.result.is_failure("SNMP counters not found.")
             return
 
         # In case SNMP PDUs not provided, It will check all the update error counters.
         if not snmp_pdus:
-            snmp_pdus = SNMP_PDUS
+            snmp_pdus = list(get_args(SnmpPdu))
 
         failures = {pdu: value for pdu in snmp_pdus if (value := pdu_counters.get(pdu, "Not Found")) == "Not Found" or value == 0}
 
@@ -311,4 +293,4 @@ class VerifySnmpPDUs(AntaTest):
         if not failures:
             self.result.is_success()
         else:
-            self.result.is_failure(f"The following SNMP PDU(s) are not found or have zero PDU counter:\n{failures}")
+            self.result.is_failure(f"The following SNMP PDU counters are not found or have zero PDU counters:\n{failures}")

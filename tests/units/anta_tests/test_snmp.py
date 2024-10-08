@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from anta.tests.snmp import VerifySnmpContact, VerifySnmpIPv4Acl, VerifySnmpIPv6Acl, VerifySnmpLocation, VerifySnmpPDUs, VerifySnmpStatus
+from anta.tests.snmp import VerifySnmpContact, VerifySnmpIPv4Acl, VerifySnmpIPv6Acl, VerifySnmpLocation, VerifySnmpPDUCounters, VerifySnmpStatus
 from tests.units.anta_tests import test
 
 DATA: list[dict[str, Any]] = [
@@ -154,7 +154,7 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "success",
-        "test": VerifySnmpPDUs,
+        "test": VerifySnmpPDUCounters,
         "eos_data": [
             {
                 "counters": {
@@ -171,7 +171,7 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "success-specific-pdus",
-        "test": VerifySnmpPDUs,
+        "test": VerifySnmpPDUCounters,
         "eos_data": [
             {
                 "counters": {
@@ -188,18 +188,18 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "failure-counters-not-found",
-        "test": VerifySnmpPDUs,
+        "test": VerifySnmpPDUCounters,
         "eos_data": [
             {
                 "counters": {},
             }
         ],
         "inputs": {},
-        "expected": {"result": "failure", "messages": ["SNMP counter details are not found."]},
+        "expected": {"result": "failure", "messages": ["SNMP counters not found."]},
     },
     {
         "name": "failure-incorrect-counters",
-        "test": VerifySnmpPDUs,
+        "test": VerifySnmpPDUCounters,
         "eos_data": [
             {
                 "counters": {
@@ -212,11 +212,14 @@ DATA: list[dict[str, Any]] = [
             }
         ],
         "inputs": {},
-        "expected": {"result": "failure", "messages": ["The following SNMP PDU(s) are not found or have zero PDU counter:\n{'inGetPdus': 0, 'inSetPdus': 0}"]},
+        "expected": {
+            "result": "failure",
+            "messages": ["The following SNMP PDU counters are not found or have zero PDU counters:\n{'inGetPdus': 0, 'inSetPdus': 0}"],
+        },
     },
     {
         "name": "failure-pdu-not-found",
-        "test": VerifySnmpPDUs,
+        "test": VerifySnmpPDUCounters,
         "eos_data": [
             {
                 "counters": {
@@ -229,7 +232,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"pdus": ["inGetPdus", "outTrapPdus"]},
         "expected": {
             "result": "failure",
-            "messages": ["The following SNMP PDU(s) are not found or have zero PDU counter:\n{'inGetPdus': 'Not Found', 'outTrapPdus': 'Not Found'}"],
+            "messages": ["The following SNMP PDU counters are not found or have zero PDU counters:\n{'inGetPdus': 'Not Found', 'outTrapPdus': 'Not Found'}"],
         },
     },
 ]
