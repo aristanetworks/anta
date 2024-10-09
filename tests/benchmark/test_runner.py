@@ -3,22 +3,31 @@
 # that can be found in the LICENSE file.
 """Benchmark tests for anta.runner."""
 
-import logging
+from __future__ import annotations
 
-from pytest_codspeed import BenchmarkFixture
+from typing import TYPE_CHECKING
 
-from anta.catalog import AntaCatalog
-from anta.inventory import AntaInventory
 from anta.result_manager import ResultManager
 from anta.runner import get_coroutines, prepare_tests
 
+if TYPE_CHECKING:
+    from collections import defaultdict
+
+    from pytest_codspeed import BenchmarkFixture
+
+    from anta.catalog import AntaCatalog, AntaTestDefinition
+    from anta.device import AntaDevice
+    from anta.inventory import AntaInventory
+
 
 def test_prepare_tests(benchmark: BenchmarkFixture, catalog: AntaCatalog, inventory: AntaInventory) -> None:
-    """Test and benchmark ANTA in Dry-Run Mode."""
-    # Disable logging during ANTA execution to avoid having these function time in benchmarks
-    logging.disable()
+    """Benchmark `anta.runner.prepare_tests`."""
 
-    selected_tests = benchmark(lambda: prepare_tests(inventory=inventory, catalog=catalog, tests=None, tags=None))
+    def bench() -> defaultdict[AntaDevice, set[AntaTestDefinition]] | None:
+        catalog.clear_indexes()
+        return prepare_tests(inventory=inventory, catalog=catalog, tests=None, tags=None)
+
+    selected_tests = benchmark(bench)
 
     assert selected_tests is not None
     assert len(selected_tests) == len(inventory)
@@ -26,10 +35,7 @@ def test_prepare_tests(benchmark: BenchmarkFixture, catalog: AntaCatalog, invent
 
 
 def test_get_coroutines(benchmark: BenchmarkFixture, catalog: AntaCatalog, inventory: AntaInventory) -> None:
-    """Test and benchmark ANTA in Dry-Run Mode."""
-    # Disable logging during ANTA execution to avoid having these function time in benchmarks
-    logging.disable()
-
+    """Benchmark `anta.runner.get_coroutines`."""
     selected_tests = prepare_tests(inventory=inventory, catalog=catalog, tests=None, tags=None)
 
     assert selected_tests is not None
