@@ -155,8 +155,21 @@ DATA: list[dict[str, Any]] = [
     {
         "name": "success",
         "test": VerifySnmpLogging,
-        "eos_data": [{"logging": {"loggingEnabled": True, "hosts": {"192.168.1.100": {"port": 162, "vrf": ""}, "192.168.1.101": {"port": 162, "vrf": "MGMT"}}}}],
-        "inputs": {"hosts": [{"hostname": "192.168.1.100", "vrf": "default"}, {"hostname": "192.168.1.101", "vrf": "MGMT"}]},
+        "eos_data": [
+            {
+                "logging": {
+                    "loggingEnabled": True,
+                    "hosts": {
+                        "192.168.1.100": {"port": 162, "vrf": ""},
+                        "192.168.1.101": {"port": 162, "vrf": "MGMT"},
+                        "snmp-server-01": {"port": 162, "vrf": "MGMT"},
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "hosts": [{"hostname": "192.168.1.100", "vrf": "default"}, {"hostname": "192.168.1.101", "vrf": "MGMT"}, {"hostname": "snmp-server-01", "vrf": "MGMT"}]
+        },
         "expected": {"result": "success"},
     },
     {
@@ -173,7 +186,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"hosts": [{"hostname": "192.168.1.100", "vrf": "default"}, {"hostname": "192.168.1.101", "vrf": "MGMT"}]},
         "expected": {
             "result": "failure",
-            "messages": ["SNMP host '192.168.1.100' is not correctly configured in specified vrf 'default'.\nSNMP host '192.168.1.101' is not configured."],
+            "messages": ["For SNMP host '192.168.1.100', expected 'default' as vrf but found 'MGMT' instead.\nSNMP host '192.168.1.101' is not configured."],
         },
     },
 ]

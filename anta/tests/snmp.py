@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING, ClassVar
 
 from pydantic import BaseModel
 
-from anta.custom_types import PositiveInteger
+from anta.custom_types import Hostname, PositiveInteger
 from anta.models import AntaCommand, AntaTest
 from anta.tools import get_value
 
@@ -256,9 +256,9 @@ class VerifySnmpLogging(AntaTest):
     anta.tests.snmp:
       - VerifySnmpLogging:
           hosts:
-            - 192.168.1.100
+            - hostname: 192.168.1.100
               vrf: default
-            - 192.168.1.101
+            - hostname: 192.168.1.103
               vrf: MGMT
     ```
     """
@@ -277,8 +277,8 @@ class VerifySnmpLogging(AntaTest):
         class SNMPHost(BaseModel):
             """Model for a SNMP Host."""
 
-            hostname: IPv4Address
-            """IPv4 address of the SNMP notification host."""
+            hostname: IPv4Address | Hostname
+            """IPv4 address or hostname of the SNMP notification host."""
             vrf: str = "default"
             """Optional VRF for SNMP Hosts. If not provided, it defaults to `default`."""
 
@@ -305,7 +305,7 @@ class VerifySnmpLogging(AntaTest):
                 failures += f"SNMP host '{hostname }' is not configured.\n"
                 continue
             if actual_vrf != vrf:
-                failures += f"SNMP host '{hostname }' is not correctly configured in specified vrf '{vrf}'.\n"
+                failures += f"For SNMP host '{hostname }', expected '{vrf}' as vrf but found '{actual_vrf}' instead.\n"
 
         # Check if there are any failures.
         if not failures:
