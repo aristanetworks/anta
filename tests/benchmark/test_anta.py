@@ -22,14 +22,6 @@ from .utils import collect, collect_commands
 logger = logging.getLogger(__name__)
 
 
-@pytest.mark.parametrize(
-    "inventory",
-    [
-        pytest.param({"count": 1, "disable_cache": True, "reachable": False}, id="1 device"),
-        pytest.param({"count": 2, "disable_cache": True, "reachable": False}, id="2 devices"),
-    ],
-    indirect=True,
-)
 def test_anta_dry_run(benchmark: BenchmarkFixture, catalog: AntaCatalog, inventory: AntaInventory) -> None:
     """Test and benchmark ANTA in Dry-Run Mode."""
     # Disable logging during ANTA execution to avoid having these function time in benchmarks
@@ -51,14 +43,6 @@ def test_anta_dry_run(benchmark: BenchmarkFixture, catalog: AntaCatalog, invento
     logger.info(bench_info)
 
 
-@pytest.mark.parametrize(
-    "inventory",
-    [
-        pytest.param({"count": 1, "disable_cache": True}, id="1 device"),
-        pytest.param({"count": 2, "disable_cache": True}, id="2 devices"),
-    ],
-    indirect=True,
-)
 @patch("anta.models.AntaTest.collect", collect)
 @patch("anta.device.AntaDevice.collect_commands", collect_commands)
 @respx.mock  # Mock eAPI responses

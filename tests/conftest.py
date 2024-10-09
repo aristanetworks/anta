@@ -17,7 +17,7 @@ from anta.inventory import AntaInventory
 DATA_DIR: Path = Path(__file__).parent.resolve() / "data"
 
 
-@pytest.fixture(params=[{"count": 1}], ids=["1-reachable-device-without-cache"])
+@pytest.fixture
 def inventory(request: pytest.FixtureRequest) -> Iterator[AntaInventory]:
     """Generate an ANTA inventory."""
     user = "admin"
