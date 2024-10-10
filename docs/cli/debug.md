@@ -15,7 +15,7 @@ The ANTA CLI includes a set of debugging tools, making it easier to build and te
 These tools are especially helpful in building the tests, as they give a visual access to the output received from the eAPI. They also facilitate the extraction of output content for use in unit tests, as described in our [contribution guide](../contribution.md).
 
 !!! warning
-    The `debug` tools require a device from your inventory. Thus, you MUST use a valid [ANTA Inventory](../usage-inventory-catalog.md#device-inventory).
+    The `debug` tools require a device from your inventory. Thus, you must use a valid [ANTA Inventory](../usage-inventory-catalog.md#device-inventory).
 
 ## Executing an EOS command
 
@@ -160,10 +160,10 @@ Run templated command 'show vlan {vlan_id}' with {'vlan_id': '10'} on DC1-LEAF1A
 }
 ```
 
+### Example of multiple arguments
+
 !!! warning
     If multiple arguments of the same key are provided, only the last argument value will be kept in the template parameters.
-
-### Example of multiple arguments
 
 ```bash
 anta -log DEBUG debug run-template --template "ping {dst} source {src}" dst "8.8.8.8" src Loopback0 --device DC1-SPINE1    

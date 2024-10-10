@@ -71,9 +71,6 @@ Full AntaTest API documentation is available in the [API documentation section](
 
 ### Instance Attributes
 
-!!! info
-    You can access an instance attribute in your code using the `self` reference. E.g. you can access the test input values using `self.inputs`.
-
 ::: anta.models.AntaTest
     options:
         show_docstring_attributes: true
