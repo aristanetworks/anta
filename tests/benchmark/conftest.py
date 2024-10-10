@@ -43,6 +43,10 @@ def pytest_terminal_summary(terminalreporter: TerminalReporter) -> None:
 def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
     """Paranetrize inventory for benchmark tests."""
     if "inventory" in metafunc.fixturenames:
+        for marker in metafunc.definition.iter_markers(name="parametrize"):
+            if "inventory" in marker.args[0]:
+                # Do not override test function parametrize marker for inventory arg
+                return
         metafunc.parametrize(
             "inventory",
             [

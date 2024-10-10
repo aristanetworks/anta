@@ -83,15 +83,3 @@ def yaml_file(request: pytest.FixtureRequest, tmp_path: Path) -> Path:
     content: dict[str, Any] = request.param
     file.write_text(yaml.dump(content, allow_unicode=True))
     return file
-
-
-def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
-    """Paranetrize inventory for unit tests."""
-    if "inventory" in metafunc.fixturenames:
-        metafunc.parametrize(
-            "inventory",
-            [
-                pytest.param({"count": 1, "disable_cache": True, "reachable": True}, id="1-reachable-device-without-cache"),
-            ],
-            indirect=True,
-        )
