@@ -623,6 +623,19 @@ anta.tests.routing:
             vrf: default
             maximum_routes: 12000
             warning_limit: 10000
+    - VerifyBGPPeerPrefixes:
+        address_families:
+          - afi: ipv4
+            safi: unicast
+            peers:
+              - 10.100.0.8
+              - 10.100.0.10
+          - afi: ipv4
+            safi: multicast
+          - afi: evpn
+          - afi: vpn-ipv4
+          - afi: ipv4
+            safi: labeled-unicast
   ospf:
     - VerifyOSPFNeighborState:
     - VerifyOSPFNeighborCount:
