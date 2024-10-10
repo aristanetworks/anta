@@ -398,6 +398,12 @@ anta.tests.snmp:
       location: New York
   - VerifySnmpContact:
       contact: Jon@example.com
+  - VerifySnmpSourceIntf:
+      interfaces:
+        - interface: Ethernet1
+          vrf: default
+        - interface: Management0
+          vrf: MGMT
 
 anta.tests.software:
   - VerifyEOSVersion:
