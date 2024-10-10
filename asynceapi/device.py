@@ -20,7 +20,6 @@ import httpx
 # -----------------------------------------------------------------------------
 # Private Imports
 # -----------------------------------------------------------------------------
-from .aio_portcheck import port_check_url
 from .config_session import SessionConfig
 from .errors import EapiCommandError
 
@@ -122,7 +121,11 @@ class Device(httpx.AsyncClient):
         bool
             True when the device eAPI is accessible, False otherwise.
         """
-        return await port_check_url(self.base_url)
+        try:
+            await self.head(self.base_url, timeout=5)
+        except httpx.RequestError:
+            return False
+        return True
 
     async def cli(  # noqa: PLR0913
         self,
