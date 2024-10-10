@@ -4265,11 +4265,7 @@ of the <code>AntaDevice</code> instance if populated.</p>
 
             <details class="quote">
               <summary>Source code in <code>anta/device.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">473</span>
-<span class="normal">474</span>
-<span class="normal">475</span>
-<span class="normal">476</span>
-<span class="normal">477</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">477</span>
 <span class="normal">478</span>
 <span class="normal">479</span>
 <span class="normal">480</span>
@@ -4306,7 +4302,11 @@ of the <code>AntaDevice</code> instance if populated.</p>
 <span class="normal">511</span>
 <span class="normal">512</span>
 <span class="normal">513</span>
-<span class="normal">514</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sources</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Path</span><span class="p">],</span> <span class="n">destination</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">direction</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;to&quot;</span><span class="p">,</span> <span class="s2">&quot;from&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;from&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">514</span>
+<span class="normal">515</span>
+<span class="normal">516</span>
+<span class="normal">517</span>
+<span class="normal">518</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sources</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Path</span><span class="p">],</span> <span class="n">destination</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">direction</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;to&quot;</span><span class="p">,</span> <span class="s2">&quot;from&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;from&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Copy files to and from the device using asyncssh.scp().</span>
 
 <span class="sd">    Parameters</span>
@@ -4401,7 +4401,11 @@ of the <code>AntaDevice</code> instance if populated.</p>
 <span class="normal">468</span>
 <span class="normal">469</span>
 <span class="normal">470</span>
-<span class="normal">471</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">refresh</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">471</span>
+<span class="normal">472</span>
+<span class="normal">473</span>
+<span class="normal">474</span>
+<span class="normal">475</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">refresh</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Update attributes of an AsyncEOSDevice instance.</span>
 
 <span class="sd">    This coroutine must update the following attributes of AsyncEOSDevice:</span>
@@ -4420,6 +4424,10 @@ of the <code>AntaDevice</code> instance if populated.</p>
             <span class="bp">self</span><span class="o">.</span><span class="n">hw_model</span> <span class="o">=</span> <span class="n">show_version</span><span class="o">.</span><span class="n">json_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;modelName&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hw_model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;Cannot parse &#39;show version&#39; returned by device </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="c1"># in some cases it is possible that &#39;modelName&#39; comes back empty</span>
+            <span class="c1"># and it is nice to get a meaninfule error message</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">hw_model</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;Got an empty &#39;modelName&#39; in the &#39;show version&#39; returned by device </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Could not connect to device </span><span class="si">%s</span><span class="s2">: cannot open eAPI port&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 
