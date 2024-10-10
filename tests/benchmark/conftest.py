@@ -38,3 +38,20 @@ def catalog(anta_mock_env: AntaMockEnvironment) -> AntaCatalog:
 def pytest_terminal_summary(terminalreporter: TerminalReporter) -> None:
     """Display the total number of ANTA unit test cases used to benchmark."""
     terminalreporter.write_sep("=", f"{TEST_CASE_COUNT} ANTA test cases")
+
+
+def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
+    """Parametrize inventory for benchmark tests."""
+    if "inventory" in metafunc.fixturenames:
+        for marker in metafunc.definition.iter_markers(name="parametrize"):
+            if "inventory" in marker.args[0]:
+                # Do not override test function parametrize marker for inventory arg
+                return
+        metafunc.parametrize(
+            "inventory",
+            [
+                pytest.param({"count": 1, "disable_cache": True, "reachable": True}, id="1-device"),
+                pytest.param({"count": 2, "disable_cache": True, "reachable": True}, id="2-devices"),
+            ],
+            indirect=True,
+        )
