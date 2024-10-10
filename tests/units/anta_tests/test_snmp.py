@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from anta.tests.snmp import VerifySnmpContact, VerifySnmpIPv4Acl, VerifySnmpIPv6Acl, VerifySnmpLocation, VerifySnmpStatus
+from anta.tests.snmp import VerifySnmpContact, VerifySnmpIPv4Acl, VerifySnmpIPv6Acl, VerifySnmpLocation, VerifySnmpSourceIntf, VerifySnmpStatus
 from tests.units.anta_tests import test
 
 DATA: list[dict[str, Any]] = [
@@ -150,6 +150,46 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": ["SNMP contact is not configured."],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifySnmpSourceIntf,
+        "eos_data": [
+            {
+                "srcIntf": {"sourceInterfaces": {"default": "Ethernet1", "MGMT": "Management0"}},
+            }
+        ],
+        "inputs": {"interfaces": [{"interface": "Ethernet1", "vrf": "default"}, {"interface": "Management0", "vrf": "MGMT"}]},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-not-configured",
+        "test": VerifySnmpSourceIntf,
+        "eos_data": [
+            {
+                "srcIntf": {},
+            }
+        ],
+        "inputs": {"interfaces": [{"interface": "Ethernet1", "vrf": "default"}, {"interface": "Management0", "vrf": "MGMT"}]},
+        "expected": {"result": "failure", "messages": ["SNMP source interface(s) are not configured."]},
+    },
+    {
+        "name": "failure-incorrect-interfaces",
+        "test": VerifySnmpSourceIntf,
+        "eos_data": [
+            {
+                "srcIntf": {
+                    "sourceInterfaces": {
+                        "default": "Management0",
+                    }
+                },
+            }
+        ],
+        "inputs": {"interfaces": [{"interface": "Ethernet1", "vrf": "default"}, {"interface": "Management0", "vrf": "MGMT"}]},
+        "expected": {
+            "result": "failure",
+            "messages": ["Source interface 'Ethernet1' is not correctly configured in vrf 'default'.\nSource interface 'Management0' is not configured."],
         },
     },
 ]
