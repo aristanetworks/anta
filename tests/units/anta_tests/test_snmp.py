@@ -14,6 +14,7 @@ from anta.tests.snmp import (
     VerifySnmpIPv6Acl,
     VerifySnmpLocation,
     VerifySnmpPDUCounters,
+    VerifySnmpSourceIntf,
     VerifySnmpStatus,
 )
 from tests.units.anta_tests import test
@@ -317,6 +318,46 @@ DATA: list[dict[str, Any]] = [
             "messages": [
                 "The following SNMP error counters are not found or have non-zero error counters:\n{'inVersionErrs': 1, 'inParseErrs': 2, 'outBadValueErrs': 2}"
             ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifySnmpSourceIntf,
+        "eos_data": [
+            {
+                "srcIntf": {"sourceInterfaces": {"default": "Ethernet1", "MGMT": "Management0"}},
+            }
+        ],
+        "inputs": {"interfaces": [{"interface": "Ethernet1", "vrf": "default"}, {"interface": "Management0", "vrf": "MGMT"}]},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-not-configured",
+        "test": VerifySnmpSourceIntf,
+        "eos_data": [
+            {
+                "srcIntf": {},
+            }
+        ],
+        "inputs": {"interfaces": [{"interface": "Ethernet1", "vrf": "default"}, {"interface": "Management0", "vrf": "MGMT"}]},
+        "expected": {"result": "failure", "messages": ["SNMP source interface(s) are not configured."]},
+    },
+    {
+        "name": "failure-incorrect-interfaces",
+        "test": VerifySnmpSourceIntf,
+        "eos_data": [
+            {
+                "srcIntf": {
+                    "sourceInterfaces": {
+                        "default": "Management0",
+                    }
+                },
+            }
+        ],
+        "inputs": {"interfaces": [{"interface": "Ethernet1", "vrf": "default"}, {"interface": "Management0", "vrf": "MGMT"}]},
+        "expected": {
+            "result": "failure",
+            "messages": ["Source interface 'Ethernet1' is not correctly configured in vrf 'default'.\nSource interface 'Management0' is not configured."],
         },
     },
 ]

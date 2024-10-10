@@ -405,6 +405,12 @@ anta.tests.snmp:
       error_counters:
         - inVersionErrs
         - inBadCommunityNames
+  - VerifySnmpSourceIntf:
+      interfaces:
+        - interface: Ethernet1
+          vrf: default
+        - interface: Management0
+          vrf: MGMT
 
 anta.tests.software:
   - VerifyEOSVersion:

@@ -9,7 +9,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar, get_args
 
-from anta.custom_types import PositiveInteger, SnmpErrorCounter, SnmpPdu
+from pydantic import BaseModel
+
+from anta.custom_types import Interface, PositiveInteger, SnmpErrorCounter, SnmpPdu
 from anta.models import AntaCommand, AntaTest
 from anta.tools import get_value
 
@@ -350,3 +352,71 @@ class VerifySnmpErrorCounters(AntaTest):
             self.result.is_success()
         else:
             self.result.is_failure(f"The following SNMP error counters are not found or have non-zero error counters:\n{error_counters_not_ok}")
+
+
+class VerifySnmpSourceIntf(AntaTest):
+    """Verifies SNMP source-interface for a specified VRF.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the provided SNMP source-interface is configured in the specified VRF.
+    * Failure: The test will fail if the provided SNMP source-interface is NOT configured in the specified VRF.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.snmp:
+      - VerifySnmpSourceIntf:
+          interfaces:
+            - interface: Ethernet1
+              vrf: default
+            - interface: Management0
+              vrf: MGMT
+    ```
+    """
+
+    name = "VerifySnmpSourceIntf"
+    description = "Verifies SNMP source-interface for a specified VRF."
+    categories: ClassVar[list[str]] = ["snmp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show snmp", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifySnmpSourceIntf test."""
+
+        interfaces: list[SourceInterface]
+        """List of source interfaces"""
+
+        class SourceInterface(BaseModel):
+            """Model for a SNMP source-interface."""
+
+            interface: Interface
+            """Source-interface to use as source IP of log messages."""
+            vrf: str = "default"
+            """The name of the VRF in which to check for the SNMP agent. Defaults to `default`."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifySnmpSourceIntf."""
+        failures: str = ""
+
+        command_output = self.instance_commands[0].json_output.get("srcIntf", {})
+        if not (interface_output := command_output.get("sourceInterfaces")):
+            self.result.is_failure("SNMP source interface(s) are not configured.")
+            return
+
+        for interface_details in self.inputs.interfaces:
+            interface = interface_details.interface
+            vrf = interface_details.vrf
+            actual_interface = interface_output.get(vrf)
+
+            # Verify source-interface details.
+            if not actual_interface:
+                failures += f"Source interface '{interface}' is not configured.\n"
+            elif actual_interface != interface:
+                failures += f"Source interface '{interface}' is not correctly configured in vrf '{vrf}'.\n"
+
+        # Check if there are any failures.
+        if not failures:
+            self.result.is_success()
+        else:
+            self.result.is_failure(failures)
