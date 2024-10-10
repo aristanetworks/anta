@@ -13,6 +13,7 @@ from functools import wraps
 from time import perf_counter
 from typing import TYPE_CHECKING, Any, Callable, TypeVar, cast
 
+from anta.constants import ACRONYM_CATEGORIES
 from anta.custom_types import REGEXP_PATH_MARKERS
 from anta.logger import format_td
 
@@ -372,3 +373,25 @@ def safe_command(command: str) -> str:
         The sanitized command.
     """
     return re.sub(rf"{REGEXP_PATH_MARKERS}", "_", command)
+
+
+def convert_categories(categories: list[str]) -> list[str]:
+    """Convert categories for reports.
+
+    if the category is part of the defined acronym, transform it to upper case
+    otherwise capitalize the first letter.
+
+    Parameters
+    ----------
+    categories
+        A list of categories
+
+    Returns
+    -------
+    list[str]
+        The list of converted categories
+    """
+    if isinstance(categories, list):
+        return [" ".join(word.upper() if word.lower() in ACRONYM_CATEGORIES else word.title() for word in category.split()) for category in categories]
+    msg = f"Wrong input type '{type(categories)}' for convert_categories."
+    raise TypeError(msg)
