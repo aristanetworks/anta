@@ -8,7 +8,7 @@
 from __future__ import annotations
 
 from ipaddress import IPv4Address, IPv4Network, IPv6Address
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
 from pydantic import BaseModel, Field, PositiveInt, model_validator
 from pydantic.v1.utils import deep_update
@@ -25,6 +25,10 @@ if TYPE_CHECKING:
         from typing import Self
     else:
         from typing_extensions import Self
+
+
+# pylint: disable=C0302
+# TODO: Refactor to reduce the number of lines in this module later
 
 
 def _add_bgp_failures(failures: dict[tuple[str, str | None], dict[str, Any]], afi: Afi, safi: Safi | None, vrf: str, issue: str | dict[str, Any]) -> None:
@@ -1628,3 +1632,93 @@ class VerifyBGPPeerRouteLimit(AntaTest):
             self.result.is_success()
         else:
             self.result.is_failure(f"The following BGP peer(s) are not configured or maximum routes and maximum routes warning limit is not correct:\n{failures}")
+
+
+class VerifyBGPRouteOrigin(AntaTest):
+    """Verifies BGP route origin for the provided IPv4 Network(s).
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the BGP route's origin matches expected origin type and next-hop address.
+    * Failure: The test will fail if the BGP route's origin does not matches with expected origin type, next-hop address or BGP route entry(s) not found.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      bgp:
+        - VerifyBGPRouteOrigin:
+            route_entries:
+                - prefix: 10.100.0.128/31
+                  vrf: default
+                  route_paths:
+                    - nexthop: 10.100.0.10
+                      origin: Igp
+                    - nexthop: 10.100.4.5
+                      origin: Incomplete
+    ```
+    """
+
+    name = "VerifyBGPRouteOrigin"
+    description = "Verifies BGP route origin for the provided IPv4 Network(s)."
+    categories: ClassVar[list[str]] = ["bgp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show ip bgp {prefix} vrf {vrf}", revision=3)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyBGPRouteOrigin test."""
+
+        route_entries: list[BgpRoute]
+        """List of BGP route(s)"""
+
+        class BgpRoute(BaseModel):
+            """Model for a BGP route(s)."""
+
+            prefix: IPv4Network
+            """IPv4 network address"""
+            vrf: str = "default"
+            """Optional VRF. If not provided, it defaults to `default`."""
+            route_paths: list[dict[str, IPv4Address | Literal["Igp", "Egp", "Incomplete"]]]
+            """A list of dictionaries represents a BGP path.
+            - `nexthop`: The next-hop IP address for the path.
+            - `origin`: The origin of the route."""
+
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        """Render the template for each BGP peer in the input list."""
+        return [template.render(prefix=route.prefix, vrf=route.vrf) for route in self.inputs.route_entries]
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyBGPRouteOrigin."""
+        failures: dict[Any, Any] = {}
+
+        for command, input_entry in zip(self.instance_commands, self.inputs.route_entries):
+            prefix = str(command.params.prefix)
+            vrf = command.params.vrf
+            paths = input_entry.route_paths
+
+            # Verify if a BGP peer is configured with the provided vrf
+            if not (bgp_routes := get_value(command.json_output, f"vrfs..{vrf}..bgpRouteEntries..{prefix}..bgpRoutePaths", separator="..")):
+                failures[prefix] = {vrf: "Not configured"}
+                continue
+
+            # Iterating over each nexthop.
+            failure: dict[Any, Any] = {}
+            for path in paths:
+                nexthop = str(path["nexthop"])
+                origin = path["origin"]
+                if not (route_path := get_item(bgp_routes, "nextHop", nexthop)):
+                    failure[nexthop] = "Path not found."
+                    continue
+
+                if (actual_origin := route_path.get("routeDetail", {}).get("origin", "Not Found")) != origin:
+                    failure[nexthop] = f"Expected `{origin}` as the origin, but found `{actual_origin}` instead."
+
+            # Updating failures.
+            if failure:
+                failures[prefix] = {vrf: failure}
+
+        # Check if any failures
+        if not failures:
+            self.result.is_success()
+        else:
+            self.result.is_failure(f"Following BGP route entry(s) or nexthop path(s) not found or origin type is not correct:\n{failures}")
