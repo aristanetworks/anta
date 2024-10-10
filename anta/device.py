@@ -465,6 +465,10 @@ class AsyncEOSDevice(AntaDevice):
                 self.hw_model = show_version.json_output.get("modelName", None)
                 if self.hw_model is None:
                     logger.critical("Cannot parse 'show version' returned by device %s", self.name)
+                # in some cases it is possible that 'modelName' comes back empty
+                # and it is nice to get a meaninfule error message
+                elif self.hw_model == "":
+                    logger.critical("Got an empty 'modelName' in the 'show version' returned by device %s", self.name)
         else:
             logger.warning("Could not connect to device %s: cannot open eAPI port", self.name)
 

@@ -22,27 +22,18 @@ from .utils import collect, collect_commands
 logger = logging.getLogger(__name__)
 
 
-@pytest.mark.parametrize(
-    "inventory",
-    [
-        pytest.param({"count": 1, "disable_cache": True, "reachable": False}, id="1 device"),
-        pytest.param({"count": 2, "disable_cache": True, "reachable": False}, id="2 devices"),
-    ],
-    indirect=True,
-)
-def test_anta_dry_run(benchmark: BenchmarkFixture, catalog: AntaCatalog, inventory: AntaInventory) -> None:
-    """Test and benchmark ANTA in Dry-Run Mode."""
+def test_anta_dry_run(benchmark: BenchmarkFixture, event_loop: asyncio.AbstractEventLoop, catalog: AntaCatalog, inventory: AntaInventory) -> None:
+    """Benchmark ANTA in Dry-Run Mode."""
     # Disable logging during ANTA execution to avoid having these function time in benchmarks
     logging.disable()
 
-    def bench() -> ResultManager:
-        """Need to wrap the ANTA Runner to instantiate a new ResultManger for each benchmark run."""
+    def _() -> ResultManager:
         manager = ResultManager()
         catalog.clear_indexes()
-        asyncio.run(main(manager, inventory, catalog, dry_run=True))
+        event_loop.run_until_complete(main(manager, inventory, catalog, dry_run=True))
         return manager
 
-    manager = benchmark(bench)
+    manager = benchmark(_)
 
     logging.disable(logging.NOTSET)
     if len(manager.results) != len(inventory) * len(catalog.tests):
@@ -51,30 +42,21 @@ def test_anta_dry_run(benchmark: BenchmarkFixture, catalog: AntaCatalog, invento
     logger.info(bench_info)
 
 
-@pytest.mark.parametrize(
-    "inventory",
-    [
-        pytest.param({"count": 1, "disable_cache": True}, id="1 device"),
-        pytest.param({"count": 2, "disable_cache": True}, id="2 devices"),
-    ],
-    indirect=True,
-)
 @patch("anta.models.AntaTest.collect", collect)
 @patch("anta.device.AntaDevice.collect_commands", collect_commands)
 @respx.mock  # Mock eAPI responses
-def test_anta(benchmark: BenchmarkFixture, catalog: AntaCatalog, inventory: AntaInventory) -> None:
-    """Test and benchmark ANTA. Mock eAPI responses."""
+def test_anta(benchmark: BenchmarkFixture, event_loop: asyncio.AbstractEventLoop, catalog: AntaCatalog, inventory: AntaInventory) -> None:
+    """Benchmark ANTA."""
     # Disable logging during ANTA execution to avoid having these function time in benchmarks
     logging.disable()
 
-    def bench() -> ResultManager:
-        """Need to wrap the ANTA Runner to instantiate a new ResultManger for each benchmark run."""
+    def _() -> ResultManager:
         manager = ResultManager()
         catalog.clear_indexes()
-        asyncio.run(main(manager, inventory, catalog))
+        event_loop.run_until_complete(main(manager, inventory, catalog))
         return manager
 
-    manager = benchmark(bench)
+    manager = benchmark(_)
 
     logging.disable(logging.NOTSET)
 

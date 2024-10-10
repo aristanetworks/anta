@@ -14,6 +14,7 @@ from jinja2 import Template
 from rich.table import Table
 
 from anta import RICH_COLOR_PALETTE, RICH_COLOR_THEME
+from anta.tools import convert_categories
 
 if TYPE_CHECKING:
     import pathlib
@@ -125,7 +126,7 @@ class ReportTable:
         def add_line(result: TestResult) -> None:
             state = self._color_result(result.result)
             message = self._split_list_to_txt_list(result.messages) if len(result.messages) > 0 else ""
-            categories = ", ".join(result.categories)
+            categories = ", ".join(convert_categories(result.categories))
             table.add_row(str(result.name), result.test, state, message, result.description, categories)
 
         for result in manager.results:
