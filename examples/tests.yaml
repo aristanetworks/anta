@@ -398,6 +398,9 @@ anta.tests.snmp:
       location: New York
   - VerifySnmpContact:
       contact: Jon@example.com
+  - VerifySnmpPDUCounters:
+      pdus:
+        - outTrapPdus
 
 anta.tests.software:
   - VerifyEOSVersion:
