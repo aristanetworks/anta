@@ -17,18 +17,20 @@ from anta.inventory import AntaInventory
 DATA_DIR: Path = Path(__file__).parent.resolve() / "data"
 
 
-@pytest.fixture(params=[{"count": 1}], ids=["1-reachable-device-without-cache"])
+@pytest.fixture
 def inventory(request: pytest.FixtureRequest) -> Iterator[AntaInventory]:
     """Generate an ANTA inventory."""
     user = "admin"
     password = "password"  # noqa: S105
-    disable_cache = request.param.get("disable_cache", True)
-    reachable = request.param.get("reachable", True)
-    if "filename" in request.param:
-        inv = AntaInventory.parse(DATA_DIR / request.param["filename"], username=user, password=password, disable_cache=disable_cache)
+    params = request.param if hasattr(request, "param") else {}
+    count = params.get("count", 1)
+    disable_cache = params.get("disable_cache", True)
+    reachable = params.get("reachable", True)
+    if "filename" in params:
+        inv = AntaInventory.parse(DATA_DIR / params["filename"], username=user, password=password, disable_cache=disable_cache)
     else:
         inv = AntaInventory()
-        for i in range(request.param["count"]):
+        for i in range(count):
             inv.add_device(
                 AsyncEOSDevice(
                     host=f"device-{i}.anta.arista.com",
