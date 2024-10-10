@@ -32,6 +32,7 @@ Here are the tests that we currently provide:
 - [Router Path Selection](tests.path_selection.md)
 - [Routing Generic](tests.routing.generic.md)
 - [Routing BGP](tests.routing.bgp.md)
+- [Routing ISIS](tests.routing.isis.md)
 - [Routing OSPF](tests.routing.ospf.md)
 - [Security](tests.security.md)
 - [Services](tests.services.md)

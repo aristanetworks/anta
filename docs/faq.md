@@ -1,5 +1,6 @@
 ---
-toc_depth: 2
+toc_depth: 3
+anta_title: Frequently Asked Questions (FAQ)
 ---
 <!--
   ~ Copyright (c) 2023-2024 Arista Networks, Inc.
@@ -7,7 +8,7 @@ toc_depth: 2
   ~ that can be found in the LICENSE file.
   -->
 <style>
-  .md-typeset h2 {
+  .md-typeset h3 {
     visibility: hidden;
     font-size: 0em;
     height: 0em;
@@ -20,8 +21,6 @@ toc_depth: 2
     margin-bottom: 0.8em;
   }
 </style>
-
-# Frequently Asked Questions (FAQ)
 
 ## A local OS error occurred while connecting to a device
 

@@ -44,98 +44,14 @@ The [AntaInventory](../api/inventory.md#anta.inventory.AntaInventory) class is a
 ### Parse an ANTA inventory file
 
 ```python
-"""
-This script parses an ANTA inventory file, connects to devices and print their status.
-"""
-import asyncio
-
-from anta.inventory import AntaInventory
-
-
-async def main(inv: AntaInventory) -> None:
-    """
-    Take an AntaInventory and:
-    1. try to connect to every device in the inventory
-    2. print a message for every device connection status
-    """
-    await inv.connect_inventory()
-
-    for device in inv.values():
-        if device.established:
-            print(f"Device {device.name} is online")
-        else:
-            print(f"Could not connect to device {device.name}")
-
-if __name__ == "__main__":
-    # Create the AntaInventory instance
-    inventory = AntaInventory.parse(
-        filename="inv.yml",
-        username="arista",
-        password="@rista123",
-    )
-
-    # Run the main coroutine
-    res = asyncio.run(main(inventory))
+--8<-- "parse_anta_inventory_file.py"
 ```
 
-??? note "How to create your inventory file"
+!!! note "How to create your inventory file"
     Please visit this [dedicated section](../usage-inventory-catalog.md) for how to use inventory and catalog files.
 
 ### Run EOS commands
 
 ```python
-"""
-This script runs a list of EOS commands on reachable devices.
-"""
-# This is needed to run the script for python < 3.10 for typing annotations
-from __future__ import annotations
-
-import asyncio
-from pprint import pprint
-
-from anta.inventory import AntaInventory
-from anta.models import AntaCommand
-
-
-async def main(inv: AntaInventory, commands: list[str]) -> dict[str, list[AntaCommand]]:
-    """
-    Take an AntaInventory and a list of commands as string and:
-    1. try to connect to every device in the inventory
-    2. collect the results of the commands from each device
-
-    Returns:
-      a dictionary where key is the device name and the value is the list of AntaCommand ran towards the device
-    """
-    await inv.connect_inventory()
-
-    # Make a list of coroutine to run commands towards each connected device
-    coros = []
-    # dict to keep track of the commands per device
-    result_dict = {}
-    for name, device in inv.get_inventory(established_only=True).items():
-        anta_commands = [AntaCommand(command=command, ofmt="json") for command in commands]
-        result_dict[name] = anta_commands
-        coros.append(device.collect_commands(anta_commands))
-
-    # Run the coroutines
-    await asyncio.gather(*coros)
-
-    return result_dict
-
-
-if __name__ == "__main__":
-    # Create the AntaInventory instance
-    inventory = AntaInventory.parse(
-        filename="inv.yml",
-        username="arista",
-        password="@rista123",
-    )
-
-    # Create a list of commands with json output
-    commands = ["show version", "show ip bgp summary"]
-
-    # Run the main asyncio  entry point
-    res = asyncio.run(main(inventory, commands))
-
-    pprint(res)
+--8<-- "run_eos_commands.py"
 ```
