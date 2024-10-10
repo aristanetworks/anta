@@ -5,31 +5,29 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from anta.result_manager import ResultManager
 from anta.runner import get_coroutines, prepare_tests
 
 if TYPE_CHECKING:
     from collections import defaultdict
-    from collections.abc import Coroutine
 
     from pytest_codspeed import BenchmarkFixture
 
     from anta.catalog import AntaCatalog, AntaTestDefinition
     from anta.device import AntaDevice
     from anta.inventory import AntaInventory
-    from anta.result_manager.models import TestResult
 
 
 def test_prepare_tests(benchmark: BenchmarkFixture, catalog: AntaCatalog, inventory: AntaInventory) -> None:
     """Benchmark `anta.runner.prepare_tests`."""
 
-    def bench() -> defaultdict[AntaDevice, set[AntaTestDefinition]] | None:
+    def _() -> defaultdict[AntaDevice, set[AntaTestDefinition]] | None:
         catalog.clear_indexes()
         return prepare_tests(inventory=inventory, catalog=catalog, tests=None, tags=None)
 
-    selected_tests = benchmark(bench)
+    selected_tests = benchmark(_)
 
     assert selected_tests is not None
     assert len(selected_tests) == len(inventory)
@@ -42,10 +40,7 @@ def test_get_coroutines(benchmark: BenchmarkFixture, catalog: AntaCatalog, inven
 
     assert selected_tests is not None
 
-    def bench() -> list[Coroutine[Any, Any, TestResult]]:
-        return get_coroutines(selected_tests=selected_tests, manager=ResultManager())
-
-    coroutines = benchmark(bench)
+    coroutines = benchmark(lambda: get_coroutines(selected_tests=selected_tests, manager=ResultManager()))
     for coros in coroutines:
         coros.close()
 
