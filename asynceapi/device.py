@@ -209,7 +209,8 @@ class Device(httpx.AsyncClient):
         expand_aliases: bool = False,
         req_id: int | str | None = None,
     ) -> dict[str, Any]:
-        """Create the JSON-RPC command dictionary object.
+        """
+        Create the JSON-RPC command dictionary object.
 
         Parameters
         ----------
@@ -328,7 +329,8 @@ class Device(httpx.AsyncClient):
         )
 
     def config_session(self, name: str) -> SessionConfig:
-        """Return a SessionConfig instance bound to this device with the given session name.
+        """
+        Return a SessionConfig instance bound to this device with the given session name.
 
         Parameters
         ----------

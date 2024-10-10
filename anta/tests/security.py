@@ -27,7 +27,8 @@ if TYPE_CHECKING:
 
 
 class VerifySSHStatus(AntaTest):
-    """Verifies if the SSHD agent is disabled in the default VRF.
+    """
+    Verifies if the SSHD agent is disabled in the default VRF.
 
     Expected Results
     ----------------
@@ -66,7 +67,8 @@ class VerifySSHStatus(AntaTest):
 
 
 class VerifySSHIPv4Acl(AntaTest):
-    """Verifies if the SSHD agent has the right number IPv4 ACL(s) configured for a specified VRF.
+    """
+    Verifies if the SSHD agent has the right number IPv4 ACL(s) configured for a specified VRF.
 
     Expected Results
     ----------------
@@ -115,7 +117,8 @@ class VerifySSHIPv4Acl(AntaTest):
 
 
 class VerifySSHIPv6Acl(AntaTest):
-    """Verifies if the SSHD agent has the right number IPv6 ACL(s) configured for a specified VRF.
+    """
+    Verifies if the SSHD agent has the right number IPv6 ACL(s) configured for a specified VRF.
 
     Expected Results
     ----------------
@@ -164,7 +167,8 @@ class VerifySSHIPv6Acl(AntaTest):
 
 
 class VerifyTelnetStatus(AntaTest):
-    """Verifies if Telnet is disabled in the default VRF.
+    """
+    Verifies if Telnet is disabled in the default VRF.
 
     Expected Results
     ----------------
@@ -195,7 +199,8 @@ class VerifyTelnetStatus(AntaTest):
 
 
 class VerifyAPIHttpStatus(AntaTest):
-    """Verifies if eAPI HTTP server is disabled globally.
+    """
+    Verifies if eAPI HTTP server is disabled globally.
 
     Expected Results
     ----------------
@@ -226,7 +231,8 @@ class VerifyAPIHttpStatus(AntaTest):
 
 
 class VerifyAPIHttpsSSL(AntaTest):
-    """Verifies if eAPI HTTPS server SSL profile is configured and valid.
+    """
+    Verifies if eAPI HTTPS server SSL profile is configured and valid.
 
     Expected Results
     ----------------
@@ -268,7 +274,8 @@ class VerifyAPIHttpsSSL(AntaTest):
 
 
 class VerifyAPIIPv4Acl(AntaTest):
-    """Verifies if eAPI has the right number IPv4 ACL(s) configured for a specified VRF.
+    """
+    Verifies if eAPI has the right number IPv4 ACL(s) configured for a specified VRF.
 
     Expected Results
     ----------------
@@ -317,7 +324,8 @@ class VerifyAPIIPv4Acl(AntaTest):
 
 
 class VerifyAPIIPv6Acl(AntaTest):
-    """Verifies if eAPI has the right number IPv6 ACL(s) configured for a specified VRF.
+    """
+    Verifies if eAPI has the right number IPv6 ACL(s) configured for a specified VRF.
 
     Expected Results
     ----------------
@@ -367,7 +375,8 @@ class VerifyAPIIPv6Acl(AntaTest):
 
 
 class VerifyAPISSLCertificate(AntaTest):
-    """Verifies the eAPI SSL certificate expiry, common subject name, encryption algorithm and key size.
+    """
+    Verifies the eAPI SSL certificate expiry, common subject name, encryption algorithm and key size.
 
     Expected Results
     ----------------
@@ -425,7 +434,8 @@ class VerifyAPISSLCertificate(AntaTest):
 
             @model_validator(mode="after")
             def validate_inputs(self) -> Self:
-                """Validate the key size provided to the APISSLCertificates class.
+                """
+                Validate the key size provided to the APISSLCertificates class.
 
                 If encryption_algorithm is RSA then key_size should be in {2048, 3072, 4096}.
 
@@ -486,7 +496,8 @@ class VerifyAPISSLCertificate(AntaTest):
 
 
 class VerifyBannerLogin(AntaTest):
-    """Verifies the login banner of a device.
+    """
+    Verifies the login banner of a device.
 
     Expected Results
     ----------------
@@ -498,10 +509,10 @@ class VerifyBannerLogin(AntaTest):
     ```yaml
     anta.tests.security:
       - VerifyBannerLogin:
-            login_banner: |
-                # Copyright (c) 2023-2024 Arista Networks, Inc.
-                # Use of this source code is governed by the Apache License 2.0
-                # that can be found in the LICENSE file.
+          login_banner: |
+            # Copyright (c) 2023-2024 Arista Networks, Inc.
+            # Use of this source code is governed by the Apache License 2.0
+            # that can be found in the LICENSE file.
     ```
     """
 
@@ -530,7 +541,8 @@ class VerifyBannerLogin(AntaTest):
 
 
 class VerifyBannerMotd(AntaTest):
-    """Verifies the motd banner of a device.
+    """
+    Verifies the motd banner of a device.
 
     Expected Results
     ----------------
@@ -542,10 +554,10 @@ class VerifyBannerMotd(AntaTest):
     ```yaml
     anta.tests.security:
       - VerifyBannerMotd:
-            motd_banner: |
-                # Copyright (c) 2023-2024 Arista Networks, Inc.
-                # Use of this source code is governed by the Apache License 2.0
-                # that can be found in the LICENSE file.
+          motd_banner: |
+            # Copyright (c) 2023-2024 Arista Networks, Inc.
+            # Use of this source code is governed by the Apache License 2.0
+            # that can be found in the LICENSE file.
     ```
     """
 
@@ -574,7 +586,8 @@ class VerifyBannerMotd(AntaTest):
 
 
 class VerifyIPv4ACL(AntaTest):
-    """Verifies the configuration of IPv4 ACLs.
+    """
+    Verifies the configuration of IPv4 ACLs.
 
     Expected Results
     ----------------
