@@ -33,8 +33,6 @@ class VerifyPtpModeStatus(AntaTest):
     ```
     """
 
-    name = "VerifyPtpModeStatus"
-    description = "Verifies that the device is configured as a PTP Boundary Clock."
     categories: ClassVar[list[str]] = ["ptp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ptp", revision=2)]
 
@@ -80,8 +78,6 @@ class VerifyPtpGMStatus(AntaTest):
         gmid: str
         """Identifier of the Grandmaster to which the device should be locked."""
 
-    name = "VerifyPtpGMStatus"
-    description = "Verifies that the device is locked to a valid PTP Grandmaster."
     categories: ClassVar[list[str]] = ["ptp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ptp", revision=2)]
 
@@ -120,8 +116,6 @@ class VerifyPtpLockStatus(AntaTest):
     ```
     """
 
-    name = "VerifyPtpLockStatus"
-    description = "Verifies that the device was locked to the upstream PTP GM in the last minute."
     categories: ClassVar[list[str]] = ["ptp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ptp", revision=2)]
 
@@ -161,8 +155,6 @@ class VerifyPtpOffset(AntaTest):
     ```
     """
 
-    name = "VerifyPtpOffset"
-    description = "Verifies that the PTP timing offset is within +/- 1000ns from the master clock."
     categories: ClassVar[list[str]] = ["ptp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ptp monitor", revision=1)]
 
@@ -206,8 +198,6 @@ class VerifyPtpPortModeStatus(AntaTest):
     ```
     """
 
-    name = "VerifyPtpPortModeStatus"
-    description = "Verifies the PTP interfaces state."
     categories: ClassVar[list[str]] = ["ptp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ptp", revision=2)]
 

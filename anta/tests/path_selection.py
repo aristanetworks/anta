@@ -18,8 +18,7 @@ from anta.tools import get_value
 
 
 class VerifyPathsHealth(AntaTest):
-    """
-    Verifies the path and telemetry state of all paths under router path-selection.
+    """Verifies the path and telemetry state of all paths under router path-selection.
 
     The expected states are 'IPsec established', 'Resolved' for path and 'active' for telemetry.
 
@@ -38,8 +37,6 @@ class VerifyPathsHealth(AntaTest):
     ```
     """
 
-    name = "VerifyPathsHealth"
-    description = "Verifies the path and telemetry state of all paths under router path-selection."
     categories: ClassVar[list[str]] = ["path-selection"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show path-selection paths", revision=1)]
 
@@ -73,8 +70,7 @@ class VerifyPathsHealth(AntaTest):
 
 
 class VerifySpecificPath(AntaTest):
-    """
-    Verifies the path and telemetry state of a specific path for an IPv4 peer under router path-selection.
+    """Verifies the path and telemetry state of a specific path for an IPv4 peer under router path-selection.
 
     The expected states are 'IPsec established', 'Resolved' for path and 'active' for telemetry.
 
@@ -98,8 +94,6 @@ class VerifySpecificPath(AntaTest):
     ```
     """
 
-    name = "VerifySpecificPath"
-    description = "Verifies the path and telemetry state of a specific path under router path-selection."
     categories: ClassVar[list[str]] = ["path-selection"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
         AntaTemplate(template="show path-selection paths peer {peer} path-group {group} source {source} destination {destination}", revision=1)
