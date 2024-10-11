@@ -25,7 +25,8 @@ logger = logging.getLogger(__name__)
 
 @click.group(cls=AliasedGroup)
 @click.pass_context
-@click.version_option(__version__)
+@click.help_option(allow_from_autoenv=False)
+@click.version_option(__version__, allow_from_autoenv=False)
 @click.option(
     "--log-file",
     help="Send the logs to a file. If logging level is DEBUG, only INFO or higher will be sent to stdout.",

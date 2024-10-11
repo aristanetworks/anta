@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar, get_args
 
-from anta.custom_types import PositiveInteger, SnmpErrorCounter
+from anta.custom_types import PositiveInteger, SnmpErrorCounter, SnmpPdu
 from anta.models import AntaCommand, AntaTest
 from anta.tools import get_value
 
@@ -237,6 +237,63 @@ class VerifySnmpContact(AntaTest):
             self.result.is_failure(f"Expected `{self.inputs.contact}` as the contact, but found `{contact}` instead.")
         else:
             self.result.is_success()
+
+
+class VerifySnmpPDUCounters(AntaTest):
+    """Verifies the SNMP PDU counters.
+
+    By default, all SNMP PDU counters will be checked for any non-zero values.
+    An optional list of specific SNMP PDU(s) can be provided for granular testing.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the SNMP PDU counter(s) are non-zero/greater than zero.
+    * Failure: The test will fail if the SNMP PDU counter(s) are zero/None/Not Found.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.snmp:
+      - VerifySnmpPDUCounters:
+          pdus:
+            - outTrapPdus
+            - inGetNextPdus
+    ```
+    """
+
+    name = "VerifySnmpPDUCounters"
+    description = "Verifies the SNMP PDU counters."
+    categories: ClassVar[list[str]] = ["snmp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show snmp", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifySnmpPDUCounters test."""
+
+        pdus: list[SnmpPdu] | None = None
+        """Optional list of SNMP PDU counters to be verified. If not provided, test will verifies all PDU counters."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifySnmpPDUCounters."""
+        snmp_pdus = self.inputs.pdus
+        command_output = self.instance_commands[0].json_output
+
+        # Verify SNMP PDU counters.
+        if not (pdu_counters := get_value(command_output, "counters")):
+            self.result.is_failure("SNMP counters not found.")
+            return
+
+        # In case SNMP PDUs not provided, It will check all the update error counters.
+        if not snmp_pdus:
+            snmp_pdus = list(get_args(SnmpPdu))
+
+        failures = {pdu: value for pdu in snmp_pdus if (value := pdu_counters.get(pdu, "Not Found")) == "Not Found" or value == 0}
+
+        # Check if any failures
+        if not failures:
+            self.result.is_success()
+        else:
+            self.result.is_failure(f"The following SNMP PDU counters are not found or have zero PDU counters:\n{failures}")
 
 
 class VerifySnmpErrorCounters(AntaTest):
