@@ -1,11 +1,7 @@
 # Copyright (c) 2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""
-parse_anta_inventory_file.py.
-
-This script parses an ANTA inventory file, connects to devices and print their status.
-"""
+"""This script parses an ANTA inventory file, connects to devices and print their status. """
 import asyncio
 
 from anta.inventory import AntaInventory
