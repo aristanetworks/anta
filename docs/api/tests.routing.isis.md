@@ -18,3 +18,4 @@ anta_title: ANTA catalog for IS-IS tests
       filters:
         - "!test"
         - "!render"
+        - "!^_[^_]"

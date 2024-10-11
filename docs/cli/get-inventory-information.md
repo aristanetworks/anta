@@ -7,9 +7,55 @@ anta_title: Retrieving Inventory Information
   ~ that can be found in the LICENSE file.
   -->
 
-The ANTA CLI offers multiple entrypoints to access data from your local inventory.
+The ANTA CLI offers multiple commands to access data from your local inventory.
 
-## Inventory used of examples
+## List devices in inventory
+
+This command will list all devices available in the inventory. Using the `--tags` option, you can filter this list to only include devices with specific tags (visit [this page](tag-management.md) to learn more about tags).  The `--connected` option allows to display only the devices where a connection has been established.
+
+### Command overview
+
+```bash
+Usage: anta get inventory [OPTIONS]
+
+  Show inventory loaded in ANTA.
+
+Options:
+  -u, --username TEXT            Username to connect to EOS  [env var:
+                                 ANTA_USERNAME; required]
+  -p, --password TEXT            Password to connect to EOS that must be
+                                 provided. It can be prompted using '--prompt'
+                                 option.  [env var: ANTA_PASSWORD]
+  --enable-password TEXT         Password to access EOS Privileged EXEC mode.
+                                 It can be prompted using '--prompt' option.
+                                 Requires '--enable' option.  [env var:
+                                 ANTA_ENABLE_PASSWORD]
+  --enable                       Some commands may require EOS Privileged EXEC
+                                 mode. This option tries to access this mode
+                                 before sending a command to the device.  [env
+                                 var: ANTA_ENABLE]
+  -P, --prompt                   Prompt for passwords if they are not
+                                 provided.  [env var: ANTA_PROMPT]
+  --timeout FLOAT                Global API timeout. This value will be used
+                                 for all devices.  [env var: ANTA_TIMEOUT;
+                                 default: 30.0]
+  --insecure                     Disable SSH Host Key validation.  [env var:
+                                 ANTA_INSECURE]
+  --disable-cache                Disable cache globally.  [env var:
+                                 ANTA_DISABLE_CACHE]
+  -i, --inventory FILE           Path to the inventory YAML file.  [env var:
+                                 ANTA_INVENTORY; required]
+  --tags TEXT                    List of tags using comma as separator:
+                                 tag1,tag2,tag3.  [env var: ANTA_TAGS]
+  --connected / --not-connected  Display inventory after connection has been
+                                 created
+  --help                         Show this message and exit.
+```
+
+!!! tip
+    By default, `anta get inventory` only provides information that doesn't rely on a device connection. If you are interested in obtaining connection-dependent details, like the hardware model, use the `--connected` option.
+
+### Example
 
 Let's consider the following inventory:
 
@@ -66,122 +112,15 @@ anta_inventory:
       tags: ["BL", "DC2"]
 ```
 
-## Obtaining all configured tags
-
-As most of ANTA's commands accommodate tag filtering, this particular command is useful for enumerating all tags configured in the inventory. Running the `anta get tags` command will return a list of all tags that have been configured in the inventory.
-
-### Command overview
-
-```bash
-Usage: anta get tags [OPTIONS]
-
-  Get list of configured tags in user inventory.
-
-Options:
-  -u, --username TEXT     Username to connect to EOS  [env var: ANTA_USERNAME;
-                          required]
-  -p, --password TEXT     Password to connect to EOS that must be provided. It
-                          can be prompted using '--prompt' option.  [env var:
-                          ANTA_PASSWORD]
-  --enable-password TEXT  Password to access EOS Privileged EXEC mode. It can
-                          be prompted using '--prompt' option. Requires '--
-                          enable' option.  [env var: ANTA_ENABLE_PASSWORD]
-  --enable                Some commands may require EOS Privileged EXEC mode.
-                          This option tries to access this mode before sending
-                          a command to the device.  [env var: ANTA_ENABLE]
-  -P, --prompt            Prompt for passwords if they are not provided.  [env
-                          var: ANTA_PROMPT]
-  --timeout FLOAT         Global API timeout. This value will be used for all
-                          devices.  [env var: ANTA_TIMEOUT; default: 30.0]
-  --insecure              Disable SSH Host Key validation.  [env var:
-                          ANTA_INSECURE]
-  --disable-cache         Disable cache globally.  [env var:
-                          ANTA_DISABLE_CACHE]
-  -i, --inventory FILE    Path to the inventory YAML file.  [env var:
-                          ANTA_INVENTORY; required]
-  --tags TEXT             List of tags using comma as separator:
-                          tag1,tag2,tag3.  [env var: ANTA_TAGS]
-  --help                  Show this message and exit.
-```
-
-### Example
-
-To get the list of all configured tags in the inventory, run the following command:
-
-```bash
-anta get tags
-Tags found:
-[
-  "BL",
-  "DC1",
-  "DC2",
-  "LEAF",
-  "SPINE"
-]
-
-* note that tag all has been added by anta
-```
-
-!!! note
-    Even if you haven't explicitly configured the `all` tag in the inventory, it is automatically added. This default tag allows to execute commands on all devices in the inventory when no tag is specified.
-
-## List devices in inventory
-
-This command will list all devices available in the inventory. Using the `--tags` option, you can filter this list to only include devices with specific tags. The `--connected` option allows to display only the devices where a connection has been established.
-
-### Command overview
-
-```bash
-Usage: anta get inventory [OPTIONS]
-
-  Show inventory loaded in ANTA.
-
-Options:
-  -u, --username TEXT            Username to connect to EOS  [env var:
-                                 ANTA_USERNAME; required]
-  -p, --password TEXT            Password to connect to EOS that must be
-                                 provided. It can be prompted using '--prompt'
-                                 option.  [env var: ANTA_PASSWORD]
-  --enable-password TEXT         Password to access EOS Privileged EXEC mode.
-                                 It can be prompted using '--prompt' option.
-                                 Requires '--enable' option.  [env var:
-                                 ANTA_ENABLE_PASSWORD]
-  --enable                       Some commands may require EOS Privileged EXEC
-                                 mode. This option tries to access this mode
-                                 before sending a command to the device.  [env
-                                 var: ANTA_ENABLE]
-  -P, --prompt                   Prompt for passwords if they are not
-                                 provided.  [env var: ANTA_PROMPT]
-  --timeout FLOAT                Global API timeout. This value will be used
-                                 for all devices.  [env var: ANTA_TIMEOUT;
-                                 default: 30.0]
-  --insecure                     Disable SSH Host Key validation.  [env var:
-                                 ANTA_INSECURE]
-  --disable-cache                Disable cache globally.  [env var:
-                                 ANTA_DISABLE_CACHE]
-  -i, --inventory FILE           Path to the inventory YAML file.  [env var:
-                                 ANTA_INVENTORY; required]
-  --tags TEXT                    List of tags using comma as separator:
-                                 tag1,tag2,tag3.  [env var: ANTA_TAGS]
-  --connected / --not-connected  Display inventory after connection has been
-                                 created
-  --help                         Show this message and exit.
-```
-
-!!! tip
-    In its default mode, `anta get inventory` provides only information that doesn't rely on a device connection. If you are interested in obtaining connection-dependent details, like the hardware model, please use the `--connected` option.
-
-### Example
-
 To retrieve a comprehensive list of all devices along with their details, execute the following command. It will provide all the data loaded into the ANTA inventory from your [inventory file](../usage-inventory-catalog.md).
 
 ```bash
-anta get inventory --tags SPINE
+$ anta get inventory --tags SPINE
 Current inventory content is:
 {
     'DC1-SPINE1': AsyncEOSDevice(
         name='DC1-SPINE1',
-        tags=['SPINE', 'DC1'],
+        tags={'DC1-SPINE1', 'DC1', 'SPINE'},
         hw_model=None,
         is_online=False,
         established=False,
@@ -189,13 +128,12 @@ Current inventory content is:
         host='172.20.20.101',
         eapi_port=443,
         username='arista',
-        enable=True,
-        enable_password='arista',
+        enable=False,
         insecure=False
     ),
     'DC1-SPINE2': AsyncEOSDevice(
         name='DC1-SPINE2',
-        tags=['SPINE', 'DC1'],
+        tags={'DC1', 'SPINE', 'DC1-SPINE2'},
         hw_model=None,
         is_online=False,
         established=False,
@@ -203,12 +141,12 @@ Current inventory content is:
         host='172.20.20.102',
         eapi_port=443,
         username='arista',
-        enable=True,
+        enable=False,
         insecure=False
     ),
     'DC2-SPINE1': AsyncEOSDevice(
         name='DC2-SPINE1',
-        tags=['SPINE', 'DC2'],
+        tags={'DC2', 'DC2-SPINE1', 'SPINE'},
         hw_model=None,
         is_online=False,
         established=False,
@@ -216,12 +154,12 @@ Current inventory content is:
         host='172.20.20.201',
         eapi_port=443,
         username='arista',
-        enable=True,
+        enable=False,
         insecure=False
     ),
     'DC2-SPINE2': AsyncEOSDevice(
         name='DC2-SPINE2',
-        tags=['SPINE', 'DC2'],
+        tags={'DC2', 'DC2-SPINE2', 'SPINE'},
         hw_model=None,
         is_online=False,
         established=False,
@@ -229,7 +167,7 @@ Current inventory content is:
         host='172.20.20.202',
         eapi_port=443,
         username='arista',
-        enable=True,
+        enable=False,
         insecure=False
     )
 }

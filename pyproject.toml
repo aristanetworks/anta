@@ -96,7 +96,8 @@ doc = [
   "mkdocs-material-extensions>=1.3.1",
   "mkdocs-material>=9.5.34",
   "mkdocstrings[python]>=0.26.0",
-  "mkdocstrings-python>=1.11.0"
+  "mkdocstrings-python>=1.11.0",
+  "black>=24.10.0"
 ]
 
 [project.urls]
@@ -435,10 +436,14 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.In
 "anta/inventory/__init__.py" = [
   "PLR0913",     # Ok to have more than 5 arguments in the AntaInventory class
 ]
-"examples/anta_runner.py" = [  # This is an example script and linked in  snippets
-  "S108",   # Probable insecure usage of temporary file or directory
+"examples/*.py" = [  # These are example scripts and linked in snippets
   "S105",   # Possible hardcoded password
+  "S106",   # Possible hardcoded password assigned to argument
+  "S108",   # Probable insecure usage of temporary file or directory
   "INP001", # Implicit packages
+  "T201",   # `print` found
+  "T203",   # `pprint` found
+
 ]
 
 ################################
