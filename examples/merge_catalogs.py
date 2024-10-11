@@ -1,11 +1,10 @@
 # Copyright (c) 2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""This script merges collection of catalogs into one AntaCatalog. """
-
+"""Script that merge a collection of catalogs into one AntaCatalog."""
 from pathlib import Path
-from anta.catalog import AntaCatalog
 
+from anta.catalog import AntaCatalog
 from anta.models import AntaTest
 
 CATALOG_SUFFIX = "-catalog.yml"
