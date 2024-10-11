@@ -1677,10 +1677,16 @@ class VerifyBGPRouteOrigin(AntaTest):
             """IPv4 network address"""
             vrf: str = "default"
             """Optional VRF. If not provided, it defaults to `default`."""
-            route_paths: list[dict[str, IPv4Address | Literal["Igp", "Egp", "Incomplete"]]]
-            """A list of dictionaries represents a BGP path.
-            - `nexthop`: The next-hop IP address for the path.
-            - `origin`: The origin of the route."""
+            route_paths: list[RoutePath]
+            """List of BGP route path(s)"""
+
+            class RoutePath(BaseModel):
+                """Model for a BGP route path(s)."""
+
+                nexthop: IPv4Address
+                """The next-hop IPv4 address for the path."""
+                origin: Literal["Igp", "Egp", "Incomplete"]
+                """The origin of the route."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each BGP peer in the input list."""
@@ -1704,8 +1710,8 @@ class VerifyBGPRouteOrigin(AntaTest):
             # Iterating over each nexthop.
             failure: dict[Any, Any] = {}
             for path in paths:
-                nexthop = str(path["nexthop"])
-                origin = path["origin"]
+                nexthop = str(path.nexthop)
+                origin = path.origin
                 if not (route_path := get_item(bgp_routes, "nextHop", nexthop)):
                     failure[nexthop] = "Path not found."
                     continue
