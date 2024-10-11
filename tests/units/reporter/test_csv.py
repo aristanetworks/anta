@@ -13,6 +13,7 @@ import pytest
 
 from anta.reporter.csv_reporter import ReportCsv
 from anta.result_manager import ResultManager
+from anta.tools import convert_categories
 
 
 class TestReportCsv:
@@ -25,7 +26,7 @@ class TestReportCsv:
         assert rows[index + 1][2] == result_manager.results[index].result
         assert rows[index + 1][3] == ReportCsv().split_list_to_txt_list(result_manager.results[index].messages)
         assert rows[index + 1][4] == result_manager.results[index].description
-        assert rows[index + 1][5] == ReportCsv().split_list_to_txt_list(result_manager.results[index].categories)
+        assert rows[index + 1][5] == ReportCsv().split_list_to_txt_list(convert_categories(result_manager.results[index].categories))
 
     def test_report_csv_generate(
         self,

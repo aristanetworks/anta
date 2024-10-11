@@ -45,11 +45,31 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "failure", "messages": ["Could not find SSH status in returned output."]},
     },
     {
-        "name": "failure-ssh-disabled",
+        "name": "failure-ssh-enabled",
         "test": VerifySSHStatus,
         "eos_data": ["SSHD status for Default VRF is enabled\nSSH connection limit is 50\nSSH per host connection limit is 20\nFIPS status: disabled\n\n"],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["SSHD status for Default VRF is enabled"]},
+    },
+    {
+        "name": "success-4.32",
+        "test": VerifySSHStatus,
+        "eos_data": [
+            "User certificate authentication methods: none (neither trusted CA nor SSL profile configured)\n"
+            "SSHD status for Default VRF: disabled\nSSH connection limit: 50\nSSH per host connection limit: 20\nFIPS status: disabled\n\n"
+        ],
+        "inputs": None,
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-ssh-enabled-4.32",
+        "test": VerifySSHStatus,
+        "eos_data": [
+            "User certificate authentication methods: none (neither trusted CA nor SSL profile configured)\n"
+            "SSHD status for Default VRF: enabled\nSSH connection limit: 50\nSSH per host connection limit: 20\nFIPS status: disabled\n\n"
+        ],
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["SSHD status for Default VRF: enabled"]},
     },
     {
         "name": "success",

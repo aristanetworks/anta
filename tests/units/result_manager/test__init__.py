@@ -85,12 +85,12 @@ class TestResultManager:
 
         result_manager.results = results
 
-        # Check the current categories order and name format
-        expected_order = ["OSPF", "BGP", "VXLAN", "System"]
+        # Check the current categories order
+        expected_order = ["ospf", "bgp", "vxlan", "system"]
         assert list(result_manager.category_stats.keys()) == expected_order
 
-        # Check the sorted categories order and name format
-        expected_order = ["BGP", "OSPF", "System", "VXLAN"]
+        # Check the sorted categories order
+        expected_order = ["bgp", "ospf", "system", "vxlan"]
         assert list(result_manager.sorted_category_stats.keys()) == expected_order
 
     @pytest.mark.parametrize(
