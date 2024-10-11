@@ -142,7 +142,7 @@ class ReportTable:
         """Create a table report with result aggregated per test.
 
         Create table with full output:
-        Test Name | # of success | # of skipped | # of failure | # of errors | List of failed or error nodes |
+        Test Name | # of success | # of skipped | # of failure | # of errors | List of failed or error nodes
 
         Parameters
         ----------
