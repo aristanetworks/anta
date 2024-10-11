@@ -2,6 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Script that merge a collection of catalogs into one AntaCatalog."""
+
 from pathlib import Path
 
 from anta.catalog import AntaCatalog

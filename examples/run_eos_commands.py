@@ -2,6 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Script that runs a list of EOS commands on reachable devices."""
+
 # This is needed to run the script for python < 3.10 for typing annotations
 from __future__ import annotations
 

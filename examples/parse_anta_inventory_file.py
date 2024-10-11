@@ -2,6 +2,7 @@
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Script that parses an ANTA inventory file, connects to devices and print their status."""
+
 import asyncio
 
 from anta.inventory import AntaInventory
