@@ -105,7 +105,7 @@ class ReportTable:
     def report_all(self, manager: ResultManager, title: str = "All tests results") -> Table:
         """Create a table report with all tests for one or all devices.
 
-        Create table with full output: Host / Test / Status / Message
+        Create table with full output: Device | Test Name | Test Status | Message(s) | Test description | Test category
 
         Parameters
         ----------
@@ -141,7 +141,8 @@ class ReportTable:
     ) -> Table:
         """Create a table report with result aggregated per test.
 
-        Create table with full output: Test | Number of success | Number of failure | Number of error | List of nodes in error or failure
+        Create table with full output:
+        Test Name | # of success | # of skipped | # of failure | # of errors | List of failed or error nodes |
 
         Parameters
         ----------
@@ -187,7 +188,7 @@ class ReportTable:
     ) -> Table:
         """Create a table report with result aggregated per device.
 
-        Create table with full output: Host | Number of success | Number of failure | Number of error | List of nodes in error or failure
+        Create table with full output: Device | # of success | # of skipped | # of failure | # of errors | List of failed or error test cases
 
         Parameters
         ----------
