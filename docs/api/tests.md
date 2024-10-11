@@ -18,7 +18,7 @@ Here are the tests that we currently provide:
 - [BFD](tests.bfd.md)
 - [Configuration](tests.configuration.md)
 - [Connectivity](tests.connectivity.md)
-- [Field Notice](tests.field_notices.md)
+- [Field Notices](tests.field_notices.md)
 - [Flow Tracking](tests.flow_tracking.md)
 - [GreenT](tests.greent.md)
 - [Hardware](tests.hardware.md)

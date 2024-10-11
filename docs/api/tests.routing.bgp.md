@@ -18,4 +18,4 @@ anta_title: ANTA catalog for BGP tests
       filters:
         - "!test"
         - "!render"
-        - "!_.*"
+        - "!^_[^_]"

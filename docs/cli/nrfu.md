@@ -31,16 +31,7 @@ All commands under the `anta nrfu` namespace require a catalog yaml file specifi
 
 ### Tag management
 
-The `--tags` option can be used to target specific devices in your inventory and run only tests configured with this specific tags from your catalog. Expected behaviour is provided below:
-
-| Command | Description |
-| ------- | ----------- |
-| No `--tags` option | Run all tests on all devices according to the `tag` definitions in your inventory and test catalog.<br/> Tests without tags are executed on all devices. |
-| `--tags leaf` | Run all tests marked with the `leaf` tag on all devices configured with the `leaf` tag.<br/> All other tests are ignored. |
-| `--tags leaf,spine` | Run all tests marked with the `leaf` tag on all devices configured with the `leaf` tag.<br/>Run all tests marked with the `spine` tag on all devices configured with the `spine` tag.<br/> All other tests are ignored. |
-
-!!! info
-    [More examples](tag-management.md) available on this dedicated page.
+The `--tags` option can be used to target specific devices in your inventory and run only tests configured with this specific tags from your catalog. Refer to the [dedicated page](tag-management.md) for more information.
 
 ### Device and test filtering
 

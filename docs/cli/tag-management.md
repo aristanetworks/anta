@@ -244,23 +244,11 @@ To get the list of all configured tags in the inventory, run the following comma
 $ anta get tags
 Tags found:
 [
-  "BL",
-  "DC1",
-  "DC1-BL1",
-  "DC1-BL2",
-  "DC1-LEAF1A",
-  "DC1-LEAF1B",
-  "DC1-SPINE1",
-  "DC1-SPINE2",
-  "DC2",
-  "DC2-BL1",
-  "DC2-BL2",
-  "DC2-LEAF1A",
-  "DC2-LEAF1B",
-  "DC2-SPINE1",
-  "DC2-SPINE2",
-  "LEAF",
-  "SPINE"
+  "leaf",
+  "leaf1",
+  "leaf2",
+  "spine",
+  "spine1"
 ]
 ```
 
