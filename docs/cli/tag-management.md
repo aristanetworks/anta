@@ -251,6 +251,3 @@ Tags found:
   "spine1"
 ]
 ```
-
-!!! note
-    ANTA automatically injects the device name as device tag.
