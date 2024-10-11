@@ -21,6 +21,7 @@ from anta.tests.routing.bgp import (
     VerifyBGPPeersHealth,
     VerifyBGPPeerUpdateErrors,
     VerifyBgpRouteMaps,
+    VerifyBGPRouteOrigin,
     VerifyBGPSpecificPeers,
     VerifyBGPTimers,
     VerifyEVPNType2Route,
@@ -4833,6 +4834,246 @@ DATA: list[dict[str, Any]] = [
                 "The following BGP peer(s) are not configured or maximum routes and maximum routes warning limit is not correct:\n"
                 "{'10.100.0.8': {'default': {'Warning limit': 'Not Found'}}, "
                 "'10.100.0.9': {'MGMT': {'Maximum total routes': 'Not Found', 'Warning limit': 'Not Found'}}}"
+            ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifyBGPRouteOrigin,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "bgpRouteEntries": {
+                            "10.100.0.128/31": {
+                                "bgpRoutePaths": [
+                                    {
+                                        "nextHop": "10.100.0.10",
+                                        "routeDetail": {
+                                            "origin": "Igp",
+                                        },
+                                    },
+                                    {
+                                        "nextHop": "10.100.4.5",
+                                        "routeDetail": {
+                                            "origin": "Incomplete",
+                                        },
+                                    },
+                                ],
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "MGMT": {
+                        "bgpRouteEntries": {
+                            "10.100.0.130/31": {
+                                "bgpRoutePaths": [
+                                    {
+                                        "nextHop": "10.100.0.8",
+                                        "routeDetail": {
+                                            "origin": "Igp",
+                                        },
+                                    },
+                                    {
+                                        "nextHop": "10.100.0.10",
+                                        "routeDetail": {
+                                            "origin": "Igp",
+                                        },
+                                    },
+                                ],
+                            }
+                        }
+                    }
+                }
+            },
+        ],
+        "inputs": {
+            "route_entries": [
+                {
+                    "prefix": "10.100.0.128/31",
+                    "vrf": "default",
+                    "route_paths": [{"nexthop": "10.100.0.10", "origin": "Igp"}, {"nexthop": "10.100.4.5", "origin": "Incomplete"}],
+                },
+                {
+                    "prefix": "10.100.0.130/31",
+                    "vrf": "MGMT",
+                    "route_paths": [{"nexthop": "10.100.0.8", "origin": "Igp"}, {"nexthop": "10.100.0.10", "origin": "Igp"}],
+                },
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-origin-not-correct",
+        "test": VerifyBGPRouteOrigin,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "bgpRouteEntries": {
+                            "10.100.0.128/31": {
+                                "bgpRoutePaths": [
+                                    {
+                                        "nextHop": "10.100.0.10",
+                                        "routeDetail": {
+                                            "origin": "Igp",
+                                        },
+                                    },
+                                    {
+                                        "nextHop": "10.100.4.5",
+                                        "routeDetail": {
+                                            "origin": "Incomplete",
+                                        },
+                                    },
+                                ],
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "MGMT": {
+                        "bgpRouteEntries": {
+                            "10.100.0.130/31": {
+                                "bgpRoutePaths": [
+                                    {
+                                        "nextHop": "10.100.0.8",
+                                        "routeDetail": {
+                                            "origin": "Igp",
+                                        },
+                                    },
+                                    {
+                                        "nextHop": "10.100.0.10",
+                                        "routeDetail": {
+                                            "origin": "Igp",
+                                        },
+                                    },
+                                ],
+                            }
+                        }
+                    }
+                }
+            },
+        ],
+        "inputs": {
+            "route_entries": [
+                {
+                    "prefix": "10.100.0.128/31",
+                    "vrf": "default",
+                    "route_paths": [{"nexthop": "10.100.0.10", "origin": "Incomplete"}, {"nexthop": "10.100.4.5", "origin": "Igp"}],
+                },
+                {
+                    "prefix": "10.100.0.130/31",
+                    "vrf": "MGMT",
+                    "route_paths": [{"nexthop": "10.100.0.8", "origin": "Incomplete"}, {"nexthop": "10.100.0.10", "origin": "Incomplete"}],
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Following BGP route entry(s) or nexthop path(s) not found or origin type is not correct:\n"
+                "{'10.100.0.128/31': {'default': {'10.100.0.10': 'Expected `Incomplete` as the origin, but found `Igp` instead.', "
+                "'10.100.4.5': 'Expected `Igp` as the origin, but found `Incomplete` instead.'}}, "
+                "'10.100.0.130/31': {'MGMT': {'10.100.0.8': 'Expected `Incomplete` as the origin, but found `Igp` instead.', "
+                "'10.100.0.10': 'Expected `Incomplete` as the origin, but found `Igp` instead.'}}}"
+            ],
+        },
+    },
+    {
+        "name": "failure-path-not-found",
+        "test": VerifyBGPRouteOrigin,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "bgpRouteEntries": {
+                            "10.100.0.128/31": {
+                                "bgpRoutePaths": [
+                                    {
+                                        "nextHop": "10.100.0.15",
+                                        "routeDetail": {
+                                            "origin": "Igp",
+                                        },
+                                    },
+                                ],
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "MGMT": {
+                        "bgpRouteEntries": {
+                            "10.100.0.130/31": {
+                                "bgpRoutePaths": [
+                                    {
+                                        "nextHop": "10.100.0.15",
+                                        "routeDetail": {
+                                            "origin": "Igp",
+                                        },
+                                    },
+                                ],
+                            }
+                        }
+                    }
+                }
+            },
+        ],
+        "inputs": {
+            "route_entries": [
+                {
+                    "prefix": "10.100.0.128/31",
+                    "vrf": "default",
+                    "route_paths": [{"nexthop": "10.100.0.10", "origin": "Incomplete"}, {"nexthop": "10.100.4.5", "origin": "Igp"}],
+                },
+                {
+                    "prefix": "10.100.0.130/31",
+                    "vrf": "MGMT",
+                    "route_paths": [{"nexthop": "10.100.0.8", "origin": "Incomplete"}, {"nexthop": "10.100.0.10", "origin": "Incomplete"}],
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Following BGP route entry(s) or nexthop path(s) not found or origin type is not correct:\n"
+                "{'10.100.0.128/31': {'default': {'10.100.0.10': 'Path not found.', '10.100.4.5': 'Path not found.'}}, "
+                "'10.100.0.130/31': {'MGMT': {'10.100.0.8': 'Path not found.', '10.100.0.10': 'Path not found.'}}}"
+            ],
+        },
+    },
+    {
+        "name": "failure-route-not-found",
+        "test": VerifyBGPRouteOrigin,
+        "eos_data": [
+            {"vrfs": {"default": {"bgpRouteEntries": {}}}},
+            {"vrfs": {"MGMT": {"bgpRouteEntries": {}}}},
+        ],
+        "inputs": {
+            "route_entries": [
+                {
+                    "prefix": "10.100.0.128/31",
+                    "vrf": "default",
+                    "route_paths": [{"nexthop": "10.100.0.10", "origin": "Incomplete"}, {"nexthop": "10.100.4.5", "origin": "Igp"}],
+                },
+                {
+                    "prefix": "10.100.0.130/31",
+                    "vrf": "MGMT",
+                    "route_paths": [{"nexthop": "10.100.0.8", "origin": "Incomplete"}, {"nexthop": "10.100.0.10", "origin": "Incomplete"}],
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Following BGP route entry(s) or nexthop path(s) not found or origin type is not correct:\n"
+                "{'10.100.0.128/31': {'default': 'Not configured'}, '10.100.0.130/31': {'MGMT': 'Not configured'}}"
             ],
         },
     },
