@@ -2292,16 +2292,109 @@
   
   
   
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_8_6" id="__nav_8_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Reporter
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_6">
+            <span class="md-nav__icon md-icon"></span>
+            Reporter
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
-      <a href="../../api/report_manager/" class="md-nav__link">
+      <a href="../../api/csv_reporter/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Report Manager
+    CSV reporter
   </span>
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/md_reporter/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Markdown reporter
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/reporters/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Other reporters
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -2797,10 +2890,12 @@
 
 <p>ANTA provides a set of commands for performing NRFU tests on devices. These commands are under the <code>anta nrfu</code> namespace and offer multiple output format options:</p>
 <ul>
-<li><a href="#performing-nrfu-with-text-rendering">Text view</a></li>
-<li><a href="#performing-nrfu-with-table-rendering">Table view</a></li>
-<li><a href="#performing-nrfu-with-json-rendering">JSON view</a></li>
-<li><a href="#performing-nrfu-with-custom-reports">Custom template view</a></li>
+<li><a href="#performing-nrfu-with-text-rendering">Text report</a></li>
+<li><a href="#performing-nrfu-with-table-rendering">Table report</a></li>
+<li><a href="#performing-nrfu-with-json-rendering">JSON report</a></li>
+<li><a href="#performing-nrfu-with-custom-reports">Custom template report</a></li>
+<li><a href="#performing-nrfu-and-saving-results-in-a-csv-file">CSV report</a></li>
+<li><a href="#performing-nrfu-and-saving-results-in-a-markdown-file">Markdown report</a></li>
 </ul>
 <h3 id="nrfu-command-overview">NRFU Command overview<a class="headerlink" href="#nrfu-command-overview" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code>Usage:<span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>COMMAND<span class="w"> </span><span class="o">[</span>ARGS<span class="o">]</span>...
@@ -2873,33 +2968,7 @@ Commands:
 <p>Issuing the command <code>anta nrfu</code> will run <code>anta nrfu table</code> without any option.</p>
 </div>
 <h4 id="tag-management">Tag management<a class="headerlink" href="#tag-management" title="Permanent link">&para;</a></h4>
-<p>The <code>--tags</code> option can be used to target specific devices in your inventory and run only tests configured with this specific tags from your catalog. The default tag is set to <code>all</code> and is implicit. Expected behaviour is provided below:</p>
-<table>
-<thead>
-<tr>
-<th>Command</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>none</code></td>
-<td>Run all tests on all devices according <code>tag</code> definition in your inventory and test catalog. And tests with no tag are executed on all devices</td>
-</tr>
-<tr>
-<td><code>--tags leaf</code></td>
-<td>Run all tests marked with <code>leaf</code> tag on all devices configured with <code>leaf</code> tag.<br/> All other tags are ignored</td>
-</tr>
-<tr>
-<td><code>--tags leaf,spine</code></td>
-<td>Run all tests marked with <code>leaf</code> tag on all devices configured with <code>leaf</code> tag.<br/>Run all tests marked with <code>spine</code> tag on all devices configured with <code>spine</code> tag.<br/> All other tags are ignored</td>
-</tr>
-</tbody>
-</table>
-<div class="admonition info">
-<p class="admonition-title">Info</p>
-<p><a href="../tag-management/">More examples</a> available on this dedicated page.</p>
-</div>
+<p>The <code>--tags</code> option can be used to target specific devices in your inventory and run only tests configured with this specific tags from your catalog. Refer to the <a href="../tag-management/">dedicated page</a> for more information.</p>
 <h4 id="device-and-test-filtering">Device and test filtering<a class="headerlink" href="#device-and-test-filtering" title="Permanent link">&para;</a></h4>
 <p>Options <code>--device</code> and <code>--test</code> can be used to target one or multiple devices and/or tests to run in your environment. The options can be repeated. Example: <code>anta nrfu --device leaf1a --device leaf1b --test VerifyUptime --test VerifyReloadCause</code>.</p>
 <h4 id="hide-results">Hide results<a class="headerlink" href="#hide-results" title="Permanent link">&para;</a></h4>
@@ -3057,7 +3126,7 @@ Options:
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 2, 2024</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 11, 2024</span>
   </span>
 
     

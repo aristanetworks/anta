@@ -1396,42 +1396,6 @@
     
   </li>
       
-        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#anta.tests.routing.ospf._count_ospf_neighbor" class="md-nav__link">
-      <span class="md-ellipsis">
-        _count_ospf_neighbor
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-  </li>
-      
-        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#anta.tests.routing.ospf._get_not_full_ospf_neighbors" class="md-nav__link">
-      <span class="md-ellipsis">
-        _get_not_full_ospf_neighbors
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-  </li>
-      
-        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#anta.tests.routing.ospf._get_ospf_max_lsa_info" class="md-nav__link">
-      <span class="md-ellipsis">
-        _get_ospf_max_lsa_info
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-  </li>
-      
     </ul>
   
 </nav>
@@ -2038,16 +2002,109 @@
   
   
   
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_8_6" id="__nav_8_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Reporter
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_6">
+            <span class="md-nav__icon md-icon"></span>
+            Reporter
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
-      <a href="../report_manager/" class="md-nav__link">
+      <a href="../csv_reporter/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Report Manager
+    CSV reporter
   </span>
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../md_reporter/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Markdown reporter
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reporters/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Other reporters
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -2214,42 +2271,6 @@
     <a href="#anta.tests.routing.ospf.VerifyOSPFNeighborState" class="md-nav__link">
       <span class="md-ellipsis">
         VerifyOSPFNeighborState
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-  </li>
-      
-        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#anta.tests.routing.ospf._count_ospf_neighbor" class="md-nav__link">
-      <span class="md-ellipsis">
-        _count_ospf_neighbor
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-  </li>
-      
-        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#anta.tests.routing.ospf._get_not_full_ospf_neighbors" class="md-nav__link">
-      <span class="md-ellipsis">
-        _get_not_full_ospf_neighbors
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-  </li>
-      
-        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#anta.tests.routing.ospf._get_ospf_max_lsa_info" class="md-nav__link">
-      <span class="md-ellipsis">
-        _get_ospf_max_lsa_info
       </span>
     </a>
 
@@ -2741,368 +2762,6 @@
 </div>
 
 
-<div class="doc doc-object doc-function">
-
-
-<h2 id="anta.tests.routing.ospf._count_ospf_neighbor" class="doc doc-heading">
-            <span class="doc doc-object-name doc-function-name">_count_ospf_neighbor</span>
-
-
-<a href="#anta.tests.routing.ospf._count_ospf_neighbor" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">_count_ospf_neighbor</span><span class="p">(</span><span class="n">ospf_neighbor_json</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span>
-</code></pre></div>
-
-    <div class="doc doc-contents ">
-  
-        <p>Count the number of OSPF neighbors.</p>
-
-
-<p><span class="doc-section-title">Parameters:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Description</th>
-          <th>Default</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td><code>ospf_neighbor_json</code></td>
-            <td>
-                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a>[<a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a class="autorefs autorefs-external" title="typing.Any" href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>]</code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>The JSON output of the <code>show ip ospf neighbor</code> command.</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-    <p><span class="doc-section-title">Returns:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>The number of OSPF neighbors.</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-            <details class="quote">
-              <summary>Source code in <code>anta/tests/routing/ospf.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">_count_ospf_neighbor</span><span class="p">(</span><span class="n">ospf_neighbor_json</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Count the number of OSPF neighbors.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    ospf_neighbor_json</span>
-<span class="sd">        The JSON output of the `show ip ospf neighbor` command.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    int</span>
-<span class="sd">        The number of OSPF neighbors.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">for</span> <span class="n">vrf_data</span> <span class="ow">in</span> <span class="n">ospf_neighbor_json</span><span class="p">[</span><span class="s2">&quot;vrfs&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-        <span class="k">for</span> <span class="n">instance_data</span> <span class="ow">in</span> <span class="n">vrf_data</span><span class="p">[</span><span class="s2">&quot;instList&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            <span class="n">count</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">instance_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ospfNeighborEntries&quot;</span><span class="p">,</span> <span class="p">[]))</span>
-    <span class="k">return</span> <span class="n">count</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h2 id="anta.tests.routing.ospf._get_not_full_ospf_neighbors" class="doc doc-heading">
-            <span class="doc doc-object-name doc-function-name">_get_not_full_ospf_neighbors</span>
-
-
-<a href="#anta.tests.routing.ospf._get_not_full_ospf_neighbors" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">_get_not_full_ospf_neighbors</span><span class="p">(</span><span class="n">ospf_neighbor_json</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span>
-</code></pre></div>
-
-    <div class="doc doc-contents ">
-  
-        <p>Return the OSPF neighbors whose adjacency state is not <code>full</code>.</p>
-
-
-<p><span class="doc-section-title">Parameters:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Description</th>
-          <th>Default</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td><code>ospf_neighbor_json</code></td>
-            <td>
-                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a>[<a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a class="autorefs autorefs-external" title="typing.Any" href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>]</code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>The JSON output of the <code>show ip ospf neighbor</code> command.</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-    <p><span class="doc-section-title">Returns:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a>[<a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a class="autorefs autorefs-external" title="typing.Any" href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>]]</code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>A list of OSPF neighbors whose adjacency state is not <code>full</code>.</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-            <details class="quote">
-              <summary>Source code in <code>anta/tests/routing/ospf.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">_get_not_full_ospf_neighbors</span><span class="p">(</span><span class="n">ospf_neighbor_json</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the OSPF neighbors whose adjacency state is not `full`.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    ospf_neighbor_json</span>
-<span class="sd">        The JSON output of the `show ip ospf neighbor` command.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    list[dict[str, Any]]</span>
-<span class="sd">        A list of OSPF neighbors whose adjacency state is not `full`.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">[</span>
-        <span class="p">{</span>
-            <span class="s2">&quot;vrf&quot;</span><span class="p">:</span> <span class="n">vrf</span><span class="p">,</span>
-            <span class="s2">&quot;instance&quot;</span><span class="p">:</span> <span class="n">instance</span><span class="p">,</span>
-            <span class="s2">&quot;neighbor&quot;</span><span class="p">:</span> <span class="n">neighbor_data</span><span class="p">[</span><span class="s2">&quot;routerId&quot;</span><span class="p">],</span>
-            <span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="n">state</span><span class="p">,</span>
-        <span class="p">}</span>
-        <span class="k">for</span> <span class="n">vrf</span><span class="p">,</span> <span class="n">vrf_data</span> <span class="ow">in</span> <span class="n">ospf_neighbor_json</span><span class="p">[</span><span class="s2">&quot;vrfs&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">instance</span><span class="p">,</span> <span class="n">instance_data</span> <span class="ow">in</span> <span class="n">vrf_data</span><span class="p">[</span><span class="s2">&quot;instList&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">neighbor_data</span> <span class="ow">in</span> <span class="n">instance_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ospfNeighborEntries&quot;</span><span class="p">,</span> <span class="p">[])</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">state</span> <span class="o">:=</span> <span class="n">neighbor_data</span><span class="p">[</span><span class="s2">&quot;adjacencyState&quot;</span><span class="p">])</span> <span class="o">!=</span> <span class="s2">&quot;full&quot;</span>
-    <span class="p">]</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h2 id="anta.tests.routing.ospf._get_ospf_max_lsa_info" class="doc doc-heading">
-            <span class="doc doc-object-name doc-function-name">_get_ospf_max_lsa_info</span>
-
-
-<a href="#anta.tests.routing.ospf._get_ospf_max_lsa_info" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">_get_ospf_max_lsa_info</span><span class="p">(</span><span class="n">ospf_process_json</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span>
-</code></pre></div>
-
-    <div class="doc doc-contents ">
-  
-        <p>Return information about OSPF instances and their LSAs.</p>
-
-
-<p><span class="doc-section-title">Parameters:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Description</th>
-          <th>Default</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td><code>ospf_process_json</code></td>
-            <td>
-                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a>[<a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a class="autorefs autorefs-external" title="typing.Any" href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>]</code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>OSPF process information in JSON format.</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-    <p><span class="doc-section-title">Returns:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a>[<a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a class="autorefs autorefs-external" title="typing.Any" href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>]]</code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>A list of dictionaries containing OSPF LSAs information.</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-            <details class="quote">
-              <summary>Source code in <code>anta/tests/routing/ospf.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span>
-<span class="normal">87</span>
-<span class="normal">88</span>
-<span class="normal">89</span>
-<span class="normal">90</span>
-<span class="normal">91</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">_get_ospf_max_lsa_info</span><span class="p">(</span><span class="n">ospf_process_json</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return information about OSPF instances and their LSAs.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    ospf_process_json</span>
-<span class="sd">        OSPF process information in JSON format.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    list[dict[str, Any]]</span>
-<span class="sd">        A list of dictionaries containing OSPF LSAs information.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">[</span>
-        <span class="p">{</span>
-            <span class="s2">&quot;vrf&quot;</span><span class="p">:</span> <span class="n">vrf</span><span class="p">,</span>
-            <span class="s2">&quot;instance&quot;</span><span class="p">:</span> <span class="n">instance</span><span class="p">,</span>
-            <span class="s2">&quot;maxLsa&quot;</span><span class="p">:</span> <span class="n">instance_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;maxLsaInformation&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;maxLsa&quot;</span><span class="p">),</span>
-            <span class="s2">&quot;maxLsaThreshold&quot;</span><span class="p">:</span> <span class="n">instance_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;maxLsaInformation&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;maxLsaThreshold&quot;</span><span class="p">),</span>
-            <span class="s2">&quot;numLsa&quot;</span><span class="p">:</span> <span class="n">instance_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;lsaInformation&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;numLsa&quot;</span><span class="p">),</span>
-        <span class="p">}</span>
-        <span class="k">for</span> <span class="n">vrf</span><span class="p">,</span> <span class="n">vrf_data</span> <span class="ow">in</span> <span class="n">ospf_process_json</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;vrfs&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">instance</span><span class="p">,</span> <span class="n">instance_data</span> <span class="ow">in</span> <span class="n">vrf_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;instList&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-    <span class="p">]</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
 
 
   </div>
@@ -3130,7 +2789,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 20, 2024</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 11, 2024</span>
   </span>
 
     

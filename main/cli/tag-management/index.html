@@ -765,6 +765,52 @@
     
   </li>
       
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#obtaining-all-configured-tags" class="md-nav__link">
+      <span class="md-ellipsis">
+        Obtaining all configured tags
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="Obtaining all configured tags">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#command-overview" class="md-nav__link">
+      <span class="md-ellipsis">
+        Command overview
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#example" class="md-nav__link">
+      <span class="md-ellipsis">
+        Example
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
+      
     </ul>
   
 </nav>
@@ -2070,16 +2116,109 @@
   
   
   
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_8_6" id="__nav_8_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Reporter
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_6">
+            <span class="md-nav__icon md-icon"></span>
+            Reporter
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
-      <a href="../../api/report_manager/" class="md-nav__link">
+      <a href="../../api/csv_reporter/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Report Manager
+    CSV reporter
   </span>
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/md_reporter/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Markdown reporter
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/reporters/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Other reporters
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -2323,6 +2462,52 @@
     
   </li>
       
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#obtaining-all-configured-tags" class="md-nav__link">
+      <span class="md-ellipsis">
+        Obtaining all configured tags
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="Obtaining all configured tags">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#command-overview" class="md-nav__link">
+      <span class="md-ellipsis">
+        Command overview
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#example" class="md-nav__link">
+      <span class="md-ellipsis">
+        Example
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
+      
     </ul>
   
 </nav>
@@ -2369,7 +2554,7 @@
 <span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;spine&quot;</span><span class="p p-Indicator">]</span>
 </code></pre></div>
 <p>Each device also has its own name automatically added as a tag:</p>
-<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>get<span class="w"> </span>inventory
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>anta<span class="w"> </span>get<span class="w"> </span>inventory
 Current<span class="w"> </span>inventory<span class="w"> </span>content<span class="w"> </span>is:
 <span class="o">{</span>
 <span class="w">    </span><span class="s1">&#39;leaf1&#39;</span>:<span class="w"> </span>AsyncEOSDevice<span class="o">(</span>
@@ -2506,7 +2691,7 @@ leaf2<span class="w"> </span>::<span class="w"> </span>VerifyMlagStatus<span cla
 <p>In this case, only <code>leaf</code> devices defined in the inventory are used to run tests marked with the <code>leaf</code> in the test catalog.</p>
 <h5 id="multiple-tags">Multiple tags<a class="headerlink" href="#multiple-tags" title="Permanent link">&para;</a></h5>
 <p>It is possible to use multiple tags using the <code>--tags tag1,tag2</code> syntax.</p>
-<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>--tags<span class="w"> </span>leaf,spine<span class="w"> </span>text
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> </span>--tags<span class="w"> </span>leaf,spine<span class="w"> </span>text
 ╭──────────────────────<span class="w"> </span>Settings<span class="w"> </span>──────────────────────╮
 │<span class="w"> </span>-<span class="w"> </span>ANTA<span class="w"> </span>Inventory<span class="w"> </span>contains<span class="w"> </span><span class="m">3</span><span class="w"> </span>devices<span class="w"> </span><span class="o">(</span>AsyncEOSDevice<span class="o">)</span><span class="w"> </span>│
 │<span class="w"> </span>-<span class="w"> </span>Tests<span class="w"> </span>catalog<span class="w"> </span>contains<span class="w"> </span><span class="m">11</span><span class="w"> </span>tests<span class="w">                    </span>│
@@ -2533,6 +2718,51 @@ spine1<span class="w"> </span>::<span class="w"> </span>VerifyUptime<span class=
 spine1<span class="w"> </span>::<span class="w"> </span>VerifyL3MTU<span class="w"> </span>::<span class="w"> </span>SUCCESS
 spine1<span class="w"> </span>::<span class="w"> </span>VerifyUptime<span class="w"> </span>::<span class="w"> </span>SUCCESS
 </code></pre></div>
+<h3 id="obtaining-all-configured-tags">Obtaining all configured tags<a class="headerlink" href="#obtaining-all-configured-tags" title="Permanent link">&para;</a></h3>
+<p>As most ANTA commands accommodate tag filtering, this command is useful for enumerating all tags configured in the inventory. Running the <code>anta get tags</code> command will return a list of all tags configured in the inventory.</p>
+<h4 id="command-overview">Command overview<a class="headerlink" href="#command-overview" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code>Usage:<span class="w"> </span>anta<span class="w"> </span>get<span class="w"> </span>tags<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
+
+<span class="w">  </span>Get<span class="w"> </span>list<span class="w"> </span>of<span class="w"> </span>configured<span class="w"> </span>tags<span class="w"> </span><span class="k">in</span><span class="w"> </span>user<span class="w"> </span>inventory.
+
+Options:
+<span class="w">  </span>-u,<span class="w"> </span>--username<span class="w"> </span>TEXT<span class="w">     </span>Username<span class="w"> </span>to<span class="w"> </span>connect<span class="w"> </span>to<span class="w"> </span>EOS<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:<span class="w"> </span>ANTA_USERNAME<span class="p">;</span>
+<span class="w">                          </span>required<span class="o">]</span>
+<span class="w">  </span>-p,<span class="w"> </span>--password<span class="w"> </span>TEXT<span class="w">     </span>Password<span class="w"> </span>to<span class="w"> </span>connect<span class="w"> </span>to<span class="w"> </span>EOS<span class="w"> </span>that<span class="w"> </span>must<span class="w"> </span>be<span class="w"> </span>provided.<span class="w"> </span>It
+<span class="w">                          </span>can<span class="w"> </span>be<span class="w"> </span>prompted<span class="w"> </span>using<span class="w"> </span><span class="s1">&#39;--prompt&#39;</span><span class="w"> </span>option.<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:
+<span class="w">                          </span>ANTA_PASSWORD<span class="o">]</span>
+<span class="w">  </span>--enable-password<span class="w"> </span>TEXT<span class="w">  </span>Password<span class="w"> </span>to<span class="w"> </span>access<span class="w"> </span>EOS<span class="w"> </span>Privileged<span class="w"> </span>EXEC<span class="w"> </span>mode.<span class="w"> </span>It<span class="w"> </span>can
+<span class="w">                          </span>be<span class="w"> </span>prompted<span class="w"> </span>using<span class="w"> </span><span class="s1">&#39;--prompt&#39;</span><span class="w"> </span>option.<span class="w"> </span>Requires<span class="w"> </span><span class="s1">&#39;--</span>
+<span class="s1">                          enable&#39;</span><span class="w"> </span>option.<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:<span class="w"> </span>ANTA_ENABLE_PASSWORD<span class="o">]</span>
+<span class="w">  </span>--enable<span class="w">                </span>Some<span class="w"> </span>commands<span class="w"> </span>may<span class="w"> </span>require<span class="w"> </span>EOS<span class="w"> </span>Privileged<span class="w"> </span>EXEC<span class="w"> </span>mode.
+<span class="w">                          </span>This<span class="w"> </span>option<span class="w"> </span>tries<span class="w"> </span>to<span class="w"> </span>access<span class="w"> </span>this<span class="w"> </span>mode<span class="w"> </span>before<span class="w"> </span>sending
+<span class="w">                          </span>a<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>device.<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:<span class="w"> </span>ANTA_ENABLE<span class="o">]</span>
+<span class="w">  </span>-P,<span class="w"> </span>--prompt<span class="w">            </span>Prompt<span class="w"> </span><span class="k">for</span><span class="w"> </span>passwords<span class="w"> </span><span class="k">if</span><span class="w"> </span>they<span class="w"> </span>are<span class="w"> </span>not<span class="w"> </span>provided.<span class="w">  </span><span class="o">[</span>env
+<span class="w">                          </span>var:<span class="w"> </span>ANTA_PROMPT<span class="o">]</span>
+<span class="w">  </span>--timeout<span class="w"> </span>FLOAT<span class="w">         </span>Global<span class="w"> </span>API<span class="w"> </span>timeout.<span class="w"> </span>This<span class="w"> </span>value<span class="w"> </span>will<span class="w"> </span>be<span class="w"> </span>used<span class="w"> </span><span class="k">for</span><span class="w"> </span>all
+<span class="w">                          </span>devices.<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:<span class="w"> </span>ANTA_TIMEOUT<span class="p">;</span><span class="w"> </span>default:<span class="w"> </span><span class="m">30</span>.0<span class="o">]</span>
+<span class="w">  </span>--insecure<span class="w">              </span>Disable<span class="w"> </span>SSH<span class="w"> </span>Host<span class="w"> </span>Key<span class="w"> </span>validation.<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:
+<span class="w">                          </span>ANTA_INSECURE<span class="o">]</span>
+<span class="w">  </span>--disable-cache<span class="w">         </span>Disable<span class="w"> </span>cache<span class="w"> </span>globally.<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:
+<span class="w">                          </span>ANTA_DISABLE_CACHE<span class="o">]</span>
+<span class="w">  </span>-i,<span class="w"> </span>--inventory<span class="w"> </span>FILE<span class="w">    </span>Path<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>inventory<span class="w"> </span>YAML<span class="w"> </span>file.<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:
+<span class="w">                          </span>ANTA_INVENTORY<span class="p">;</span><span class="w"> </span>required<span class="o">]</span>
+<span class="w">  </span>--tags<span class="w"> </span>TEXT<span class="w">             </span>List<span class="w"> </span>of<span class="w"> </span>tags<span class="w"> </span>using<span class="w"> </span>comma<span class="w"> </span>as<span class="w"> </span>separator:
+<span class="w">                          </span>tag1,tag2,tag3.<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:<span class="w"> </span>ANTA_TAGS<span class="o">]</span>
+<span class="w">  </span>--help<span class="w">                  </span>Show<span class="w"> </span>this<span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span>exit.
+</code></pre></div>
+<h4 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h4>
+<p>To get the list of all configured tags in the inventory, run the following command:</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>anta<span class="w"> </span>get<span class="w"> </span>tags
+Tags<span class="w"> </span>found:
+<span class="o">[</span>
+<span class="w">  </span><span class="s2">&quot;leaf&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;leaf1&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;leaf2&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;spine&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;spine1&quot;</span>
+<span class="o">]</span>
+</code></pre></div>
 
 
 
@@ -2553,7 +2783,7 @@ spine1<span class="w"> </span>::<span class="w"> </span>VerifyUptime<span class=
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 2, 2024</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 11, 2024</span>
   </span>
 
     

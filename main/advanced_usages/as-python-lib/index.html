@@ -2034,16 +2034,109 @@
   
   
   
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_8_6" id="__nav_8_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Reporter
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_6">
+            <span class="md-nav__icon md-icon"></span>
+            Reporter
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
-      <a href="../../api/report_manager/" class="md-nav__link">
+      <a href="../../api/csv_reporter/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Report Manager
+    CSV reporter
   </span>
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/md_reporter/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Markdown reporter
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/reporters/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Other reporters
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -2311,19 +2404,20 @@ It uses the <a href="https://github.com/jeremyschulman/aio-eapi">aio-eapi</a> eA
 </ul>
 <h3 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h3>
 <h4 id="parse-an-anta-inventory-file">Parse an ANTA inventory file<a class="headerlink" href="#parse-an-anta-inventory-file" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">This script parses an ANTA inventory file, connects to devices and print their status.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<div class="highlight"><pre><span></span><code><span class="c1"># Copyright (c) 2024 Arista Networks, Inc.</span>
+<span class="c1"># Use of this source code is governed by the Apache License 2.0</span>
+<span class="c1"># that can be found in the LICENSE file.</span>
+<span class="sd">&quot;&quot;&quot;Script that parses an ANTA inventory file, connects to devices and print their status.&quot;&quot;&quot;</span>
+
 <span class="kn">import</span> <span class="nn">asyncio</span>
 
 <span class="kn">from</span> <span class="nn">anta.inventory</span> <span class="kn">import</span> <span class="n">AntaInventory</span>
 
 
 <span class="k">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">inv</span><span class="p">:</span> <span class="n">AntaInventory</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Take an AntaInventory and:</span>
-<span class="sd">    1. try to connect to every device in the inventory</span>
-<span class="sd">    2. print a message for every device connection status</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read an AntaInventory and try to connect to every device in the inventory.</span>
+
+<span class="sd">    Print a message for every device connection status</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">await</span> <span class="n">inv</span><span class="o">.</span><span class="n">connect_inventory</span><span class="p">()</span>
 
@@ -2333,10 +2427,11 @@ It uses the <a href="https://github.com/jeremyschulman/aio-eapi">aio-eapi</a> eA
         <span class="k">else</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not connect to device </span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
+
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="c1"># Create the AntaInventory instance</span>
     <span class="n">inventory</span> <span class="o">=</span> <span class="n">AntaInventory</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span>
-        <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;inv.yml&quot;</span><span class="p">,</span>
+        <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;inventory.yaml&quot;</span><span class="p">,</span>
         <span class="n">username</span><span class="o">=</span><span class="s2">&quot;arista&quot;</span><span class="p">,</span>
         <span class="n">password</span><span class="o">=</span><span class="s2">&quot;@rista123&quot;</span><span class="p">,</span>
     <span class="p">)</span>
@@ -2344,14 +2439,16 @@ It uses the <a href="https://github.com/jeremyschulman/aio-eapi">aio-eapi</a> eA
     <span class="c1"># Run the main coroutine</span>
     <span class="n">res</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">(</span><span class="n">inventory</span><span class="p">))</span>
 </code></pre></div>
-<details class="note">
-<summary>How to create your inventory file</summary>
+<div class="admonition note">
+<p class="admonition-title">How to create your inventory file</p>
 <p>Please visit this <a href="../../usage-inventory-catalog/">dedicated section</a> for how to use inventory and catalog files.</p>
-</details>
+</div>
 <h4 id="run-eos-commands">Run EOS commands<a class="headerlink" href="#run-eos-commands" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">This script runs a list of EOS commands on reachable devices.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<div class="highlight"><pre><span></span><code><span class="c1"># Copyright (c) 2024 Arista Networks, Inc.</span>
+<span class="c1"># Use of this source code is governed by the Apache License 2.0</span>
+<span class="c1"># that can be found in the LICENSE file.</span>
+<span class="sd">&quot;&quot;&quot;Script that runs a list of EOS commands on reachable devices.&quot;&quot;&quot;</span>
+
 <span class="c1"># This is needed to run the script for python &lt; 3.10 for typing annotations</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
@@ -2363,13 +2460,16 @@ It uses the <a href="https://github.com/jeremyschulman/aio-eapi">aio-eapi</a> eA
 
 
 <span class="k">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">inv</span><span class="p">:</span> <span class="n">AntaInventory</span><span class="p">,</span> <span class="n">commands</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Take an AntaInventory and a list of commands as string and:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run a list of commands against each valid device in the inventory.</span>
+
+<span class="sd">    Take an AntaInventory and a list of commands as string</span>
 <span class="sd">    1. try to connect to every device in the inventory</span>
 <span class="sd">    2. collect the results of the commands from each device</span>
 
-<span class="sd">    Returns:</span>
-<span class="sd">      a dictionary where key is the device name and the value is the list of AntaCommand ran towards the device</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict[str, list[AntaCommand]]</span>
+<span class="sd">        a dictionary where key is the device name and the value is the list of AntaCommand ran towards the device</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">await</span> <span class="n">inv</span><span class="o">.</span><span class="n">connect_inventory</span><span class="p">()</span>
 
@@ -2391,16 +2491,16 @@ It uses the <a href="https://github.com/jeremyschulman/aio-eapi">aio-eapi</a> eA
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="c1"># Create the AntaInventory instance</span>
     <span class="n">inventory</span> <span class="o">=</span> <span class="n">AntaInventory</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span>
-        <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;inv.yml&quot;</span><span class="p">,</span>
+        <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;inventory.yaml&quot;</span><span class="p">,</span>
         <span class="n">username</span><span class="o">=</span><span class="s2">&quot;arista&quot;</span><span class="p">,</span>
         <span class="n">password</span><span class="o">=</span><span class="s2">&quot;@rista123&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="c1"># Create a list of commands with json output</span>
-    <span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;show version&quot;</span><span class="p">,</span> <span class="s2">&quot;show ip bgp summary&quot;</span><span class="p">]</span>
+    <span class="n">command_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;show version&quot;</span><span class="p">,</span> <span class="s2">&quot;show ip bgp summary&quot;</span><span class="p">]</span>
 
     <span class="c1"># Run the main asyncio  entry point</span>
-    <span class="n">res</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">(</span><span class="n">inventory</span><span class="p">,</span> <span class="n">commands</span><span class="p">))</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">(</span><span class="n">inventory</span><span class="p">,</span> <span class="n">command_list</span><span class="p">))</span>
 
     <span class="n">pprint</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
 </code></pre></div>
@@ -2424,7 +2524,7 @@ It uses the <a href="https://github.com/jeremyschulman/aio-eapi">aio-eapi</a> eA
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 2, 2024</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 11, 2024</span>
   </span>
 
     

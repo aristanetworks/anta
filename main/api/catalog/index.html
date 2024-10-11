@@ -2250,16 +2250,109 @@
   
   
   
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_8_6" id="__nav_8_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Reporter
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_6">
+            <span class="md-nav__icon md-icon"></span>
+            Reporter
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
-      <a href="../report_manager/" class="md-nav__link">
+      <a href="../csv_reporter/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Report Manager
+    CSV reporter
   </span>
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../md_reporter/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Markdown reporter
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reporters/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Other reporters
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -2722,7 +2815,10 @@
 
 
 <a href="#anta.catalog.AntaCatalog" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">AntaCatalog</span><span class="p">(</span><span class="n">tests</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaTestDefinition</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">AntaCatalog</span><span class="p">(</span>
+    <span class="n">tests</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaTestDefinition</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
@@ -2903,7 +2999,9 @@
 
 
 <a href="#anta.catalog.AntaCatalog.build_indexes" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">build_indexes</span><span class="p">(</span><span class="n">filtered_tests</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">build_indexes</span><span class="p">(</span>
+    <span class="n">filtered_tests</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -3075,7 +3173,10 @@
   </span>
 
 <a href="#anta.catalog.AntaCatalog.from_dict" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">from_dict</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">RawCatalogInput</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaCatalog</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">from_dict</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">RawCatalogInput</span><span class="p">,</span>
+    <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaCatalog</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -3373,7 +3474,9 @@ YAML Test Catalog file.</p>
 
 
 <a href="#anta.catalog.AntaCatalog.get_tests_by_tags" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">get_tests_by_tags</span><span class="p">(</span><span class="n">tags</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="n">AntaTestDefinition</span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">get_tests_by_tags</span><span class="p">(</span>
+    <span class="n">tags</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="n">AntaTestDefinition</span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -3794,7 +3897,10 @@ If False, returns tests that contain any of the specified tags (union).</p>
   </span>
 
 <a href="#anta.catalog.AntaCatalog.parse" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">parse</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="n">file_format</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;yaml&#39;</span><span class="p">,</span> <span class="s1">&#39;json&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;yaml&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaCatalog</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">parse</span><span class="p">(</span>
+    <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span>
+    <span class="n">file_format</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;yaml&quot;</span><span class="p">,</span> <span class="s2">&quot;json&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;yaml&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaCatalog</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -3952,7 +4058,14 @@ If False, returns tests that contain any of the specified tags (union).</p>
 
 
 <a href="#anta.catalog.AntaTestDefinition" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">AntaTestDefinition</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">AntaTest</span><span class="p">]</span> <span class="o">|</span> <span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">AntaTestDefinition</span><span class="p">(</span>
+    <span class="o">**</span><span class="n">data</span><span class="p">:</span> <span class="p">(</span>
+        <span class="nb">type</span><span class="p">[</span><span class="n">AntaTest</span><span class="p">]</span>
+        <span class="o">|</span> <span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span>
+        <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+        <span class="o">|</span> <span class="kc">None</span>
+    <span class="p">)</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
@@ -4094,7 +4207,10 @@ If False, returns tests that contain any of the specified tags (union).</p>
   </span>
 
 <a href="#anta.catalog.AntaTestDefinition.instantiate_inputs" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">instantiate_inputs</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">ValidationInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">instantiate_inputs</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">info</span><span class="p">:</span> <span class="n">ValidationInfo</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -4443,7 +4559,9 @@ with provided value to validate test inputs.</p>
   </span>
 
 <a href="#anta.catalog.AntaCatalogFile.flatten_modules" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">flatten_modules</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">package</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="n">ModuleType</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">flatten_modules</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">package</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="n">ModuleType</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">

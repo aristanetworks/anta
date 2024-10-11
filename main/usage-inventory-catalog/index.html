@@ -2104,16 +2104,109 @@
   
   
   
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_8_6" id="__nav_8_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Reporter
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_6">
+            <span class="md-nav__icon md-icon"></span>
+            Reporter
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
-      <a href="../api/report_manager/" class="md-nav__link">
+      <a href="../api/csv_reporter/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Report Manager
+    CSV reporter
   </span>
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/md_reporter/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Markdown reporter
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/reporters/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Other reporters
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -2672,12 +2765,15 @@ So for instance, if my custom tests are defined in the <code>custom.tests.system
 </code></pre></div>
 <h4 id="example-script-to-merge-catalogs">Example script to merge catalogs<a class="headerlink" href="#example-script-to-merge-catalogs" title="Permanent link">&para;</a></h4>
 <p>The following script reads all the files in <code>intended/test_catalogs/</code> with names <code>&lt;device_name&gt;-catalog.yml</code> and merge them together inside one big catalog <code>anta-catalog.yml</code> using the new <code>AntaCatalog.merge_catalogs()</code> class method.</p>
-<div class="highlight"><pre><span></span><code><span class="ch">#!/usr/bin/env python</span>
-<span class="kn">from</span> <span class="nn">anta.catalog</span> <span class="kn">import</span> <span class="n">AntaCatalog</span>
+<div class="highlight"><pre><span></span><code><span class="c1"># Copyright (c) 2024 Arista Networks, Inc.</span>
+<span class="c1"># Use of this source code is governed by the Apache License 2.0</span>
+<span class="c1"># that can be found in the LICENSE file.</span>
+<span class="sd">&quot;&quot;&quot;Script that merge a collection of catalogs into one AntaCatalog.&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">anta.models</span> <span class="kn">import</span> <span class="n">AntaTest</span>
 
+<span class="kn">from</span> <span class="nn">anta.catalog</span> <span class="kn">import</span> <span class="n">AntaCatalog</span>
+<span class="kn">from</span> <span class="nn">anta.models</span> <span class="kn">import</span> <span class="n">AntaTest</span>
 
 <span class="n">CATALOG_SUFFIX</span> <span class="o">=</span> <span class="s2">&quot;-catalog.yml&quot;</span>
 <span class="n">CATALOG_DIR</span> <span class="o">=</span> <span class="s2">&quot;intended/test_catalogs/&quot;</span>
@@ -2697,7 +2793,7 @@ So for instance, if my custom tests are defined in the <code>custom.tests.system
     <span class="n">merged_catalog</span> <span class="o">=</span> <span class="n">AntaCatalog</span><span class="o">.</span><span class="n">merge_catalogs</span><span class="p">(</span><span class="n">catalogs</span><span class="p">)</span>
 
     <span class="c1"># Save the merged catalog to a file</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s1">&#39;anta-catalog.yml&#39;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;anta-catalog.yml&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">merged_catalog</span><span class="o">.</span><span class="n">dump</span><span class="p">()</span><span class="o">.</span><span class="n">yaml</span><span class="p">())</span>
 </code></pre></div>
 <div class="admonition warning">
@@ -2724,7 +2820,7 @@ So for instance, if my custom tests are defined in the <code>custom.tests.system
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 2, 2024</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 11, 2024</span>
   </span>
 
     

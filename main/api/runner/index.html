@@ -13,7 +13,7 @@
       
       
       
-        <link rel="prev" href="../report_manager/">
+        <link rel="prev" href="../reporters/">
       
       
         <link rel="next" href="../../troubleshooting/">
@@ -1908,16 +1908,109 @@
   
   
   
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_8_6" id="__nav_8_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Reporter
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_6">
+            <span class="md-nav__icon md-icon"></span>
+            Reporter
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
-      <a href="../report_manager/" class="md-nav__link">
+      <a href="../csv_reporter/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Report Manager
+    CSV reporter
   </span>
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../md_reporter/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Markdown reporter
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reporters/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Other reporters
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -2434,7 +2527,12 @@
 
 
 <a href="#anta.runner.get_coroutines" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">get_coroutines</span><span class="p">(</span><span class="n">selected_tests</span><span class="p">:</span> <span class="n">defaultdict</span><span class="p">[</span><span class="n">AntaDevice</span><span class="p">,</span> <span class="nb">set</span><span class="p">[</span><span class="n">AntaTestDefinition</span><span class="p">]],</span> <span class="n">manager</span><span class="p">:</span> <span class="n">ResultManager</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Coroutine</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TestResult</span><span class="p">]]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">get_coroutines</span><span class="p">(</span>
+    <span class="n">selected_tests</span><span class="p">:</span> <span class="n">defaultdict</span><span class="p">[</span>
+        <span class="n">AntaDevice</span><span class="p">,</span> <span class="nb">set</span><span class="p">[</span><span class="n">AntaTestDefinition</span><span class="p">]</span>
+    <span class="p">],</span>
+    <span class="n">manager</span><span class="p">:</span> <span class="n">ResultManager</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Coroutine</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TestResult</span><span class="p">]]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2679,7 +2777,17 @@
   </span>
 
 <a href="#anta.runner.main" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">main</span><span class="p">(</span><span class="n">manager</span><span class="p">:</span> <span class="n">ResultManager</span><span class="p">,</span> <span class="n">inventory</span><span class="p">:</span> <span class="n">AntaInventory</span><span class="p">,</span> <span class="n">catalog</span><span class="p">:</span> <span class="n">AntaCatalog</span><span class="p">,</span> <span class="n">devices</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tests</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">established_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">main</span><span class="p">(</span>
+    <span class="n">manager</span><span class="p">:</span> <span class="n">ResultManager</span><span class="p">,</span>
+    <span class="n">inventory</span><span class="p">:</span> <span class="n">AntaInventory</span><span class="p">,</span>
+    <span class="n">catalog</span><span class="p">:</span> <span class="n">AntaCatalog</span><span class="p">,</span>
+    <span class="n">devices</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">tests</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">tags</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">established_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -3004,7 +3112,14 @@ ResultManager object gets updated with the test results.</p>
 
 
 <a href="#anta.runner.prepare_tests" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">prepare_tests</span><span class="p">(</span><span class="n">inventory</span><span class="p">:</span> <span class="n">AntaInventory</span><span class="p">,</span> <span class="n">catalog</span><span class="p">:</span> <span class="n">AntaCatalog</span><span class="p">,</span> <span class="n">tests</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">defaultdict</span><span class="p">[</span><span class="n">AntaDevice</span><span class="p">,</span> <span class="nb">set</span><span class="p">[</span><span class="n">AntaTestDefinition</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">prepare_tests</span><span class="p">(</span>
+    <span class="n">inventory</span><span class="p">:</span> <span class="n">AntaInventory</span><span class="p">,</span>
+    <span class="n">catalog</span><span class="p">:</span> <span class="n">AntaCatalog</span><span class="p">,</span>
+    <span class="n">tests</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">tags</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span>
+    <span class="n">defaultdict</span><span class="p">[</span><span class="n">AntaDevice</span><span class="p">,</span> <span class="nb">set</span><span class="p">[</span><span class="n">AntaTestDefinition</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -3220,7 +3335,13 @@ ResultManager object gets updated with the test results.</p>
   </span>
 
 <a href="#anta.runner.setup_inventory" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">setup_inventory</span><span class="p">(</span><span class="n">inventory</span><span class="p">:</span> <span class="n">AntaInventory</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">devices</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">established_only</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaInventory</span> <span class="o">|</span> <span class="kc">None</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">setup_inventory</span><span class="p">(</span>
+    <span class="n">inventory</span><span class="p">:</span> <span class="n">AntaInventory</span><span class="p">,</span>
+    <span class="n">tags</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">devices</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">established_only</span><span class="p">:</span> <span class="nb">bool</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaInventory</span> <span class="o">|</span> <span class="kc">None</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">

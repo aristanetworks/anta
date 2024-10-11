@@ -2594,16 +2594,109 @@
   
   
   
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_8_6" id="__nav_8_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Reporter
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_6">
+            <span class="md-nav__icon md-icon"></span>
+            Reporter
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
-      <a href="../report_manager/" class="md-nav__link">
+      <a href="../csv_reporter/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Report Manager
+    CSV reporter
   </span>
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../md_reporter/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Markdown reporter
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reporters/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Other reporters
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -3436,7 +3529,9 @@
   </span>
 
 <a href="#anta.custom_types.AAAAuthMethod" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">AAAAuthMethod</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">AfterValidator</span><span class="p">(</span><span class="n">aaa_group_prefix</span><span class="p">)]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">AAAAuthMethod</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span>
+    <span class="nb">str</span><span class="p">,</span> <span class="n">AfterValidator</span><span class="p">(</span><span class="n">aaa_group_prefix</span><span class="p">)</span>
+<span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -3457,7 +3552,16 @@
   </span>
 
 <a href="#anta.custom_types.Afi" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">Afi</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;ipv4&#39;</span><span class="p">,</span> <span class="s1">&#39;ipv6&#39;</span><span class="p">,</span> <span class="s1">&#39;vpn-ipv4&#39;</span><span class="p">,</span> <span class="s1">&#39;vpn-ipv6&#39;</span><span class="p">,</span> <span class="s1">&#39;evpn&#39;</span><span class="p">,</span> <span class="s1">&#39;rt-membership&#39;</span><span class="p">,</span> <span class="s1">&#39;path-selection&#39;</span><span class="p">,</span> <span class="s1">&#39;link-state&#39;</span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">Afi</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span>
+    <span class="s2">&quot;ipv4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ipv6&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;vpn-ipv4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;vpn-ipv6&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;evpn&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;rt-membership&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;path-selection&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;link-state&quot;</span><span class="p">,</span>
+<span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -3520,7 +3624,19 @@
   </span>
 
 <a href="#anta.custom_types.BfdProtocol" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">BfdProtocol</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;bgp&#39;</span><span class="p">,</span> <span class="s1">&#39;isis&#39;</span><span class="p">,</span> <span class="s1">&#39;lag&#39;</span><span class="p">,</span> <span class="s1">&#39;ospf&#39;</span><span class="p">,</span> <span class="s1">&#39;ospfv3&#39;</span><span class="p">,</span> <span class="s1">&#39;pim&#39;</span><span class="p">,</span> <span class="s1">&#39;route-input&#39;</span><span class="p">,</span> <span class="s1">&#39;static-bfd&#39;</span><span class="p">,</span> <span class="s1">&#39;static-route&#39;</span><span class="p">,</span> <span class="s1">&#39;vrrp&#39;</span><span class="p">,</span> <span class="s1">&#39;vxlan&#39;</span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">BfdProtocol</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span>
+    <span class="s2">&quot;bgp&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;isis&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;lag&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ospf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ospfv3&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;pim&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;route-input&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;static-bfd&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;static-route&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;vrrp&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;vxlan&quot;</span><span class="p">,</span>
+<span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -3541,7 +3657,36 @@
   </span>
 
 <a href="#anta.custom_types.BgpDropStats" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">BgpDropStats</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;inDropAsloop&#39;</span><span class="p">,</span> <span class="s1">&#39;inDropClusterIdLoop&#39;</span><span class="p">,</span> <span class="s1">&#39;inDropMalformedMpbgp&#39;</span><span class="p">,</span> <span class="s1">&#39;inDropOrigId&#39;</span><span class="p">,</span> <span class="s1">&#39;inDropNhLocal&#39;</span><span class="p">,</span> <span class="s1">&#39;inDropNhAfV6&#39;</span><span class="p">,</span> <span class="s1">&#39;prefixDroppedMartianV4&#39;</span><span class="p">,</span> <span class="s1">&#39;prefixDroppedMaxRouteLimitViolatedV4&#39;</span><span class="p">,</span> <span class="s1">&#39;prefixDroppedMartianV6&#39;</span><span class="p">,</span> <span class="s1">&#39;prefixDroppedMaxRouteLimitViolatedV6&#39;</span><span class="p">,</span> <span class="s1">&#39;prefixLuDroppedV4&#39;</span><span class="p">,</span> <span class="s1">&#39;prefixLuDroppedMartianV4&#39;</span><span class="p">,</span> <span class="s1">&#39;prefixLuDroppedMaxRouteLimitViolatedV4&#39;</span><span class="p">,</span> <span class="s1">&#39;prefixLuDroppedV6&#39;</span><span class="p">,</span> <span class="s1">&#39;prefixLuDroppedMartianV6&#39;</span><span class="p">,</span> <span class="s1">&#39;prefixLuDroppedMaxRouteLimitViolatedV6&#39;</span><span class="p">,</span> <span class="s1">&#39;prefixEvpnDroppedUnsupportedRouteType&#39;</span><span class="p">,</span> <span class="s1">&#39;prefixBgpLsDroppedReceptionUnsupported&#39;</span><span class="p">,</span> <span class="s1">&#39;outDropV4LocalAddr&#39;</span><span class="p">,</span> <span class="s1">&#39;outDropV6LocalAddr&#39;</span><span class="p">,</span> <span class="s1">&#39;prefixVpnIpv4DroppedImportMatchFailure&#39;</span><span class="p">,</span> <span class="s1">&#39;prefixVpnIpv4DroppedMaxRouteLimitViolated&#39;</span><span class="p">,</span> <span class="s1">&#39;prefixVpnIpv6DroppedImportMatchFailure&#39;</span><span class="p">,</span> <span class="s1">&#39;prefixVpnIpv6DroppedMaxRouteLimitViolated&#39;</span><span class="p">,</span> <span class="s1">&#39;prefixEvpnDroppedImportMatchFailure&#39;</span><span class="p">,</span> <span class="s1">&#39;prefixEvpnDroppedMaxRouteLimitViolated&#39;</span><span class="p">,</span> <span class="s1">&#39;prefixRtMembershipDroppedLocalAsReject&#39;</span><span class="p">,</span> <span class="s1">&#39;prefixRtMembershipDroppedMaxRouteLimitViolated&#39;</span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">BgpDropStats</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span>
+    <span class="s2">&quot;inDropAsloop&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;inDropClusterIdLoop&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;inDropMalformedMpbgp&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;inDropOrigId&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;inDropNhLocal&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;inDropNhAfV6&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;prefixDroppedMartianV4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;prefixDroppedMaxRouteLimitViolatedV4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;prefixDroppedMartianV6&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;prefixDroppedMaxRouteLimitViolatedV6&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;prefixLuDroppedV4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;prefixLuDroppedMartianV4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;prefixLuDroppedMaxRouteLimitViolatedV4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;prefixLuDroppedV6&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;prefixLuDroppedMartianV6&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;prefixLuDroppedMaxRouteLimitViolatedV6&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;prefixEvpnDroppedUnsupportedRouteType&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;prefixBgpLsDroppedReceptionUnsupported&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;outDropV4LocalAddr&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;outDropV6LocalAddr&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;prefixVpnIpv4DroppedImportMatchFailure&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;prefixVpnIpv4DroppedMaxRouteLimitViolated&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;prefixVpnIpv6DroppedImportMatchFailure&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;prefixVpnIpv6DroppedMaxRouteLimitViolated&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;prefixEvpnDroppedImportMatchFailure&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;prefixEvpnDroppedMaxRouteLimitViolated&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;prefixRtMembershipDroppedLocalAsReject&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;prefixRtMembershipDroppedMaxRouteLimitViolated&quot;</span><span class="p">,</span>
+<span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -3562,7 +3707,13 @@
   </span>
 
 <a href="#anta.custom_types.BgpUpdateError" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">BgpUpdateError</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;inUpdErrWithdraw&#39;</span><span class="p">,</span> <span class="s1">&#39;inUpdErrIgnore&#39;</span><span class="p">,</span> <span class="s1">&#39;inUpdErrDisableAfiSafi&#39;</span><span class="p">,</span> <span class="s1">&#39;disabledAfiSafi&#39;</span><span class="p">,</span> <span class="s1">&#39;lastUpdErrTime&#39;</span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">BgpUpdateError</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span>
+    <span class="s2">&quot;inUpdErrWithdraw&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;inUpdErrIgnore&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;inUpdErrDisableAfiSafi&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;disabledAfiSafi&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;lastUpdErrTime&quot;</span><span class="p">,</span>
+<span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -3646,7 +3797,20 @@
   </span>
 
 <a href="#anta.custom_types.ErrDisableReasons" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">ErrDisableReasons</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;acl&#39;</span><span class="p">,</span> <span class="s1">&#39;arp-inspection&#39;</span><span class="p">,</span> <span class="s1">&#39;bpduguard&#39;</span><span class="p">,</span> <span class="s1">&#39;dot1x-session-replace&#39;</span><span class="p">,</span> <span class="s1">&#39;hitless-reload-down&#39;</span><span class="p">,</span> <span class="s1">&#39;lacp-rate-limit&#39;</span><span class="p">,</span> <span class="s1">&#39;link-flap&#39;</span><span class="p">,</span> <span class="s1">&#39;no-internal-vlan&#39;</span><span class="p">,</span> <span class="s1">&#39;portchannelguard&#39;</span><span class="p">,</span> <span class="s1">&#39;portsec&#39;</span><span class="p">,</span> <span class="s1">&#39;tapagg&#39;</span><span class="p">,</span> <span class="s1">&#39;uplink-failure-detection&#39;</span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">ErrDisableReasons</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span>
+    <span class="s2">&quot;acl&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;arp-inspection&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bpduguard&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;dot1x-session-replace&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;hitless-reload-down&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;lacp-rate-limit&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;link-flap&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;no-internal-vlan&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;portchannelguard&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;portsec&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;tapagg&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;uplink-failure-detection&quot;</span><span class="p">,</span>
+<span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -3667,7 +3831,12 @@
   </span>
 
 <a href="#anta.custom_types.EthernetInterface" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">EthernetInterface</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="s1">&#39;^Ethernet[0-9]+(</span><span class="se">\\</span><span class="s1">/[0-9]+)*$&#39;</span><span class="p">),</span> <span class="n">BeforeValidator</span><span class="p">(</span><span class="n">interface_autocomplete</span><span class="p">),</span> <span class="n">BeforeValidator</span><span class="p">(</span><span class="n">interface_case_sensitivity</span><span class="p">)]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">EthernetInterface</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span>
+    <span class="nb">str</span><span class="p">,</span>
+    <span class="n">Field</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="s2">&quot;^Ethernet[0-9]+(</span><span class="se">\\</span><span class="s2">/[0-9]+)*$&quot;</span><span class="p">),</span>
+    <span class="n">BeforeValidator</span><span class="p">(</span><span class="n">interface_autocomplete</span><span class="p">),</span>
+    <span class="n">BeforeValidator</span><span class="p">(</span><span class="n">interface_case_sensitivity</span><span class="p">),</span>
+<span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -3688,7 +3857,9 @@
   </span>
 
 <a href="#anta.custom_types.Hostname" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">Hostname</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="n">REGEXP_TYPE_HOSTNAME</span><span class="p">)]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">Hostname</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span>
+    <span class="nb">str</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="n">REGEXP_TYPE_HOSTNAME</span><span class="p">)</span>
+<span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -3709,7 +3880,12 @@
   </span>
 
 <a href="#anta.custom_types.Interface" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">Interface</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="n">REGEXP_TYPE_EOS_INTERFACE</span><span class="p">),</span> <span class="n">BeforeValidator</span><span class="p">(</span><span class="n">interface_autocomplete</span><span class="p">),</span> <span class="n">BeforeValidator</span><span class="p">(</span><span class="n">interface_case_sensitivity</span><span class="p">)]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">Interface</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span>
+    <span class="nb">str</span><span class="p">,</span>
+    <span class="n">Field</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="n">REGEXP_TYPE_EOS_INTERFACE</span><span class="p">),</span>
+    <span class="n">BeforeValidator</span><span class="p">(</span><span class="n">interface_autocomplete</span><span class="p">),</span>
+    <span class="n">BeforeValidator</span><span class="p">(</span><span class="n">interface_case_sensitivity</span><span class="p">),</span>
+<span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -3751,7 +3927,12 @@
   </span>
 
 <a href="#anta.custom_types.MultiProtocolCaps" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">MultiProtocolCaps</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BeforeValidator</span><span class="p">(</span><span class="n">bgp_multiprotocol_capabilities_abbreviations</span><span class="p">)]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">MultiProtocolCaps</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span>
+    <span class="nb">str</span><span class="p">,</span>
+    <span class="n">BeforeValidator</span><span class="p">(</span>
+        <span class="n">bgp_multiprotocol_capabilities_abbreviations</span>
+    <span class="p">),</span>
+<span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -3814,7 +3995,12 @@
   </span>
 
 <a href="#anta.custom_types.PortChannelInterface" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">PortChannelInterface</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="n">REGEX_TYPE_PORTCHANNEL</span><span class="p">),</span> <span class="n">BeforeValidator</span><span class="p">(</span><span class="n">interface_autocomplete</span><span class="p">),</span> <span class="n">BeforeValidator</span><span class="p">(</span><span class="n">interface_case_sensitivity</span><span class="p">)]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">PortChannelInterface</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span>
+    <span class="nb">str</span><span class="p">,</span>
+    <span class="n">Field</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="n">REGEX_TYPE_PORTCHANNEL</span><span class="p">),</span>
+    <span class="n">BeforeValidator</span><span class="p">(</span><span class="n">interface_autocomplete</span><span class="p">),</span>
+    <span class="n">BeforeValidator</span><span class="p">(</span><span class="n">interface_case_sensitivity</span><span class="p">),</span>
+<span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -3856,7 +4042,9 @@
   </span>
 
 <a href="#anta.custom_types.REGEXP_BGP_IPV4_MPLS_LABELS" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">REGEXP_BGP_IPV4_MPLS_LABELS</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">b(ipv4[</span><span class="se">\\</span><span class="s1">s</span><span class="se">\\</span><span class="s1">-]?mpls[</span><span class="se">\\</span><span class="s1">s</span><span class="se">\\</span><span class="s1">-]?label(s)?)</span><span class="se">\\</span><span class="s1">b&#39;</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">REGEXP_BGP_IPV4_MPLS_LABELS</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">b(ipv4[</span><span class="se">\\</span><span class="s2">s</span><span class="se">\\</span><span class="s2">-]?mpls[</span><span class="se">\\</span><span class="s2">s</span><span class="se">\\</span><span class="s2">-]?label(s)?)</span><span class="se">\\</span><span class="s2">b&quot;</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -3879,7 +4067,7 @@
   </span>
 
 <a href="#anta.custom_types.REGEXP_BGP_L2VPN_AFI" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">REGEXP_BGP_L2VPN_AFI</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">b(l2[</span><span class="se">\\</span><span class="s1">s</span><span class="se">\\</span><span class="s1">-]?vpn[</span><span class="se">\\</span><span class="s1">s</span><span class="se">\\</span><span class="s1">-]?evpn)</span><span class="se">\\</span><span class="s1">b&#39;</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">REGEXP_BGP_L2VPN_AFI</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">b(l2[</span><span class="se">\\</span><span class="s2">s</span><span class="se">\\</span><span class="s2">-]?vpn[</span><span class="se">\\</span><span class="s2">s</span><span class="se">\\</span><span class="s2">-]?evpn)</span><span class="se">\\</span><span class="s2">b&quot;</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -3902,7 +4090,11 @@
   </span>
 
 <a href="#anta.custom_types.REGEXP_EOS_BLACKLIST_CMDS" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">REGEXP_EOS_BLACKLIST_CMDS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;^reload.*&#39;</span><span class="p">,</span> <span class="s1">&#39;^conf</span><span class="se">\\</span><span class="s1">w*</span><span class="se">\\</span><span class="s1">s*(terminal|session)*&#39;</span><span class="p">,</span> <span class="s1">&#39;^wr</span><span class="se">\\</span><span class="s1">w*</span><span class="se">\\</span><span class="s1">s*</span><span class="se">\\</span><span class="s1">w+&#39;</span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">REGEXP_EOS_BLACKLIST_CMDS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;^reload.*&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;^conf</span><span class="se">\\</span><span class="s2">w*</span><span class="se">\\</span><span class="s2">s*(terminal|session)*&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;^wr</span><span class="se">\\</span><span class="s2">w*</span><span class="se">\\</span><span class="s2">s*</span><span class="se">\\</span><span class="s2">w+&quot;</span><span class="p">,</span>
+<span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -3971,7 +4163,7 @@
   </span>
 
 <a href="#anta.custom_types.REGEXP_TYPE_EOS_INTERFACE" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">REGEXP_TYPE_EOS_INTERFACE</span> <span class="o">=</span> <span class="s1">&#39;^(Dps|Ethernet|Fabric|Loopback|Management|Port-Channel|Tunnel|Vlan|Vxlan)[0-9]+(</span><span class="se">\\</span><span class="s1">/[0-9]+)*(</span><span class="se">\\</span><span class="s1">.[0-9]+)?$&#39;</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">REGEXP_TYPE_EOS_INTERFACE</span> <span class="o">=</span> <span class="s2">&quot;^(Dps|Ethernet|Fabric|Loopback|Management|Port-Channel|Tunnel|Vlan|Vxlan)[0-9]+(</span><span class="se">\\</span><span class="s2">/[0-9]+)*(</span><span class="se">\\</span><span class="s2">.[0-9]+)?$&quot;</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -3994,7 +4186,7 @@
   </span>
 
 <a href="#anta.custom_types.REGEXP_TYPE_HOSTNAME" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">REGEXP_TYPE_HOSTNAME</span> <span class="o">=</span> <span class="s1">&#39;^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9</span><span class="se">\\</span><span class="s1">-]*[a-zA-Z0-9])</span><span class="se">\\</span><span class="s1">.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9</span><span class="se">\\</span><span class="s1">-]*[A-Za-z0-9])$&#39;</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">REGEXP_TYPE_HOSTNAME</span> <span class="o">=</span> <span class="s2">&quot;^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9</span><span class="se">\\</span><span class="s2">-]*[a-zA-Z0-9])</span><span class="se">\\</span><span class="s2">.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9</span><span class="se">\\</span><span class="s2">-]*[A-Za-z0-9])$&quot;</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -4017,7 +4209,7 @@
   </span>
 
 <a href="#anta.custom_types.REGEXP_TYPE_VXLAN_SRC_INTERFACE" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">REGEXP_TYPE_VXLAN_SRC_INTERFACE</span> <span class="o">=</span> <span class="s1">&#39;^(Loopback)([0-9]|[1-9][0-9]{1,2}|[1-7][0-9]</span><span class="si">{3}</span><span class="s1">|8[01][0-9]</span><span class="si">{2}</span><span class="s1">|819[01])$&#39;</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">REGEXP_TYPE_VXLAN_SRC_INTERFACE</span> <span class="o">=</span> <span class="s2">&quot;^(Loopback)([0-9]|[1-9][0-9]{1,2}|[1-7][0-9]</span><span class="si">{3}</span><span class="s2">|8[01][0-9]</span><span class="si">{2}</span><span class="s2">|819[01])$&quot;</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -4040,7 +4232,9 @@
   </span>
 
 <a href="#anta.custom_types.REGEX_BGP_IPV4_MPLS_VPN" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">REGEX_BGP_IPV4_MPLS_VPN</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">b(ipv4[</span><span class="se">\\</span><span class="s1">s</span><span class="se">\\</span><span class="s1">-]?mpls[</span><span class="se">\\</span><span class="s1">s</span><span class="se">\\</span><span class="s1">-]?vpn)</span><span class="se">\\</span><span class="s1">b&#39;</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">REGEX_BGP_IPV4_MPLS_VPN</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">b(ipv4[</span><span class="se">\\</span><span class="s2">s</span><span class="se">\\</span><span class="s2">-]?mpls[</span><span class="se">\\</span><span class="s2">s</span><span class="se">\\</span><span class="s2">-]?vpn)</span><span class="se">\\</span><span class="s2">b&quot;</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -4063,7 +4257,9 @@
   </span>
 
 <a href="#anta.custom_types.REGEX_BGP_IPV4_UNICAST" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">REGEX_BGP_IPV4_UNICAST</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">b(ipv4[</span><span class="se">\\</span><span class="s1">s</span><span class="se">\\</span><span class="s1">-]?uni[</span><span class="se">\\</span><span class="s1">s</span><span class="se">\\</span><span class="s1">-]?cast)</span><span class="se">\\</span><span class="s1">b&#39;</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">REGEX_BGP_IPV4_UNICAST</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">b(ipv4[</span><span class="se">\\</span><span class="s2">s</span><span class="se">\\</span><span class="s2">-]?uni[</span><span class="se">\\</span><span class="s2">s</span><span class="se">\\</span><span class="s2">-]?cast)</span><span class="se">\\</span><span class="s2">b&quot;</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -4172,7 +4368,9 @@
   </span>
 
 <a href="#anta.custom_types.Safi" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">Safi</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;unicast&#39;</span><span class="p">,</span> <span class="s1">&#39;multicast&#39;</span><span class="p">,</span> <span class="s1">&#39;labeled-unicast&#39;</span><span class="p">,</span> <span class="s1">&#39;sr-te&#39;</span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">Safi</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span>
+    <span class="s2">&quot;unicast&quot;</span><span class="p">,</span> <span class="s2">&quot;multicast&quot;</span><span class="p">,</span> <span class="s2">&quot;labeled-unicast&quot;</span><span class="p">,</span> <span class="s2">&quot;sr-te&quot;</span>
+<span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -4193,7 +4391,16 @@
   </span>
 
 <a href="#anta.custom_types.SnmpErrorCounter" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">SnmpErrorCounter</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;inVersionErrs&#39;</span><span class="p">,</span> <span class="s1">&#39;inBadCommunityNames&#39;</span><span class="p">,</span> <span class="s1">&#39;inBadCommunityUses&#39;</span><span class="p">,</span> <span class="s1">&#39;inParseErrs&#39;</span><span class="p">,</span> <span class="s1">&#39;outTooBigErrs&#39;</span><span class="p">,</span> <span class="s1">&#39;outNoSuchNameErrs&#39;</span><span class="p">,</span> <span class="s1">&#39;outBadValueErrs&#39;</span><span class="p">,</span> <span class="s1">&#39;outGeneralErrs&#39;</span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">SnmpErrorCounter</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span>
+    <span class="s2">&quot;inVersionErrs&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;inBadCommunityNames&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;inBadCommunityUses&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;inParseErrs&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;outTooBigErrs&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;outNoSuchNameErrs&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;outBadValueErrs&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;outGeneralErrs&quot;</span><span class="p">,</span>
+<span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -4214,7 +4421,13 @@
   </span>
 
 <a href="#anta.custom_types.SnmpPdu" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">SnmpPdu</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;inGetPdus&#39;</span><span class="p">,</span> <span class="s1">&#39;inGetNextPdus&#39;</span><span class="p">,</span> <span class="s1">&#39;inSetPdus&#39;</span><span class="p">,</span> <span class="s1">&#39;outGetResponsePdus&#39;</span><span class="p">,</span> <span class="s1">&#39;outTrapPdus&#39;</span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">SnmpPdu</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span>
+    <span class="s2">&quot;inGetPdus&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;inGetNextPdus&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;inSetPdus&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;outGetResponsePdus&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;outTrapPdus&quot;</span><span class="p">,</span>
+<span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -4277,7 +4490,12 @@
   </span>
 
 <a href="#anta.custom_types.VxlanSrcIntf" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">VxlanSrcIntf</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="n">REGEXP_TYPE_VXLAN_SRC_INTERFACE</span><span class="p">),</span> <span class="n">BeforeValidator</span><span class="p">(</span><span class="n">interface_autocomplete</span><span class="p">),</span> <span class="n">BeforeValidator</span><span class="p">(</span><span class="n">interface_case_sensitivity</span><span class="p">)]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">VxlanSrcIntf</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span>
+    <span class="nb">str</span><span class="p">,</span>
+    <span class="n">Field</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="n">REGEXP_TYPE_VXLAN_SRC_INTERFACE</span><span class="p">),</span>
+    <span class="n">BeforeValidator</span><span class="p">(</span><span class="n">interface_autocomplete</span><span class="p">),</span>
+    <span class="n">BeforeValidator</span><span class="p">(</span><span class="n">interface_case_sensitivity</span><span class="p">),</span>
+<span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -4325,7 +4543,9 @@
 
 
 <a href="#anta.custom_types.bgp_multiprotocol_capabilities_abbreviations" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">bgp_multiprotocol_capabilities_abbreviations</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">bgp_multiprotocol_capabilities_abbreviations</span><span class="p">(</span>
+    <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
