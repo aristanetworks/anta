@@ -36,8 +36,6 @@ class VerifyTemperature(AntaTest):
     ```
     """
 
-    name = "VerifyTemperature"
-    description = "Verifies the device temperature."
     categories: ClassVar[list[str]] = ["hardware"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show system environment temperature", revision=1)]
 
@@ -61,8 +59,8 @@ Full AntaTest API documentation is available in the [API documentation section](
 
 ### Class Attributes
 
-- `name` (`str`): Name of the test. Used during reporting.
-- `description` (`str`): A human readable description of your test.
+- `name` (`str`, `optional`): Name of the test. Used during reporting. By default set to the Class name.
+- `description` (`str`, `optional`): A human readable description of your test. By default set to the first line of the docstring.
 - `categories` (`list[str]`): A list of categories in which the test belongs.
 - `commands` (`[list[AntaCommand | AntaTemplate]]`): A list of command to collect from devices. This list **must** be a list of [AntaCommand](../api/models.md#anta.models.AntaCommand) or [AntaTemplate](../api/models.md#anta.models.AntaTemplate) instances. Rendering [AntaTemplate](../api/models.md#anta.models.AntaTemplate) instances will be discussed later.
 
@@ -171,11 +169,11 @@ from anta.models import AntaTest, AntaCommand, AntaTemplate
 
 class <YourTestName>(AntaTest):
     """
-    <a docstring description of your test>
+    <a docstring description of your test, the first line is used as description of the test by default>
     """
 
-    name = "YourTestName"                                           # should be your class name
-    description = "<test description in human reading format>"
+    # name = <override>        # uncomment to override default behavior of name=Class Name
+    # description = <override> # uncomment to override default behavior of description=first line of docstring
     categories = ["<arbitrary category>", "<another arbitrary category>"]
     commands = [
         AntaCommand(

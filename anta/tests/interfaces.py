@@ -44,8 +44,6 @@ class VerifyInterfaceUtilization(AntaTest):
     ```
     """
 
-    name = "VerifyInterfaceUtilization"
-    description = "Verifies that the utilization of interfaces is below a certain threshold."
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
         AntaCommand(command="show interfaces counters rates", revision=1),
@@ -105,8 +103,6 @@ class VerifyInterfaceErrors(AntaTest):
     ```
     """
 
-    name = "VerifyInterfaceErrors"
-    description = "Verifies there are no interface error counters."
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces counters errors", revision=1)]
 
@@ -140,8 +136,6 @@ class VerifyInterfaceDiscards(AntaTest):
     ```
     """
 
-    name = "VerifyInterfaceDiscards"
-    description = "Verifies there are no interface discard counters."
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces counters discards", revision=1)]
 
@@ -174,8 +168,6 @@ class VerifyInterfaceErrDisabled(AntaTest):
     ```
     """
 
-    name = "VerifyInterfaceErrDisabled"
-    description = "Verifies there are no interfaces in the errdisabled state."
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces status", revision=1)]
 
@@ -219,8 +211,6 @@ class VerifyInterfacesStatus(AntaTest):
     ```
     """
 
-    name = "VerifyInterfacesStatus"
-    description = "Verifies the status of the provided interfaces."
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces description", revision=1)]
 
@@ -291,8 +281,6 @@ class VerifyStormControlDrops(AntaTest):
     ```
     """
 
-    name = "VerifyStormControlDrops"
-    description = "Verifies there are no interface storm-control drop counters."
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show storm-control", revision=1)]
 
@@ -329,8 +317,6 @@ class VerifyPortChannels(AntaTest):
     ```
     """
 
-    name = "VerifyPortChannels"
-    description = "Verifies there are no inactive ports in all port channels."
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show port-channel", revision=1)]
 
@@ -364,8 +350,6 @@ class VerifyIllegalLACP(AntaTest):
     ```
     """
 
-    name = "VerifyIllegalLACP"
-    description = "Verifies there are no illegal LACP packets in all port channels."
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show lacp counters all-ports", revision=1)]
 
@@ -401,8 +385,6 @@ class VerifyLoopbackCount(AntaTest):
     ```
     """
 
-    name = "VerifyLoopbackCount"
-    description = "Verifies the number of loopback interfaces and their status."
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip interface brief", revision=1)]
 
@@ -450,8 +432,6 @@ class VerifySVI(AntaTest):
     ```
     """
 
-    name = "VerifySVI"
-    description = "Verifies the status of all SVIs."
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip interface brief", revision=1)]
 
@@ -495,8 +475,6 @@ class VerifyL3MTU(AntaTest):
     ```
     """
 
-    name = "VerifyL3MTU"
-    description = "Verifies the global L3 MTU of all L3 interfaces."
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces", revision=1)]
 
@@ -553,8 +531,6 @@ class VerifyIPProxyARP(AntaTest):
     ```
     """
 
-    name = "VerifyIPProxyARP"
-    description = "Verifies if Proxy ARP is enabled."
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show ip interface {intf}", revision=2)]
 
@@ -607,8 +583,6 @@ class VerifyL2MTU(AntaTest):
     ```
     """
 
-    name = "VerifyL2MTU"
-    description = "Verifies the global L2 MTU of all L2 interfaces."
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces", revision=1)]
 
@@ -669,8 +643,6 @@ class VerifyInterfaceIPv4(AntaTest):
     ```
     """
 
-    name = "VerifyInterfaceIPv4"
-    description = "Verifies the interface IPv4 addresses."
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show ip interface {interface}", revision=2)]
 
@@ -765,8 +737,6 @@ class VerifyIpVirtualRouterMac(AntaTest):
     ```
     """
 
-    name = "VerifyIpVirtualRouterMac"
-    description = "Verifies the IP virtual router MAC address."
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip virtual-router", revision=2)]
 
@@ -818,8 +788,6 @@ class VerifyInterfacesSpeed(AntaTest):
     ```
     """
 
-    name = "VerifyInterfacesSpeed"
-    description = "Verifies the speed, lanes, auto-negotiation status, and mode as full duplex for interfaces."
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces")]
 
@@ -909,8 +877,6 @@ class VerifyLACPInterfacesStatus(AntaTest):
     ```
     """
 
-    name = "VerifyLACPInterfacesStatus"
-    description = "Verifies the Link Aggregation Control Protocol(LACP) status of the provided interfaces."
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show lacp interface {interface}", revision=1)]
 

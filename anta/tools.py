@@ -94,8 +94,7 @@ def get_dict_superset(
     *,
     required: bool = False,
 ) -> Any:
-    """
-    Get the first dictionary from a list of dictionaries that is a superset of the input dict.
+    """Get the first dictionary from a list of dictionaries that is a superset of the input dict.
 
     Returns the supplied default value or None if there is no match and "required" is False.
 
