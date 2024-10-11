@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar, get_args
 
-from anta.custom_types import PositiveInteger, SnmpPdu
+from anta.custom_types import PositiveInteger, SnmpErrorCounter, SnmpPdu
 from anta.models import AntaCommand, AntaTest
 from anta.tools import get_value
 
@@ -294,3 +294,59 @@ class VerifySnmpPDUCounters(AntaTest):
             self.result.is_success()
         else:
             self.result.is_failure(f"The following SNMP PDU counters are not found or have zero PDU counters:\n{failures}")
+
+
+class VerifySnmpErrorCounters(AntaTest):
+    """Verifies the SNMP error counters.
+
+    By default, all  error counters will be checked for any non-zero values.
+    An optional list of specific error counters can be provided for granular testing.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the SNMP error counter(s) are zero/None.
+    * Failure: The test will fail if the SNMP error counter(s) are non-zero/not None/Not Found or is not configured.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.snmp:
+      - VerifySnmpErrorCounters:
+          error_counters:
+            - inVersionErrs
+            - inBadCommunityNames
+    """
+
+    name = "VerifySnmpErrorCounters"
+    description = "Verifies the SNMP error counters."
+    categories: ClassVar[list[str]] = ["snmp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show snmp", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifySnmpErrorCounters test."""
+
+        error_counters: list[SnmpErrorCounter] | None = None
+        """Optional list of SNMP error counters to be verified. If not provided, test will verifies all error counters."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifySnmpErrorCounters."""
+        error_counters = self.inputs.error_counters
+        command_output = self.instance_commands[0].json_output
+
+        # Verify SNMP PDU counters.
+        if not (snmp_counters := get_value(command_output, "counters")):
+            self.result.is_failure("SNMP counters not found.")
+            return
+
+        # In case SNMP error counters not provided, It will check all the error counters.
+        if not error_counters:
+            error_counters = list(get_args(SnmpErrorCounter))
+
+        error_counters_not_ok = {counter: value for counter in error_counters if (value := snmp_counters.get(counter))}
+
+        # Check if any failures
+        if not error_counters_not_ok:
+            self.result.is_success()
+        else:
+            self.result.is_failure(f"The following SNMP error counters are not found or have non-zero error counters:\n{error_counters_not_ok}")

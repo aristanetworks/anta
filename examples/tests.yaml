@@ -401,6 +401,10 @@ anta.tests.snmp:
   - VerifySnmpPDUCounters:
       pdus:
         - outTrapPdus
+  - VerifySnmpErrorCounters:
+      error_counters:
+        - inVersionErrs
+        - inBadCommunityNames
 
 anta.tests.software:
   - VerifyEOSVersion:
