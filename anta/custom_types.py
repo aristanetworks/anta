@@ -208,3 +208,6 @@ SnmpPdu = Literal["inGetPdus", "inGetNextPdus", "inSetPdus", "outGetResponsePdus
 SnmpErrorCounter = Literal[
     "inVersionErrs", "inBadCommunityNames", "inBadCommunityUses", "inParseErrs", "outTooBigErrs", "outNoSuchNameErrs", "outBadValueErrs", "outGeneralErrs"
 ]
+SnmpVersion = Literal["v1", "v2c", "v3"]
+HashingAlgorithms = Literal["MD5", "SHA", "SHA-224", "SHA-256", "SHA-384", "SHA-512"]
+EncryptionAlgorithms = Literal["AES-128", "AES-192", "AES-256", "DES"]

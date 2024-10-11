@@ -9,9 +9,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar, get_args
 
-from anta.custom_types import PositiveInteger, SnmpErrorCounter, SnmpPdu
+from pydantic import BaseModel, model_validator
+
+from anta.custom_types import EncryptionAlgorithms, HashingAlgorithms, PositiveInteger, SnmpErrorCounter, SnmpPdu, SnmpVersion
 from anta.models import AntaCommand, AntaTest
-from anta.tools import get_value
+from anta.tools import get_failed_logs, get_value
 
 if TYPE_CHECKING:
     from anta.models import AntaTemplate
@@ -350,3 +352,103 @@ class VerifySnmpErrorCounters(AntaTest):
             self.result.is_success()
         else:
             self.result.is_failure(f"The following SNMP error counters are not found or have non-zero error counters:\n{error_counters_not_ok}")
+
+
+class VerifySnmpUser(AntaTest):
+    """Verifies the SNMP user configurations for specified version(s).
+
+    - Verifies that the valid user name and group name.
+    - Ensures that the SNMP v3 security model, the user authentication and privacy settings aligning with version-specific requirements.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the provided SNMP user and all specified parameters are correctly configured.
+    * Failure: The test will fail if the provided SNMP user is not configured or specified parameters are not correctly configured.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.snmp:
+      - VerifySnmpUser:
+          users:
+            - username: test
+              group_name: test_group
+              security_model: v3
+              authentication_type: MD5
+              priv_type: AES-128
+    ```
+    """
+
+    name = "VerifySnmpUser"
+    description = "Verifies the SNMP user configurations for specified version(s)."
+    categories: ClassVar[list[str]] = ["snmp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show snmp user", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifySnmpUser test."""
+
+        users: list[SnmpUser]
+        """List of SNMP users."""
+
+        class SnmpUser(BaseModel):
+            """Model for a SNMP User."""
+
+            username: str
+            """SNMP user name."""
+            group_name: str
+            """SNMP group for the user."""
+            security_model: SnmpVersion
+            """SNMP protocol version.."""
+            authentication_type: HashingAlgorithms | None = None
+            """User authentication settings."""
+            priv_type: EncryptionAlgorithms | None = None
+            """User privacy settings."""
+
+            @model_validator(mode="after")
+            def validate_inputs(self: BaseModel) -> BaseModel:
+                """Validate the inputs provided to the SnmpUser class."""
+                if self.security_model in ["v1", "v2c"] and (self.authentication_type or self.priv_type) is not None:
+                    msg = "SNMP versions 1 and 2c, do not support encryption or advanced authentication."
+                    raise ValueError(msg)
+                return self
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifySnmpUser."""
+        self.result.is_success()
+        failures: str = ""
+
+        for user in self.inputs.users:
+            username = user.username
+            group_name = user.group_name
+            security_model = user.security_model
+            authentication_type = user.authentication_type
+            priv_type = user.priv_type
+
+            # Verify SNMP host details.
+            if not (user_details := get_value(self.instance_commands[0].json_output, f"usersByVersion.{security_model}.users.{username}")):
+                failures += f"SNMP user '{username}' is not configured with security model '{security_model}'.\n"
+                continue
+
+            # Update expected host details.
+            expected_user_details = {"user group": group_name}
+
+            # Update actual host details.
+            actual_user_details = {"user group": user_details.get("groupName", "Not Found")}
+
+            if authentication_type:
+                expected_user_details["authentication type"] = authentication_type
+                actual_user_details["authentication type"] = user_details.get("v3Params", {}).get("authType", "Not Found")
+
+            if priv_type:
+                expected_user_details["privacy type"] = priv_type
+                actual_user_details["privacy type"] = user_details.get("v3Params", {}).get("privType", "Not Found")
+
+            # Collecting failures logs if any.
+            failure_logs = get_failed_logs(expected_user_details, actual_user_details)
+            if failure_logs:
+                failures += f"For SNMP user {username}:{failure_logs}\n"
+
+        # Check if there are any failures.
+        if failures:
+            self.result.is_failure(failures)

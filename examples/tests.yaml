@@ -405,6 +405,17 @@ anta.tests.snmp:
       error_counters:
         - inVersionErrs
         - inBadCommunityNames
+  - VerifySnmpUser:
+      users:
+        - username: Test1
+          group_name: TestGroup1
+          security_model: v3
+          authentication_type: MD5
+          priv_type: AES-128
+        - username: Test2
+          group_name: TestGroup2
+          security_model: v3
+          authentication_type: SHA-256
 
 anta.tests.software:
   - VerifyEOSVersion:
