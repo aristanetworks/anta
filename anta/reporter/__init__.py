@@ -14,6 +14,7 @@ from jinja2 import Template
 from rich.table import Table
 
 from anta import RICH_COLOR_PALETTE, RICH_COLOR_THEME
+from anta.tools import convert_categories
 
 if TYPE_CHECKING:
     import pathlib
@@ -108,7 +109,7 @@ class ReportTable:
         """
         Create a table report with all tests for one or all devices.
 
-        Create table with full output: Host / Test / Status / Message
+        Create table with full output: Device | Test Name | Test Status | Message(s) | Test description | Test category
 
         Parameters
         ----------
@@ -129,7 +130,7 @@ class ReportTable:
         def add_line(result: TestResult) -> None:
             state = self._color_result(result.result)
             message = self._split_list_to_txt_list(result.messages) if len(result.messages) > 0 else ""
-            categories = ", ".join(result.categories)
+            categories = ", ".join(convert_categories(result.categories))
             table.add_row(str(result.name), result.test, state, message, result.description, categories)
 
         for result in manager.results:
@@ -145,7 +146,8 @@ class ReportTable:
         """
         Create a table report with result aggregated per test.
 
-        Create table with full output: Test | Number of success | Number of failure | Number of error | List of nodes in error or failure
+        Create table with full output:
+        Test Name | # of success | # of skipped | # of failure | # of errors | List of failed or error nodes
 
         Parameters
         ----------
@@ -192,7 +194,7 @@ class ReportTable:
         """
         Create a table report with result aggregated per device.
 
-        Create table with full output: Host | Number of success | Number of failure | Number of error | List of nodes in error or failure
+        Create table with full output: Device | # of success | # of skipped | # of failure | # of errors | List of failed or error test cases
 
         Parameters
         ----------

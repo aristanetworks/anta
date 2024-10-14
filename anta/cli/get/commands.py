@@ -139,6 +139,7 @@ def tags(inventory: AntaInventory, **kwargs: Any) -> None:
 @click.command
 def tests() -> None:
     """Show all builtin ANTA tests with an example output retrieved from each test documentation."""
+    # pylint: disable=C0415
     console.print("# Current builtin ANTA tests are:", style="white on blue")
     import importlib
     import inspect
@@ -149,17 +150,14 @@ def tests() -> None:
 
     from anta.models import AntaTest
 
-    # TODO: with this method need to disable warning for unknown section in numpydoc
-    # Would be better to not use numpydoc
     def explore_package(module_name: str, level: int = 0) -> None:
         loader = pkgutil.get_loader(module_name)
         if loader is None:
-            # TODO: log something
             return
         path = Path(loader.get_filename()).parent
         for sub_module in pkgutil.walk_packages([str(path)]):
             _, sub_module_name, _ = sub_module
-            qname = module_name + "." + sub_module_name
+            qname = f"{module_name}.{sub_module_name}"
             if sub_module.ispkg:
                 explore_package(qname, level=level + 1)
             else:
@@ -172,7 +170,6 @@ def tests() -> None:
                             doc = NumpyDocString(obj.__doc__)
                         console.print(f"  - {obj.name}:")
                         console.print(f"      # {obj.description}", soft_wrap=True)
-                        # TODO: add info about when the test was added
                         if len(doc["Examples"]) > 4 + level:
                             console.print("\n".join(line[2 * level :] for line in doc["Examples"][level + 3 : -1]))
 

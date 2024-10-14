@@ -150,8 +150,7 @@ def prepare_tests(
     # Using a set to avoid inserting duplicate tests
     device_to_tests: defaultdict[AntaDevice, set[AntaTestDefinition]] = defaultdict(set)
 
-    # Create AntaTestRunner tuples from the tags
-    final_tests_count = 0
+    # Create the device to tests mapping from the tags
     for device in inventory.devices:
         if tags:
             if not any(tag in device.tags for tag in tags):
@@ -163,8 +162,6 @@ def prepare_tests(
 
         # Add the tests with matching tags from device tags
         device_to_tests[device].update(catalog.get_tests_by_tags(device.tags))
-
-        final_tests_count += len(device_to_tests[device])
 
     if len(device_to_tests.values()) == 0:
         msg = (

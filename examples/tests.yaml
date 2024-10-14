@@ -286,7 +286,7 @@ anta.tests.logging:
       interface: Management0
       vrf: default
   - VerifyLoggingTimestamp:
-      # Verifies if logs are generated with the riate timestamp.
+      # Verifies if logs are generated with the appropriate timestamp.
 anta.tests.mlag:
   - VerifyMlagConfigSanity:
       # Verifies there are no MLAG config-sanity inconsistencies.
@@ -676,6 +676,10 @@ anta.tests.snmp:
   - VerifySnmpContact:
       # Verifies the SNMP contact of a device.
       contact: Jon@example.com
+  - VerifySnmpErrorCounters:
+      # Verifies the SNMP error counters.
+      error_counters:
+        - inVersionErrs
   - VerifySnmpIPv4Acl:
       # Verifies if the SNMP agent has IPv4 ACL(s) configured.
       number: 3
@@ -687,6 +691,11 @@ anta.tests.snmp:
   - VerifySnmpLocation:
       # Verifies the SNMP location of a device.
       location: New York
+  - VerifySnmpPDUCounters:
+      # Verifies the SNMP PDU counters.
+      pdus:
+        - outTrapPdus
+        - inGetNextPdus
   - VerifySnmpStatus:
       # Verifies if the SNMP agent is enabled.
       vrf: default

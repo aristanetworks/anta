@@ -10,7 +10,6 @@ from collections import defaultdict
 from functools import cached_property
 from itertools import chain
 
-from anta.constants import ACRONYM_CATEGORIES
 from anta.result_manager.models import AntaTestStatus, TestResult
 
 from .models import CategoryStats, DeviceStats, TestStats
@@ -166,9 +165,6 @@ class ResultManager:
         result
             TestResult to update the statistics.
         """
-        result.categories = [
-            " ".join(word.upper() if word.lower() in ACRONYM_CATEGORIES else word.title() for word in category.split()) for category in result.categories
-        ]
         count_attr = f"tests_{result.result}_count"
 
         # Update device stats

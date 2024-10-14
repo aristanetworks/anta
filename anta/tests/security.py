@@ -58,7 +58,7 @@ class VerifySSHStatus(AntaTest):
         except StopIteration:
             self.result.is_failure("Could not find SSH status in returned output.")
             return
-        status = line.split("is ")[1]
+        status = line.split()[-1]
 
         if status == "disabled":
             self.result.is_success()

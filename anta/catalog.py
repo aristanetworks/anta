@@ -310,13 +310,11 @@ class AntaCatalog:
 
         self.indexes_built: bool
         self.tag_to_tests: defaultdict[str | None, set[AntaTestDefinition]]
-        self._tests_without_tags: set[AntaTestDefinition]
         self._init_indexes()
 
     def _init_indexes(self) -> None:
         """Init indexes related variables."""
         self.tag_to_tests = defaultdict(set)
-        self._tests_without_tags = set()
         self.indexes_built = False
 
     @property
@@ -505,11 +503,7 @@ class AntaCatalog:
 
         If a `filtered_tests` set is provided, only the tests in this set will be indexed.
 
-        This method populates two attributes:
-
-        - tag_to_tests: A dictionary mapping each tag to a set of tests that contain it.
-
-        - _tests_without_tags: A set of tests that do not have any tags.
+        This method populates the tag_to_tests attribute, which is a dictionary mapping tags to sets of tests.
 
         Once the indexes are built, the `indexes_built` attribute is set to True.
         """
@@ -523,9 +517,8 @@ class AntaCatalog:
                 for tag in test_tags:
                     self.tag_to_tests[tag].add(test)
             else:
-                self._tests_without_tags.add(test)
+                self.tag_to_tests[None].add(test)
 
-        self.tag_to_tests[None] = self._tests_without_tags
         self.indexes_built = True
 
     def clear_indexes(self) -> None:
