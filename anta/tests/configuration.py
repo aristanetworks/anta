@@ -18,7 +18,8 @@ if TYPE_CHECKING:
 
 
 class VerifyZeroTouch(AntaTest):
-    """Verifies ZeroTouch is disabled.
+    """
+    Verifies ZeroTouch is disabled.
 
     Expected Results
     ----------------
@@ -49,7 +50,8 @@ class VerifyZeroTouch(AntaTest):
 
 
 class VerifyRunningConfigDiffs(AntaTest):
-    """Verifies there is no difference between the running-config and the startup-config.
+    """
+    Verifies there is no difference between the running-config and the startup-config.
 
     Expected Results
     ----------------
@@ -80,7 +82,8 @@ class VerifyRunningConfigDiffs(AntaTest):
 
 
 class VerifyRunningConfigLines(AntaTest):
-    """Verifies the given regular expression patterns are present in the running-config.
+    """
+    Verifies the given regular expression patterns are present in the running-config.
 
     !!! warning
         Since this uses regular expression searches on the whole running-config, it can

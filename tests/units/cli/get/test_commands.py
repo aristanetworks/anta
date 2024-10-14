@@ -43,7 +43,8 @@ def test_from_cvp(
     cvp_connect_failure: bool,
 ) -> None:
     # ruff: noqa: C901
-    """Test `anta get from-cvp`.
+    """
+    Test `anta get from-cvp`.
 
     This test verifies that username and password are NOT mandatory to run this command
     """
@@ -143,7 +144,8 @@ def test_from_ansible(
     expected_exit: int,
     expected_log: str | None,
 ) -> None:
-    """Test `anta get from-ansible`.
+    """
+    Test `anta get from-ansible`.
 
     This test verifies:
     * the parsing of an ansible-inventory
@@ -228,7 +230,8 @@ def test_from_ansible_overwrite(
     expected_exit: int,
     expected_log: str | None,
 ) -> None:
-    """Test `anta get from-ansible` overwrite mechanism.
+    """
+    Test `anta get from-ansible` overwrite mechanism.
 
     The test uses a static ansible-inventory and output as these are tested in other functions
 

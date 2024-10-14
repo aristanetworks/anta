@@ -143,7 +143,8 @@ def save_to_csv(ctx: click.Context, csv_file: pathlib.Path) -> None:
 
 
 def save_markdown_report(ctx: click.Context, md_output: pathlib.Path) -> None:
-    """Save the markdown report to a file.
+    """
+    Save the markdown report to a file.
 
     Parameters
     ----------

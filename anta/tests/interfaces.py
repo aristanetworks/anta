@@ -24,7 +24,8 @@ BPS_GBPS_CONVERSIONS = 1000000000
 
 
 class VerifyInterfaceUtilization(AntaTest):
-    """Verifies that the utilization of interfaces is below a certain threshold.
+    """
+    Verifies that the utilization of interfaces is below a certain threshold.
 
     Load interval (default to 5 minutes) is defined in device configuration.
     This test has been implemented for full-duplex interfaces only.
@@ -90,7 +91,8 @@ class VerifyInterfaceUtilization(AntaTest):
 
 
 class VerifyInterfaceErrors(AntaTest):
-    """Verifies that the interfaces error counters are equal to zero.
+    """
+    Verifies that the interfaces error counters are equal to zero.
 
     Expected Results
     ----------------
@@ -125,7 +127,8 @@ class VerifyInterfaceErrors(AntaTest):
 
 
 class VerifyInterfaceDiscards(AntaTest):
-    """Verifies that the interfaces packet discard counters are equal to zero.
+    """
+    Verifies that the interfaces packet discard counters are equal to zero.
 
     Expected Results
     ----------------
@@ -159,7 +162,8 @@ class VerifyInterfaceDiscards(AntaTest):
 
 
 class VerifyInterfaceErrDisabled(AntaTest):
-    """Verifies there are no interfaces in the errdisabled state.
+    """
+    Verifies there are no interfaces in the errdisabled state.
 
     Expected Results
     ----------------
@@ -191,7 +195,8 @@ class VerifyInterfaceErrDisabled(AntaTest):
 
 
 class VerifyInterfacesStatus(AntaTest):
-    """Verifies if the provided list of interfaces are all in the expected state.
+    """
+    Verifies if the provided list of interfaces are all in the expected state.
 
     - If line protocol status is provided, prioritize checking against both status and line protocol status
     - If line protocol status is not provided and interface status is "up", expect both status and line protocol to be "up"
@@ -276,7 +281,8 @@ class VerifyInterfacesStatus(AntaTest):
 
 
 class VerifyStormControlDrops(AntaTest):
-    """Verifies there are no interface storm-control drop counters.
+    """
+    Verifies there are no interface storm-control drop counters.
 
     Expected Results
     ----------------
@@ -314,7 +320,8 @@ class VerifyStormControlDrops(AntaTest):
 
 
 class VerifyPortChannels(AntaTest):
-    """Verifies there are no inactive ports in all port channels.
+    """
+    Verifies there are no inactive ports in all port channels.
 
     Expected Results
     ----------------
@@ -349,7 +356,8 @@ class VerifyPortChannels(AntaTest):
 
 
 class VerifyIllegalLACP(AntaTest):
-    """Verifies there are no illegal LACP packets in all port channels.
+    """
+    Verifies there are no illegal LACP packets in all port channels.
 
     Expected Results
     ----------------
@@ -385,7 +393,8 @@ class VerifyIllegalLACP(AntaTest):
 
 
 class VerifyLoopbackCount(AntaTest):
-    """Verifies that the device has the expected number of loopback interfaces and all are operational.
+    """
+    Verifies that the device has the expected number of loopback interfaces and all are operational.
 
     Expected Results
     ----------------
@@ -435,7 +444,8 @@ class VerifyLoopbackCount(AntaTest):
 
 
 class VerifySVI(AntaTest):
-    """Verifies the status of all SVIs.
+    """
+    Verifies the status of all SVIs.
 
     Expected Results
     ----------------
@@ -471,7 +481,8 @@ class VerifySVI(AntaTest):
 
 
 class VerifyL3MTU(AntaTest):
-    """Verifies the global layer 3 Maximum Transfer Unit (MTU) for all L3 interfaces.
+    """
+    Verifies the global layer 3 Maximum Transfer Unit (MTU) for all L3 interfaces.
 
     Test that L3 interfaces are configured with the correct MTU. It supports Ethernet, Port Channel and VLAN interfaces.
 
@@ -535,7 +546,8 @@ class VerifyL3MTU(AntaTest):
 
 
 class VerifyIPProxyARP(AntaTest):
-    """Verifies if Proxy-ARP is enabled for the provided list of interface(s).
+    """
+    Verifies if Proxy-ARP is enabled for the provided list of interface(s).
 
     Expected Results
     ----------------
@@ -583,7 +595,8 @@ class VerifyIPProxyARP(AntaTest):
 
 
 class VerifyL2MTU(AntaTest):
-    """Verifies the global layer 2 Maximum Transfer Unit (MTU) for all L2 interfaces.
+    """
+    Verifies the global layer 2 Maximum Transfer Unit (MTU) for all L2 interfaces.
 
     Test that L2 interfaces are configured with the correct MTU. It supports Ethernet, Port Channel and VLAN interfaces.
     You can define a global MTU to check and also an MTU per interface and also ignored some interfaces.
@@ -648,7 +661,8 @@ class VerifyL2MTU(AntaTest):
 
 
 class VerifyInterfaceIPv4(AntaTest):
-    """Verifies if an interface is configured with a correct primary and list of optional secondary IPv4 addresses.
+    """
+    Verifies if an interface is configured with a correct primary and list of optional secondary IPv4 addresses.
 
     Expected Results
     ----------------
@@ -749,7 +763,8 @@ class VerifyInterfaceIPv4(AntaTest):
 
 
 class VerifyIpVirtualRouterMac(AntaTest):
-    """Verifies the IP virtual router MAC address.
+    """
+    Verifies the IP virtual router MAC address.
 
     Expected Results
     ----------------
@@ -789,7 +804,8 @@ class VerifyIpVirtualRouterMac(AntaTest):
 
 
 class VerifyInterfacesSpeed(AntaTest):
-    """Verifies the speed, lanes, auto-negotiation status, and mode as full duplex for interfaces.
+    """
+    Verifies the speed, lanes, auto-negotiation status, and mode as full duplex for interfaces.
 
     - If the auto-negotiation status is set to True, verifies that auto-negotiation is successful, the mode is full duplex and the speed/lanes match the input.
     - If the auto-negotiation status is set to False, verifies that the mode is full duplex and the speed/lanes match the input.
@@ -886,7 +902,8 @@ class VerifyInterfacesSpeed(AntaTest):
 
 
 class VerifyLACPInterfacesStatus(AntaTest):
-    """Verifies the Link Aggregation Control Protocol (LACP) status of the provided interfaces.
+    """
+    Verifies the Link Aggregation Control Protocol (LACP) status of the provided interfaces.
 
     - Verifies that the interface is a member of the LACP port channel.
     - Ensures that the synchronization is established.

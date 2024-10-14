@@ -67,6 +67,7 @@ repos:
           - --rcfile=pyproject.toml  # Link to config file
         additional_dependencies:
           - anta[cli]
+          - numpydoc
           - types-PyYAML
           - types-requests
           - types-pyOpenSSL
@@ -108,3 +109,15 @@ repos:
           - --config=.github/markdownlint.yaml
           - --ignore-path=.github/markdownlintignore
           - --fix
+
+  - repo: local
+    hooks:
+      - id: examples-test
+        name: Generate examples/tests.yaml
+        entry: >-
+          docs/scripts/generate_examples_tests.py
+        language: system
+        types: [python]
+        files: anta/
+        verbose: true
+        pass_filenames: false

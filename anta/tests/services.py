@@ -18,7 +18,8 @@ from anta.tools import get_dict_superset, get_failed_logs, get_item
 
 
 class VerifyHostname(AntaTest):
-    """Verifies the hostname of a device.
+    """
+    Verifies the hostname of a device.
 
     Expected Results
     ----------------
@@ -57,7 +58,8 @@ class VerifyHostname(AntaTest):
 
 
 class VerifyDNSLookup(AntaTest):
-    """Verifies the DNS (Domain Name Service) name to IP address resolution.
+    """
+    Verifies the DNS (Domain Name Service) name to IP address resolution.
 
     Expected Results
     ----------------
@@ -107,7 +109,8 @@ class VerifyDNSLookup(AntaTest):
 
 
 class VerifyDNSServers(AntaTest):
-    """Verifies if the DNS (Domain Name Service) servers are correctly configured.
+    """
+    Verifies if the DNS (Domain Name Service) servers are correctly configured.
 
     Expected Results
     ----------------
@@ -174,7 +177,8 @@ class VerifyDNSServers(AntaTest):
 
 
 class VerifyErrdisableRecovery(AntaTest):
-    """Verifies the errdisable recovery reason, status, and interval.
+    """
+    Verifies the errdisable recovery reason, status, and interval.
 
     Expected Results
     ----------------

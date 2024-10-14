@@ -15,7 +15,8 @@ if TYPE_CHECKING:
 
 
 class VerifyFieldNotice44Resolution(AntaTest):
-    """Verifies if the device is using an Aboot version that fixes the bug discussed in the Field Notice 44.
+    """
+    Verifies if the device is using an Aboot version that fixes the bug discussed in the Field Notice 44.
 
     Aboot manages system settings prior to EOS initialization.
 
@@ -126,7 +127,8 @@ class VerifyFieldNotice44Resolution(AntaTest):
 
 
 class VerifyFieldNotice72Resolution(AntaTest):
-    """Verifies if the device is potentially exposed to Field Notice 72, and if the issue has been mitigated.
+    """
+    Verifies if the device is potentially exposed to Field Notice 72, and if the issue has been mitigated.
 
     Reference: https://www.arista.com/en/support/advisories-notices/field-notice/17410-field-notice-0072
 
