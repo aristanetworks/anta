@@ -241,14 +241,10 @@ class VerifySnmpPDUCounters(AntaTest):
     By default, all SNMP PDU counters will be checked for any non-zero values.
     An optional list of specific SNMP PDU(s) can be provided for granular testing.
 
-    - Verifies that the valid notification type and VRF name.
-    - Ensures that UDP port provided matches the expected value.
-    - Ensures that the community_string is properly set for SNMP v1/v2 and for SNMP v3, the user field is included, aligning with version-specific requirements.
-
     Expected Results
     ----------------
-    * Success: The test will pass if the provided SNMP notification host and all specified parameters are correctly configured.
-    * Failure: The test will fail if the provided SNMP notification host is not configured or specified parameters are not correctly configured.
+    * Success: The test will pass if the SNMP PDU counter(s) are non-zero/greater than zero.
+    * Failure: The test will fail if the SNMP PDU counter(s) are zero/None/Not Found.
 
     Examples
     --------
