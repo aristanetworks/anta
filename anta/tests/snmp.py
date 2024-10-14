@@ -411,9 +411,9 @@ class VerifySnmpSourceIntf(AntaTest):
 
             # Verify source-interface details.
             if not actual_interface:
-                failures += f"Source interface '{interface}' is not configured.\n"
+                failures += f"Source interface '{interface}' is not configured with vrf '{vrf}'.\n"
             elif actual_interface != interface:
-                failures += f"Source interface '{interface}' is not correctly configured in vrf '{vrf}'.\n"
+                failures += f"Expected '{interface}' as source-interface in vrf '{vrf}' but found '{actual_interface}' instead.\n"
 
         # Check if there are any failures.
         if not failures:

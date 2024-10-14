@@ -357,7 +357,10 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"interfaces": [{"interface": "Ethernet1", "vrf": "default"}, {"interface": "Management0", "vrf": "MGMT"}]},
         "expected": {
             "result": "failure",
-            "messages": ["Source interface 'Ethernet1' is not correctly configured in vrf 'default'.\nSource interface 'Management0' is not configured."],
+            "messages": [
+                "Expected 'Ethernet1' as source-interface in vrf 'default' but found 'Management0' instead.\n"
+                "Source interface 'Management0' is not configured with vrf 'MGMT'."
+            ],
         },
     },
 ]
