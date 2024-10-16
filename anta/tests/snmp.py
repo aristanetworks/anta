@@ -7,14 +7,77 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar, get_args
+from typing import TYPE_CHECKING, Any, ClassVar, Literal, get_args
 
-from anta.custom_types import PositiveInteger, SnmpErrorCounter, SnmpPdu
+from pydantic import BaseModel, model_validator
+
+from anta.custom_types import PositiveInteger, SnmpErrorCounter, SnmpPdu, SnmpVersion
 from anta.models import AntaCommand, AntaTest
 from anta.tools import get_value
 
 if TYPE_CHECKING:
     from anta.models import AntaTemplate
+
+
+def _get_snmp_group_failures(
+    version: SnmpVersion,
+    read_view: str | None,
+    write_view: str | None,
+    notify_view: str | None,
+    authentication: Literal["v3Auth", "v3Priv", "v3NoAuth"] | None,
+    group_details: dict[str, Any],
+) -> str:
+    """
+    Validate SNMP group configurations and return failure messages if issues are found.
+
+    Parameters
+    ----------
+    version
+        SNMP protocol version.
+    read_view
+        View to restrict read access.
+    write_view
+        View to restrict write access.
+    notify_view
+        View to restrict notifications.
+    authentication
+        Advanced authentication in v3 SNMP version
+    group_details
+        The SNMP group output from device.
+
+    Returns
+    -------
+    str
+        Failed log of a group details.
+
+    """
+    failure: str = ""
+
+    def check_view(view_name: str, expected_view: str, default_message: str) -> str:
+        """Check actual view and return failure log if any."""
+        failure_log: str = ""
+        actual_view = "Not Found" if (view := group_details.get(view_name)) is None else view or default_message
+        config_view = group_details.get(f"{view_name}Config")
+
+        if not config_view:
+            failure_log += f"\nThe '{expected_view}' view is not configured."
+        if expected_view != actual_view:
+            failure_log += f"\nExpected '{expected_view}' as '{view_name}' but found '{actual_view}' instead."
+        return failure_log
+
+    # Check views (read, write, notify)
+    if read_view:
+        failure += check_view("readView", read_view, "default: all included")
+    if write_view:
+        failure += check_view("writeView", write_view, "no write view specified")
+    if notify_view:
+        failure += check_view("notifyView", notify_view, "no notify view specified")
+
+    # Check version-specific authentication
+    if version == "v3" and (actual_auth := group_details.get("secModel")) != authentication:
+        failure += f"\nExpected '{authentication}' as security model but found '{actual_auth}' instead."
+
+    return failure
 
 
 class VerifySnmpStatus(AntaTest):
@@ -350,3 +413,96 @@ class VerifySnmpErrorCounters(AntaTest):
             self.result.is_success()
         else:
             self.result.is_failure(f"The following SNMP error counters are not found or have non-zero error counters:\n{error_counters_not_ok}")
+
+
+class VerifySnmpGroup(AntaTest):
+    """Verifies the SNMP group configurations for specified version(s).
+
+    - Verifies that the valid group name and security model version.
+    - Ensures that the SNMP views, the read, write and notify settings aligning with version-specific requirements.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the provided SNMP group and all specified parameters are correctly configured.
+    * Failure: The test will fail if the provided SNMP group is not configured or specified parameters are not correctly configured.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.snmp:
+      - VerifySnmpGroup:
+          snmp_groups:
+            - group_name: Group1
+              version: v1
+              read_view: group_read_1
+              write_view: group_write_1
+              notify_view: group_notify_1
+    ```
+    """
+
+    name = "VerifySnmpGroup"
+    description = "Verifies the SNMP group configurations for specified version(s)."
+    categories: ClassVar[list[str]] = ["snmp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show snmp group", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifySnmpGroup test."""
+
+        snmp_groups: list[SnmpGroup]
+        """List of SNMP groups."""
+
+        class SnmpGroup(BaseModel):
+            """Model for a SNMP group."""
+
+            group_name: str
+            """SNMP group for the user."""
+            version: SnmpVersion
+            """SNMP protocol version."""
+            read_view: str | None = None
+            """View to restrict read access."""
+            write_view: str | None = None
+            """View to restrict write access."""
+            notify_view: str | None = None
+            """View to restrict notifications."""
+            authentication: Literal["v3Auth", "v3Priv", "v3NoAuth"] | None = None
+            """Advanced authentication in v3 SNMP version. Defaults to None.
+            - v3Auth: Group using authentication but not privacy
+            - v3Priv: Group using both authentication and privacy
+            - v3NoAuth: Group using neither authentication nor privacy
+            """
+
+            @model_validator(mode="after")
+            def validate_inputs(self: BaseModel) -> BaseModel:
+                """Validate the inputs provided to the SnmpGroup class."""
+                if self.version == "v3" and self.authentication is None:
+                    msg = "SNMP versions v3, advanced authentication is required."
+                    raise ValueError(msg)
+                return self
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifySnmpGroup."""
+        self.result.is_success()
+        failures: str = ""
+
+        for group in self.inputs.snmp_groups:
+            group_name = group.group_name
+            version = group.version
+            read_view = group.read_view
+            write_view = group.write_view
+            notify_view = group.notify_view
+            authentication = group.authentication
+
+            # Verify SNMP group details.
+            if not (group_details := get_value(self.instance_commands[0].json_output, f"groups.{group_name}.versions.{version}")):
+                failures += f"SNMP group '{group_name}' is not configured with security model '{version}'.\n"
+                continue
+
+            # Collecting failures logs if any.
+            failure_logs = _get_snmp_group_failures(version, read_view, write_view, notify_view, authentication, group_details)
+            if failure_logs:
+                failures += f"For SNMP group {group_name} with SNMP version {version}:{failure_logs}\n"
+
+        # Check if there are any failures.
+        if failures:
+            self.result.is_failure(failures)
