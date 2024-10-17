@@ -389,7 +389,6 @@ class VerifyBGPSpecificPeers(AntaTest):
                 if address_family.check_tcp_queues and (inq != 0 or outq != 0):
                     self.result.is_failure(f"{address_family} Peer: {peer_ip} - Session has non-empty message queues - InQ: {inq}, OutQ: {outq}")
 
-
 class VerifyBGPExchangedRoutes(AntaTest):
     """Verifies the advertised and received routes of BGP peers.
 
