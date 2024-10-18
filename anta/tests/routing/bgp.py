@@ -140,7 +140,7 @@ class VerifyBGPPeerCount(AntaTest):
         @field_validator("address_families")
         @classmethod
         def validate_address_families(cls, address_families: list[BgpAddressFamily]) -> list[BgpAddressFamily]:
-            """Validate that 'peers' field is provided in each address family."""
+            """Validate that 'num_peers' field is provided in each address family."""
             for af in address_families:
                 if af.num_peers is None:
                     msg = f"{af} 'num_peers' field missing in the input"
