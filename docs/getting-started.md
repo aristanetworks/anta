@@ -145,7 +145,8 @@ anta nrfu \
     --enable-password t \
     --inventory .personal/inventory_atd.yml \
     --catalog .personal/tests-bases.yml \
-    table --tags leaf
+    --tags leaf \
+    table
 
 
 ╭────────────────────── Settings ──────────────────────╮
@@ -186,7 +187,8 @@ $ anta nrfu \
     --enable-password t \
     --inventory .personal/inventory_atd.yml \
     --catalog .personal/tests-bases.yml \
-    text --tags leaf
+    --tags leaf \
+    text
 
 ╭────────────────────── Settings ──────────────────────╮
 │ Running ANTA tests:                                  │
@@ -216,7 +218,8 @@ $ anta nrfu \
     --enable-password t \
     --inventory .personal/inventory_atd.yml \
     --catalog .personal/tests-bases.yml \
-    json --tags leaf
+    --tags leaf \
+    json
 
 ╭────────────────────── Settings ──────────────────────╮
 │ Running ANTA tests:                                  │
