@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "anta"
-version = "v1.0.0"
+version = "v1.1.0"
 readme = "docs/README.md"
 authors = [{ name = "Arista Networks ANTA maintainers", email = "anta-dev@arista.com" }]
 maintainers = [
@@ -75,7 +75,7 @@ dev = [
   "pytest-metadata>=3.0.0",
   "pytest>=7.4.0",
   "respx>=0.21.1",
-  "ruff>=0.5.4,<0.7.0",
+  "ruff>=0.5.4,<0.8.0",
   "tox>=4.10.0,<5.0.0",
   "types-PyYAML",
   "types-pyOpenSSL",
@@ -96,7 +96,8 @@ doc = [
   "mkdocs-material-extensions>=1.3.1",
   "mkdocs-material>=9.5.34",
   "mkdocstrings[python]>=0.26.0",
-  "mkdocstrings-python>=1.11.0"
+  "mkdocstrings-python>=1.11.0",
+  "black>=24.10.0"
 ]
 
 [project.urls]
@@ -118,7 +119,7 @@ namespaces = false
 # Version
 ################################
 [tool.bumpver]
-current_version = "1.0.0"
+current_version = "1.1.0"
 version_pattern = "MAJOR.MINOR.PATCH"
 commit_message  = "bump: Version {old_version} -> {new_version}"
 commit = true
@@ -434,10 +435,14 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.In
 "anta/inventory/__init__.py" = [
   "PLR0913",     # Ok to have more than 5 arguments in the AntaInventory class
 ]
-"examples/anta_runner.py" = [  # This is an example script and linked in  snippets
-  "S108",   # Probable insecure usage of temporary file or directory
+"examples/*.py" = [  # These are example scripts and linked in snippets
   "S105",   # Possible hardcoded password
+  "S106",   # Possible hardcoded password assigned to argument
+  "S108",   # Probable insecure usage of temporary file or directory
   "INP001", # Implicit packages
+  "T201",   # `print` found
+  "T203",   # `pprint` found
+
 ]
 
 ################################

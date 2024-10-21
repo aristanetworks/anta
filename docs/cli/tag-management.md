@@ -31,7 +31,7 @@ anta_inventory:
 Each device also has its own name automatically added as a tag:
 
 ```bash
-anta get inventory
+$ anta get inventory
 Current inventory content is:
 {
     'leaf1': AsyncEOSDevice(
@@ -170,7 +170,7 @@ In this case, only `leaf` devices defined in the inventory are used to run tests
 It is possible to use multiple tags using the `--tags tag1,tag2` syntax.
 
 ```bash
-anta nrfu --tags leaf,spine text
+$ anta nrfu --tags leaf,spine text
 ╭────────────────────── Settings ──────────────────────╮
 │ - ANTA Inventory contains 3 devices (AsyncEOSDevice) │
 │ - Tests catalog contains 11 tests                    │
@@ -196,4 +196,58 @@ spine1 :: VerifyMlagStatus :: SUCCESS
 spine1 :: VerifyUptime :: SUCCESS
 spine1 :: VerifyL3MTU :: SUCCESS
 spine1 :: VerifyUptime :: SUCCESS
+```
+
+## Obtaining all configured tags
+
+As most ANTA commands accommodate tag filtering, this command is useful for enumerating all tags configured in the inventory. Running the `anta get tags` command will return a list of all tags configured in the inventory.
+
+### Command overview
+
+```bash
+Usage: anta get tags [OPTIONS]
+
+  Get list of configured tags in user inventory.
+
+Options:
+  -u, --username TEXT     Username to connect to EOS  [env var: ANTA_USERNAME;
+                          required]
+  -p, --password TEXT     Password to connect to EOS that must be provided. It
+                          can be prompted using '--prompt' option.  [env var:
+                          ANTA_PASSWORD]
+  --enable-password TEXT  Password to access EOS Privileged EXEC mode. It can
+                          be prompted using '--prompt' option. Requires '--
+                          enable' option.  [env var: ANTA_ENABLE_PASSWORD]
+  --enable                Some commands may require EOS Privileged EXEC mode.
+                          This option tries to access this mode before sending
+                          a command to the device.  [env var: ANTA_ENABLE]
+  -P, --prompt            Prompt for passwords if they are not provided.  [env
+                          var: ANTA_PROMPT]
+  --timeout FLOAT         Global API timeout. This value will be used for all
+                          devices.  [env var: ANTA_TIMEOUT; default: 30.0]
+  --insecure              Disable SSH Host Key validation.  [env var:
+                          ANTA_INSECURE]
+  --disable-cache         Disable cache globally.  [env var:
+                          ANTA_DISABLE_CACHE]
+  -i, --inventory FILE    Path to the inventory YAML file.  [env var:
+                          ANTA_INVENTORY; required]
+  --tags TEXT             List of tags using comma as separator:
+                          tag1,tag2,tag3.  [env var: ANTA_TAGS]
+  --help                  Show this message and exit.
+```
+
+### Example
+
+To get the list of all configured tags in the inventory, run the following command:
+
+```bash
+$ anta get tags
+Tags found:
+[
+  "leaf",
+  "leaf1",
+  "leaf2",
+  "spine",
+  "spine1"
+]
 ```

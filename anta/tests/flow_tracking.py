@@ -11,6 +11,7 @@ from typing import ClassVar
 
 from pydantic import BaseModel
 
+from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_failed_logs
 
@@ -144,6 +145,7 @@ class VerifyHardwareFlowTrackerStatus(AntaTest):
         """Render the template for each hardware tracker."""
         return [template.render(name=tracker.name) for tracker in self.inputs.trackers]
 
+    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyHardwareFlowTrackerStatus."""

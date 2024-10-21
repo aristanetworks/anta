@@ -18,3 +18,4 @@ anta_title: ANTA catalog for OSPF tests
       filters:
         - "!test"
         - "!render"
+        - "!^_[^_]"
