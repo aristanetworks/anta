@@ -41,6 +41,7 @@ class VerifyVxlan1Interface(AntaTest):
     ```
     """
 
+    description = "Verifies the Vxlan1 interface status."
     categories: ClassVar[list[str]] = ["vxlan"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces description", revision=1)]
 
@@ -63,7 +64,7 @@ class VerifyVxlan1Interface(AntaTest):
 
 
 class VerifyVxlanConfigSanity(AntaTest):
-    """Verifies that no issues are detected with the VXLAN configuration.
+    """Verifies there are no VXLAN config-sanity inconsistencies.
 
     Expected Results
     ----------------

@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 
 
 class VerifyRoutingProtocolModel(AntaTest):
-    """Verifies the configured routing protocol model is the one we expect.
+    """Verifies the configured routing protocol model.
 
     Expected Results
     ----------------

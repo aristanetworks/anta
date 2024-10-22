@@ -33,6 +33,7 @@ class VerifyUnifiedForwardingTableMode(AntaTest):
     ```
     """
 
+    description = "Verifies the device is using the expected UFT mode."
     categories: ClassVar[list[str]] = ["profiles"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show platform trident forwarding-table partition", revision=1)]
 
@@ -70,6 +71,7 @@ class VerifyTcamProfile(AntaTest):
     ```
     """
 
+    description = "Verifies the device TCAM profile."
     categories: ClassVar[list[str]] = ["profiles"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show hardware tcam profile", revision=1)]
 

@@ -195,6 +195,7 @@ class VerifyMlagDualPrimary(AntaTest):
     ```
     """
 
+    description = "Verifies the MLAG dual-primary detection parameters."
     categories: ClassVar[list[str]] = ["mlag"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show mlag detail", revision=2)]
 
@@ -252,6 +253,7 @@ class VerifyMlagPrimaryPriority(AntaTest):
     ```
     """
 
+    description = "Verifies the configuration of the MLAG primary priority."
     categories: ClassVar[list[str]] = ["mlag"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show mlag detail", revision=2)]
 

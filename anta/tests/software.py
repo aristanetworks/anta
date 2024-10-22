@@ -34,6 +34,7 @@ class VerifyEOSVersion(AntaTest):
     ```
     """
 
+    description = "Verifies the EOS version of the device."
     categories: ClassVar[list[str]] = ["software"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show version", revision=1)]
 
@@ -72,6 +73,7 @@ class VerifyTerminAttrVersion(AntaTest):
     ```
     """
 
+    description = "Verifies the TerminAttr version of the device."
     categories: ClassVar[list[str]] = ["software"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show version detail", revision=1)]
 

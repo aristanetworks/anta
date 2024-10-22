@@ -127,6 +127,7 @@ class VerifyLLDPNeighbors(AntaTest):
     ```
     """
 
+    description = "Verifies that the provided LLDP neighbors are connected properly."
     categories: ClassVar[list[str]] = ["connectivity"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show lldp neighbors detail", revision=1)]
 

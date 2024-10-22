@@ -157,6 +157,7 @@ class VerifySTPForwardingPorts(AntaTest):
     ```
     """
 
+    description = "Verifies that all interfaces are forwarding for a provided list of VLAN(s)."
     categories: ClassVar[list[str]] = ["stp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show spanning-tree topology vlan {vlan} status", revision=1)]
 

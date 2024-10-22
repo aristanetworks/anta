@@ -100,6 +100,7 @@ class VerifyRunningConfigLines(AntaTest):
     ```
     """
 
+    description = "Search the Running-Config for the given RegEx patterns."
     categories: ClassVar[list[str]] = ["configuration"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show running-config", ofmt="text")]
 

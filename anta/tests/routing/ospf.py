@@ -186,6 +186,7 @@ class VerifyOSPFMaxLSA(AntaTest):
     ```
     """
 
+    description = "Verifies all OSPF instances did not cross the maximum LSA threshold."
     categories: ClassVar[list[str]] = ["ospf"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip ospf", revision=1)]
 

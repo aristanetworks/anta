@@ -273,6 +273,7 @@ class VerifyISISInterfaceMode(AntaTest):
     ```
     """
 
+    description = "Verifies interface mode for IS-IS"
     categories: ClassVar[list[str]] = ["isis"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show isis interface brief", revision=1)]
 
@@ -327,9 +328,7 @@ class VerifyISISInterfaceMode(AntaTest):
 
 
 class VerifyISISSegmentRoutingAdjacencySegments(AntaTest):
-    """Verifies ISIS Segment Routing Adjacency Segments.
-
-    Verify that all expected Adjacency segments are correctly visible for each interface.
+    """Verify expected Adjacency segments are correctly visible for each interface.
 
     Expected Results
     ----------------

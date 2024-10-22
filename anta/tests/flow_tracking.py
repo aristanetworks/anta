@@ -99,6 +99,9 @@ class VerifyHardwareFlowTrackerStatus(AntaTest):
     ```
     """
 
+    description = (
+        "Verifies if hardware flow tracking is running and an input tracker is active. Optionally verifies the tracker interval/timeout and exporter configuration."
+    )
     categories: ClassVar[list[str]] = ["flow tracking"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show flow tracking hardware tracker {name}", revision=1)]
 

@@ -42,6 +42,7 @@ class VerifyBFDSpecificPeers(AntaTest):
     ```
     """
 
+    description = "Verifies the IPv4 BFD peer's sessions and remote disc in the specified VRF."
     categories: ClassVar[list[str]] = ["bfd"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bfd peers", revision=1)]
 

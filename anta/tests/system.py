@@ -42,6 +42,7 @@ class VerifyUptime(AntaTest):
     ```
     """
 
+    description = "Verifies the device uptime."
     categories: ClassVar[list[str]] = ["system"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show uptime", revision=1)]
 
@@ -120,6 +121,7 @@ class VerifyCoredump(AntaTest):
     ```
     """
 
+    description = "Verifies there are no core dump files."
     categories: ClassVar[list[str]] = ["system"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show system coredump", revision=1)]
 
@@ -137,7 +139,7 @@ class VerifyCoredump(AntaTest):
 
 
 class VerifyAgentLogs(AntaTest):
-    """Verifies that no agent crash reports are present on the device.
+    """Verifies there are no agent crash reports.
 
     Expected Results
     ----------------
@@ -272,6 +274,7 @@ class VerifyNTP(AntaTest):
     ```
     """
 
+    description = "Verifies if NTP is synchronised."
     categories: ClassVar[list[str]] = ["system"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ntp status", ofmt="text")]
 

@@ -177,6 +177,8 @@ class VerifyEnvironmentCooling(AntaTest):
     ```
     """
 
+    name = "VerifyEnvironmentCooling"
+    description = "Verifies the status of power supply fans and all fan trays."
     categories: ClassVar[list[str]] = ["hardware"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show system environment cooling", revision=1)]
 
@@ -262,6 +264,7 @@ class VerifyAdverseDrops(AntaTest):
     ```
     """
 
+    description = "Verifies there are no adverse drops on DCS-7280 and DCS-7500 family switches."
     categories: ClassVar[list[str]] = ["hardware"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show hardware counter drop", revision=1)]
 

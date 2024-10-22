@@ -385,6 +385,7 @@ class VerifyLoopbackCount(AntaTest):
     ```
     """
 
+    description = "Verifies the number of loopback interfaces and their status."
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip interface brief", revision=1)]
 
@@ -475,6 +476,7 @@ class VerifyL3MTU(AntaTest):
     ```
     """
 
+    description = "Verifies the global L3 MTU of all L3 interfaces."
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces", revision=1)]
 
@@ -531,6 +533,7 @@ class VerifyIPProxyARP(AntaTest):
     ```
     """
 
+    description = "Verifies if Proxy ARP is enabled."
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show ip interface {intf}", revision=2)]
 
@@ -583,6 +586,7 @@ class VerifyL2MTU(AntaTest):
     ```
     """
 
+    description = "Verifies the global L2 MTU of all L2 interfaces."
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces", revision=1)]
 
@@ -643,6 +647,7 @@ class VerifyInterfaceIPv4(AntaTest):
     ```
     """
 
+    description = "Verifies the interface IPv4 addresses."
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show ip interface {interface}", revision=2)]
 

@@ -75,6 +75,7 @@ class VerifyDNSLookup(AntaTest):
     ```
     """
 
+    description = "Verifies the DNS name to IP address resolution."
     categories: ClassVar[list[str]] = ["services"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="bash timeout 10 nslookup {domain}", revision=1)]
 
@@ -125,6 +126,7 @@ class VerifyDNSServers(AntaTest):
     ```
     """
 
+    description = "Verifies if the DNS servers are correctly configured."
     categories: ClassVar[list[str]] = ["services"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip name-server", revision=1)]
 

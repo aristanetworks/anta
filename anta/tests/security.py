@@ -81,6 +81,7 @@ class VerifySSHIPv4Acl(AntaTest):
     ```
     """
 
+    description = "Verifies if the SSHD agent has IPv4 ACL(s) configured."
     categories: ClassVar[list[str]] = ["security"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management ssh ip access-list summary", revision=1)]
 
@@ -128,6 +129,7 @@ class VerifySSHIPv6Acl(AntaTest):
     ```
     """
 
+    description = "Verifies if the SSHD agent has IPv6 ACL(s) configured."
     categories: ClassVar[list[str]] = ["security"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management ssh ipv6 access-list summary", revision=1)]
 
@@ -232,6 +234,7 @@ class VerifyAPIHttpsSSL(AntaTest):
     ```
     """
 
+    description = "Verifies if the eAPI has a valid SSL profile."
     categories: ClassVar[list[str]] = ["security"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management api http-commands", revision=1)]
 
@@ -716,6 +719,7 @@ class VerifySpecificIPSecConn(AntaTest):
     ```
     """
 
+    description = "Verifies IPv4 security connections for a peer."
     categories: ClassVar[list[str]] = ["security"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show ip security connection vrf {vrf} path peer {peer}")]
 

@@ -30,6 +30,7 @@ class VerifyLANZ(AntaTest):
     ```
     """
 
+    description = "Verifies if LANZ is enabled."
     categories: ClassVar[list[str]] = ["lanz"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show queue-monitor length status", revision=1)]
 
