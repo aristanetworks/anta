@@ -73,4 +73,17 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"enabled": True},
         "expected": {"result": "success"},
     },
+    {
+        "name": "success-disabled",
+        "test": VerifyManagementCVX,
+        "eos_data": [
+            {
+                "clusterStatus": {
+                    "enabled": False,
+                }
+            }
+        ],
+        "inputs": {"enabled": False},
+        "expected": {"result": "success"},
+    },
 ]
