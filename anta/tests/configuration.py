@@ -131,3 +131,41 @@ class VerifyRunningConfigLines(AntaTest):
             self.result.is_success()
         else:
             self.result.is_failure("Following patterns were not found: " + ",".join(failure_msgs))
+
+
+class VerifyMcsClientMounts(AntaTest):
+    """Verifies the MCS Clients mount status.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the MCS mount status on MCS Clients are mountStateMountComplete.
+    * Failure: The test will fail if the MCS mount status on MCS Clients are not mountStateMountComplete.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.configuration:
+      - VerifyMcsClientMounts:
+    ```
+    """
+
+    name = "VerifyMcsClientMounts"
+    description = "VerifyMcsClientMounts"
+    categories: ClassVar[list[str]] = ["configuration"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management cvx mounts", revision=1)]
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyManagementCVX."""
+        command_output = self.instance_commands[0].json_output
+        self.result.is_success()
+        mount_states = command_output["mountStates"]
+        mcs_mount_state_detected = False
+        for mount_state in mount_states:
+            if mount_state["type"].startswith("Mcs"):
+                mcs_mount_state_detected = True
+                if mount_state("state") != "mountStateMountComplete":
+                    self.result.is_failure(f"MCS Client mount states are not valid: {mount_states}")
+
+        if len(mount_states) == 0 or not mcs_mount_state_detected:
+            self.result.is_failure(f"MCS Client mount states are not present: {mount_states}")

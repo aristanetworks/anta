@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from anta.tests.configuration import VerifyRunningConfigDiffs, VerifyRunningConfigLines, VerifyZeroTouch
+from anta.tests.configuration import VerifyMcsClientMounts, VerifyRunningConfigDiffs, VerifyRunningConfigLines, VerifyZeroTouch
 from tests.units.anta_tests import test
 
 DATA: list[dict[str, Any]] = [
@@ -59,5 +59,20 @@ DATA: list[dict[str, Any]] = [
         "eos_data": ["enable password something\nsome other line"],
         "inputs": {"regex_patterns": ["bla", "bleh"]},
         "expected": {"result": "failure", "messages": ["Following patterns were not found: 'bla','bleh'"]},
+    },
+    {
+        "name": "success",
+        "test": VerifyMcsClientMounts,
+        "eos_data": [
+            {"mountStates": [{"path": "mcs/v1/toSwitch/28-99-3a-8f-93-7b", "type": "Mcs::DeviceConfigV1", "state": "mountStateMountComplete"}]},
+            {
+                "mountStates": [
+                    {"path": "mcs/v1/apiCfgRedState", "type": "Mcs::ApiConfigRedundancyState", "state": "mountStateMountComplete"},
+                    {"path": "mcs/v1/toSwitch/00-1c-73-74-c0-8b", "type": "Mcs::DeviceConfigV1", "state": "mountStateMountComplete"},
+                ]
+            },
+        ],
+        "inputs": None,
+        "expected": {"result": "success"},
     },
 ]
