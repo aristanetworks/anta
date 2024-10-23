@@ -63,8 +63,14 @@ DATA: list[dict[str, Any]] = [
     {
         "name": "success",
         "test": VerifyMcsClientMounts,
+        "eos_data": [{"mountStates": [{"path": "mcs/v1/toSwitch/28-99-3a-8f-93-7b", "type": "Mcs::DeviceConfigV1", "state": "mountStateMountComplete"}]}],
+        "inputs": None,
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-haclient",
+        "test": VerifyMcsClientMounts,
         "eos_data": [
-            {"mountStates": [{"path": "mcs/v1/toSwitch/28-99-3a-8f-93-7b", "type": "Mcs::DeviceConfigV1", "state": "mountStateMountComplete"}]},
             {
                 "mountStates": [
                     {"path": "mcs/v1/apiCfgRedState", "type": "Mcs::ApiConfigRedundancyState", "state": "mountStateMountComplete"},
