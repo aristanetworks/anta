@@ -145,7 +145,6 @@ anta nrfu \
     --enable-password t \
     --inventory .personal/inventory_atd.yml \
     --catalog .personal/tests-bases.yml \
-    --tags leaf \
     table
 
 
@@ -187,7 +186,6 @@ $ anta nrfu \
     --enable-password t \
     --inventory .personal/inventory_atd.yml \
     --catalog .personal/tests-bases.yml \
-    --tags leaf \
     text
 
 ╭────────────────────── Settings ──────────────────────╮
@@ -218,7 +216,6 @@ $ anta nrfu \
     --enable-password t \
     --inventory .personal/inventory_atd.yml \
     --catalog .personal/tests-bases.yml \
-    --tags leaf \
     json
 
 ╭────────────────────── Settings ──────────────────────╮
