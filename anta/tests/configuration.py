@@ -131,3 +131,45 @@ class VerifyRunningConfigLines(AntaTest):
             self.result.is_success()
         else:
             self.result.is_failure("Following patterns were not found: " + ",".join(failure_msgs))
+
+
+class VerifyManagementCVX(AntaTest):
+    """Verifies the Management CVX global status.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the Management CVX global status matches the expected status.
+    * Failure: The test will fail if the Management CVX global status does not match the expected status.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.managementCVX:
+      - VerifyManagementCVX:
+          enabled: True
+    ```
+    """
+
+    name = "VerifyManagementCVX"
+    description = "VerifyManagementCVX"
+    categories: ClassVar[list[str]] = ["configuration"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management cvx", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyManagementCVX test."""
+
+        enabled: bool
+        """Whether Management cvx must be enabled (True) or disabled (False)."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyManagementCVX."""
+        command_output = self.instance_commands[0].json_output
+        self.result.is_success()
+        cluster_status = command_output["clusterStatus"]
+        if "enabled" in cluster_status:
+            cluster_state = cluster_status["enabled"]
+            if not cluster_state if self.inputs.enabled else cluster_state:
+                self.result.is_failure(f"Management cvx state is not valid: {cluster_state}")
+        else:
+            self.result.is_failure(f"Management cvx state is not valid: {cluster_status}")
