@@ -144,7 +144,7 @@ class VerifyManagementCVX(AntaTest):
     Examples
     --------
     ```yaml
-    anta.tests.managementCVX:
+    anta.tests.configuration:
       - VerifyManagementCVX:
           enabled: True
     ```
