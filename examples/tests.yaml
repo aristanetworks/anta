@@ -98,6 +98,7 @@ anta.tests.configuration:
       regex_patterns:
         - "^enable password.*$"
         - "bla bla"
+  - VerifyMcsClientMounts:
 
 anta.tests.connectivity:
   - VerifyReachability:
