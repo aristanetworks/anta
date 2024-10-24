@@ -151,7 +151,7 @@ class VerifyManagementCVX(AntaTest):
     """
 
     name = "VerifyManagementCVX"
-    description = "VerifyManagementCVX"
+    description = "Verifies the Management CVX global status."
     categories: ClassVar[list[str]] = ["configuration"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management cvx", revision=1)]
 
@@ -167,9 +167,5 @@ class VerifyManagementCVX(AntaTest):
         command_output = self.instance_commands[0].json_output
         self.result.is_success()
         cluster_status = command_output["clusterStatus"]
-        if "enabled" in cluster_status:
-            cluster_state = cluster_status["enabled"]
-            if not cluster_state if self.inputs.enabled else cluster_state:
-                self.result.is_failure(f"Management cvx state is not valid: {cluster_state}")
-        else:
-            self.result.is_failure(f"Management cvx state is not valid: {cluster_status}")
+        if (cluster_state := cluster_status.get("enabled")) != self.inputs.enabled:
+            self.result.is_failure(f"Management cvx state is not valid: {cluster_state}")

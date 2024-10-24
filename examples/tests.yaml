@@ -98,6 +98,8 @@ anta.tests.configuration:
       regex_patterns:
         - "^enable password.*$"
         - "bla bla"
+  - VerifyManagementCVX:
+      enabled: True
 
 anta.tests.connectivity:
   - VerifyReachability:
