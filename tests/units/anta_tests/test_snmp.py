@@ -15,6 +15,7 @@ from anta.tests.snmp import (
     VerifySnmpLocation,
     VerifySnmpPDUCounters,
     VerifySnmpStatus,
+    VerifySnmpUser,
 )
 from tests.units.anta_tests import test
 
@@ -316,6 +317,138 @@ DATA: list[dict[str, Any]] = [
             "result": "failure",
             "messages": [
                 "The following SNMP error counters are not found or have non-zero error counters:\n{'inVersionErrs': 1, 'inParseErrs': 2, 'outBadValueErrs': 2}"
+            ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifySnmpUser,
+        "eos_data": [
+            {
+                "usersByVersion": {
+                    "v1": {
+                        "users": {
+                            "Test1": {
+                                "groupName": "TestGroup1",
+                            },
+                        }
+                    },
+                    "v2c": {
+                        "users": {
+                            "Test2": {
+                                "groupName": "TestGroup2",
+                            },
+                        }
+                    },
+                    "v3": {
+                        "users": {
+                            "Test3": {
+                                "groupName": "TestGroup3",
+                                "v3Params": {"authType": "SHA-384", "privType": "AES-128"},
+                            },
+                            "Test4": {"groupName": "TestGroup3", "v3Params": {"authType": "SHA-512", "privType": "AES-192"}},
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "users": [
+                {"username": "Test1", "group_name": "TestGroup1", "security_model": "v1"},
+                {"username": "Test2", "group_name": "TestGroup2", "security_model": "v2c"},
+                {"username": "Test3", "group_name": "TestGroup3", "security_model": "v3", "authentication_type": "SHA-384", "priv_type": "AES-128"},
+                {"username": "Test4", "group_name": "TestGroup3", "security_model": "v3", "authentication_type": "SHA-512", "priv_type": "AES-192"},
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-not-configured",
+        "test": VerifySnmpUser,
+        "eos_data": [
+            {
+                "usersByVersion": {
+                    "v3": {
+                        "users": {
+                            "Test3": {
+                                "groupName": "TestGroup3",
+                                "v3Params": {"authType": "SHA-384", "privType": "AES-128"},
+                            },
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "users": [
+                {"username": "Test1", "group_name": "TestGroup1", "security_model": "v1"},
+                {"username": "Test2", "group_name": "TestGroup2", "security_model": "v2c"},
+                {"username": "Test3", "group_name": "TestGroup3", "security_model": "v3", "authentication_type": "SHA-384", "priv_type": "AES-128"},
+                {"username": "Test4", "group_name": "TestGroup3", "security_model": "v3", "authentication_type": "SHA-512", "priv_type": "AES-192"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "SNMP user 'Test1' is not configured with security model 'v1'.\n"
+                "SNMP user 'Test2' is not configured with security model 'v2c'.\n"
+                "SNMP user 'Test4' is not configured with security model 'v3'."
+            ],
+        },
+    },
+    {
+        "name": "failure-incorrect-configure",
+        "test": VerifySnmpUser,
+        "eos_data": [
+            {
+                "usersByVersion": {
+                    "v1": {
+                        "users": {
+                            "Test1": {
+                                "groupName": "TestGroup2",
+                            },
+                        }
+                    },
+                    "v2c": {
+                        "users": {
+                            "Test2": {
+                                "groupName": "TestGroup1",
+                            },
+                        }
+                    },
+                    "v3": {
+                        "users": {
+                            "Test3": {
+                                "groupName": "TestGroup4",
+                                "v3Params": {"authType": "SHA-512", "privType": "AES-192"},
+                            },
+                            "Test4": {"groupName": "TestGroup4", "v3Params": {"authType": "SHA-384", "privType": "AES-128"}},
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "users": [
+                {"username": "Test1", "group_name": "TestGroup1", "security_model": "v1"},
+                {"username": "Test2", "group_name": "TestGroup2", "security_model": "v2c"},
+                {"username": "Test3", "group_name": "TestGroup3", "security_model": "v3", "authentication_type": "SHA-384", "priv_type": "AES-128"},
+                {"username": "Test4", "group_name": "TestGroup3", "security_model": "v3", "authentication_type": "SHA-512", "priv_type": "AES-192"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "For SNMP user Test1:\nExpected `TestGroup1` as the user group, but found `TestGroup2` instead.\n"
+                "For SNMP user Test2:\nExpected `TestGroup2` as the user group, but found `TestGroup1` instead.\n"
+                "For SNMP user Test3:\n"
+                "Expected `TestGroup3` as the user group, but found `TestGroup4` instead.\n"
+                "Expected `SHA-384` as the authentication type, but found `SHA-512` instead.\n"
+                "Expected `AES-128` as the privacy type, but found `AES-192` instead.\n"
+                "For SNMP user Test4:\n"
+                "Expected `TestGroup3` as the user group, but found `TestGroup4` instead.\n"
+                "Expected `SHA-512` as the authentication type, but found `SHA-384` instead.\n"
+                "Expected `AES-192` as the privacy type, but found `AES-128` instead."
             ],
         },
     },
