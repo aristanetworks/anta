@@ -59,6 +59,11 @@ class BgpAddressFamily(BaseModel):
     """Number of expected established BGP peers with negotiated AFI/SAFI. Required field in the `VerifyBGPPeerCount` test."""
     peers: list[IPv4Address | IPv6Address] | None = None
     """List of expected IPv4/IPv6 BGP peers supporting the AFI/SAFI. Required field in the `VerifyBGPSpecificPeers` test."""
+    check_tcp_queues: bool = True
+    """Flag to check if the TCP session queues are empty for a BGP peer. Defaults to `True`.
+
+    Can be disabled in the `VerifyBGPPeersHealth` and `VerifyBGPSpecificPeers` tests.
+    """
 
     @model_validator(mode="after")
     def validate_inputs(self) -> Self:
@@ -92,7 +97,6 @@ class BgpAddressFamily(BaseModel):
             base_string += f" SAFI:{self.safi}"
         if self.afi in ["ipv4", "ipv6"]:
             base_string += f" VRF:{self.vrf}"
-        base_string += " -"
         return base_string
 
 

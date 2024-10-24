@@ -159,7 +159,7 @@ class VerifyBGPPeerCount(AntaTest):
 
             # Check if the VRF is configured
             if (vrf_output := get_value(output, f"vrfs.{address_family.vrf}")) is None:
-                self.result.is_failure(f"{address_family} VRF not configured")
+                self.result.is_failure(f"{address_family} - VRF not configured")
                 continue
 
             # Count the number of established peers with negotiated AFI/SAFI
@@ -169,7 +169,7 @@ class VerifyBGPPeerCount(AntaTest):
 
             # Check if the count matches the expected count
             if address_family.num_peers != peer_count:
-                self.result.is_failure(f"{address_family} Expected: {address_family.num_peers}, Actual: {peer_count}")
+                self.result.is_failure(f"{address_family} - Expected: {address_family.num_peers}, Actual: {peer_count}")
 
 
 class VerifyBGPPeersHealth(AntaTest):
@@ -183,6 +183,7 @@ class VerifyBGPPeersHealth(AntaTest):
         - Verifies that the BGP session is in the `Established` state.
         - Confirms that the AFI/SAFI state is `negotiated`.
         - Checks that both input and output TCP message queues are empty.
+          Can be disabled by setting `check_tcp_queues` to `False`.
 
     Expected Results
     ----------------
@@ -192,7 +193,7 @@ class VerifyBGPPeersHealth(AntaTest):
         - No peers are found for a given AFI/SAFI.
         - Any BGP session is not in the `Established` state.
         - The AFI/SAFI state is not 'negotiated' for any peer.
-        - Any TCP message queue (input or output) is not empty.
+        - Any TCP message queue (input or output) is not empty when `check_tcp_queues` is `True` (default).
 
     Examples
     --------
@@ -208,6 +209,7 @@ class VerifyBGPPeersHealth(AntaTest):
               - afi: "ipv6"
                 safi: "unicast"
                 vrf: "DEV"
+                check_tcp_queues: false
     ```
     """
 
@@ -233,7 +235,7 @@ class VerifyBGPPeersHealth(AntaTest):
         for address_family in self.inputs.address_families:
             # Check if the VRF is configured
             if (vrf_output := get_value(output, f"vrfs.{address_family.vrf}")) is None:
-                self.result.is_failure(f"{address_family} VRF not configured")
+                self.result.is_failure(f"{address_family} - VRF not configured")
                 continue
 
             # Check if any peers are found for this AFI/SAFI
@@ -242,22 +244,24 @@ class VerifyBGPPeersHealth(AntaTest):
             ]
 
             if not relevant_peers:
-                self.result.is_failure(f"{address_family} No peers found")
+                self.result.is_failure(f"{address_family} - No peers found")
                 continue
 
             for peer in relevant_peers:
                 # Check if the BGP session is established
                 if peer["state"] != "Established":
-                    self.result.is_failure(f"{address_family} Peer:{peer['peerAddress']} session state is not established; State:{peer['state']}")
+                    self.result.is_failure(f"{address_family} - Peer:{peer['peerAddress']} session state is not established; State:{peer['state']}")
 
                 # Check if the AFI/SAFI state is negotiated
                 capability_status = get_value(peer, f"neighborCapabilities.multiprotocolCaps.{address_family.eos_key}")
                 if not check_bgp_neighbor_capability(capability_status):
-                    self.result.is_failure(f"{address_family} Peer:{peer['peerAddress']} AFI/SAFI state is not negotiated; {format_data(capability_status)}")
+                    self.result.is_failure(f"{address_family} - Peer:{peer['peerAddress']} AFI/SAFI state is not negotiated; {format_data(capability_status)}")
 
                 # Check the TCP session message queues
-                if (inq := peer["peerTcpInfo"]["inputQueueLength"]) != 0 or (outq := peer["peerTcpInfo"]["outputQueueLength"]) != 0:
-                    self.result.is_failure(f"{address_family} Peer:{peer['peerAddress']} session has non-empty message queues; InQ: {inq}, OutQ: {outq}")
+                if address_family.check_tcp_queues and (
+                    (inq := peer["peerTcpInfo"]["inputQueueLength"]) != 0 or (outq := peer["peerTcpInfo"]["outputQueueLength"]) != 0
+                ):
+                    self.result.is_failure(f"{address_family} - Peer:{peer['peerAddress']} session has non-empty message queues; InQ: {inq}, OutQ: {outq}")
 
 
 class VerifyBGPSpecificPeers(AntaTest):
@@ -271,6 +275,7 @@ class VerifyBGPSpecificPeers(AntaTest):
         - Checks that the BGP session is in the `Established` state.
         - Confirms that the AFI/SAFI state is `negotiated`.
         - Ensures that both input and output TCP message queues are empty.
+          Can be disabled by setting `check_tcp_queues` to `False`.
 
     Expected Results
     ----------------
@@ -280,7 +285,7 @@ class VerifyBGPSpecificPeers(AntaTest):
         - A specified peer is not found in the BGP configuration.
         - The BGP session for a peer is not in the `Established` state.
         - The AFI/SAFI state is not `negotiated` for a peer.
-        - Any TCP message queue (input or output) is not empty for a peer.
+        - Any TCP message queue (input or output) is not empty for a peer when `check_tcp_queues` is `True` (default).
 
     Examples
     --------
@@ -333,7 +338,7 @@ class VerifyBGPSpecificPeers(AntaTest):
         for address_family in self.inputs.address_families:
             # Check if the VRF is configured
             if (vrf_output := get_value(output, f"vrfs.{address_family.vrf}")) is None:
-                self.result.is_failure(f"{address_family} VRF not configured")
+                self.result.is_failure(f"{address_family} - VRF not configured")
                 continue
 
             for peer in address_family.peers:
@@ -341,12 +346,12 @@ class VerifyBGPSpecificPeers(AntaTest):
 
                 # Check if the peer is found
                 if (peer_data := get_item(vrf_output["peerList"], "peerAddress", peer_ip)) is None:
-                    self.result.is_failure(f"{address_family} Peer:{peer_ip} not found")
+                    self.result.is_failure(f"{address_family} - Peer:{peer_ip} not found")
                     continue
 
                 # Check if the BGP session is established
                 if peer_data["state"] != "Established":
-                    self.result.is_failure(f"{address_family} Peer:{peer_ip} session state is not established; State:{peer_data['state']}")
+                    self.result.is_failure(f"{address_family} - Peer:{peer_ip} session state is not established; State:{peer_data['state']}")
 
                 # Check if the AFI/SAFI state is negotiated
                 capability_status = get_value(peer_data, f"neighborCapabilities.multiprotocolCaps.{address_family.eos_key}")
@@ -354,8 +359,10 @@ class VerifyBGPSpecificPeers(AntaTest):
                     self.result.is_failure(f"{address_family} Peer:{peer_ip} AFI/SAFI state is not negotiated; {format_data(capability_status)}")
 
                 # Check the TCP session message queues
-                if (inq := peer_data["peerTcpInfo"]["inputQueueLength"]) != 0 or (outq := peer_data["peerTcpInfo"]["outputQueueLength"]) != 0:
-                    self.result.is_failure(f"{address_family} Peer:{peer_ip} session has non-empty message queues; InQ: {inq}, OutQ: {outq}")
+                if address_family.check_tcp_queues and (
+                    (inq := peer_data["peerTcpInfo"]["inputQueueLength"]) != 0 or (outq := peer_data["peerTcpInfo"]["outputQueueLength"]) != 0
+                ):
+                    self.result.is_failure(f"{address_family} - Peer:{peer_ip} session has non-empty message queues; InQ: {inq}, OutQ: {outq}")
 
 
 class VerifyBGPExchangedRoutes(AntaTest):
