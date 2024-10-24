@@ -36,8 +36,6 @@ class VerifyMlagStatus(AntaTest):
     ```
     """
 
-    name = "VerifyMlagStatus"
-    description = "Verifies the health status of the MLAG configuration."
     categories: ClassVar[list[str]] = ["mlag"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show mlag", revision=2)]
 
@@ -78,8 +76,6 @@ class VerifyMlagInterfaces(AntaTest):
     ```
     """
 
-    name = "VerifyMlagInterfaces"
-    description = "Verifies there are no inactive or active-partial MLAG ports."
     categories: ClassVar[list[str]] = ["mlag"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show mlag", revision=2)]
 
@@ -114,8 +110,6 @@ class VerifyMlagConfigSanity(AntaTest):
     ```
     """
 
-    name = "VerifyMlagConfigSanity"
-    description = "Verifies there are no MLAG config-sanity inconsistencies."
     categories: ClassVar[list[str]] = ["mlag"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show mlag config-sanity", revision=1)]
 
@@ -153,8 +147,6 @@ class VerifyMlagReloadDelay(AntaTest):
     ```
     """
 
-    name = "VerifyMlagReloadDelay"
-    description = "Verifies the MLAG reload-delay parameters."
     categories: ClassVar[list[str]] = ["mlag"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show mlag", revision=2)]
 
@@ -203,7 +195,6 @@ class VerifyMlagDualPrimary(AntaTest):
     ```
     """
 
-    name = "VerifyMlagDualPrimary"
     description = "Verifies the MLAG dual-primary detection parameters."
     categories: ClassVar[list[str]] = ["mlag"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show mlag detail", revision=2)]
@@ -262,7 +253,6 @@ class VerifyMlagPrimaryPriority(AntaTest):
     ```
     """
 
-    name = "VerifyMlagPrimaryPriority"
     description = "Verifies the configuration of the MLAG primary priority."
     categories: ClassVar[list[str]] = ["mlag"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show mlag detail", revision=2)]

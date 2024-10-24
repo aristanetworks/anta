@@ -38,7 +38,6 @@ class VerifyVlanInternalPolicy(AntaTest):
     ```
     """
 
-    name = "VerifyVlanInternalPolicy"
     description = "Verifies the VLAN internal allocation policy and the range of VLANs."
     categories: ClassVar[list[str]] = ["vlan"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show vlan internal allocation policy", revision=1)]

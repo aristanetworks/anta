@@ -42,7 +42,6 @@ class VerifyBFDSpecificPeers(AntaTest):
     ```
     """
 
-    name = "VerifyBFDSpecificPeers"
     description = "Verifies the IPv4 BFD peer's sessions and remote disc in the specified VRF."
     categories: ClassVar[list[str]] = ["bfd"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bfd peers", revision=1)]
@@ -123,8 +122,6 @@ class VerifyBFDPeersIntervals(AntaTest):
     ```
     """
 
-    name = "VerifyBFDPeersIntervals"
-    description = "Verifies the timers of the IPv4 BFD peers in the specified VRF."
     categories: ClassVar[list[str]] = ["bfd"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bfd peers detail", revision=1)]
 
@@ -218,8 +215,6 @@ class VerifyBFDPeersHealth(AntaTest):
     ```
     """
 
-    name = "VerifyBFDPeersHealth"
-    description = "Verifies the health of all IPv4 BFD peers."
     categories: ClassVar[list[str]] = ["bfd"]
     # revision 1 as later revision introduces additional nesting for type
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
@@ -308,8 +303,6 @@ class VerifyBFDPeersRegProtocols(AntaTest):
     ```
     """
 
-    name = "VerifyBFDPeersRegProtocols"
-    description = "Verifies that IPv4 BFD peer(s) have the specified protocol(s) registered."
     categories: ClassVar[list[str]] = ["bfd"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bfd peers detail", revision=1)]
 

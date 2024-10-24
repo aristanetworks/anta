@@ -42,7 +42,6 @@ class VerifyUptime(AntaTest):
     ```
     """
 
-    name = "VerifyUptime"
     description = "Verifies the device uptime."
     categories: ClassVar[list[str]] = ["system"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show uptime", revision=1)]
@@ -80,8 +79,6 @@ class VerifyReloadCause(AntaTest):
     ```
     """
 
-    name = "VerifyReloadCause"
-    description = "Verifies the last reload cause of the device."
     categories: ClassVar[list[str]] = ["system"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show reload cause", revision=1)]
 
@@ -124,7 +121,6 @@ class VerifyCoredump(AntaTest):
     ```
     """
 
-    name = "VerifyCoredump"
     description = "Verifies there are no core dump files."
     categories: ClassVar[list[str]] = ["system"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show system coredump", revision=1)]
@@ -143,7 +139,7 @@ class VerifyCoredump(AntaTest):
 
 
 class VerifyAgentLogs(AntaTest):
-    """Verifies that no agent crash reports are present on the device.
+    """Verifies there are no agent crash reports.
 
     Expected Results
     ----------------
@@ -158,8 +154,6 @@ class VerifyAgentLogs(AntaTest):
     ```
     """
 
-    name = "VerifyAgentLogs"
-    description = "Verifies there are no agent crash reports."
     categories: ClassVar[list[str]] = ["system"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show agent logs crash", ofmt="text")]
 
@@ -191,8 +185,6 @@ class VerifyCPUUtilization(AntaTest):
     ```
     """
 
-    name = "VerifyCPUUtilization"
-    description = "Verifies whether the CPU utilization is below 75%."
     categories: ClassVar[list[str]] = ["system"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show processes top once", revision=1)]
 
@@ -223,8 +215,6 @@ class VerifyMemoryUtilization(AntaTest):
     ```
     """
 
-    name = "VerifyMemoryUtilization"
-    description = "Verifies whether the memory utilization is below 75%."
     categories: ClassVar[list[str]] = ["system"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show version", revision=1)]
 
@@ -255,8 +245,6 @@ class VerifyFileSystemUtilization(AntaTest):
     ```
     """
 
-    name = "VerifyFileSystemUtilization"
-    description = "Verifies that no partition is utilizing more than 75% of its disk space."
     categories: ClassVar[list[str]] = ["system"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="bash timeout 10 df -h", ofmt="text")]
 
@@ -286,7 +274,6 @@ class VerifyNTP(AntaTest):
     ```
     """
 
-    name = "VerifyNTP"
     description = "Verifies if NTP is synchronised."
     categories: ClassVar[list[str]] = ["system"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ntp status", ofmt="text")]
@@ -328,8 +315,6 @@ class VerifyNTPAssociations(AntaTest):
     ```
     """
 
-    name = "VerifyNTPAssociations"
-    description = "Verifies the Network Time Protocol (NTP) associations."
     categories: ClassVar[list[str]] = ["system"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ntp associations")]
 

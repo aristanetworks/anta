@@ -18,8 +18,7 @@ from anta.tools import get_value
 
 
 class VerifyAVTPathHealth(AntaTest):
-    """
-    Verifies the status of all Adaptive Virtual Topology (AVT) paths for all VRFs.
+    """Verifies the status of all Adaptive Virtual Topology (AVT) paths for all VRFs.
 
     Expected Results
     ----------------
@@ -34,7 +33,6 @@ class VerifyAVTPathHealth(AntaTest):
     ```
     """
 
-    name = "VerifyAVTPathHealth"
     description = "Verifies the status of all AVT paths for all VRFs."
     categories: ClassVar[list[str]] = ["avt"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show adaptive-virtual-topology path")]
@@ -73,8 +71,7 @@ class VerifyAVTPathHealth(AntaTest):
 
 
 class VerifyAVTSpecificPath(AntaTest):
-    """
-    Verifies the status and type of an Adaptive Virtual Topology (AVT) path for a specified VRF.
+    """Verifies the status and type of an Adaptive Virtual Topology (AVT) path for a specified VRF.
 
     Expected Results
     ----------------
@@ -97,7 +94,6 @@ class VerifyAVTSpecificPath(AntaTest):
     ```
     """
 
-    name = "VerifyAVTSpecificPath"
     description = "Verifies the status and type of an AVT path for a specified VRF."
     categories: ClassVar[list[str]] = ["avt"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
@@ -191,8 +187,7 @@ class VerifyAVTSpecificPath(AntaTest):
 
 
 class VerifyAVTRole(AntaTest):
-    """
-    Verifies the Adaptive Virtual Topology (AVT) role of a device.
+    """Verifies the Adaptive Virtual Topology (AVT) role of a device.
 
     Expected Results
     ----------------
@@ -208,7 +203,6 @@ class VerifyAVTRole(AntaTest):
     ```
     """
 
-    name = "VerifyAVTRole"
     description = "Verifies the AVT role of a device."
     categories: ClassVar[list[str]] = ["avt"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show adaptive-virtual-topology path")]

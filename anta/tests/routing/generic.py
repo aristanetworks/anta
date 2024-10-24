@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 
 
 class VerifyRoutingProtocolModel(AntaTest):
-    """Verifies the configured routing protocol model is the one we expect.
+    """Verifies the configured routing protocol model.
 
     Expected Results
     ----------------
@@ -43,8 +43,6 @@ class VerifyRoutingProtocolModel(AntaTest):
     ```
     """
 
-    name = "VerifyRoutingProtocolModel"
-    description = "Verifies the configured routing protocol model."
     categories: ClassVar[list[str]] = ["routing"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip route summary", revision=3)]
 
@@ -85,8 +83,6 @@ class VerifyRoutingTableSize(AntaTest):
     ```
     """
 
-    name = "VerifyRoutingTableSize"
-    description = "Verifies the size of the IP routing table of the default VRF."
     categories: ClassVar[list[str]] = ["routing"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip route summary", revision=3)]
 
@@ -138,8 +134,6 @@ class VerifyRoutingTableEntry(AntaTest):
     ```
     """
 
-    name = "VerifyRoutingTableEntry"
-    description = "Verifies that the provided routes are present in the routing table of a specified VRF."
     categories: ClassVar[list[str]] = ["routing"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
         AntaTemplate(template="show ip route vrf {vrf} {route}", revision=4),

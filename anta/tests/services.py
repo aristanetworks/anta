@@ -34,8 +34,6 @@ class VerifyHostname(AntaTest):
     ```
     """
 
-    name = "VerifyHostname"
-    description = "Verifies the hostname of a device."
     categories: ClassVar[list[str]] = ["services"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show hostname", revision=1)]
 
@@ -77,7 +75,6 @@ class VerifyDNSLookup(AntaTest):
     ```
     """
 
-    name = "VerifyDNSLookup"
     description = "Verifies the DNS name to IP address resolution."
     categories: ClassVar[list[str]] = ["services"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="bash timeout 10 nslookup {domain}", revision=1)]
@@ -129,7 +126,6 @@ class VerifyDNSServers(AntaTest):
     ```
     """
 
-    name = "VerifyDNSServers"
     description = "Verifies if the DNS servers are correctly configured."
     categories: ClassVar[list[str]] = ["services"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip name-server", revision=1)]
@@ -194,8 +190,6 @@ class VerifyErrdisableRecovery(AntaTest):
     ```
     """
 
-    name = "VerifyErrdisableRecovery"
-    description = "Verifies the errdisable recovery reason, status, and interval."
     categories: ClassVar[list[str]] = ["services"]
     # NOTE: Only `text` output format is supported for this command
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show errdisable recovery", ofmt="text")]
