@@ -81,4 +81,85 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {"result": "success"},
     },
+    {
+        "name": "success-partial-non-mcs",
+        "test": VerifyMcsClientMounts,
+        "eos_data": [
+            {
+                "mountStates": [
+                    {"path": "blah/blah/blah", "type": "blah::blah", "state": "mountStatePreservedUnmounted"},
+                    {"path": "mcs/v1/toSwitch/00-1c-73-74-c0-8b", "type": "Mcs::DeviceConfigV1", "state": "mountStateMountComplete"},
+                ]
+            },
+        ],
+        "inputs": None,
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-nomounts",
+        "test": VerifyMcsClientMounts,
+        "eos_data": [
+            {"mountStates": []},
+        ],
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["MCS Client mount states are not present"]},
+    },
+    {
+        "name": "failure-mountStatePreservedUnmounted",
+        "test": VerifyMcsClientMounts,
+        "eos_data": [{"mountStates": [{"path": "mcs/v1/toSwitch/28-99-3a-8f-93-7b", "type": "Mcs::DeviceConfigV1", "state": "mountStatePreservedUnmounted"}]}],
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["MCS Client mount states are not valid: mountStatePreservedUnmounted"]},
+    },
+    {
+        "name": "failure-partial-haclient",
+        "test": VerifyMcsClientMounts,
+        "eos_data": [
+            {
+                "mountStates": [
+                    {"path": "mcs/v1/apiCfgRedState", "type": "Mcs::ApiConfigRedundancyState", "state": "mountStateMountComplete"},
+                    {"path": "mcs/v1/toSwitch/00-1c-73-74-c0-8b", "type": "Mcs::DeviceConfigV1", "state": "mountStatePreservedUnmounted"},
+                ]
+            },
+        ],
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["MCS Client mount states are not valid: mountStatePreservedUnmounted"]},
+    },
+    {
+        "name": "failure-full-haclient",
+        "test": VerifyMcsClientMounts,
+        "eos_data": [
+            {
+                "mountStates": [
+                    {"path": "blah/blah/blah", "type": "blah::blahState", "state": "mountStatePreservedUnmounted"},
+                    {"path": "mcs/v1/toSwitch/00-1c-73-74-c0-8b", "type": "Mcs::DeviceConfigV1", "state": "mountStatePreservedUnmounted"},
+                ]
+            },
+        ],
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["MCS Client mount states are not valid: mountStatePreservedUnmounted"]},
+    },
+    {
+        "name": "failure-non-mcs-client",
+        "test": VerifyMcsClientMounts,
+        "eos_data": [
+            {"mountStates": [{"path": "blah/blah/blah", "type": "blah::blahState", "state": "mountStatePreservedUnmounted"}]},
+        ],
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["MCS Client mount states are not present"]},
+    },
+    {
+        "name": "failure-partial-mcs-client",
+        "test": VerifyMcsClientMounts,
+        "eos_data": [
+            {
+                "mountStates": [
+                    {"path": "blah/blah/blah", "type": "blah::blahState", "state": "mountStatePreservedUnmounted"},
+                    {"path": "blah/blah/blah", "type": "Mcs::DeviceConfigV1", "state": "mountStatePreservedUnmounted"},
+                ]
+            },
+        ],
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["MCS Client mount states are not valid: mountStatePreservedUnmounted"]},
+    },
 ]
