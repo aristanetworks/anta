@@ -507,7 +507,7 @@ class AntaTest(ABC):
     def __init_subclass__(cls) -> None:
         """Verify that the mandatory class attributes are defined and set name and description if not set."""
         mandatory_attributes = ["categories", "commands"]
-        if (missing_attrs := [attr for attr in mandatory_attributes if not hasattr(cls, attr)]): 
+        if missing_attrs := [attr for attr in mandatory_attributes if not hasattr(cls, attr)]:
             msg = f"Class {cls.__module__}.{cls.__name__} is missing required class attribute(s): {', '.join(missing_attrs)}"
             raise AttributeError(msg)
 
