@@ -18,7 +18,8 @@ from anta.tools import get_value
 
 
 def _count_isis_neighbor(isis_neighbor_json: dict[str, Any]) -> int:
-    """Count the number of isis neighbors.
+    """
+    Count the number of isis neighbors.
 
     Parameters
     ----------
@@ -39,7 +40,8 @@ def _count_isis_neighbor(isis_neighbor_json: dict[str, Any]) -> int:
 
 
 def _get_not_full_isis_neighbors(isis_neighbor_json: dict[str, Any]) -> list[dict[str, Any]]:
-    """Return the isis neighbors whose adjacency state is not `up`.
+    """
+    Return the isis neighbors whose adjacency state is not `up`.
 
     Parameters
     ----------
@@ -68,7 +70,8 @@ def _get_not_full_isis_neighbors(isis_neighbor_json: dict[str, Any]) -> list[dic
 
 
 def _get_full_isis_neighbors(isis_neighbor_json: dict[str, Any], neighbor_state: Literal["up", "down"] = "up") -> list[dict[str, Any]]:
-    """Return the isis neighbors whose adjacency state is `up`.
+    """
+    Return the isis neighbors whose adjacency state is `up`.
 
     Parameters
     ----------
@@ -141,7 +144,8 @@ def _get_adjacency_segment_data_by_neighbor(neighbor: str, instance: str, vrf: s
 
 
 class VerifyISISNeighborState(AntaTest):
-    """Verifies all IS-IS neighbors are in UP state.
+    """
+    Verifies all IS-IS neighbors are in UP state.
 
     Expected Results
     ----------------
@@ -177,7 +181,8 @@ class VerifyISISNeighborState(AntaTest):
 
 
 class VerifyISISNeighborCount(AntaTest):
-    """Verifies number of IS-IS neighbors per level and per interface.
+    """
+    Verifies number of IS-IS neighbors per level and per interface.
 
     Expected Results
     ----------------
@@ -248,7 +253,8 @@ class VerifyISISNeighborCount(AntaTest):
 
 
 class VerifyISISInterfaceMode(AntaTest):
-    """Verifies ISIS Interfaces are running in correct mode.
+    """
+    Verifies ISIS Interfaces are running in correct mode.
 
     Expected Results
     ----------------
@@ -333,7 +339,8 @@ class VerifyISISInterfaceMode(AntaTest):
 
 
 class VerifyISISSegmentRoutingAdjacencySegments(AntaTest):
-    """Verifies ISIS Segment Routing Adjacency Segments.
+    """
+    Verifies ISIS Segment Routing Adjacency Segments.
 
     Verify that all expected Adjacency segments are correctly visible for each interface.
 
@@ -356,7 +363,6 @@ class VerifyISISSegmentRoutingAdjacencySegments(AntaTest):
                   - interface: Ethernet2
                     address: 10.0.1.3
                     sid_origin: dynamic
-
     ```
     """
 
@@ -543,7 +549,7 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
     --------
     ```yaml
     anta.tests.routing:
-    isis:
+      isis:
         - VerifyISISSegmentRoutingTunnels:
             entries:
             # Check only endpoint
@@ -600,7 +606,8 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """Main test function for VerifyISISSegmentRoutingTunnels.
+        """
+        Main test function for VerifyISISSegmentRoutingTunnels.
 
         This method performs the main test logic for verifying ISIS Segment Routing tunnels.
         It checks the command output, initiates defaults, and performs various checks on the tunnels.

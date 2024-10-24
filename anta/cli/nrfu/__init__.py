@@ -20,7 +20,8 @@ if TYPE_CHECKING:
 
 
 class IgnoreRequiredWithHelp(AliasedGroup):
-    """Custom Click Group.
+    """
+    Custom Click Group.
 
     https://stackoverflow.com/questions/55818737/python-click-application-required-parameters-have-precedence-over-sub-command-he
 

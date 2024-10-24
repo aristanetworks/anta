@@ -1,7 +1,8 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""Module related to the EOS various logging tests.
+"""
+Module related to the EOS various logging tests.
 
 NOTE: The EOS command `show logging` does not support JSON output format.
 """
@@ -23,7 +24,8 @@ if TYPE_CHECKING:
 
 
 def _get_logging_states(logger: logging.Logger, command_output: str) -> str:
-    """Parse `show logging` output and gets operational logging states used in the tests in this module.
+    """
+    Parse `show logging` output and gets operational logging states used in the tests in this module.
 
     Parameters
     ----------
@@ -44,7 +46,8 @@ def _get_logging_states(logger: logging.Logger, command_output: str) -> str:
 
 
 class VerifyLoggingPersistent(AntaTest):
-    """Verifies if logging persistent is enabled and logs are saved in flash.
+    """
+    Verifies if logging persistent is enabled and logs are saved in flash.
 
     Expected Results
     ----------------
@@ -83,7 +86,8 @@ class VerifyLoggingPersistent(AntaTest):
 
 
 class VerifyLoggingSourceIntf(AntaTest):
-    """Verifies logging source-interface for a specified VRF.
+    """
+    Verifies logging source-interface for a specified VRF.
 
     Expected Results
     ----------------
@@ -125,7 +129,8 @@ class VerifyLoggingSourceIntf(AntaTest):
 
 
 class VerifyLoggingHosts(AntaTest):
-    """Verifies logging hosts (syslog servers) for a specified VRF.
+    """
+    Verifies logging hosts (syslog servers) for a specified VRF.
 
     Expected Results
     ----------------
@@ -174,7 +179,8 @@ class VerifyLoggingHosts(AntaTest):
 
 
 class VerifyLoggingLogsGeneration(AntaTest):
-    """Verifies if logs are generated.
+    """
+    Verifies if logs are generated.
 
     Expected Results
     ----------------
@@ -211,7 +217,8 @@ class VerifyLoggingLogsGeneration(AntaTest):
 
 
 class VerifyLoggingHostname(AntaTest):
-    """Verifies if logs are generated with the device FQDN.
+    """
+    Verifies if logs are generated with the device FQDN.
 
     Expected Results
     ----------------
@@ -255,7 +262,8 @@ class VerifyLoggingHostname(AntaTest):
 
 
 class VerifyLoggingTimestamp(AntaTest):
-    """Verifies if logs are generated with the appropriate timestamp.
+    """
+    Verifies if logs are generated with the appropriate timestamp.
 
     Expected Results
     ----------------
@@ -297,7 +305,8 @@ class VerifyLoggingTimestamp(AntaTest):
 
 
 class VerifyLoggingAccounting(AntaTest):
-    """Verifies if AAA accounting logs are generated.
+    """
+    Verifies if AAA accounting logs are generated.
 
     Expected Results
     ----------------
@@ -329,7 +338,8 @@ class VerifyLoggingAccounting(AntaTest):
 
 
 class VerifyLoggingErrors(AntaTest):
-    """Verifies there are no syslog messages with a severity of ERRORS or higher.
+    """
+    Verifies there are no syslog messages with a severity of ERRORS or higher.
 
     Expected Results
     ----------------
