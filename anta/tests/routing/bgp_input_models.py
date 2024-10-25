@@ -88,10 +88,17 @@ class BgpAddressFamily(BaseModel):
     @property
     def eos_key(self) -> str:
         """AFI/SAFI EOS key representation."""
+        # Pydantic handles the validation of the AFI/SAFI combination, so we can ignore error handling here.
         return AFI_SAFI_EOS_KEY[(self.afi, self.safi)]
 
     def __str__(self) -> str:
-        """Return a string representation of the BgpAddressFamily model. Used in failure messages."""
+        """Return a string representation of the BgpAddressFamily model. Used in failure messages.
+
+        Examples
+        --------
+        - AFI:ipv4 SAFI:unicast VRF:default
+        - AFI:evpn
+        """
         base_string = f"AFI:{self.afi}"
         if self.safi is not None:
             base_string += f" SAFI:{self.safi}"
