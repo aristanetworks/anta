@@ -364,31 +364,27 @@ class VerifyNTPAssociations(AntaTest):
 
         # Iterate over each NTP server.
         for ntp_server in self.inputs.ntp_servers:
-            peer_found = False
             server_address = str(ntp_server.server_address)
-            preferred = ntp_server.preferred
-            stratum = ntp_server.stratum
 
             # Collecting the expected NTP peer details.
-            expected_peer_details = {"condition": "candidate", "stratum": stratum}
-            if preferred:
-                expected_peer_details["condition"] = "sys.peer"
+            expected_peer_details = {"condition": "sys.peer" if ntp_server.preferred else "candidate", "stratum": ntp_server.stratum}
 
             # Check if NTP server details exists.
-            for peer, peer_detail in peer_details.items():
-                if server_address in peer:
-                    peer_found = True
+            matching_peer = next((peer for peer in peer_details if server_address in peer), None)
 
-                    # Collecting the actual NTP peer details.
-                    actual_peer_details = {"condition": get_value(peer_detail, "condition"), "stratum": get_value(peer_detail, "stratumLevel")}
-
-                    # Collecting failures logs if any.
-                    failure_logs = get_failed_logs(expected_peer_details, actual_peer_details)
-                    if failure_logs:
-                        failures += f"For NTP peer {server_address}:{failure_logs}\n"
-
-            if not peer_found:
+            if not matching_peer:
                 failures += f"NTP peer {server_address} is not configured.\n"
+                continue
+
+            # Collecting the actual NTP peer details.
+            actual_peer_details = {
+                "condition": get_value(peer_details[matching_peer], "condition"),
+                "stratum": get_value(peer_details[matching_peer], "stratumLevel"),
+            }
+
+            # Collecting failures logs if any.
+            if failure_logs := get_failed_logs(expected_peer_details, actual_peer_details):
+                failures += f"For NTP peer {server_address}:{failure_logs}\n"
 
         # Check if there are any failures.
         if not failures:
