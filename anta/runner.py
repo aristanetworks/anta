@@ -146,6 +146,8 @@ def prepare_tests(
     # Using a set to avoid inserting duplicate tests
     device_to_tests: defaultdict[AntaDevice, set[AntaTestDefinition]] = defaultdict(set)
 
+    total_test_count = 0
+
     # Create the device to tests mapping from the tags
     for device in inventory.devices:
         if tags:
@@ -162,7 +164,9 @@ def prepare_tests(
             # Then add the tests with matching tags from device tags
             device_to_tests[device].update(catalog.get_tests_by_tags(device.tags))
 
-    if sum(len(tests) for tests in device_to_tests.values()) == 0:
+        total_test_count += len(device_to_tests[device])
+
+    if total_test_count == 0:
         msg = (
             f"There are no tests{f' matching the tags {tags} ' if tags else ' '}to run in the current test catalog and device inventory, please verify your inputs."
         )
