@@ -6,8 +6,11 @@
 from __future__ import annotations
 
 import functools
+import importlib
+import inspect
 import json
 import logging
+import pkgutil
 from pathlib import Path
 from sys import stdin
 from typing import Any, Callable
@@ -16,10 +19,13 @@ import click
 import requests
 import urllib3
 import yaml
+from numpydoc.docscrape import NumpyDocString
 
+from anta.cli.console import console
 from anta.cli.utils import ExitCode
 from anta.inventory import AntaInventory
 from anta.inventory.models import AntaInventoryHost, AntaInventoryInput
+from anta.models import AntaTest
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -204,3 +210,42 @@ def create_inventory_from_ansible(inventory: Path, output: Path, ansible_group: 
         raise ValueError(msg)
     ansible_hosts = deep_yaml_parsing(ansible_inventory)
     write_inventory_to_file(ansible_hosts, output)
+
+
+def explore_package(module_name: str, level: int = 0, test_name: str | None = None) -> None:
+    """Parse submodules recursively and print AntaTest example."""
+    if (module_spec := importlib.util.find_spec(module_name)) is None or module_spec.origin is None:
+        return
+
+    if module_spec.submodule_search_locations:
+        for _, sub_module_name, ispkg in pkgutil.walk_packages(module_spec.submodule_search_locations):
+            qname = f"{module_name}.{sub_module_name}"
+            if ispkg:
+                explore_package(qname, level=level + 1, test_name=test_name)
+                continue
+            print_tests_examples(qname, level, test_name)
+
+    else:
+        print_tests_examples(module_spec.name, level, test_name)
+
+
+def print_tests_examples(qname: str, level: int, test_name: str | None) -> None:
+    """Print tests in qname if matching test_name (or all if test_name is None."""
+    qname_module = importlib.import_module(qname)
+    module_printed = False
+    for _name, obj in inspect.getmembers(qname_module):
+        if not inspect.isclass(obj) or not issubclass(obj, AntaTest) or obj == AntaTest:
+            continue
+        if test_name and obj.name != test_name:
+            continue
+        if not module_printed:
+            console.print(f"{qname}:")
+            module_printed = True
+        console.print(f"  - {obj.name}:")
+        console.print(f"      # {obj.description}", soft_wrap=True)
+        doc = NumpyDocString(obj.__doc__)
+        if "Examples" not in doc or not doc["Examples"]:
+            msg = f"Test {obj.name} in module {qname} is missing an Example"
+            raise LookupError(msg)
+        if len(doc["Examples"]) > 4 + level:  # otherwise it is a test with no params.
+            console.print("\n".join(line[4 + 2 * level :] for line in doc["Examples"][level + 3 : -1]))
