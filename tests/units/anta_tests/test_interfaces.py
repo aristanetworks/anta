@@ -1108,7 +1108,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"interfaces": [{"name": "Ethernet2", "status": "up"}, {"name": "Ethernet8", "status": "up"}, {"name": "Ethernet3", "status": "up"}]},
         "expected": {
             "result": "failure",
-            "messages": ["The following interface(s) are not configured: ['Ethernet8']"],
+            "messages": ["Ethernet8 - not configured"],
         },
     },
     {
@@ -1126,7 +1126,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"interfaces": [{"name": "Ethernet2", "status": "up"}, {"name": "Ethernet8", "status": "up"}, {"name": "Ethernet3", "status": "up"}]},
         "expected": {
             "result": "failure",
-            "messages": ["The following interface(s) are not in the expected state: ['Ethernet8 is down/down'"],
+            "messages": ["Interface status/Line protocol status for Ethernet8 - Expected: up/up, Actual: down/down"],
         },
     },
     {
@@ -1150,7 +1150,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["The following interface(s) are not in the expected state: ['Ethernet8 is up/down'"],
+            "messages": ["Interface status/Line protocol status for Ethernet8 - Expected: up/up, Actual: up/down"],
         },
     },
     {
@@ -1166,7 +1166,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"interfaces": [{"name": "PortChannel100", "status": "up"}]},
         "expected": {
             "result": "failure",
-            "messages": ["The following interface(s) are not in the expected state: ['Port-Channel100 is down/lowerLayerDown'"],
+            "messages": ["Interface status/Line protocol status for Port-Channel100 - Expected: up/up, Actual: down/lowerLayerDown"],
         },
     },
     {
@@ -1190,7 +1190,10 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["The following interface(s) are not in the expected state: ['Ethernet2 is up/unknown'"],
+            "messages": [
+                "Interface status/Line protocol status for Ethernet2 - Expected: up/down, Actual: up/unknown",
+                "Interface status/Line protocol status for Ethernet8 - Expected: up/up, Actual: up/down",
+            ],
         },
     },
     {
