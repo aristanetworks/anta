@@ -366,15 +366,15 @@ class VerifyNTPAssociations(AntaTest):
         for ntp_server in self.inputs.ntp_servers:
             server_address = str(ntp_server.server_address)
 
-            # Collecting the expected NTP peer details.
-            expected_peer_details = {"condition": "sys.peer" if ntp_server.preferred else "candidate", "stratum": ntp_server.stratum}
-
             # Check if NTP server details exists.
             matching_peer = next((peer for peer in peer_details if server_address in peer), None)
 
             if not matching_peer:
                 failures += f"NTP peer {server_address} is not configured.\n"
                 continue
+
+            # Collecting the expected NTP peer details.
+            expected_peer_details = {"condition": "sys.peer" if ntp_server.preferred else "candidate", "stratum": ntp_server.stratum}
 
             # Collecting the actual NTP peer details.
             actual_peer_details = {
