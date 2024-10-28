@@ -99,7 +99,7 @@ anta.tests.configuration:
         - "^enable password.*$"
         - "bla bla"
   - VerifyManagementCVX:
-      enabled: True
+      enabled: true
 
 anta.tests.connectivity:
   - VerifyReachability:
