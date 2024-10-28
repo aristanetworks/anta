@@ -10,8 +10,7 @@ from anta.device import AntaDevice
 
 
 def test(device: AntaDevice, data: dict[str, Any]) -> None:
-    """
-    Generic test function for AntaTest subclass.
+    """Generic test function for AntaTest subclass.
 
     Generate unit tests for each AntaTest subclass.
 

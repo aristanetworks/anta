@@ -16,8 +16,7 @@ from .models import CategoryStats, DeviceStats, TestStats
 
 
 class ResultManager:
-    """
-    Helper to manage Test Results and generate reports.
+    """Helper to manage Test Results and generate reports.
 
     Examples
     --------
@@ -70,8 +69,7 @@ class ResultManager:
     """
 
     def __init__(self) -> None:
-        """
-        Class constructor.
+        """Class constructor.
 
         The status of the class is initialized to "unset"
 
@@ -140,8 +138,7 @@ class ResultManager:
         return {status: [result for result in self._result_entries if result.result == status] for status in AntaTestStatus}
 
     def _update_status(self, test_status: AntaTestStatus) -> None:
-        """
-        Update the status of the ResultManager instance based on the test status.
+        """Update the status of the ResultManager instance based on the test status.
 
         Parameters
         ----------
@@ -157,8 +154,7 @@ class ResultManager:
             self.status = AntaTestStatus.FAILURE
 
     def _update_stats(self, result: TestResult) -> None:
-        """
-        Update the statistics based on the test result.
+        """Update the statistics based on the test result.
 
         Parameters
         ----------
@@ -189,8 +185,7 @@ class ResultManager:
             test_stats.devices_failure.add(result.name)
 
     def add(self, result: TestResult) -> None:
-        """
-        Add a result to the ResultManager instance.
+        """Add a result to the ResultManager instance.
 
         The result is added to the internal list of results and the overall status
         of the ResultManager instance is updated based on the added test status.
@@ -208,8 +203,7 @@ class ResultManager:
         self.__dict__.pop("results_by_status", None)
 
     def get_results(self, status: set[AntaTestStatus] | None = None, sort_by: list[str] | None = None) -> list[TestResult]:
-        """
-        Get the results, optionally filtered by status and sorted by TestResult fields.
+        """Get the results, optionally filtered by status and sorted by TestResult fields.
 
         If no status is provided, all results are returned.
 
@@ -238,8 +232,7 @@ class ResultManager:
         return results
 
     def get_total_results(self, status: set[AntaTestStatus] | None = None) -> int:
-        """
-        Get the total number of results, optionally filtered by status.
+        """Get the total number of results, optionally filtered by status.
 
         If no status is provided, the total number of results is returned.
 
@@ -265,8 +258,7 @@ class ResultManager:
         return "error" if self.error_status and not ignore_error else self.status
 
     def filter(self, hide: set[AntaTestStatus]) -> ResultManager:
-        """
-        Get a filtered ResultManager based on test status.
+        """Get a filtered ResultManager based on test status.
 
         Parameters
         ----------
@@ -284,8 +276,7 @@ class ResultManager:
         return manager
 
     def filter_by_tests(self, tests: set[str]) -> ResultManager:
-        """
-        Get a filtered ResultManager that only contains specific tests.
+        """Get a filtered ResultManager that only contains specific tests.
 
         Parameters
         ----------
@@ -302,8 +293,7 @@ class ResultManager:
         return manager
 
     def filter_by_devices(self, devices: set[str]) -> ResultManager:
-        """
-        Get a filtered ResultManager that only contains specific devices.
+        """Get a filtered ResultManager that only contains specific devices.
 
         Parameters
         ----------
@@ -320,8 +310,7 @@ class ResultManager:
         return manager
 
     def get_tests(self) -> set[str]:
-        """
-        Get the set of all the test names.
+        """Get the set of all the test names.
 
         Returns
         -------
@@ -331,8 +320,7 @@ class ResultManager:
         return {str(result.test) for result in self._result_entries}
 
     def get_devices(self) -> set[str]:
-        """
-        Get the set of all the device names.
+        """Get the set of all the device names.
 
         Returns
         -------

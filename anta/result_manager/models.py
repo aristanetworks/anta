@@ -12,8 +12,7 @@ from pydantic import BaseModel
 
 
 class AntaTestStatus(str, Enum):
-    """
-    Test status Enum for the TestResult.
+    """Test status Enum for the TestResult.
 
     NOTE: This could be updated to StrEnum when Python 3.11 is the minimum supported version in ANTA.
     """
@@ -30,8 +29,7 @@ class AntaTestStatus(str, Enum):
 
 
 class TestResult(BaseModel):
-    """
-    Describe the result of a test from a single device.
+    """Describe the result of a test from a single device.
 
     Attributes
     ----------
@@ -61,8 +59,7 @@ class TestResult(BaseModel):
     custom_field: str | None = None
 
     def is_success(self, message: str | None = None) -> None:
-        """
-        Set status to success.
+        """Set status to success.
 
         Parameters
         ----------
@@ -73,8 +70,7 @@ class TestResult(BaseModel):
         self._set_status(AntaTestStatus.SUCCESS, message)
 
     def is_failure(self, message: str | None = None) -> None:
-        """
-        Set status to failure.
+        """Set status to failure.
 
         Parameters
         ----------
@@ -85,8 +81,7 @@ class TestResult(BaseModel):
         self._set_status(AntaTestStatus.FAILURE, message)
 
     def is_skipped(self, message: str | None = None) -> None:
-        """
-        Set status to skipped.
+        """Set status to skipped.
 
         Parameters
         ----------
@@ -97,8 +92,7 @@ class TestResult(BaseModel):
         self._set_status(AntaTestStatus.SKIPPED, message)
 
     def is_error(self, message: str | None = None) -> None:
-        """
-        Set status to error.
+        """Set status to error.
 
         Parameters
         ----------
@@ -109,8 +103,7 @@ class TestResult(BaseModel):
         self._set_status(AntaTestStatus.ERROR, message)
 
     def _set_status(self, status: AntaTestStatus, message: str | None = None) -> None:
-        """
-        Set status and insert optional message.
+        """Set status and insert optional message.
 
         Parameters
         ----------

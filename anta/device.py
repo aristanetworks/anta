@@ -35,8 +35,7 @@ CLIENT_KEYS = asyncssh.public_key.load_default_keypairs()
 
 
 class AntaDevice(ABC):
-    """
-    Abstract class representing a device in ANTA.
+    """Abstract class representing a device in ANTA.
 
     An implementation of this class must override the abstract coroutines `_collect()` and
     `refresh()`.
@@ -61,8 +60,7 @@ class AntaDevice(ABC):
     """
 
     def __init__(self, name: str, tags: set[str] | None = None, *, disable_cache: bool = False) -> None:
-        """
-        Initialize an AntaDevice.
+        """Initialize an AntaDevice.
 
         Parameters
         ----------
@@ -117,8 +115,7 @@ class AntaDevice(ABC):
         return None
 
     def __rich_repr__(self) -> Iterator[tuple[str, Any]]:
-        """
-        Implement Rich Repr Protocol.
+        """Implement Rich Repr Protocol.
 
         https://rich.readthedocs.io/en/stable/pretty.html#rich-repr-protocol.
         """
@@ -142,8 +139,7 @@ class AntaDevice(ABC):
 
     @abstractmethod
     async def _collect(self, command: AntaCommand, *, collection_id: str | None = None) -> None:
-        """
-        Collect device command output.
+        """Collect device command output.
 
         This abstract coroutine can be used to implement any command collection method
         for a device in ANTA.
@@ -164,8 +160,7 @@ class AntaDevice(ABC):
         """
 
     async def collect(self, command: AntaCommand, *, collection_id: str | None = None) -> None:
-        """
-        Collect the output for a specified command.
+        """Collect the output for a specified command.
 
         When caching is activated on both the device and the command,
         this method prioritizes retrieving the output from the cache. In cases where the output isn't cached yet,
@@ -198,8 +193,7 @@ class AntaDevice(ABC):
             await self._collect(command=command, collection_id=collection_id)
 
     async def collect_commands(self, commands: list[AntaCommand], *, collection_id: str | None = None) -> None:
-        """
-        Collect multiple commands.
+        """Collect multiple commands.
 
         Parameters
         ----------
@@ -212,8 +206,7 @@ class AntaDevice(ABC):
 
     @abstractmethod
     async def refresh(self) -> None:
-        """
-        Update attributes of an AntaDevice instance.
+        """Update attributes of an AntaDevice instance.
 
         This coroutine must update the following attributes of AntaDevice:
 
@@ -225,8 +218,7 @@ class AntaDevice(ABC):
         """
 
     async def copy(self, sources: list[Path], destination: Path, direction: Literal["to", "from"] = "from") -> None:
-        """
-        Copy files to and from the device, usually through SCP.
+        """Copy files to and from the device, usually through SCP.
 
         It is not mandatory to implement this for a valid AntaDevice subclass.
 
@@ -246,8 +238,7 @@ class AntaDevice(ABC):
 
 
 class AsyncEOSDevice(AntaDevice):
-    """
-    Implementation of AntaDevice for EOS using aio-eapi.
+    """Implementation of AntaDevice for EOS using aio-eapi.
 
     Attributes
     ----------
@@ -281,8 +272,7 @@ class AsyncEOSDevice(AntaDevice):
         insecure: bool = False,
         disable_cache: bool = False,
     ) -> None:
-        """
-        Instantiate an AsyncEOSDevice.
+        """Instantiate an AsyncEOSDevice.
 
         Parameters
         ----------
@@ -340,8 +330,7 @@ class AsyncEOSDevice(AntaDevice):
         )
 
     def __rich_repr__(self) -> Iterator[tuple[str, Any]]:
-        """
-        Implement Rich Repr Protocol.
+        """Implement Rich Repr Protocol.
 
         https://rich.readthedocs.io/en/stable/pretty.html#rich-repr-protocol.
         """
@@ -377,16 +366,14 @@ class AsyncEOSDevice(AntaDevice):
 
     @property
     def _keys(self) -> tuple[Any, ...]:
-        """
-        Two AsyncEOSDevice objects are equal if the hostname and the port are the same.
+        """Two AsyncEOSDevice objects are equal if the hostname and the port are the same.
 
         This covers the use case of port forwarding when the host is localhost and the devices have different ports.
         """
         return (self._session.host, self._session.port)
 
     async def _collect(self, command: AntaCommand, *, collection_id: str | None = None) -> None:  # noqa: C901  function is too complex - because of many required except blocks
-        """
-        Collect device command output from EOS using aio-eapi.
+        """Collect device command output from EOS using aio-eapi.
 
         Supports outformat `json` and `text` as output structure.
         Gain privileged access using the `enable_password` attribute
@@ -460,8 +447,7 @@ class AsyncEOSDevice(AntaDevice):
         logger.debug("%s: %s", self.name, command)
 
     async def refresh(self) -> None:
-        """
-        Update attributes of an AsyncEOSDevice instance.
+        """Update attributes of an AsyncEOSDevice instance.
 
         This coroutine must update the following attributes of AsyncEOSDevice:
         - is_online: When a device IP is reachable and a port can be open
@@ -489,8 +475,7 @@ class AsyncEOSDevice(AntaDevice):
         self.established = bool(self.is_online and self.hw_model)
 
     async def copy(self, sources: list[Path], destination: Path, direction: Literal["to", "from"] = "from") -> None:
-        """
-        Copy files to and from the device using asyncssh.scp().
+        """Copy files to and from the device using asyncssh.scp().
 
         Parameters
         ----------

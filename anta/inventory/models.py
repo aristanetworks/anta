@@ -17,8 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 class AntaInventoryHost(BaseModel):
-    """
-    Host entry of AntaInventoryInput.
+    """Host entry of AntaInventoryInput.
 
     Attributes
     ----------
@@ -45,8 +44,7 @@ class AntaInventoryHost(BaseModel):
 
 
 class AntaInventoryNetwork(BaseModel):
-    """
-    Network entry of AntaInventoryInput.
+    """Network entry of AntaInventoryInput.
 
     Attributes
     ----------
@@ -67,8 +65,7 @@ class AntaInventoryNetwork(BaseModel):
 
 
 class AntaInventoryRange(BaseModel):
-    """
-    IP Range entry of AntaInventoryInput.
+    """IP Range entry of AntaInventoryInput.
 
     Attributes
     ----------
@@ -101,8 +98,7 @@ class AntaInventoryInput(BaseModel):
     ranges: list[AntaInventoryRange] | None = None
 
     def yaml(self) -> str:
-        """
-        Return a YAML representation string of this model.
+        """Return a YAML representation string of this model.
 
         Returns
         -------

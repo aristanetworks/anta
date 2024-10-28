@@ -18,8 +18,7 @@ from anta.tools import get_failed_logs, get_value
 
 
 class VerifyStunClient(AntaTest):
-    """
-    Verifies the configuration of the STUN client, specifically the IPv4 source address and port.
+    """Verifies the configuration of the STUN client, specifically the IPv4 source address and port.
 
     Optionally, it can also verify the public address and port.
 
@@ -118,8 +117,7 @@ class VerifyStunClient(AntaTest):
 
 
 class VerifyStunServer(AntaTest):
-    """
-    Verifies the STUN server status is enabled and running.
+    """Verifies the STUN server status is enabled and running.
 
     Expected Results
     ----------------

@@ -17,8 +17,7 @@ from anta.tools import get_value
 
 
 class VerifySTPMode(AntaTest):
-    """
-    Verifies the configured STP mode for a provided list of VLAN(s).
+    """Verifies the configured STP mode for a provided list of VLAN(s).
 
     Expected Results
     ----------------
@@ -79,8 +78,7 @@ class VerifySTPMode(AntaTest):
 
 
 class VerifySTPBlockedPorts(AntaTest):
-    """
-    Verifies there is no STP blocked ports.
+    """Verifies there is no STP blocked ports.
 
     Expected Results
     ----------------
@@ -113,8 +111,7 @@ class VerifySTPBlockedPorts(AntaTest):
 
 
 class VerifySTPCounters(AntaTest):
-    """
-    Verifies there is no errors in STP BPDU packets.
+    """Verifies there is no errors in STP BPDU packets.
 
     Expected Results
     ----------------
@@ -148,8 +145,7 @@ class VerifySTPCounters(AntaTest):
 
 
 class VerifySTPForwardingPorts(AntaTest):
-    """
-    Verifies that all interfaces are in a forwarding state for a provided list of VLAN(s).
+    """Verifies that all interfaces are in a forwarding state for a provided list of VLAN(s).
 
     Expected Results
     ----------------
@@ -207,8 +203,7 @@ class VerifySTPForwardingPorts(AntaTest):
 
 
 class VerifySTPRootPriority(AntaTest):
-    """
-    Verifies the STP root priority for a provided list of VLAN or MST instance ID(s).
+    """Verifies the STP root priority for a provided list of VLAN or MST instance ID(s).
 
     Expected Results
     ----------------
@@ -267,8 +262,7 @@ class VerifySTPRootPriority(AntaTest):
 
 
 class VerifyStpTopologyChanges(AntaTest):
-    """
-    Verifies the number of changes across all interfaces in the Spanning Tree Protocol (STP) topology is below a threshold.
+    """Verifies the number of changes across all interfaces in the Spanning Tree Protocol (STP) topology is below a threshold.
 
     Expected Results
     ----------------

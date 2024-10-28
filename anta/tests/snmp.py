@@ -18,8 +18,7 @@ if TYPE_CHECKING:
 
 
 class VerifySnmpStatus(AntaTest):
-    """
-    Verifies whether the SNMP agent is enabled in a specified VRF.
+    """Verifies whether the SNMP agent is enabled in a specified VRF.
 
     Expected Results
     ----------------
@@ -57,8 +56,7 @@ class VerifySnmpStatus(AntaTest):
 
 
 class VerifySnmpIPv4Acl(AntaTest):
-    """
-    Verifies if the SNMP agent has the right number IPv4 ACL(s) configured for a specified VRF.
+    """Verifies if the SNMP agent has the right number IPv4 ACL(s) configured for a specified VRF.
 
     Expected Results
     ----------------
@@ -107,8 +105,7 @@ class VerifySnmpIPv4Acl(AntaTest):
 
 
 class VerifySnmpIPv6Acl(AntaTest):
-    """
-    Verifies if the SNMP agent has the right number IPv6 ACL(s) configured for a specified VRF.
+    """Verifies if the SNMP agent has the right number IPv6 ACL(s) configured for a specified VRF.
 
     Expected Results
     ----------------
@@ -157,8 +154,7 @@ class VerifySnmpIPv6Acl(AntaTest):
 
 
 class VerifySnmpLocation(AntaTest):
-    """
-    Verifies the SNMP location of a device.
+    """Verifies the SNMP location of a device.
 
     Expected Results
     ----------------
@@ -201,8 +197,7 @@ class VerifySnmpLocation(AntaTest):
 
 
 class VerifySnmpContact(AntaTest):
-    """
-    Verifies the SNMP contact of a device.
+    """Verifies the SNMP contact of a device.
 
     Expected Results
     ----------------
@@ -245,8 +240,7 @@ class VerifySnmpContact(AntaTest):
 
 
 class VerifySnmpPDUCounters(AntaTest):
-    """
-    Verifies the SNMP PDU counters.
+    """Verifies the SNMP PDU counters.
 
     By default, all SNMP PDU counters will be checked for any non-zero values.
     An optional list of specific SNMP PDU(s) can be provided for granular testing.
@@ -303,8 +297,7 @@ class VerifySnmpPDUCounters(AntaTest):
 
 
 class VerifySnmpErrorCounters(AntaTest):
-    """
-    Verifies the SNMP error counters.
+    """Verifies the SNMP error counters.
 
     By default, all  error counters will be checked for any non-zero values.
     An optional list of specific error counters can be provided for granular testing.

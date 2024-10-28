@@ -44,8 +44,7 @@ def aaa_group_prefix(v: str) -> str:
 
 
 def interface_autocomplete(v: str) -> str:
-    """
-    Allow the user to only provide the beginning of an interface name.
+    """Allow the user to only provide the beginning of an interface name.
 
     Supported alias:
          - `et`, `eth` will be changed to `Ethernet`
@@ -65,8 +64,7 @@ def interface_autocomplete(v: str) -> str:
 
 
 def interface_case_sensitivity(v: str) -> str:
-    """
-    Reformat interface name to match expected case sensitivity.
+    """Reformat interface name to match expected case sensitivity.
 
     Examples
     --------
@@ -81,8 +79,7 @@ def interface_case_sensitivity(v: str) -> str:
 
 
 def bgp_multiprotocol_capabilities_abbreviations(value: str) -> str:
-    """
-    Abbreviations for different BGP multiprotocol capabilities.
+    """Abbreviations for different BGP multiprotocol capabilities.
 
     Examples
     --------

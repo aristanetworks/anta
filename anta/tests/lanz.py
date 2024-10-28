@@ -15,8 +15,7 @@ if TYPE_CHECKING:
 
 
 class VerifyLANZ(AntaTest):
-    """
-    Verifies if LANZ (Latency Analyzer) is enabled.
+    """Verifies if LANZ (Latency Analyzer) is enabled.
 
     Expected Results
     ----------------

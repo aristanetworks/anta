@@ -35,8 +35,7 @@ LogLevel = Literal[Log.CRITICAL, Log.ERROR, Log.WARNING, Log.INFO, Log.DEBUG]
 
 
 def setup_logging(level: LogLevel = Log.INFO, file: Path | None = None) -> None:
-    """
-    Configure logging for ANTA.
+    """Configure logging for ANTA.
 
     By default, the logging level is INFO for all loggers except for httpx and asyncssh which are too verbose:
     their logging level is WARNING.
@@ -103,8 +102,7 @@ def exc_to_str(exception: BaseException) -> str:
 
 
 def anta_log_exception(exception: BaseException, message: str | None = None, calling_logger: logging.Logger | None = None) -> None:
-    """
-    Log exception.
+    """Log exception.
 
     If `anta.__DEBUG__` is True then the `logger.exception` method is called to get the traceback, otherwise `logger.error` is called.
 

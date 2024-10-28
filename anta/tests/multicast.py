@@ -17,8 +17,7 @@ if TYPE_CHECKING:
 
 
 class VerifyIGMPSnoopingVlans(AntaTest):
-    """
-    Verifies the IGMP snooping status for the provided VLANs.
+    """Verifies the IGMP snooping status for the provided VLANs.
 
     Expected Results
     ----------------
@@ -63,8 +62,7 @@ class VerifyIGMPSnoopingVlans(AntaTest):
 
 
 class VerifyIGMPSnoopingGlobal(AntaTest):
-    """
-    Verifies the IGMP snooping global status.
+    """Verifies the IGMP snooping global status.
 
     Expected Results
     ----------------

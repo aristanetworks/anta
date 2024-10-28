@@ -42,8 +42,7 @@ class ReportTable:
         list_of_error_tests: str = "List of failed or error test cases"
 
     def _split_list_to_txt_list(self, usr_list: list[str], delimiter: str | None = None) -> str:
-        """
-        Split list to multi-lines string.
+        """Split list to multi-lines string.
 
         Parameters
         ----------
@@ -63,8 +62,7 @@ class ReportTable:
         return "\n".join(f"{line}" for line in usr_list)
 
     def _build_headers(self, headers: list[str], table: Table) -> Table:
-        """
-        Create headers for a table.
+        """Create headers for a table.
 
         First key is considered as header and is colored using RICH_COLOR_PALETTE.HEADER
 
@@ -89,8 +87,7 @@ class ReportTable:
         return table
 
     def _color_result(self, status: AntaTestStatus) -> str:
-        """
-        Return a colored string based on an AntaTestStatus.
+        """Return a colored string based on an AntaTestStatus.
 
         Parameters
         ----------
@@ -106,8 +103,7 @@ class ReportTable:
         return f"[{color}]{status}" if color != "" else str(status)
 
     def report_all(self, manager: ResultManager, title: str = "All tests results") -> Table:
-        """
-        Create a table report with all tests for one or all devices.
+        """Create a table report with all tests for one or all devices.
 
         Create table with full output: Device | Test Name | Test Status | Message(s) | Test description | Test category
 
@@ -143,8 +139,7 @@ class ReportTable:
         tests: list[str] | None = None,
         title: str = "Summary per test",
     ) -> Table:
-        """
-        Create a table report with result aggregated per test.
+        """Create a table report with result aggregated per test.
 
         Create table with full output:
         Test Name | # of success | # of skipped | # of failure | # of errors | List of failed or error nodes
@@ -191,8 +186,7 @@ class ReportTable:
         devices: list[str] | None = None,
         title: str = "Summary per device",
     ) -> Table:
-        """
-        Create a table report with result aggregated per device.
+        """Create a table report with result aggregated per device.
 
         Create table with full output: Device | # of success | # of skipped | # of failure | # of errors | List of failed or error test cases
 
@@ -245,8 +239,7 @@ class ReportJinja:
         self.template_path = template_path
 
     def render(self, data: list[dict[str, Any]], *, trim_blocks: bool = True, lstrip_blocks: bool = True) -> str:
-        """
-        Build a report based on a Jinja2 template.
+        """Build a report based on a Jinja2 template.
 
         Report is built based on a J2 template provided by user.
         Data structure sent to template is:

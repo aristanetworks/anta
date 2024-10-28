@@ -52,8 +52,7 @@ MOCK_CLI_TEXT: dict[str, asynceapi.EapiCommandError | str] = {
 
 @pytest.fixture
 def temp_env(anta_env: dict[str, str], tmp_path: Path) -> dict[str, str]:
-    """
-    Fixture that create a temporary ANTA inventory.
+    """Fixture that create a temporary ANTA inventory.
 
     The inventory can be overridden and returns the corresponding environment variables.
     """

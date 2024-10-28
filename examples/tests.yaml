@@ -103,24 +103,18 @@ anta.tests.bfd:
         - peer_address: 192.0.255.7
           vrf: default
 anta.tests.configuration:
+  - VerifyManagementCVX:
+      # Verifies the management CVX global status.
+      enabled: true
   - VerifyRunningConfigDiffs:
       # Verifies there is no difference between the running-config and the startup-config
   - VerifyRunningConfigLines:
-<<<<<<< HEAD
       # Search the Running-Config for the given RegEx patterns.
         regex_patterns:
             - "^enable password.*$"
             - "bla bla"
   - VerifyZeroTouch:
       # Verifies ZeroTouch is disabled
-=======
-      regex_patterns:
-        - "^enable password.*$"
-        - "bla bla"
-  - VerifyManagementCVX:
-      enabled: true
-
->>>>>>> main
 anta.tests.connectivity:
   - VerifyLLDPNeighbors:
       # Verifies that the provided LLDP neighbors are connected properly.

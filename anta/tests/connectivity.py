@@ -17,8 +17,7 @@ from anta.models import AntaCommand, AntaTemplate, AntaTest
 
 
 class VerifyReachability(AntaTest):
-    """
-    Test network reachability to one or many destination IP(s).
+    """Test network reachability to one or many destination IP(s).
 
     Expected Results
     ----------------
@@ -106,8 +105,7 @@ class VerifyReachability(AntaTest):
 
 
 class VerifyLLDPNeighbors(AntaTest):
-    """
-    Verifies that the provided LLDP neighbors are present and connected with the correct configuration.
+    """Verifies that the provided LLDP neighbors are present and connected with the correct configuration.
 
     Expected Results
     ----------------

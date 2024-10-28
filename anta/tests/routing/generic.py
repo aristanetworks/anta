@@ -26,8 +26,7 @@ if TYPE_CHECKING:
 
 
 class VerifyRoutingProtocolModel(AntaTest):
-    """
-    Verifies the configured routing protocol model is the one we expect.
+    """Verifies the configured routing protocol model is the one we expect.
 
     Expected Results
     ----------------
@@ -68,8 +67,7 @@ class VerifyRoutingProtocolModel(AntaTest):
 
 
 class VerifyRoutingTableSize(AntaTest):
-    """
-    Verifies the size of the IP routing table of the default VRF.
+    """Verifies the size of the IP routing table of the default VRF.
 
     Expected Results
     ----------------
@@ -120,8 +118,7 @@ class VerifyRoutingTableSize(AntaTest):
 
 
 class VerifyRoutingTableEntry(AntaTest):
-    """
-    Verifies that the provided routes are present in the routing table of a specified VRF.
+    """Verifies that the provided routes are present in the routing table of a specified VRF.
 
     Expected Results
     ----------------

@@ -22,8 +22,7 @@ if TYPE_CHECKING:
 
 
 class VerifyBFDSpecificPeers(AntaTest):
-    """
-    Verifies if the IPv4 BFD peer's sessions are UP and remote disc is non-zero in the specified VRF.
+    """Verifies if the IPv4 BFD peer's sessions are UP and remote disc is non-zero in the specified VRF.
 
     Expected Results
     ----------------
@@ -98,8 +97,7 @@ class VerifyBFDSpecificPeers(AntaTest):
 
 
 class VerifyBFDPeersIntervals(AntaTest):
-    """
-    Verifies the timers of the IPv4 BFD peers in the specified VRF.
+    """Verifies the timers of the IPv4 BFD peers in the specified VRF.
 
     Expected Results
     ----------------
@@ -198,8 +196,7 @@ class VerifyBFDPeersIntervals(AntaTest):
 
 
 class VerifyBFDPeersHealth(AntaTest):
-    """
-    Verifies the health of IPv4 BFD peers across all VRFs.
+    """Verifies the health of IPv4 BFD peers across all VRFs.
 
     It checks that no BFD peer is in the down state and that the discriminator value of the remote system is not zero.
 
@@ -291,8 +288,7 @@ class VerifyBFDPeersHealth(AntaTest):
 
 
 class VerifyBFDPeersRegProtocols(AntaTest):
-    """
-    Verifies that IPv4 BFD peer(s) have the specified protocol(s) registered.
+    """Verifies that IPv4 BFD peer(s) have the specified protocol(s) registered.
 
     Expected Results
     ----------------

@@ -18,8 +18,7 @@ from anta.tools import get_value
 
 
 def _count_isis_neighbor(isis_neighbor_json: dict[str, Any]) -> int:
-    """
-    Count the number of isis neighbors.
+    """Count the number of isis neighbors.
 
     Parameters
     ----------
@@ -40,8 +39,7 @@ def _count_isis_neighbor(isis_neighbor_json: dict[str, Any]) -> int:
 
 
 def _get_not_full_isis_neighbors(isis_neighbor_json: dict[str, Any]) -> list[dict[str, Any]]:
-    """
-    Return the isis neighbors whose adjacency state is not `up`.
+    """Return the isis neighbors whose adjacency state is not `up`.
 
     Parameters
     ----------
@@ -70,8 +68,7 @@ def _get_not_full_isis_neighbors(isis_neighbor_json: dict[str, Any]) -> list[dic
 
 
 def _get_full_isis_neighbors(isis_neighbor_json: dict[str, Any], neighbor_state: Literal["up", "down"] = "up") -> list[dict[str, Any]]:
-    """
-    Return the isis neighbors whose adjacency state is `up`.
+    """Return the isis neighbors whose adjacency state is `up`.
 
     Parameters
     ----------
@@ -144,8 +141,7 @@ def _get_adjacency_segment_data_by_neighbor(neighbor: str, instance: str, vrf: s
 
 
 class VerifyISISNeighborState(AntaTest):
-    """
-    Verifies all IS-IS neighbors are in UP state.
+    """Verifies all IS-IS neighbors are in UP state.
 
     Expected Results
     ----------------
@@ -181,8 +177,7 @@ class VerifyISISNeighborState(AntaTest):
 
 
 class VerifyISISNeighborCount(AntaTest):
-    """
-    Verifies number of IS-IS neighbors per level and per interface.
+    """Verifies number of IS-IS neighbors per level and per interface.
 
     Expected Results
     ----------------
@@ -253,8 +248,7 @@ class VerifyISISNeighborCount(AntaTest):
 
 
 class VerifyISISInterfaceMode(AntaTest):
-    """
-    Verifies ISIS Interfaces are running in correct mode.
+    """Verifies ISIS Interfaces are running in correct mode.
 
     Expected Results
     ----------------
@@ -339,8 +333,7 @@ class VerifyISISInterfaceMode(AntaTest):
 
 
 class VerifyISISSegmentRoutingAdjacencySegments(AntaTest):
-    """
-    Verifies ISIS Segment Routing Adjacency Segments.
+    """Verifies ISIS Segment Routing Adjacency Segments.
 
     Verify that all expected Adjacency segments are correctly visible for each interface.
 
@@ -452,8 +445,7 @@ class VerifyISISSegmentRoutingAdjacencySegments(AntaTest):
 
 
 class VerifyISISSegmentRoutingDataplane(AntaTest):
-    """
-    Verify dataplane of a list of ISIS-SR instances.
+    """Verify dataplane of a list of ISIS-SR instances.
 
     Expected Results
     ----------------
@@ -536,8 +528,7 @@ class VerifyISISSegmentRoutingDataplane(AntaTest):
 
 
 class VerifyISISSegmentRoutingTunnels(AntaTest):
-    """
-    Verify ISIS-SR tunnels computed by device.
+    """Verify ISIS-SR tunnels computed by device.
 
     Expected Results
     ----------------
@@ -606,8 +597,7 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """
-        Main test function for VerifyISISSegmentRoutingTunnels.
+        """Main test function for VerifyISISSegmentRoutingTunnels.
 
         This method performs the main test logic for verifying ISIS Segment Routing tunnels.
         It checks the command output, initiates defaults, and performs various checks on the tunnels.
@@ -645,8 +635,7 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
             self.result.is_failure("\n".join(failure_message))
 
     def _check_tunnel_type(self, via_input: VerifyISISSegmentRoutingTunnels.Input.Entry.Vias, eos_entry: dict[str, Any]) -> bool:
-        """
-        Check if the tunnel type specified in `via_input` matches any of the tunnel types in `eos_entry`.
+        """Check if the tunnel type specified in `via_input` matches any of the tunnel types in `eos_entry`.
 
         Parameters
         ----------
@@ -673,8 +662,7 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
         return True
 
     def _check_tunnel_nexthop(self, via_input: VerifyISISSegmentRoutingTunnels.Input.Entry.Vias, eos_entry: dict[str, Any]) -> bool:
-        """
-        Check if the tunnel nexthop matches the given input.
+        """Check if the tunnel nexthop matches the given input.
 
         Parameters
         ----------
@@ -701,8 +689,7 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
         return True
 
     def _check_tunnel_interface(self, via_input: VerifyISISSegmentRoutingTunnels.Input.Entry.Vias, eos_entry: dict[str, Any]) -> bool:
-        """
-        Check if the tunnel interface exists in the given EOS entry.
+        """Check if the tunnel interface exists in the given EOS entry.
 
         Parameters
         ----------
@@ -729,8 +716,7 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
         return True
 
     def _check_tunnel_id(self, via_input: VerifyISISSegmentRoutingTunnels.Input.Entry.Vias, eos_entry: dict[str, Any]) -> bool:
-        """
-        Check if the tunnel ID matches any of the tunnel IDs in the EOS entry's vias.
+        """Check if the tunnel ID matches any of the tunnel IDs in the EOS entry's vias.
 
         Parameters
         ----------

@@ -16,8 +16,7 @@ if TYPE_CHECKING:
 
 
 class VerifyEOSVersion(AntaTest):
-    """
-    Verifies that the device is running one of the allowed EOS version.
+    """Verifies that the device is running one of the allowed EOS version.
 
     Expected Results
     ----------------
@@ -57,8 +56,7 @@ class VerifyEOSVersion(AntaTest):
 
 
 class VerifyTerminAttrVersion(AntaTest):
-    """
-    Verifies that he device is running one of the allowed TerminAttr version.
+    """Verifies that he device is running one of the allowed TerminAttr version.
 
     Expected Results
     ----------------
@@ -99,8 +97,7 @@ class VerifyTerminAttrVersion(AntaTest):
 
 
 class VerifyEOSExtensions(AntaTest):
-    """
-    Verifies that all EOS extensions installed on the device are enabled for boot persistence.
+    """Verifies that all EOS extensions installed on the device are enabled for boot persistence.
 
     Expected Results
     ----------------

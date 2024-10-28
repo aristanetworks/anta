@@ -21,8 +21,7 @@ if TYPE_CHECKING:
 
 
 class VerifyVxlan1Interface(AntaTest):
-    """
-    Verifies if the Vxlan1 interface is configured and 'up/up'.
+    """Verifies if the Vxlan1 interface is configured and 'up/up'.
 
     Warnings
     --------
@@ -66,8 +65,7 @@ class VerifyVxlan1Interface(AntaTest):
 
 
 class VerifyVxlanConfigSanity(AntaTest):
-    """
-    Verifies that no issues are detected with the VXLAN configuration.
+    """Verifies that no issues are detected with the VXLAN configuration.
 
     Expected Results
     ----------------
@@ -107,8 +105,7 @@ class VerifyVxlanConfigSanity(AntaTest):
 
 
 class VerifyVxlanVniBinding(AntaTest):
-    """
-    Verifies the VNI-VLAN bindings of the Vxlan1 interface.
+    """Verifies the VNI-VLAN bindings of the Vxlan1 interface.
 
     Expected Results
     ----------------
@@ -171,8 +168,7 @@ class VerifyVxlanVniBinding(AntaTest):
 
 
 class VerifyVxlanVtep(AntaTest):
-    """
-    Verifies the VTEP peers of the Vxlan1 interface.
+    """Verifies the VTEP peers of the Vxlan1 interface.
 
     Expected Results
     ----------------
@@ -224,8 +220,7 @@ class VerifyVxlanVtep(AntaTest):
 
 
 class VerifyVxlan1ConnSettings(AntaTest):
-    """
-    Verifies the interface vxlan1 source interface and UDP port.
+    """Verifies the interface vxlan1 source interface and UDP port.
 
     Expected Results
     ----------------

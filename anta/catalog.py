@@ -43,8 +43,7 @@ ListAntaTestTuples = list[tuple[type[AntaTest], Optional[Union[AntaTest.Input, d
 
 
 class AntaTestDefinition(BaseModel):
-    """
-    Define a test with its associated inputs.
+    """Define a test with its associated inputs.
 
     Attributes
     ----------
@@ -61,8 +60,7 @@ class AntaTestDefinition(BaseModel):
 
     @model_serializer()
     def serialize_model(self) -> dict[str, AntaTest.Input]:
-        """
-        Serialize the AntaTestDefinition model.
+        """Serialize the AntaTestDefinition model.
 
         The dictionary representing the model will be look like:
         ```
@@ -78,8 +76,7 @@ class AntaTestDefinition(BaseModel):
         return {self.test.__name__: self.inputs}
 
     def __init__(self, **data: type[AntaTest] | AntaTest.Input | dict[str, Any] | None) -> None:
-        """
-        Inject test in the context to allow to instantiate Input in the BeforeValidator.
+        """Inject test in the context to allow to instantiate Input in the BeforeValidator.
 
         https://docs.pydantic.dev/2.0/usage/validators/#using-validation-context-with-basemodel-initialization.
         """
@@ -97,8 +94,7 @@ class AntaTestDefinition(BaseModel):
         data: AntaTest.Input | dict[str, Any] | None,
         info: ValidationInfo,
     ) -> AntaTest.Input:
-        """
-        Ensure the test inputs can be instantiated and thus are valid.
+        """Ensure the test inputs can be instantiated and thus are valid.
 
         If the test has no inputs, allow the user to omit providing the `inputs` field.
         If the test has inputs, allow the user to provide a valid dictionary of the input fields.
@@ -134,8 +130,7 @@ class AntaTestDefinition(BaseModel):
 
     @model_validator(mode="after")
     def check_inputs(self) -> Self:
-        """
-        Check the `inputs` field typing.
+        """Check the `inputs` field typing.
 
         The `inputs` class attribute needs to be an instance of the AntaTest.Input subclass defined in the class `test`.
         """
@@ -146,8 +141,7 @@ class AntaTestDefinition(BaseModel):
 
 
 class AntaCatalogFile(RootModel[dict[ImportString[Any], list[AntaTestDefinition]]]):  # pylint: disable=too-few-public-methods
-    """
-    Represents an ANTA Test Catalog File.
+    """Represents an ANTA Test Catalog File.
 
     Example
     -------
@@ -164,8 +158,7 @@ class AntaCatalogFile(RootModel[dict[ImportString[Any], list[AntaTestDefinition]
 
     @staticmethod
     def flatten_modules(data: dict[str, Any], package: str | None = None) -> dict[ModuleType, list[Any]]:
-        """
-        Allow the user to provide a data structure with nested Python modules.
+        """Allow the user to provide a data structure with nested Python modules.
 
         Example
         -------
@@ -209,8 +202,7 @@ class AntaCatalogFile(RootModel[dict[ImportString[Any], list[AntaTestDefinition]
     @model_validator(mode="before")
     @classmethod
     def check_tests(cls: type[AntaCatalogFile], data: Any) -> Any:  # noqa: ANN401
-        """
-        Allow the user to provide a Python data structure that only has string values.
+        """Allow the user to provide a Python data structure that only has string values.
 
         This validator will try to flatten and import Python modules, check if the tests classes
         are actually defined in their respective Python module and instantiate Input instances
@@ -249,8 +241,7 @@ class AntaCatalogFile(RootModel[dict[ImportString[Any], list[AntaTestDefinition]
         return data
 
     def yaml(self) -> str:
-        """
-        Return a YAML representation string of this model.
+        """Return a YAML representation string of this model.
 
         Returns
         -------
@@ -264,8 +255,7 @@ class AntaCatalogFile(RootModel[dict[ImportString[Any], list[AntaTestDefinition]
         return safe_dump(safe_load(self.model_dump_json(serialize_as_any=True, exclude_unset=True)), indent=2, width=math.inf)
 
     def to_json(self) -> str:
-        """
-        Return a JSON representation string of this model.
+        """Return a JSON representation string of this model.
 
         Returns
         -------
@@ -276,8 +266,7 @@ class AntaCatalogFile(RootModel[dict[ImportString[Any], list[AntaTestDefinition]
 
 
 class AntaCatalog:
-    """
-    Class representing an ANTA Catalog.
+    """Class representing an ANTA Catalog.
 
     It can be instantiated using its constructor or one of the static methods: `parse()`, `from_list()` or `from_dict()`
     """
@@ -287,8 +276,7 @@ class AntaCatalog:
         tests: list[AntaTestDefinition] | None = None,
         filename: str | Path | None = None,
     ) -> None:
-        """
-        Instantiate an AntaCatalog instance.
+        """Instantiate an AntaCatalog instance.
 
         Parameters
         ----------
@@ -340,8 +328,7 @@ class AntaCatalog:
 
     @staticmethod
     def parse(filename: str | Path, file_format: Literal["yaml", "json"] = "yaml") -> AntaCatalog:
-        """
-        Create an AntaCatalog instance from a test catalog file.
+        """Create an AntaCatalog instance from a test catalog file.
 
         Parameters
         ----------
@@ -372,8 +359,7 @@ class AntaCatalog:
 
     @staticmethod
     def from_dict(data: RawCatalogInput, filename: str | Path | None = None) -> AntaCatalog:
-        """
-        Create an AntaCatalog instance from a dictionary data structure.
+        """Create an AntaCatalog instance from a dictionary data structure.
 
         See RawCatalogInput type alias for details.
         It is the data structure returned by `yaml.load()` function of a valid
@@ -415,8 +401,7 @@ class AntaCatalog:
 
     @staticmethod
     def from_list(data: ListAntaTestTuples) -> AntaCatalog:
-        """
-        Create an AntaCatalog instance from a list data structure.
+        """Create an AntaCatalog instance from a list data structure.
 
         See ListAntaTestTuples type alias for details.
 
@@ -440,8 +425,7 @@ class AntaCatalog:
 
     @classmethod
     def merge_catalogs(cls, catalogs: list[AntaCatalog]) -> AntaCatalog:
-        """
-        Merge multiple AntaCatalog instances.
+        """Merge multiple AntaCatalog instances.
 
         Parameters
         ----------
@@ -457,8 +441,7 @@ class AntaCatalog:
         return cls(tests=combined_tests)
 
     def merge(self, catalog: AntaCatalog) -> AntaCatalog:
-        """
-        Merge two AntaCatalog instances.
+        """Merge two AntaCatalog instances.
 
         Warning
         -------
@@ -483,8 +466,7 @@ class AntaCatalog:
         return self.merge_catalogs([self, catalog])
 
     def dump(self) -> AntaCatalogFile:
-        """
-        Return an AntaCatalogFile instance from this AntaCatalog instance.
+        """Return an AntaCatalogFile instance from this AntaCatalog instance.
 
         Returns
         -------
@@ -498,8 +480,7 @@ class AntaCatalog:
         return AntaCatalogFile(root=root)
 
     def build_indexes(self, filtered_tests: set[str] | None = None) -> None:
-        """
-        Indexes tests by their tags for quick access during filtering operations.
+        """Indexes tests by their tags for quick access during filtering operations.
 
         If a `filtered_tests` set is provided, only the tests in this set will be indexed.
 
@@ -526,8 +507,7 @@ class AntaCatalog:
         self._init_indexes()
 
     def get_tests_by_tags(self, tags: set[str], *, strict: bool = False) -> set[AntaTestDefinition]:
-        """
-        Return all tests that match a given set of tags, according to the specified strictness.
+        """Return all tests that match a given set of tags, according to the specified strictness.
 
         Parameters
         ----------

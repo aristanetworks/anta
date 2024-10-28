@@ -28,8 +28,7 @@ if TYPE_CHECKING:
 
 
 def _add_bgp_failures(failures: dict[tuple[str, str | None], dict[str, Any]], afi: Afi, safi: Safi | None, vrf: str, issue: str | dict[str, Any]) -> None:
-    """
-    Add a BGP failure entry to the given `failures` dictionary.
+    """Add a BGP failure entry to the given `failures` dictionary.
 
     Note: This function modifies `failures` in-place.
 
@@ -77,8 +76,7 @@ def _add_bgp_failures(failures: dict[tuple[str, str | None], dict[str, Any]], af
 
 
 def _check_peer_issues(peer_data: dict[str, Any] | None) -> dict[str, Any]:
-    """
-    Check for issues in BGP peer data.
+    """Check for issues in BGP peer data.
 
     Parameters
     ----------
@@ -121,8 +119,7 @@ def _check_peer_issues(peer_data: dict[str, Any] | None) -> dict[str, Any]:
 def _add_bgp_routes_failure(
     bgp_routes: list[str], bgp_output: dict[str, Any], peer: str, vrf: str, route_type: str = "advertised_routes"
 ) -> dict[str, dict[str, dict[str, dict[str, list[str]]]]]:
-    """
-    Identify missing BGP routes and invalid or inactive route entries.
+    """Identify missing BGP routes and invalid or inactive route entries.
 
     This function checks the BGP output from the device against the expected routes.
 
@@ -175,8 +172,7 @@ def _add_bgp_routes_failure(
 
 
 class VerifyBGPPeerCount(AntaTest):
-    """
-    Verifies the count of BGP peers for a given address family.
+    """Verifies the count of BGP peers for a given address family.
 
     It supports multiple types of Address Families Identifiers (AFI) and Subsequent Address Family Identifiers (SAFI).
 
@@ -248,8 +244,7 @@ class VerifyBGPPeerCount(AntaTest):
 
             @model_validator(mode="after")
             def validate_inputs(self) -> Self:
-                """
-                Validate the inputs provided to the BgpAfi class.
+                """Validate the inputs provided to the BgpAfi class.
 
                 If afi is either ipv4 or ipv6, safi must be provided.
 
@@ -324,8 +319,7 @@ class VerifyBGPPeerCount(AntaTest):
 
 
 class VerifyBGPPeersHealth(AntaTest):
-    """
-    Verifies the health of BGP peers.
+    """Verifies the health of BGP peers.
 
     It will validate that all BGP sessions are established and all message queues for these BGP sessions are empty for a given address family.
 
@@ -390,8 +384,7 @@ class VerifyBGPPeersHealth(AntaTest):
 
             @model_validator(mode="after")
             def validate_inputs(self) -> Self:
-                """
-                Validate the inputs provided to the BgpAfi class.
+                """Validate the inputs provided to the BgpAfi class.
 
                 If afi is either ipv4 or ipv6, safi must be provided.
 
@@ -465,8 +458,7 @@ class VerifyBGPPeersHealth(AntaTest):
 
 
 class VerifyBGPSpecificPeers(AntaTest):
-    """
-    Verifies the health of specific BGP peer(s).
+    """Verifies the health of specific BGP peer(s).
 
     It will validate that the BGP session is established and all message queues for this BGP session are empty for the given peer(s).
 
@@ -539,8 +531,7 @@ class VerifyBGPSpecificPeers(AntaTest):
 
             @model_validator(mode="after")
             def validate_inputs(self) -> Self:
-                """
-                Validate the inputs provided to the BgpAfi class.
+                """Validate the inputs provided to the BgpAfi class.
 
                 If afi is either ipv4 or ipv6, safi must be provided and vrf must NOT be all.
 
@@ -619,8 +610,7 @@ class VerifyBGPSpecificPeers(AntaTest):
 
 
 class VerifyBGPExchangedRoutes(AntaTest):
-    """
-    Verifies if the BGP peers have correctly advertised and received routes.
+    """Verifies if the BGP peers have correctly advertised and received routes.
 
     The route type should be 'valid' and 'active' for a specified VRF.
 
@@ -720,8 +710,7 @@ class VerifyBGPExchangedRoutes(AntaTest):
 
 
 class VerifyBGPPeerMPCaps(AntaTest):
-    """
-    Verifies the multiprotocol capabilities of a BGP peer in a specified VRF.
+    """Verifies the multiprotocol capabilities of a BGP peer in a specified VRF.
 
     Supports `strict: True` to verify that only the specified capabilities are configured, requiring an exact match.
 
@@ -821,8 +810,7 @@ class VerifyBGPPeerMPCaps(AntaTest):
 
 
 class VerifyBGPPeerASNCap(AntaTest):
-    """
-    Verifies the four octet asn capabilities of a BGP peer in a specified VRF.
+    """Verifies the four octet asn capabilities of a BGP peer in a specified VRF.
 
     Expected Results
     ----------------
@@ -900,8 +888,7 @@ class VerifyBGPPeerASNCap(AntaTest):
 
 
 class VerifyBGPPeerRouteRefreshCap(AntaTest):
-    """
-    Verifies the route refresh capabilities of a BGP peer in a specified VRF.
+    """Verifies the route refresh capabilities of a BGP peer in a specified VRF.
 
     Expected Results
     ----------------
@@ -979,8 +966,7 @@ class VerifyBGPPeerRouteRefreshCap(AntaTest):
 
 
 class VerifyBGPPeerMD5Auth(AntaTest):
-    """
-    Verifies the MD5 authentication and state of IPv4 BGP peers in a specified VRF.
+    """Verifies the MD5 authentication and state of IPv4 BGP peers in a specified VRF.
 
     Expected Results
     ----------------
@@ -1055,8 +1041,7 @@ class VerifyBGPPeerMD5Auth(AntaTest):
 
 
 class VerifyEVPNType2Route(AntaTest):
-    """
-    Verifies the EVPN Type-2 routes for a given IPv4 or MAC address and VNI.
+    """Verifies the EVPN Type-2 routes for a given IPv4 or MAC address and VNI.
 
     Expected Results
     ----------------
@@ -1133,8 +1118,7 @@ class VerifyEVPNType2Route(AntaTest):
 
 
 class VerifyBGPAdvCommunities(AntaTest):
-    """
-    Verifies if the advertised communities of BGP peers are standard, extended, and large in the specified VRF.
+    """Verifies if the advertised communities of BGP peers are standard, extended, and large in the specified VRF.
 
     Expected Results
     ----------------
@@ -1207,8 +1191,7 @@ class VerifyBGPAdvCommunities(AntaTest):
 
 
 class VerifyBGPTimers(AntaTest):
-    """
-    Verifies if the BGP peers are configured with the correct hold and keep-alive timers in the specified VRF.
+    """Verifies if the BGP peers are configured with the correct hold and keep-alive timers in the specified VRF.
 
     Expected Results
     ----------------
@@ -1287,8 +1270,7 @@ class VerifyBGPTimers(AntaTest):
 
 
 class VerifyBGPPeerDropStats(AntaTest):
-    """
-    Verifies BGP NLRI drop statistics for the provided BGP IPv4 peer(s).
+    """Verifies BGP NLRI drop statistics for the provided BGP IPv4 peer(s).
 
     By default, all drop statistics counters will be checked for any non-zero values.
     An optional list of specific drop statistics can be provided for granular testing.
@@ -1375,8 +1357,7 @@ class VerifyBGPPeerDropStats(AntaTest):
 
 
 class VerifyBGPPeerUpdateErrors(AntaTest):
-    """
-    Verifies BGP update error counters for the provided BGP IPv4 peer(s).
+    """Verifies BGP update error counters for the provided BGP IPv4 peer(s).
 
     By default, all update error counters will be checked for any non-zero values.
     An optional list of specific update error counters can be provided for granular testing.
@@ -1467,8 +1448,7 @@ class VerifyBGPPeerUpdateErrors(AntaTest):
 
 
 class VerifyBgpRouteMaps(AntaTest):
-    """
-    Verifies BGP inbound and outbound route-maps of BGP IPv4 peer(s).
+    """Verifies BGP inbound and outbound route-maps of BGP IPv4 peer(s).
 
     Expected Results
     ----------------
@@ -1514,8 +1494,7 @@ class VerifyBgpRouteMaps(AntaTest):
 
             @model_validator(mode="after")
             def validate_inputs(self) -> Self:
-                """
-                Validate the inputs provided to the BgpPeer class.
+                """Validate the inputs provided to the BgpPeer class.
 
                 At least one of 'inbound' or 'outbound' route-map must be provided.
                 """
@@ -1566,8 +1545,7 @@ class VerifyBgpRouteMaps(AntaTest):
 
 
 class VerifyBGPPeerRouteLimit(AntaTest):
-    """
-    Verifies the maximum routes and optionally verifies the maximum routes warning limit for the provided BGP IPv4 peer(s).
+    """Verifies the maximum routes and optionally verifies the maximum routes warning limit for the provided BGP IPv4 peer(s).
 
     Expected Results
     ----------------

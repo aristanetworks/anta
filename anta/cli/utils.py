@@ -48,8 +48,7 @@ def parse_tags(ctx: click.Context, param: Option, value: str | None) -> set[str]
 
 
 def exit_with_code(ctx: click.Context) -> None:
-    """
-    Exit the Click application with an exit code.
+    """Exit the Click application with an exit code.
 
     This function determines the global test status to be either `unset`, `skipped`, `success` or `error`
     from the `ResultManger` instance.
@@ -85,8 +84,7 @@ def exit_with_code(ctx: click.Context) -> None:
 
 
 class AliasedGroup(click.Group):
-    """
-    Implements a subclass of Group that accepts a prefix for a command.
+    """Implements a subclass of Group that accepts a prefix for a command.
 
     If there were a command called push, it would accept pus as an alias (so long as it was unique)
     From Click documentation.

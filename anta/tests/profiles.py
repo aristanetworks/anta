@@ -17,8 +17,7 @@ if TYPE_CHECKING:
 
 
 class VerifyUnifiedForwardingTableMode(AntaTest):
-    """
-    Verifies the device is using the expected UFT (Unified Forwarding Table) mode.
+    """Verifies the device is using the expected UFT (Unified Forwarding Table) mode.
 
     Expected Results
     ----------------
@@ -57,8 +56,7 @@ class VerifyUnifiedForwardingTableMode(AntaTest):
 
 
 class VerifyTcamProfile(AntaTest):
-    """
-    Verifies that the device is using the provided Ternary Content-Addressable Memory (TCAM) profile.
+    """Verifies that the device is using the provided Ternary Content-Addressable Memory (TCAM) profile.
 
     Expected Results
     ----------------

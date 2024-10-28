@@ -17,8 +17,7 @@ if TYPE_CHECKING:
 
 
 class VerifyPtpModeStatus(AntaTest):
-    """
-    Verifies that the device is configured as a Precision Time Protocol (PTP) Boundary Clock (BC).
+    """Verifies that the device is configured as a Precision Time Protocol (PTP) Boundary Clock (BC).
 
     Expected Results
     ----------------
@@ -56,8 +55,7 @@ class VerifyPtpModeStatus(AntaTest):
 
 
 class VerifyPtpGMStatus(AntaTest):
-    """
-    Verifies that the device is locked to a valid Precision Time Protocol (PTP) Grandmaster (GM).
+    """Verifies that the device is locked to a valid Precision Time Protocol (PTP) Grandmaster (GM).
 
     To test PTP failover, re-run the test with a secondary GMID configured.
 
@@ -106,8 +104,7 @@ class VerifyPtpGMStatus(AntaTest):
 
 
 class VerifyPtpLockStatus(AntaTest):
-    """
-    Verifies that the device was locked to the upstream Precision Time Protocol (PTP) Grandmaster (GM) in the last minute.
+    """Verifies that the device was locked to the upstream Precision Time Protocol (PTP) Grandmaster (GM) in the last minute.
 
     Expected Results
     ----------------
@@ -148,8 +145,7 @@ class VerifyPtpLockStatus(AntaTest):
 
 
 class VerifyPtpOffset(AntaTest):
-    """
-    Verifies that the Precision Time Protocol (PTP) timing offset is within +/- 1000ns from the master clock.
+    """Verifies that the Precision Time Protocol (PTP) timing offset is within +/- 1000ns from the master clock.
 
     Expected Results
     ----------------
@@ -193,8 +189,7 @@ class VerifyPtpOffset(AntaTest):
 
 
 class VerifyPtpPortModeStatus(AntaTest):
-    """
-    Verifies that all interfaces are in a valid Precision Time Protocol (PTP) state.
+    """Verifies that all interfaces are in a valid Precision Time Protocol (PTP) state.
 
     The interfaces can be in one of the following state: Master, Slave, Passive, or Disabled.
 

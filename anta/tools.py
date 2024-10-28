@@ -31,8 +31,7 @@ F = TypeVar("F", bound=Callable[..., Any])
 
 
 def get_failed_logs(expected_output: dict[Any, Any], actual_output: dict[Any, Any]) -> str:
-    """
-    Get the failed log for a test.
+    """Get the failed log for a test.
 
     Returns the failed log or an empty string if there is no difference between the expected and actual output.
 
@@ -66,8 +65,7 @@ def get_failed_logs(expected_output: dict[Any, Any], actual_output: dict[Any, An
 
 
 def custom_division(numerator: float, denominator: float) -> int | float:
-    """
-    Get the custom division of numbers.
+    """Get the custom division of numbers.
 
     Custom division that returns an integer if the result is an integer, otherwise a float.
 
@@ -96,8 +94,7 @@ def get_dict_superset(
     *,
     required: bool = False,
 ) -> Any:
-    """
-    Get the first dictionary from a list of dictionaries that is a superset of the input dict.
+    """Get the first dictionary from a list of dictionaries that is a superset of the input dict.
 
     Returns the supplied default value or None if there is no match and "required" is False.
 
@@ -155,8 +152,7 @@ def get_value(
     *,
     required: bool = False,
 ) -> Any:
-    """
-    Get a value from a dictionary or nested dictionaries.
+    """Get a value from a dictionary or nested dictionaries.
 
     Key supports dot-notation like "foo.bar" to do deeper lookups.
 
@@ -214,8 +210,7 @@ def get_item(
     required: bool = False,
     case_sensitive: bool = False,
 ) -> Any:
-    """
-    Get one dictionary from a list of dictionaries by matching the given key and value.
+    """Get one dictionary from a list of dictionaries by matching the given key and value.
 
     Returns the supplied default value or None if there is no match and "required" is False.
 
@@ -307,8 +302,7 @@ class Catchtime:
 
 
 def cprofile(sort_by: str = "cumtime") -> Callable[[F], F]:
-    """
-    Profile a function with cProfile.
+    """Profile a function with cProfile.
 
     profile is conditionally enabled based on the presence of ANTA_CPROFILE environment variable.
     Expect to decorate an async function.
@@ -327,8 +321,7 @@ def cprofile(sort_by: str = "cumtime") -> Callable[[F], F]:
     def decorator(func: F) -> F:
         @wraps(func)
         async def wrapper(*args: Any, **kwargs: Any) -> Any:
-            """
-            Enable cProfile or not.
+            """Enable cProfile or not.
 
             If `ANTA_CPROFILE` is set, cProfile is enabled and dumps the stats to the file.
 
@@ -366,8 +359,7 @@ def cprofile(sort_by: str = "cumtime") -> Callable[[F], F]:
 
 
 def safe_command(command: str) -> str:
-    """
-    Return a sanitized command.
+    """Return a sanitized command.
 
     Parameters
     ----------
@@ -383,8 +375,7 @@ def safe_command(command: str) -> str:
 
 
 def convert_categories(categories: list[str]) -> list[str]:
-    """
-    Convert categories for reports.
+    """Convert categories for reports.
 
     if the category is part of the defined acronym, transform it to upper case
     otherwise capitalize the first letter.

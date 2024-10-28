@@ -42,8 +42,7 @@ class AntaInventory(dict[str, AntaDevice]):
 
     @staticmethod
     def _update_disable_cache(kwargs: dict[str, Any], *, inventory_disable_cache: bool) -> dict[str, Any]:
-        """
-        Return new dictionary, replacing kwargs with added disable_cache value from inventory_value if disable_cache has not been set by CLI.
+        """Return new dictionary, replacing kwargs with added disable_cache value from inventory_value if disable_cache has not been set by CLI.
 
         Parameters
         ----------
@@ -63,8 +62,7 @@ class AntaInventory(dict[str, AntaDevice]):
         inventory: AntaInventory,
         **kwargs: dict[str, Any],
     ) -> None:
-        """
-        Parse the host section of an AntaInventoryInput and add the devices to the inventory.
+        """Parse the host section of an AntaInventoryInput and add the devices to the inventory.
 
         Parameters
         ----------
@@ -96,8 +94,7 @@ class AntaInventory(dict[str, AntaDevice]):
         inventory: AntaInventory,
         **kwargs: dict[str, Any],
     ) -> None:
-        """
-        Parse the network section of an AntaInventoryInput and add the devices to the inventory.
+        """Parse the network section of an AntaInventoryInput and add the devices to the inventory.
 
         Parameters
         ----------
@@ -134,8 +131,7 @@ class AntaInventory(dict[str, AntaDevice]):
         inventory: AntaInventory,
         **kwargs: dict[str, Any],
     ) -> None:
-        """
-        Parse the range section of an AntaInventoryInput and add the devices to the inventory.
+        """Parse the range section of an AntaInventoryInput and add the devices to the inventory.
 
         Parameters
         ----------
@@ -187,8 +183,7 @@ class AntaInventory(dict[str, AntaDevice]):
         insecure: bool = False,
         disable_cache: bool = False,
     ) -> AntaInventory:
-        """
-        Create an AntaInventory instance from an inventory file.
+        """Create an AntaInventory instance from an inventory file.
 
         The inventory devices are AsyncEOSDevice instances.
 
@@ -279,8 +274,7 @@ class AntaInventory(dict[str, AntaDevice]):
     ###########################################################################
 
     def get_inventory(self, *, established_only: bool = False, tags: set[str] | None = None, devices: set[str] | None = None) -> AntaInventory:
-        """
-        Return a filtered inventory.
+        """Return a filtered inventory.
 
         Parameters
         ----------
@@ -323,8 +317,7 @@ class AntaInventory(dict[str, AntaDevice]):
         return super().__setitem__(key, value)
 
     def add_device(self, device: AntaDevice) -> None:
-        """
-        Add a device to final inventory.
+        """Add a device to final inventory.
 
         Parameters
         ----------

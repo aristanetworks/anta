@@ -45,8 +45,7 @@ logger = logging.getLogger(__name__)
     default=False,
 )
 def from_cvp(ctx: click.Context, output: Path, host: str, username: str, password: str, container: str | None, *, ignore_cert: bool) -> None:
-    """
-    Build ANTA inventory from CloudVision.
+    """Build ANTA inventory from CloudVision.
 
     NOTE: Only username/password authentication is supported for on-premises CloudVision instances.
     Token authentication for both on-premises and CloudVision as a Service (CVaaS) is not supported.
@@ -90,8 +89,7 @@ def from_cvp(ctx: click.Context, output: Path, host: str, username: str, passwor
     required=True,
 )
 def from_ansible(ctx: click.Context, output: Path, ansible_group: str, ansible_inventory: Path) -> None:
-    """
-    Build ANTA inventory from an ansible inventory YAML file.
+    """Build ANTA inventory from an ansible inventory YAML file.
 
     NOTE: This command does not support inline vaulted variables. Make sure to comment them out.
 

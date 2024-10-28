@@ -73,8 +73,7 @@ def async_device(request: pytest.FixtureRequest) -> AsyncEOSDevice:
 
 @pytest.fixture
 def yaml_file(request: pytest.FixtureRequest, tmp_path: Path) -> Path:
-    """
-    Fixture to create a temporary YAML file and return the path.
+    """Fixture to create a temporary YAML file and return the path.
 
     Fixture is indirectly parametrized with the YAML file content.
     """

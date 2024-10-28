@@ -27,8 +27,7 @@ logger = logging.getLogger(__name__)
 
 # pylint: disable=too-few-public-methods
 class MDReportGenerator:
-    """
-    Class responsible for generating a Markdown report based on the provided `ResultManager` object.
+    """Class responsible for generating a Markdown report based on the provided `ResultManager` object.
 
     It aggregates different report sections, each represented by a subclass of `MDReportBase`,
     and sequentially generates their content into a markdown file.
@@ -39,8 +38,7 @@ class MDReportGenerator:
 
     @classmethod
     def generate(cls, results: ResultManager, md_filename: Path) -> None:
-        """
-        Generate and write the various sections of the markdown report.
+        """Generate and write the various sections of the markdown report.
 
         Parameters
         ----------
@@ -68,16 +66,14 @@ class MDReportGenerator:
 
 
 class MDReportBase(ABC):
-    """
-    Base class for all sections subclasses.
+    """Base class for all sections subclasses.
 
     Every subclasses must implement the `generate_section` method that uses the `ResultManager` object
     to generate and write content to the provided markdown file.
     """
 
     def __init__(self, mdfile: TextIOWrapper, results: ResultManager) -> None:
-        """
-        Initialize the MDReportBase with an open markdown file object to write to and a ResultManager instance.
+        """Initialize the MDReportBase with an open markdown file object to write to and a ResultManager instance.
 
         Parameters
         ----------
@@ -91,8 +87,7 @@ class MDReportBase(ABC):
 
     @abstractmethod
     def generate_section(self) -> None:
-        """
-        Abstract method to generate a specific section of the markdown report.
+        """Abstract method to generate a specific section of the markdown report.
 
         Must be implemented by subclasses.
         """
@@ -100,8 +95,7 @@ class MDReportBase(ABC):
         raise NotImplementedError(msg)
 
     def generate_rows(self) -> Generator[str, None, None]:
-        """
-        Generate the rows of a markdown table for a specific report section.
+        """Generate the rows of a markdown table for a specific report section.
 
         Subclasses can implement this method to generate the content of the table rows.
         """
@@ -109,8 +103,7 @@ class MDReportBase(ABC):
         raise NotImplementedError(msg)
 
     def generate_heading_name(self) -> str:
-        """
-        Generate a formatted heading name based on the class name.
+        """Generate a formatted heading name based on the class name.
 
         Returns
         -------
@@ -133,8 +126,7 @@ class MDReportBase(ABC):
         return " ".join(formatted_words)
 
     def write_table(self, table_heading: list[str], *, last_table: bool = False) -> None:
-        """
-        Write a markdown table with a table heading and multiple rows to the markdown file.
+        """Write a markdown table with a table heading and multiple rows to the markdown file.
 
         Parameters
         ----------
@@ -150,8 +142,7 @@ class MDReportBase(ABC):
             self.mdfile.write("\n")
 
     def write_heading(self, heading_level: int) -> None:
-        """
-        Write a markdown heading to the markdown file.
+        """Write a markdown heading to the markdown file.
 
         The heading name used is the class name.
 
@@ -171,8 +162,7 @@ class MDReportBase(ABC):
         self.mdfile.write(f"{heading}\n\n")
 
     def safe_markdown(self, text: str | None) -> str:
-        """
-        Escape markdown characters in the text to prevent markdown rendering issues.
+        """Escape markdown characters in the text to prevent markdown rendering issues.
 
         Parameters
         ----------
