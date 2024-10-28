@@ -11,7 +11,7 @@ import re
 from abc import ABC, abstractmethod
 from functools import wraps
 from string import Formatter
-from typing import TYPE_CHECKING, Any, Callable, ClassVar, Literal, TypeVar
+from typing import TYPE_CHECKING, Any, Callable, ClassVar, Literal, TypeVar, Protocol
 
 from pydantic import BaseModel, ConfigDict, ValidationError, create_model
 
@@ -271,6 +271,11 @@ class AntaTemplateRenderError(RuntimeError):
         self.template = template
         self.key = key
         super().__init__(f"'{self.key}' was not provided for template '{self.template.template}'")
+
+
+@runtime_checkable
+class AntaTestProtocol(Protocol):
+    """Make Mandatory ClassVar."""
 
 
 class AntaTest(ABC):
