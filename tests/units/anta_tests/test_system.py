@@ -347,6 +347,39 @@ poll interval unknown
         "expected": {"result": "success"},
     },
     {
+        "name": "success-ip-dns",
+        "test": VerifyNTPAssociations,
+        "eos_data": [
+            {
+                "peers": {
+                    "1.1.1.1 (1.ntp.networks.com)": {
+                        "condition": "sys.peer",
+                        "peerIpAddr": "1.1.1.1",
+                        "stratumLevel": 1,
+                    },
+                    "2.2.2.2 (2.ntp.networks.com)": {
+                        "condition": "candidate",
+                        "peerIpAddr": "2.2.2.2",
+                        "stratumLevel": 2,
+                    },
+                    "3.3.3.3 (3.ntp.networks.com)": {
+                        "condition": "candidate",
+                        "peerIpAddr": "3.3.3.3",
+                        "stratumLevel": 2,
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "ntp_servers": [
+                {"server_address": "1.1.1.1", "preferred": True, "stratum": 1},
+                {"server_address": "2.2.2.2", "stratum": 2},
+                {"server_address": "3.3.3.3", "stratum": 2},
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
         "name": "failure",
         "test": VerifyNTPAssociations,
         "eos_data": [
