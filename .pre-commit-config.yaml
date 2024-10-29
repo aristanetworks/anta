@@ -115,9 +115,13 @@ repos:
       - id: examples-test
         name: Generate examples/tests.yaml
         entry: >-
-          docs/scripts/generate_examples_tests.py
-        language: system
+          sh -c "docs/scripts/generate_examples_tests.py"
+        language: python
         types: [python]
         files: anta/
         verbose: true
         pass_filenames: false
+        additional_dependencies:
+          - anta[cli]
+          # TODO: next can go once we have it added to anta properly
+          - numpydoc
