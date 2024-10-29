@@ -396,27 +396,6 @@ def convert_categories(categories: list[str]) -> list[str]:
     raise TypeError(msg)
 
 
-def check_bgp_neighbor_capability(capability_status: dict[str, bool]) -> bool:
-    """Check if a BGP neighbor capability is advertised, received, and enabled.
-
-    Parameters
-    ----------
-    capability_status
-        A dictionary containing the capability status.
-
-    Returns
-    -------
-    bool
-        True if the capability is advertised, received, and enabled, False otherwise.
-
-    Example
-    -------
-    >>> check_bgp_neighbor_capability({"advertised": True, "received": True, "enabled": True})
-    True
-    """
-    return all(capability_status.get(state, False) for state in ("advertised", "received", "enabled"))
-
-
 def format_data(data: dict[str, bool]) -> str:
     """Format a data dictionary for logging purposes.
 

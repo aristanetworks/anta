@@ -11,7 +11,7 @@ from typing import Any
 
 import pytest
 
-from anta.tools import convert_categories, custom_division, get_dict_superset, get_failed_logs, get_item, get_value
+from anta.tools import convert_categories, custom_division, format_data, get_dict_superset, get_failed_logs, get_item, get_value
 
 TEST_GET_FAILED_LOGS_DATA = [
     {"id": 1, "name": "Alice", "age": 30, "email": "alice@example.com"},
@@ -513,3 +513,17 @@ def test_convert_categories(test_input: list[str], expected_raise: AbstractConte
     """Test convert_categories."""
     with expected_raise:
         assert convert_categories(test_input) == expected_result
+
+
+@pytest.mark.parametrize(
+    ("input_data", "expected_output"),
+    [
+        pytest.param({"advertised": True, "received": True, "enabled": True}, "Advertised:True, Received:True, Enabled:True"),
+        pytest.param({"advertised": False, "received": False}, "Advertised:False, Received:False"),
+        pytest.param({}, ""),
+        pytest.param({"test": True}, "Test:True"),
+    ],
+)
+def test_format_data(input_data: dict[str, bool], expected_output: str) -> None:
+    """Test format_data."""
+    assert format_data(input_data) == expected_output
