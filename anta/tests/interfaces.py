@@ -184,12 +184,13 @@ class VerifyInterfaceErrDisabled(AntaTest):
 
 
 class VerifyInterfacesStatus(AntaTest):
-    """Validates whether the given interfaces are in their expected operational states.
+    """Validates the operational states of specified interfaces to ensure they match expected configurations.
 
     This test performs the following checks for each specified interface:
-    1. If line protocol status is specified, verifies both interface and line protocol states.
-    2. When line protocol status is absent but interface status is "up", assumes both are "up".
-    3. If the interface status is not "up", validates only the interface status, ignoring the line protocol.
+
+    - If `line_protocol_status` is defined, both `status` and `line_protocol_status` are verified for the specified interface.
+    - If `line_protocol_status` is not provided but the `status` is "up", it is assumed that both the interface and line protocol should be "up".
+    - If the interface `status` is not "up", only the interface's status is validated, with no line protocol check performed.
 
     Expected Results
     ----------------
