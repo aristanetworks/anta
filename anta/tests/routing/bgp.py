@@ -15,10 +15,9 @@ from pydantic.v1.utils import deep_update
 from pydantic_extra_types.mac_address import MacAddress
 
 from anta.custom_types import BgpDropStats, BgpUpdateError, MultiProtocolCaps, Vni
+from anta.input_models.routing.bgp import BgpAddressFamily, BgpAfi
 from anta.models import AntaCommand, AntaTemplate, AntaTest
-from anta.tools import check_bgp_neighbor_capability, format_data, get_item, get_value
-
-from .bgp_input_models import BgpAddressFamily, BgpAfi
+from anta.tools import format_data, get_item, get_value
 
 if TYPE_CHECKING:
     import sys
@@ -82,6 +81,27 @@ def _add_bgp_routes_failure(
             failure_routes = deep_update(failure_routes, failure)
 
     return failure_routes
+
+
+def _check_bgp_neighbor_capability(capability_status: dict[str, bool]) -> bool:
+    """Check if a BGP neighbor capability is advertised, received, and enabled.
+
+    Parameters
+    ----------
+    capability_status
+        A dictionary containing the capability status.
+
+    Returns
+    -------
+    bool
+        True if the capability is advertised, received, and enabled, False otherwise.
+
+    Example
+    -------
+    >>> _check_bgp_neighbor_capability({"advertised": True, "received": True, "enabled": True})
+    True
+    """
+    return all(capability_status.get(state, False) for state in ("advertised", "received", "enabled"))
 
 
 class VerifyBGPPeerCount(AntaTest):
@@ -254,13 +274,13 @@ class VerifyBGPPeersHealth(AntaTest):
 
                 # Check if the AFI/SAFI state is negotiated
                 capability_status = get_value(peer, f"neighborCapabilities.multiprotocolCaps.{address_family.eos_key}")
-                if not check_bgp_neighbor_capability(capability_status):
+                if not _check_bgp_neighbor_capability(capability_status):
                     self.result.is_failure(f"{address_family} - Peer:{peer['peerAddress']} AFI/SAFI state is not negotiated; {format_data(capability_status)}")
 
                 # Check the TCP session message queues
-                if address_family.check_tcp_queues and (
-                    (inq := peer["peerTcpInfo"]["inputQueueLength"]) != 0 or (outq := peer["peerTcpInfo"]["outputQueueLength"]) != 0
-                ):
+                inq = peer["peerTcpInfo"]["inputQueueLength"]
+                outq = peer["peerTcpInfo"]["outputQueueLength"]
+                if address_family.check_tcp_queues and (inq != 0 or outq != 0):
                     self.result.is_failure(f"{address_family} - Peer:{peer['peerAddress']} session has non-empty message queues; InQ: {inq}, OutQ: {outq}")
 
 
@@ -357,13 +377,16 @@ class VerifyBGPSpecificPeers(AntaTest):
 
                 # Check if the AFI/SAFI state is negotiated
                 capability_status = get_value(peer_data, f"neighborCapabilities.multiprotocolCaps.{address_family.eos_key}")
-                if not check_bgp_neighbor_capability(capability_status):
+                if not capability_status:
+                    self.result.is_failure(f"{address_family} Peer:{peer_ip} AFI/SAFI state is not negotiated")
+
+                if capability_status and not _check_bgp_neighbor_capability(capability_status):
                     self.result.is_failure(f"{address_family} Peer:{peer_ip} AFI/SAFI state is not negotiated; {format_data(capability_status)}")
 
                 # Check the TCP session message queues
-                if address_family.check_tcp_queues and (
-                    (inq := peer_data["peerTcpInfo"]["inputQueueLength"]) != 0 or (outq := peer_data["peerTcpInfo"]["outputQueueLength"]) != 0
-                ):
+                inq = peer_data["peerTcpInfo"]["inputQueueLength"]
+                outq = peer_data["peerTcpInfo"]["outputQueueLength"]
+                if address_family.check_tcp_queues and (inq != 0 or outq != 0):
                     self.result.is_failure(f"{address_family} - Peer:{peer_ip} session has non-empty message queues; InQ: {inq}, OutQ: {outq}")
 
 
