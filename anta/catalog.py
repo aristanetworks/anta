@@ -22,7 +22,7 @@ from pydantic_core import PydanticCustomError
 from yaml import YAMLError, safe_dump, safe_load
 
 from anta.logger import anta_log_exception
-from anta.models import AntaTest
+from anta.models import AntaTest, RawCatalogInputModel
 
 if TYPE_CHECKING:
     import sys
@@ -35,8 +35,6 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-# { <module_name> : [ { <test_class_name>: <input_as_dict_or_None> }, ... ] }
-RawCatalogInput = dict[str, list[dict[str, Optional[dict[str, Any]]]]]
 
 # [ ( <AntaTest class>, <input_as AntaTest.Input or dict or None > ), ... ]
 ListAntaTestTuples = list[tuple[type[AntaTest], Optional[Union[AntaTest.Input, dict[str, Any]]]]]
@@ -358,10 +356,10 @@ class AntaCatalog:
         return AntaCatalog.from_dict(data, filename=filename)
 
     @staticmethod
-    def from_dict(data: RawCatalogInput, filename: str | Path | None = None) -> AntaCatalog:
+    def from_dict(data: RawCatalogInputModel, filename: str | Path | None = None) -> AntaCatalog:
         """Create an AntaCatalog instance from a dictionary data structure.
 
-        See RawCatalogInput type alias for details.
+        See RawCatalogInputModel type alias for details.
         It is the data structure returned by `yaml.load()` function of a valid
         YAML Test Catalog file.
 
@@ -387,7 +385,7 @@ class AntaCatalog:
             raise TypeError(msg)
 
         try:
-            catalog_data = AntaCatalogFile(data)  # type: ignore[arg-type]
+            catalog_data = AntaCatalogFile(data)
         except ValidationError as e:
             anta_log_exception(
                 e,
