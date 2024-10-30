@@ -22,7 +22,7 @@ from pydantic_core import PydanticCustomError
 from yaml import YAMLError, safe_dump, safe_load
 
 from anta.logger import anta_log_exception
-from anta.models import AntaTest, RawCatalogInputModel
+from anta.models import AntaTest
 
 if TYPE_CHECKING:
     import sys
@@ -34,6 +34,43 @@ if TYPE_CHECKING:
         from typing_extensions import Self
 
 logger = logging.getLogger(__name__)
+
+
+class RawCatalogInputModuleOptionModel(RootModel[dict[str, Any] | None]):  # pylint: disable=R0903
+    """Model capturing test option in catalog input."""
+
+    root: dict[str, Any] | None
+
+
+class RawCatalogInputModuleModel(RootModel[dict[str, RawCatalogInputModuleOptionModel]]):  # pylint: disable=R0903
+    """Model capturing test module in catalog input."""
+
+    root: dict[str, RawCatalogInputModuleOptionModel]
+
+
+class RawCatalogInputModel(RootModel[dict[str, list[RawCatalogInputModuleModel]]]):  # pylint: disable=R0903
+    """
+    Model for tests catalog input defined by user.
+
+    Originally defined with:
+        RawCatalogInput = dict[str, list[dict[str, Optional[dict[str, Any]]]]]
+
+    Example:
+        raw_catalog_input = RawCatalogInputModel.parse_obj({
+            "module_name": [
+                {"test_name": {"key": "value"}},
+                {"another_test": None}
+            ]
+        })
+    """
+
+    root: dict[str, list[RawCatalogInputModuleModel]]
+
+
+class AntaParamsBaseModel(BaseModel):
+    """Extends BaseModel and overwrite __getattr__ to return None on missing attribute."""
+
+    model_config = ConfigDict(extra="forbid")
 
 
 # [ ( <AntaTest class>, <input_as AntaTest.Input or dict or None > ), ... ]
