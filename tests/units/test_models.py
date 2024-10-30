@@ -505,7 +505,7 @@ class TestAntaTest:
                 def test(self) -> None:
                     self.result.is_success()
 
-        assert exec_info.value.args[0] == "Class tests.units.test_models._WrongTestNoCategories is missing required class attribute categories"
+        assert exec_info.value.args[0] == "Class tests.units.test_models._WrongTestNoCategories is missing required class attribute(s): categories"
 
         with pytest.raises(AttributeError) as exec_info:
 
@@ -518,7 +518,7 @@ class TestAntaTest:
                 def test(self) -> None:
                     self.result.is_success()
 
-        assert exec_info.value.args[0] == "Class tests.units.test_models._WrongTestNoCommands is missing required class attribute commands"
+        assert exec_info.value.args[0] == "Class tests.units.test_models._WrongTestNoCommands is missing required class attribute(s): commands"
 
         with pytest.raises(
             AttributeError,

@@ -328,7 +328,7 @@ class VerifyISISInterfaceMode(AntaTest):
 
 
 class VerifyISISSegmentRoutingAdjacencySegments(AntaTest):
-    """Verify expected Adjacency segments are correctly visible for each interface.
+    """Verify that all expected Adjacency segments are correctly visible for each interface.
 
     Expected Results
     ----------------

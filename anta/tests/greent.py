@@ -60,7 +60,7 @@ class VerifyGreenT(AntaTest):
     ```
     """
 
-    description = "Verifies if a GreenT policy other then the default is created."
+    description = "Verifies if a GreenT policy other than the default is created."
     categories: ClassVar[list[str]] = ["greent"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show monitor telemetry postcard policy profile", revision=1)]
 
