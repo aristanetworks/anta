@@ -11,7 +11,6 @@ from typing import Any
 
 import pytest
 
-from anta.tests.routing.bgp import _check_bgp_neighbor_capability
 from anta.tools import convert_categories, custom_division, format_data, get_dict_superset, get_failed_logs, get_item, get_value
 
 TEST_GET_FAILED_LOGS_DATA = [
@@ -528,19 +527,3 @@ def test_convert_categories(test_input: list[str], expected_raise: AbstractConte
 def test_format_data(input_data: dict[str, bool], expected_output: str) -> None:
     """Test format_data."""
     assert format_data(input_data) == expected_output
-
-
-@pytest.mark.parametrize(
-    ("input_dict", "expected"),
-    [
-        pytest.param({"advertised": True, "received": True, "enabled": True}, True),
-        pytest.param({"advertised": False, "received": True, "enabled": True}, False),
-        pytest.param({"advertised": True, "received": False, "enabled": True}, False),
-        pytest.param({"advertised": True, "received": True, "enabled": False}, False),
-        pytest.param({"advertised": True, "received": True}, False),  # Missing 'enabled'
-        pytest.param({}, False),
-    ],
-)
-def test_check_bgp_neighbor_capability(input_dict: dict[str, bool], expected: bool) -> None:
-    """Test check_bgp_neighbor_capability."""
-    assert _check_bgp_neighbor_capability(input_dict) == expected

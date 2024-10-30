@@ -8,6 +8,8 @@ from __future__ import annotations
 
 from typing import Any
 
+import pytest
+
 from anta.tests.routing.bgp import (
     VerifyBGPAdvCommunities,
     VerifyBGPExchangedRoutes,
@@ -24,8 +26,27 @@ from anta.tests.routing.bgp import (
     VerifyBGPSpecificPeers,
     VerifyBGPTimers,
     VerifyEVPNType2Route,
+    _check_bgp_neighbor_capability,
 )
 from tests.units.anta_tests import test
+
+
+# Unit testing for _check_bgp_neighbor_capability helper function from BGP test module.
+@pytest.mark.parametrize(
+    ("input_dict", "expected"),
+    [
+        pytest.param({"advertised": True, "received": True, "enabled": True}, True),
+        pytest.param({"advertised": False, "received": True, "enabled": True}, False),
+        pytest.param({"advertised": True, "received": False, "enabled": True}, False),
+        pytest.param({"advertised": True, "received": True, "enabled": False}, False),
+        pytest.param({"advertised": True, "received": True}, False),  # Missing 'enabled'
+        pytest.param({}, False),
+    ],
+)
+def test_check_bgp_neighbor_capability(input_dict: dict[str, bool], expected: bool) -> None:
+    """Test check_bgp_neighbor_capability."""
+    assert _check_bgp_neighbor_capability(input_dict) == expected
+
 
 DATA: list[dict[str, Any]] = [
     {
