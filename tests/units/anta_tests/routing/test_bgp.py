@@ -851,7 +851,7 @@ DATA: list[dict[str, Any]] = [
             "messages": [
                 "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.12 - Session state is not established - State: Idle",
                 "AFI: ipv4 SAFI: unicast VRF: MGMT Peer: 10.100.0.14 - Session state is not established - State: Idle",
-            ],
+            ]
         },
     },
     {
