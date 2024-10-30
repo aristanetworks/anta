@@ -330,7 +330,9 @@ class AntaTest(ABC):
     description: ClassVar[str]
 
     # Mandatory class attributes
-    # TODO: find a way to tell mypy these are mandatory for child classes - maybe Protocol
+    # TODO: find a way to tell mypy these are mandatory for child classes
+    #       follow this https://discuss.python.org/t/provide-a-canonical-way-to-declare-an-abstract-class-variable/69416
+    #       for now only enforced at runtime with __init_subclass__
     categories: ClassVar[list[str]]
     commands: ClassVar[list[AntaTemplate | AntaCommand]]
 
@@ -515,8 +517,8 @@ class AntaTest(ABC):
 
         cls.name = getattr(cls, "name", cls.__name__)
         if not hasattr(cls, "description"):
-            if not cls.__doc__:
-                # No doctsring - raise
+            if not cls.__doc__ or cls.__doc__.strip() == "":
+                # No doctsring or empty doctsring - raise
                 msg = f"Cannot set the description for class {cls.name}, either set it in the class definition or add a docstring to the class."
                 raise AttributeError(msg)
             cls.description = cls.__doc__.split(sep="\n", maxsplit=1)[0]
