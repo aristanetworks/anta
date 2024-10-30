@@ -67,12 +67,6 @@ class RawCatalogInputModel(RootModel[dict[str, list[RawCatalogInputModuleModel]]
     root: dict[str, list[RawCatalogInputModuleModel]]
 
 
-class AntaParamsBaseModel(BaseModel):
-    """Extends BaseModel and overwrite __getattr__ to return None on missing attribute."""
-
-    model_config = ConfigDict(extra="forbid")
-
-
 # [ ( <AntaTest class>, <input_as AntaTest.Input or dict or None > ), ... ]
 ListAntaTestTuples = list[tuple[type[AntaTest], Optional[Union[AntaTest.Input, dict[str, Any]]]]]
 
