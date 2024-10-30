@@ -445,10 +445,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "AFI:ipv4 SAFI:unicast VRF:default - Peer:10.100.0.12 session state is not established; State:Idle",
-                "AFI:ipv4 SAFI:sr-te VRF:MGMT - Peer:10.100.0.12 session state is not established; State:Idle",
-                "AFI:path-selection - Peer:10.100.0.13 session state is not established; State:Idle",
-                "AFI:link-state - Peer:10.100.0.14 session state is not established; State:Idle",
+                "AFI:ipv4 SAFI:unicast VRF:default Peer:10.100.0.12 - Session state is not established; State:Idle",
+                "AFI:ipv4 SAFI:sr-te VRF:MGMT Peer:10.100.0.12 - Session state is not established; State:Idle",
+                "AFI:path-selection Peer:10.100.0.13 - Session state is not established; State:Idle",
+                "AFI:link-state Peer:10.100.0.14 - Session state is not established; State:Idle",
             ],
         },
     },
@@ -504,13 +504,13 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "AFI:ipv4 SAFI:unicast VRF:default - Peer:10.100.0.12 session state is not established; State:Idle",
+                "AFI:ipv4 SAFI:unicast VRF:default Peer:10.100.0.12 - Session state is not established; State:Idle",
                 "AFI:ipv4 SAFI:unicast VRF:default - Peer:10.100.0.12 AFI/SAFI state is not negotiated; Advertised:False, Received:False, Enabled:True",
-                "AFI:ipv4 SAFI:sr-te VRF:MGMT - Peer:10.100.0.12 session state is not established; State:Idle",
+                "AFI:ipv4 SAFI:sr-te VRF:MGMT Peer:10.100.0.12 - Session state is not established; State:Idle",
                 "AFI:ipv4 SAFI:sr-te VRF:MGMT - Peer:10.100.0.12 AFI/SAFI state is not negotiated; Advertised:False, Received:False, Enabled:False",
-                "AFI:path-selection - Peer:10.100.0.13 session state is not established; State:Idle",
+                "AFI:path-selection Peer:10.100.0.13 - Session state is not established; State:Idle",
                 "AFI:path-selection - Peer:10.100.0.13 AFI/SAFI state is not negotiated; Advertised:True, Received:False, Enabled:False",
-                "AFI:link-state - Peer:10.100.0.14 session state is not established; State:Idle",
+                "AFI:link-state Peer:10.100.0.14 - Session state is not established; State:Idle",
                 "AFI:link-state - Peer:10.100.0.14 AFI/SAFI state is not negotiated; Advertised:False, Received:False, Enabled:False",
             ],
         },
@@ -567,13 +567,13 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "AFI:ipv4 SAFI:unicast VRF:default - Peer:10.100.0.12 session state is not established; State:Idle",
+                "AFI:ipv4 SAFI:unicast VRF:default Peer:10.100.0.12 - Session state is not established; State:Idle",
                 "AFI:ipv4 SAFI:unicast VRF:default - Peer:10.100.0.12 session has non-empty message queues; InQ: 2, OutQ: 4",
-                "AFI:ipv4 SAFI:sr-te VRF:MGMT - Peer:10.100.0.12 session state is not established; State:Idle",
+                "AFI:ipv4 SAFI:sr-te VRF:MGMT Peer:10.100.0.12 - Session state is not established; State:Idle",
                 "AFI:ipv4 SAFI:sr-te VRF:MGMT - Peer:10.100.0.12 session has non-empty message queues; InQ: 5, OutQ: 1",
-                "AFI:path-selection - Peer:10.100.0.13 session state is not established; State:Idle",
+                "AFI:path-selection Peer:10.100.0.13 - Session state is not established; State:Idle",
                 "AFI:path-selection - Peer:10.100.0.13 session has non-empty message queues; InQ: 1, OutQ: 1",
-                "AFI:link-state - Peer:10.100.0.14 session state is not established; State:Idle",
+                "AFI:link-state Peer:10.100.0.14 - Session state is not established; State:Idle",
                 "AFI:link-state - Peer:10.100.0.14 session has non-empty message queues; InQ: 3, OutQ: 2",
             ],
         },
@@ -729,8 +729,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "AFI:ipv4 SAFI:unicast VRF:default - Peer:10.100.0.12 session state is not established; State:Idle",
-                "AFI:ipv4 SAFI:unicast VRF:MGMT - Peer:10.100.0.14 session state is not established; State:Idle",
+                "AFI:ipv4 SAFI:unicast VRF:default Peer:10.100.0.12 - Session state is not established; State:Idle",
+                "AFI:ipv4 SAFI:unicast VRF:MGMT Peer:10.100.0.14 - Session state is not established; State:Idle",
             ],
         },
     },

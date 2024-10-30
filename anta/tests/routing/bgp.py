@@ -270,7 +270,7 @@ class VerifyBGPPeersHealth(AntaTest):
             for peer in relevant_peers:
                 # Check if the BGP session is established
                 if peer["state"] != "Established":
-                    self.result.is_failure(f"{address_family} - Peer:{peer['peerAddress']} session state is not established; State:{peer['state']}")
+                    self.result.is_failure(f"{address_family} Peer:{peer['peerAddress']} - Session state is not established; State:{peer['state']}")
 
                 # Check if the AFI/SAFI state is negotiated
                 capability_status = get_value(peer, f"neighborCapabilities.multiprotocolCaps.{address_family.eos_key}")
