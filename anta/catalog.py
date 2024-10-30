@@ -36,7 +36,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class RawCatalogInputModuleOptionModel(RootModel[dict[str, Any] | None]):  # pylint: disable=R0903
+class RawCatalogInputModuleOptionModel(RootModel[Union[dict[str, Any], None]]):  # pylint: disable=R0903
     """Model capturing test option in catalog input."""
 
     root: dict[str, Any] | None
