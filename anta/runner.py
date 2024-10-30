@@ -152,8 +152,7 @@ def prepare_tests(
     for device in inventory.devices:
         if tags:
             # If there are CLI tags, execute tests with matching tags for this device
-            matching_tags = tags.intersection(device.tags)
-            if not matching_tags:
+            if not (matching_tags := tags.intersection(device.tags)):
                 # The device does not have any selected tag, skipping
                 continue
             device_to_tests[device].update(catalog.get_tests_by_tags(matching_tags))
