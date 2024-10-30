@@ -5,19 +5,11 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal
+from typing import Literal
 
 from pydantic import BaseModel
 
 from anta.custom_types import Interface
-
-if TYPE_CHECKING:
-    import sys
-
-    if sys.version_info >= (3, 11):
-        pass
-    else:
-        pass
 
 
 class InterfaceState(BaseModel):
