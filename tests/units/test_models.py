@@ -494,7 +494,7 @@ class TestAntaTest:
 
     def test__init_subclass__(self) -> None:
         """Test __init_subclass__."""
-        with pytest.raises(NotImplementedError) as exec_info:
+        with pytest.raises(AttributeError) as exec_info:
 
             class _WrongTestNoCategories(AntaTest):
                 """ANTA test that is missing categories."""
@@ -507,7 +507,7 @@ class TestAntaTest:
 
         assert exec_info.value.args[0] == "Class tests.units.test_models._WrongTestNoCategories is missing required class attribute categories"
 
-        with pytest.raises(NotImplementedError) as exec_info:
+        with pytest.raises(AttributeError) as exec_info:
 
             class _WrongTestNoCommands(AntaTest):
                 """ANTA test that is missing commands."""

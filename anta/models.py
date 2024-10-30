@@ -11,7 +11,7 @@ import re
 from abc import ABC, abstractmethod
 from functools import wraps
 from string import Formatter
-from typing import TYPE_CHECKING, Any, Callable, ClassVar, Literal, TypeVar, Protocol
+from typing import TYPE_CHECKING, Any, Callable, ClassVar, Literal, TypeVar
 
 from pydantic import BaseModel, ConfigDict, ValidationError, create_model
 
@@ -273,11 +273,6 @@ class AntaTemplateRenderError(RuntimeError):
         super().__init__(f"'{self.key}' was not provided for template '{self.template.template}'")
 
 
-@runtime_checkable
-class AntaTestProtocol(Protocol):
-    """Make Mandatory ClassVar."""
-
-
 class AntaTest(ABC):
     """Abstract class defining a test in ANTA.
 
@@ -333,10 +328,12 @@ class AntaTest(ABC):
     # Optional class attributes
     name: ClassVar[str]
     description: ClassVar[str]
+
     # Mandatory class attributes
     # TODO: find a way to tell mypy these are mandatory for child classes - maybe Protocol
     categories: ClassVar[list[str]]
     commands: ClassVar[list[AntaTemplate | AntaCommand]]
+
     # Class attributes to handle the progress bar of ANTA CLI
     progress: Progress | None = None
     nrfu_task: TaskID | None = None
