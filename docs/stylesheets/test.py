@@ -1,3 +1,6 @@
+# Copyright (c) 2024 Arista Networks, Inc.
+# Use of this source code is governed by the Apache License 2.0
+# that can be found in the LICENSE file.
 from typing import TypeVar
 
 T = TypeVar("T")
@@ -7,7 +10,7 @@ T = TypeVar("T")
 # class Test[T](list[T]):
 class Test(list[T]):
     T = type(int)
-    
+
     def __getitem__(self, index: int) -> int:
         pass
 
@@ -16,8 +19,6 @@ class Test(list[T]):
 
     def __len__(self) -> int:
         return 42
-
-    pass
 
 
 t = Test()
