@@ -73,7 +73,7 @@ anta.tests.avt:
           path_type: direct
 anta.tests.bfd:
   - VerifyBFDPeersHealth:
-      # Verifies the health of all IPv4 BFD peers.
+      # Verifies the health of IPv4 BFD peers across all VRFs.
       down_threshold: 2
   - VerifyBFDPeersIntervals:
       # Verifies the timers of the IPv4 BFD peers in the specified VRF.
@@ -107,14 +107,14 @@ anta.tests.configuration:
       # Verifies the management CVX global status.
       enabled: true
   - VerifyRunningConfigDiffs:
-      # Verifies there is no difference between the running-config and the startup-config
+      # Verifies there is no difference between the running-config and the startup-config.
   - VerifyRunningConfigLines:
       # Search the Running-Config for the given RegEx patterns.
         regex_patterns:
             - "^enable password.*$"
             - "bla bla"
   - VerifyZeroTouch:
-      # Verifies ZeroTouch is disabled
+      # Verifies ZeroTouch is disabled.
 anta.tests.connectivity:
   - VerifyLLDPNeighbors:
       # Verifies that the provided LLDP neighbors are connected properly.
@@ -126,7 +126,7 @@ anta.tests.connectivity:
           neighbor_device: DC1-SPINE2
           neighbor_port: Ethernet1
   - VerifyReachability:
-      # Test the network reachability to one or many destination IP(s).
+      # Test network reachability to one or many destination IP(s).
       hosts:
         - source: Management0
           destination: 1.1.1.1
@@ -157,7 +157,7 @@ anta.tests.flow_tracking:
               template_interval: 3600000
 anta.tests.greent:
   - VerifyGreenT:
-      # Verifies if a GreenT policy is created.
+      # Verifies if a GreenT policy other than the default is created.
   - VerifyGreenTCounters:
       # Verifies if the GreenT counters are incremented.
 anta.tests.hardware:
@@ -172,17 +172,17 @@ anta.tests.hardware:
       states:
         - ok
   - VerifyEnvironmentSystemCooling:
-      # Verifies the system cooling status.
+      # Verifies the device's system cooling status.
   - VerifyTemperature:
-      # Verifies the device temperature.
+      # Verifies if the device temperature is within acceptable limits.
   - VerifyTransceiversManufacturers:
-      # Verifies if all transceivers come from approved manufacturers.
+      # Verifies if all the transceivers come from approved manufacturers.
       manufacturers:
         - Not Present
         - Arista Networks
         - Arastra, Inc.
   - VerifyTransceiversTemperature:
-      # Verifies the transceivers temperature.
+      # Verifies if all the transceivers are operating at an acceptable temperature.
 anta.tests.interfaces:
   - VerifyIPProxyARP:
       # Verifies if Proxy ARP is enabled.
@@ -192,11 +192,11 @@ anta.tests.interfaces:
   - VerifyIllegalLACP:
       # Verifies there are no illegal LACP packets in all port channels.
   - VerifyInterfaceDiscards:
-      # Verifies there are no interface discard counters.
+      # Verifies that the interfaces packet discard counters are equal to zero.
   - VerifyInterfaceErrDisabled:
       # Verifies there are no interfaces in the errdisabled state.
   - VerifyInterfaceErrors:
-      # Verifies there are no interface error counters.
+      # Verifies that the interfaces error counters are equal to zero.
   - VerifyInterfaceIPv4:
       # Verifies the interface IPv4 addresses.
       interfaces:
@@ -222,7 +222,7 @@ anta.tests.interfaces:
           auto: False
           speed: 2.5
   - VerifyInterfacesStatus:
-      # Verifies the status of the provided interfaces.
+      # Verifies if the provided list of interfaces are all in the expected state.
       interfaces:
         - name: Ethernet1
           status: up
@@ -251,7 +251,7 @@ anta.tests.interfaces:
       specific_mtu:
           - Ethernet1: 2500
   - VerifyLACPInterfacesStatus:
-      # Verifies the Link Aggregation Control Protocol(LACP) status of the provided interfaces.
+      # Verifies the Link Aggregation Control Protocol (LACP) status of the provided interfaces.
       interfaces:
         - name: Ethernet1
           portchannel: Port-Channel100
@@ -305,14 +305,14 @@ anta.tests.mlag:
       # Verifies the configuration of the MLAG primary priority.
       primary_priority: 3276
   - VerifyMlagReloadDelay:
-      # Verifies the MLAG reload-delay parameters.
+      # Verifies the reload-delay parameters of the MLAG configuration.
       reload_delay: 300
       reload_delay_non_mlag: 330
   - VerifyMlagStatus:
       # Verifies the health status of the MLAG configuration.
 anta.tests.multicast:
   - VerifyIGMPSnoopingGlobal:
-      # Verifies the IGMP snooping global configuration.
+      # Verifies the IGMP snooping global status.
       enabled: True
   - VerifyIGMPSnoopingVlans:
       # Verifies the IGMP snooping status for the provided VLANs.
@@ -323,7 +323,7 @@ anta.tests.path_selection:
   - VerifyPathsHealth:
       # Verifies the path and telemetry state of all paths under router path-selection.
   - VerifySpecificPath:
-      # Verifies the path and telemetry state of a specific path under router path-selection.
+      # Verifies the path and telemetry state of a specific path for an IPv4 peer under router path-selection.
       paths:
         - peer: 10.255.0.1
           path_group: internet
@@ -395,7 +395,7 @@ anta.tests.routing.bgp:
           vrf: "DEV"
           num_peers: 3
   - VerifyBGPPeerDropStats:
-      # Verifies the NLRI drop statistics of a BGP IPv4 peer(s).
+      # Verifies BGP NLRI drop statistics for the provided BGP IPv4 peer(s).
       bgp_peers:
         - peer_address: 172.30.11.1
           vrf: default
@@ -418,7 +418,7 @@ anta.tests.routing.bgp:
           capabilities:
             - ipv4Unicast
   - VerifyBGPPeerRouteLimit:
-      # Verifies maximum routes and maximum routes warning limit for the provided BGP IPv4 peer(s).
+      # Verifies the maximum routes and optionally verifies the maximum routes warning limit for the provided BGP IPv4 peer(s).
       bgp_peers:
         - peer_address: 172.30.11.1
           vrf: default
@@ -430,14 +430,14 @@ anta.tests.routing.bgp:
         - peer_address: 172.30.11.1
           vrf: default
   - VerifyBGPPeerUpdateErrors:
-      # Verifies the update error counters of a BGP IPv4 peer.
+      # Verifies BGP update error counters for the provided BGP IPv4 peer(s).
       bgp_peers:
         - peer_address: 172.30.11.1
           vrf: default
           update_error_filter:
             - inUpdErrWithdraw
   - VerifyBGPPeersHealth:
-      # Verifies the health of BGP peers
+      # Verifies the health of BGP peers.
       address_families:
         - afi: "evpn"
         - afi: "ipv4"
@@ -515,7 +515,7 @@ anta.tests.routing.isis:
           vrf: default
           # level is set to 2 by default
   - VerifyISISNeighborCount:
-      # Verifies count of IS-IS interface per level
+      # Verifies number of IS-IS neighbors per level and per interface.
       interfaces:
         - name: Ethernet1
           level: 1
@@ -529,7 +529,7 @@ anta.tests.routing.isis:
   - VerifyISISNeighborState:
       # Verifies all IS-IS neighbors are in UP state.
   - VerifyISISSegmentRoutingAdjacencySegments:
-      # Verify expected Adjacency segments are correctly visible for each interface.
+      # Verify that all expected Adjacency segments are correctly visible for each interface.
       instances:
         - name: CORE-ISIS
           vrf: default
@@ -538,13 +538,13 @@ anta.tests.routing.isis:
               address: 10.0.1.3
               sid_origin: dynamic
   - VerifyISISSegmentRoutingDataplane:
-      # Verify dataplane of a list of ISIS-SR instances
+      # Verify dataplane of a list of ISIS-SR instances.
       instances:
         - name: CORE-ISIS
           vrf: default
           dataplane: MPLS
   - VerifyISISSegmentRoutingTunnels:
-      # Verify ISIS-SR tunnels computed by device
+      # Verify ISIS-SR tunnels computed by device.
       entries:
       # Check only endpoint
       - endpoint: 1.0.0.122/32
@@ -742,7 +742,7 @@ anta.tests.stp:
       threshold: 10
 anta.tests.stun:
   - VerifyStunClient:
-      # Verifies the STUN client is configured with the specified IPv4 source address and port. Validate the public IP and port if provided.
+      # Verifies STUN client settings, including local IP/port and optionally public IP/port.
       stun_clients:
         - source_address: 172.18.3.2
           public_address: 172.18.3.21
@@ -803,7 +803,7 @@ anta.tests.vxlan:
         10010: 10
         10020: 20
   - VerifyVxlanVtep:
-      # Verifies the VTEP peers of the Vxlan1 interface
+      # Verifies the VTEP peers of the Vxlan1 interface.
       vteps:
         - 10.1.1.5
         - 10.1.1.6
