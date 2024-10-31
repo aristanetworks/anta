@@ -1,8 +1,8 @@
 anta nrfu \
     --username arista \
-    --password $LABPASSPHRASE \
+    --password arista \
     --inventory ./inventory.yml \
-    `# uncomment the two next lines if you have an enable password` \
+    `# uncomment the next two lines if you have an enable password `\
     `# --enable` \
     `# --enable-password <password>` \
     --catalog ./catalog.yml \

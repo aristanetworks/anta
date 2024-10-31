@@ -21,7 +21,7 @@
            INFO     Cache statistics for 's1-leaf1': 1 hits / 9 command(s) (11.11%)                                                                                                                                                                                                                     runner.py:75
            INFO     Cache statistics for 's1-leaf2': 1 hits / 9 command(s) (11.11%)                                                                                                                                                                                                                     runner.py:75
            INFO     Cache statistics for 's1-leaf3': 1 hits / 9 command(s) (11.11%)                                                                                                                                                                                                                     runner.py:75
-  • Running NRFU Tests...100% ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 45/45 • 0:00:00 • 0:00:00
+  • Running NRFU Tests...100% ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 45/45 • 0:00:00 • 0:00:00
 
 s1-spine1 :: VerifyRunningConfigDiffs :: SUCCESS
 s1-spine1 :: VerifyNTP :: SUCCESS

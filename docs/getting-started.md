@@ -92,6 +92,11 @@ This entrypoint has multiple options to manage test coverage and reporting.
 
 To run the NRFU, you need to select an output format amongst ["json", "table", "text", "tpl-report"]. For a first usage, `table` is recommended.  By default all test results for all devices are rendered but it can be changed to a report per test case or per host
 
+!!! Note
+    The following examples shows how to pass all the CLI options.
+
+    See how to use environment variables instead in the [CLI overview](cli/overview.md#anta-environment-variables)
+
 #### Default report using table
 
 ```bash
@@ -112,8 +117,6 @@ To run the NRFU, you need to select an output format amongst ["json", "table", "
 --8<-- "getting-started/anta_nrfu_json.sh"
 --8<-- "getting-started/anta_nrfu_json.output"
 ```
-
-You can find more information under the **usage** section of the website
 
 ### Basic usage in a Python script
 
