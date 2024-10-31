@@ -3,6 +3,8 @@
 # that can be found in the LICENSE file.
 """Module containing input models for system tests."""
 
+from __future__ import annotations
+
 from ipaddress import IPv4Address
 
 from pydantic import BaseModel, ConfigDict, Field
