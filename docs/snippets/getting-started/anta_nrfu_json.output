@@ -3,53 +3,51 @@
 │ - Tests catalog contains 9 tests                     │
 ╰──────────────────────────────────────────────────────╯
 
-[10:25:04] INFO     Preparing ANTA NRFU Run ...                                                                                                                                                                                                                                                         tools.py:294
-           INFO     Connecting to devices ...                                                                                                                                                                                                                                                           tools.py:294
-           INFO     Connecting to devices completed in: 0:00:00.056.                                                                                                                                                                                                                                    tools.py:302
-           INFO     Preparing the tests ...                                                                                                                                                                                                                                                             tools.py:294
-           INFO     Preparing the tests completed in: 0:00:00.001.                                                                                                                                                                                                                                      tools.py:302
-           INFO     --- ANTA NRFU Run Information ---                                                                                                                                                                                                                                                  runner.py:270
-                    Number of devices: 5 (5 established)
-                    Total number of selected tests: 45
-                    Maximum number of open file descriptors for the current ANTA process: 16384
-                    ---------------------------------
-           INFO     Preparing ANTA NRFU Run completed in: 0:00:00.069.                                                                                                                                                                                                                                  tools.py:302
-           INFO     Running ANTA tests ...                                                                                                                                                                                                                                                              tools.py:294
-           INFO     Running ANTA tests completed in: 0:00:00.909.                                                                                                                                                                                                                                       tools.py:302
-           INFO     Cache statistics for 's1-spine1': 1 hits / 9 command(s) (11.11%)                                                                                                                                                                                                                    runner.py:75
-           INFO     Cache statistics for 's1-spine2': 1 hits / 9 command(s) (11.11%)                                                                                                                                                                                                                    runner.py:75
-           INFO     Cache statistics for 's1-leaf1': 1 hits / 9 command(s) (11.11%)                                                                                                                                                                                                                     runner.py:75
-           INFO     Cache statistics for 's1-leaf2': 1 hits / 9 command(s) (11.11%)                                                                                                                                                                                                                     runner.py:75
-           INFO     Cache statistics for 's1-leaf3': 1 hits / 9 command(s) (11.11%)                                                                                                                                                                                                                     runner.py:75
-  • Running NRFU Tests...100% ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 45/45 • 0:00:00 • 0:00:00
+[10:53:11] INFO     Preparing ANTA NRFU Run ...                                                                                                     tools.py:294
+           INFO     Connecting to devices ...                                                                                                       tools.py:294
+           INFO     Connecting to devices completed in: 0:00:00.053.                                                                                tools.py:302
+           INFO     Preparing the tests ...                                                                                                         tools.py:294
+           INFO     Preparing the tests completed in: 0:00:00.001.                                                                                  tools.py:302
+           INFO     --- ANTA NRFU Run Information ---                                                                                              runner.py:276
+                    Number of devices: 5 (5 established)                                                                                                        
+                    Total number of selected tests: 45                                                                                                          
+                    Maximum number of open file descriptors for the current ANTA process: 16384                                                                 
+                    ---------------------------------                                                                                                           
+           INFO     Preparing ANTA NRFU Run completed in: 0:00:00.065.                                                                              tools.py:302
+           INFO     Running ANTA tests ...                                                                                                          tools.py:294
+[10:53:12] INFO     Running ANTA tests completed in: 0:00:00.857.                                                                                   tools.py:302
+           INFO     Cache statistics for 's1-spine1': 1 hits / 9 command(s) (11.11%)                                                                runner.py:75
+           INFO     Cache statistics for 's1-spine2': 1 hits / 9 command(s) (11.11%)                                                                runner.py:75
+           INFO     Cache statistics for 's1-leaf1': 1 hits / 9 command(s) (11.11%)                                                                 runner.py:75
+           INFO     Cache statistics for 's1-leaf2': 1 hits / 9 command(s) (11.11%)                                                                 runner.py:75
+           INFO     Cache statistics for 's1-leaf3': 1 hits / 9 command(s) (11.11%)                                                                 runner.py:75
+  • Running NRFU Tests...100% ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 45/45 • 0:00:00 • 0:00:00
 
-╭──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
-│ JSON results                                                                                                                                                         │
-╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ JSON results                                                                                                                                                 │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 [
   {
     "name": "s1-spine1",
-    "test": "VerifyMlagStatus",
+    "test": "VerifyNTP",
     "categories": [
-      "mlag"
+      "system"
     ],
-    "description": "Verifies the health status of the MLAG configuration.",
-    "result": "skipped",
-    "messages": [
-      "MLAG is disabled"
-    ],
+    "description": "Verifies if NTP is synchronised.",
+    "result": "success",
+    "messages": [],
     "custom_field": null
   },
   {
     "name": "s1-spine1",
-    "test": "VerifyEOSVersion",
+    "test": "VerifyMlagConfigSanity",
     "categories": [
-      "software"
+      "mlag"
     ],
-    "description": "Verifies the EOS version of the device.",
-    "result": "failure",
+    "description": "Verifies there are no MLAG config-sanity inconsistencies.",
+    "result": "skipped",
     "messages": [
-      "device is running version \"4.32.2F-38195967.4322F (engineering build)\" not in expected versions: ['4.25.4M', '4.26.1F', '4.28.3M-28837868.4283M (engineering build)']"
+      "MLAG is disabled"
     ],
     "custom_field": null
   },
