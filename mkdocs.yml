@@ -122,47 +122,44 @@ plugins:
       width: 90vw
 
 markdown_extensions:
+  - admonition
   - attr_list
-  - pymdownx.emoji:
-      emoji_index: !!python/name:material.extensions.emoji.twemoji
-      emoji_generator: !!python/name:material.extensions.emoji.to_svg
-  - smarty
+  - codehilite:
+      guess_lang: true
   - pymdownx.arithmatex
   - pymdownx.betterem:
       smart_enable: all
   - pymdownx.caret
   - pymdownx.critic
   - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight
   - pymdownx.inlinehilite
   - pymdownx.magiclink
   - pymdownx.mark
   - pymdownx.smartsymbols
+  - pymdownx.snippets:
+      base_path:
+        - docs/snippets
+        - examples
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
   - pymdownx.tasklist:
       custom_checkbox: true
   - pymdownx.tilde
-  # - fontawesome_markdown
-  - admonition
-  - codehilite:
-      guess_lang: true
+  - smarty
   - toc:
       separator: "-"
       # permalink: "#"
       permalink: true
       baselevel: 2
-  - pymdownx.highlight
-  - pymdownx.snippets:
-      base_path:
-        - docs/snippets
-        - examples
-  - pymdownx.superfences
-  - pymdownx.superfences
-  - pymdownx.tabbed:
-      alternate_style: true
 
 # TOC
 docs_dir: docs/
