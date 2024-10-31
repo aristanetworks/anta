@@ -14,7 +14,7 @@ import pytest
 import requests
 from cvprac.cvp_client_errors import CvpApiError
 
-from anta.cli._main import anta
+from anta.cli import anta
 from anta.cli.utils import ExitCode
 
 if TYPE_CHECKING:

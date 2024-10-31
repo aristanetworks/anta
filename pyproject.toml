@@ -106,7 +106,7 @@ Homepage = "https://anta.arista.com"
 Contributing = "https://anta.arista.com/main/contribution/"
 
 [project.scripts]
-anta = "anta.cli:cli"
+anta = "anta.__main__:cli"
 
 ################################
 # Tools
@@ -406,7 +406,7 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.In
 "anta/cli/exec/utils.py" = [
   "SLF001",  # TODO: some private members, lets try to fix
 ]
-"anta/cli/__init__.py" = [
+"anta/__main__.py" = [
   "T201",  # Allow print statements
 ]
 "anta/cli/*" = [
