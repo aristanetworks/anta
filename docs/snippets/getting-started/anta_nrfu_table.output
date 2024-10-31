@@ -9,10 +9,10 @@
            INFO     Preparing the tests ...                                                                                                         tools.py:294
            INFO     Preparing the tests completed in: 0:00:00.001.                                                                                  tools.py:302
            INFO     --- ANTA NRFU Run Information ---                                                                                              runner.py:276
-                    Number of devices: 5 (5 established)                                                                                                        
-                    Total number of selected tests: 45                                                                                                          
-                    Maximum number of open file descriptors for the current ANTA process: 16384                                                                 
-                    ---------------------------------                                                                                                           
+                    Number of devices: 5 (5 established)
+                    Total number of selected tests: 45
+                    Maximum number of open file descriptors for the current ANTA process: 16384
+                    ---------------------------------
            INFO     Preparing ANTA NRFU Run completed in: 0:00:00.069.                                                                              tools.py:302
            INFO     Running ANTA tests ...                                                                                                          tools.py:294
 [10:53:02] INFO     Running ANTA tests completed in: 0:00:00.969.                                                                                   tools.py:302
@@ -23,7 +23,7 @@
            INFO     Cache statistics for 's1-leaf3': 1 hits / 9 command(s) (11.11%)                                                                 runner.py:75
   • Running NRFU Tests...100% ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 45/45 • 0:00:00 • 0:00:00
 
-                                                                       All tests results                                                                        
+                                                                       All tests results
 ┏━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┓
 ┃ Device    ┃ Test Name                ┃ Test Status ┃ Message(s)                                 ┃ Test description                           ┃ Test category ┃
 ┡━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━┩
