@@ -37,8 +37,6 @@ class VerifyPathsHealth(AntaTest):
     ```
     """
 
-    name = "VerifyPathsHealth"
-    description = "Verifies the path and telemetry state of all paths under router path-selection."
     categories: ClassVar[list[str]] = ["path-selection"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show path-selection paths", revision=1)]
 
@@ -96,8 +94,6 @@ class VerifySpecificPath(AntaTest):
     ```
     """
 
-    name = "VerifySpecificPath"
-    description = "Verifies the path and telemetry state of a specific path under router path-selection."
     categories: ClassVar[list[str]] = ["path-selection"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
         AntaTemplate(template="show path-selection paths peer {peer} path-group {group} source {source} destination {destination}", revision=1)

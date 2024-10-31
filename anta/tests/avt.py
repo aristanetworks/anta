@@ -33,7 +33,6 @@ class VerifyAVTPathHealth(AntaTest):
     ```
     """
 
-    name = "VerifyAVTPathHealth"
     description = "Verifies the status of all AVT paths for all VRFs."
     categories: ClassVar[list[str]] = ["avt"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show adaptive-virtual-topology path")]
@@ -95,7 +94,6 @@ class VerifyAVTSpecificPath(AntaTest):
     ```
     """
 
-    name = "VerifyAVTSpecificPath"
     description = "Verifies the status and type of an AVT path for a specified VRF."
     categories: ClassVar[list[str]] = ["avt"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
@@ -205,7 +203,6 @@ class VerifyAVTRole(AntaTest):
     ```
     """
 
-    name = "VerifyAVTRole"
     description = "Verifies the AVT role of a device."
     categories: ClassVar[list[str]] = ["avt"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show adaptive-virtual-topology path")]

@@ -99,7 +99,6 @@ class VerifyHardwareFlowTrackerStatus(AntaTest):
     ```
     """
 
-    name = "VerifyHardwareFlowTrackerStatus"
     description = (
         "Verifies if hardware flow tracking is running and an input tracker is active. Optionally verifies the tracker interval/timeout and exporter configuration."
     )

@@ -158,8 +158,6 @@ class VerifyISISNeighborState(AntaTest):
     ```
     """
 
-    name = "VerifyISISNeighborState"
-    description = "Verifies all IS-IS neighbors are in UP state."
     categories: ClassVar[list[str]] = ["isis"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show isis neighbors", revision=1)]
 
@@ -204,8 +202,6 @@ class VerifyISISNeighborCount(AntaTest):
     ```
     """
 
-    name = "VerifyISISNeighborCount"
-    description = "Verifies count of IS-IS interface per level"
     categories: ClassVar[list[str]] = ["isis"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show isis interface brief", revision=1)]
 
@@ -277,7 +273,6 @@ class VerifyISISInterfaceMode(AntaTest):
     ```
     """
 
-    name = "VerifyISISInterfaceMode"
     description = "Verifies interface mode for IS-IS"
     categories: ClassVar[list[str]] = ["isis"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show isis interface brief", revision=1)]
@@ -333,9 +328,7 @@ class VerifyISISInterfaceMode(AntaTest):
 
 
 class VerifyISISSegmentRoutingAdjacencySegments(AntaTest):
-    """Verifies ISIS Segment Routing Adjacency Segments.
-
-    Verify that all expected Adjacency segments are correctly visible for each interface.
+    """Verify that all expected Adjacency segments are correctly visible for each interface.
 
     Expected Results
     ----------------
@@ -359,8 +352,6 @@ class VerifyISISSegmentRoutingAdjacencySegments(AntaTest):
     ```
     """
 
-    name = "VerifyISISSegmentRoutingAdjacencySegments"
-    description = "Verify expected Adjacency segments are correctly visible for each interface."
     categories: ClassVar[list[str]] = ["isis", "segment-routing"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show isis segment-routing adjacency-segments", ofmt="json")]
 
@@ -466,8 +457,6 @@ class VerifyISISSegmentRoutingDataplane(AntaTest):
     ```
     """
 
-    name = "VerifyISISSegmentRoutingDataplane"
-    description = "Verify dataplane of a list of ISIS-SR instances"
     categories: ClassVar[list[str]] = ["isis", "segment-routing"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show isis segment-routing", ofmt="json")]
 
@@ -558,8 +547,6 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
     ```
     """
 
-    name = "VerifyISISSegmentRoutingTunnels"
-    description = "Verify ISIS-SR tunnels computed by device"
     categories: ClassVar[list[str]] = ["isis", "segment-routing"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show isis segment-routing tunnel", ofmt="json")]
 
