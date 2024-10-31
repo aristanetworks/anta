@@ -1,0 +1,22 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python Debugger: Module",
+            "type": "debugpy",
+            "console": "integratedTerminal",
+            "request": "launch",
+            "module": "anta.cli._main",
+            "args": [ "nrfu", "-c", "${workspaceFolder}/.vscode/nrfu.yml", "-i", "${workspaceFolder}/.vscode/inventory.yml", "text"],
+            "env": {
+                "ANTA_USERNAME": "ansible",
+                "ANTA_PASSWORD": "ansible",
+                "ANTA_ENABLE": "false",
+            },
+            "justMyCode": false
+        }
+    ]
+}

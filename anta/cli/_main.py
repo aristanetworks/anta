@@ -69,3 +69,7 @@ def cli() -> None:
             logger,
         )
         sys.exit(ExitCode.INTERNAL_ERROR)
+
+
+if __name__ == "__main__":
+    anta()
