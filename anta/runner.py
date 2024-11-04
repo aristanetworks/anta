@@ -13,6 +13,7 @@ from collections import defaultdict
 from typing import TYPE_CHECKING, Any
 
 from anta import GITHUB_SUGGESTION
+from anta.cli.console import console
 from anta.logger import anta_log_exception, exc_to_str
 from anta.models import AntaTest
 from anta.tools import Catchtime, cprofile
@@ -46,6 +47,7 @@ def adjust_max_concurrency() -> int:
 
     Returns
     -------
+    int
         The maximum number of tests to run concurrently.
     """
     try:
@@ -65,6 +67,7 @@ def adjust_rlimit_nofile() -> tuple[int, int]:
 
     Returns
     -------
+    tuple[int, int]
         The new soft and hard limits for open file descriptors.
     """
     try:
@@ -172,6 +175,7 @@ async def setup_inventory(inventory: AntaInventory, tags: set[str] | None, devic
 
     Returns
     -------
+    AntaInventory | None
         The filtered AntaInventory or None if there are no devices to run tests on.
     """
     if len(inventory) == 0:
@@ -215,6 +219,7 @@ def setup_tests(
 
     Returns
     -------
+    tuple[int, defaultdict[AntaDevice, set[AntaTestDefinition]] | None]
         The total number of tests and a mapping of devices to the tests to run or None if there are no tests to run.
     """
     # Build indexes for the catalog. If `tests` is set, filter the indexes based on these tests
@@ -243,13 +248,11 @@ def setup_tests(
         total_test_count += len(device_to_tests[device])
 
     if total_test_count == 0:
-        msg = (
-            f"There are no tests{f' matching the tags {tags} ' if tags else ' '}to run in the current test catalog and device inventory, please verify your inputs."
-        )
+        msg = f"There are no tests{f' matching the tags {tags} ' if tags else ' '}to run in the current test catalog and device inventory, please verify your inputs."
         logger.warning(msg)
-        return total_tests, None
+        return total_test_count, None
 
-    return total_tests, device_to_tests
+    return total_test_count, device_to_tests
 
 
 async def test_generator(
@@ -350,14 +353,17 @@ async def main(  # noqa: PLR0913
 
         generator = test_generator(selected_tests, manager)
 
+        # TODO: 34 is a magic numbers from RichHandler formatting catering for date, level and path
+        width = min(int(console.width) - 34, len("Maximum number of open file descriptors for the current ANTA process: 0000000000\n"))
+
         run_info = (
-            "------------------------------------ ANTA NRFU Run Information -------------------------------------\n"
+            f"{' ANTA NRFU Run Information ':-^{width}}\n"
             f"Number of devices: {len(inventory)} ({len(selected_inventory)} established)\n"
             f"Total number of selected tests: {total_tests}\n"
             f"Maximum number of tests to run concurrently: {max_concurrency}\n"
             f"Maximum number of connections per device: {DEFAULT_MAX_CONNECTIONS}\n"
             f"Maximum number of open file descriptors for the current ANTA process: {limits[0]}\n"
-            "----------------------------------------------------------------------------------------------------"
+            f"{'':-^{width}}"
         )
 
         logger.info(run_info)
