@@ -248,7 +248,9 @@ def setup_tests(
         total_test_count += len(device_to_tests[device])
 
     if total_test_count == 0:
-        msg = f"There are no tests{f' matching the tags {tags} ' if tags else ' '}to run in the current test catalog and device inventory, please verify your inputs."
+        msg = (
+            f"There are no tests{f' matching the tags {tags} ' if tags else ' '}to run in the current test catalog and device inventory, please verify your inputs."
+        )
         logger.warning(msg)
         return total_test_count, None
 
