@@ -33,8 +33,6 @@ class VerifyZeroTouch(AntaTest):
     ```
     """
 
-    name = "VerifyZeroTouch"
-    description = "Verifies ZeroTouch is disabled"
     categories: ClassVar[list[str]] = ["configuration"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show zerotouch", revision=1)]
 
@@ -64,8 +62,6 @@ class VerifyRunningConfigDiffs(AntaTest):
     ```
     """
 
-    name = "VerifyRunningConfigDiffs"
-    description = "Verifies there is no difference between the running-config and the startup-config"
     categories: ClassVar[list[str]] = ["configuration"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show running-config diffs", ofmt="text")]
 
@@ -104,7 +100,6 @@ class VerifyRunningConfigLines(AntaTest):
     ```
     """
 
-    name = "VerifyRunningConfigLines"
     description = "Search the Running-Config for the given RegEx patterns."
     categories: ClassVar[list[str]] = ["configuration"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show running-config", ofmt="text")]
@@ -131,3 +126,41 @@ class VerifyRunningConfigLines(AntaTest):
             self.result.is_success()
         else:
             self.result.is_failure("Following patterns were not found: " + ",".join(failure_msgs))
+
+
+class VerifyManagementCVX(AntaTest):
+    """Verifies the management CVX global status.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the management CVX global status matches the expected status.
+    * Failure: The test will fail if the management CVX global status does not match the expected status.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.configuration:
+      - VerifyManagementCVX:
+          enabled: true
+    ```
+    """
+
+    name = "VerifyManagementCVX"
+    description = "Verifies the management CVX global status."
+    categories: ClassVar[list[str]] = ["configuration"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management cvx", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyManagementCVX test."""
+
+        enabled: bool
+        """Whether management CVX must be enabled (True) or disabled (False)."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyManagementCVX."""
+        command_output = self.instance_commands[0].json_output
+        self.result.is_success()
+        cluster_status = command_output["clusterStatus"]
+        if (cluster_state := cluster_status.get("enabled")) != self.inputs.enabled:
+            self.result.is_failure(f"Management CVX status is not valid: {cluster_state}")

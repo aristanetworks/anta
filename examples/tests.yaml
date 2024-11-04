@@ -98,6 +98,8 @@ anta.tests.configuration:
       regex_patterns:
         - "^enable password.*$"
         - "bla bla"
+  - VerifyManagementCVX:
+      enabled: true
 
 anta.tests.connectivity:
   - VerifyReachability:
@@ -398,6 +400,13 @@ anta.tests.snmp:
       location: New York
   - VerifySnmpContact:
       contact: Jon@example.com
+  - VerifySnmpPDUCounters:
+      pdus:
+        - outTrapPdus
+  - VerifySnmpErrorCounters:
+      error_counters:
+        - inVersionErrs
+        - inBadCommunityNames
 
 anta.tests.software:
   - VerifyEOSVersion:

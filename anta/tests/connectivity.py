@@ -43,8 +43,6 @@ class VerifyReachability(AntaTest):
     ```
     """
 
-    name = "VerifyReachability"
-    description = "Test the network reachability to one or many destination IP(s)."
     categories: ClassVar[list[str]] = ["connectivity"]
     # Removing the <space> between '{size}' and '{df_bit}' to compensate the df-bit set default value
     # i.e if df-bit kept disable then it will add redundant space in between the command
@@ -129,7 +127,6 @@ class VerifyLLDPNeighbors(AntaTest):
     ```
     """
 
-    name = "VerifyLLDPNeighbors"
     description = "Verifies that the provided LLDP neighbors are connected properly."
     categories: ClassVar[list[str]] = ["connectivity"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show lldp neighbors detail", revision=1)]
