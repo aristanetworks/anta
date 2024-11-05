@@ -1197,6 +1197,34 @@ DATA: list[dict[str, Any]] = [
         },
     },
     {
+        "name": "failure-interface-status-down",
+        "test": VerifyInterfacesStatus,
+        "eos_data": [
+            {
+                "interfaceDescriptions": {
+                    "Ethernet8": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "down"},
+                    "Ethernet2": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "unknown"},
+                    "Ethernet3": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
+                }
+            }
+        ],
+        "inputs": {
+            "interfaces": [
+                {"name": "Ethernet2", "status": "down"},
+                {"name": "Ethernet8", "status": "down"},
+                {"name": "Ethernet3", "status": "down"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Ethernet2 - Expected: down, Actual: up",
+                "Ethernet8 - Expected: down, Actual: up",
+                "Ethernet3 - Expected: down, Actual: up",
+            ],
+        },
+    },
+    {
         "name": "success",
         "test": VerifyStormControlDrops,
         "eos_data": [

@@ -184,7 +184,7 @@ class VerifyInterfaceErrDisabled(AntaTest):
 
 
 class VerifyInterfacesStatus(AntaTest):
-    """Validates the operational states of specified interfaces to ensure they match expected configurations.
+    """Verifies the operational states of specified interfaces to ensure they match expected configurations.
 
     This test performs the following checks for each specified interface:
 
