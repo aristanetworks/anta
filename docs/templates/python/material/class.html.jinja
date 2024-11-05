@@ -1,9 +1,12 @@
 {% extends "_base/class.html.jinja" %}
 {% set anta_test = namespace(found=false) %}
+{% set anta_test_input_model = namespace(found=false) %}
 {% for base in class.bases %}
 {%   set basestr = base | string %}
 {%   if "AntaTest" == basestr %}
 {%     set anta_test.found = True %}
+{%   elif class.parent.parent.name == "input_models" %}
+{%     set anta_test_input_model.found = True %}
 {%   endif %}
 {% endfor %}
 {% block children %}
@@ -11,6 +14,21 @@
   {% set root = False %}
   {% set heading_level = heading_level + 1 %}
   {% include "anta_test.html.jinja" with context %}
+  {# render source after children - TODO make add flag to respect disabling it.. though do we want to disable?#}
+	<details class="quote">
+	<summary>Source code in <code>
+		{%- if class.relative_filepath.is_absolute() -%}
+			{{ class.relative_package_filepath }}
+		{%- else -%}
+			{{ class.relative_filepath }}
+		{%- endif -%}
+	</code></summary>
+	{{ class.source|highlight(language="python", linestart=class.lineno, linenums=True) }}
+  </details>
+{%    elif anta_test_input_model.found %}
+  {% set root = False %}
+  {% set heading_level = heading_level + 1 %}
+  {% include "anta_test_input_model.html.jinja" with context %}
   {# render source after children - TODO make add flag to respect disabling it.. though do we want to disable?#}
 	<details class="quote">
 	<summary>Source code in <code>
