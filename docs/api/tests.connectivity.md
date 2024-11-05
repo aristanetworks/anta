@@ -10,6 +10,7 @@ anta_title: ANTA catalog for connectivity tests
 # Tests
 
 ::: anta.tests.connectivity
+
     options:
       show_root_heading: false
       show_root_toc_entry: false
@@ -24,10 +25,11 @@ anta_title: ANTA catalog for connectivity tests
 # Input models
 
 ::: anta.input_models.connectivity
+
     options:
       show_root_heading: false
       show_root_toc_entry: false
       show_bases: false
       anta_hide_test_module_description: true
       show_labels: true
-      filters: ["!^_[^_]", "!**str**"]
+      filters: ["!^__str__"]
