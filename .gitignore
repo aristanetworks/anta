@@ -99,3 +99,4 @@ venv.bak/
 
 # VScode settings
 .vscode
+.vscode/settings.json

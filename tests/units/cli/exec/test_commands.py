@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from anta.cli import anta
+from anta.cli._main import anta
 from anta.cli.exec.commands import clear_counters, collect_tech_support, snapshot
 from anta.cli.utils import ExitCode
 

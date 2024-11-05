@@ -13,6 +13,7 @@ from unittest.mock import patch
 import pytest
 
 import anta.cli
+import anta.cli._main
 
 if TYPE_CHECKING:
     from types import ModuleType
@@ -34,10 +35,11 @@ def test_cli_error_missing(capsys: pytest.CaptureFixture[Any]) -> None:
     """Test ANTA errors out when anta[cli] was not installed."""
     with patch.dict(sys.modules) as sys_modules, patch("builtins.__import__", import_mock):
         del sys_modules["anta.cli._main"]
+        del sys_modules["anta.cli.console"]
         reload(anta.cli)
 
         with pytest.raises(SystemExit) as e_info:
-            anta.cli.cli()
+            anta.cli._main.cli()
 
         captured = capsys.readouterr()
         assert "The ANTA command line client could not run because the required dependencies were not installed." in captured.out
@@ -46,7 +48,7 @@ def test_cli_error_missing(capsys: pytest.CaptureFixture[Any]) -> None:
 
         # setting ANTA_DEBUG
         with pytest.raises(SystemExit) as e_info, patch("anta.cli.__DEBUG__", new=True):
-            anta.cli.cli()
+            anta.cli._main.cli()
 
         captured = capsys.readouterr()
         assert "The ANTA command line client could not run because the required dependencies were not installed." in captured.out

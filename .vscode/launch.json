@@ -9,12 +9,13 @@
             "type": "debugpy",
             "console": "integratedTerminal",
             "request": "launch",
-            "module": "anta.cli._main",
+            "module": "anta.cli",
             "args": [ "nrfu", "-c", "${workspaceFolder}/.vscode/nrfu.yml", "-i", "${workspaceFolder}/.vscode/inventory.yml", "text"],
             "env": {
                 "ANTA_USERNAME": "ansible",
                 "ANTA_PASSWORD": "ansible",
                 "ANTA_ENABLE": "false",
+                "ANTA_DEBUG": "true",
             },
             "justMyCode": false
         }
