@@ -129,8 +129,10 @@ async def collect_show_tech(inv: AntaInventory, root_dir: Path, *, configure: bo
                     return
 
                 # TODO: ANTA 2.0.0
-                msg = ("[DEPRECATED] Using '--configure' for collecting show-techs is deprecated and will be removed in ANTA 2.0.0. "
-                       "Please add the required configuration on your devices before running this command from ANTA.")
+                msg = (
+                    "[DEPRECATED] Using '--configure' for collecting show-techs is deprecated and will be removed in ANTA 2.0.0. "
+                    "Please add the required configuration on your devices before running this command from ANTA."
+                )
                 logger.warning(msg)
 
                 commands = []
