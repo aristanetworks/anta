@@ -31,4 +31,4 @@ anta_title: ANTA catalog for connectivity tests
       anta_hide_test_module_description: true
       show_labels: true
       filters:
-        - "!__str__"
+        - "!**str**"
