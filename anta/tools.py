@@ -412,6 +412,6 @@ def format_data(data: dict[str, bool]) -> str:
     Example
     -------
     >>> format_data({"advertised": True, "received": True, "enabled": True})
-    "Advertised:True, Received:True, Enabled:True"
+    "Advertised: True, Received: True, Enabled: True"
     """
-    return ", ".join(f"{k.capitalize()}:{v}" for k, v in data.items())
+    return ", ".join(f"{k.capitalize()}: {v}" for k, v in data.items())

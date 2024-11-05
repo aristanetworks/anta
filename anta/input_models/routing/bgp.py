@@ -99,11 +99,11 @@ class BgpAddressFamily(BaseModel):
         - AFI:ipv4 SAFI:unicast VRF:default
         - AFI:evpn
         """
-        base_string = f"AFI:{self.afi}"
+        base_string = f"AFI: {self.afi}"
         if self.safi is not None:
-            base_string += f" SAFI:{self.safi}"
+            base_string += f" SAFI: {self.safi}"
         if self.afi in ["ipv4", "ipv6"]:
-            base_string += f" VRF:{self.vrf}"
+            base_string += f" VRF: {self.vrf}"
         return base_string
 
 
