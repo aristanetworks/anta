@@ -237,6 +237,9 @@ class VerifyBGPPeersHealth(AntaTest):
     ```
     """
 
+    name = "VerifyBGPPeersHealth"
+    description = "Verifies the health of BGP peers for the given address families."
+>>>>>>> 44581a0 (Resolved conflicts and updated the space after : in failure msgs)
     categories: ClassVar[list[str]] = ["bgp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=3)]
 
