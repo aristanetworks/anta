@@ -222,7 +222,7 @@ anta.tests.interfaces:
           auto: False
           speed: 2.5
   - VerifyInterfacesStatus:
-      # Verifies if the provided list of interfaces are all in the expected state.
+      # Verifies the operational states of specified interfaces to ensure they match expected configurations.
       interfaces:
         - name: Ethernet1
           status: up
