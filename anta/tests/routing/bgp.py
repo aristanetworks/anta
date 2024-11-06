@@ -7,15 +7,13 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from ipaddress import IPv4Address, IPv4Network
-from typing import TYPE_CHECKING, Any, ClassVar
+from ipaddress import IPv4Address
+from typing import TYPE_CHECKING, Any, ClassVar, TypeVar
 
 from pydantic import BaseModel, Field, field_validator, model_validator
-from pydantic.v1.utils import deep_update
-from pydantic_extra_types.mac_address import MacAddress
 
-from anta.custom_types import BgpDropStats, BgpUpdateError, MultiProtocolCaps, Vni
-from anta.input_models.routing.bgp import BgpAddressFamily, BgpAfi
+from anta.custom_types import BgpUpdateError
+from anta.input_models.routing.bgp import BgpAddressFamily, BgpAfi, BgpNeighbor, BgpPeer, VxlanEndpoint
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import format_data, get_item, get_value
 
@@ -27,60 +25,8 @@ if TYPE_CHECKING:
     else:
         from typing_extensions import Self
 
-
-def _add_bgp_routes_failure(
-    bgp_routes: list[str], bgp_output: dict[str, Any], peer: str, vrf: str, route_type: str = "advertised_routes"
-) -> dict[str, dict[str, dict[str, dict[str, list[str]]]]]:
-    """Identify missing BGP routes and invalid or inactive route entries.
-
-    This function checks the BGP output from the device against the expected routes.
-
-    It identifies any missing routes as well as any routes that are invalid or inactive. The results are returned in a dictionary.
-
-    Parameters
-    ----------
-    bgp_routes
-        The list of expected routes.
-    bgp_output
-        The BGP output from the device.
-    peer
-        The IP address of the BGP peer.
-    vrf
-        The name of the VRF for which the routes need to be verified.
-    route_type
-        The type of BGP routes. Defaults to 'advertised_routes'.
-
-    Returns
-    -------
-    dict[str, dict[str, dict[str, dict[str, list[str]]]]]
-        A dictionary containing the missing routes and invalid or inactive routes.
-
-    """
-    # Prepare the failure routes dictionary
-    failure_routes: dict[str, dict[str, Any]] = {}
-
-    # Iterate over the expected BGP routes
-    for route in bgp_routes:
-        str_route = str(route)
-        failure: dict[str, Any] = {"bgp_peers": {peer: {vrf: {route_type: {}}}}}
-
-        # Check if the route is missing in the BGP output
-        if str_route not in bgp_output:
-            # If missing, add it to the failure routes dictionary
-            failure["bgp_peers"][peer][vrf][route_type][str_route] = "Not found"
-            failure_routes = deep_update(failure_routes, failure)
-            continue
-
-        # Check if the route is active and valid
-        is_active = bgp_output[str_route]["bgpRoutePaths"][0]["routeType"]["valid"]
-        is_valid = bgp_output[str_route]["bgpRoutePaths"][0]["routeType"]["active"]
-
-        # If the route is either inactive or invalid, add it to the failure routes dictionary
-        if not is_active or not is_valid:
-            failure["bgp_peers"][peer][vrf][route_type][str_route] = {"valid": is_valid, "active": is_active}
-            failure_routes = deep_update(failure_routes, failure)
-
-    return failure_routes
+# Using a TypeVar for the BgpPeer model since mypy thinks it's a ClassVar and not a valid type when used in field validators
+T = TypeVar("T", bound=BgpPeer)
 
 
 def _check_bgp_neighbor_capability(capability_status: dict[str, bool]) -> bool:
@@ -237,9 +183,6 @@ class VerifyBGPPeersHealth(AntaTest):
     ```
     """
 
-    name = "VerifyBGPPeersHealth"
-    description = "Verifies the health of BGP peers for the given address families."
->>>>>>> 44581a0 (Resolved conflicts and updated the space after : in failure msgs)
     categories: ClassVar[list[str]] = ["bgp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=3)]
 
@@ -395,12 +338,20 @@ class VerifyBGPSpecificPeers(AntaTest):
 class VerifyBGPExchangedRoutes(AntaTest):
     """Verifies the advertised and received routes of BGP peers.
 
-    The route type should be 'valid' and 'active' for a specified VRF.
+    This test performs the following checks for each specified peer:
+
+      1. For each advertised and received route:
+        - Confirms that the route exists in the BGP route table.
+        - Verifies that the route is in an 'active' and 'valid' state.
 
     Expected Results
     ----------------
-    * Success: If the BGP peers have correctly advertised and received routes of type 'valid' and 'active' for a specified VRF.
-    * Failure: If a BGP peer is not found, the expected advertised/received routes are not found, or the routes are not 'valid' or 'active'.
+    * Success: If all of the following conditions are met:
+        - All specified advertised/received routes are found in the BGP route table.
+        - All routes are in both 'active' and 'valid' states.
+    * Failure: If any of the following occur:
+        - An advertised/received route is not found in the BGP route table.
+        - Any route is not in an 'active' or 'valid' state.
 
     Examples
     --------
@@ -434,71 +385,85 @@ class VerifyBGPExchangedRoutes(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPExchangedRoutes test."""
 
-        bgp_peers: list[BgpNeighbor]
-        """List of BGP neighbors."""
+        bgp_peers: list[BgpPeer]
+        """List of BGP peers."""
+        BgpNeighbor: ClassVar[type[BgpNeighbor]] = BgpNeighbor
 
-        class BgpNeighbor(BaseModel):
-            """Model for a BGP neighbor."""
-
-            peer_address: IPv4Address
-            """IPv4 address of a BGP peer."""
-            vrf: str = "default"
-            """Optional VRF for BGP peer. If not provided, it defaults to `default`."""
-            advertised_routes: list[IPv4Network]
-            """List of advertised routes in CIDR format."""
-            received_routes: list[IPv4Network]
-            """List of received routes in CIDR format."""
+        @field_validator("bgp_peers")
+        @classmethod
+        def validate_bgp_peers(cls, bgp_peers: list[BgpPeer]) -> list[BgpPeer]:
+            """Validate that 'peers' field is provided in each address family."""
+            for peer in bgp_peers:
+                if peer.advertised_routes is None or peer.received_routes is None:
+                    msg = f"{peer} 'advertised_routes' or 'received_routes' field missing in the input"
+                    raise ValueError(msg)
+            return bgp_peers
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
-        """Render the template for each BGP neighbor in the input list."""
+        """Render the template for each BGP peer in the input list."""
         return [template.render(peer=str(bgp_peer.peer_address), vrf=bgp_peer.vrf) for bgp_peer in self.inputs.bgp_peers]
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyBGPExchangedRoutes."""
-        failures: dict[str, dict[str, Any]] = {"bgp_peers": {}}
+        self.result.is_success()
 
-        # Iterating over command output for different peers
-        for command in self.instance_commands:
-            peer = command.params.peer
-            vrf = command.params.vrf
-            for input_entry in self.inputs.bgp_peers:
-                if str(input_entry.peer_address) == peer and input_entry.vrf == vrf:
-                    advertised_routes = input_entry.advertised_routes
-                    received_routes = input_entry.received_routes
-                    break
-            failure = {vrf: ""}
+        num_peers = len(self.inputs.bgp_peers)
 
-            # Verify if a BGP peer is configured with the provided vrf
-            if not (bgp_routes := get_value(command.json_output, f"vrfs.{vrf}.bgpRouteEntries")):
-                failure[vrf] = "Not configured"
-                failures["bgp_peers"][peer] = failure
-                continue
+        # Process each peer and its corresponding command pair
+        for peer_idx, peer in enumerate(self.inputs.bgp_peers):
+            # For n peers, advertised routes are at indices 0 to n-1, and received routes are at indices n to 2n-1
+            advertised_routes_cmd = self.instance_commands[peer_idx]
+            received_routes_cmd = self.instance_commands[peer_idx + num_peers]
 
-            # Validate advertised routes
-            if "advertised-routes" in command.command:
-                failure_routes = _add_bgp_routes_failure(advertised_routes, bgp_routes, peer, vrf)
+            # Get the BGP route entries of each command
+            advertised_routes_entries = get_value(advertised_routes_cmd.json_output, f"vrfs.{peer.vrf}.bgpRouteEntries", default={})
+            received_routes_entries = get_value(received_routes_cmd.json_output, f"vrfs.{peer.vrf}.bgpRouteEntries", default={})
 
-            # Validate received routes
-            else:
-                failure_routes = _add_bgp_routes_failure(received_routes, bgp_routes, peer, vrf, route_type="received_routes")
-            failures = deep_update(failures, failure_routes)
+            # Validate both advertised and received routes
+            for route_type, routes in zip(["Advertised", "Received"], [peer.advertised_routes, peer.received_routes]):
+                entries = advertised_routes_entries if route_type == "Advertised" else received_routes_entries
+                for route in routes:
+                    # Check if the route is found
+                    if str(route) not in entries:
+                        self.result.is_failure(f"{peer} {route_type} route: {route} - Not found")
+                        continue
 
-        if not failures["bgp_peers"]:
-            self.result.is_success()
-        else:
-            self.result.is_failure(f"Following BGP peers are not found or routes are not exchanged properly:\n{failures}")
+                    # Check if the route is active and valid
+                    route_paths = entries[str(route)]["bgpRoutePaths"][0]["routeType"]
+                    is_active = route_paths["active"]
+                    is_valid = route_paths["valid"]
+                    if not is_active or not is_valid:
+                        self.result.is_failure(f"{peer} {route_type} route: {route} - Invalid/inactive; Valid: {is_valid}, Active: {is_active}")
 
 
 class VerifyBGPPeerMPCaps(AntaTest):
-    """Verifies the multiprotocol capabilities of a BGP peer in a specified VRF.
+    """Verifies the multiprotocol capabilities of BGP peers.
 
-    Supports `strict: True` to verify that only the specified capabilities are configured, requiring an exact match.
+    This test performs the following checks for each specified peer:
+
+      1. Confirms that the specified VRF is configured.
+      2. Verifies that the peer exists in the BGP configuration.
+      3. For each specified capability:
+        - Validates that the capability is present in the peer's configuration.
+        - Confirms that the capability is advertised, received, and enabled.
+      4. When strict mode is enabled (`strict: true`):
+        - Verifies that only the specified capabilities are configured.
+        - Ensures an exact match between configured and expected capabilities.
 
     Expected Results
     ----------------
-    * Success: The test will pass if the BGP peer's multiprotocol capabilities are advertised, received, and enabled in the specified VRF.
-    * Failure: The test will fail if BGP peers are not found or multiprotocol capabilities are not advertised, received, and enabled in the specified VRF.
+    * Success: If all of the following conditions are met:
+        - The specified VRF is configured.
+        - All specified peers are found in the BGP configuration.
+        - All specified capabilities are present and properly negotiated.
+        - In strict mode, only the specified capabilities are configured.
+    * Failure: If any of the following occur:
+        - The specified VRF is not configured.
+        - A specified peer is not found in the BGP configuration.
+        - A specified capability is not found.
+        - A capability is not properly negotiated (not advertised, received, or enabled).
+        - In strict mode, additional or missing capabilities are detected.
 
     Examples
     --------
@@ -515,7 +480,6 @@ class VerifyBGPPeerMPCaps(AntaTest):
     ```
     """
 
-    description = "Verifies the multiprotocol capabilities of a BGP peer."
     categories: ClassVar[list[str]] = ["bgp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=3)]
 
@@ -524,78 +488,78 @@ class VerifyBGPPeerMPCaps(AntaTest):
 
         bgp_peers: list[BgpPeer]
         """List of BGP peers"""
+        BgpPeer: ClassVar[type[BgpPeer]] = BgpPeer
 
-        class BgpPeer(BaseModel):
-            """Model for a BGP peer."""
-
-            peer_address: IPv4Address
-            """IPv4 address of a BGP peer."""
-            vrf: str = "default"
-            """Optional VRF for BGP peer. If not provided, it defaults to `default`."""
-            strict: bool = False
-            """If True, requires exact matching of provided capabilities. Defaults to False."""
-            capabilities: list[MultiProtocolCaps]
-            """List of multiprotocol capabilities to be verified."""
+        @field_validator("bgp_peers")
+        @classmethod
+        def validate_bgp_peers(cls, bgp_peers: list[T]) -> list[T]:
+            """Validate that 'peers' field is provided in each address family."""
+            for peer in bgp_peers:
+                if peer.capabilities is None:
+                    msg = f"{peer} 'capabilities' field missing in the input"
+                    raise ValueError(msg)
+            return bgp_peers
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyBGPPeerMPCaps."""
-        failures: dict[str, Any] = {"bgp_peers": {}}
+        self.result.is_success()
 
-        # Iterate over each bgp peer.
-        for bgp_peer in self.inputs.bgp_peers:
-            peer = str(bgp_peer.peer_address)
-            vrf = bgp_peer.vrf
-            capabilities = bgp_peer.capabilities
-            failure: dict[str, dict[str, dict[str, Any]]] = {"bgp_peers": {peer: {vrf: {}}}}
+        output = self.instance_commands[0].json_output
 
-            # Check if BGP output exists.
-            if (
-                not (bgp_output := get_value(self.instance_commands[0].json_output, f"vrfs.{vrf}.peerList"))
-                or (bgp_output := get_item(bgp_output, "peerAddress", peer)) is None
-            ):
-                failure["bgp_peers"][peer][vrf] = {"status": "Not configured"}
-                failures = deep_update(failures, failure)
+        for peer in self.inputs.bgp_peers:
+            peer_ip = str(peer.peer_address)
+
+            # Check if the VRF is configured
+            if (vrf_output := get_value(output, f"vrfs.{peer.vrf}")) is None:
+                self.result.is_failure(f"{peer} - VRF not configured")
                 continue
 
-            # Fetching the capabilities output.
-            bgp_output = get_value(bgp_output, "neighborCapabilities.multiprotocolCaps")
+            # Check if the peer is found
+            if (peer_data := get_item(vrf_output["peerList"], "peerAddress", peer_ip)) is None:
+                self.result.is_failure(f"{peer} - Not found")
+                continue
 
-            if bgp_peer.strict and sorted(capabilities) != sorted(bgp_output):
-                failure["bgp_peers"][peer][vrf] = {
-                    "status": f"Expected only `{', '.join(capabilities)}` capabilities should be listed but found `{', '.join(bgp_output)}` instead."
-                }
-                failures = deep_update(failures, failure)
+            # Fetching the multiprotocol capabilities
+            act_mp_caps = get_value(peer_data, "neighborCapabilities.multiprotocolCaps")
+
+            # If strict is True, check if only the specified capabilities are configured
+            if peer.strict and sorted(peer.capabilities) != sorted(act_mp_caps):
+                self.result.is_failure(f"{peer} - Mismatch; Expected: {', '.join(peer.capabilities)} Actual: {', '.join(act_mp_caps)}")
                 continue
 
             # Check each capability
-            for capability in capabilities:
-                capability_output = bgp_output.get(capability)
+            for capability in peer.capabilities:
+                # Check if the capability is found
+                if (capability_status := get_value(act_mp_caps, capability)) is None:
+                    self.result.is_failure(f"{peer} - {capability} not found")
+                    continue
 
-                # Check if capabilities are missing
-                if not capability_output:
-                    failure["bgp_peers"][peer][vrf][capability] = "not found"
-                    failures = deep_update(failures, failure)
-
-                # Check if capabilities are not advertised, received, or enabled
-                elif not all(capability_output.get(prop, False) for prop in ["advertised", "received", "enabled"]):
-                    failure["bgp_peers"][peer][vrf][capability] = capability_output
-                    failures = deep_update(failures, failure)
-
-        # Check if there are any failures
-        if not failures["bgp_peers"]:
-            self.result.is_success()
-        else:
-            self.result.is_failure(f"Following BGP peer multiprotocol capabilities are not found or not ok:\n{failures}")
+                # Check if the capability is advertised, received, and enabled
+                if not _check_bgp_neighbor_capability(capability_status):
+                    self.result.is_failure(f"{peer} - {capability} not negotiated; {format_data(capability_status)}")
 
 
 class VerifyBGPPeerASNCap(AntaTest):
-    """Verifies the four octet asn capabilities of a BGP peer in a specified VRF.
+    """Verifies the four octet asn ASN capability of BGP peers.
+
+    This test performs the following checks for each specified peer:
+
+      1. Confirms that the specified VRF is configured.
+      2. Verifies that the peer exists in the BGP configuration.
+      3. Validates that the capability is present in the peer's configuration.
+      4. Confirms that the capability is advertised, received, and enabled.
 
     Expected Results
     ----------------
-    * Success: The test will pass if BGP peer's four octet asn capabilities are advertised, received, and enabled in the specified VRF.
-    * Failure: The test will fail if BGP peers are not found or four octet asn capabilities are not advertised, received, and enabled in the specified VRF.
+    * Success: If all of the following conditions are met:
+        - All specified peers are found in the BGP configuration.
+        - The four octet ASN capability is present in each peer's configuration.
+        - The capability is properly negotiated (advertised, received, and enabled) for all peers.
+    * Failure: If any of the following occur:
+        - A specified peer is not found in the BGP configuration.
+        - The four octet ASN capability is not present for a peer.
+        - The capability is not properly negotiated (not advertised, received, or enabled) for any peer.
 
     Examples
     --------
@@ -609,7 +573,6 @@ class VerifyBGPPeerASNCap(AntaTest):
     ```
     """
 
-    description = "Verifies the four octet asn capabilities of a BGP peer."
     categories: ClassVar[list[str]] = ["bgp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=3)]
 
@@ -618,61 +581,54 @@ class VerifyBGPPeerASNCap(AntaTest):
 
         bgp_peers: list[BgpPeer]
         """List of BGP peers."""
-
-        class BgpPeer(BaseModel):
-            """Model for a BGP peer."""
-
-            peer_address: IPv4Address
-            """IPv4 address of a BGP peer."""
-            vrf: str = "default"
-            """Optional VRF for BGP peer. If not provided, it defaults to `default`."""
+        BgpPeer: ClassVar[type[BgpPeer]] = BgpPeer
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyBGPPeerASNCap."""
-        failures: dict[str, Any] = {"bgp_peers": {}}
+        self.result.is_success()
 
-        # Iterate over each bgp peer
-        for bgp_peer in self.inputs.bgp_peers:
-            peer = str(bgp_peer.peer_address)
-            vrf = bgp_peer.vrf
-            failure: dict[str, dict[str, dict[str, Any]]] = {"bgp_peers": {peer: {vrf: {}}}}
+        output = self.instance_commands[0].json_output
 
-            # Check if BGP output exists
-            if (
-                not (bgp_output := get_value(self.instance_commands[0].json_output, f"vrfs.{vrf}.peerList"))
-                or (bgp_output := get_item(bgp_output, "peerAddress", peer)) is None
-            ):
-                failure["bgp_peers"][peer][vrf] = {"status": "Not configured"}
-                failures = deep_update(failures, failure)
+        for peer in self.inputs.bgp_peers:
+            peer_ip = str(peer.peer_address)
+            peer_list = get_value(output, f"vrfs.{peer.vrf}.peerList", default=[])
+
+            # Check if the peer is found
+            if (peer_data := get_item(peer_list, "peerAddress", peer_ip)) is None:
+                self.result.is_failure(f"{peer} - Not found")
                 continue
 
-            bgp_output = get_value(bgp_output, "neighborCapabilities.fourOctetAsnCap")
+            # Check if the 4-octet ASN capability is found
+            if (capablity_status := get_value(peer_data, "neighborCapabilities.fourOctetAsnCap")) is None:
+                self.result.is_failure(f"{peer} - 4-octet ASN capability not found")
+                continue
 
-            # Check if  four octet asn capabilities are found
-            if not bgp_output:
-                failure["bgp_peers"][peer][vrf] = {"fourOctetAsnCap": "not found"}
-                failures = deep_update(failures, failure)
-
-            # Check if capabilities are not advertised, received, or enabled
-            elif not all(bgp_output.get(prop, False) for prop in ["advertised", "received", "enabled"]):
-                failure["bgp_peers"][peer][vrf] = {"fourOctetAsnCap": bgp_output}
-                failures = deep_update(failures, failure)
-
-        # Check if there are any failures
-        if not failures["bgp_peers"]:
-            self.result.is_success()
-        else:
-            self.result.is_failure(f"Following BGP peer four octet asn capabilities are not found or not ok:\n{failures}")
+            # Check if the 4-octet ASN capability is advertised, received, and enabled
+            if not _check_bgp_neighbor_capability(capablity_status):
+                self.result.is_failure(f"{peer} - 4-octet ASN capability not negotiated; {format_data(capablity_status)}")
 
 
 class VerifyBGPPeerRouteRefreshCap(AntaTest):
     """Verifies the route refresh capabilities of a BGP peer in a specified VRF.
 
+    This test performs the following checks for each specified peer:
+
+      1. Confirms that the specified VRF is configured.
+      2. Verifies that the peer exists in the BGP configuration.
+      3. Validates that the route refresh capability is present in the peer's configuration.
+      4. Confirms that the capability is advertised, received, and enabled.
+
     Expected Results
     ----------------
-    * Success: The test will pass if the BGP peer's route refresh capabilities are advertised, received, and enabled in the specified VRF.
-    * Failure: The test will fail if BGP peers are not found or route refresh capabilities are not advertised, received, and enabled in the specified VRF.
+    * Success: If all of the following conditions are met:
+        - All specified peers are found in the BGP configuration.
+        - The route refresh capability is present in each peer's configuration.
+        - The capability is properly negotiated (advertised, received, and enabled) for all peers.
+    * Failure: If any of the following occur:
+        - A specified peer is not found in the BGP configuration.
+        - The route refresh capability is not present for a peer.
+        - The capability is not properly negotiated (not advertised, received, or enabled) for any peer.
 
     Examples
     --------
@@ -695,61 +651,54 @@ class VerifyBGPPeerRouteRefreshCap(AntaTest):
 
         bgp_peers: list[BgpPeer]
         """List of BGP peers"""
-
-        class BgpPeer(BaseModel):
-            """Model for a BGP peer."""
-
-            peer_address: IPv4Address
-            """IPv4 address of a BGP peer."""
-            vrf: str = "default"
-            """Optional VRF for BGP peer. If not provided, it defaults to `default`."""
+        BgpPeer: ClassVar[type[BgpPeer]] = BgpPeer
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyBGPPeerRouteRefreshCap."""
-        failures: dict[str, Any] = {"bgp_peers": {}}
+        self.result.is_success()
 
-        # Iterate over each bgp peer
-        for bgp_peer in self.inputs.bgp_peers:
-            peer = str(bgp_peer.peer_address)
-            vrf = bgp_peer.vrf
-            failure: dict[str, dict[str, dict[str, Any]]] = {"bgp_peers": {peer: {vrf: {}}}}
+        output = self.instance_commands[0].json_output
 
-            # Check if BGP output exists
-            if (
-                not (bgp_output := get_value(self.instance_commands[0].json_output, f"vrfs.{vrf}.peerList"))
-                or (bgp_output := get_item(bgp_output, "peerAddress", peer)) is None
-            ):
-                failure["bgp_peers"][peer][vrf] = {"status": "Not configured"}
-                failures = deep_update(failures, failure)
+        for peer in self.inputs.bgp_peers:
+            peer_ip = str(peer.peer_address)
+            peer_list = get_value(output, f"vrfs.{peer.vrf}.peerList", default=[])
+
+            # Check if the peer is found
+            if (peer_data := get_item(peer_list, "peerAddress", peer_ip)) is None:
+                self.result.is_failure(f"{peer} - Not found")
                 continue
 
-            bgp_output = get_value(bgp_output, "neighborCapabilities.routeRefreshCap")
+            # Check if the route refresh capability is found
+            if (capablity_status := get_value(peer_data, "neighborCapabilities.routeRefreshCap")) is None:
+                self.result.is_failure(f"{peer} - Route refresh capability not found")
+                continue
 
-            # Check if route refresh capabilities are found
-            if not bgp_output:
-                failure["bgp_peers"][peer][vrf] = {"routeRefreshCap": "not found"}
-                failures = deep_update(failures, failure)
-
-            # Check if capabilities are not advertised, received, or enabled
-            elif not all(bgp_output.get(prop, False) for prop in ["advertised", "received", "enabled"]):
-                failure["bgp_peers"][peer][vrf] = {"routeRefreshCap": bgp_output}
-                failures = deep_update(failures, failure)
-
-        # Check if there are any failures
-        if not failures["bgp_peers"]:
-            self.result.is_success()
-        else:
-            self.result.is_failure(f"Following BGP peer route refresh capabilities are not found or not ok:\n{failures}")
+            # Check if the route refresh capability is advertised, received, and enabled
+            if not _check_bgp_neighbor_capability(capablity_status):
+                self.result.is_failure(f"{peer} - Route refresh capability not negotiated; {format_data(capablity_status)}")
 
 
 class VerifyBGPPeerMD5Auth(AntaTest):
     """Verifies the MD5 authentication and state of IPv4 BGP peers in a specified VRF.
 
+    This test performs the following checks for each specified peer:
+
+      1. Confirms that the specified VRF is configured.
+      2. Verifies that the peer exists in the BGP configuration.
+      3. Validates that the BGP session is in `Established` state.
+      4. Confirms that MD5 authentication is enabled for the peer.
+
     Expected Results
     ----------------
-    * Success: The test will pass if IPv4 BGP peers are configured with MD5 authentication and state as established in the specified VRF.
-    * Failure: The test will fail if IPv4 BGP peers are not found, state is not as established or MD5 authentication is not enabled in the specified VRF.
+    * Success: If all of the following conditions are met:
+        - All specified peers are found in the BGP configuration.
+        - All peers are in `Established` state.
+        - MD5 authentication is enabled for all peers.
+    * Failure: If any of the following occur:
+        - A specified peer is not found in the BGP configuration.
+        - A peer's session state is not `Established`.
+        - MD5 authentication is not enabled for a peer.
 
     Examples
     --------
@@ -774,56 +723,53 @@ class VerifyBGPPeerMD5Auth(AntaTest):
 
         bgp_peers: list[BgpPeer]
         """List of IPv4 BGP peers."""
-
-        class BgpPeer(BaseModel):
-            """Model for a BGP peer."""
-
-            peer_address: IPv4Address
-            """IPv4 address of BGP peer."""
-            vrf: str = "default"
-            """Optional VRF for BGP peer. If not provided, it defaults to `default`."""
+        BgpPeer: ClassVar[type[BgpPeer]] = BgpPeer
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyBGPPeerMD5Auth."""
-        failures: dict[str, Any] = {"bgp_peers": {}}
+        self.result.is_success()
 
-        # Iterate over each command
-        for bgp_peer in self.inputs.bgp_peers:
-            peer = str(bgp_peer.peer_address)
-            vrf = bgp_peer.vrf
-            failure: dict[str, dict[str, dict[str, Any]]] = {"bgp_peers": {peer: {vrf: {}}}}
+        output = self.instance_commands[0].json_output
 
-            # Check if BGP output exists
-            if (
-                not (bgp_output := get_value(self.instance_commands[0].json_output, f"vrfs.{vrf}.peerList"))
-                or (bgp_output := get_item(bgp_output, "peerAddress", peer)) is None
-            ):
-                failure["bgp_peers"][peer][vrf] = {"status": "Not configured"}
-                failures = deep_update(failures, failure)
+        for peer in self.inputs.bgp_peers:
+            peer_ip = str(peer.peer_address)
+            peer_list = get_value(output, f"vrfs.{peer.vrf}.peerList", default=[])
+
+            # Check if the peer is found
+            if (peer_data := get_item(peer_list, "peerAddress", peer_ip)) is None:
+                self.result.is_failure(f"{peer} - Not found")
                 continue
 
-            # Check if BGP peer state and authentication
-            state = bgp_output.get("state")
-            md5_auth_enabled = bgp_output.get("md5AuthEnabled")
-            if state != "Established" or not md5_auth_enabled:
-                failure["bgp_peers"][peer][vrf] = {"state": state, "md5_auth_enabled": md5_auth_enabled}
-                failures = deep_update(failures, failure)
-
-        # Check if there are any failures
-        if not failures["bgp_peers"]:
-            self.result.is_success()
-        else:
-            self.result.is_failure(f"Following BGP peers are not configured, not established or MD5 authentication is not enabled:\n{failures}")
+            # Check BGP peer state and MD5 authentication
+            state = peer_data.get("state")
+            md5_auth_enabled = peer_data.get("md5AuthEnabled")
+            if state != "Established":
+                self.result.is_failure(f"{peer} - Session state is not established; State: {state}")
+            if not md5_auth_enabled:
+                self.result.is_failure(f"{peer} - Session does not have MD5 authentication enabled")
 
 
 class VerifyEVPNType2Route(AntaTest):
     """Verifies the EVPN Type-2 routes for a given IPv4 or MAC address and VNI.
 
+    This test performs the following checks for each specified VXLAN endpoint:
+
+      1. Verifies that the endpoint exists in the BGP EVPN table.
+      2. For each EVPN route found:
+        - Validates that at least one path exists for the route.
+        - Confirms that at least one path is valid and active.
+
     Expected Results
     ----------------
-    * Success: If all provided VXLAN endpoints have at least one valid and active path to their EVPN Type-2 routes.
-    * Failure: If any of the provided VXLAN endpoints do not have at least one valid and active path to their EVPN Type-2 routes.
+    * Success: If all of the following conditions are met:
+        - All specified VXLAN endpoints are found in the BGP EVPN table.
+        - Each endpoint has at least one EVPN Type-2 route.
+        - Each route has at least one path that is both valid and active.
+    * Failure: If any of the following occur:
+        - A VXLAN endpoint is not found in the BGP EVPN table.
+        - No EVPN Type-2 route exists for an endpoint.
+        - No valid and active path exists for a route.
 
     Examples
     --------
@@ -847,14 +793,7 @@ class VerifyEVPNType2Route(AntaTest):
 
         vxlan_endpoints: list[VxlanEndpoint]
         """List of VXLAN endpoints to verify."""
-
-        class VxlanEndpoint(BaseModel):
-            """Model for a VXLAN endpoint."""
-
-            address: IPv4Address | MacAddress
-            """IPv4 or MAC address of the VXLAN endpoint."""
-            vni: Vni
-            """VNI of the VXLAN endpoint."""
+        VxlanEndpoint: ClassVar[type[VxlanEndpoint]] = VxlanEndpoint
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each VXLAN endpoint in the input list."""
@@ -864,19 +803,15 @@ class VerifyEVPNType2Route(AntaTest):
     def test(self) -> None:
         """Main test function for VerifyEVPNType2Route."""
         self.result.is_success()
-        no_evpn_routes = []
-        bad_evpn_routes = []
 
-        for command in self.instance_commands:
-            address = command.params.address
-            vni = command.params.vni
+        for command, endpoint in zip(self.instance_commands, self.inputs.vxlan_endpoints):
             # Verify that the VXLAN endpoint is in the BGP EVPN table
             evpn_routes = command.json_output["evpnRoutes"]
             if not evpn_routes:
-                no_evpn_routes.append((address, vni))
+                self.result.is_failure(f"{endpoint} - No EVPN Type-2 route")
                 continue
             # Verify that each EVPN route has at least one valid and active path
-            for route, route_data in evpn_routes.items():
+            for route_data in evpn_routes.values():
                 has_active_path = False
                 for path in route_data["evpnRoutePaths"]:
                     if path["routeType"]["valid"] is True and path["routeType"]["active"] is True:
@@ -884,21 +819,29 @@ class VerifyEVPNType2Route(AntaTest):
                         has_active_path = True
                         break
                 if not has_active_path:
-                    bad_evpn_routes.append(route)
-
-        if no_evpn_routes:
-            self.result.is_failure(f"The following VXLAN endpoint do not have any EVPN Type-2 route: {no_evpn_routes}")
-        if bad_evpn_routes:
-            self.result.is_failure(f"The following EVPN Type-2 routes do not have at least one valid and active path: {bad_evpn_routes}")
+                    self.result.is_failure(f"{endpoint} - No valid and active path")
 
 
 class VerifyBGPAdvCommunities(AntaTest):
-    """Verifies if the advertised communities of BGP peers are standard, extended, and large in the specified VRF.
+    """Verifies that advertised communities are standard, extended and large for BGP peers.
+
+    This test performs the following checks for each specified peer:
+
+      1. Confirms that the specified VRF is configured.
+      2. Verifies that the peer exists in the BGP configuration.
+      3. Validates that all required community types are advertised:
+        - Standard communities
+        - Extended communities
+        - Large communities
 
     Expected Results
     ----------------
-    * Success: The test will pass if the advertised communities of BGP peers are standard, extended, and large in the specified VRF.
-    * Failure: The test will fail if the advertised communities of BGP peers are not standard, extended, and large in the specified VRF.
+    * Success: If all of the following conditions are met:
+        - All specified peers are found in the BGP configuration.
+        - Each peer advertises standard, extended and large communities.
+    * Failure: If any of the following occur:
+        - A specified peer is not found in the BGP configuration.
+        - A peer does not advertise standard, extended or large communities.
 
     Examples
     --------
@@ -923,54 +866,46 @@ class VerifyBGPAdvCommunities(AntaTest):
 
         bgp_peers: list[BgpPeer]
         """List of BGP peers."""
-
-        class BgpPeer(BaseModel):
-            """Model for a BGP peer."""
-
-            peer_address: IPv4Address
-            """IPv4 address of a BGP peer."""
-            vrf: str = "default"
-            """Optional VRF for BGP peer. If not provided, it defaults to `default`."""
+        BgpPeer: ClassVar[type[BgpPeer]] = BgpPeer
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyBGPAdvCommunities."""
-        failures: dict[str, Any] = {"bgp_peers": {}}
+        self.result.is_success()
 
-        # Iterate over each bgp peer
-        for bgp_peer in self.inputs.bgp_peers:
-            peer = str(bgp_peer.peer_address)
-            vrf = bgp_peer.vrf
-            failure: dict[str, dict[str, dict[str, Any]]] = {"bgp_peers": {peer: {vrf: {}}}}
+        output = self.instance_commands[0].json_output
 
-            # Verify BGP peer
-            if (
-                not (bgp_output := get_value(self.instance_commands[0].json_output, f"vrfs.{vrf}.peerList"))
-                or (bgp_output := get_item(bgp_output, "peerAddress", peer)) is None
-            ):
-                failure["bgp_peers"][peer][vrf] = {"status": "Not configured"}
-                failures = deep_update(failures, failure)
+        for peer in self.inputs.bgp_peers:
+            peer_ip = str(peer.peer_address)
+            peer_list = get_value(output, f"vrfs.{peer.vrf}.peerList", default=[])
+
+            # Check if the peer is found
+            if (peer_data := get_item(peer_list, "peerAddress", peer_ip)) is None:
+                self.result.is_failure(f"{peer} - Not found")
                 continue
 
-            # Verify BGP peer's advertised communities
-            bgp_output = bgp_output.get("advertisedCommunities")
-            if not bgp_output["standard"] or not bgp_output["extended"] or not bgp_output["large"]:
-                failure["bgp_peers"][peer][vrf] = {"advertised_communities": bgp_output}
-                failures = deep_update(failures, failure)
-
-        if not failures["bgp_peers"]:
-            self.result.is_success()
-        else:
-            self.result.is_failure(f"Following BGP peers are not configured or advertised communities are not standard, extended, and large:\n{failures}")
+            # Check BGP peer advertised communities
+            if not all(get_value(peer_data, f"advertisedCommunities.{community}") is True for community in ["standard", "extended", "large"]):
+                self.result.is_failure(f"{peer} - {format_data(peer_data['advertisedCommunities'])}")
 
 
 class VerifyBGPTimers(AntaTest):
-    """Verifies if the BGP peers are configured with the correct hold and keep-alive timers in the specified VRF.
+    """Verifies the timers of BGP peers.
+
+    This test performs the following checks for each specified peer:
+
+      1. Confirms that the specified VRF is configured.
+      2. Verifies that the peer exists in the BGP configuration.
+      3. Confirms the BGP session hold time/keepalive timers match the expected value.
 
     Expected Results
     ----------------
-    * Success: The test will pass if the hold and keep-alive timers are correct for BGP peers in the specified VRF.
-    * Failure: The test will fail if BGP peers are not found or hold and keep-alive timers are not correct in the specified VRF.
+    * Success: If all of the following conditions are met:
+        - All specified peers are found in the BGP configuration.
+        - The hold time/keepalive timers match the expected value for each peer.
+    * Failure: If any of the following occur:
+        - A specified peer is not found in the BGP configuration.
+        - The hold time/keepalive timers do not match the expected value for a peer.
 
     Examples
     --------
@@ -990,7 +925,6 @@ class VerifyBGPTimers(AntaTest):
     ```
     """
 
-    description = "Verifies the timers of a BGP peer."
     categories: ClassVar[list[str]] = ["bgp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=3)]
 
@@ -999,59 +933,62 @@ class VerifyBGPTimers(AntaTest):
 
         bgp_peers: list[BgpPeer]
         """List of BGP peers"""
+        BgpPeer: ClassVar[type[BgpPeer]] = BgpPeer
 
-        class BgpPeer(BaseModel):
-            """Model for a BGP peer."""
-
-            peer_address: IPv4Address
-            """IPv4 address of a BGP peer."""
-            vrf: str = "default"
-            """Optional VRF for BGP peer. If not provided, it defaults to `default`."""
-            hold_time: int = Field(ge=3, le=7200)
-            """BGP hold time in seconds."""
-            keep_alive_time: int = Field(ge=0, le=3600)
-            """BGP keep-alive time in seconds."""
+        @field_validator("bgp_peers")
+        @classmethod
+        def validate_bgp_peers(cls, bgp_peers: list[T]) -> list[T]:
+            """Validate that 'peers' field is provided in each address family."""
+            for peer in bgp_peers:
+                if peer.hold_time is None or peer.keep_alive_time is None:
+                    msg = f"{peer} 'hold_time' or 'keep_alive_time' field missing in the input"
+                    raise ValueError(msg)
+            return bgp_peers
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyBGPTimers."""
-        failures: dict[str, Any] = {}
+        self.result.is_success()
 
-        # Iterate over each bgp peer
-        for bgp_peer in self.inputs.bgp_peers:
-            peer_address = str(bgp_peer.peer_address)
-            vrf = bgp_peer.vrf
-            hold_time = bgp_peer.hold_time
-            keep_alive_time = bgp_peer.keep_alive_time
+        output = self.instance_commands[0].json_output
 
-            # Verify BGP peer
-            if (
-                not (bgp_output := get_value(self.instance_commands[0].json_output, f"vrfs.{vrf}.peerList"))
-                or (bgp_output := get_item(bgp_output, "peerAddress", peer_address)) is None
-            ):
-                failures[peer_address] = {vrf: "Not configured"}
+        for peer in self.inputs.bgp_peers:
+            peer_ip = str(peer.peer_address)
+            peer_list = get_value(output, f"vrfs.{peer.vrf}.peerList", default=[])
+
+            # Check if the peer is found
+            if (peer_data := get_item(peer_list, "peerAddress", peer_ip)) is None:
+                self.result.is_failure(f"{peer} - Not found")
                 continue
 
-            # Verify BGP peer's hold and keep alive timers
-            if bgp_output.get("holdTime") != hold_time or bgp_output.get("keepaliveTime") != keep_alive_time:
-                failures[peer_address] = {vrf: {"hold_time": bgp_output.get("holdTime"), "keep_alive_time": bgp_output.get("keepaliveTime")}}
-
-        if not failures:
-            self.result.is_success()
-        else:
-            self.result.is_failure(f"Following BGP peers are not configured or hold and keep-alive timers are not correct:\n{failures}")
+            # Check BGP peer timers
+            if peer_data["holdTime"] != peer.hold_time:
+                self.result.is_failure(f"{peer} - Hold time mismatch; Expected: {peer.hold_time} Actual: {peer_data['holdTime']}")
+            if peer_data["keepaliveTime"] != peer.keep_alive_time:
+                self.result.is_failure(f"{peer} - Keepalive time mismatch; Expected: {peer.keep_alive_time} Actual: {peer_data['keepaliveTime']}")
 
 
 class VerifyBGPPeerDropStats(AntaTest):
     """Verifies BGP NLRI drop statistics for the provided BGP IPv4 peer(s).
 
-    By default, all drop statistics counters will be checked for any non-zero values.
-    An optional list of specific drop statistics can be provided for granular testing.
+    This test performs the following checks for each specified peer:
+
+      1. Confirms that the specified VRF is configured.
+      2. Verifies that the peer exists in the BGP configuration.
+      3. Validates the BGP drop statistics:
+        - If specific drop statistics are provided, checks only those counters.
+        - If no specific drop statistics are provided, checks all available counters.
+        - Confirms that all checked counters have a value of zero.
 
     Expected Results
     ----------------
-    * Success: The test will pass if the BGP peer's drop statistic(s) are zero.
-    * Failure: The test will fail if the BGP peer's drop statistic(s) are non-zero/Not Found or peer is not configured.
+    * Success: If all of the following conditions are met:
+        - All specified peers are found in the BGP configuration.
+        - All specified drop statistics counters (or all counters if none specified) are zero.
+    * Failure: If any of the following occur:
+        - A specified peer is not found in the BGP configuration.
+        - Any checked drop statistics counter has a non-zero value.
+        - A specified drop statistics counter does not exist.
 
     Examples
     --------
@@ -1069,62 +1006,43 @@ class VerifyBGPPeerDropStats(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["bgp"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show bgp neighbors {peer} vrf {vrf}", revision=3)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show bgp neighbors vrf all", revision=3)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPPeerDropStats test."""
 
         bgp_peers: list[BgpPeer]
         """List of BGP peers"""
-
-        class BgpPeer(BaseModel):
-            """Model for a BGP peer."""
-
-            peer_address: IPv4Address
-            """IPv4 address of a BGP peer."""
-            vrf: str = "default"
-            """Optional VRF for BGP peer. If not provided, it defaults to `default`."""
-            drop_stats: list[BgpDropStats] | None = None
-            """Optional list of drop statistics to be verified. If not provided, test will verifies all the drop statistics."""
-
-    def render(self, template: AntaTemplate) -> list[AntaCommand]:
-        """Render the template for each BGP peer in the input list."""
-        return [template.render(peer=str(bgp_peer.peer_address), vrf=bgp_peer.vrf) for bgp_peer in self.inputs.bgp_peers]
+        BgpPeer: ClassVar[type[BgpPeer]] = BgpPeer
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyBGPPeerDropStats."""
-        failures: dict[Any, Any] = {}
+        self.result.is_success()
 
-        for command, input_entry in zip(self.instance_commands, self.inputs.bgp_peers):
-            peer = command.params.peer
-            vrf = command.params.vrf
-            drop_statistics = input_entry.drop_stats
+        output = self.instance_commands[0].json_output
 
-            # Verify BGP peer
-            if not (peer_list := get_value(command.json_output, f"vrfs.{vrf}.peerList")) or (peer_detail := get_item(peer_list, "peerAddress", peer)) is None:
-                failures[peer] = {vrf: "Not configured"}
+        for peer in self.inputs.bgp_peers:
+            peer_ip = str(peer.peer_address)
+            drop_stats_input = peer.drop_stats
+            peer_list = get_value(output, f"vrfs.{peer.vrf}.peerList", default=[])
+
+            # Check if the peer is found
+            if (peer_data := get_item(peer_list, "peerAddress", peer_ip)) is None:
+                self.result.is_failure(f"{peer} - Not found")
                 continue
 
-            # Verify BGP peer's drop stats
-            drop_stats_output = peer_detail.get("dropStats", {})
+            # Verify BGP peers' drop stats
+            drop_stats_output = peer_data["dropStats"]
 
             # In case drop stats not provided, It will check all drop statistics
-            if not drop_statistics:
-                drop_statistics = drop_stats_output
+            if not drop_stats_input:
+                drop_stats_input = drop_stats_output
 
             # Verify BGP peer's drop stats
-            drop_stats_not_ok = {
-                drop_stat: drop_stats_output.get(drop_stat, "Not Found") for drop_stat in drop_statistics if drop_stats_output.get(drop_stat, "Not Found")
-            }
-            if any(drop_stats_not_ok):
-                failures[peer] = {vrf: drop_stats_not_ok}
-
-        # Check if any failures
-        if not failures:
-            self.result.is_success()
-        else:
-            self.result.is_failure(f"The following BGP peers are not configured or have non-zero NLRI drop statistics counters:\n{failures}")
+            for drop_stat in drop_stats_input:
+                if (stat_value := drop_stats_output.get(drop_stat, 0)) != 0:
+                    self.result.is_failure(f"{peer} - Non-zero NLRI drop statistics counter; {drop_stat}: {stat_value}")
 
 
 class VerifyBGPPeerUpdateErrors(AntaTest):
