@@ -49,8 +49,7 @@ class RawCatalogInputModuleModel(RootModel[dict[str, RawCatalogInputModuleOption
 
 
 class RawCatalogInputModel(RootModel[dict[str, list[RawCatalogInputModuleModel]]]):  # pylint: disable=R0903
-    """
-    Model for tests catalog input defined by user.
+    """Model for tests catalog input defined by user.
 
     Originally defined with:
         RawCatalogInput = dict[str, list[dict[str, Optional[dict[str, Any]]]]]
