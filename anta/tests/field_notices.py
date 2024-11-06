@@ -34,7 +34,6 @@ class VerifyFieldNotice44Resolution(AntaTest):
     ```
     """
 
-    name = "VerifyFieldNotice44Resolution"
     description = "Verifies that the device is using the correct Aboot version per FN0044."
     categories: ClassVar[list[str]] = ["field notices"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show version detail", revision=1)]
@@ -143,7 +142,6 @@ class VerifyFieldNotice72Resolution(AntaTest):
     ```
     """
 
-    name = "VerifyFieldNotice72Resolution"
     description = "Verifies if the device is exposed to FN0072, and if the issue has been mitigated."
     categories: ClassVar[list[str]] = ["field notices"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show version detail", revision=1)]

@@ -7,12 +7,12 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from ipaddress import IPv4Address
 from typing import ClassVar
 
 from pydantic import BaseModel
 
 from anta.custom_types import Interface
+from anta.input_models.connectivity import Host
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 
 
@@ -43,11 +43,8 @@ class VerifyReachability(AntaTest):
     ```
     """
 
-    name = "VerifyReachability"
-    description = "Test the network reachability to one or many destination IP(s)."
     categories: ClassVar[list[str]] = ["connectivity"]
-    # Removing the <space> between '{size}' and '{df_bit}' to compensate the df-bit set default value
-    # i.e if df-bit kept disable then it will add redundant space in between the command
+    # Template uses '{size}{df_bit}' without space since df_bit includes leading space when enabled
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
         AntaTemplate(template="ping vrf {vrf} {destination} source {source} size {size}{df_bit} repeat {repeat}", revision=1)
     ]
@@ -57,29 +54,13 @@ class VerifyReachability(AntaTest):
 
         hosts: list[Host]
         """List of host to ping."""
-
-        class Host(BaseModel):
-            """Model for a remote host to ping."""
-
-            destination: IPv4Address
-            """IPv4 address to ping."""
-            source: IPv4Address | Interface
-            """IPv4 address source IP or egress interface to use."""
-            vrf: str = "default"
-            """VRF context. Defaults to `default`."""
-            repeat: int = 2
-            """Number of ping repetition. Defaults to 2."""
-            size: int = 100
-            """Specify datagram size. Defaults to 100."""
-            df_bit: bool = False
-            """Enable do not fragment bit in IP header. Defaults to False."""
+        Host: ClassVar[type[Host]] = Host
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each host in the input list."""
         commands = []
         for host in self.inputs.hosts:
-            # Enables do not fragment bit in IP header if needed else keeping disable.
-            # Adding the <space> at start to compensate change in AntaTemplate
+            # df_bit includes leading space when enabled, empty string when disabled
             df_bit = " df-bit" if host.df_bit else ""
             command = template.render(destination=host.destination, source=host.source, vrf=host.vrf, repeat=host.repeat, size=host.size, df_bit=df_bit)
             commands.append(command)
@@ -88,20 +69,11 @@ class VerifyReachability(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyReachability."""
-        failures = []
+        self.result.is_success()
 
-        for command in self.instance_commands:
-            src = command.params.source
-            dst = command.params.destination
-            repeat = command.params.repeat
-
-            if f"{repeat} received" not in command.json_output["messages"][0]:
-                failures.append((str(src), str(dst)))
-
-        if not failures:
-            self.result.is_success()
-        else:
-            self.result.is_failure(f"Connectivity test failed for the following source-destination pairs: {failures}")
+        for command, host in zip(self.instance_commands, self.inputs.hosts):
+            if f"{host.repeat} received" not in command.json_output["messages"][0]:
+                self.result.is_failure(f"{host} - Unreachable")
 
 
 class VerifyLLDPNeighbors(AntaTest):
@@ -129,7 +101,6 @@ class VerifyLLDPNeighbors(AntaTest):
     ```
     """
 
-    name = "VerifyLLDPNeighbors"
     description = "Verifies that the provided LLDP neighbors are connected properly."
     categories: ClassVar[list[str]] = ["connectivity"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show lldp neighbors detail", revision=1)]
