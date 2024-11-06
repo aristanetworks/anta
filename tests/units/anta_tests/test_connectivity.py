@@ -153,7 +153,7 @@ DATA: list[dict[str, Any]] = [
                 ],
             },
         ],
-        "expected": {"result": "failure", "messages": ["Connectivity test failed for the following source-destination pairs: [('10.0.0.5', '10.0.0.11')]"]},
+        "expected": {"result": "failure", "messages": ["Host 10.0.0.11 (src: 10.0.0.5, vrf: default, size: 100B, repeat: 2) - Unreachable"]},
     },
     {
         "name": "failure-interface",
@@ -187,7 +187,7 @@ DATA: list[dict[str, Any]] = [
                 ],
             },
         ],
-        "expected": {"result": "failure", "messages": ["Connectivity test failed for the following source-destination pairs: [('Management0', '10.0.0.11')]"]},
+        "expected": {"result": "failure", "messages": ["Host 10.0.0.11 (src: Management0, vrf: default, size: 100B, repeat: 2) - Unreachable"]},
     },
     {
         "name": "failure-size",
@@ -209,7 +209,7 @@ DATA: list[dict[str, Any]] = [
                 ],
             },
         ],
-        "expected": {"result": "failure", "messages": ["Connectivity test failed for the following source-destination pairs: [('Management0', '10.0.0.1')]"]},
+        "expected": {"result": "failure", "messages": ["Host 10.0.0.1 (src: Management0, vrf: default, size: 1501B, repeat: 5, df-bit: enabled) - Unreachable"]},
     },
     {
         "name": "success",
