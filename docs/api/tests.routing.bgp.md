@@ -7,7 +7,10 @@ anta_title: ANTA catalog for BGP tests
   ~ that can be found in the LICENSE file.
   -->
 
+# Tests
+
 ::: anta.tests.routing.bgp
+
     options:
       show_root_heading: false
       show_root_toc_entry: false
@@ -19,3 +22,15 @@ anta_title: ANTA catalog for BGP tests
         - "!test"
         - "!render"
         - "!^_[^_]"
+
+# Input models
+
+::: anta.input_models.routing.bgp
+
+    options:
+      show_root_heading: false
+      show_root_toc_entry: false
+      show_bases: false
+      anta_hide_test_module_description: true
+      show_labels: true
+      filters: ["!^__str__"]

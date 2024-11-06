@@ -114,6 +114,55 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
+        "name": "success-peer-state-check-false",
+        "test": VerifyBGPPeerCount,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "vrf": "default",
+                        "routerId": "10.1.0.3",
+                        "asn": "65120",
+                        "peers": {
+                            "10.1.0.1": {
+                                "peerState": "Idle",
+                                "peerAsn": "65100",
+                                "ipv4Unicast": {"afiSafiState": "advertised", "nlrisReceived": 0, "nlrisAccepted": 0},
+                                "l2VpnEvpn": {"afiSafiState": "negotiated", "nlrisReceived": 42, "nlrisAccepted": 42},
+                            },
+                            "10.1.0.2": {
+                                "peerState": "Idle",
+                                "peerAsn": "65100",
+                                "ipv4Unicast": {"afiSafiState": "advertised", "nlrisReceived": 0, "nlrisAccepted": 0},
+                                "l2VpnEvpn": {"afiSafiState": "negotiated", "nlrisReceived": 42, "nlrisAccepted": 42},
+                            },
+                        },
+                    },
+                    "DEV": {
+                        "vrf": "DEV",
+                        "routerId": "10.1.0.3",
+                        "asn": "65120",
+                        "peers": {
+                            "10.1.254.1": {
+                                "peerState": "Idle",
+                                "peerAsn": "65120",
+                                "ipv4Unicast": {"afiSafiState": "negotiated", "nlrisReceived": 4, "nlrisAccepted": 4},
+                            }
+                        },
+                    },
+                }
+            },
+        ],
+        "inputs": {
+            "address_families": [
+                {"afi": "evpn", "num_peers": 2, "check_peer_state": False},
+                {"afi": "ipv4", "safi": "unicast", "vrf": "default", "num_peers": 2, "check_peer_state": False},
+                {"afi": "ipv4", "safi": "unicast", "vrf": "DEV", "num_peers": 1, "check_peer_state": False},
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
         "name": "failure-vrf-not-configured",
         "test": VerifyBGPPeerCount,
         "eos_data": [
@@ -318,6 +367,56 @@ DATA: list[dict[str, Any]] = [
             "result": "failure",
             "messages": [
                 "AFI: evpn - Expected: 3, Actual: 2",
+                "AFI: ipv4 SAFI: unicast VRF: DEV - Expected: 2, Actual: 1",
+            ],
+        },
+    },
+    {
+        "name": "failure-peer-state-check-false",
+        "test": VerifyBGPPeerCount,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "vrf": "default",
+                        "routerId": "10.1.0.3",
+                        "asn": "65120",
+                        "peers": {
+                            "10.1.0.1": {
+                                "peerState": "Idle",
+                                "peerAsn": "65100",
+                                "ipv4Unicast": {"afiSafiState": "advertised", "nlrisReceived": 0, "nlrisAccepted": 0},
+                                "l2VpnEvpn": {"afiSafiState": "negotiated", "nlrisReceived": 42, "nlrisAccepted": 42},
+                            },
+                        },
+                    },
+                    "DEV": {
+                        "vrf": "DEV",
+                        "routerId": "10.1.0.3",
+                        "asn": "65120",
+                        "peers": {
+                            "10.1.254.1": {
+                                "peerState": "Idle",
+                                "peerAsn": "65120",
+                                "ipv4Unicast": {"afiSafiState": "negotiated", "nlrisReceived": 4, "nlrisAccepted": 4},
+                            }
+                        },
+                    },
+                }
+            },
+        ],
+        "inputs": {
+            "address_families": [
+                {"afi": "evpn", "num_peers": 2, "check_peer_state": False},
+                {"afi": "ipv4", "safi": "unicast", "vrf": "default", "num_peers": 2, "check_peer_state": False},
+                {"afi": "ipv4", "safi": "unicast", "vrf": "DEV", "num_peers": 2, "check_peer_state": False},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "AFI: evpn - Expected: 2, Actual: 1",
+                "AFI: ipv4 SAFI: unicast VRF: default - Expected: 2, Actual: 1",
                 "AFI: ipv4 SAFI: unicast VRF: DEV - Expected: 2, Actual: 1",
             ],
         },

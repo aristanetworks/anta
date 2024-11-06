@@ -175,17 +175,22 @@ class VerifyBGPPeerCount(AntaTest):
         output = self.instance_commands[0].json_output
 
         for address_family in self.inputs.address_families:
-            peer_count = 0
-
             # Check if the VRF is configured
             if (vrf_output := get_value(output, f"vrfs.{address_family.vrf}")) is None:
                 self.result.is_failure(f"{address_family} - VRF not configured")
                 continue
 
-            # Count the number of established peers with negotiated AFI/SAFI
-            for peer_data in vrf_output.get("peers", {}).values():
-                if peer_data.get("peerState") == "Established" and get_value(peer_data, f"{address_family.eos_key}.afiSafiState") == "negotiated":
-                    peer_count += 1
+            peers_data = vrf_output.get("peers", {}).values()
+            if not address_family.check_peer_state:
+                # Count the number of peers without considering the state and negotiated AFI/SAFI check if the count matches the expected count
+                peer_count = sum(1 for peer_data in peers_data if address_family.eos_key in peer_data)
+            else:
+                # Count the number of established peers with negotiated AFI/SAFI
+                peer_count = sum(
+                    1
+                    for peer_data in peers_data
+                    if peer_data.get("peerState") == "Established" and get_value(peer_data, f"{address_family.eos_key}.afiSafiState") == "negotiated"
+                )
 
             # Check if the count matches the expected count
             if address_family.num_peers != peer_count:
