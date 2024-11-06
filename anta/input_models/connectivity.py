@@ -39,3 +39,25 @@ class Host(BaseModel):
         """
         df_status = ", df-bit: enabled" if self.df_bit else ""
         return f"Host {self.destination} (src: {self.source}, vrf: {self.vrf}, size: {self.size}B, repeat: {self.repeat}{df_status})"
+
+
+class Neighbor(BaseModel):
+    """LLDP (Link Layer Discovery Protocol) model representing the port details and neighbor information."""
+
+    model_config = ConfigDict(extra="forbid")
+    port: Interface
+    """The LLDP port for the local device."""
+    neighbor_device: str
+    """The system name of the LLDP neighbor device."""
+    neighbor_port: Interface
+    """The LLDP port on the neighboring device."""
+
+    def __str__(self) -> str:
+        """Return a human-readable string representation of the Neighbor for reporting.
+
+        Examples
+        --------
+        Port Ethernet1 (Neighbor: DC1-SPINE2, Neighbor port: Ethernet2)
+
+        """
+        return f"Port {self.port} (Neighbor: {self.neighbor_device}, Neighbor port: {self.neighbor_port})"
