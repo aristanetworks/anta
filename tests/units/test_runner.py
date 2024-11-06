@@ -16,7 +16,7 @@ import pytest
 from anta.catalog import AntaCatalog
 from anta.inventory import AntaInventory
 from anta.result_manager import ResultManager
-from anta.runner import adjust_rlimit_nofile, main, setup_tests
+from anta.runner import adjust_rlimit_nofile, main, prepare_tests
 
 from .test_models import FakeTest, FakeTestWithMissingTest
 
@@ -142,13 +142,13 @@ def test_adjust_rlimit_nofile_invalid_env(caplog: pytest.LogCaptureFixture) -> N
     ],
     indirect=["inventory"],
 )
-async def test_setup_tests(
+async def test_prepare_tests(
     caplog: pytest.LogCaptureFixture, inventory: AntaInventory, tags: set[str], tests: set[str], devices_count: int, tests_count: int
 ) -> None:
-    """Test the runner setup_tests function with specific tests."""
+    """Test the runner prepare_tests function with specific tests."""
     caplog.set_level(logging.WARNING)
     catalog: AntaCatalog = AntaCatalog.parse(str(DATA_DIR / "test_catalog_with_tags.yml"))
-    total_tests, selected_tests = setup_tests(inventory=inventory, catalog=catalog, tags=tags, tests=tests)
+    selected_tests = prepare_tests(inventory=inventory, catalog=catalog, tags=tags, tests=tests)
     if selected_tests is None:
         msg = f"There are no tests matching the tags {tags} to run in the current test catalog and device inventory, please verify your inputs."
         assert msg in caplog.messages
@@ -156,7 +156,6 @@ async def test_setup_tests(
     assert selected_tests is not None
     assert len(selected_tests) == devices_count
     assert sum(len(tests) for tests in selected_tests.values()) == tests_count
-    assert total_tests == tests_count
 
 
 async def test_dry_run(caplog: pytest.LogCaptureFixture, inventory: AntaInventory) -> None:

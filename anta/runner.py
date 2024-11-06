@@ -11,16 +11,18 @@ import os
 import resource
 from collections import defaultdict
 from typing import TYPE_CHECKING, Any
+from warnings import warn
 
 from anta import GITHUB_SUGGESTION
 from anta.cli.console import console
+from anta.device import get_httpx_limits
 from anta.logger import anta_log_exception, exc_to_str
 from anta.models import AntaTest
 from anta.tools import Catchtime, cprofile
 
 if TYPE_CHECKING:
     from asyncio import Task
-    from collections.abc import AsyncGenerator, Coroutine
+    from collections.abc import AsyncGenerator, Coroutine, Iterator
 
     from anta.catalog import AntaCatalog, AntaTestDefinition
     from anta.device import AntaDevice
@@ -34,11 +36,66 @@ DEFAULT_NOFILE = 16384
 """Default number of open file descriptors for the ANTA process."""
 DEFAULT_MAX_CONCURRENCY = 10000
 """Default maximum number of tests to run concurrently."""
-DEFAULT_MAX_CONNECTIONS = 100
-"""Default underlying HTTPX client maximum number of connections per device."""
 
 
-def adjust_max_concurrency() -> int:
+def log_run_information(
+    device_count: tuple[int, int],
+    test_count: int,
+    max_concurrency: int,
+    max_connections: int | None,
+    file_descriptor_limit: int,
+) -> None:
+    """Log ANTA run information and potential resource limit warnings.
+
+    Parameters
+    ----------
+    device_count : tuple[int, int]
+        Total number of devices in inventory and number of established devices.
+    test_count : int
+        Total number of tests to run.
+    max_concurrency : int
+        Maximum number of concurrent tests.
+    max_connections : int | None
+        Maximum connections per device. None means unlimited.
+    file_descriptor_limit : int
+        System file descriptor limit.
+    """
+    # TODO: 34 is a magic numbers from RichHandler formatting catering for date, level and path
+    width = min(int(console.width) - 34, len("Maximum number of open file descriptors for the current ANTA process: 0000000000\n"))
+
+    devices_total, devices_established = device_count
+
+    run_info = (
+        f"{' ANTA NRFU Run Information ':-^{width}}\n"
+        f"Devices: {devices_total} total, {devices_established} established\n"
+        f"Tests: {test_count} total\n"
+        f"Limits:\n"
+        f"  Max concurrent tests: {max_concurrency}\n"
+        f"  Max connections per device: {"Unlimited" if max_connections is None else max_connections}\n"
+        f"  Max file descriptors: {file_descriptor_limit}\n"
+        f"{'':-^{width}}"
+    )
+
+    logger.info(run_info)
+
+    # Log warnings for potential resource limits
+    if test_count > max_concurrency:
+        logger.warning("Tests count (%s) exceeds concurrent limit (%s). Tests will be throttled. See Scaling ANTA documentation.", test_count, max_concurrency)
+
+    if max_connections is None:
+        logger.warning(
+            "Running with unlimited HTTP connections. Connection errors may occur due to file descriptor limit (%s). See Scaling ANTA documentation.",
+            file_descriptor_limit,
+        )
+    elif devices_established * max_connections > file_descriptor_limit:
+        logger.warning(
+            "Potential connections (%s) exceeds file descriptor limit (%s). Connection errors may occur. See Scaling ANTA documentation.",
+            devices_established * max_connections,
+            file_descriptor_limit,
+        )
+
+
+def get_max_concurrency() -> int:
     """Adjust the maximum number of tests (coroutines) to run concurrently.
 
     The limit is set to the value of the ANTA_MAX_CONCURRENCY environment variable.
@@ -54,12 +111,12 @@ def adjust_max_concurrency() -> int:
         max_concurrency = int(os.environ.get("ANTA_MAX_CONCURRENCY", DEFAULT_MAX_CONCURRENCY))
     except ValueError as exception:
         logger.warning("The ANTA_MAX_CONCURRENCY environment variable value is invalid: %s\nDefault to %s.", exc_to_str(exception), DEFAULT_MAX_CONCURRENCY)
-        max_concurrency = DEFAULT_MAX_CONCURRENCY
+        return DEFAULT_MAX_CONCURRENCY
     return max_concurrency
 
 
 def adjust_rlimit_nofile() -> tuple[int, int]:
-    """Adjust the maximum number of open file descriptors for the ANTA process.
+    """Get the maximum number of open file descriptors for the ANTA process.
 
     The limit is set to the lower of the current hard limit and the value of the ANTA_NOFILE environment variable.
 
@@ -201,10 +258,10 @@ async def setup_inventory(inventory: AntaInventory, tags: set[str] | None, devic
     return selected_inventory
 
 
-def setup_tests(
+def prepare_tests(
     inventory: AntaInventory, catalog: AntaCatalog, tests: set[str] | None, tags: set[str] | None
-) -> tuple[int, defaultdict[AntaDevice, set[AntaTestDefinition]] | None]:
-    """Set up the tests for the ANTA run.
+) -> defaultdict[AntaDevice, set[AntaTestDefinition]] | None:
+    """Prepare the tests to run.
 
     Parameters
     ----------
@@ -219,8 +276,8 @@ def setup_tests(
 
     Returns
     -------
-    tuple[int, defaultdict[AntaDevice, set[AntaTestDefinition]] | None]
-        The total number of tests and a mapping of devices to the tests to run or None if there are no tests to run.
+    defaultdict[AntaDevice, set[AntaTestDefinition]] | None
+        A mapping of devices to the tests to run or None if there are no tests to run.
     """
     # Build indexes for the catalog. If `tests` is set, filter the indexes based on these tests
     catalog.build_indexes(filtered_tests=tests)
@@ -252,22 +309,21 @@ def setup_tests(
             f"There are no tests{f' matching the tags {tags} ' if tags else ' '}to run in the current test catalog and device inventory, please verify your inputs."
         )
         logger.warning(msg)
-        return total_test_count, None
+        return None
 
-    return total_test_count, device_to_tests
+    return device_to_tests
 
 
-async def test_generator(
-    selected_tests: defaultdict[AntaDevice, set[AntaTestDefinition]], manager: ResultManager
-) -> AsyncGenerator[Coroutine[Any, Any, TestResult], None]:
-    """Get the coroutines for the ANTA run.
+def _generate_test_coroutines(selected_tests: defaultdict[AntaDevice, set[AntaTestDefinition]], manager: ResultManager) -> Iterator[Coroutine[Any, Any, TestResult]]:
+    """Generate test coroutines from selected tests for the ANTA run.
 
-        It creates an async generator of coroutines which are created by the `test` method of the AntaTest instances. Each coroutine is a test to run.
+    Internal function that creates the test coroutines. Used by both
+    `generate_test_coroutines` and `get_coroutines` functions.
 
     Parameters
     ----------
     selected_tests
-        A mapping of devices to the tests to run. The selected tests are created by the `setup_tests` function.
+        A mapping of devices to the tests to run.
     manager
         A ResultManager
 
@@ -281,7 +337,7 @@ async def test_generator(
                 test_instance = test.test(device=device, inputs=test.inputs)
                 manager.add(test_instance.result)
                 coroutine = test_instance.test()
-            except Exception as e:  # noqa: PERF203, BLE001
+            except Exception as e:  # noqa: BLE001, PERF203
                 # An AntaTest instance is potentially user-defined code.
                 # We need to catch everything and exit gracefully with an error message.
                 message = "\n".join(
@@ -293,6 +349,57 @@ async def test_generator(
                 anta_log_exception(e, message, logger)
             else:
                 yield coroutine
+
+
+async def generate_test_coroutines(
+    selected_tests: defaultdict[AntaDevice, set[AntaTestDefinition]], manager: ResultManager
+) -> AsyncGenerator[Coroutine[Any, Any, TestResult], None]:
+    """Generate test coroutines from selected tests for the ANTA run.
+
+    It creates an async generator of coroutines which are created by the `test` method of the AntaTest instances. Each coroutine is a test to run.
+
+    Parameters
+    ----------
+    selected_tests
+        A mapping of devices to the tests to run. The selected tests are created by the `prepare_tests` function.
+    manager
+        A ResultManager
+
+    Yields
+    ------
+        The coroutine (test) to run.
+    """
+    for coroutine in _generate_test_coroutines(selected_tests, manager):
+        yield coroutine
+
+
+def get_coroutines(selected_tests: defaultdict[AntaDevice, set[AntaTestDefinition]], manager: ResultManager) -> list[Coroutine[Any, Any, TestResult]]:
+    """Get the coroutines for the ANTA run.
+
+    Warning
+    -------
+        This function is deprecated and no longer used by the runner as it now uses a generator created by the `test_generator` function of this module.
+        Will be removed in ANTA v2.0
+
+    Parameters
+    ----------
+    selected_tests
+        A mapping of devices to the tests to run. The selected tests are generated by the `prepare_tests` function.
+    manager
+        A ResultManager
+
+    Returns
+    -------
+    list[Coroutine[Any, Any, TestResult]]
+        The list of coroutines to run.
+    """
+    # TODO: Remove this function in ANTA v2.0
+    warn(
+        message="`get_coroutines` is deprecated and no longer used by the runner. Use `test_generator` instead. Will be removed in ANTA v2.0.",
+        category=DeprecationWarning,
+        stacklevel=2,
+    )
+    return list(_generate_test_coroutines(selected_tests, manager))
 
 
 @cprofile()
@@ -334,8 +441,11 @@ async def main(  # noqa: PLR0913
     # Adjust the maximum number of open file descriptors for the ANTA process
     limits = adjust_rlimit_nofile()
 
-    # Adjust the maximum number of tests to run concurrently
-    max_concurrency = adjust_max_concurrency()
+    # Get the maximum number of tests to run concurrently
+    max_concurrency = get_max_concurrency()
+
+    # Get the maximum number of connections per device
+    max_connections = get_httpx_limits().max_connections
 
     if not catalog.tests:
         logger.info("The list of tests is empty, exiting")
@@ -347,49 +457,25 @@ async def main(  # noqa: PLR0913
         if selected_inventory is None:
             return
 
-        with Catchtime(logger=logger, message="Preparing the tests"):
-            total_tests, selected_tests = setup_tests(selected_inventory, catalog, tests, tags)
-            if total_tests == 0 or selected_tests is None:
+        with Catchtime(logger=logger, message="Preparing Tests"):
+            selected_tests = prepare_tests(selected_inventory, catalog, tests, tags)
+            if selected_tests is None:
                 return
             final_tests_count = sum(len(tests) for tests in selected_tests.values())
+            del catalog  # No longer needed
 
-        generator = test_generator(selected_tests, manager)
+        generator = generate_test_coroutines(selected_tests, manager)
 
-        # TODO: 34 is a magic numbers from RichHandler formatting catering for date, level and path
-        width = min(int(console.width) - 34, len("Maximum number of open file descriptors for the current ANTA process: 0000000000\n"))
-
-        run_info = (
-            f"{' ANTA NRFU Run Information ':-^{width}}\n"
-            f"Number of devices: {len(inventory)} ({len(selected_inventory)} established)\n"
-            f"Total number of selected tests: {total_tests}\n"
-            f"Maximum number of tests to run concurrently: {max_concurrency}\n"
-            f"Maximum number of connections per device: {DEFAULT_MAX_CONNECTIONS}\n"
-            f"Maximum number of open file descriptors for the current ANTA process: {limits[0]}\n"
-            f"{'':-^{width}}"
+        log_run_information(
+            device_count=(len(inventory), len(selected_inventory)),
+            test_count=final_tests_count,
+            max_concurrency=max_concurrency,
+            max_connections=max_connections,
+            file_descriptor_limit=limits[0],
         )
 
-        logger.info(run_info)
-
-        total_potential_connections = len(selected_inventory) * DEFAULT_MAX_CONNECTIONS
-
-        if total_tests > max_concurrency:
-            logger.warning(
-                "The total number of tests is higher than the maximum number of tests to run concurrently.\n"
-                "ANTA will be throttled to run at the maximum number of tests to run concurrently to ensure system stability.\n"
-                "Please consult the ANTA FAQ."
-            )
-        if total_potential_connections > limits[0]:
-            logger.warning(
-                "The total potential connections to devices is higher than the open file descriptors limit for this ANTA process.\n"
-                "Errors may occur while running the tests.\n"
-                "Please consult the ANTA FAQ."
-            )
-
-        # Cleanup no longer needed objects before running the tests
-        del selected_tests
-
     if dry_run:
-        logger.info("Dry-run mode, exiting before running the tests.")
+        logger.info("Dry-run mode, exiting before running tests.")
         async for test in generator:
             test.close()
         return
@@ -397,7 +483,7 @@ async def main(  # noqa: PLR0913
     if AntaTest.progress is not None:
         AntaTest.nrfu_task = AntaTest.progress.add_task("Running NRFU Tests...", total=final_tests_count)
 
-    with Catchtime(logger=logger, message="Running ANTA tests"):
+    with Catchtime(logger=logger, message="Running Tests"):
         async for result in run(generator, limit=max_concurrency):
             logger.debug(result)
 

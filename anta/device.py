@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import os
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from typing import TYPE_CHECKING, Any, Literal
@@ -16,7 +17,7 @@ import httpcore
 from aiocache import Cache
 from aiocache.plugins import HitMissRatioPlugin
 from asyncssh import SSHClientConnection, SSHClientConnectionOptions
-from httpx import ConnectError, HTTPError, TimeoutException
+from httpx import ConnectError, HTTPError, Limits, Timeout, TimeoutException
 
 import asynceapi
 from anta import __DEBUG__
@@ -32,6 +33,78 @@ logger = logging.getLogger(__name__)
 # Do not load the default keypairs multiple times due to a performance issue introduced in cryptography 37.0
 # https://github.com/pyca/cryptography/issues/7236#issuecomment-1131908472
 CLIENT_KEYS = asyncssh.public_key.load_default_keypairs()
+
+ANTA_DEFAULT_TIMEOUT = 30.0
+
+
+def get_httpx_limits() -> Limits:
+    """Adjust the underlying HTTPX client resource limits.
+
+    The limits are set using the following environment variables:
+        - ANTA_MAX_CONNECTIONS: Maximum number of allowable connections.
+        - ANTA_MAX_KEEPALIVE_CONNECTIONS: Number of allowable keep-alive connections.
+        - ANTA_KEEPALIVE_EXPIRY: Time limit on idle keep-alive connections in seconds.
+
+    If any environment variable is not set or is invalid, the following HTTPX default limits are used:
+        - max_connections: 100
+        - max_keepalive_connections: 20
+        - keepalive_expiry: 5.0
+
+    These limits are set for all devices.
+
+    Returns
+    -------
+    Limits
+        HTTPX Limits object with configured connection limits.
+
+    TODO: HTTPX supports None to disable limits. This is not implemented yet.
+    """
+    try:
+        max_connections = int(os.environ.get("ANTA_MAX_CONNECTIONS", 100))
+        max_keepalive_connections = int(os.environ.get("ANTA_MAX_KEEPALIVE_CONNECTIONS", 20))
+        keepalive_expiry = float(os.environ.get("ANTA_KEEPALIVE_EXPIRY", 5.0))
+    except ValueError as exc:
+        default_limits = Limits(max_connections=100, max_keepalive_connections=20, keepalive_expiry=5.0)
+        logger.warning("Error parsing HTTPX resource limits from environment variables: %s\nDefaults to %s", exc, default_limits)
+        return default_limits
+    return Limits(max_connections=max_connections, max_keepalive_connections=max_keepalive_connections, keepalive_expiry=keepalive_expiry)
+
+
+def get_httpx_timeout(timeout: float | None) -> Timeout:
+    """Adjust the underlying HTTPX client timeout.
+
+    The timeouts are set using the following environment variables:
+        - ANTA_CONNECT_TIMEOUT: Maximum amount of time to wait until a socket connection to the requested host is established.
+        - ANTA_READ_TIMEOUT: Maximum duration to wait for a chunk of data to be received (for example, a chunk of the response body).
+        - ANTA_WRITE_TIMEOUT: Maximum duration to wait for a chunk of data to be sent (for example, a chunk of the request body).
+        - ANTA_POOL_TIMEOUT: Maximum duration to wait for acquiring a connection from the connection pool.
+
+    If any environment variable is not set or is invalid, the provided timeout value is used.
+    If no timeout is provided, 30 seconds is used which is the default when running ANTA.
+
+    Parameters
+    ----------
+    timeout : float | None
+        Global timeout value in seconds. Used if specific timeouts are not set.
+
+    Returns
+    -------
+    Timeout
+        HTTPX Timeout object with configured timeout values.
+
+    TODO: HTTPX supports None to disable timeouts. This is not implemented yet.
+    """
+    timeout = timeout if timeout is not None else ANTA_DEFAULT_TIMEOUT
+    try:
+        connect = float(os.environ.get("ANTA_CONNECT_TIMEOUT", timeout))
+        read = float(os.environ.get("ANTA_READ_TIMEOUT", timeout))
+        write = float(os.environ.get("ANTA_WRITE_TIMEOUT", timeout))
+        pool = float(os.environ.get("ANTA_POOL_TIMEOUT", timeout))
+    except ValueError as exc:
+        default_timeout = Timeout(timeout=timeout)
+        logger.warning("Error parsing HTTPX timeouts from environment variables: %s\nDefaults to %s", exc, default_timeout)
+        return default_timeout
+    return Timeout(connect=connect, read=read, write=write, pool=pool)
 
 
 class AntaDevice(ABC):
@@ -263,7 +336,7 @@ class AsyncEOSDevice(AntaDevice):
         name: str | None = None,
         enable_password: str | None = None,
         port: int | None = None,
-        ssh_port: int | None = 22,
+        ssh_port: int = 22,
         tags: set[str] | None = None,
         timeout: float | None = None,
         proto: Literal["http", "https"] = "https",
@@ -321,13 +394,28 @@ class AsyncEOSDevice(AntaDevice):
             raise ValueError(message)
         self.enable = enable
         self._enable_password = enable_password
-        self._session: asynceapi.Device = asynceapi.Device(host=host, port=port, username=username, password=password, proto=proto, timeout=timeout)
-        ssh_params: dict[str, Any] = {}
-        if insecure:
-            ssh_params["known_hosts"] = None
-        self._ssh_opts: SSHClientConnectionOptions = SSHClientConnectionOptions(
-            host=host, port=ssh_port, username=username, password=password, client_keys=CLIENT_KEYS, **ssh_params
-        )
+
+        # Create the async eAPI client
+        self._client = self._create_asynceapi_client(host, port, username, password, proto, timeout)
+
+        # Create the SSH connection options
+        self._ssh_opts = self._create_ssh_options(host, ssh_port, username, password, insecure=insecure)
+
+    def _create_asynceapi_client(
+        self, host: str, port: int | None, username: str, password: str, proto: Literal["http", "https"], timeout: float | None
+    ) -> asynceapi.Device:
+        """Create the asynceapi client with the provided parameters."""
+        # Get resource limits and timeout values from environment variables or use default values
+        client_limits = get_httpx_limits()
+        client_timeout = get_httpx_timeout(timeout)
+
+        return asynceapi.Device(host=host, port=port, username=username, password=password, proto=proto, timeout=client_timeout, limits=client_limits)
+
+    def _create_ssh_options(self, host: str, port: int, username: str, password: str, *, insecure: bool) -> SSHClientConnectionOptions:
+        """Create the SSH connection options with the provided parameters."""
+        ssh_params = {"known_hosts": None} if insecure else {}
+
+        return SSHClientConnectionOptions(host=host, port=port, username=username, password=password, client_keys=CLIENT_KEYS, **ssh_params)
 
     def __rich_repr__(self) -> Iterator[tuple[str, Any]]:
         """Implement Rich Repr Protocol.
@@ -335,8 +423,8 @@ class AsyncEOSDevice(AntaDevice):
         https://rich.readthedocs.io/en/stable/pretty.html#rich-repr-protocol.
         """
         yield from super().__rich_repr__()
-        yield ("host", self._session.host)
-        yield ("eapi_port", self._session.port)
+        yield ("host", self._client.host)
+        yield ("eapi_port", self._client.port)
         yield ("username", self._ssh_opts.username)
         yield ("enable", self.enable)
         yield ("insecure", self._ssh_opts.known_hosts is None)
@@ -345,7 +433,7 @@ class AsyncEOSDevice(AntaDevice):
             removed_pw = "<removed>"
             _ssh_opts["password"] = removed_pw
             _ssh_opts["kwargs"]["password"] = removed_pw
-            yield ("_session", vars(self._session))
+            yield ("_client", vars(self._client))
             yield ("_ssh_opts", _ssh_opts)
 
     def __repr__(self) -> str:
@@ -357,8 +445,8 @@ class AsyncEOSDevice(AntaDevice):
             f"is_online={self.is_online!r}, "
             f"established={self.established!r}, "
             f"disable_cache={self.cache is None!r}, "
-            f"host={self._session.host!r}, "
-            f"eapi_port={self._session.port!r}, "
+            f"host={self._client.host!r}, "
+            f"eapi_port={self._client.port!r}, "
             f"username={self._ssh_opts.username!r}, "
             f"enable={self.enable!r}, "
             f"insecure={self._ssh_opts.known_hosts is None!r})"
@@ -370,7 +458,7 @@ class AsyncEOSDevice(AntaDevice):
 
         This covers the use case of port forwarding when the host is localhost and the devices have different ports.
         """
-        return (self._session.host, self._session.port)
+        return (self._client.host, self._client.port)
 
     async def _collect(self, command: AntaCommand, *, collection_id: str | None = None) -> None:  # noqa: C901  function is too complex - because of many required except blocks
         """Collect device command output from EOS using aio-eapi.
@@ -399,7 +487,7 @@ class AsyncEOSDevice(AntaDevice):
             commands.append({"cmd": "enable"})
         commands += [{"cmd": command.command, "revision": command.revision}] if command.revision else [{"cmd": command.command}]
         try:
-            response: list[dict[str, Any] | str] = await self._session.cli(
+            response: list[dict[str, Any] | str] = await self._client.cli(
                 commands=commands,
                 ofmt=command.ofmt,
                 version=command.version,
@@ -421,9 +509,13 @@ class AsyncEOSDevice(AntaDevice):
         except TimeoutException as e:
             # This block catches Timeout exceptions.
             command.errors = [exc_to_str(e)]
-            timeouts = self._session.timeout.as_dict()
+            timeouts = self._client.timeout.as_dict()
             logger.error(
-                "%s occurred while sending a command to %s. Consider increasing the timeout.\nCurrent timeouts: Connect: %s | Read: %s | Write: %s | Pool: %s",
+                "%s occurred while sending a command to %s.\n"
+                "Current timeouts: Connect: %s | Read: %s | Write: %s | Pool: %s\n"
+                "You can either increase the global timeout or configure specific timeout behaviors. "
+                "See Scaling ANTA documentation for details: "
+                "https://anta.arista.com/stable/advanced_usages/scaling/",
                 exc_to_str(e),
                 self.name,
                 timeouts["connect"],
@@ -455,7 +547,7 @@ class AsyncEOSDevice(AntaDevice):
         - hw_model: The hardware model of the device
         """
         logger.debug("Refreshing device %s", self.name)
-        self.is_online = await self._session.check_connection()
+        self.is_online = await self._client.check_connection()
         if self.is_online:
             show_version = AntaCommand(command="show version")
             await self._collect(show_version)

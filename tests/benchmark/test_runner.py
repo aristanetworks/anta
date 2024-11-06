@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from anta.runner import setup_tests
+from anta.runner import prepare_tests
 
 if TYPE_CHECKING:
     from collections import defaultdict
@@ -19,16 +19,14 @@ if TYPE_CHECKING:
     from anta.inventory import AntaInventory
 
 
-def test_setup_tests(benchmark: BenchmarkFixture, catalog: AntaCatalog, inventory: AntaInventory) -> None:
-    """Benchmark `anta.runner.setup_tests`."""
+def test_prepare_tests(benchmark: BenchmarkFixture, catalog: AntaCatalog, inventory: AntaInventory) -> None:
+    """Benchmark `anta.runner.prepare_tests`."""
 
-    def _() -> tuple[int, defaultdict[AntaDevice, set[AntaTestDefinition]] | None]:
+    def _() -> defaultdict[AntaDevice, set[AntaTestDefinition]] | None:
         catalog.clear_indexes()
-        return setup_tests(inventory=inventory, catalog=catalog, tests=None, tags=None)
+        return prepare_tests(inventory=inventory, catalog=catalog, tests=None, tags=None)
 
-    result = benchmark(_)
-    assert result is not None
-    count, selected_tests = result
+    selected_tests = benchmark(_)
 
     assert selected_tests is not None
     assert len(selected_tests) == len(inventory)
