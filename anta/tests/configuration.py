@@ -127,6 +127,7 @@ class VerifyRunningConfigLines(AntaTest):
         else:
             self.result.is_failure("Following patterns were not found: " + ",".join(failure_msgs))
 
+
 class VerifyMcsClientMounts(AntaTest):
     """Verifies the MCS Clients mount status.
 
@@ -134,7 +135,8 @@ class VerifyMcsClientMounts(AntaTest):
     ----------------
     * Success: The test will pass if the MCS mount status on MCS Clients are mountStateMountComplete.
     * Failure: The test will fail even if one switch's MCS client mount status is not  mountStateMountComplete.
-     Examples
+
+    Examples
     --------
     ```yaml
     anta.tests.configuration:
@@ -146,7 +148,7 @@ class VerifyMcsClientMounts(AntaTest):
     description = "Verify if all MCS client mounts are in mountStateMountComplete"
     categories: ClassVar[list[str]] = ["configuration"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management cvx mounts", revision=1)]
-    
+
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyMcsClientMounts."""
@@ -163,7 +165,8 @@ class VerifyMcsClientMounts(AntaTest):
 
         if not mcs_mount_state_detected:
             self.result.is_failure("MCS Client mount states are not present")
-            
+
+
 class VerifyManagementCVX(AntaTest):
     """Verifies the management CVX global status.
 
@@ -192,7 +195,7 @@ class VerifyManagementCVX(AntaTest):
 
         enabled: bool
         """Whether management CVX must be enabled (True) or disabled (False)."""
-        
+
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyManagementCVX."""
@@ -201,4 +204,3 @@ class VerifyManagementCVX(AntaTest):
         cluster_status = command_output["clusterStatus"]
         if (cluster_state := cluster_status.get("enabled")) != self.inputs.enabled:
             self.result.is_failure(f"Management CVX status is not valid: {cluster_state}")
-

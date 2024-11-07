@@ -7,10 +7,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from anta.tests.configuration import VerifyMcsClientMounts, VerifyRunningConfigDiffs, VerifyRunningConfigLines, VerifyZeroTouch
-
 from anta.tests.configuration import VerifyManagementCVX, VerifyMcsClientMounts, VerifyRunningConfigDiffs, VerifyRunningConfigLines, VerifyZeroTouch
-
 from tests.units.anta_tests import test
 
 DATA: list[dict[str, Any]] = [
