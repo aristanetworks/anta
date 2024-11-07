@@ -99,6 +99,7 @@ anta.tests.configuration:
         - "^enable password.*$"
         - "bla bla"
 
+anta.tests.cvx:
   - VerifyMcsClientMounts:
   - VerifyManagementCVX:
       enabled: true
