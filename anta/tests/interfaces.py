@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import re
 from ipaddress import IPv4Network
-from typing import Any, ClassVar, Literal
+from typing import Any, ClassVar
 
 from pydantic import BaseModel, Field
 from pydantic_extra_types.mac_address import MacAddress
@@ -17,6 +17,7 @@ from pydantic_extra_types.mac_address import MacAddress
 from anta import GITHUB_SUGGESTION
 from anta.custom_types import EthernetInterface, Interface, Percent, PortChannelInterface, PositiveInteger
 from anta.decorators import skip_on_platforms
+from anta.input_models.interfaces import InterfaceState
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import custom_division, get_failed_logs, get_item, get_value
 
@@ -183,16 +184,20 @@ class VerifyInterfaceErrDisabled(AntaTest):
 
 
 class VerifyInterfacesStatus(AntaTest):
-    """Verifies if the provided list of interfaces are all in the expected state.
+    """Verifies the operational states of specified interfaces to ensure they match expected configurations.
 
-    - If line protocol status is provided, prioritize checking against both status and line protocol status
-    - If line protocol status is not provided and interface status is "up", expect both status and line protocol to be "up"
-    - If interface status is not "up", check only the interface status without considering line protocol status
+    This test performs the following checks for each specified interface:
+
+      1. If `line_protocol_status` is defined, both `status` and `line_protocol_status` are verified for the specified interface.
+      2. If `line_protocol_status` is not provided but the `status` is "up", it is assumed that both the status and line protocol should be "up".
+      3. If the interface `status` is not "up", only the interface's status is validated, with no line protocol check performed.
 
     Expected Results
     ----------------
-    * Success: The test will pass if the provided interfaces are all in the expected state.
-    * Failure: The test will fail if any interface is not in the expected state.
+    * Success: If the interface status and line protocol status matches the expected operational state for all specified interfaces.
+    * Failure: If any of the following occur:
+        - The specified interface is not configured.
+        - The specified interface status and line protocol status does not match the expected operational state for any interface.
 
     Examples
     --------
@@ -219,30 +224,17 @@ class VerifyInterfacesStatus(AntaTest):
 
         interfaces: list[InterfaceState]
         """List of interfaces with their expected state."""
-
-        class InterfaceState(BaseModel):
-            """Model for an interface state."""
-
-            name: Interface
-            """Interface to validate."""
-            status: Literal["up", "down", "adminDown"]
-            """Expected status of the interface."""
-            line_protocol_status: Literal["up", "down", "testing", "unknown", "dormant", "notPresent", "lowerLayerDown"] | None = None
-            """Expected line protocol status of the interface."""
+        InterfaceState: ClassVar[type[InterfaceState]] = InterfaceState
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyInterfacesStatus."""
-        command_output = self.instance_commands[0].json_output
-
         self.result.is_success()
 
-        intf_not_configured = []
-        intf_wrong_state = []
-
+        command_output = self.instance_commands[0].json_output
         for interface in self.inputs.interfaces:
             if (intf_status := get_value(command_output["interfaceDescriptions"], interface.name, separator="..")) is None:
-                intf_not_configured.append(interface.name)
+                self.result.is_failure(f"{interface.name} - Not configured")
                 continue
 
             status = "up" if intf_status["interfaceStatus"] in {"up", "connected"} else intf_status["interfaceStatus"]
@@ -251,18 +243,15 @@ class VerifyInterfacesStatus(AntaTest):
             # If line protocol status is provided, prioritize checking against both status and line protocol status
             if interface.line_protocol_status:
                 if interface.status != status or interface.line_protocol_status != proto:
-                    intf_wrong_state.append(f"{interface.name} is {status}/{proto}")
+                    actual_state = f"Expected: {interface.status}/{interface.line_protocol_status}, Actual: {status}/{proto}"
+                    self.result.is_failure(f"{interface.name} - {actual_state}")
 
             # If line protocol status is not provided and interface status is "up", expect both status and proto to be "up"
             # If interface status is not "up", check only the interface status without considering line protocol status
-            elif (interface.status == "up" and (status != "up" or proto != "up")) or (interface.status != status):
-                intf_wrong_state.append(f"{interface.name} is {status}/{proto}")
-
-        if intf_not_configured:
-            self.result.is_failure(f"The following interface(s) are not configured: {intf_not_configured}")
-
-        if intf_wrong_state:
-            self.result.is_failure(f"The following interface(s) are not in the expected state: {intf_wrong_state}")
+            elif interface.status == "up" and (status != "up" or proto != "up"):
+                self.result.is_failure(f"{interface.name} - Expected: up/up, Actual: {status}/{proto}")
+            elif interface.status != status:
+                self.result.is_failure(f"{interface.name} - Expected: {interface.status}, Actual: {status}")
 
 
 class VerifyStormControlDrops(AntaTest):
