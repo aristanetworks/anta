@@ -71,7 +71,7 @@ def log_run_information(
         f"Tests: {test_count} total\n"
         f"Limits:\n"
         f"  Max concurrent tests: {max_concurrency}\n"
-        f"  Max connections per device: {"Unlimited" if max_connections is None else max_connections}\n"
+        f"  Max connections per device: {'Unlimited' if max_connections is None else max_connections}\n"
         f"  Max file descriptors: {file_descriptor_limit}\n"
         f"{'':-^{width}}"
     )
