@@ -43,6 +43,9 @@ anta_title: Frequently Asked Questions (FAQ)
     The `user` is the one with which the ANTA process is started.
     The `value` is the new hard limit. The maximum value depends on the system. A hard limit of 16384 should be sufficient for ANTA to run in most high scale scenarios. After creating this file, log out the current session and log in again.
 
+    !!! tip "Large Scale Deployments"
+        For detailed information about managing file descriptors and other resource limits in large scale deployments, please refer to the [Scaling ANTA](advanced_usages/scaling.md#resource-management) guide.
+
 ## `Timeout` error in the logs
 
 ???+ faq "`Timeout` error in the logs"
@@ -61,6 +64,9 @@ anta_title: Frequently Asked Questions (FAQ)
 
     The previous command set a couple of options for ANTA NRFU, one them being the `timeout` command, by default, when running ANTA from CLI, it is set to 30s.
     The timeout is increased to 50s to allow ANTA to wait for API calls a little longer.
+
+    !!! tip "Advanced Timeout Configuration"
+        For comprehensive information about timeout configuration and optimization in large scale environments, see the [Timeouts Configuration](advanced_usages/scaling.md#timeouts-configuration) section in the Scaling ANTA guide. The guide provides detailed explanations of different timeout types and recommended values for various deployment scenarios.
 
 ## `ImportError` related to `urllib3`
 

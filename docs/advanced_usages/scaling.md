@@ -29,8 +29,10 @@
       - [Tag-Based Implementation](#tag-based-implementation)
     - [Performance Considerations](#performance-considerations)
       - [Parallel Job Control](#parallel-job-control)
+      - [JSON vs YAML](#json-vs-yaml)
     - [Results Management](#results-management)
   - [🎉 Conclusion](#-conclusion)
+  - [📚 References](#-references)
 
 ## 📖 Introduction
 
@@ -492,6 +494,28 @@ The `-j` option in `GNU Parallel` controls the number of concurrent jobs. Consid
      - Each ANTA instance requires memory
      - Monitor system resources during execution using `htop` or similar tools
 
+#### JSON vs YAML
+
+When working with large catalogs and inventories, using JSON format instead of YAML can provide better performance as ANTA loads JSON files more efficiently. If you choose to use JSON:
+
+- Convert your YAML files to JSON (you can use `yq` for this)
+- Modify the scripts to use `jq` instead of `yq`:
+
+  ```bash
+  # For device-based implementation
+  NODE_NAMES=$(jq -r '.anta_inventory.hosts[].name' < "anta_inventory.json")
+
+  # For tag-based implementation
+  TAGS=$(jq -r '.. | select(.filters?) | .filters.tags[]' < "anta_catalog.json" | sort -u)
+  ```
+
+  Example of converting YAML to JSON:
+
+  ```bash
+  yq -o=json eval 'anta_inventory.yaml' > anta_inventory.json
+  yq -o=json eval 'anta_catalog.yaml' > anta_catalog.json
+  ```
+
 ### Results Management
 
 ANTA can output results in various formats:
@@ -563,6 +587,9 @@ ANTA can output results in various formats:
     xml.write("nrfu.xml", pretty=True)
     ```
 
+    !!! tip "CI/CD Integration"
+        This report format can be used with CI/CD tools like Jenkins, GitLab, or GitHub Actions.
+
 ## 🎉 Conclusion
 
 By implementing these scaling strategies, you can efficiently run ANTA tests on large network fabrics. The combination of parallel execution, optimized catalogs, and proper resource management ensures fast and reliable network validation.
@@ -578,5 +605,31 @@ Remember to:
     Performance tuning can be complex and highly dependent on your specific deployment. Don't hesitate to:
 
     - 📞 Reach out to your Arista SE for guidance
-    - 📝 Document your specific use case on GitHub
+    - 📝 Document your specific use case on [GitHub](https://github.com/aristanetworks/anta)
     - 🔍 Share your findings with the community
+
+## 📚 References
+
+- **Python AsyncIO**
+  - [AsyncIO Documentation](https://docs.python.org/3/library/asyncio.html)
+  - [AsyncIO Event Loop](https://docs.python.org/3/library/asyncio-eventloop.html)
+  - [AsyncIO Tasks and Coroutines](https://docs.python.org/3/library/asyncio-task.html)
+
+- **HTTPX**
+  - [HTTPX Documentation](https://www.python-httpx.org/)
+  - [Timeouts](https://www.python-httpx.org/advanced/timeouts/)
+  - [Resource Limits](https://www.python-httpx.org/advanced/resource-limits/)
+
+- **GNU Parallel**
+  - [GNU Parallel Documentation](https://www.gnu.org/software/parallel/)
+  - [GNU Parallel Tutorial](https://www.gnu.org/software/parallel/parallel_tutorial.html)
+
+- **JSON and YAML Processing**
+  - [jq Manual](https://jqlang.github.io/jq/manual/)
+  - [jq GitHub Repository](https://github.com/jqlang/jq)
+  - [yq Documentation](https://mikefarah.gitbook.io/yq/)
+  - [yq GitHub Repository](https://github.com/mikefarah/yq/)
+
+- **JUnit/xUnit Result XML Parser**
+  - [junitparser Documentation](https://junitparser.readthedocs.io/en/latest/)
+  - [junitparser GitHub Repository](https://github.com/weiwei/junitparser)
