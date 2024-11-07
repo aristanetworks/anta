@@ -33,8 +33,6 @@ class VerifyZeroTouch(AntaTest):
     ```
     """
 
-    name = "VerifyZeroTouch"
-    description = "Verifies ZeroTouch is disabled"
     categories: ClassVar[list[str]] = ["configuration"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show zerotouch", revision=1)]
 
@@ -64,8 +62,6 @@ class VerifyRunningConfigDiffs(AntaTest):
     ```
     """
 
-    name = "VerifyRunningConfigDiffs"
-    description = "Verifies there is no difference between the running-config and the startup-config"
     categories: ClassVar[list[str]] = ["configuration"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show running-config diffs", ofmt="text")]
 
@@ -104,7 +100,6 @@ class VerifyRunningConfigLines(AntaTest):
     ```
     """
 
-    name = "VerifyRunningConfigLines"
     description = "Search the Running-Config for the given RegEx patterns."
     categories: ClassVar[list[str]] = ["configuration"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show running-config", ofmt="text")]
@@ -132,31 +127,29 @@ class VerifyRunningConfigLines(AntaTest):
         else:
             self.result.is_failure("Following patterns were not found: " + ",".join(failure_msgs))
 
-
 class VerifyMcsClientMounts(AntaTest):
     """Verifies the MCS Clients mount status.
 
     Expected Results
     ----------------
     * Success: The test will pass if the MCS mount status on MCS Clients are mountStateMountComplete.
-    * Failure: The test will fail if the MCS mount status on MCS Clients are not mountStateMountComplete.
-
-    Examples
+    * Failure: The test will fail even if one switch's MCS client mount status is not  mountStateMountComplete.
+     Examples
     --------
     ```yaml
     anta.tests.configuration:
-      - VerifyMcsClientMounts:
+    - VerifyMcsClientMounts:
     ```
     """
 
     name = "VerifyMcsClientMounts"
-    description = "Verify if all service MCS Client management cvx mounts are mountStateMountComplete"
+    description = "Verify if all MCS client mounts are in mountStateMountComplete"
     categories: ClassVar[list[str]] = ["configuration"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management cvx mounts", revision=1)]
-
+    
     @AntaTest.anta_test
     def test(self) -> None:
-        """Main test function for VerifyManagementCVX."""
+        """Main test function for VerifyMcsClientMounts."""
         command_output = self.instance_commands[0].json_output
         self.result.is_success()
         mount_states = command_output["mountStates"]
@@ -170,3 +163,42 @@ class VerifyMcsClientMounts(AntaTest):
 
         if not mcs_mount_state_detected:
             self.result.is_failure("MCS Client mount states are not present")
+            
+class VerifyManagementCVX(AntaTest):
+    """Verifies the management CVX global status.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the management CVX global status matches the expected status.
+    * Failure: The test will fail if the management CVX global status does not match the expected status.
+
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.configuration:
+      - VerifyManagementCVX:
+          enabled: true
+    ```
+    """
+
+    name = "VerifyManagementCVX"
+    description = "Verifies the management CVX global status."
+    categories: ClassVar[list[str]] = ["configuration"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management cvx", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyManagementCVX test."""
+
+        enabled: bool
+        """Whether management CVX must be enabled (True) or disabled (False)."""
+        
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyManagementCVX."""
+        command_output = self.instance_commands[0].json_output
+        self.result.is_success()
+        cluster_status = command_output["clusterStatus"]
+        if (cluster_state := cluster_status.get("enabled")) != self.inputs.enabled:
+            self.result.is_failure(f"Management CVX status is not valid: {cluster_state}")
+

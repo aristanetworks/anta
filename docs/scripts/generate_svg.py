@@ -94,7 +94,7 @@ if __name__ == "__main__":
         # Redirect stdout of the program towards another StringIO to capture help
         # that is not part or anta rich console
         # redirect potential progress bar output to console by patching
-        with patch("anta.cli.nrfu.anta_progress_bar", custom_progress_bar), suppress(SystemExit):
+        with patch("anta.cli.nrfu.utils.anta_progress_bar", custom_progress_bar), suppress(SystemExit):
             function()
 
     if "--help" in args:

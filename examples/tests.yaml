@@ -98,7 +98,10 @@ anta.tests.configuration:
       regex_patterns:
         - "^enable password.*$"
         - "bla bla"
+
   - VerifyMcsClientMounts:
+  - VerifyManagementCVX:
+      enabled: true
 
 anta.tests.connectivity:
   - VerifyReachability:
