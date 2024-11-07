@@ -248,7 +248,7 @@ python =
   3.10: py310
   3.11: erase, py311, report
   3.12: py312
-  3:13: py313
+  3.13: py313
 
 [testenv]
 description = Run pytest with {basepython}
