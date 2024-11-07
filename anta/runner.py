@@ -8,7 +8,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import os
-import resource
+import sys
 from collections import defaultdict
 from typing import TYPE_CHECKING, Any
 
@@ -26,35 +26,38 @@ if TYPE_CHECKING:
     from anta.result_manager import ResultManager
     from anta.result_manager.models import TestResult
 
+if os.name == "posix":
+    import resource
+
+    DEFAULT_NOFILE = 16384
+
+    def adjust_rlimit_nofile() -> tuple[int, int]:
+        """Adjust the maximum number of open file descriptors for the ANTA process.
+
+        The limit is set to the lower of the current hard limit and the value of the ANTA_NOFILE environment variable.
+
+        If the `ANTA_NOFILE` environment variable is not set or is invalid, `DEFAULT_NOFILE` is used.
+
+        Returns
+        -------
+        tuple[int, int]
+            The new soft and hard limits for open file descriptors.
+        """
+        try:
+            nofile = int(os.environ.get("ANTA_NOFILE", DEFAULT_NOFILE))
+        except ValueError as exception:
+            logger.warning("The ANTA_NOFILE environment variable value is invalid: %s\nDefault to %s.", exc_to_str(exception), DEFAULT_NOFILE)
+            nofile = DEFAULT_NOFILE
+
+        limits = resource.getrlimit(resource.RLIMIT_NOFILE)
+        logger.debug("Initial limit numbers for open file descriptors for the current ANTA process: Soft Limit: %s | Hard Limit: %s", limits[0], limits[1])
+        nofile = min(limits[1], nofile)
+        logger.debug("Setting soft limit for open file descriptors for the current ANTA process to %s", nofile)
+        resource.setrlimit(resource.RLIMIT_NOFILE, (nofile, limits[1]))
+        return resource.getrlimit(resource.RLIMIT_NOFILE)
+
+
 logger = logging.getLogger(__name__)
-
-DEFAULT_NOFILE = 16384
-
-
-def adjust_rlimit_nofile() -> tuple[int, int]:
-    """Adjust the maximum number of open file descriptors for the ANTA process.
-
-    The limit is set to the lower of the current hard limit and the value of the ANTA_NOFILE environment variable.
-
-    If the `ANTA_NOFILE` environment variable is not set or is invalid, `DEFAULT_NOFILE` is used.
-
-    Returns
-    -------
-    tuple[int, int]
-        The new soft and hard limits for open file descriptors.
-    """
-    try:
-        nofile = int(os.environ.get("ANTA_NOFILE", DEFAULT_NOFILE))
-    except ValueError as exception:
-        logger.warning("The ANTA_NOFILE environment variable value is invalid: %s\nDefault to %s.", exc_to_str(exception), DEFAULT_NOFILE)
-        nofile = DEFAULT_NOFILE
-
-    limits = resource.getrlimit(resource.RLIMIT_NOFILE)
-    logger.debug("Initial limit numbers for open file descriptors for the current ANTA process: Soft Limit: %s | Hard Limit: %s", limits[0], limits[1])
-    nofile = min(limits[1], nofile)
-    logger.debug("Setting soft limit for open file descriptors for the current ANTA process to %s", nofile)
-    resource.setrlimit(resource.RLIMIT_NOFILE, (nofile, limits[1]))
-    return resource.getrlimit(resource.RLIMIT_NOFILE)
 
 
 def log_cache_statistics(devices: list[AntaDevice]) -> None:
@@ -167,7 +170,8 @@ def prepare_tests(
 
     if total_test_count == 0:
         msg = (
-            f"There are no tests{f' matching the tags {tags} ' if tags else ' '}to run in the current test catalog and device inventory, please verify your inputs."
+            f"There are no tests{f' matching the tags {tags} ' if tags else ' '}to run in the current "
+            "test catalog and device inventory, please verify your inputs."
         )
         logger.warning(msg)
         return None
@@ -247,7 +251,8 @@ async def main(  # noqa: PLR0913
         Build the list of coroutine to run and stop before test execution.
     """
     # Adjust the maximum number of open file descriptors for the ANTA process
-    limits = adjust_rlimit_nofile()
+    # TODO: Make this better
+    limits = adjust_rlimit_nofile() if os.name == "posix" else (sys.maxsize, sys.maxsize)
 
     if not catalog.tests:
         logger.info("The list of tests is empty, exiting")
