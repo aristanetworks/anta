@@ -162,11 +162,11 @@ class VerifyMcsClientMounts(AntaTest):
         mount_states = command_output["mountStates"]
         mcs_mount_state_detected = False
         for mount_state in mount_states:
-            if mount_state["type"].startswith("Mcs"):
-                mcs_mount_state_detected = True
-                state = mount_state["state"]
-                if state != "mountStateMountComplete":
-                    self.result.is_failure(f"MCS Client mount states are not valid: {state}")
+            if not mount_state["type"].startswith("Mcs"):
+                continue
+            mcs_mount_state_detected = True
+            if (state := mount_state["state"]) != "mountStateMountComplete":
+                self.result.is_failure(f"MCS Client mount states are not valid: {state}")
 
         if len(mount_states) == 0 or not mcs_mount_state_detected:
             self.result.is_failure("MCS Client mount states are not present")
