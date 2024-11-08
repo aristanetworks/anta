@@ -33,4 +33,7 @@ anta_title: ANTA catalog for BGP tests
       show_bases: false
       anta_hide_test_module_description: true
       show_labels: true
-      filters: ["!^__str__"]
+      filters:
+        - "!^__str__"
+        - "!AFI_SAFI_EOS_KEY"
+        - "!eos_key"
