@@ -32,8 +32,10 @@ anta_title: ANTA catalog for BGP tests
       show_root_toc_entry: false
       show_bases: false
       anta_hide_test_module_description: true
+      merge_init_into_class: false
       show_labels: true
       filters:
+        - "!^__init__"
         - "!^__str__"
         - "!AFI_SAFI_EOS_KEY"
         - "!eos_key"
