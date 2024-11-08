@@ -57,7 +57,7 @@ class Neighbor(BaseModel):
 
         Examples
         --------
-        Port Ethernet1 (Neighbor: DC1-SPINE2, Neighbor port: Ethernet2)
+        Port Ethernet1 (Neighbor: DC1-SPINE2, Neighbor Port: Ethernet2)
 
         """
-        return f"Port {self.port} (Neighbor: {self.neighbor_device}, Neighbor port: {self.neighbor_port})"
+        return f"Port {self.port} (Neighbor: {self.neighbor_device}, Neighbor Port: {self.neighbor_port})"

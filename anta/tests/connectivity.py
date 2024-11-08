@@ -112,6 +112,7 @@ class VerifyLLDPNeighbors(AntaTest):
 
         neighbors: list[Neighbor]
         """List of LLDP neighbors."""
+        Neighbor: ClassVar[type[Neighbor]] = Neighbor
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -125,7 +126,7 @@ class VerifyLLDPNeighbors(AntaTest):
                 continue
 
             if len(lldp_neighbor_info := output[neighbor.port]["lldpNeighborInfo"]) == 0:
-                self.result.is_failure(f"{neighbor} - No LLDP neighbors on the port")
+                self.result.is_failure(f"{neighbor} - No LLDP neighbors")
                 continue
 
             # Check if the system name and neighbor port matches
@@ -135,4 +136,4 @@ class VerifyLLDPNeighbors(AntaTest):
             )
             if not match_found:
                 failure_msg = [f"{info['systemName']}/{info['neighborInterfaceInfo']['interfaceId_v2']}" for info in lldp_neighbor_info]
-                self.result.is_failure(f"{neighbor} - Wrong LLDP neighbors on the ports; {', '.join(failure_msg)}")
+                self.result.is_failure(f"{neighbor} - Wrong LLDP neighbors; {', '.join(failure_msg)}")
