@@ -146,8 +146,6 @@ class VerifyBGPPeerCount(AntaTest):
     ```
     """
 
-    name = "VerifyBGPPeerCount"
-    description = "Verifies the count of BGP peers for given address families."
     categories: ClassVar[list[str]] = ["bgp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp summary vrf all", revision=1)]
 
@@ -239,8 +237,6 @@ class VerifyBGPPeersHealth(AntaTest):
     ```
     """
 
-    name = "VerifyBGPPeersHealth"
-    description = "Verifies the health of BGP peers for the given address families."
     categories: ClassVar[list[str]] = ["bgp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=3)]
 
