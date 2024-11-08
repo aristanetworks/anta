@@ -14,7 +14,7 @@ from pydantic import BaseModel
 from anta.custom_types import ErrDisableInterval, ErrDisableReasons
 from anta.input_models.services import DnsServer
 from anta.models import AntaCommand, AntaTemplate, AntaTest
-from anta.tools import get_dict_superset, get_failed_logs, get_item
+from anta.tools import get_dict_superset, get_failed_logs
 
 
 class VerifyHostname(AntaTest):
@@ -106,7 +106,7 @@ class VerifyDNSLookup(AntaTest):
 class VerifyDNSServers(AntaTest):
     """Verifies if the DNS (Domain Name Service) servers are correctly configured.
 
-    This test performs the following checks for each specified LLDP neighbor:
+    This test performs the following checks for each specified DNS Server:
 
       1. Confirming correctly registered with a valid IPv4 or IPv6 address with the designated VRF.
       2. Ensuring an appropriate priority level.
@@ -142,6 +142,7 @@ class VerifyDNSServers(AntaTest):
 
         dns_servers: list[DnsServer]
         """List of DNS servers to verify."""
+        DnsServer: ClassVar[type[DnsServer]] = DnsServer
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -155,14 +156,9 @@ class VerifyDNSServers(AntaTest):
             priority = server.priority
             input_dict = {"ipAddr": address, "vrf": vrf}
 
-            # Check if the DNS server is configured with any VRF.
-            if get_item(command_output, "ipAddr", address) is None:
-                self.result.is_failure(f"Server {address} - Not configured with any VRF")
-                continue
-
             # Check if the DNS server is configured with specified VRF.
             if (output := get_dict_superset(command_output, input_dict)) is None:
-                self.result.is_failure(f"{server} - Not configured in specified VRF")
+                self.result.is_failure(f"{server} - Not configured")
                 continue
 
             # Check if the DNS server priority matches with expected.

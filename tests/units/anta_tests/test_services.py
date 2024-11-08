@@ -76,22 +76,6 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
-        "name": "failure-dns-missing",
-        "test": VerifyDNSServers,
-        "eos_data": [
-            {
-                "nameServerConfigs": [{"ipAddr": "10.14.0.1", "vrf": "default", "priority": 0}, {"ipAddr": "10.14.0.11", "vrf": "MGMT", "priority": 1}],
-            }
-        ],
-        "inputs": {
-            "dns_servers": [{"server_address": "10.14.0.10", "vrf": "default", "priority": 0}, {"server_address": "10.14.0.21", "vrf": "MGMT", "priority": 1}]
-        },
-        "expected": {
-            "result": "failure",
-            "messages": ["Server 10.14.0.10 - Not configured with any VRF", "Server 10.14.0.21 - Not configured with any VRF"],
-        },
-    },
-    {
         "name": "failure-no-dns-found",
         "test": VerifyDNSServers,
         "eos_data": [
@@ -104,7 +88,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Server 10.14.0.10 - Not configured with any VRF", "Server 10.14.0.21 - Not configured with any VRF"],
+            "messages": ["Server 10.14.0.10 (VRF: default, Priority: 0) - Not configured", "Server 10.14.0.21 (VRF: MGMT, Priority: 1) - Not configured"],
         },
     },
     {
@@ -126,8 +110,8 @@ DATA: list[dict[str, Any]] = [
             "result": "failure",
             "messages": [
                 "Server 10.14.0.1 (VRF: CS, Priority: 0) - Incorrect priority; Priority: 1",
-                "Server 10.14.0.11 (VRF: default, Priority: 0) - Not configured in specified VRF",
-                "Server 10.14.0.110 - Not configured with any VRF",
+                "Server 10.14.0.11 (VRF: default, Priority: 0) - Not configured",
+                "Server 10.14.0.110 (VRF: MGMT, Priority: 0) - Not configured",
             ],
         },
     },
