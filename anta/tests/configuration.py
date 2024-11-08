@@ -8,9 +8,10 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, ClassVar, Literal
 
 from anta.custom_types import RegexString
+from anta.input_models.cvx import CVXPeers
 from anta.models import AntaCommand, AntaTest
 
 if TYPE_CHECKING:
@@ -139,7 +140,7 @@ class VerifyManagementCVX(AntaTest):
     Examples
     --------
     ```yaml
-    anta.tests.configuration:
+    anta.tests.cvx:
       - VerifyManagementCVX:
           enabled: true
     ```
@@ -179,7 +180,7 @@ class VerifyCVXClusterStatus(AntaTest):
     Examples
     --------
     ```yaml
-    anta.tests.configuration:
+    anta.tests.cvx:
       - VerifyCVXClusterStatus:
           enabled: true
           clusterMode: true
@@ -191,20 +192,28 @@ class VerifyCVXClusterStatus(AntaTest):
 
     name = "VerifyCVXClusterStatus"
     description = "Verifies the CVX Cluster Status."
-    categories: ClassVar[list[str]] = ["configuration"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management cvx", revision=1)]
+    categories: ClassVar[list[str]] = ["cvx"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show cvx", revision=1)]
 
     class Input(AntaTest.Input):
-        """Input model for the VerifyManagementCVX test."""
+        """Input model for the VerifyCVXClusterStatus test."""
 
         enabled: bool
         """Whether management CVX must be enabled (True) or disabled (False)."""
+        cluster_mode: bool
+        role: Literal["Master", "Standby", "Disconnected"] = "Master"
+        peer_status: list[CVXPeers]
+        CVXPeers: ClassVar[type[CVXPeers]] = CVXPeers
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """Main test function for VerifyManagementCVX."""
+        """Main test function for VerifyCVXClusterStatus."""
         command_output = self.instance_commands[0].json_output
         self.result.is_success()
         cluster_status = command_output["clusterStatus"]
-        if (cluster_state := cluster_status.get("enabled")) != self.inputs.enabled:
-            self.result.is_failure(f"Management CVX status is not valid: {cluster_state}")
+        if not command_output["enabled"]:
+            self.result.is_failure("CVX Server status is not enabled")
+        if not command_output["clusterMode"]:
+            self.result.is_failure("CVX Server is not a cluster")
+        if (cluster_state := cluster_status.get("role")) != self.inputs.role:
+            self.result.is_failure(f"CVX Role is not valid: {cluster_state}")
