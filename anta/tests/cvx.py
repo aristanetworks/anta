@@ -70,8 +70,6 @@ class VerifyManagementCVX(AntaTest):
     ```
     """
 
-    name = "VerifyManagementCVX"
-    description = "Verifies the management CVX global status."
     categories: ClassVar[list[str]] = ["cvx"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management cvx", revision=1)]
 
