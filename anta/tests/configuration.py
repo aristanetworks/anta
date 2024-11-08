@@ -164,3 +164,47 @@ class VerifyManagementCVX(AntaTest):
         cluster_status = command_output["clusterStatus"]
         if (cluster_state := cluster_status.get("enabled")) != self.inputs.enabled:
             self.result.is_failure(f"Management CVX status is not valid: {cluster_state}")
+
+
+class VerifyCVXClusterStatus(AntaTest):
+    """Verifies the CVX Server Cluster status.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the CVX Server Cluster is enabled.
+    * Failure: The test will fail if any of the following conditions are met:
+        - If the CVX Status is disabled
+        - If the peers are not in "Registration ok" state
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.configuration:
+      - VerifyCVXClusterStatus:
+          enabled: true
+          clusterMode: true
+          role: Master
+          peerStatus:
+            registrationState: Registration ok
+    ```
+    """
+
+    name = "VerifyCVXClusterStatus"
+    description = "Verifies the CVX Cluster Status."
+    categories: ClassVar[list[str]] = ["configuration"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management cvx", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyManagementCVX test."""
+
+        enabled: bool
+        """Whether management CVX must be enabled (True) or disabled (False)."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyManagementCVX."""
+        command_output = self.instance_commands[0].json_output
+        self.result.is_success()
+        cluster_status = command_output["clusterStatus"]
+        if (cluster_state := cluster_status.get("enabled")) != self.inputs.enabled:
+            self.result.is_failure(f"Management CVX status is not valid: {cluster_state}")
