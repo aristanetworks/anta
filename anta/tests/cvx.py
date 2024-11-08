@@ -1,7 +1,7 @@
 # Copyright (c) 2023-2024 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""Module related to the device configuration tests."""
+"""Module related to the CVX tests."""
 
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
@@ -33,7 +33,7 @@ class VerifyMcsClientMounts(AntaTest):
 
     name = "VerifyMcsClientMounts"
     description = "Verify if all MCS client mounts are in mountStateMountComplete"
-    categories: ClassVar[list[str]] = ["configuration"]
+    categories: ClassVar[list[str]] = ["cvx"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management cvx mounts", revision=1)]
 
     @AntaTest.anta_test
@@ -74,7 +74,7 @@ class VerifyManagementCVX(AntaTest):
 
     name = "VerifyManagementCVX"
     description = "Verifies the management CVX global status."
-    categories: ClassVar[list[str]] = ["configuration"]
+    categories: ClassVar[list[str]] = ["cvx"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management cvx", revision=1)]
 
     class Input(AntaTest.Input):
