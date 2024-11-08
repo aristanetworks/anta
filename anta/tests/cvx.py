@@ -31,8 +31,6 @@ class VerifyMcsClientMounts(AntaTest):
     ```
     """
 
-    name = "VerifyMcsClientMounts"
-    description = "Verify if all MCS client mounts are in mountStateMountComplete"
     categories: ClassVar[list[str]] = ["cvx"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management cvx mounts", revision=1)]
 
