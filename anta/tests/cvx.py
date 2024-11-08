@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 
 class VerifyMcsClientMounts(AntaTest):
-    """Verifies the MCS Clients mount status.
+    """Verify if all MCS client mounts are in mountStateMountComplete.
 
     Expected Results
     ----------------
