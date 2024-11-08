@@ -64,10 +64,10 @@ class BgpAddressFamily(BaseModel):
 
     Can be disabled in the `VerifyBGPPeersHealth` and `VerifyBGPSpecificPeers` tests.
     """
-    check_peer_state: bool = True
-    """Flag to check if the peers are established with negotiated AFI/SAFI. Defaults to `True`.
+    check_peer_state: bool = False
+    """Flag to check if the peers are established with negotiated AFI/SAFI. Defaults to `False`.
 
-    Can be disabled in the `VerifyBGPPeerCount` tests.
+    Can be enabled in the `VerifyBGPPeerCount` tests.
     """
 
     @model_validator(mode="after")

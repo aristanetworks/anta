@@ -105,21 +105,22 @@ def _check_bgp_neighbor_capability(capability_status: dict[str, bool]) -> bool:
 
 
 class VerifyBGPPeerCount(AntaTest):
-    """Verifies the count of established BGP peers with negotiated AFI/SAFI for given address families.
+    """Verifies the count of BGP peers for given address families.
 
     This test performs the following checks for each specified address family:
 
       1. Confirms that the specified VRF is configured.
       2. Counts the number of peers that are:
-        - In the `Established` state
-        - Have successfully negotiated the specified AFI/SAFI
+        - If `check_peer_state` is set to True, Counts the number of BGP peers that are in the `Established` state and
+        have successfully negotiated the specified AFI/SAFI
+        - If `check_peer_state` is set to False, skips validation of the `Established` state and AFI/SAFI negotiation.
 
     Expected Results
     ----------------
-    * Success: If the count of established BGP peers with negotiated AFI/SAFI matches the expected count for all specified address families.
+    * Success: If the count of BGP peers matches the expected count with `check_peer_state` enabled/disabled.
     * Failure: If any of the following occur:
         - The specified VRF is not configured.
-        - The count of established peers with negotiated AFI/SAFI does not match the expected count for any address family.
+        - The BGP peer count does not match expected value with `check_peer_state` enabled/disabled."
 
     Examples
     --------
@@ -146,7 +147,7 @@ class VerifyBGPPeerCount(AntaTest):
     """
 
     name = "VerifyBGPPeerCount"
-    description = "Verifies the count of established BGP peers with negotiated AFI/SAFI for given address families."
+    description = "Verifies the count of BGP peers for given address families."
     categories: ClassVar[list[str]] = ["bgp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp summary vrf all", revision=1)]
 
