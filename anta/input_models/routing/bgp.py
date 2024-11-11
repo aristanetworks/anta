@@ -12,7 +12,7 @@ from warnings import warn
 from pydantic import BaseModel, ConfigDict, Field, PositiveInt, model_validator
 from pydantic_extra_types.mac_address import MacAddress
 
-from anta.custom_types import Afi, BgpDropStats, MultiProtocolCaps, Safi, Vni
+from anta.custom_types import Afi, BgpDropStats, BgpUpdateError, MultiProtocolCaps, Safi, Vni
 
 if TYPE_CHECKING:
     import sys
@@ -160,6 +160,18 @@ class BgpPeer(BaseModel):
     """List of drop statistics to be verified.
 
     Optional field in the `VerifyBGPPeerDropStats` test. If not provided, the test will verifies all drop statistics."""
+    update_errors: list[BgpUpdateError] | None = None
+    """List of update error counters to be verified.
+
+    Optional field in the `VerifyBGPPeerUpdateErrors` test. If not provided, the test will verifies all the update error counters."""
+    inbound_route_map: str | None = None
+    """Inbound route map applied, defaults to None. Required field in the `VerifyBgpRouteMaps` test."""
+    outbound_route_map: str | None = None
+    """Outbound route map applied, defaults to None. Required field in the `VerifyBgpRouteMaps` test."""
+    maximum_routes: int | None = Field(default=None, ge=0, le=4294967294)
+    """The maximum allowable number of BGP routes, `0` means unlimited. Required field in the `VerifyBGPPeerRouteLimit` test"""
+    warning_limit: int | None = Field(default=None, ge=0, le=4294967294)
+    """Optional maximum routes warning limit. If not provided, it defaults to `0` meaning no warning limit."""
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the BgpPeer for reporting."""
@@ -175,7 +187,7 @@ class BgpNeighbor(BgpPeer):
     """
 
     def __init__(self, **data: Any) -> None:  # noqa: ANN401
-        """Initialize the BgpAfi class, emitting a depreciation warning."""
+        """Initialize the BgpPeer class, emitting a depreciation warning."""
         warn(
             message="BgpNeighbor model is deprecated and will be removed in ANTA v2.0.0. Use the BgpPeer model instead.",
             category=DeprecationWarning,
