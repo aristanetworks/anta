@@ -10,7 +10,7 @@
 from __future__ import annotations
 
 from socket import getservbyname
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal, overload
 
 # -----------------------------------------------------------------------------
 # Public Imports
@@ -25,7 +25,7 @@ from .config_session import SessionConfig
 from .errors import EapiCommandError
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+    from ._types import EapiComplexCommand, EapiJsonOutput, EapiSimpleCommand, EapiTextOutput, JsonRpc
 
 # -----------------------------------------------------------------------------
 # Exports
@@ -121,18 +121,148 @@ class Device(httpx.AsyncClient):
         """
         return await port_check_url(self.base_url)
 
+    # Single command, JSON output, no suppression
+    @overload
+    async def cli(
+        self,
+        *,
+        command: EapiSimpleCommand | EapiComplexCommand,
+        commands: None = None,
+        ofmt: Literal["json"] = "json",
+        version: int | Literal["latest"] = "latest",
+        suppress_error: Literal[False] = False,
+        auto_complete: bool = False,
+        expand_aliases: bool = False,
+        stop_on_error: bool = True,
+        req_id: int | str | None = None,
+    ) -> EapiJsonOutput: ...
+
+    # Multiple commands, JSON output, no suppression
+    @overload
+    async def cli(
+        self,
+        *,
+        command: None = None,
+        commands: list[EapiSimpleCommand | EapiComplexCommand],
+        ofmt: Literal["json"] = "json",
+        version: int | Literal["latest"] = "latest",
+        suppress_error: Literal[False] = False,
+        auto_complete: bool = False,
+        expand_aliases: bool = False,
+        stop_on_error: bool = True,
+        req_id: int | str | None = None,
+    ) -> list[EapiJsonOutput]: ...
+
+    # Single command, TEXT output, no suppression
+    @overload
+    async def cli(
+        self,
+        *,
+        command: EapiSimpleCommand | EapiComplexCommand,
+        commands: None = None,
+        ofmt: Literal["text"],
+        version: int | Literal["latest"] = "latest",
+        suppress_error: Literal[False] = False,
+        auto_complete: bool = False,
+        expand_aliases: bool = False,
+        stop_on_error: bool = True,
+        req_id: int | str | None = None,
+    ) -> EapiTextOutput: ...
+
+    # Multiple commands, TEXT output, no suppression
+    @overload
+    async def cli(
+        self,
+        *,
+        command: None = None,
+        commands: list[EapiSimpleCommand | EapiComplexCommand],
+        ofmt: Literal["text"],
+        version: int | Literal["latest"] = "latest",
+        suppress_error: Literal[False] = False,
+        auto_complete: bool = False,
+        expand_aliases: bool = False,
+        stop_on_error: bool = True,
+        req_id: int | str | None = None,
+    ) -> list[EapiTextOutput]: ...
+
+    # Single command, JSON output, with suppression
+    @overload
+    async def cli(
+        self,
+        *,
+        command: EapiSimpleCommand | EapiComplexCommand,
+        commands: None = None,
+        ofmt: Literal["json"] = "json",
+        version: int | Literal["latest"] = "latest",
+        suppress_error: Literal[True],
+        auto_complete: bool = False,
+        expand_aliases: bool = False,
+        stop_on_error: bool = True,
+        req_id: int | str | None = None,
+    ) -> EapiJsonOutput | None: ...
+
+    # Multiple commands, JSON output, with suppression
+    @overload
+    async def cli(
+        self,
+        *,
+        command: None = None,
+        commands: list[EapiSimpleCommand | EapiComplexCommand],
+        ofmt: Literal["json"] = "json",
+        version: int | Literal["latest"] = "latest",
+        suppress_error: Literal[True],
+        auto_complete: bool = False,
+        expand_aliases: bool = False,
+        stop_on_error: bool = True,
+        req_id: int | str | None = None,
+    ) -> list[EapiJsonOutput] | None: ...
+
+    # Single command, TEXT output, with suppression
+    @overload
+    async def cli(
+        self,
+        *,
+        command: EapiSimpleCommand | EapiComplexCommand,
+        commands: None = None,
+        ofmt: Literal["text"],
+        version: int | Literal["latest"] = "latest",
+        suppress_error: Literal[True],
+        auto_complete: bool = False,
+        expand_aliases: bool = False,
+        stop_on_error: bool = True,
+        req_id: int | str | None = None,
+    ) -> EapiTextOutput | None: ...
+
+    # Multiple commands, TEXT output, with suppression
+    @overload
+    async def cli(
+        self,
+        *,
+        command: None = None,
+        commands: list[EapiSimpleCommand | EapiComplexCommand],
+        ofmt: Literal["text"],
+        version: int | Literal["latest"] = "latest",
+        suppress_error: Literal[True],
+        auto_complete: bool = False,
+        expand_aliases: bool = False,
+        stop_on_error: bool = True,
+        req_id: int | str | None = None,
+    ) -> list[EapiTextOutput] | None: ...
+
+    # Actual implementation
     async def cli(  # noqa: PLR0913
         self,
-        command: str | dict[str, Any] | None = None,
-        commands: Sequence[str | dict[str, Any]] | None = None,
-        ofmt: str | None = None,
-        version: int | str | None = "latest",
+        command: EapiSimpleCommand | EapiComplexCommand | None = None,
+        commands: list[EapiSimpleCommand | EapiComplexCommand] | None = None,
+        ofmt: Literal["json", "text"] = "json",
+        version: int | Literal["latest"] = "latest",
         *,
         suppress_error: bool = False,
         auto_complete: bool = False,
         expand_aliases: bool = False,
+        stop_on_error: bool = True,
         req_id: int | str | None = None,
-    ) -> list[dict[str, Any] | str] | dict[str, Any] | str | None:
+    ) -> EapiJsonOutput | EapiTextOutput | list[EapiJsonOutput] | list[EapiTextOutput] | None:
         """Execute one or more CLI commands.
 
         Parameters
@@ -143,6 +273,7 @@ class Device(httpx.AsyncClient):
             A list of commands to execute; results in a list of output responses.
         ofmt
             Either 'json' or 'text'; indicates the output format for the CLI commands.
+            eAPI defaults to 'json'.
         version
             By default the eAPI will use "version 1" for all API object models.
             This driver will, by default, always set version to "latest" so
@@ -158,33 +289,61 @@ class Device(httpx.AsyncClient):
 
                 response = dev.cli(..., suppress_error=True)
         auto_complete
-            Enabled/disables the command auto-compelete feature of the EAPI.  Per the
+            Enabled/disables the command auto-compelete feature of the eAPI. Per the
             documentation:
                 Allows users to use shorthand commands in eAPI calls. With this
                 parameter included a user can send 'sh ver' via eAPI to get the
                 output of 'show version'.
         expand_aliases
-            Enables/disables the command use of User defined alias.  Per the
+            Enables/disables the command use of user-defined alias. Per the
             documentation:
                 Allowed users to provide the expandAliases parameter to eAPI
                 calls. This allows users to use aliased commands via the API.
                 For example if an alias is configured as 'sv' for 'show version'
                 then an API call with sv and the expandAliases parameter will
                 return the output of show version.
+        stop_on_error
+            Enables/disables the command stop-on-error feature of the eAPI. Per the
+            documentation:
+                If true, eAPI will stop if an error is seen when executing a command.
+
+                For example, when sending 'show version', 'bad command', 'show clock',
+                commands, only 'show version' runs by default. If set to False,
+                'show version' and 'show clock' outputs are returned in the error
+                object even if 'bad command' fails.
         req_id
             A unique identifier that will be echoed back by the switch. May be a string or number.
 
         Returns
         -------
-        list[dict[str, Any] | str] | dict[str, Any] | str | None
-            One or List of output responses, per the description above.
+        Single command, JSON output (suppress_error=False):
+            dict[str, Any]
+        Multiple commands, JSON output (suppress_error=False):
+            list[dict[str, Any]]
+        Single command, TEXT output (suppress_error=False):
+            str
+        Multiple commands, TEXT output (suppress_error=False):
+            list[str]
+        Single command, JSON output (suppress_error=True):
+            dict[str, Any] | None
+        Multiple commands, JSON output (suppress_error=True):
+            list[dict[str, Any]] | None
+        Single command, TEXT output (suppress_error=True):
+            str | None
+        Multiple commands, TEXT output (suppress_error=True):
+            list[str] | None
         """
-        if not any((command, commands)):
+        if command and commands:
+            msg = "Cannot provide both 'command' and 'commands'"
+            raise RuntimeError(msg)
+
+        cmds = [command] if command else commands
+        if not cmds:
             msg = "Required 'command' or 'commands'"
             raise RuntimeError(msg)
 
         jsonrpc = self._jsonrpc_command(
-            commands=[command] if command else commands, ofmt=ofmt, version=version, auto_complete=auto_complete, expand_aliases=expand_aliases, req_id=req_id
+            commands=cmds, ofmt=ofmt, version=version, auto_complete=auto_complete, expand_aliases=expand_aliases, stop_on_error=stop_on_error, req_id=req_id
         )
 
         try:
@@ -197,14 +356,15 @@ class Device(httpx.AsyncClient):
 
     def _jsonrpc_command(  # noqa: PLR0913
         self,
-        commands: Sequence[str | dict[str, Any]] | None = None,
-        ofmt: str | None = None,
-        version: int | str | None = "latest",
+        commands: list[EapiSimpleCommand | EapiComplexCommand],
+        ofmt: Literal["json", "text"] = "json",
+        version: int | Literal["latest"] = "latest",
         *,
         auto_complete: bool = False,
         expand_aliases: bool = False,
+        stop_on_error: bool = True,
         req_id: int | str | None = None,
-    ) -> dict[str, Any]:
+    ) -> JsonRpc:
         """Create the JSON-RPC command dictionary object.
 
         Parameters
@@ -213,6 +373,7 @@ class Device(httpx.AsyncClient):
             A list of commands to execute; results in a list of output responses.
         ofmt
             Either 'json' or 'text'; indicates the output format for the CLI commands.
+            eAPI defaults to 'json'.
         version
             By default the eAPI will use "version 1" for all API object models.
             This driver will, by default, always set version to "latest" so
@@ -232,6 +393,15 @@ class Device(httpx.AsyncClient):
                 For example if an alias is configured as 'sv' for 'show version'
                 then an API call with sv and the expandAliases parameter will
                 return the output of show version.
+        stop_on_error
+            Enables/disables the command stop-on-error feature of the eAPI. Per the
+            documentation:
+                If true, eAPI will stop if an error is seen when executing a command.
+
+                For example, when sending 'show version', 'bad command', 'show clock',
+                commands, only 'show version' runs by default. If set to False,
+                'show version' and 'show clock' outputs are returned in the error
+                object even if 'bad command' fails.
         req_id
             A unique identifier that will be echoed back by the switch. May be a string or number.
 
@@ -241,25 +411,21 @@ class Device(httpx.AsyncClient):
             dict containing the JSON payload to run the command.
 
         """
-        cmd: dict[str, Any] = {
+        return {
             "jsonrpc": "2.0",
             "method": "runCmds",
             "params": {
                 "version": version,
                 "cmds": commands,
-                "format": ofmt or self.EAPI_DEFAULT_OFMT,
+                "format": ofmt,
+                "autoComplete": auto_complete,
+                "expandAliases": expand_aliases,
+                "stopOnError": stop_on_error,
             },
             "id": req_id or id(self),
         }
-        if auto_complete is not None:
-            cmd["params"].update({"autoComplete": auto_complete})
 
-        if expand_aliases is not None:
-            cmd["params"].update({"expandAliases": expand_aliases})
-
-        return cmd
-
-    async def jsonrpc_exec(self, jsonrpc: dict[str, Any]) -> list[dict[str, Any] | str]:
+    async def jsonrpc_exec(self, jsonrpc: JsonRpc) -> list[EapiJsonOutput] | list[EapiTextOutput]:
         """Execute the JSON-RPC dictionary object.
 
         Parameters
@@ -315,7 +481,7 @@ class Device(httpx.AsyncClient):
         failed_cmd = commands[err_at]
 
         raise EapiCommandError(
-            passed=[get_output(cmd_data[cmd_i]) for cmd_i, cmd in enumerate(commands[:err_at])],
+            passed=[get_output(cmd_data[i]) for i in range(err_at)],
             failed=failed_cmd["cmd"] if isinstance(failed_cmd, dict) else failed_cmd,
             errors=cmd_data[err_at]["errors"],
             errmsg=err_msg,
