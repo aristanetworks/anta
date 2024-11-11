@@ -29,6 +29,17 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 DEFAULT_NOFILE = 16384
+COMMAND_QUEUING = False
+
+
+def get_command_queuing() -> bool:
+    """Return the command queuing flag from the environment variable if set."""
+    try:
+        command_queuing = bool(os.environ.get("ANTA_COMMAND_QUEUING", COMMAND_QUEUING))
+    except ValueError as exception:
+        logger.warning("The ANTA_COMMAND_QUEUING environment variable value is invalid: %s\nDefault to %s.", exc_to_str(exception), COMMAND_QUEUING)
+        command_queuing = COMMAND_QUEUING
+    return command_queuing
 
 
 def adjust_rlimit_nofile() -> tuple[int, int]:
@@ -190,11 +201,12 @@ def get_coroutines(selected_tests: defaultdict[AntaDevice, set[AntaTestDefinitio
     list[Coroutine[Any, Any, TestResult]]
         The list of coroutines to run.
     """
+    command_queuing = get_command_queuing()
     coros = []
     for device, test_definitions in selected_tests.items():
         for test in test_definitions:
             try:
-                test_instance = test.test(device=device, inputs=test.inputs)
+                test_instance = test.test(device=device, inputs=test.inputs, command_queuing=command_queuing)
                 manager.add(test_instance.result)
                 coros.append(test_instance.test())
             except Exception as e:  # noqa: PERF203, BLE001
@@ -296,4 +308,5 @@ async def main(  # noqa: PLR0913
     with Catchtime(logger=logger, message="Running ANTA tests"):
         await asyncio.gather(*coroutines)
 
-    log_cache_statistics(selected_inventory.devices)
+    if not get_command_queuing():
+        log_cache_statistics(selected_inventory.devices)

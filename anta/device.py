@@ -81,6 +81,10 @@ class AntaDevice(ABC):
         self.established: bool = False
         self.cache: Cache | None = None
         self.cache_locks: defaultdict[str, asyncio.Lock] | None = None
+        self.command_queue: asyncio.Queue[AntaCommand] = asyncio.Queue()
+        self.batch_task: asyncio.Task[None] | None = None
+        # TODO: Check if we want to make the batch size configurable
+        self.batch_size: int = 100
 
         # Initialize cache if not disabled
         if not disable_cache:
@@ -103,6 +107,12 @@ class AntaDevice(ABC):
         """Initialize cache for the device, can be overridden by subclasses to manipulate how it works."""
         self.cache = Cache(cache_class=Cache.MEMORY, ttl=60, namespace=self.name, plugins=[HitMissRatioPlugin()])
         self.cache_locks = defaultdict(asyncio.Lock)
+
+    def init_batch_task(self) -> None:
+        """Initialize the batch task for the device."""
+        if self.batch_task is None:
+            logger.debug("<%s>: Starting the batch task", self.name)
+            self.batch_task = asyncio.create_task(self._batch_task())
 
     @property
     def cache_statistics(self) -> dict[str, Any] | None:
@@ -136,6 +146,72 @@ class AntaDevice(ABC):
             f"established={self.established!r}, "
             f"disable_cache={self.cache is None!r})"
         )
+
+    async def _batch_task(self) -> None:
+        """Background task to retrieve commands put by tests from the command queue of this device.
+
+        Test coroutines put their AntaCommand instances in the queue, this task retrieves them. Once they stop coming,
+        the instances are grouped by UID, split into JSON and text batches, and collected in batches of `batch_size`.
+        """
+        collection_tasks: list[asyncio.Task[None]] = []
+        all_commands: list[AntaCommand] = []
+
+        while True:
+            try:
+                get_await = self.command_queue.get()
+                command = await asyncio.wait_for(get_await, timeout=0.5)
+                logger.debug("<%s>: Command retrieved from the queue: %s", self.name, command)
+                all_commands.append(command)
+            except asyncio.TimeoutError:  # noqa: PERF203
+                logger.debug("<%s>: All test commands have been retrieved from the queue", self.name)
+                break
+
+        # Group all command instances by UID
+        command_groups: defaultdict[str, list[AntaCommand]] = defaultdict(list[AntaCommand])
+        for command in all_commands:
+            command_groups[command.uid].append(command)
+
+        # Split into JSON and text batches. We can safely take the first command instance from each UID as they are the same.
+        json_commands = {uid: commands for uid, commands in command_groups.items() if commands[0].ofmt == "json"}
+        text_commands = {uid: commands for uid, commands in command_groups.items() if commands[0].ofmt == "text"}
+
+        # Process JSON batches
+        for i in range(0, len(json_commands), self.batch_size):
+            batch = dict(list(json_commands.items())[i : i + self.batch_size])
+            task = asyncio.create_task(self._collect_batch(batch, ofmt="json"))
+            collection_tasks.append(task)
+
+        # Process text batches
+        for i in range(0, len(text_commands), self.batch_size):
+            batch = dict(list(text_commands.items())[i : i + self.batch_size])
+            task = asyncio.create_task(self._collect_batch(batch, ofmt="text"))
+            collection_tasks.append(task)
+
+        # Wait for all collection tasks to complete
+        if collection_tasks:
+            logger.debug("<%s>: Waiting for %d collection tasks to complete", self.name, len(collection_tasks))
+            await asyncio.gather(*collection_tasks)
+
+        # TODO: Handle other exceptions
+
+        logger.debug("<%s>: Stopping the batch task", self.name)
+
+    async def _collect_batch(self, command_groups: dict[str, list[AntaCommand]], ofmt: Literal["json", "text"] = "json") -> None:
+        """Collect a batch of device commands.
+
+        This coroutine must be implemented by subclasses that want to support command queuing
+        in conjunction with the `_batch_task()` method.
+
+        Parameters
+        ----------
+        command_groups
+            Mapping of command instances grouped by UID to avoid duplicate commands.
+        ofmt
+            The output format of the batch.
+        """
+        _ = (command_groups, ofmt)
+        msg = f"_collect_batch method has not been implemented in {self.__class__.__name__} definition"
+        raise NotImplementedError(msg)
 
     @abstractmethod
     async def _collect(self, command: AntaCommand, *, collection_id: str | None = None) -> None:
@@ -192,16 +268,38 @@ class AntaDevice(ABC):
         else:
             await self._collect(command=command, collection_id=collection_id)
 
-    async def collect_commands(self, commands: list[AntaCommand], *, collection_id: str | None = None) -> None:
+    async def collect_commands(self, commands: list[AntaCommand], *, command_queuing: bool = False, collection_id: str | None = None) -> None:
         """Collect multiple commands.
 
         Parameters
         ----------
         commands
             The commands to collect.
+        command_queuing
+            If True, the commands are put in a queue and collected in batches. Default is False.
         collection_id
-            An identifier used to build the eAPI request ID.
+            An identifier used to build the eAPI request ID. Not used when command queuing is enabled.
         """
+        # Collect the commands with queuing
+        if command_queuing:
+            # Disable cache for this device as it is not needed when using command queuing
+            self.cache = None
+            self.cache_locks = None
+
+            # Initialize the device batch task if not already running
+            self.init_batch_task()
+
+            # Put the commands in the queue
+            for command in commands:
+                logger.debug("<%s>: Putting command in the queue: %s", self.name, command)
+                await self.command_queue.put(command)
+
+            # Wait for all commands to be collected.
+            logger.debug("<%s>: Waiting for all commands to be collected", self.name)
+            await asyncio.gather(*[command.event.wait() for command in commands])
+            return
+
+        # Collect the commands without queuing. Default behavior.
         await asyncio.gather(*(self.collect(command=command, collection_id=collection_id) for command in commands))
 
     @abstractmethod
@@ -371,6 +469,78 @@ class AsyncEOSDevice(AntaDevice):
         This covers the use case of port forwarding when the host is localhost and the devices have different ports.
         """
         return (self._session.host, self._session.port)
+
+    async def _collect_batch(self, command_groups: dict[str, list[AntaCommand]], ofmt: Literal["json", "text"] = "json") -> None:  # noqa: C901
+        """Collect a batch of device commands.
+
+        Parameters
+        ----------
+        command_groups
+            Mapping of command instances grouped by UID to avoid duplicate commands.
+        ofmt
+            The output format of the batch.
+        """
+        # Add 'enable' command if required
+        cmds = []
+        if self.enable and self._enable_password is not None:
+            cmds.append({"cmd": "enable", "input": str(self._enable_password)})
+        elif self.enable:
+            # No password
+            cmds.append({"cmd": "enable"})
+
+        # Take first instance from each group for the actual commands
+        cmds.extend(
+            [
+                {"cmd": instances[0].command, "revision": instances[0].revision} if instances[0].revision else {"cmd": instances[0].command}
+                for instances in command_groups.values()
+            ]
+        )
+
+        try:
+            response = await self._session.cli(
+                commands=cmds,
+                ofmt=ofmt,
+                # TODO: See if we want to have different batches for different versions
+                version=1,
+                # TODO: See if want to have a different req_id for each batch
+                req_id=f"ANTA-{id(command_groups)}",
+            )
+
+            # Do not keep response of 'enable' command
+            if self.enable:
+                response = response[1:]
+
+            # Update all AntaCommand instances with their output and signal their completion
+            logger.debug("<%s>: Collected batch of commands, signaling their completion", self.name)
+            for idx, instances in enumerate(command_groups.values()):
+                output = response[idx]
+                for cmd_instance in instances:
+                    cmd_instance.output = output
+                    cmd_instance.event.set()
+
+        except asynceapi.EapiCommandError as e:
+            # TODO: Handle commands that passed
+            for instances in command_groups.values():
+                for cmd_instance in instances:
+                    cmd_instance.errors = e.errors
+                    if cmd_instance.requires_privileges:
+                        logger.error(
+                            "Command '%s' requires privileged mode on %s. Verify user permissions and if the `enable` option is required.",
+                            cmd_instance.command,
+                            self.name,
+                        )
+                    if cmd_instance.supported:
+                        logger.error("Command '%s' failed on %s: %s", cmd_instance.command, self.name, e.errors[0] if len(e.errors) == 1 else e.errors)
+                    else:
+                        logger.debug("Command '%s' is not supported on '%s' (%s)", cmd_instance.command, self.name, self.hw_model)
+                    cmd_instance.event.set()
+
+        # TODO: Handle other exceptions
+        except Exception as e:
+            for instances in command_groups.values():
+                for cmd_instance in instances:
+                    cmd_instance.errors = [exc_to_str(e)]
+                    cmd_instance.event.set()
 
     async def _collect(self, command: AntaCommand, *, collection_id: str | None = None) -> None:  # noqa: C901  function is too complex - because of many required except blocks
         """Collect device command output from EOS using aio-eapi.
