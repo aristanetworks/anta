@@ -73,7 +73,6 @@ repos:
           - pylint_pydantic
           - pytest
           - pytest-codspeed
-          - psutils # Remove after next release
           - respx
 
   - repo: https://github.com/codespell-project/codespell
