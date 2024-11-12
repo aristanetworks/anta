@@ -102,8 +102,7 @@ class VerifyTacacsServers(AntaTest):
             str(server)
             for server in self.inputs.servers
             if not any(
-                str(server) == tacacs_server["serverInfo"]["hostname"] and self.inputs.vrf == tacacs_server["serverInfo"]["vrf"]
-                for tacacs_server in tacacs_servers
+                str(server) == tacacs_server["serverInfo"]["hostname"] and self.inputs.vrf == tacacs_server["serverInfo"]["vrf"] for tacacs_server in tacacs_servers
             )
         ]
         if not not_configured:
