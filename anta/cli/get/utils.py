@@ -212,7 +212,7 @@ def create_inventory_from_ansible(inventory: Path, output: Path, ansible_group: 
     write_inventory_to_file(ansible_hosts, output)
 
 
-def explore_package(module_name: str, level: int = 0, test_name: str | None = None) -> None:
+def explore_package(module_name: str, level: int = 0, test_name: str | None = None, *, short: bool = False) -> None:
     """Parse submodules recursively and print AntaTest example."""
     if (module_spec := importlib.util.find_spec(module_name)) is None or module_spec.origin is None:
         return
@@ -223,29 +223,31 @@ def explore_package(module_name: str, level: int = 0, test_name: str | None = No
             if ispkg:
                 explore_package(qname, level=level + 1, test_name=test_name)
                 continue
-            print_tests_examples(qname, level, test_name)
+            print_tests_examples(qname, level, test_name, short=short)
 
     else:
-        print_tests_examples(module_spec.name, level, test_name)
+        print_tests_examples(module_spec.name, level, test_name, short=short)
 
 
-def print_tests_examples(qname: str, level: int, test_name: str | None) -> None:
+def print_tests_examples(qname: str, level: int, test_name: str | None, *, short: bool = False) -> None:
     """Print tests in qname if matching test_name (or all if test_name is None."""
     qname_module = importlib.import_module(qname)
     module_printed = False
     for _name, obj in inspect.getmembers(qname_module):
         if not inspect.isclass(obj) or not issubclass(obj, AntaTest) or obj == AntaTest:
             continue
-        if test_name and obj.name != test_name:
+        if test_name and not obj.name.startswith(test_name):
             continue
         if not module_printed:
             console.print(f"{qname}:")
             module_printed = True
         console.print(f"  - {obj.name}:")
         console.print(f"      # {obj.description}", soft_wrap=True)
+        if short:
+            continue
         doc = NumpyDocString(obj.__doc__)
         if "Examples" not in doc or not doc["Examples"]:
             msg = f"Test {obj.name} in module {qname} is missing an Example"
             raise LookupError(msg)
         if len(doc["Examples"]) > 4 + level:  # otherwise it is a test with no params.
-            console.print("\n".join(line[4 + 2 * level :] for line in doc["Examples"][level + 3 : -1]))
+            console.print("\n".join(line[2 * level :] for line in doc["Examples"][level + 3 : -1]))

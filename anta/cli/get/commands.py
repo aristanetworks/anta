@@ -137,13 +137,14 @@ def tags(inventory: AntaInventory, **kwargs: Any) -> None:
 
 @click.option("--module", help="Test module to retrieve the examples for.", required=False)
 @click.option("--test", help="Test name to retrieve the example for. If module is set, lookup only in given module.", required=False)
+@click.option("--short", help="Print test names only and not the inputs", required=False, is_flag=True, default=False)
 @click.command
-def tests(module: str | None, test: str | None) -> None:
+def tests(module: str | None, test: str | None, *, short: bool) -> None:
     """Show all builtin ANTA tests with an example output retrieved from each test documentation."""
     filterwarnings("ignore", message="Unknown section Expected Results")
 
     console.print("# Current builtin ANTA tests are:", style="white on blue")
     if module:
-        explore_package(module, test_name=test)
+        explore_package(module, test_name=test, short=short)
     else:
-        explore_package("anta.tests", test_name=test)
+        explore_package("anta.tests", test_name=test, short=short)
