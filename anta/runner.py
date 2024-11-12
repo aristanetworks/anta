@@ -250,10 +250,6 @@ async def main(  # noqa: PLR0913
     dry_run
         Build the list of coroutine to run and stop before test execution.
     """
-    # Adjust the maximum number of open file descriptors for the ANTA process
-    # TODO: Make this better
-    limits = adjust_rlimit_nofile() if os.name == "posix" else (sys.maxsize, sys.maxsize)
-
     if not catalog.tests:
         logger.info("The list of tests is empty, exiting")
         return
@@ -274,9 +270,18 @@ async def main(  # noqa: PLR0913
             "--- ANTA NRFU Run Information ---\n"
             f"Number of devices: {len(inventory)} ({len(selected_inventory)} established)\n"
             f"Total number of selected tests: {final_tests_count}\n"
-            f"Maximum number of open file descriptors for the current ANTA process: {limits[0]}\n"
-            "---------------------------------"
         )
+
+        if os.name == "posix":
+            # Adjust the maximum number of open file descriptors for the ANTA process
+            limits = adjust_rlimit_nofile()
+            run_info += f"Maximum number of open file descriptors for the current ANTA process: {limits[0]}\n"
+        else:
+            # Running on none Posix system, cannot manage the resource.
+            limits = (sys.maxsize, sys.maxsize)
+            run_info += "Running on a none POSIX system, cannot adjust the maximum number of file descriptors.\n"
+
+        run_info += "---------------------------------"
 
         logger.info(run_info)
 
