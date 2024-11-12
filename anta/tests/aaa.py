@@ -102,7 +102,8 @@ class VerifyTacacsServers(AntaTest):
             str(server)
             for server in self.inputs.servers
             if not any(
-                str(server) == tacacs_server["serverInfo"]["hostname"] and self.inputs.vrf == tacacs_server["serverInfo"]["vrf"] for tacacs_server in tacacs_servers
+                str(server) == tacacs_server["serverInfo"]["hostname"] and self.inputs.vrf == tacacs_server["serverInfo"]["vrf"]
+                for tacacs_server in tacacs_servers
             )
         ]
         if not not_configured:
@@ -167,14 +168,14 @@ class VerifyAuthenMethods(AntaTest):
     ```yaml
     anta.tests.aaa:
       - VerifyAuthenMethods:
-        methods:
-          - local
-          - none
-          - logging
-        types:
-          - login
-          - enable
-          - dot1x
+          methods:
+            - local
+            - none
+            - logging
+          types:
+            - login
+            - enable
+            - dot1x
     ```
     """
 
@@ -352,6 +353,7 @@ class VerifyAcctConsoleMethods(AntaTest):
     ```
     """
 
+    description = "Verifies the AAA accounting console method lists for different accounting types (system, exec, commands, dot1x)."
     categories: ClassVar[list[str]] = ["aaa"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show aaa methods accounting", revision=1)]
 
