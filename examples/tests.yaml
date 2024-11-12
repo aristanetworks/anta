@@ -103,6 +103,14 @@ anta.tests.bfd:
         - peer_address: 192.0.255.7
           vrf: default
 anta.tests.configuration:
+  - VerifyZeroTouch:
+  - VerifyRunningConfigDiffs:
+  - VerifyRunningConfigLines:
+      regex_patterns:
+        - "^enable password.*$"
+        - "bla bla"
+anta.tests.cvx:
+  - VerifyMcsClientMounts:
   - VerifyManagementCVX:
       # Verifies the management CVX global status.
       enabled: true
