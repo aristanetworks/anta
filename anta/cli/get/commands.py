@@ -143,7 +143,6 @@ def tests(module: str | None, test: str | None, *, short: bool) -> None:
     """Show all builtin ANTA tests with an example output retrieved from each test documentation."""
     filterwarnings("ignore", message="Unknown section Expected Results")
 
-    console.print("# Current builtin ANTA tests are:", style="white on blue")
     if module:
         explore_package(module, test_name=test, short=short)
     else:

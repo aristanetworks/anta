@@ -275,3 +275,98 @@ def test_from_ansible_overwrite(
     elif expected_exit == ExitCode.INTERNAL_ERROR:
         assert expected_log
         assert expected_log in result.output
+
+
+@pytest.mark.parametrize(
+    ("module", "test_name", "short", "expected_output"),
+    [
+        pytest.param(
+            None,
+            None,
+            False,
+            "VerifyAcctConsoleMethods",
+            id="Get all tests",
+        ),
+        pytest.param(
+            "anta.tests.aaa",
+            None,
+            False,
+            "VerifyAcctConsoleMethods",
+            id="Get tests, filter on module",
+        ),
+        pytest.param(
+            None,
+            "VerifyNTPAssociations",
+            False,
+            "VerifyNTPAssociations",
+            id="Get tests, filter on exact test name",
+        ),
+        pytest.param(
+            None,
+            "VerifyNTP",
+            False,
+            "anta.tests.system",
+            id="Get tests, filter on included test name",
+        ),
+        pytest.param(
+            None,
+            "VerifyNTP",
+            True,
+            "VerifyNTPAssociations",
+            id="Get tests --short",
+        ),
+        pytest.param(
+            "unknown_module",
+            None,
+            True,
+            "",
+            id="Get tests wrong module",
+        ),
+        pytest.param(
+            None,
+            "VerifySomething",
+            True,
+            "",
+            id="Get tests wrong test name",
+        ),
+        pytest.param(
+            "anta.tests.aaa",
+            "VerifyNTP",
+            True,
+            "",
+            id="Get tests test exists but not in module",
+        ),
+    ],
+)
+def test_get_tests(click_runner: CliRunner, module: str | None, test_name: str | None, *, short: bool, expected_output: str) -> None:
+    """Test `anta get tests`.
+
+    The test uses a static ansible-inventory and output as these are tested in other functions
+
+    This test verifies:
+    * that overwrite is working as expected with or without init data in the target file
+    * that when the target file is not empty and a tty is present, the user is prompt with confirmation
+    * Check the behavior when the prompt is filled
+
+    The initial content of the ANTA inventory is set using init_anta_inventory, if it is None, no inventory is set.
+
+    * With overwrite True, the expectation is that the from-ansible command succeeds
+    * With no init (init_anta_inventory == None), the expectation is also that command succeeds
+    """
+    cli_args = [
+        "get",
+        "tests",
+    ]
+    if module is not None:
+        cli_args.extend(["--module", module])
+
+    if test_name is not None:
+        cli_args.extend(["--test", test_name])
+
+    if short:
+        cli_args.append("--short")
+
+    result = click_runner.invoke(anta, cli_args)
+
+    assert result.exit_code == ExitCode.OK
+    assert expected_output in result.output
