@@ -103,17 +103,6 @@ anta.tests.bfd:
         - peer_address: 192.0.255.7
           vrf: default
 anta.tests.configuration:
-  - VerifyZeroTouch:
-  - VerifyRunningConfigDiffs:
-  - VerifyRunningConfigLines:
-      regex_patterns:
-        - "^enable password.*$"
-        - "bla bla"
-anta.tests.cvx:
-  - VerifyMcsClientMounts:
-  - VerifyManagementCVX:
-      # Verifies the management CVX global status.
-      enabled: true
   - VerifyRunningConfigDiffs:
       # Verifies there is no difference between the running-config and the startup-config.
   - VerifyRunningConfigLines:
@@ -146,6 +135,12 @@ anta.tests.connectivity:
           vrf: MGMT
           df_bit: True
           size: 100
+anta.tests.cvx:
+  - VerifyManagementCVX:
+      # Verifies the management CVX global status.
+      enabled: true
+  - VerifyMcsClientMounts:
+      # Verify if all MCS client mounts are in mountStateMountComplete.
 anta.tests.field_notices:
   - VerifyFieldNotice44Resolution:
       # Verifies that the device is using the correct Aboot version per FN0044.
