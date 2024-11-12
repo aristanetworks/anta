@@ -475,7 +475,7 @@ async def main(  # noqa: PLR0913
         )
 
     if dry_run:
-        logger.info("Dry-run mode, exiting before running tests.")
+        logger.info("Dry-run mode, exiting before running the tests.")
         async for test in generator:
             test.close()
         return
