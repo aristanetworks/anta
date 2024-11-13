@@ -7,21 +7,13 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar, TypeVar
+from typing import ClassVar, TypeVar
 
 from pydantic import field_validator
 
 from anta.input_models.routing.bgp import BgpAddressFamily, BgpAfi, BgpNeighbor, BgpPeer, VxlanEndpoint
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import format_data, get_item, get_value
-
-if TYPE_CHECKING:
-    import sys
-
-    if sys.version_info >= (3, 11):
-        pass
-    else:
-        pass
 
 # Using a TypeVar for the BgpPeer model since mypy thinks it's a ClassVar and not a valid type when used in field validators
 T = TypeVar("T", bound=BgpPeer)
@@ -531,10 +523,9 @@ class VerifyBGPPeerMPCaps(AntaTest):
                 # Check if the capability is found
                 if (capability_status := get_value(act_mp_caps, capability)) is None:
                     self.result.is_failure(f"{peer} - {capability} not found")
-                    continue
 
                 # Check if the capability is advertised, received, and enabled
-                if not _check_bgp_neighbor_capability(capability_status):
+                elif not _check_bgp_neighbor_capability(capability_status):
                     self.result.is_failure(f"{peer} - {capability} not negotiated; {format_data(capability_status)}")
 
 
