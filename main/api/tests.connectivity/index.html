@@ -1016,26 +1016,6 @@
 
     <!-- Table of contents list -->
     
-      <nav class="md-nav" aria-label="Inputs">
-        <ul class="md-nav__list">
-          
-          
-            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#anta.tests.connectivity.VerifyLLDPNeighbors-attributes" class="md-nav__link">
-      <span class="md-ellipsis">
-        Neighbor
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-  </li>
-          
-          
-        </ul>
-      </nav>
-    
   </li>
           
           
@@ -1103,6 +1083,34 @@
     <a href="#anta.input_models.connectivity.Host" class="md-nav__link">
       <span class="md-ellipsis">
         Host
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.input_models.connectivity.LLDPNeighbor" class="md-nav__link">
+      <span class="md-ellipsis">
+        LLDPNeighbor
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.input_models.connectivity.Neighbor" class="md-nav__link">
+      <span class="md-ellipsis">
+        Neighbor
       </span>
     </a>
 
@@ -2340,26 +2348,6 @@
 
     <!-- Table of contents list -->
     
-      <nav class="md-nav" aria-label="Inputs">
-        <ul class="md-nav__list">
-          
-          
-            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#anta.tests.connectivity.VerifyLLDPNeighbors-attributes" class="md-nav__link">
-      <span class="md-ellipsis">
-        Neighbor
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-  </li>
-          
-          
-        </ul>
-      </nav>
-    
   </li>
           
           
@@ -2427,6 +2415,34 @@
     <a href="#anta.input_models.connectivity.Host" class="md-nav__link">
       <span class="md-ellipsis">
         Host
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.input_models.connectivity.LLDPNeighbor" class="md-nav__link">
+      <span class="md-ellipsis">
+        LLDPNeighbor
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.input_models.connectivity.Neighbor" class="md-nav__link">
+      <span class="md-ellipsis">
+        Neighbor
       </span>
     </a>
 
@@ -2509,16 +2525,22 @@
     <div class="doc doc-contents ">
 
   
-        <p>Verifies that the provided LLDP neighbors are present and connected with the correct configuration.</p>
+        <p>Verifies the connection status of the specified LLDP (Link Layer Discovery Protocol) neighbors.</p>
+<p>This test performs the following checks for each specified LLDP neighbor:</p>
+<ol>
+<li>Confirming matching ports on both local and neighboring devices.</li>
+<li>Ensuring compatibility of device names and interface identifiers.</li>
+<li>Verifying neighbor configurations match expected values per interface; extra neighbors are ignored.</li>
+</ol>
 
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>Success: The test will pass if each of the provided LLDP neighbors is present and connected to the specified port and device.</li>
+<li>Success: The test will pass if all the provided LLDP neighbors are present and correctly connected to the specified port and device.</li>
 <li>Failure: The test will fail if any of the following conditions are met:<ul>
-<li>The provided LLDP neighbor is not found.</li>
-<li>The system name or port of the LLDP neighbor does not match the provided information.</li>
+<li>The provided LLDP neighbor is not found in the LLDP table.</li>
+<li>The system name or port of the LLDP neighbor does not match the expected information.</li>
 </ul>
 </li>
 </ul>
@@ -2569,7 +2591,7 @@
               <tr>
                 <td><code>neighbors</code></td>
                 <td>
-                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<span title="anta.tests.connectivity.VerifyLLDPNeighbors.Input.Neighbor">Neighbor</span>]</code>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="anta.input_models.connectivity.LLDPNeighbor" href="#anta.input_models.connectivity.LLDPNeighbor">LLDPNeighbor</a>]</code>
                 </td>
                 <td>
                   <div class="doc-md-description">
@@ -2582,66 +2604,6 @@
               </tr>
           </tbody>
         </table>
-<h4 id="anta.tests.connectivity.VerifyLLDPNeighbors-attributes">Neighbor<a href="#anta.tests.connectivity.VerifyLLDPNeighbors-attributes" class="headerlink" title="Permanent link">&para;</a></h4>          <div class="doc doc-children doc-contents">
-  
-
-  <div class="doc doc-children">
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Type</th>
-              <th>Description</th>
-              <th>Default</th>
-            </tr>
-          </thead>
-          <tbody>
-              <tr>
-                <td><code>port</code></td>
-                <td>
-                      <code><a class="autorefs autorefs-internal" title="anta.custom_types.Interface" href="../types/#anta.custom_types.Interface">Interface</a></code>
-                </td>
-                <td>
-                  <div class="doc-md-description">
-                    LLDP port.
-                  </div>
-                </td>
-                <td>
-                    <em>-</em>
-                </td>
-              </tr>
-              <tr>
-                <td><code>neighbor_device</code></td>
-                <td>
-                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>
-                </td>
-                <td>
-                  <div class="doc-md-description">
-                    LLDP neighbor device.
-                  </div>
-                </td>
-                <td>
-                    <em>-</em>
-                </td>
-              </tr>
-              <tr>
-                <td><code>neighbor_port</code></td>
-                <td>
-                      <code><a class="autorefs autorefs-internal" title="anta.custom_types.Interface" href="../types/#anta.custom_types.Interface">Interface</a></code>
-                </td>
-                <td>
-                  <div class="doc-md-description">
-                    LLDP neighbor port.
-                  </div>
-                </td>
-                <td>
-                    <em>-</em>
-                </td>
-              </tr>
-          </tbody>
-        </table>
-  </div>
-          </div>
   </div>
 
 
@@ -2651,7 +2613,10 @@
   </div>
 	<details class="quote">
 	<summary>Source code in <code>anta/tests/connectivity.py</code></summary>
-	<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 79</span>
+	<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
 <span class="normal"> 80</span>
 <span class="normal"> 81</span>
 <span class="normal"> 82</span>
@@ -2712,34 +2677,21 @@
 <span class="normal">137</span>
 <span class="normal">138</span>
 <span class="normal">139</span>
-<span class="normal">140</span>
-<span class="normal">141</span>
-<span class="normal">142</span>
-<span class="normal">143</span>
-<span class="normal">144</span>
-<span class="normal">145</span>
-<span class="normal">146</span>
-<span class="normal">147</span>
-<span class="normal">148</span>
-<span class="normal">149</span>
-<span class="normal">150</span>
-<span class="normal">151</span>
-<span class="normal">152</span>
-<span class="normal">153</span>
-<span class="normal">154</span>
-<span class="normal">155</span>
-<span class="normal">156</span>
-<span class="normal">157</span>
-<span class="normal">158</span>
-<span class="normal">159</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyLLDPNeighbors</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies that the provided LLDP neighbors are present and connected with the correct configuration.</span>
+<span class="normal">140</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyLLDPNeighbors</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the connection status of the specified LLDP (Link Layer Discovery Protocol) neighbors.</span>
+
+<span class="sd">    This test performs the following checks for each specified LLDP neighbor:</span>
+
+<span class="sd">      1. Confirming matching ports on both local and neighboring devices.</span>
+<span class="sd">      2. Ensuring compatibility of device names and interface identifiers.</span>
+<span class="sd">      3. Verifying neighbor configurations match expected values per interface; extra neighbors are ignored.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
-<span class="sd">    * Success: The test will pass if each of the provided LLDP neighbors is present and connected to the specified port and device.</span>
+<span class="sd">    * Success: The test will pass if all the provided LLDP neighbors are present and correctly connected to the specified port and device.</span>
 <span class="sd">    * Failure: The test will fail if any of the following conditions are met:</span>
-<span class="sd">        - The provided LLDP neighbor is not found.</span>
-<span class="sd">        - The system name or port of the LLDP neighbor does not match the provided information.</span>
+<span class="sd">        - The provided LLDP neighbor is not found in the LLDP table.</span>
+<span class="sd">        - The system name or port of the LLDP neighbor does not match the expected information.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -2763,55 +2715,33 @@
     <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyLLDPNeighbors test.&quot;&quot;&quot;</span>
 
-        <span class="n">neighbors</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Neighbor</span><span class="p">]</span>
+        <span class="n">neighbors</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">LLDPNeighbor</span><span class="p">]</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;List of LLDP neighbors.&quot;&quot;&quot;</span>
-
-        <span class="k">class</span> <span class="nc">Neighbor</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;Model for an LLDP neighbor.&quot;&quot;&quot;</span>
-
-            <span class="n">port</span><span class="p">:</span> <span class="n">Interface</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;LLDP port.&quot;&quot;&quot;</span>
-            <span class="n">neighbor_device</span><span class="p">:</span> <span class="nb">str</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;LLDP neighbor device.&quot;&quot;&quot;</span>
-            <span class="n">neighbor_port</span><span class="p">:</span> <span class="n">Interface</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;LLDP neighbor port.&quot;&quot;&quot;</span>
+        <span class="n">Neighbor</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">Neighbor</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Neighbor</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyLLDPNeighbors.&quot;&quot;&quot;</span>
-        <span class="n">failures</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
         <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">&quot;lldpNeighbors&quot;</span><span class="p">]</span>
-
         <span class="k">for</span> <span class="n">neighbor</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">neighbors</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">neighbor</span><span class="o">.</span><span class="n">port</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">output</span><span class="p">:</span>
-                <span class="n">failures</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;Port(s) not configured&quot;</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">neighbor</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">neighbor</span><span class="si">}</span><span class="s2"> - Port not found&quot;</span><span class="p">)</span>
                 <span class="k">continue</span>
 
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lldp_neighbor_info</span> <span class="o">:=</span> <span class="n">output</span><span class="p">[</span><span class="n">neighbor</span><span class="o">.</span><span class="n">port</span><span class="p">][</span><span class="s2">&quot;lldpNeighborInfo&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">failures</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;No LLDP neighbor(s) on port(s)&quot;</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">neighbor</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">neighbor</span><span class="si">}</span><span class="s2"> - No LLDP neighbors&quot;</span><span class="p">)</span>
                 <span class="k">continue</span>
 
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span>
+            <span class="c1"># Check if the system name and neighbor port matches</span>
+            <span class="n">match_found</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span>
                 <span class="n">info</span><span class="p">[</span><span class="s2">&quot;systemName&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">neighbor</span><span class="o">.</span><span class="n">neighbor_device</span> <span class="ow">and</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;neighborInterfaceInfo&quot;</span><span class="p">][</span><span class="s2">&quot;interfaceId_v2&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">neighbor</span><span class="o">.</span><span class="n">neighbor_port</span>
                 <span class="k">for</span> <span class="n">info</span> <span class="ow">in</span> <span class="n">lldp_neighbor_info</span>
-            <span class="p">):</span>
-                <span class="n">neighbors</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">      &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                    <span class="p">[</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">neighbor</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">neighbor</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
-                        <span class="k">for</span> <span class="n">neighbor</span> <span class="ow">in</span> <span class="p">[(</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;systemName&quot;</span><span class="p">],</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;neighborInterfaceInfo&quot;</span><span class="p">][</span><span class="s2">&quot;interfaceId_v2&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">info</span> <span class="ow">in</span> <span class="n">lldp_neighbor_info</span><span class="p">]</span>
-                    <span class="p">]</span>
-                <span class="p">)</span>
-                <span class="n">failures</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;Wrong LLDP neighbor(s) on port(s)&quot;</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">neighbor</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="se">\n</span><span class="s2">      </span><span class="si">{</span><span class="n">neighbors</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">failures</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">failure_messages</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">for</span> <span class="n">failure_type</span><span class="p">,</span> <span class="n">ports</span> <span class="ow">in</span> <span class="n">failures</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="n">ports_str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">   &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ports</span><span class="p">)</span>
-                <span class="n">failure_messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">failure_type</span><span class="si">}</span><span class="s2">:</span><span class="se">\n</span><span class="s2">   </span><span class="si">{</span><span class="n">ports_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">failure_messages</span><span class="p">))</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">match_found</span><span class="p">:</span>
+                <span class="n">failure_msg</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;systemName&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;neighborInterfaceInfo&#39;</span><span class="p">][</span><span class="s1">&#39;interfaceId_v2&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">info</span> <span class="ow">in</span> <span class="n">lldp_neighbor_info</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">neighbor</span><span class="si">}</span><span class="s2"> - Wrong LLDP neighbors: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">failure_msg</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -2914,7 +2844,10 @@
   </div>
 	<details class="quote">
 	<summary>Source code in <code>anta/tests/connectivity.py</code></summary>
-	<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">19</span>
+	<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
 <span class="normal">20</span>
 <span class="normal">21</span>
 <span class="normal">22</span>
@@ -2968,10 +2901,7 @@
 <span class="normal">70</span>
 <span class="normal">71</span>
 <span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyReachability</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">73</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyReachability</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Test network reachability to one or many destination IP(s).</span>
 
 <span class="sd">    Expected Results</span>
@@ -3209,9 +3139,7 @@
   </div>
 	<details class="quote">
 	<summary>Source code in <code>anta/input_models/connectivity.py</code></summary>
-	<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
+	<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">17</span>
 <span class="normal">18</span>
 <span class="normal">19</span>
 <span class="normal">20</span>
@@ -3235,7 +3163,9 @@
 <span class="normal">38</span>
 <span class="normal">39</span>
 <span class="normal">40</span>
-<span class="normal">41</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Host</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Host</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Model for a remote host to ping.&quot;&quot;&quot;</span>
 
     <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
@@ -3262,6 +3192,248 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">df_status</span> <span class="o">=</span> <span class="s2">&quot;, df-bit: enabled&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_bit</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Host </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">destination</span><span class="si">}</span><span class="s2"> (src: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="si">}</span><span class="s2">, vrf: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">, size: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">B, repeat: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">repeat</span><span class="si">}{</span><span class="n">df_status</span><span class="si">}</span><span class="s2">)&quot;</span>
+</code></pre></div></td></tr></table></div>
+  </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="anta.input_models.connectivity.LLDPNeighbor" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">LLDPNeighbor</span>
+
+
+<a href="#anta.input_models.connectivity.LLDPNeighbor" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+
+  
+        <p>LLDP (Link Layer Discovery Protocol) model representing the port details and neighbor information.</p>
+
+
+
+
+
+
+  
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+  
+
+  <div class="doc doc-children">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Description</th>
+              <th>Default</th>
+            </tr>
+          </thead>
+          <tbody>
+              <tr>
+                <td><code>port</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-internal" title="anta.custom_types.Interface" href="../types/#anta.custom_types.Interface">Interface</a></code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    The LLDP port for the local device.
+                  </div>
+                </td>
+                <td>
+                    <em>-</em>
+                </td>
+              </tr>
+              <tr>
+                <td><code>neighbor_device</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    The system name of the LLDP neighbor device.
+                  </div>
+                </td>
+                <td>
+                    <em>-</em>
+                </td>
+              </tr>
+              <tr>
+                <td><code>neighbor_port</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-internal" title="anta.custom_types.Interface" href="../types/#anta.custom_types.Interface">Interface</a></code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    The LLDP port on the neighboring device.
+                  </div>
+                </td>
+                <td>
+                    <em>-</em>
+                </td>
+              </tr>
+          </tbody>
+        </table>
+  </div>
+
+
+
+
+
+
+  </div>
+	<details class="quote">
+	<summary>Source code in <code>anta/input_models/connectivity.py</code></summary>
+	<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">LLDPNeighbor</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;LLDP (Link Layer Discovery Protocol) model representing the port details and neighbor information.&quot;&quot;&quot;</span>
+
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+    <span class="n">port</span><span class="p">:</span> <span class="n">Interface</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The LLDP port for the local device.&quot;&quot;&quot;</span>
+    <span class="n">neighbor_device</span><span class="p">:</span> <span class="nb">str</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The system name of the LLDP neighbor device.&quot;&quot;&quot;</span>
+    <span class="n">neighbor_port</span><span class="p">:</span> <span class="n">Interface</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The LLDP port on the neighboring device.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a human-readable string representation of the LLDPNeighbor for reporting.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        Port Ethernet1 (Neighbor: DC1-SPINE2, Neighbor Port: Ethernet2)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Port </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s2"> (Neighbor: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">neighbor_device</span><span class="si">}</span><span class="s2">, Neighbor Port: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">neighbor_port</span><span class="si">}</span><span class="s2">)&quot;</span>
+</code></pre></div></td></tr></table></div>
+  </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="anta.input_models.connectivity.Neighbor" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">Neighbor</span>
+
+
+<a href="#anta.input_models.connectivity.Neighbor" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">Neighbor</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+  
+        <p>Alias for the LLDPNeighbor model to maintain backward compatibility.</p>
+<p>When initialized, it will emit a deprecation warning and call the LLDPNeighbor model.</p>
+<p>TODO: Remove this class in ANTA v2.0.0.</p>
+
+
+
+
+
+
+                    <details class="quote">
+                    <summary>Source code in <code>anta/input_models/connectivity.py</code></summary>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: ANN401</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize the LLDPNeighbor class, emitting a depreciation warning.&quot;&quot;&quot;</span>
+    <span class="n">warn</span><span class="p">(</span>
+        <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Neighbor model is deprecated and will be removed in ANTA v2.0.0. Use the LLDPNeighbor model instead.&quot;</span><span class="p">,</span>
+        <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+                  </details>
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+	<details class="quote">
+	<summary>Source code in <code>anta/input_models/connectivity.py</code></summary>
+	<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Neighbor</span><span class="p">(</span><span class="n">LLDPNeighbor</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Alias for the LLDPNeighbor model to maintain backward compatibility.</span>
+
+<span class="sd">    When initialized, it will emit a deprecation warning and call the LLDPNeighbor model.</span>
+
+<span class="sd">    TODO: Remove this class in ANTA v2.0.0.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: ANN401</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the LLDPNeighbor class, emitting a depreciation warning.&quot;&quot;&quot;</span>
+        <span class="n">warn</span><span class="p">(</span>
+            <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Neighbor model is deprecated and will be removed in ANTA v2.0.0. Use the LLDPNeighbor model instead.&quot;</span><span class="p">,</span>
+            <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
