@@ -112,16 +112,16 @@ class BgpAddressFamily(BaseModel):
         return base_string
 
 
-class BgpAfi(BgpAddressFamily):
+class BgpAfi(BgpAddressFamily):  # pragma: no cover
     """Alias for the BgpAddressFamily model to maintain backward compatibility.
 
-    When initialized, it will emit a depreciation warning and call the BgpAddressFamily model.
+    When initialized, it will emit a deprecation warning and call the BgpAddressFamily model.
 
     TODO: Remove this class in ANTA v2.0.0.
     """
 
     def __init__(self, **data: Any) -> None:  # noqa: ANN401
-        """Initialize the BgpAfi class, emitting a depreciation warning."""
+        """Initialize the BgpAfi class, emitting a deprecation warning."""
         warn(
             message="BgpAfi model is deprecated and will be removed in ANTA v2.0.0. Use the BgpAddressFamily model instead.",
             category=DeprecationWarning,
