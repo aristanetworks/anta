@@ -539,7 +539,7 @@ class VerifyBGPPeerMPCaps(AntaTest):
 
 
 class VerifyBGPPeerASNCap(AntaTest):
-    """Verifies the four octet asn ASN capability of BGP peers.
+    """Verifies the four octet ASN capability of BGP peers.
 
     This test performs the following checks for each specified peer:
 
@@ -640,7 +640,6 @@ class VerifyBGPPeerRouteRefreshCap(AntaTest):
     ```
     """
 
-    description = "Verifies the route refresh capabilities of a BGP peer."
     categories: ClassVar[list[str]] = ["bgp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=3)]
 
@@ -712,7 +711,6 @@ class VerifyBGPPeerMD5Auth(AntaTest):
     ```
     """
 
-    description = "Verifies the MD5 authentication and state of a BGP peer."
     categories: ClassVar[list[str]] = ["bgp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp neighbors vrf all", revision=3)]
 
