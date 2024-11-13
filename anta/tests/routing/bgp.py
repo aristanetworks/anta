@@ -26,6 +26,9 @@ if TYPE_CHECKING:
     else:
         from typing_extensions import Self
 
+# pylint: disable=C0302
+# TODO: Refactor to reduce the number of lines in this module later
+
 
 def _add_bgp_failures(failures: dict[tuple[str, str | None], dict[str, Any]], afi: Afi, safi: Safi | None, vrf: str, issue: str | dict[str, Any]) -> None:
     """Add a BGP failure entry to the given `failures` dictionary.
@@ -169,6 +172,43 @@ def _add_bgp_routes_failure(
             failure_routes = deep_update(failure_routes, failure)
 
     return failure_routes
+
+
+def _get_inconsistent_peers(peer_details: dict[Any, Any], bgp_peers: list[IPv4Address] | None) -> dict[Any, Any]:
+    """Identify BGP peers with inconsistency of prefix(s) received and accepted in a BGP session.
+
+    Parameters
+    ----------
+    peer_details: dict[Any, Any]
+        The BGP peer data dictionary.
+    bgp_peers: list[IPv4Address] | None
+        List of IPv4 address of a BGP peer to be verified. If not provided, test will verifies all the BGP peers.
+
+    Returns
+    -------
+    dict[Any, Any]: A dictionary containing the BGP peer(s) with inconsistent prefix(s).
+
+    """
+    failure: dict[Any, Any] = {}
+
+    # Update the peer details as per input peer addresses for verification.
+    if bgp_peers:
+        input_peers_detail: dict[Any, Any] = {}
+        for peer in bgp_peers:
+            if not (peer_detail := peer_details.get(str(peer))):
+                failure[str(peer)] = "Not Configured"
+            else:
+                input_peers_detail[str(peer)] = peer_detail
+        peer_details = input_peers_detail
+
+    # Iterate over each peer and verify the prefix(s) consistency.
+    for peer, peer_detail in peer_details.items():
+        prefix_rcv = peer_detail.get("prefixReceived", "Not Found")
+        prefix_acc = peer_detail.get("prefixAccepted", "Not Found")
+        if (prefix_acc and prefix_rcv) == "Not Found" or prefix_rcv != prefix_acc:
+            failure[peer] = {"prefix received": prefix_rcv, "prefix accepted": prefix_acc}
+
+    return failure
 
 
 class VerifyBGPPeerCount(AntaTest):
@@ -1605,3 +1645,144 @@ class VerifyBGPPeerRouteLimit(AntaTest):
             self.result.is_success()
         else:
             self.result.is_failure(f"The following BGP peer(s) are not configured or maximum routes and maximum routes warning limit is not correct:\n{failures}")
+
+
+class VerifyBGPPeerPrefixes(AntaTest):
+    """Verifies BGP IPv4 peer(s) consistency of prefix(s) received and accepted in a BGP session.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the `PfxRcd` equals `PfxAcc`, indicating that all received prefix(s) were accepted.
+    * Failure: The test will fail if the `PfxRcd` is not equal to `PfxAcc`, indicating that some prefix(s) were rejected/filtered out or
+    peer(s) are not configured.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      bgp:
+        - VerifyBGPPeerPrefixes:
+            address_families:
+              - afi: ipv4
+                safi: unicast
+                peers:
+                  - 10.100.0.8
+                  - 10.100.0.10
+              - afi: ipv4
+                safi: multicast
+              - afi: evpn
+              - afi: vpn-ipv4
+              - afi: ipv4
+                safi: labeled-unicast
+    ```
+    """
+
+    name = "VerifyBGPPeerPrefixes"
+    description = "Verifies the prefix(s) received and accepted of a BGP IPv4 peer."
+    categories: ClassVar[list[str]] = ["bgp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
+        AntaTemplate(template="show bgp {afi} {safi} summary vrf {vrf}", revision=3),
+        AntaTemplate(template="show bgp {afi} summary", revision=3),
+    ]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyBGPPeerPrefixes test."""
+
+        address_families: list[BgpAfi]
+        """List of BGP address families (BgpAfi)."""
+
+        class BgpAfi(BaseModel):
+            """Model for a BGP address family (AFI) and subsequent address family (SAFI)."""
+
+            afi: Afi
+            """BGP address family (AFI)."""
+            safi: Safi | None = None
+            """Optional BGP subsequent service family (SAFI).
+
+            If the input `afi` is `ipv4` or `ipv6`, a valid `safi` must be provided.
+            """
+            vrf: str = "default"
+            """
+            Optional VRF for IPv4 and IPv6. If not provided, it defaults to `default`.
+
+            If the input `afi` is not `ipv4` or `ipv6`, e.g. `evpn`, `vrf` must be `default`.
+            """
+            peers: list[IPv4Address] | None = None
+            """Optional list of IPv4 address of a BGP peer to be verified. If not provided, test will verifies all the BGP peers."""
+
+            @model_validator(mode="after")
+            def validate_inputs(self: BaseModel) -> BaseModel:
+                """Validate the inputs provided to the BgpAfi class.
+
+                If afi is either ipv4 or ipv6, safi must be provided.
+
+                If afi is not ipv4 or ipv6, safi must not be provided and vrf must be default.
+                """
+                if self.afi in ["ipv4", "ipv6"]:
+                    if self.safi is None:
+                        msg = "'safi' must be provided when afi is ipv4 or ipv6"
+                        raise ValueError(msg)
+                elif self.safi is not None:
+                    msg = "'safi' must not be provided when afi is not ipv4 or ipv6"
+                    raise ValueError(msg)
+                elif self.vrf != "default":
+                    msg = "'vrf' must be default when afi is not ipv4 or ipv6"
+                    raise ValueError(msg)
+                return self
+
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        """Render the template for each BGP address family in the input list."""
+        commands = []
+        for afi in self.inputs.address_families:
+            if template == VerifyBGPPeerPrefixes.commands[0] and afi.afi in ["ipv4", "ipv6"] and afi.safi != "sr-te":
+                commands.append(template.render(afi=afi.afi, safi=afi.safi, vrf=afi.vrf))
+
+            # For SR-TE SAFI, the EOS command supports sr-te first then ipv4/ipv6
+            elif template == VerifyBGPPeerPrefixes.commands[0] and afi.afi in ["ipv4", "ipv6"] and afi.safi == "sr-te":
+                commands.append(template.render(afi=afi.safi, safi=afi.afi, vrf=afi.vrf))
+            elif template == VerifyBGPPeerPrefixes.commands[1] and afi.afi not in ["ipv4", "ipv6"]:
+                commands.append(template.render(afi=afi.afi))
+        return commands
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyBGPPeerPrefixes."""
+        self.result.is_success()
+        failures: dict[Any, Any] = {}
+
+        for command, input_entry in zip(self.instance_commands, self.inputs.address_families):
+            command_output = command.json_output
+            afi = input_entry.afi
+            safi = input_entry.safi
+            afi_vrf = input_entry.vrf
+            input_peers = input_entry.peers
+
+            # Update failures dictionary for `afi`, later on removing the same if no failure found.
+            if not failures.get(afi):
+                failures[afi] = {}
+
+            # Verify peer details.
+            if not (peer_details := get_value(command_output, f"vrfs..{afi_vrf}..peers", separator="..")):
+                failures[afi].update({safi: "Peers not configured"})
+                if not safi:
+                    failures[afi] = "Peers not configured"
+                continue
+
+            # Verify the received and accepted prefix(s).
+            failure_logs = _get_inconsistent_peers(peer_details, input_peers)
+
+            # Update failures if any.
+            if failure_logs and safi:
+                failures[afi].update({safi: failure_logs})
+            elif failure_logs:
+                failures[afi].update(failure_logs)
+
+            # Remove AFI from failures if empty.
+            if not failures.get(afi):
+                failures.pop(afi, None)
+
+        # Check if any failures
+        if failures:
+            self.result.is_failure(
+                f"The following BGP address family(s), peers are not configured or prefix(s) received and accepted are not consistent:\n{failures}"
+            )
