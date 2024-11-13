@@ -412,7 +412,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Port Ethernet2 (Neighbor: DC1-SPINE2, Neighbor Port: Ethernet1) - Wrong LLDP neighbors; DC1-SPINE2/Ethernet2"],
+            "messages": ["Port Ethernet2 (Neighbor: DC1-SPINE2, Neighbor Port: Ethernet1) - Wrong LLDP neighbors: DC1-SPINE2/Ethernet2"],
         },
     },
     {
@@ -450,7 +450,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Port Ethernet1 (Neighbor: DC1-SPINE1, Neighbor Port: Ethernet1) - Wrong LLDP neighbors; DC1-SPINE1/Ethernet2",
+                "Port Ethernet1 (Neighbor: DC1-SPINE1, Neighbor Port: Ethernet1) - Wrong LLDP neighbors: DC1-SPINE1/Ethernet2",
                 "Port Ethernet2 (Neighbor: DC1-SPINE2, Neighbor Port: Ethernet1) - No LLDP neighbors",
                 "Port Ethernet3 (Neighbor: DC1-SPINE3, Neighbor Port: Ethernet1) - Port not found",
             ],
@@ -498,7 +498,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Port Ethernet1 (Neighbor: DC1-SPINE3, Neighbor Port: Ethernet1) - Wrong LLDP neighbors; DC1-SPINE1/Ethernet1, DC1-SPINE2/Ethernet1"],
+            "messages": ["Port Ethernet1 (Neighbor: DC1-SPINE3, Neighbor Port: Ethernet1) - Wrong LLDP neighbors: DC1-SPINE1/Ethernet1, DC1-SPINE2/Ethernet1"],
         },
     },
 ]

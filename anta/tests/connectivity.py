@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import ClassVar
 
-from anta.input_models.connectivity import Host, Neighbor
+from anta.input_models.connectivity import Host, LLDPNeighbor, Neighbor
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 
 
@@ -80,6 +80,7 @@ class VerifyLLDPNeighbors(AntaTest):
 
       1. Confirming matching ports on both local and neighboring devices.
       2. Ensuring compatibility of device names and interface identifiers.
+      3. Verifying neighbor configurations match expected values per interface; extra neighbors are ignored.
 
     Expected Results
     ----------------
@@ -110,7 +111,7 @@ class VerifyLLDPNeighbors(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyLLDPNeighbors test."""
 
-        neighbors: list[Neighbor]
+        neighbors: list[LLDPNeighbor]
         """List of LLDP neighbors."""
         Neighbor: ClassVar[type[Neighbor]] = Neighbor
 
@@ -136,4 +137,4 @@ class VerifyLLDPNeighbors(AntaTest):
             )
             if not match_found:
                 failure_msg = [f"{info['systemName']}/{info['neighborInterfaceInfo']['interfaceId_v2']}" for info in lldp_neighbor_info]
-                self.result.is_failure(f"{neighbor} - Wrong LLDP neighbors; {', '.join(failure_msg)}")
+                self.result.is_failure(f"{neighbor} - Wrong LLDP neighbors: {', '.join(failure_msg)}")
