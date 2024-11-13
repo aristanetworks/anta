@@ -65,7 +65,7 @@ class LLDPNeighbor(BaseModel):
         return f"Port {self.port} (Neighbor: {self.neighbor_device}, Neighbor Port: {self.neighbor_port})"
 
 
-class Neighbor(LLDPNeighbor):
+class Neighbor(LLDPNeighbor):  # pragma: no cover
     """Alias for the LLDPNeighbor model to maintain backward compatibility.
 
     When initialized, it will emit a deprecation warning and call the LLDPNeighbor model.
