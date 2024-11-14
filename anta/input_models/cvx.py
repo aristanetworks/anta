@@ -9,8 +9,11 @@ from typing import Literal
 
 from pydantic import BaseModel
 
+from anta.custom_types import Hostname
+
 
 class CVXPeers(BaseModel):
     """Model for a CVX Cluster Peer."""
 
+    peer_name: Hostname
     registration_state: Literal["Connecting", "Connected", "Registration error", "Registration complete", "Unexpected peer state"] = "Registration complete"

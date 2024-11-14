@@ -13,6 +13,7 @@ from typing import TYPE_CHECKING, ClassVar, Literal
 from anta.custom_types import RegexString
 from anta.input_models.cvx import CVXPeers
 from anta.models import AntaCommand, AntaTest
+from anta.tools import get_value
 
 if TYPE_CHECKING:
     from anta.models import AntaTemplate
@@ -183,10 +184,13 @@ class VerifyCVXClusterStatus(AntaTest):
     anta.tests.cvx:
       - VerifyCVXClusterStatus:
           enabled: true
-          clusterMode: true
+          cluster_mode: true
           role: Master
-          peerStatus:
-            registrationState: Registration ok
+          peer_status:
+            - peer_name : cvx-red-2
+              registration_state: Registration complete
+            - peer_name: cvx-red-3
+              registration_state: Registration complete
     ```
     """
 
@@ -210,10 +214,21 @@ class VerifyCVXClusterStatus(AntaTest):
         """Main test function for VerifyCVXClusterStatus."""
         command_output = self.instance_commands[0].json_output
         self.result.is_success()
-        cluster_status = command_output["clusterStatus"]
-        if not command_output["enabled"]:
-            self.result.is_failure("CVX Server status is not enabled")
-        if not command_output["clusterMode"]:
+        cluster_status = command_output.get("clusterStatus")
+        if not cluster_status:
             self.result.is_failure("CVX Server is not a cluster")
-        if (cluster_state := cluster_status.get("role")) != self.inputs.role:
-            self.result.is_failure(f"CVX Role is not valid: {cluster_state}")
+        else:
+            if not command_output["enabled"]:
+                self.result.is_failure("CVX Server status is not enabled")
+            if not (command_output["clusterMode"] and cluster_status):
+                self.result.is_failure("CVX Server is not a cluster")
+            if (cluster_state := cluster_status.get("role")) != self.inputs.role:
+                self.result.is_failure(f"CVX Role is not valid: {cluster_state}")
+            peer_cluster = cluster_status.get("peerStatus")
+            for peer in self.inputs.peer_status:
+                if (eos_peer_status := get_value(peer_cluster, peer.peer_name, separator="..")) is None:
+                    self.result.is_failure(f"{peer.peer_name} is not present")
+                    continue
+                peer_reg_state = eos_peer_status["registrationState"]
+                if peer_reg_state != peer.registration_state:
+                    self.result.is_failure(f"{peer.peer_name} registration state is not complete {peer_reg_state}")
