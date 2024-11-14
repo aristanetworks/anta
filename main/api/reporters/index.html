@@ -2455,24 +2455,6 @@
 
 
 
-                    <details class="quote">
-                    <summary>Source code in <code>anta/reporter/__init__.py</code></summary>
-                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">233</span>
-<span class="normal">234</span>
-<span class="normal">235</span>
-<span class="normal">236</span>
-<span class="normal">237</span>
-<span class="normal">238</span>
-<span class="normal">239</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a ReportJinja instance.&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">template_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;template file is not found: </span><span class="si">{</span><span class="n">template_path</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-
-    <span class="bp">self</span><span class="o">.</span><span class="n">template_path</span> <span class="o">=</span> <span class="n">template_path</span>
-</code></pre></div></td></tr></table></div>
-                  </details>
-
 
   
 
@@ -2729,7 +2711,6 @@ Data structure sent to template is:</p>
 
 
 
-  
 
   
 
@@ -2777,7 +2758,6 @@ Data structure sent to template is:</p>
 
 
 
-  
 
   
 

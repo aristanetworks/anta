@@ -2791,66 +2791,6 @@ error_status is set to True.</p>
 
 
 
-                    <details class="quote">
-                    <summary>Source code in <code>anta/result_manager/__init__.py</code></summary>
-                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span>
-<span class="normal">87</span>
-<span class="normal">88</span>
-<span class="normal">89</span>
-<span class="normal">90</span>
-<span class="normal">91</span>
-<span class="normal">92</span>
-<span class="normal">93</span>
-<span class="normal">94</span>
-<span class="normal">95</span>
-<span class="normal">96</span>
-<span class="normal">97</span>
-<span class="normal">98</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class constructor.</span>
-
-<span class="sd">    The status of the class is initialized to &quot;unset&quot;</span>
-
-<span class="sd">    Then when adding a test with a status that is NOT &#39;error&#39; the following</span>
-<span class="sd">    table shows the updated status:</span>
-
-<span class="sd">    | Current Status |         Added test Status       | Updated Status |</span>
-<span class="sd">    | -------------- | ------------------------------- | -------------- |</span>
-<span class="sd">    |      unset     |              Any                |       Any      |</span>
-<span class="sd">    |     skipped    |         unset, skipped          |     skipped    |</span>
-<span class="sd">    |     skipped    |            success              |     success    |</span>
-<span class="sd">    |     skipped    |            failure              |     failure    |</span>
-<span class="sd">    |     success    |     unset, skipped, success     |     success    |</span>
-<span class="sd">    |     success    |            failure              |     failure    |</span>
-<span class="sd">    |     failure    | unset, skipped success, failure |     failure    |</span>
-
-<span class="sd">    If the status of the added test is error, the status is untouched and the</span>
-<span class="sd">    error_status is set to True.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_result_entries</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">TestResult</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="p">:</span> <span class="n">AntaTestStatus</span> <span class="o">=</span> <span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">UNSET</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">error_status</span> <span class="o">=</span> <span class="kc">False</span>
-
-    <span class="bp">self</span><span class="o">.</span><span class="n">device_stats</span><span class="p">:</span> <span class="n">defaultdict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DeviceStats</span><span class="p">]</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">DeviceStats</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">category_stats</span><span class="p">:</span> <span class="n">defaultdict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">CategoryStats</span><span class="p">]</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">CategoryStats</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">test_stats</span><span class="p">:</span> <span class="n">defaultdict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TestStats</span><span class="p">]</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">TestStats</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-                  </details>
-
 
   
 

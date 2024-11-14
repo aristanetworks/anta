@@ -3251,72 +3251,6 @@ This list must have the same length and order than the <code>instance_commands</
 
 
 
-                    <details class="quote">
-                    <summary>Source code in <code>anta/models.py</code></summary>
-                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">407</span>
-<span class="normal">408</span>
-<span class="normal">409</span>
-<span class="normal">410</span>
-<span class="normal">411</span>
-<span class="normal">412</span>
-<span class="normal">413</span>
-<span class="normal">414</span>
-<span class="normal">415</span>
-<span class="normal">416</span>
-<span class="normal">417</span>
-<span class="normal">418</span>
-<span class="normal">419</span>
-<span class="normal">420</span>
-<span class="normal">421</span>
-<span class="normal">422</span>
-<span class="normal">423</span>
-<span class="normal">424</span>
-<span class="normal">425</span>
-<span class="normal">426</span>
-<span class="normal">427</span>
-<span class="normal">428</span>
-<span class="normal">429</span>
-<span class="normal">430</span>
-<span class="normal">431</span>
-<span class="normal">432</span>
-<span class="normal">433</span>
-<span class="normal">434</span>
-<span class="normal">435</span>
-<span class="normal">436</span>
-<span class="normal">437</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-    <span class="bp">self</span><span class="p">,</span>
-    <span class="n">device</span><span class="p">:</span> <span class="n">AntaDevice</span><span class="p">,</span>
-    <span class="n">inputs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">eos_data</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;AntaTest Constructor.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    device</span>
-<span class="sd">        AntaDevice instance on which the test will be run.</span>
-<span class="sd">    inputs</span>
-<span class="sd">        Dictionary of attributes used to instantiate the AntaTest.Input instance.</span>
-<span class="sd">    eos_data</span>
-<span class="sd">        Populate outputs of the test commands instead of collecting from devices.</span>
-<span class="sd">        This list must have the same length and order than the `instance_commands` instance attribute.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">module</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">:</span> <span class="n">AntaDevice</span> <span class="o">=</span> <span class="n">device</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">:</span> <span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">:</span> <span class="n">TestResult</span> <span class="o">=</span> <span class="n">TestResult</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-        <span class="n">test</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-        <span class="n">categories</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_init_inputs</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">result</span> <span class="o">==</span> <span class="n">AntaTestStatus</span><span class="o">.</span><span class="n">UNSET</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_init_commands</span><span class="p">(</span><span class="n">eos_data</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-                  </details>
-
 
   
 
@@ -3483,7 +3417,6 @@ This list must have the same length and order than the <code>instance_commands</
 
 
 
-  
 
   
 
@@ -3544,7 +3477,6 @@ This list must have the same length and order than the <code>instance_commands</
 
 
 
-  
 
   
 
@@ -3637,7 +3569,6 @@ This list must have the same length and order than the <code>instance_commands</
 
 
 
-  
 
   
 
@@ -4269,7 +4200,6 @@ translated to a specific <strong>revision</strong> for each CLI command in the R
 
 
 
-  
 
   
 
@@ -4607,58 +4537,6 @@ AntaDevice.collect() must be called before this property.</p>
 
 
 
-
-                    <details class="quote">
-                    <summary>Source code in <code>anta/models.py</code></summary>
-                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span>
-<span class="normal">87</span>
-<span class="normal">88</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-    <span class="bp">self</span><span class="p">,</span>
-    <span class="n">template</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">version</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;latest&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;latest&quot;</span><span class="p">,</span>
-    <span class="n">revision</span><span class="p">:</span> <span class="n">Revision</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">ofmt</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;json&quot;</span><span class="p">,</span> <span class="s2">&quot;text&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
-    <span class="o">*</span><span class="p">,</span>
-    <span class="n">use_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">template</span> <span class="o">=</span> <span class="n">template</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="n">version</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">revision</span> <span class="o">=</span> <span class="n">revision</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">ofmt</span> <span class="o">=</span> <span class="n">ofmt</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">use_cache</span> <span class="o">=</span> <span class="n">use_cache</span>
-
-    <span class="c1"># Create a AntaTemplateParams model to elegantly store AntaTemplate variables</span>
-    <span class="n">field_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">fname</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">Formatter</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">template</span><span class="p">)</span> <span class="k">if</span> <span class="n">fname</span><span class="p">]</span>
-    <span class="c1"># Extracting the type from the params based on the expected field_names from the template</span>
-    <span class="n">fields</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="p">(</span><span class="n">Any</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">field_names</span><span class="p">}</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">params_schema</span> <span class="o">=</span> <span class="n">create_model</span><span class="p">(</span>
-        <span class="s2">&quot;AntaParams&quot;</span><span class="p">,</span>
-        <span class="n">__base__</span><span class="o">=</span><span class="n">AntaParamsBaseModel</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">fields</span><span class="p">,</span>
-    <span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-                  </details>
 
 
   
