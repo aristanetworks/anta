@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from functools import cache
 from ipaddress import IPv4Address, IPv4Interface, IPv4Network
-from typing import Any, TYPE_CHECKING, ClassVar, Literal
+from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
 from pydantic import BaseModel, model_validator
 
@@ -229,6 +229,7 @@ class VerifyRouteType(AntaTest):
 
         class Routes(BaseModel):
             """Model for a list of route entries."""
+
             vrf: str = "default"
             """ VRF context. Defaults to `default` VRF."""
             prefix: IPv4Network
@@ -268,7 +269,8 @@ class VerifyRouteType(AntaTest):
             # Verifying that the expected route-type and the actual routes are the same.
             if expected_route_type != actual_route_type:
                 failures["routes_entries"][network] = {
-                    vrf: {"route_type": f"Expected route type is '{expected_route_type}' " f"however in actual it is found as '{actual_route_type}'"}}
+                    vrf: {"route_type": f"Expected route type is '{expected_route_type}' " f"however in actual it is found as '{actual_route_type}'"}
+                }
 
         # Updating the result, as per the testcase failure message.
         if failures["routes_entries"]:

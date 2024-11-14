@@ -324,8 +324,7 @@ DATA: list[dict[str, Any]] = [
                                 "routeAction": "forward",
                                 "preference": 200,
                                 "metric": 0,
-                                "vias": [{"nexthopAddr": "10.100.0.12", "interface": "Ethernet1"},
-                                         {"nexthopAddr": "10.100.0.14", "interface": "Ethernet2"}],
+                                "vias": [{"nexthopAddr": "10.100.0.12", "interface": "Ethernet1"}, {"nexthopAddr": "10.100.0.14", "interface": "Ethernet2"}],
                                 "directlyConnected": False,
                             },
                             "10.100.0.12/31": {
@@ -354,8 +353,7 @@ DATA: list[dict[str, Any]] = [
                                 "routeAction": "forward",
                                 "preference": 200,
                                 "metric": 0,
-                                "vias": [{"nexthopAddr": "10.100.0.12", "interface": "Ethernet1"},
-                                         {"nexthopAddr": "10.100.0.14", "interface": "Ethernet2"}],
+                                "vias": [{"nexthopAddr": "10.100.0.12", "interface": "Ethernet1"}, {"nexthopAddr": "10.100.0.14", "interface": "Ethernet2"}],
                                 "directlyConnected": False,
                             },
                             "10.100.1.5/32": {
@@ -405,8 +403,7 @@ DATA: list[dict[str, Any]] = [
                                 "routeAction": "forward",
                                 "preference": 200,
                                 "metric": 0,
-                                "vias": [{"nexthopAddr": "10.100.0.12", "interface": "Ethernet1"},
-                                         {"nexthopAddr": "10.100.0.14", "interface": "Ethernet2"}],
+                                "vias": [{"nexthopAddr": "10.100.0.12", "interface": "Ethernet1"}, {"nexthopAddr": "10.100.0.14", "interface": "Ethernet2"}],
                                 "directlyConnected": False,
                             },
                             "10.100.0.12/31": {
@@ -435,8 +432,7 @@ DATA: list[dict[str, Any]] = [
                                 "routeAction": "forward",
                                 "preference": 200,
                                 "metric": 0,
-                                "vias": [{"nexthopAddr": "10.100.0.12", "interface": "Ethernet1"},
-                                         {"nexthopAddr": "10.100.0.14", "interface": "Ethernet2"}],
+                                "vias": [{"nexthopAddr": "10.100.0.12", "interface": "Ethernet1"}, {"nexthopAddr": "10.100.0.14", "interface": "Ethernet2"}],
                                 "directlyConnected": False,
                             },
                             "10.100.1.5/32": {
@@ -489,8 +485,7 @@ DATA: list[dict[str, Any]] = [
                                 "routeAction": "forward",
                                 "preference": 200,
                                 "metric": 0,
-                                "vias": [{"nexthopAddr": "10.100.0.12", "interface": "Ethernet1"},
-                                         {"nexthopAddr": "10.100.0.14", "interface": "Ethernet2"}],
+                                "vias": [{"nexthopAddr": "10.100.0.12", "interface": "Ethernet1"}, {"nexthopAddr": "10.100.0.14", "interface": "Ethernet2"}],
                                 "directlyConnected": False,
                             },
                             "10.100.0.12/31": {
@@ -519,8 +514,7 @@ DATA: list[dict[str, Any]] = [
                                 "routeAction": "forward",
                                 "preference": 200,
                                 "metric": 0,
-                                "vias": [{"nexthopAddr": "10.100.0.12", "interface": "Ethernet1"},
-                                         {"nexthopAddr": "10.100.0.14", "interface": "Ethernet2"}],
+                                "vias": [{"nexthopAddr": "10.100.0.12", "interface": "Ethernet1"}, {"nexthopAddr": "10.100.0.14", "interface": "Ethernet2"}],
                                 "directlyConnected": False,
                             },
                             "10.100.1.5/32": {
@@ -603,8 +597,7 @@ DATA: list[dict[str, Any]] = [
                                 "routeAction": "forward",
                                 "preference": 200,
                                 "metric": 0,
-                                "vias": [{"nexthopAddr": "10.100.0.12", "interface": "Ethernet1"},
-                                         {"nexthopAddr": "10.100.0.14", "interface": "Ethernet2"}],
+                                "vias": [{"nexthopAddr": "10.100.0.12", "interface": "Ethernet1"}, {"nexthopAddr": "10.100.0.14", "interface": "Ethernet2"}],
                                 "directlyConnected": False,
                             },
                             "10.100.0.12/31": {
@@ -633,8 +626,7 @@ DATA: list[dict[str, Any]] = [
                                 "routeAction": "forward",
                                 "preference": 200,
                                 "metric": 0,
-                                "vias": [{"nexthopAddr": "10.100.0.12", "interface": "Ethernet1"},
-                                         {"nexthopAddr": "10.100.0.14", "interface": "Ethernet2"}],
+                                "vias": [{"nexthopAddr": "10.100.0.12", "interface": "Ethernet1"}, {"nexthopAddr": "10.100.0.14", "interface": "Ethernet2"}],
                                 "directlyConnected": False,
                             },
                             "10.100.1.5/32": {
