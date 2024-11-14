@@ -231,7 +231,10 @@ def explore_package(module_name: str, level: int = 0, test_name: str | None = No
 
 
 def print_tests_examples(qname: str, level: int, test_name: str | None, *, short: bool = False) -> None:
-    """Print tests in qname if matching test_name (or all if test_name is None."""
+    """Print tests in qname if matching test_name (or all if test_name is None.
+
+    TODO: Allow to give a package argument to import_module.
+    """
     qname_module = importlib.import_module(qname)
     module_printed = False
     for _name, obj in inspect.getmembers(qname_module):

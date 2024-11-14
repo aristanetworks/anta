@@ -7,14 +7,15 @@ from __future__ import annotations
 
 from contextlib import AbstractContextManager, nullcontext
 from pathlib import Path
-from typing import Any
+from typing import Any, ClassVar
 from unittest.mock import MagicMock, patch
 
 import pytest
 import requests
 
-from anta.cli.get.utils import create_inventory_from_ansible, create_inventory_from_cvp, get_cv_token
+from anta.cli.get.utils import create_inventory_from_ansible, create_inventory_from_cvp, get_cv_token, print_tests_examples
 from anta.inventory import AntaInventory
+from anta.models import AntaCommand, AntaTemplate, AntaTest
 
 DATA_DIR: Path = Path(__file__).parents[3].resolve() / "data"
 
@@ -160,3 +161,47 @@ def test_create_inventory_from_ansible(
         assert not target_file.exists()
         if expected_log:
             assert expected_log in caplog.text
+
+
+class MissingExampleTest(AntaTest):
+    """ANTA test that always succeed but has no Examples section."""
+
+    categories: ClassVar[list[str]] = []
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = []
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Test function."""
+        self.result.is_success()
+
+
+class EmptyExampleTest(AntaTest):
+    """ANTA test that always succeed but has an empty Examples section.
+
+    Examples
+    --------
+    """
+
+    # For the test purpose we want am empty section as custom tests could not be using ruff.
+    # ruff: noqa:  D414
+
+    categories: ClassVar[list[str]] = []
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = []
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Test function."""
+        self.result.is_success()
+
+
+def test_print_tests_examples() -> None:
+    """Test print_tests_examples.
+
+    Only testing the case where the 'Examples' is missing as everything else
+    is covered already in test_commands.py.
+    """
+    module = "tests.units.cli.get.test_utils"
+    with pytest.raises(LookupError, match="is missing an Example"):
+        print_tests_examples(module, 0, "MissingExampleTest")
+    with pytest.raises(LookupError, match="is missing an Example"):
+        print_tests_examples(module, 0, "EmptyExampleTest")
