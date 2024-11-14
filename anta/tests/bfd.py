@@ -8,12 +8,11 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from ipaddress import IPv4Address
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import TYPE_CHECKING, ClassVar
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 
-from anta.custom_types import BfdInterval, BfdMultiplier, BfdProtocol
+from anta.input_models.bfd import BFDPeer
 from anta.models import AntaCommand, AntaTest
 from anta.tools import get_value
 
@@ -22,12 +21,24 @@ if TYPE_CHECKING:
 
 
 class VerifyBFDSpecificPeers(AntaTest):
-    """Verifies if the IPv4 BFD peer's sessions are UP and remote disc is non-zero in the specified VRF.
+    """Verifies if the IPv4 BFD peer sessions are in the UP state and the remote discriminator (disc) is non-zero within the specified VRF.
+
+    This test performs the following checks for each specified peer:
+
+      1. Confirms that the specified VRF is configured.
+      2. Verifies that the peer exists in the BFD configuration.
+      3. For each specified BFD peer:
+        - Validates that the state is up
+        - Confirms that the remote discriminator identifier is non-zero.
 
     Expected Results
     ----------------
-    * Success: The test will pass if IPv4 BFD peers are up and remote disc is non-zero in the specified VRF.
-    * Failure: The test will fail if IPv4 BFD peers are not found, the status is not UP or remote disc is zero in the specified VRF.
+    * Success: If all of the following conditions are met:
+        - All specified peers are found in the BFD configuration within the specified VRF.
+        - All BFD peers are up and remote disc is non-zero.
+    * Failure: If any of the following occur:
+        - A specified peer is not found in the BFD configuration within the specified VRF.
+        - Any BFD peer session is not up or the remote discriminator identifier is zero.
 
     Examples
     --------
@@ -50,20 +61,13 @@ class VerifyBFDSpecificPeers(AntaTest):
         """Input model for the VerifyBFDSpecificPeers test."""
 
         bfd_peers: list[BFDPeer]
-        """List of IPv4 BFD peers."""
-
-        class BFDPeer(BaseModel):
-            """Model for an IPv4 BFD peer."""
-
-            peer_address: IPv4Address
-            """IPv4 address of a BFD peer."""
-            vrf: str = "default"
-            """Optional VRF for BFD peer. If not provided, it defaults to `default`."""
+        """List of IPv4 BFD"""
+        BFDPeer: ClassVar[type[BFDPeer]] = BFDPeer
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyBFDSpecificPeers."""
-        failures: dict[Any, Any] = {}
+        self.result.is_success()
 
         # Iterating over BFD peers
         for bfd_peer in self.inputs.bfd_peers:
@@ -77,31 +81,33 @@ class VerifyBFDSpecificPeers(AntaTest):
 
             # Check if BFD peer configured
             if not bfd_output:
-                failures[peer] = {vrf: "Not Configured"}
+                self.result.is_failure(f"{bfd_peer} - Not found")
                 continue
 
             # Check BFD peer status and remote disc
-            if not (bfd_output.get("status") == "up" and bfd_output.get("remoteDisc") != 0):
-                failures[peer] = {
-                    vrf: {
-                        "status": bfd_output.get("status"),
-                        "remote_disc": bfd_output.get("remoteDisc"),
-                    }
-                }
-
-        if not failures:
-            self.result.is_success()
-        else:
-            self.result.is_failure(f"Following BFD peers are not configured, status is not up or remote disc is zero:\n{failures}")
+            state = bfd_output.get("status")
+            remote_disc = bfd_output.get("remoteDisc")
+            if not (state == "up" and remote_disc != 0):
+                self.result.is_failure(f"{bfd_peer} - Session not properly established; State: {state} Remote Discriminator: {remote_disc}")
 
 
 class VerifyBFDPeersIntervals(AntaTest):
     """Verifies the timers of the IPv4 BFD peers in the specified VRF.
 
+    This test performs the following checks for each specified peer:
+
+      1. Confirms that the specified VRF is configured.
+      2. Verifies that the peer exists in the BFD configuration.
+      3. Confirms that BFD peer is correctly configured with the `Transmit interval, Receive interval and Multiplier`.
+
     Expected Results
     ----------------
-    * Success: The test will pass if the timers of the IPv4 BFD peers are correct in the specified VRF.
-    * Failure: The test will fail if the IPv4 BFD peers are not found or their timers are incorrect in the specified VRF.
+    * Success: If all of the following conditions are met:
+        - All specified peers are found in the BFD configuration within the specified VRF.
+        - All BFD peers are correctly configured with the `Transmit interval, Receive interval and Multiplier`.
+    * Failure: If any of the following occur:
+        - A specified peer is not found in the BFD configuration within the specified VRF.
+        - Any BFD peer not correctly configured with the `Transmit interval, Receive interval and Multiplier`.
 
     Examples
     --------
@@ -129,34 +135,21 @@ class VerifyBFDPeersIntervals(AntaTest):
         """Input model for the VerifyBFDPeersIntervals test."""
 
         bfd_peers: list[BFDPeer]
-        """List of BFD peers."""
-
-        class BFDPeer(BaseModel):
-            """Model for an IPv4 BFD peer."""
-
-            peer_address: IPv4Address
-            """IPv4 address of a BFD peer."""
-            vrf: str = "default"
-            """Optional VRF for BFD peer. If not provided, it defaults to `default`."""
-            tx_interval: BfdInterval
-            """Tx interval of BFD peer in milliseconds."""
-            rx_interval: BfdInterval
-            """Rx interval of BFD peer in milliseconds."""
-            multiplier: BfdMultiplier
-            """Multiplier of BFD peer."""
+        """List of IPv4 BFD"""
+        BFDPeer: ClassVar[type[BFDPeer]] = BFDPeer
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyBFDPeersIntervals."""
-        failures: dict[Any, Any] = {}
+        self.result.is_success()
 
         # Iterating over BFD peers
-        for bfd_peers in self.inputs.bfd_peers:
-            peer = str(bfd_peers.peer_address)
-            vrf = bfd_peers.vrf
-            tx_interval = bfd_peers.tx_interval
-            rx_interval = bfd_peers.rx_interval
-            multiplier = bfd_peers.multiplier
+        for bfd_peer in self.inputs.bfd_peers:
+            peer = str(bfd_peer.peer_address)
+            vrf = bfd_peer.vrf
+            tx_interval = bfd_peer.tx_interval
+            rx_interval = bfd_peer.rx_interval
+            multiplier = bfd_peer.multiplier
 
             # Check if BFD peer configured
             bfd_output = get_value(
@@ -165,7 +158,7 @@ class VerifyBFDPeersIntervals(AntaTest):
                 separator="..",
             )
             if not bfd_output:
-                failures[peer] = {vrf: "Not Configured"}
+                self.result.is_failure(f"{bfd_peer} - Not found")
                 continue
 
             # Convert interval timer(s) into milliseconds to be consistent with the inputs.
@@ -173,23 +166,13 @@ class VerifyBFDPeersIntervals(AntaTest):
             op_tx_interval = bfd_details.get("operTxInterval") // 1000
             op_rx_interval = bfd_details.get("operRxInterval") // 1000
             detect_multiplier = bfd_details.get("detectMult")
-            intervals_ok = op_tx_interval == tx_interval and op_rx_interval == rx_interval and detect_multiplier == multiplier
 
             # Check timers of BFD peer
+            intervals_ok = op_tx_interval == tx_interval and op_rx_interval == rx_interval and detect_multiplier == multiplier
             if not intervals_ok:
-                failures[peer] = {
-                    vrf: {
-                        "tx_interval": op_tx_interval,
-                        "rx_interval": op_rx_interval,
-                        "multiplier": detect_multiplier,
-                    }
-                }
-
-        # Check if any failures
-        if not failures:
-            self.result.is_success()
-        else:
-            self.result.is_failure(f"Following BFD peers are not configured or timers are not correct:\n{failures}")
+                self.result.is_failure(
+                    f"{bfd_peer} - Incorrect timers; Transmit interval: {op_tx_interval}, Receive interval: {op_rx_interval}, Multiplier: {detect_multiplier}"
+                )
 
 
 class VerifyBFDPeersHealth(AntaTest):
@@ -283,12 +266,22 @@ class VerifyBFDPeersHealth(AntaTest):
 
 
 class VerifyBFDPeersRegProtocols(AntaTest):
-    """Verifies that IPv4 BFD peer(s) have the specified protocol(s) registered.
+    """Verifies the registered routing protocol of the IPv4 BFD peers in the specified VRF.
+
+    This test performs the following checks for each specified peer:
+
+      1. Confirms that the specified VRF is configured.
+      2. Verifies that the peer exists in the BFD configuration.
+      3. Confirms that BFD peer is correctly configured with the routing protocol.
 
     Expected Results
     ----------------
-    * Success: The test will pass if IPv4 BFD peers are registered with the specified protocol(s).
-    * Failure: The test will fail if IPv4 BFD peers are not found or the specified protocol(s) are not registered for the BFD peer(s).
+    * Success: If all of the following conditions are met:
+        - All specified peers are found in the BFD configuration within the specified VRF.
+        - All BFD peers are correctly configured with the `routing protocol`.
+    * Failure: If any of the following occur:
+        - A specified peer is not found in the BFD configuration within the specified VRF.
+        - Any BFD peer not correctly configured with the `routing protocol`.
 
     Examples
     --------
@@ -310,23 +303,13 @@ class VerifyBFDPeersRegProtocols(AntaTest):
         """Input model for the VerifyBFDPeersRegProtocols test."""
 
         bfd_peers: list[BFDPeer]
-        """List of IPv4 BFD peers."""
-
-        class BFDPeer(BaseModel):
-            """Model for an IPv4 BFD peer."""
-
-            peer_address: IPv4Address
-            """IPv4 address of a BFD peer."""
-            vrf: str = "default"
-            """Optional VRF for BFD peer. If not provided, it defaults to `default`."""
-            protocols: list[BfdProtocol]
-            """List of protocols to be verified."""
+        """List of IPv4 BFD"""
+        BFDPeer: ClassVar[type[BFDPeer]] = BFDPeer
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyBFDPeersRegProtocols."""
-        # Initialize failure messages
-        failures: dict[Any, Any] = {}
+        self.result.is_success()
 
         # Iterating over BFD peers, extract the parameters and command output
         for bfd_peer in self.inputs.bfd_peers:
@@ -341,16 +324,10 @@ class VerifyBFDPeersRegProtocols(AntaTest):
 
             # Check if BFD peer configured
             if not bfd_output:
-                failures[peer] = {vrf: "Not Configured"}
+                self.result.is_failure(f"{bfd_peer} - Not found")
                 continue
 
             # Check registered protocols
             difference = set(protocols) - set(get_value(bfd_output, "peerStatsDetail.apps"))
-
             if difference:
-                failures[peer] = {vrf: sorted(difference)}
-
-        if not failures:
-            self.result.is_success()
-        else:
-            self.result.is_failure(f"The following BFD peers are not configured or have non-registered protocol(s):\n{failures}")
+                self.result.is_failure(f"{bfd_peer} - `{','.join(difference)}` routing protocols not configured")
