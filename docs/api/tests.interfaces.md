@@ -30,6 +30,7 @@ anta_title: ANTA catalog for interfaces tests
       show_root_heading: false
       show_root_toc_entry: false
       show_bases: false
+      merge_init_into_class: false
       anta_hide_test_module_description: true
       show_labels: true
       filters: ["!^__str__"]
