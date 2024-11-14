@@ -9,9 +9,9 @@ from __future__ import annotations
 
 from functools import cache
 from ipaddress import IPv4Address, IPv4Interface, IPv4Network
-from typing import TYPE_CHECKING, ClassVar, Literal, Any
+from typing import TYPE_CHECKING, ClassVar, Literal
 
-from pydantic import model_validator, BaseModel
+from pydantic import BaseModel, model_validator
 
 from anta.custom_types import PositiveInteger, RouteType
 from anta.models import AntaCommand, AntaTemplate, AntaTest
@@ -62,8 +62,7 @@ class VerifyRoutingProtocolModel(AntaTest):
         if configured_model == operating_model == self.inputs.model:
             self.result.is_success()
         else:
-            self.result.is_failure(
-                f"routing model is misconfigured: configured: {configured_model} - operating: {operating_model} - expected: {self.inputs.model}")
+            self.result.is_failure(f"routing model is misconfigured: configured: {configured_model} - operating: {operating_model} - expected: {self.inputs.model}")
 
 
 class VerifyRoutingTableSize(AntaTest):
@@ -112,8 +111,7 @@ class VerifyRoutingTableSize(AntaTest):
         if self.inputs.minimum <= total_routes <= self.inputs.maximum:
             self.result.is_success()
         else:
-            self.result.is_failure(
-                f"routing-table has {total_routes} routes and not between min ({self.inputs.minimum}) and maximum ({self.inputs.maximum})")
+            self.result.is_failure(f"routing-table has {total_routes} routes and not between min ({self.inputs.minimum}) and maximum ({self.inputs.maximum})")
 
 
 class VerifyRoutingTableEntry(AntaTest):
@@ -183,8 +181,7 @@ class VerifyRoutingTableEntry(AntaTest):
         if not missing_routes:
             self.result.is_success()
         else:
-            self.result.is_failure(
-                f"The following route(s) are missing from the routing table of VRF {self.inputs.vrf}: {missing_routes}")
+            self.result.is_failure(f"The following route(s) are missing from the routing table of VRF {self.inputs.vrf}: {missing_routes}")
 
 
 class VerifyRouteType(AntaTest):
@@ -194,6 +191,7 @@ class VerifyRouteType(AntaTest):
     ----------------
     * Success: The test will pass if the provided route is of the expected type.
     * Failure: The test will fail if the provided route is not of the expected type.
+
     Examples
     --------
     ```yaml
@@ -217,17 +215,19 @@ class VerifyRouteType(AntaTest):
               prefix: 10.100.1.5/32
               route_type: iBGP```
     """
+
     categories: ClassVar[list[str]] = ["routing"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
         AntaCommand(command="show ip route vrf all", revision=4),
     ]
 
     class Input(AntaTest.Input):
-        """ Input model for the VerifyRouteType test. """
+        """Input model for the VerifyRouteType test."""
+
         routes_entries: list[Routes]
 
         class Routes(BaseModel):
-            """ Model for a list of route entries."""
+            """Model for a list of route entries."""
 
             vrf: str = "default"
             """ VRF context. Defaults to `default` VRF."""
@@ -235,6 +235,7 @@ class VerifyRouteType(AntaTest):
             """ IPV4network to validate the rout type. """
             route_type: RouteType
             """ List of Route type to validate the valid rout type. """
+
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyRouteType."""
@@ -266,11 +267,10 @@ class VerifyRouteType(AntaTest):
 
             # Verifying that the expected route-type and the actual routes are the same.
             if expected_route_type != actual_route_type:
-                failures["routes_entries"][network] = {vrf: {
-                    "route_type": f"Expected route type is '{expected_route_type}' "
-                                  f"however in actual it is found as '{actual_route_type}'"}}
+                failures["routes_entries"][network] = {
+                    vrf: {"route_type": f"Expected route type is '{expected_route_type}' " f"however in actual it is found as '{actual_route_type}'"}
+                }
 
         # Updating the result, as per the testcase failure message.
         if failures["routes_entries"]:
-            self.result.is_failure(
-                f"For following routes, VRF is not configured or Route types are invalid:\n{failures}")
+            self.result.is_failure(f"For following routes, VRF is not configured or Route types are invalid:\n{failures}")
