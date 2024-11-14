@@ -380,7 +380,7 @@ anta.tests.routing.bgp:
         - peer_address: 172.30.11.1
           vrf: default
   - VerifyBGPPeerCount:
-      # Verifies the count of BGP peers.
+      # Verifies the count of BGP peers for given address families.
       address_families:
         - afi: "evpn"
           num_peers: 2
@@ -439,7 +439,7 @@ anta.tests.routing.bgp:
           update_error_filter:
             - inUpdErrWithdraw
   - VerifyBGPPeersHealth:
-      # Verifies the health of BGP peers.
+      # Verifies the health of BGP peers for given address families.
       address_families:
         - afi: "evpn"
         - afi: "ipv4"
@@ -448,8 +448,9 @@ anta.tests.routing.bgp:
         - afi: "ipv6"
           safi: "unicast"
           vrf: "DEV"
+          check_tcp_queues: false
   - VerifyBGPSpecificPeers:
-      # Verifies the health of specific BGP peer(s).
+      # Verifies the health of specific BGP peer(s) for given address families.
       address_families:
         - afi: "evpn"
           peers:
