@@ -11,6 +11,7 @@ import inspect
 import json
 import logging
 import pkgutil
+import textwrap
 from pathlib import Path
 from sys import stdin
 from typing import Any, Callable
@@ -249,5 +250,7 @@ def print_tests_examples(qname: str, level: int, test_name: str | None, *, short
         if "Examples" not in doc or not doc["Examples"]:
             msg = f"Test {obj.name} in module {qname} is missing an Example"
             raise LookupError(msg)
+        # Picking up only the inputs in the examples
         if len(doc["Examples"]) > 4 + level:  # otherwise it is a test with no params.
-            console.print("\n".join(line[2 * level :] for line in doc["Examples"][level + 3 : -1]))
+            inputs = "\n".join(doc["Examples"][level + 3 : -1])
+            console.print(textwrap.indent(textwrap.dedent(inputs), " " * 6))
