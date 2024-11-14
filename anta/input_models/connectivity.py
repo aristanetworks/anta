@@ -6,6 +6,8 @@
 from __future__ import annotations
 
 from ipaddress import IPv4Address
+from typing import Any
+from warnings import warn
 
 from pydantic import BaseModel, ConfigDict
 
@@ -39,3 +41,43 @@ class Host(BaseModel):
         """
         df_status = ", df-bit: enabled" if self.df_bit else ""
         return f"Host {self.destination} (src: {self.source}, vrf: {self.vrf}, size: {self.size}B, repeat: {self.repeat}{df_status})"
+
+
+class LLDPNeighbor(BaseModel):
+    """LLDP (Link Layer Discovery Protocol) model representing the port details and neighbor information."""
+
+    model_config = ConfigDict(extra="forbid")
+    port: Interface
+    """The LLDP port for the local device."""
+    neighbor_device: str
+    """The system name of the LLDP neighbor device."""
+    neighbor_port: Interface
+    """The LLDP port on the neighboring device."""
+
+    def __str__(self) -> str:
+        """Return a human-readable string representation of the LLDPNeighbor for reporting.
+
+        Examples
+        --------
+        Port Ethernet1 (Neighbor: DC1-SPINE2, Neighbor Port: Ethernet2)
+
+        """
+        return f"Port {self.port} (Neighbor: {self.neighbor_device}, Neighbor Port: {self.neighbor_port})"
+
+
+class Neighbor(LLDPNeighbor):  # pragma: no cover
+    """Alias for the LLDPNeighbor model to maintain backward compatibility.
+
+    When initialized, it will emit a deprecation warning and call the LLDPNeighbor model.
+
+    TODO: Remove this class in ANTA v2.0.0.
+    """
+
+    def __init__(self, **data: Any) -> None:  # noqa: ANN401
+        """Initialize the LLDPNeighbor class, emitting a depreciation warning."""
+        warn(
+            message="Neighbor model is deprecated and will be removed in ANTA v2.0.0. Use the LLDPNeighbor model instead.",
+            category=DeprecationWarning,
+            stacklevel=2,
+        )
+        super().__init__(**data)
