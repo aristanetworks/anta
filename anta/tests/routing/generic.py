@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from functools import cache
 from ipaddress import IPv4Address, IPv4Interface, IPv4Network
-from typing import TYPE_CHECKING, ClassVar, Literal
+from typing import Any, TYPE_CHECKING, ClassVar, Literal
 
 from pydantic import BaseModel, model_validator
 
@@ -185,7 +185,7 @@ class VerifyRoutingTableEntry(AntaTest):
 
 
 class VerifyRouteType(AntaTest):
-    """Verifies the type of the provided route in the routing table of a specified VRF.
+    """Verifies the route-type of the provided prefixes within a specified VRF.
 
     Expected Results
     ----------------
@@ -213,7 +213,8 @@ class VerifyRouteType(AntaTest):
               route_type: eBGP
             - vrf: default
               prefix: 10.100.1.5/32
-              route_type: iBGP```
+              route_type: iBGP
+    ```
     """
 
     categories: ClassVar[list[str]] = ["routing"]
@@ -228,7 +229,6 @@ class VerifyRouteType(AntaTest):
 
         class Routes(BaseModel):
             """Model for a list of route entries."""
-
             vrf: str = "default"
             """ VRF context. Defaults to `default` VRF."""
             prefix: IPv4Network
@@ -242,7 +242,7 @@ class VerifyRouteType(AntaTest):
         self.result.is_success()
 
         # Forming a dictionary for the test failure message.
-        failures: dict[str, any] = {"routes_entries": {}}
+        failures: dict[str, Any] = {"routes_entries": {}}
 
         # Collecting the 'show ip route vrf all' command output.
         output = self.instance_commands[0].json_output
@@ -268,8 +268,7 @@ class VerifyRouteType(AntaTest):
             # Verifying that the expected route-type and the actual routes are the same.
             if expected_route_type != actual_route_type:
                 failures["routes_entries"][network] = {
-                    vrf: {"route_type": f"Expected route type is '{expected_route_type}' " f"however in actual it is found as '{actual_route_type}'"}
-                }
+                    vrf: {"route_type": f"Expected route type is '{expected_route_type}' " f"however in actual it is found as '{actual_route_type}'"}}
 
         # Updating the result, as per the testcase failure message.
         if failures["routes_entries"]:
