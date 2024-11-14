@@ -347,6 +347,39 @@ poll interval unknown
         "expected": {"result": "success"},
     },
     {
+        "name": "success-ip-dns",
+        "test": VerifyNTPAssociations,
+        "eos_data": [
+            {
+                "peers": {
+                    "1.1.1.1 (1.ntp.networks.com)": {
+                        "condition": "sys.peer",
+                        "peerIpAddr": "1.1.1.1",
+                        "stratumLevel": 1,
+                    },
+                    "2.2.2.2 (2.ntp.networks.com)": {
+                        "condition": "candidate",
+                        "peerIpAddr": "2.2.2.2",
+                        "stratumLevel": 2,
+                    },
+                    "3.3.3.3 (3.ntp.networks.com)": {
+                        "condition": "candidate",
+                        "peerIpAddr": "3.3.3.3",
+                        "stratumLevel": 2,
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "ntp_servers": [
+                {"server_address": "1.1.1.1", "preferred": True, "stratum": 1},
+                {"server_address": "2.2.2.2", "stratum": 2},
+                {"server_address": "3.3.3.3", "stratum": 2},
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
         "name": "failure",
         "test": VerifyNTPAssociations,
         "eos_data": [
@@ -380,9 +413,9 @@ poll interval unknown
         "expected": {
             "result": "failure",
             "messages": [
-                "For NTP peer 1.1.1.1:\nExpected `sys.peer` as the condition, but found `candidate` instead.\nExpected `1` as the stratum, but found `2` instead.\n"
-                "For NTP peer 2.2.2.2:\nExpected `candidate` as the condition, but found `sys.peer` instead.\n"
-                "For NTP peer 3.3.3.3:\nExpected `candidate` as the condition, but found `sys.peer` instead.\nExpected `2` as the stratum, but found `3` instead."
+                "1.1.1.1 (Preferred: True, Stratum: 1) - Bad association; Condition: candidate, Stratum: 2",
+                "2.2.2.2 (Preferred: False, Stratum: 2) - Bad association; Condition: sys.peer, Stratum: 2",
+                "3.3.3.3 (Preferred: False, Stratum: 2) - Bad association; Condition: sys.peer, Stratum: 3",
             ],
         },
     },
@@ -399,7 +432,7 @@ poll interval unknown
         },
         "expected": {
             "result": "failure",
-            "messages": ["None of NTP peers are not configured."],
+            "messages": ["No NTP peers configured"],
         },
     },
     {
@@ -430,7 +463,7 @@ poll interval unknown
         },
         "expected": {
             "result": "failure",
-            "messages": ["NTP peer 3.3.3.3 is not configured."],
+            "messages": ["3.3.3.3 (Preferred: False, Stratum: 1) - Not configured"],
         },
     },
     {
@@ -457,8 +490,9 @@ poll interval unknown
         "expected": {
             "result": "failure",
             "messages": [
-                "For NTP peer 1.1.1.1:\nExpected `sys.peer` as the condition, but found `candidate` instead.\n"
-                "NTP peer 2.2.2.2 is not configured.\nNTP peer 3.3.3.3 is not configured."
+                "1.1.1.1 (Preferred: True, Stratum: 1) - Bad association; Condition: candidate, Stratum: 1",
+                "2.2.2.2 (Preferred: False, Stratum: 1) - Not configured",
+                "3.3.3.3 (Preferred: False, Stratum: 1) - Not configured",
             ],
         },
     },

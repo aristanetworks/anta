@@ -7,14 +7,14 @@ from __future__ import annotations
 
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
-from ipaddress import IPv4Address, IPv6Address
 from typing import ClassVar
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 from anta.custom_types import ErrDisableInterval, ErrDisableReasons
+from anta.input_models.services import DnsServer
 from anta.models import AntaCommand, AntaTemplate, AntaTest
-from anta.tools import get_dict_superset, get_failed_logs, get_item
+from anta.tools import get_dict_superset, get_failed_logs
 
 
 class VerifyHostname(AntaTest):
@@ -34,8 +34,6 @@ class VerifyHostname(AntaTest):
     ```
     """
 
-    name = "VerifyHostname"
-    description = "Verifies the hostname of a device."
     categories: ClassVar[list[str]] = ["services"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show hostname", revision=1)]
 
@@ -77,7 +75,6 @@ class VerifyDNSLookup(AntaTest):
     ```
     """
 
-    name = "VerifyDNSLookup"
     description = "Verifies the DNS name to IP address resolution."
     categories: ClassVar[list[str]] = ["services"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="bash timeout 10 nslookup {domain}", revision=1)]
@@ -109,10 +106,17 @@ class VerifyDNSLookup(AntaTest):
 class VerifyDNSServers(AntaTest):
     """Verifies if the DNS (Domain Name Service) servers are correctly configured.
 
+    This test performs the following checks for each specified DNS Server:
+
+      1. Confirming correctly registered with a valid IPv4 or IPv6 address with the designated VRF.
+      2. Ensuring an appropriate priority level.
+
     Expected Results
     ----------------
     * Success: The test will pass if the DNS server specified in the input is configured with the correct VRF and priority.
-    * Failure: The test will fail if the DNS server is not configured or if the VRF and priority of the DNS server do not match the input.
+    * Failure: The test will fail if any of the following conditions are met:
+        - The provided DNS server is not configured.
+        - The provided DNS server with designated VRF and priority does not match the expected information.
 
     Examples
     --------
@@ -129,7 +133,6 @@ class VerifyDNSServers(AntaTest):
     ```
     """
 
-    name = "VerifyDNSServers"
     description = "Verifies if the DNS servers are correctly configured."
     categories: ClassVar[list[str]] = ["services"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip name-server", revision=1)]
@@ -139,38 +142,28 @@ class VerifyDNSServers(AntaTest):
 
         dns_servers: list[DnsServer]
         """List of DNS servers to verify."""
-
-        class DnsServer(BaseModel):
-            """Model for a DNS server."""
-
-            server_address: IPv4Address | IPv6Address
-            """The IPv4/IPv6 address of the DNS server."""
-            vrf: str = "default"
-            """The VRF for the DNS server. Defaults to 'default' if not provided."""
-            priority: int = Field(ge=0, le=4)
-            """The priority of the DNS server from 0 to 4, lower is first."""
+        DnsServer: ClassVar[type[DnsServer]] = DnsServer
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyDNSServers."""
-        command_output = self.instance_commands[0].json_output["nameServerConfigs"]
         self.result.is_success()
+
+        command_output = self.instance_commands[0].json_output["nameServerConfigs"]
         for server in self.inputs.dns_servers:
             address = str(server.server_address)
             vrf = server.vrf
             priority = server.priority
             input_dict = {"ipAddr": address, "vrf": vrf}
 
-            if get_item(command_output, "ipAddr", address) is None:
-                self.result.is_failure(f"DNS server `{address}` is not configured with any VRF.")
-                continue
-
+            # Check if the DNS server is configured with specified VRF.
             if (output := get_dict_superset(command_output, input_dict)) is None:
-                self.result.is_failure(f"DNS server `{address}` is not configured with VRF `{vrf}`.")
+                self.result.is_failure(f"{server} - Not configured")
                 continue
 
+            # Check if the DNS server priority matches with expected.
             if output["priority"] != priority:
-                self.result.is_failure(f"For DNS server `{address}`, the expected priority is `{priority}`, but `{output['priority']}` was found instead.")
+                self.result.is_failure(f"{server} - Incorrect priority; Priority: {output['priority']}")
 
 
 class VerifyErrdisableRecovery(AntaTest):
@@ -194,8 +187,6 @@ class VerifyErrdisableRecovery(AntaTest):
     ```
     """
 
-    name = "VerifyErrdisableRecovery"
-    description = "Verifies the errdisable recovery reason, status, and interval."
     categories: ClassVar[list[str]] = ["services"]
     # NOTE: Only `text` output format is supported for this command
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show errdisable recovery", ofmt="text")]

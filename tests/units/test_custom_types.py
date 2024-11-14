@@ -192,8 +192,7 @@ def test_regexp_eos_blacklist_cmds(test_string: str, expected: bool) -> None:
     """Test REGEXP_EOS_BLACKLIST_CMDS."""
 
     def matches_any_regex(string: str, regex_list: list[str]) -> bool:
-        """
-        Check if a string matches at least one regular expression in a list.
+        """Check if a string matches at least one regular expression in a list.
 
         :param string: The string to check.
         :param regex_list: A list of regular expressions.
