@@ -6,8 +6,6 @@
 from __future__ import annotations
 
 from ipaddress import IPv4Address
-from typing import Any
-from warnings import warn
 
 from pydantic import BaseModel, ConfigDict
 
@@ -16,7 +14,7 @@ from anta.custom_types import BfdInterval, BfdMultiplier, BfdProtocol
 
 class BFDPeer(BaseModel):
     """BFD (Bidirectional Forwarding Detection) model representing the peer details.
-    
+
     Only IPv4 peers are supported for now.
     """
 
