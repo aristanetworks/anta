@@ -1,5 +1,5 @@
 ---
-anta_title: ANTA catalog for System tests
+anta_title: ANTA catalog for CVX tests
 ---
 <!--
   ~ Copyright (c) 2023-2024 Arista Networks, Inc.
@@ -7,30 +7,14 @@ anta_title: ANTA catalog for System tests
   ~ that can be found in the LICENSE file.
   -->
 
-# Tests
-
-::: anta.tests.system
-
+::: anta.tests.cvx
     options:
       show_root_heading: false
       show_root_toc_entry: false
       show_bases: false
       merge_init_into_class: false
-      show_labels: true
       anta_hide_test_module_description: true
+      show_labels: true
       filters:
         - "!test"
         - "!render"
-
-# Input models
-
-::: anta.input_models.system
-
-    options:
-      show_root_heading: false
-      show_root_toc_entry: false
-      show_bases: false
-      merge_init_into_class: false
-      anta_hide_test_module_description: true
-      show_labels: true
-      filters: ["!^__str__"]
