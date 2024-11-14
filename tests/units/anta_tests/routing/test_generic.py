@@ -305,7 +305,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "failure", "messages": ["The following route(s) are missing from the routing table of VRF default: ['10.1.0.2']"]},
     },
     {
-        "name": "Failure-route-not-found",
+        "name": "Success-valid-route-type",
         "test": VerifyRouteType,
         "eos_data": [
             {
@@ -324,7 +324,8 @@ DATA: list[dict[str, Any]] = [
                                 "routeAction": "forward",
                                 "preference": 200,
                                 "metric": 0,
-                                "vias": [{"nexthopAddr": "10.100.0.12", "interface": "Ethernet1"}, {"nexthopAddr": "10.100.0.14", "interface": "Ethernet2"}],
+                                "vias": [{"nexthopAddr": "10.100.0.12", "interface": "Ethernet1"},
+                                         {"nexthopAddr": "10.100.0.14", "interface": "Ethernet2"}],
                                 "directlyConnected": False,
                             },
                             "10.100.0.12/31": {
@@ -353,7 +354,89 @@ DATA: list[dict[str, Any]] = [
                                 "routeAction": "forward",
                                 "preference": 200,
                                 "metric": 0,
-                                "vias": [{"nexthopAddr": "10.100.0.12", "interface": "Ethernet1"}, {"nexthopAddr": "10.100.0.14", "interface": "Ethernet2"}],
+                                "vias": [{"nexthopAddr": "10.100.0.12", "interface": "Ethernet1"},
+                                         {"nexthopAddr": "10.100.0.14", "interface": "Ethernet2"}],
+                                "directlyConnected": False,
+                            },
+                            "10.100.1.5/32": {
+                                "hardwareProgrammed": True,
+                                "routeType": "iBGP",
+                                "routeLeaked": False,
+                                "kernelProgrammed": True,
+                                "routeAction": "forward",
+                                "directlyConnected": False,
+                                "preference": 200,
+                                "metric": 0,
+                                "vias": [{"nexthopAddr": "10.100.4.4", "interface": "Vlan4093"}],
+                            },
+                        },
+                    }
+                }
+            }
+        ],
+        "inputs": {
+            "routes_entries": [
+                {"vrf": "default", "prefix": "10.10.0.1/32", "route_type": "eBGP"},
+                {"vrf": "default", "prefix": "10.100.0.12/31", "route_type": "connected"},
+                {"vrf": "default", "prefix": "10.100.0.14/31", "route_type": "connected"},
+                {"vrf": "default", "prefix": "10.100.0.128/31", "route_type": "eBGP"},
+                {"vrf": "default", "prefix": "10.100.1.5/32", "route_type": "iBGP"},
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "Failure-route-not-found",
+        "test": VerifyRouteType,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "routingDisabled": False,
+                        "allRoutesProgrammedHardware": True,
+                        "allRoutesProgrammedKernel": True,
+                        "defaultRouteState": "notSet",
+                        "routes": {
+                            "10.10.0.1/32": {
+                                "hardwareProgrammed": True,
+                                "routeType": "eBGP",
+                                "routeLeaked": False,
+                                "kernelProgrammed": True,
+                                "routeAction": "forward",
+                                "preference": 200,
+                                "metric": 0,
+                                "vias": [{"nexthopAddr": "10.100.0.12", "interface": "Ethernet1"},
+                                         {"nexthopAddr": "10.100.0.14", "interface": "Ethernet2"}],
+                                "directlyConnected": False,
+                            },
+                            "10.100.0.12/31": {
+                                "hardwareProgrammed": True,
+                                "routeType": "connected",
+                                "routeLeaked": False,
+                                "kernelProgrammed": True,
+                                "routeAction": "forward",
+                                "vias": [{"interface": "Ethernet1"}],
+                                "directlyConnected": True,
+                            },
+                            "10.100.0.14/31": {
+                                "hardwareProgrammed": True,
+                                "routeType": "connected",
+                                "routeLeaked": False,
+                                "kernelProgrammed": True,
+                                "routeAction": "forward",
+                                "vias": [{"interface": "Ethernet2"}],
+                                "directlyConnected": True,
+                            },
+                            "10.100.0.128/31": {
+                                "hardwareProgrammed": True,
+                                "routeType": "eBGP",
+                                "routeLeaked": False,
+                                "kernelProgrammed": True,
+                                "routeAction": "forward",
+                                "preference": 200,
+                                "metric": 0,
+                                "vias": [{"nexthopAddr": "10.100.0.12", "interface": "Ethernet1"},
+                                         {"nexthopAddr": "10.100.0.14", "interface": "Ethernet2"}],
                                 "directlyConnected": False,
                             },
                             "10.100.1.5/32": {
@@ -387,85 +470,6 @@ DATA: list[dict[str, Any]] = [
         },
     },
     {
-        "name": "Success-valid-route-type",
-        "test": VerifyRouteType,
-        "eos_data": [
-            {
-                "vrfs": {
-                    "default": {
-                        "routingDisabled": False,
-                        "allRoutesProgrammedHardware": True,
-                        "allRoutesProgrammedKernel": True,
-                        "defaultRouteState": "notSet",
-                        "routes": {
-                            "10.10.0.1/32": {
-                                "hardwareProgrammed": True,
-                                "routeType": "eBGP",
-                                "routeLeaked": False,
-                                "kernelProgrammed": True,
-                                "routeAction": "forward",
-                                "preference": 200,
-                                "metric": 0,
-                                "vias": [{"nexthopAddr": "10.100.0.12", "interface": "Ethernet1"}, {"nexthopAddr": "10.100.0.14", "interface": "Ethernet2"}],
-                                "directlyConnected": False,
-                            },
-                            "10.100.0.12/31": {
-                                "hardwareProgrammed": True,
-                                "routeType": "connected",
-                                "routeLeaked": False,
-                                "kernelProgrammed": True,
-                                "routeAction": "forward",
-                                "vias": [{"interface": "Ethernet1"}],
-                                "directlyConnected": True,
-                            },
-                            "10.100.0.14/31": {
-                                "hardwareProgrammed": True,
-                                "routeType": "connected",
-                                "routeLeaked": False,
-                                "kernelProgrammed": True,
-                                "routeAction": "forward",
-                                "vias": [{"interface": "Ethernet2"}],
-                                "directlyConnected": True,
-                            },
-                            "10.100.0.128/31": {
-                                "hardwareProgrammed": True,
-                                "routeType": "eBGP",
-                                "routeLeaked": False,
-                                "kernelProgrammed": True,
-                                "routeAction": "forward",
-                                "preference": 200,
-                                "metric": 0,
-                                "vias": [{"nexthopAddr": "10.100.0.12", "interface": "Ethernet1"}, {"nexthopAddr": "10.100.0.14", "interface": "Ethernet2"}],
-                                "directlyConnected": False,
-                            },
-                            "10.100.1.5/32": {
-                                "hardwareProgrammed": True,
-                                "routeType": "iBGP",
-                                "routeLeaked": False,
-                                "kernelProgrammed": True,
-                                "routeAction": "forward",
-                                "directlyConnected": False,
-                                "preference": 200,
-                                "metric": 0,
-                                "vias": [{"nexthopAddr": "10.100.4.4", "interface": "Vlan4093"}],
-                            },
-                        },
-                    }
-                }
-            }
-        ],
-        "inputs": {
-            "routes_entries": [
-                {"vrf": "default", "prefix": "10.10.0.1/32", "route_type": "eBGP"},
-                {"vrf": "default", "prefix": "10.100.0.12/31", "route_type": "connected"},
-                {"vrf": "default", "prefix": "10.100.0.14/31", "route_type": "connected"},
-                {"vrf": "default", "prefix": "10.100.0.128/31", "route_type": "eBGP"},
-                {"vrf": "default", "prefix": "10.100.1.5/32", "route_type": "iBGP"},
-            ]
-        },
-        "expected": {"result": "success"},
-    },
-    {
         "name": "Failure-invalid-route-type",
         "test": VerifyRouteType,
         "eos_data": [
@@ -485,7 +489,8 @@ DATA: list[dict[str, Any]] = [
                                 "routeAction": "forward",
                                 "preference": 200,
                                 "metric": 0,
-                                "vias": [{"nexthopAddr": "10.100.0.12", "interface": "Ethernet1"}, {"nexthopAddr": "10.100.0.14", "interface": "Ethernet2"}],
+                                "vias": [{"nexthopAddr": "10.100.0.12", "interface": "Ethernet1"},
+                                         {"nexthopAddr": "10.100.0.14", "interface": "Ethernet2"}],
                                 "directlyConnected": False,
                             },
                             "10.100.0.12/31": {
@@ -514,7 +519,8 @@ DATA: list[dict[str, Any]] = [
                                 "routeAction": "forward",
                                 "preference": 200,
                                 "metric": 0,
-                                "vias": [{"nexthopAddr": "10.100.0.12", "interface": "Ethernet1"}, {"nexthopAddr": "10.100.0.14", "interface": "Ethernet2"}],
+                                "vias": [{"nexthopAddr": "10.100.0.12", "interface": "Ethernet1"},
+                                         {"nexthopAddr": "10.100.0.14", "interface": "Ethernet2"}],
                                 "directlyConnected": False,
                             },
                             "10.100.1.5/32": {
@@ -545,7 +551,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "For following routes, VRF is not configured or Route types are invalid:\n{'routes_entries': {'10.10.0.1/32': {'default': {'route_type': \"Expected route type is 'iBGP' however in actual it is found as 'eBGP'\"}}, '10.100.0.14/31': {'default': {'route_type': \"Expected route type is 'static' however in actual it is found as 'connected'\"}}, '10.100.1.5/32': {'default': {'route_type': \"Expected route type is 'eBGP' however in actual it is found as 'iBGP'\"}}}}"
+                "For following routes, VRF is not configured or Route types are invalid:\n"
+                "{'routes_entries': {'10.10.0.1/32': {'default': {'route_type': \"Expected route type is 'iBGP' however in actual it is found as 'eBGP'\"}}, "
+                "'10.100.0.14/31': {'default': {'route_type': \"Expected route type is 'static' however in actual it is found as 'connected'\"}}, "
+                "'10.100.1.5/32': {'default': {'route_type': \"Expected route type is 'eBGP' however in actual it is found as 'iBGP'\"}}}}"
             ],
         },
     },
@@ -565,7 +574,12 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "For following routes, VRF is not configured or Route types are invalid:\n{'routes_entries': {'10.10.0.1/32': {'default': 'Not configured'}, '10.100.0.12/31': {'default': 'Not configured'}, '10.100.0.14/31': {'default': 'Not configured'}, '10.100.0.128/31': {'default': 'Not configured'}, '10.100.1.5/32': {'default': 'Not configured'}}}"
+                "For following routes, VRF is not configured or Route types are invalid:\n"
+                "{'routes_entries': {'10.10.0.1/32': {'default': 'Not configured'}, "
+                "'10.100.0.12/31': {'default': 'Not configured'}, "
+                "'10.100.0.14/31': {'default': 'Not configured'}, "
+                "'10.100.0.128/31': {'default': 'Not configured'}, "
+                "'10.100.1.5/32': {'default': 'Not configured'}}}"
             ],
         },
     },
@@ -589,7 +603,8 @@ DATA: list[dict[str, Any]] = [
                                 "routeAction": "forward",
                                 "preference": 200,
                                 "metric": 0,
-                                "vias": [{"nexthopAddr": "10.100.0.12", "interface": "Ethernet1"}, {"nexthopAddr": "10.100.0.14", "interface": "Ethernet2"}],
+                                "vias": [{"nexthopAddr": "10.100.0.12", "interface": "Ethernet1"},
+                                         {"nexthopAddr": "10.100.0.14", "interface": "Ethernet2"}],
                                 "directlyConnected": False,
                             },
                             "10.100.0.12/31": {
@@ -618,7 +633,8 @@ DATA: list[dict[str, Any]] = [
                                 "routeAction": "forward",
                                 "preference": 200,
                                 "metric": 0,
-                                "vias": [{"nexthopAddr": "10.100.0.12", "interface": "Ethernet1"}, {"nexthopAddr": "10.100.0.14", "interface": "Ethernet2"}],
+                                "vias": [{"nexthopAddr": "10.100.0.12", "interface": "Ethernet1"},
+                                         {"nexthopAddr": "10.100.0.14", "interface": "Ethernet2"}],
                                 "directlyConnected": False,
                             },
                             "10.100.1.5/32": {
