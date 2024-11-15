@@ -302,6 +302,76 @@ DATA: list[dict[str, Any]] = [
         },
     },
     {
+        "name": "failure-wrong-count-peer-state-check-true",
+        "test": VerifyBGPPeerCount,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "vrf": "default",
+                        "routerId": "10.1.0.3",
+                        "asn": "65120",
+                        "peers": {
+                            "10.1.0.1": {
+                                "peerState": "Established",
+                                "peerAsn": "65100",
+                                "ipv4MplsVpn": {"afiSafiState": "advertised", "nlrisReceived": 0, "nlrisAccepted": 0},
+                                "l2VpnEvpn": {"afiSafiState": "negotiated", "nlrisReceived": 42, "nlrisAccepted": 42},
+                            },
+                            "10.1.0.2": {
+                                "peerState": "Established",
+                                "peerAsn": "65100",
+                                "ipv4MplsVpn": {"afiSafiState": "advertised", "nlrisReceived": 0, "nlrisAccepted": 0},
+                                "l2VpnEvpn": {"afiSafiState": "negotiated", "nlrisReceived": 42, "nlrisAccepted": 42},
+                            },
+                            "10.1.254.1": {
+                                "peerState": "Established",
+                                "peerAsn": "65120",
+                                "ipv4Unicast": {"afiSafiState": "negotiated", "nlrisReceived": 17, "nlrisAccepted": 17},
+                            },
+                            "10.1.255.0": {
+                                "peerState": "Established",
+                                "peerAsn": "65100",
+                                "ipv4Unicast": {"afiSafiState": "negotiated", "nlrisReceived": 14, "nlrisAccepted": 14},
+                            },
+                            "10.1.255.2": {
+                                "peerState": "Established",
+                                "peerAsn": "65100",
+                                "ipv4Unicast": {"afiSafiState": "negotiated", "nlrisReceived": 14, "nlrisAccepted": 14},
+                            },
+                        },
+                    },
+                    "DEV": {
+                        "vrf": "DEV",
+                        "routerId": "10.1.0.3",
+                        "asn": "65120",
+                        "peers": {
+                            "10.1.254.1": {
+                                "peerState": "Established",
+                                "peerAsn": "65120",
+                                "ipv4Unicast": {"afiSafiState": "negotiated", "nlrisReceived": 4, "nlrisAccepted": 4},
+                            }
+                        },
+                    },
+                }
+            },
+        ],
+        "inputs": {
+            "address_families": [
+                {"afi": "evpn", "num_peers": 3, "check_peer_state": True},
+                {"afi": "ipv4", "safi": "unicast", "vrf": "default", "num_peers": 3, "check_peer_state": True},
+                {"afi": "ipv4", "safi": "unicast", "vrf": "DEV", "num_peers": 2, "check_peer_state": True},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "AFI: evpn - Expected: 3, Actual: 2",
+                "AFI: ipv4 SAFI: unicast VRF: DEV - Expected: 2, Actual: 1",
+            ],
+        },
+    },
+    {
         "name": "failure-wrong-count",
         "test": VerifyBGPPeerCount,
         "eos_data": [
