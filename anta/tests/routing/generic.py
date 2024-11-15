@@ -269,7 +269,7 @@ class VerifyRouteType(AntaTest):
             # Verifying that the expected route-type and the actual routes are the same.
             if expected_route_type != actual_route_type:
                 failures["routes_entries"][network] = {
-                    vrf: {"route_type": f"Expected route type is '{expected_route_type}' " f"however in actual it is found as '{actual_route_type}'"}
+                    vrf: {"route_type": f"Expected route type is '{expected_route_type}' however in actual it is found as '{actual_route_type}'"}
                 }
 
         # Updating the result, as per the testcase failure message.
