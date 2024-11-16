@@ -178,16 +178,20 @@ class VerifyBFDPeersIntervals(AntaTest):
 class VerifyBFDPeersHealth(AntaTest):
     """Verifies the health of IPv4 BFD peers across all VRFs.
 
-    It checks that no BFD peer is in the down state and that the discriminator value of the remote system is not zero.
+    This test performs the following checks for BFD peers across all VRFs:
 
-    Optionally, it can also verify that BFD peers have not been down before a specified threshold of hours.
+      1. Validates that the state is up
+      2. Confirms that the remote discriminator identifier is non-zero.
+      3. Optionally verifies that the peer have not been down before a specified threshold of hours
 
     Expected Results
     ----------------
-    * Success: The test will pass if all IPv4 BFD peers are up, the discriminator value of each remote system is non-zero,
-               and the last downtime of each peer is above the defined threshold.
-    * Failure: The test will fail if any IPv4 BFD peer is down, the discriminator value of any remote system is zero,
-               or the last downtime of any peer is below the defined threshold.
+    * Success: If all of the following conditions are met:
+        - All BFD peers across the VRFs are up and remote disc is non-zero.
+        - Last downtime of each peer is above the defined threshold.
+    * Failure: If any of the following occur:
+        - Any BFD peer session is not up or the remote discriminator identifier is zero.
+        - Last downtime of any peer is below the defined threshold.
 
     Examples
     --------
@@ -214,17 +218,12 @@ class VerifyBFDPeersHealth(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyBFDPeersHealth."""
-        # Initialize failure strings
-        down_failures = []
-        up_failures = []
+        self.result.is_success()
 
         # Extract the current timestamp and command output
         clock_output = self.instance_commands[1].json_output
         current_timestamp = clock_output["utcTime"]
         bfd_output = self.instance_commands[0].json_output
-
-        # set the initial result
-        self.result.is_success()
 
         # Check if any IPv4 BFD peer is configured
         ipv4_neighbors_exist = any(vrf_data["ipv4Neighbors"] for vrf_data in bfd_output["vrfs"].values())
@@ -238,31 +237,19 @@ class VerifyBFDPeersHealth(AntaTest):
                 for peer_data in neighbor_data["peerStats"].values():
                     peer_status = peer_data["status"]
                     remote_disc = peer_data["remoteDisc"]
-                    remote_disc_info = f" with remote disc {remote_disc}" if remote_disc == 0 else ""
                     last_down = peer_data["lastDown"]
                     hours_difference = (
                         datetime.fromtimestamp(current_timestamp, tz=timezone.utc) - datetime.fromtimestamp(last_down, tz=timezone.utc)
                     ).total_seconds() / 3600
 
-                    # Check if peer status is not up
-                    if peer_status != "up":
-                        down_failures.append(f"{peer} is {peer_status} in {vrf} VRF{remote_disc_info}.")
+                    if not (peer_status == "up" and remote_disc != 0):
+                        self.result.is_failure(
+                            f"Peer: {peer} VRF: {vrf} - Session not properly established; State: {peer_status} Remote Discriminator: {remote_disc}"
+                        )
 
                     # Check if the last down is within the threshold
-                    elif self.inputs.down_threshold and hours_difference < self.inputs.down_threshold:
-                        up_failures.append(f"{peer} in {vrf} VRF was down {round(hours_difference)} hours ago{remote_disc_info}.")
-
-                    # Check if remote disc is 0
-                    elif remote_disc == 0:
-                        up_failures.append(f"{peer} in {vrf} VRF has remote disc {remote_disc}.")
-
-        # Check if there are any failures
-        if down_failures:
-            down_failures_str = "\n".join(down_failures)
-            self.result.is_failure(f"Following BFD peers are not up:\n{down_failures_str}")
-        if up_failures:
-            up_failures_str = "\n".join(up_failures)
-            self.result.is_failure(f"\nFollowing BFD peers were down:\n{up_failures_str}")
+                    if self.inputs.down_threshold and hours_difference < self.inputs.down_threshold:
+                        self.result.is_failure(f"Peer: {peer} VRF: {vrf} - Unstable session, Recent failure {round(hours_difference)} hours ago")
 
 
 class VerifyBFDPeersRegProtocols(AntaTest):
