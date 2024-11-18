@@ -103,6 +103,15 @@ anta.tests.cvx:
   - VerifyMcsClientMounts:
   - VerifyManagementCVX:
       enabled: true
+  - VerifyCVXClusterStatus:
+          enabled: true
+          cluster_mode: true
+          role: Master
+          peer_status:
+            - peer_name : cvx-red-2
+              registration_state: Registration complete
+            - peer_name: cvx-red-3
+              registration_state: Registration complete
 
 anta.tests.connectivity:
   - VerifyReachability:
