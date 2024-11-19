@@ -215,7 +215,7 @@ def create_inventory_from_ansible(inventory: Path, output: Path, ansible_group: 
 
 def explore_package(module_name: str, level: int = 0, test_name: str | None = None, *, short: bool = False) -> None:
     """Parse ANTA test submodules recursively and print AntaTest examples.
-    
+
     Parameters
     ----------
     module_name
