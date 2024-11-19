@@ -143,7 +143,5 @@ def tests(module: str | None, test: str | None, *, short: bool) -> None:
     """Show all builtin ANTA tests with an example output retrieved from each test documentation."""
     filterwarnings("ignore", message="Unknown section Expected Results")
 
-    if module:
-        explore_package(module, test_name=test, short=short)
-    else:
-        explore_package("anta.tests", test_name=test, short=short)
+    module = module or "anta.tests"
+    explore_package(module, test_name=test, short=short)
