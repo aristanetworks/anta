@@ -213,7 +213,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "failure", "messages": ["CVX Server is not a cluster"]},
     },
     {
-        "name": "failure-unexpected-peers",
+        "name": "failure-missing-peers",
         "test": VerifyCVXClusterStatus,
         "eos_data": [
             {
@@ -237,6 +237,30 @@ DATA: list[dict[str, Any]] = [
             ],
         },
         "expected": {"result": "failure", "messages": ["Unexpected number of peers", "cvx-red-3 is not present"]},
+    },
+    {
+        "name": "failure-invalid-peers",
+        "test": VerifyCVXClusterStatus,
+        "eos_data": [
+            {
+                "enabled": True,
+                "clusterMode": True,
+                "clusterStatus": {
+                    "role": "Master",
+                    "peerStatus": {},
+                },
+            }
+        ],
+        "inputs": {
+            "enabled": True,
+            "cluster_mode": True,
+            "role": "Master",
+            "peer_status": [
+                {"peer_name": "cvx-red-2", "registrationState": "Registration complete"},
+                {"peer_name": "cvx-red-3", "registrationState": "Registration complete"},
+            ],
+        },
+        "expected": {"result": "failure", "messages": ["Peer status data is invalid"]},
     },
     {
         "name": "failure-registration-error",
