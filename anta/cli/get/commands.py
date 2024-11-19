@@ -135,9 +135,9 @@ def tags(inventory: AntaInventory, **kwargs: Any) -> None:
     console.print_json(json.dumps(sorted(tags), indent=2))
 
 
-@click.option("--module", help="Test module to retrieve the examples for.", required=False)
-@click.option("--test", help="Test name to retrieve the example for. If module is set, lookup only in given module.", required=False)
-@click.option("--short", help="Print test names only and not the inputs", required=False, is_flag=True, default=False)
+@click.option("--module", help="Filter tests by module name. Defaults to 'anta.tests'.", required=False)
+@click.option("--test", help="Filter by specific test name. If module is specified, searches only within that module.", required=False)
+@click.option("--short", help="Display test names without their inputs.", required=False, is_flag=True, default=False)
 @click.command
 def tests(module: str | None, test: str | None, *, short: bool) -> None:
     """Show all builtin ANTA tests with an example output retrieved from each test documentation."""
