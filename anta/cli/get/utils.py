@@ -243,7 +243,7 @@ def explore_package(module_name: str, level: int = 0, test_name: str | None = No
 
 
 def print_tests_examples(qname: str, level: int, test_name: str | None, *, short: bool = False) -> None:
-    """Print tests in qname if matching test_name (or all if test_name is None.
+    """Print tests from `qname`, filtered by `test_name` if provided.
 
     TODO: Allow to give a package argument to import_module.
     """
