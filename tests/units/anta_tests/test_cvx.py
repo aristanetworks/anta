@@ -174,6 +174,33 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
+        "name": "failure-invalid-role",
+        "test": VerifyCVXClusterStatus,
+        "eos_data": [
+            {
+                "enabled": True,
+                "clusterMode": True,
+                "clusterStatus": {
+                    "role": "Standby",
+                    "peerStatus": {
+                        "cvx-red-2": {"peerName": "cvx-red-2", "registrationState": "Registration complete"},
+                        "cvx-red-3": {"peerName": "cvx-red-3", "registrationState": "Registration complete"},
+                    },
+                },
+            }
+        ],
+        "inputs": {
+            "enabled": True,
+            "cluster_mode": True,
+            "role": "Master",
+            "peer_status": [
+                {"peer_name": "cvx-red-2", "registrationState": "Registration complete"},
+                {"peer_name": "cvx-red-3", "registrationState": "Registration complete"},
+            ],
+        },
+        "expected": {"result": "failure", "messages": ["CVX Role is not valid: Standby"]},
+    },
+    {
         "name": "failure-cvx-enabled",
         "test": VerifyCVXClusterStatus,
         "eos_data": [
