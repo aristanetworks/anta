@@ -21,15 +21,15 @@ if TYPE_CHECKING:
 
 
 class VerifyBFDSpecificPeers(AntaTest):
-    """Verifies if the IPv4 BFD peer sessions are in the UP state and the remote discriminator (disc) is non-zero within the specified VRF.
+    """Verifies the state of IPv4 BFD peer sessions.
 
     This test performs the following checks for each specified peer:
 
       1. Confirms that the specified VRF is configured.
       2. Verifies that the peer exists in the BFD configuration.
       3. For each specified BFD peer:
-        - Validates that the state is up
-        - Confirms that the remote discriminator identifier is non-zero.
+        - Validates that the state is `up`
+        - Confirms that the remote discriminator identifier (disc) is non-zero.
 
     Expected Results
     ----------------
@@ -38,7 +38,7 @@ class VerifyBFDSpecificPeers(AntaTest):
         - All BFD peers are up and remote disc is non-zero.
     * Failure: If any of the following occur:
         - A specified peer is not found in the BFD configuration within the specified VRF.
-        - Any BFD peer session is not up or the remote discriminator identifier is zero.
+        - Any BFD peer session is not `up` or the remote discriminator identifier is zero.
 
     Examples
     --------
@@ -88,11 +88,11 @@ class VerifyBFDSpecificPeers(AntaTest):
             state = bfd_output.get("status")
             remote_disc = bfd_output.get("remoteDisc")
             if not (state == "up" and remote_disc != 0):
-                self.result.is_failure(f"{bfd_peer} - Session not properly established; State: {state} Remote Discriminator: {remote_disc}")
+                self.result.is_failure(f"{bfd_peer} - Session not properly established; State: {state}, Remote Discriminator: {remote_disc}")
 
 
 class VerifyBFDPeersIntervals(AntaTest):
-    """Verifies the timers of the IPv4 BFD peers in the specified VRF.
+    """Verifies the timers of IPv4 BFD peer sessions.
 
     This test performs the following checks for each specified peer:
 
@@ -167,12 +167,14 @@ class VerifyBFDPeersIntervals(AntaTest):
             op_rx_interval = bfd_details.get("operRxInterval") // 1000
             detect_multiplier = bfd_details.get("detectMult")
 
-            # Check timers of BFD peer
-            intervals_ok = op_tx_interval == tx_interval and op_rx_interval == rx_interval and detect_multiplier == multiplier
-            if not intervals_ok:
-                self.result.is_failure(
-                    f"{bfd_peer} - Incorrect timers; Transmit interval: {op_tx_interval}, Receive interval: {op_rx_interval}, Multiplier: {detect_multiplier}"
-                )
+            if op_tx_interval != tx_interval:
+                self.result.is_failure(f"{bfd_peer} - Incorrect Transmit interval; Expected: {tx_interval} Actual: {op_tx_interval}")
+
+            if op_rx_interval != rx_interval:
+                self.result.is_failure(f"{bfd_peer} - Incorrect Receive interval; Expected: {rx_interval} Actual: {op_rx_interval}")
+
+            if detect_multiplier != multiplier:
+                self.result.is_failure(f"{bfd_peer} - Incorrect Multiplier; Expected: {multiplier} Actual: {detect_multiplier}")
 
 
 class VerifyBFDPeersHealth(AntaTest):
@@ -180,18 +182,18 @@ class VerifyBFDPeersHealth(AntaTest):
 
     This test performs the following checks for BFD peers across all VRFs:
 
-      1. Validates that the state is up
-      2. Confirms that the remote discriminator identifier is non-zero.
-      3. Optionally verifies that the peer have not been down before a specified threshold of hours
+      1. Validates that the state is `up`.
+      2. Confirms that the remote discriminator identifier (disc) is non-zero.
+      3. Optionally verifies that the peer have not been down before a specified threshold of hours.
 
     Expected Results
     ----------------
     * Success: If all of the following conditions are met:
         - All BFD peers across the VRFs are up and remote disc is non-zero.
-        - Last downtime of each peer is above the defined threshold.
+        - Last downtime of each peer is above the defined threshold, if specified.
     * Failure: If any of the following occur:
         - Any BFD peer session is not up or the remote discriminator identifier is zero.
-        - Last downtime of any peer is below the defined threshold.
+        - Last downtime of any peer is below the defined threshold, if specified.
 
     Examples
     --------
@@ -244,22 +246,24 @@ class VerifyBFDPeersHealth(AntaTest):
 
                     if not (peer_status == "up" and remote_disc != 0):
                         self.result.is_failure(
-                            f"Peer: {peer} VRF: {vrf} - Session not properly established; State: {peer_status} Remote Discriminator: {remote_disc}"
+                            f"Peer: {peer} VRF: {vrf} - Session not properly established; State: {peer_status}, Remote Discriminator: {remote_disc}"
                         )
 
                     # Check if the last down is within the threshold
                     if self.inputs.down_threshold and hours_difference < self.inputs.down_threshold:
-                        self.result.is_failure(f"Peer: {peer} VRF: {vrf} - Unstable session, Recent failure {round(hours_difference)} hours ago")
+                        self.result.is_failure(
+                            f"Peer: {peer} VRF: {vrf} - Session failure detected within the expected uptime threshold ({round(hours_difference)} hours ago)"
+                        )
 
 
 class VerifyBFDPeersRegProtocols(AntaTest):
-    """Verifies the registered routing protocol of the IPv4 BFD peers in the specified VRF.
+    """Verifies the registered routing protocol of IPv4 BFD peer sessions.
 
     This test performs the following checks for each specified peer:
 
       1. Confirms that the specified VRF is configured.
       2. Verifies that the peer exists in the BFD configuration.
-      3. Confirms that BFD peer is correctly configured with the routing protocol.
+      3. Confirms that BFD peer is correctly configured with the `routing protocol`.
 
     Expected Results
     ----------------
@@ -315,6 +319,6 @@ class VerifyBFDPeersRegProtocols(AntaTest):
                 continue
 
             # Check registered protocols
-            difference = set(protocols) - set(get_value(bfd_output, "peerStatsDetail.apps"))
+            difference = sorted(set(protocols) - set(get_value(bfd_output, "peerStatsDetail.apps")))
             if difference:
-                self.result.is_failure(f"{bfd_peer} - `{','.join(difference)}` routing protocols not configured")
+                self.result.is_failure(f"{bfd_peer} - `{', '.join(difference)}` routing protocol(s) not configured")
