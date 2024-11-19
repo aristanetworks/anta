@@ -214,7 +214,19 @@ def create_inventory_from_ansible(inventory: Path, output: Path, ansible_group: 
 
 
 def explore_package(module_name: str, level: int = 0, test_name: str | None = None, *, short: bool = False) -> None:
-    """Parse submodules recursively and print AntaTest example."""
+    """Parse ANTA test submodules recursively and print AntaTest examples.
+    
+    Parameters
+    ----------
+    module_name
+        Name of the module to explore (e.g., 'anta.tests.routing.bgp').
+    level
+        Current recursion level, used for indentation.
+    test_name
+        If provided, only show tests starting with this name.
+    short
+        If True, only print test names without their inputs.
+    """
     if (module_spec := importlib.util.find_spec(module_name)) is None or module_spec.origin is None:
         return
 
