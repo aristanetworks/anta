@@ -9,7 +9,7 @@ from contextlib import redirect_stdout
 from pathlib import Path
 from sys import path
 
-# Override global path to load pyavd from pwd instead of any installed version.
+# Override global path to load anta from pwd instead of any installed version.
 path.insert(0, str(Path(__file__).parents[2]))
 
 examples_tests_path = Path(__file__).parents[2] / "examples" / "tests.yaml"
