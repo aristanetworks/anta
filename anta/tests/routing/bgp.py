@@ -425,7 +425,7 @@ class VerifyBGPExchangedRoutes(AntaTest):
                     is_active = route_paths["active"]
                     is_valid = route_paths["valid"]
                     if not is_active or not is_valid:
-                        self.result.is_failure(f"{peer} {route_type} route: {route} - Invalid/inactive; Valid: {is_valid}, Active: {is_active}")
+                        self.result.is_failure(f"{peer} {route_type} route: {route} - Valid: {is_valid}, Active: {is_active}")
 
 
 class VerifyBGPPeerMPCaps(AntaTest):

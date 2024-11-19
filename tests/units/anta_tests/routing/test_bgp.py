@@ -1325,13 +1325,13 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 172.30.11.1 VRF: default Advertised route: 192.0.254.3/32 - Invalid/inactive; Valid: False, Active: True",
+                "Peer: 172.30.11.1 VRF: default Advertised route: 192.0.254.3/32 - Valid: False, Active: True",
                 "Peer: 172.30.11.1 VRF: default Advertised route: 192.0.254.51/32 - Not found",
                 "Peer: 172.30.11.1 VRF: default Received route: 192.0.254.31/32 - Not found",
-                "Peer: 172.30.11.1 VRF: default Received route: 192.0.255.4/32 - Invalid/inactive; Valid: False, Active: False",
+                "Peer: 172.30.11.1 VRF: default Received route: 192.0.255.4/32 - Valid: False, Active: False",
                 "Peer: 172.30.11.5 VRF: default Advertised route: 192.0.254.31/32 - Not found",
-                "Peer: 172.30.11.5 VRF: default Advertised route: 192.0.254.5/32 - Invalid/inactive; Valid: False, Active: True",
-                "Peer: 172.30.11.5 VRF: default Received route: 192.0.254.3/32 - Invalid/inactive; Valid: True, Active: False",
+                "Peer: 172.30.11.5 VRF: default Advertised route: 192.0.254.5/32 - Valid: False, Active: True",
+                "Peer: 172.30.11.5 VRF: default Received route: 192.0.254.3/32 - Valid: True, Active: False",
                 "Peer: 172.30.11.5 VRF: default Received route: 192.0.255.41/32 - Not found",
             ],
         },
