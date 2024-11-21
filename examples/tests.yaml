@@ -510,20 +510,20 @@ anta.tests.routing:
           - 10.1.0.2
     - VerifyRouteType:
         routes_entries:
-          - vrf: default
-            prefix: 10.10.0.1/32
+          - prefix: 10.10.0.1/32
+            vrf: default
             route_type: eBGP
-          - vrf: default
-            prefix: 10.100.0.12/31
+          - prefix: 10.100.0.12/31
+            vrf: default
             route_type: connected
-          - vrf: default
-            prefix: 10.100.0.14/31
+          - prefix: 10.100.0.14/31
+            vrf: default
             route_type: connected
-          - vrf: default
-            prefix: 10.100.0.128/31
+          - prefix: 10.100.0.128/31
+            vrf: default
             route_type: eBGP
-          - vrf: default
-            prefix: 10.100.1.5/32
+          - prefix: 10.100.1.5/32
+            vrf: default
             route_type: iBGP
   bgp:
     - VerifyBGPPeerCount:
