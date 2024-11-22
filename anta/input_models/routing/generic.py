@@ -9,11 +9,11 @@ from ipaddress import IPv4Network
 
 from pydantic import BaseModel
 
-from anta.custom_types import RouteType
+from anta.custom_types import IPv4RouteType
 
 
-class Routes(BaseModel):
-    """Model for a list of route entries."""
+class IPv4Routes(BaseModel):
+    """Model for a list of IPV4 route entries."""
 
     prefix: IPv4Network
     """ IPV4network to validate the rout type. """
@@ -21,8 +21,8 @@ class Routes(BaseModel):
     vrf: str = "default"
     """ VRF context. Defaults to `default` VRF."""
 
-    route_type: RouteType
-    """ List of Route type to validate the valid rout type. """
+    route_type: IPv4RouteType
+    """ List of IPV4 Route type to validate the valid rout type. """
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the route-type for reporting."""
