@@ -26,4 +26,4 @@ class Routes(BaseModel):
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the route-type for reporting."""
-        return f"Prefix: {self.prefix} VRF: {self.vrf} RouteType: {self.route_type}  "
+        return f"Prefix: {self.prefix} VRF: {self.vrf}"
