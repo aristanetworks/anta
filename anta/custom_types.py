@@ -210,7 +210,7 @@ SnmpErrorCounter = Literal[
 ]
 # TODO: Needs to update the route types with confirmation.
 
-RouteType = Literal[
+IPv4RouteType = Literal[
     "connected",
     "static",
     "kernel",

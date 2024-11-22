@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING, ClassVar, Literal
 from pydantic import model_validator
 
 from anta.custom_types import PositiveInteger
-from anta.input_models.routing.generic import Routes
+from anta.input_models.routing.generic import IPv4Routes
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_value
 
@@ -185,20 +185,31 @@ class VerifyRoutingTableEntry(AntaTest):
             self.result.is_failure(f"The following route(s) are missing from the routing table of VRF {self.inputs.vrf}: {missing_routes}")
 
 
-class VerifyRouteType(AntaTest):
-    """Verifies the route-type of the provided prefixes within a specified VRF.
+class VerifyIPv4RouteType(AntaTest):
+    """Verifies the IPV4 route-type of the provided prefixes within a specified VRF.
+
+    This test performs the following checks for each specific ipv4 route:
+        1. Verifies that the specified VRF is configured.
+        2. Verifies that the specified ipv4 route is exists in the configuration.
+        3. Verifies that the the specified ipv4 route is of the expected type.
 
     Expected Results
     ----------------
-    * Success: The test will pass if the provided route is of the expected type.
-    * Failure: The test will fail if the provided route is not of the expected type.
+    * Success: If all of the following conditions are met:
+        - All the specified VRFs are configured.
+        - All the specified ipv4 routes are found.
+        - All the specified ipv4 routes are of the expected type.
+    * Failure: If any of the following occur:
+        - A specified VRF is not configured.
+        - A specified ipv4 route is not found.
+        - Any specified ipv4 route is not of the expected type.
 
     Examples
     --------
     ```yaml
     anta.tests.routing:
       generic:
-        VerifyRouteType:
+        VerifyIPV4RouteType:
           routes_entries:
             - prefix: 10.10.0.1/32
               vrf: default
@@ -206,12 +217,6 @@ class VerifyRouteType(AntaTest):
             - prefix: 10.100.0.12/31
               vrf: default
               route_type: connected
-            - prefix: 10.100.0.14/31
-              vrf: default
-              route_type: connected
-            - prefix: 10.100.0.128/31
-              vrf: default
-              route_type: eBGP
             - prefix: 10.100.1.5/32
               vrf: default
               route_type: iBGP
@@ -222,38 +227,32 @@ class VerifyRouteType(AntaTest):
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip route vrf all", revision=4)]
 
     class Input(AntaTest.Input):
-        """Input model for the VerifyRouteType test."""
+        """Input model for the VerifyIPV4RouteType test."""
 
-        routes_entries: list[Routes]
-        """List of route entries"""
-        Routes: ClassVar[type[Routes]] = Routes
+        routes_entries: list[IPv4Routes]
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """Main test function for VerifyRouteType."""
+        """Main test function for VerifyIPV4RouteType."""
         self.result.is_success()
-
-        # Collecting the 'show ip route vrf all' command output.
         output = self.instance_commands[0].json_output
 
         # Iterating over the all routes entries mentioned in the inputs.
-        for entries in self.inputs.routes_entries:
-            prefix = str(entries.prefix)
-            vrf = entries.vrf
-            expected_route_type = entries.route_type
+        for entry in self.inputs.routes_entries:
+            prefix = str(entry.prefix)
+            vrf = entry.vrf
+            expected_route_type = entry.route_type
 
             # Verifying that on device, expected VRF is configured.
             if (routes_details := get_value(output, f"vrfs.{vrf}.routes")) is None:
-                self.result.is_failure(f"{entries} - Not configured")
+                self.result.is_failure(f"{entry} - VRF not configured")
                 continue
 
-            # Verifying that the expected route is present or not on the device
-            if (route_data := get_value(routes_details, prefix, separator="..")) is None:
-                self.result.is_failure(f"{entries} - Routes not found")
+            # Verifying that the expected ipv4 route is present or not on the device
+            if (route_data := routes_details.get(prefix)) is None:
+                self.result.is_failure(f"{entry} - Routes not found")
                 continue
 
-            actual_route_type = route_data.get("routeType")
-
-            # Verifying that the expected route-type and the actual routes are the same.
-            if expected_route_type != actual_route_type:
-                self.result.is_failure(f"{entries}- Incorrect route type; Expected: {expected_route_type} Actual: {actual_route_type}")
+            # Verifying that the specified ipv4 routes are of the expected type.
+            if expected_route_type != (actual_route_type := route_data.get("routeType")):
+                self.result.is_failure(f"{entry} - Incorrect route type, Expected: {expected_route_type} Actual: {actual_route_type}")
