@@ -225,6 +225,7 @@ class VerifyRouteType(AntaTest):
         """Input model for the VerifyRouteType test."""
 
         routes_entries: list[Routes]
+        """List of route entries"""
         Routes: ClassVar[type[Routes]] = Routes
 
     @AntaTest.anta_test
@@ -243,18 +244,16 @@ class VerifyRouteType(AntaTest):
 
             # Verifying that on device, expected VRF is configured.
             if (routes_details := get_value(output, f"vrfs.{vrf}.routes")) is None:
-                self.result.is_failure(f"Prefix {prefix} - VRF {vrf} is not configured")
+                self.result.is_failure(f"{entries} - Not configured")
                 continue
 
             # Verifying that the expected route is present or not on the device
             if (route_data := get_value(routes_details, prefix, separator="..")) is None:
-                self.result.is_failure(f"Prefix: {prefix} VRF: {vrf} - Routes not found")
+                self.result.is_failure(f"{entries} - Routes not found")
                 continue
 
             actual_route_type = route_data.get("routeType")
 
             # Verifying that the expected route-type and the actual routes are the same.
             if expected_route_type != actual_route_type:
-                self.result.is_failure(
-                    f"Prefix: {prefix} VRF: {vrf} -  Expected route type is '{expected_route_type}' however in actual it is found as '{actual_route_type}'"
-                )
+                self.result.is_failure(f"{entries}- Incorrect route type; Expected: {expected_route_type} Actual: {actual_route_type}")

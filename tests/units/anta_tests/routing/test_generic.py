@@ -542,9 +542,9 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Prefix: 10.10.0.1/32 VRF: default -  Expected route type is 'iBGP' however in actual it is found as 'eBGP'",
-                "Prefix: 10.100.0.14/31 VRF: default -  Expected route type is 'static' however in actual it is found as 'connected'",
-                "Prefix: 10.100.1.5/32 VRF: default -  Expected route type is 'eBGP' however in actual it is found as 'iBGP'",
+                "Prefix: 10.10.0.1/32 VRF: default- Incorrect route type; Expected: iBGP Actual: eBGP",
+                "Prefix: 10.100.0.14/31 VRF: default- Incorrect route type; Expected: static Actual: connected",
+                "Prefix: 10.100.1.5/32 VRF: default- Incorrect route type; Expected: eBGP Actual: iBGP",
             ],
         },
     },
@@ -564,11 +564,11 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Prefix 10.10.0.1/32 - VRF default is not configured",
-                "Prefix 10.100.0.12/31 - VRF default is not configured",
-                "Prefix 10.100.0.14/31 - VRF default is not configured",
-                "Prefix 10.100.0.128/31 - VRF default is not configured",
-                "Prefix 10.100.1.5/32 - VRF default is not configured",
+                "Prefix: 10.10.0.1/32 VRF: default - Not configured",
+                "Prefix: 10.100.0.12/31 VRF: default - Not configured",
+                "Prefix: 10.100.0.14/31 VRF: default - Not configured",
+                "Prefix: 10.100.0.128/31 VRF: default - Not configured",
+                "Prefix: 10.100.1.5/32 VRF: default - Not configured",
             ],
         },
     },
