@@ -7,7 +7,10 @@ anta_title: ANTA catalog for security tests
   ~ that can be found in the LICENSE file.
   -->
 
+# Tests
+
 ::: anta.tests.security
+
     options:
       show_root_heading: false
       show_root_toc_entry: false
@@ -18,3 +21,16 @@ anta_title: ANTA catalog for security tests
       filters:
         - "!test"
         - "!render"
+
+# Input models
+
+::: anta.input_models.security
+
+    options:
+      show_root_heading: false
+      show_root_toc_entry: false
+      show_bases: false
+      merge_init_into_class: false
+      anta_hide_test_module_description: true
+      show_labels: true
+      filters: ["!^__str__"]

@@ -16,6 +16,7 @@ from pydantic import BaseModel, Field, model_validator
 from anta.custom_types import EcdsaKeySize, EncryptionAlgorithm, PositiveInteger, RsaKeySize
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_failed_logs, get_item, get_value
+from anta.input_models.security import IPSecPeer, IPSecPeers
 
 if TYPE_CHECKING:
     import sys
@@ -726,28 +727,9 @@ class VerifySpecificIPSecConn(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifySpecificIPSecConn test."""
 
-        ip_security_connections: list[IPSecPeers]
+        ip_security_connections: list[IPSecPeer]
         """List of IP4v security peers."""
-
-        class IPSecPeers(BaseModel):
-            """Details of IPv4 security peers."""
-
-            peer: IPv4Address
-            """IPv4 address of the peer."""
-
-            vrf: str = "default"
-            """Optional VRF for the IP security peer."""
-
-            connections: list[IPSecConn] | None = None
-            """Optional list of IPv4 security connections of a peer."""
-
-            class IPSecConn(BaseModel):
-                """Details of IPv4 security connections for a peer."""
-
-                source_address: IPv4Address
-                """Source IPv4 address of the connection."""
-                destination_address: IPv4Address
-                """Destination IPv4 address of the connection."""
+        IPSecPeers: ClassVar[type[IPSecPeers]] = IPSecPeers
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each input IP Sec connection."""
