@@ -32,6 +32,7 @@ class IPSecPeer(BaseModel):
         """
         return f"Peer: {self.peer} VRF: {self.vrf}"
 
+
 class IPSecConn(BaseModel):
     """Details of an IPv4 security connection for a peer."""
 

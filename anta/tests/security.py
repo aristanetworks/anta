@@ -8,15 +8,14 @@ from __future__ import annotations
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 from datetime import datetime, timezone
-from ipaddress import IPv4Address
 from typing import TYPE_CHECKING, ClassVar, get_args
 
 from pydantic import BaseModel, Field, model_validator
 
 from anta.custom_types import EcdsaKeySize, EncryptionAlgorithm, PositiveInteger, RsaKeySize
+from anta.input_models.security import IPSecPeer, IPSecPeers
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_failed_logs, get_item, get_value
-from anta.input_models.security import IPSecPeer, IPSecPeers
 
 if TYPE_CHECKING:
     import sys
@@ -693,15 +692,23 @@ class VerifyIPSecConnHealth(AntaTest):
 
 
 class VerifySpecificIPSecConn(AntaTest):
-    """Verifies the state of IPv4 security connections for a specified peer.
+    """Verifies the IPv4 security connections.
 
-    It optionally allows for the verification of a specific path for a peer by providing source and destination addresses.
-    If these addresses are not provided, it will verify all paths for the specified peer.
+    This test performs the following checks for each specified address family:
+
+      1. Validates that the VRF is configured.
+      2. Checks for the presence of IPv4 security connections for the specified peer.
+      3. For each relevant peer:
+        - If source and destination addresses are provided, Verifies the security connection for the specific path.
+        - If no addresses are provided, Verifies all security connections associated with the peer.
+        - Verifies that the connection is in the `Established` state.
 
     Expected Results
     ----------------
-    * Success: The test passes if the IPv4 security connection for a peer is established in the specified VRF.
-    * Failure: The test fails if IPv4 security is not configured, a connection is not found for a peer, or the connection is not established in the specified VRF.
+    * Success: If all checks pass for all specified IPv4 security connections.
+    * Failure: If any of the following occur:
+        - No IPv4 security connections are found for the peer
+        - The security connection is not established for the specified path or any of the peer's connections when no path is specified.
 
     Examples
     --------
@@ -720,9 +727,9 @@ class VerifySpecificIPSecConn(AntaTest):
     ```
     """
 
-    description = "Verifies IPv4 security connections for a peer."
+    description = "Verifies the IPv4 security connections."
     categories: ClassVar[list[str]] = ["security"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show ip security connection vrf {vrf} path peer {peer}")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show ip security connection vrf {vrf} path peer {peer}", revision=2)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifySpecificIPSecConn test."""
@@ -739,15 +746,15 @@ class VerifySpecificIPSecConn(AntaTest):
     def test(self) -> None:
         """Main test function for VerifySpecificIPSecConn."""
         self.result.is_success()
+
         for command_output, input_peer in zip(self.instance_commands, self.inputs.ip_security_connections):
             conn_output = command_output.json_output["connections"]
-            peer = command_output.params.peer
-            vrf = command_output.params.vrf
             conn_input = input_peer.connections
+            vrf = input_peer.vrf
 
             # Check if IPv4 security connection is configured
             if not conn_output:
-                self.result.is_failure(f"No IPv4 security connection configured for peer `{peer}`.")
+                self.result.is_failure(f"{input_peer} - Not configured")
                 continue
 
             # If connection details are not provided then check all connections of a peer
@@ -757,11 +764,7 @@ class VerifySpecificIPSecConn(AntaTest):
                     if state != "Established":
                         source = conn_data.get("saddr")
                         destination = conn_data.get("daddr")
-                        vrf = conn_data.get("tunnelNs")
-                        self.result.is_failure(
-                            f"Expected state of IPv4 security connection `source:{source} destination:{destination} vrf:{vrf}` for peer `{peer}` is `Established` "
-                            f"but found `{state}` instead."
-                        )
+                        self.result.is_failure(f"{input_peer} Source: {source} Destination: {destination} - Connection down; Expected: Established Actual: {state}")
                 continue
 
             # Create a dictionary of existing connections for faster lookup
@@ -777,13 +780,10 @@ class VerifySpecificIPSecConn(AntaTest):
                     existing_state = existing_connections[(source_input, destination_input, vrf)]
                     if existing_state != "Established":
                         self.result.is_failure(
-                            f"Expected state of IPv4 security connection `source:{source_input} destination:{destination_input} vrf:{vrf}` "
-                            f"for peer `{peer}` is `Established` but found `{existing_state}` instead."
+                            f"{input_peer} Source: {source_input} Destination: {destination_input} - Connection down; Expected: Established Actual: {existing_state}"
                         )
                 else:
-                    self.result.is_failure(
-                        f"IPv4 security connection `source:{source_input} destination:{destination_input} vrf:{vrf}` for peer `{peer}` is not found."
-                    )
+                    self.result.is_failure(f"{input_peer} Source: {source_input} Destination: {destination_input} - Connection not found.")
 
 
 class VerifyHardwareEntropy(AntaTest):
