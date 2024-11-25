@@ -31,4 +31,4 @@ anta_title: ANTA catalog for generic routing tests
       merge_init_into_class: false
       anta_hide_test_module_description: true
       show_labels: true
-      filters: ["!^__str__"]
+      filters: ["!^**str**"]
