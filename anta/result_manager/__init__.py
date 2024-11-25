@@ -148,7 +148,7 @@ class ResultManager:
         if test_status == "error":
             self.error_status = True
             return
-        if self.status == "unset" or self.status == "skipped" and test_status in {"success", "failure"}:
+        if self.status == "unset" or (self.status == "skipped" and test_status in {"success", "failure"}):
             self.status = test_status
         elif self.status == "success" and test_status == "failure":
             self.status = AntaTestStatus.FAILURE
