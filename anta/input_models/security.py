@@ -53,15 +53,15 @@ class IPSecConn(BaseModel):
 
 
 class IPSecPeers(IPSecPeer):  # pragma: no cover
-    """Alias for the IPSecPeer model to maintain backward compatibility.
+    """Alias for the IPSecPeers model to maintain backward compatibility.
 
-    When initialized, it will emit a deprecation warning and call the IPSecPeers model.
+    When initialized, it will emit a deprecation warning and call the IPSecPeer model.
 
     TODO: Remove this class in ANTA v2.0.0.
     """
 
     def __init__(self, **data: Any) -> None:  # noqa: ANN401
-        """Initialize the BgpAfi class, emitting a deprecation warning."""
+        """Initialize the IPSecPeer class, emitting a deprecation warning."""
         warn(
             message="IPSecPeers model is deprecated and will be removed in ANTA v2.0.0. Use the IPSecPeer model instead.",
             category=DeprecationWarning,
