@@ -7,23 +7,29 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from ipaddress import IPv4Address
 from typing import ClassVar
 
-from pydantic import BaseModel
-
-from anta.custom_types import Port
+from anta.input_models.stun import ClientAddress
 from anta.models import AntaCommand, AntaTemplate, AntaTest
-from anta.tools import get_failed_logs, get_value
+from anta.tools import get_value
 
 
 class VerifyStunClient(AntaTest):
-    """Verifies STUN client settings, including local IP/port and optionally public IP/port.
+    """Verifies the STUN client configuration.
+
+    This test performs the following checks for each specified address family:
+
+      1. Validates that the STUN client is configured.
+      2. If public IP and port details are provided, validates their correctness against the configuration.
 
     Expected Results
     ----------------
-    * Success: The test will pass if the STUN client is correctly configured with the specified IPv4 source address/port and public address/port.
-    * Failure: The test will fail if the STUN client is not configured or if the IPv4 source address, public address, or port details are incorrect.
+    * Success: If all of the following conditions are met:
+        - The test will pass if the STUN client is correctly configured.
+        - If public IP and port details are provided, they must also match the configuration.
+    * Failure: If any of the following occur:
+        - The STUN client is not configured.
+        - The public IP or port details, if specified, are incorrect.
 
     Examples
     --------
@@ -43,24 +49,14 @@ class VerifyStunClient(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["stun"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show stun client translations {source_address} {source_port}")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show stun client translations {source_address} {source_port}", revision=1)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyStunClient test."""
 
         stun_clients: list[ClientAddress]
-
-        class ClientAddress(BaseModel):
-            """Source and public address/port details of STUN client."""
-
-            source_address: IPv4Address
-            """IPv4 source address of STUN client."""
-            source_port: Port = 4500
-            """Source port number for STUN client."""
-            public_address: IPv4Address | None = None
-            """Optional IPv4 public address of STUN client."""
-            public_port: Port | None = None
-            """Optional public port number for STUN client."""
+        """List of STUN clients."""
+        ClientAddress: ClassVar[type[ClientAddress]] = ClientAddress
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each STUN translation."""
@@ -74,42 +70,24 @@ class VerifyStunClient(AntaTest):
         # Iterate over each command output and corresponding client input
         for command, client_input in zip(self.instance_commands, self.inputs.stun_clients):
             bindings = command.json_output["bindings"]
-            source_address = str(command.params.source_address)
-            source_port = command.params.source_port
+            input_public_address = client_input.public_address
+            input_public_port = client_input.public_port
 
             # If no bindings are found for the STUN client, mark the test as a failure and continue with the next client
             if not bindings:
-                self.result.is_failure(f"STUN client transaction for source `{source_address}:{source_port}` is not found.")
+                self.result.is_failure(f"{client_input} - STUN client transaction not found.")
                 continue
-
-            # Extract the public address and port from the client input
-            public_address = client_input.public_address
-            public_port = client_input.public_port
 
             # Extract the transaction ID from the bindings
             transaction_id = next(iter(bindings.keys()))
 
-            # Prepare the actual and expected STUN data for comparison
-            actual_stun_data = {
-                "source ip": get_value(bindings, f"{transaction_id}.sourceAddress.ip"),
-                "source port": get_value(bindings, f"{transaction_id}.sourceAddress.port"),
-            }
-            expected_stun_data = {"source ip": source_address, "source port": source_port}
-
             # If public address is provided, add it to the actual and expected STUN data
-            if public_address is not None:
-                actual_stun_data["public ip"] = get_value(bindings, f"{transaction_id}.publicAddress.ip")
-                expected_stun_data["public ip"] = str(public_address)
+            if input_public_address and str(input_public_address) != (actual_public_address := get_value(bindings, f"{transaction_id}.publicAddress.ip")):
+                self.result.is_failure(f"{client_input} - Incorrect public-facing address; Expected: {input_public_address} Actual: {actual_public_address}")
 
             # If public port is provided, add it to the actual and expected STUN data
-            if public_port is not None:
-                actual_stun_data["public port"] = get_value(bindings, f"{transaction_id}.publicAddress.port")
-                expected_stun_data["public port"] = public_port
-
-            # If the actual STUN data does not match the expected STUN data, mark the test as failure
-            if actual_stun_data != expected_stun_data:
-                failed_log = get_failed_logs(expected_stun_data, actual_stun_data)
-                self.result.is_failure(f"For STUN source `{source_address}:{source_port}`:{failed_log}")
+            if input_public_port and input_public_port != (actual_public_port := get_value(bindings, f"{transaction_id}.publicAddress.port")):
+                self.result.is_failure(f"{client_input} - Incorrect public-facing port; Expected: {input_public_port} Actual: {actual_public_port}")
 
 
 class VerifyStunServer(AntaTest):

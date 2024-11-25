@@ -88,8 +88,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "For STUN source `100.64.3.2:4500`:\nExpected `192.164.3.2` as the public ip, but found `192.64.3.2` instead.",
-                "For STUN source `172.18.3.2:4500`:\nExpected `192.118.3.2` as the public ip, but found `192.18.3.2` instead.",
+                "Client 100.64.3.2 Port: 4500 - Incorrect public-facing address; Expected: 192.164.3.2 Actual: 192.64.3.2",
+                "Client 172.18.3.2 Port: 4500 - Incorrect public-facing address; Expected: 192.118.3.2 Actual: 192.18.3.2",
             ],
         },
     },
@@ -108,7 +108,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["STUN client transaction for source `100.64.3.2:4500` is not found.", "STUN client transaction for source `172.18.3.2:4500` is not found."],
+            "messages": ["Client 100.64.3.2 Port: 4500 - STUN client transaction not found.", "Client 172.18.3.2 Port: 4500 - STUN client transaction not found."],
         },
     },
     {
@@ -134,10 +134,9 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "STUN client transaction for source `100.64.3.2:4500` is not found.",
-                "For STUN source `172.18.3.2:4500`:\n"
-                "Expected `192.118.3.2` as the public ip, but found `192.18.3.2` instead.\n"
-                "Expected `6006` as the public port, but found `4800` instead.",
+                "Client 100.64.3.2 Port: 4500 - STUN client transaction not found.",
+                "Client 172.18.3.2 Port: 4500 - Incorrect public-facing address; Expected: 192.118.3.2 Actual: 192.18.3.2",
+                "Client 172.18.3.2 Port: 4500 - Incorrect public-facing port; Expected: 6006 Actual: 4800",
             ],
         },
     },
@@ -164,12 +163,9 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "STUN client transaction for source `100.64.3.2:4500` is not found.",
-                "For STUN source `172.18.4.2:4800`:\n"
-                "Expected `172.18.4.2` as the source ip, but found `172.18.3.2` instead.\n"
-                "Expected `4800` as the source port, but found `4500` instead.\n"
-                "Expected `192.118.3.2` as the public ip, but found `192.18.3.2` instead.\n"
-                "Expected `6006` as the public port, but found `4800` instead.",
+                "Client 100.64.3.2 Port: 4500 - STUN client transaction not found.",
+                "Client 172.18.4.2 Port: 4800 - Incorrect public-facing address; Expected: 192.118.3.2 Actual: 192.18.3.2",
+                "Client 172.18.4.2 Port: 4800 - Incorrect public-facing port; Expected: 6006 Actual: 4800",
             ],
         },
     },
