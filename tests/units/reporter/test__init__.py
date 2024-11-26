@@ -115,7 +115,7 @@ class TestReportTable:
         ("test", "title", "number_of_tests", "expected_length"),
         [
             pytest.param(None, None, 5, 5, id="all results"),
-            pytest.param("VerifyTest3", None, 5, 1, id="result for test VerifyTest3"),
+            pytest.param("FakeTest3", None, 5, 1, id="result for test FakeTest3"),
             pytest.param(None, "Custom title", 5, 5, id="Change table title"),
         ],
     )

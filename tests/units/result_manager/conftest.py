@@ -12,6 +12,7 @@ import pytest
 from anta.device import AntaDevice
 from anta.result_manager import ResultManager
 from anta.result_manager.models import TestResult
+from tests.units.test_models import FakeTest
 
 TEST_RESULTS: Path = Path(__file__).parent.resolve() / "test_files" / "test_md_report_results.json"
 
@@ -64,9 +65,10 @@ def test_result_factory(device: AntaDevice) -> Callable[[int], TestResult]:
         """Actual Factory."""
         return TestResult(
             name=device.name,
-            test=f"VerifyTest{index}",
+            test=f"{FakeTest.name}{index}",
+            inputs=FakeTest.Input(),
             categories=["test"],
-            description=f"Verifies Test {index}",
+            description=FakeTest.description,
             custom_field=None,
         )
 

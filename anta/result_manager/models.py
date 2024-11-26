@@ -10,7 +10,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from pydantic import BaseModel, SerializeAsAny
+from pydantic import BaseModel
 
 
 class AntaTestStatus(str, Enum):
@@ -155,7 +155,7 @@ class TestResult(BaseTestResult):
         Name of the device on which the test was run.
     test : str
         Name of the AntaTest subclass.
-    inputs: BaseModel
+    inputs:  BaseModel | None
         Inputs of the AntaTest instance.
     categories : list[str]
         List of categories the TestResult belongs to. Defaults to the AntaTest subclass categories.
@@ -175,7 +175,7 @@ class TestResult(BaseTestResult):
     name: str
     test: str
     description: str
-    inputs: SerializeAsAny[BaseModel]
+    inputs: BaseModel | None = None
     categories: list[str]
     custom_field: str | None = None
     atomic_results: list[AtomicTestResult] = []
