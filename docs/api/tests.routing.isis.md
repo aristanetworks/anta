@@ -8,6 +8,7 @@ anta_title: ANTA catalog for IS-IS tests
   -->
 
 ::: anta.tests.routing.isis
+
     options:
       show_root_heading: false
       show_root_toc_entry: false
@@ -18,4 +19,4 @@ anta_title: ANTA catalog for IS-IS tests
       filters:
         - "!test"
         - "!render"
-        - "!^*[^*]"
+        - "!^_[^_]"
