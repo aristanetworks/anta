@@ -152,7 +152,6 @@ anta_title: Frequently Asked Questions (FAQ)
         user anta role anta-users secret <secret>
         ```
 
-
 # Still facing issues?
 
 If you've tried the above solutions and continue to experience problems, please follow the [troubleshooting](troubleshooting.md) instructions and report the issue in our [GitHub repository](https://github.com/aristanetworks/anta).
