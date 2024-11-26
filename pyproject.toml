@@ -259,6 +259,9 @@ extras =
 # tox -e <env> -- path/to/my/test::test
 commands =
    pytest {posargs}
+# To test on non-POSIX system
+# https://github.com/tox-dev/tox/issues/1455
+passenv = USERNAME
 
 [testenv:lint]
 description = Check the code style
