@@ -518,8 +518,8 @@ def test_convert_categories(test_input: list[str], expected_raise: AbstractConte
 @pytest.mark.parametrize(
     ("input_data", "expected_output"),
     [
-        pytest.param({"advertised": True, "received": True, "enabled": True}, "Advertised: True, Received: True, Enabled: True", id="multiple entry, all True"),
-        pytest.param({"advertised": False, "received": False}, "Advertised: False, Received: False", id="multiple entry, all False"),
+        pytest.param({"advertised": True, "received": True, "enabled": True}, "Advertised: True Received: True Enabled: True", id="multiple entry, all True"),
+        pytest.param({"advertised": False, "received": False}, "Advertised: False Received: False", id="multiple entry, all False"),
         pytest.param({}, "", id="empty dict"),
         pytest.param({"test": True}, "Test: True", id="single entry"),
     ],
