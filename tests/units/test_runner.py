@@ -20,7 +20,7 @@ from anta.runner import adjust_rlimit_nofile, main, prepare_tests
 
 from .test_models import FakeTest, FakeTestWithMissingTest
 
-if os.name == "posix"
+if os.name == "posix":
     import resource
 
 DATA_DIR: Path = Path(__file__).parent.parent.resolve() / "data"
@@ -67,9 +67,11 @@ async def test_no_selected_device(caplog: pytest.LogCaptureFixture, inventory: A
     msg = f'No reachable device {f"matching the tags {tags} " if tags else ""}was found.{f" Selected devices: {devices} " if devices is not None else ""}'
     assert msg in caplog.messages
 
-@pytest.make.skipif(os.name != "posix", reason = "Cannot run this test on Windows")
+
+@pytest.mark.skipif(os.name != "posix", reason="Cannot run this test on Windows")
 def test_adjust_rlimit_nofile_valid_env(caplog: pytest.LogCaptureFixture) -> None:
     """Test adjust_rlimit_nofile with valid environment variables."""
+    # pylint: disable=E0606
     with (
         caplog.at_level(logging.DEBUG),
         patch.dict("os.environ", {"ANTA_NOFILE": "20480"}),
@@ -99,7 +101,7 @@ def test_adjust_rlimit_nofile_valid_env(caplog: pytest.LogCaptureFixture) -> Non
         setrlimit_mock.assert_called_once_with(resource.RLIMIT_NOFILE, (20480, 1048576))
 
 
-@pytest.make.skipif(os.name != "posix", reason = "Cannot run this test on Windows")
+@pytest.mark.skipif(os.name != "posix", reason="Cannot run this test on Windows")
 def test_adjust_rlimit_nofile_invalid_env(caplog: pytest.LogCaptureFixture) -> None:
     """Test adjust_rlimit_nofile with valid environment variables."""
     with (
@@ -132,14 +134,16 @@ def test_adjust_rlimit_nofile_invalid_env(caplog: pytest.LogCaptureFixture) -> N
 
         setrlimit_mock.assert_called_once_with(resource.RLIMIT_NOFILE, (16384, 1048576))
 
-@pytest.make.skipif(os.name == "posix", reason = "Run this test on Windows only")
-def test_check_runner_log_for_windows(caplog: pytest.LogCaptureFixture, inventory: AntaInventory) -> None:
+
+@pytest.mark.skipif(os.name == "posix", reason="Run this test on Windows only")
+async def test_check_runner_log_for_windows(caplog: pytest.LogCaptureFixture, inventory: AntaInventory) -> None:
     """Test log output for Windows host regarding rlimit."""
     caplog.set_level(logging.INFO)
     manager = ResultManager()
     # Using dry-run to shorten the test
     await main(manager, inventory, FAKE_CATALOG, dry_run=True)
     assert "Running on a none POSIX system, cannot adjust the maximum number of file descriptors." in caplog.records[-2].message
+
 
 @pytest.mark.parametrize(
     ("inventory", "tags", "tests", "devices_count", "tests_count"),
