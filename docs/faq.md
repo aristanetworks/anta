@@ -124,6 +124,35 @@ anta_title: Frequently Asked Questions (FAQ)
         export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
         ```
 
+## `EOS AAA configuration for a special ANTA user`
+
+???+ faq "`EOS AAA configuration for a special ANTA user`
+
+    anyone hardened eos aaa for a role that can only run anta validatio
+
+    1. Configure the following role
+
+        ```bash
+        role anta-users
+           10 permit command show
+           20 deny command .*
+        ```
+
+        You can then add other commands if they're required (ping for example) and then tighten down the show commands.
+
+    2. Configure the following authorization (You may need to adapt depending on your AAA setup)
+
+        ```bash
+        aaa authorization commands all default local
+        ```
+
+    3. Configure a user for the role
+
+        ```bash
+        user anta role anta-users secret <secret>
+        ```
+
+
 # Still facing issues?
 
 If you've tried the above solutions and continue to experience problems, please follow the [troubleshooting](troubleshooting.md) instructions and report the issue in our [GitHub repository](https://github.com/aristanetworks/anta).
