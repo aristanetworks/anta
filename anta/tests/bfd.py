@@ -53,7 +53,6 @@ class VerifyBFDSpecificPeers(AntaTest):
     ```
     """
 
-    description = "Verifies the IPv4 BFD peer's sessions and remote disc in the specified VRF."
     categories: ClassVar[list[str]] = ["bfd"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bfd peers", revision=1)]
 
@@ -63,6 +62,7 @@ class VerifyBFDSpecificPeers(AntaTest):
         bfd_peers: list[BFDPeer]
         """List of IPv4 BFD"""
         BFDPeer: ClassVar[type[BFDPeer]] = BFDPeer
+        """To maintain backward compatibility."""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -88,7 +88,7 @@ class VerifyBFDSpecificPeers(AntaTest):
             state = bfd_output.get("status")
             remote_disc = bfd_output.get("remoteDisc")
             if not (state == "up" and remote_disc != 0):
-                self.result.is_failure(f"{bfd_peer} - Session not properly established; State: {state}, Remote Discriminator: {remote_disc}")
+                self.result.is_failure(f"{bfd_peer} - Session not properly established - State: {state} Remote Discriminator: {remote_disc}")
 
 
 class VerifyBFDPeersIntervals(AntaTest):
@@ -137,6 +137,7 @@ class VerifyBFDPeersIntervals(AntaTest):
         bfd_peers: list[BFDPeer]
         """List of IPv4 BFD"""
         BFDPeer: ClassVar[type[BFDPeer]] = BFDPeer
+        """To maintain backward compatibility"""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -168,13 +169,13 @@ class VerifyBFDPeersIntervals(AntaTest):
             detect_multiplier = bfd_details.get("detectMult")
 
             if op_tx_interval != tx_interval:
-                self.result.is_failure(f"{bfd_peer} - Incorrect Transmit interval; Expected: {tx_interval} Actual: {op_tx_interval}")
+                self.result.is_failure(f"{bfd_peer} - Incorrect Transmit interval - Expected: {tx_interval} Actual: {op_tx_interval}")
 
             if op_rx_interval != rx_interval:
-                self.result.is_failure(f"{bfd_peer} - Incorrect Receive interval; Expected: {rx_interval} Actual: {op_rx_interval}")
+                self.result.is_failure(f"{bfd_peer} - Incorrect Receive interval - Expected: {rx_interval} Actual: {op_rx_interval}")
 
             if detect_multiplier != multiplier:
-                self.result.is_failure(f"{bfd_peer} - Incorrect Multiplier; Expected: {multiplier} Actual: {detect_multiplier}")
+                self.result.is_failure(f"{bfd_peer} - Incorrect Multiplier - Expected: {multiplier} Actual: {detect_multiplier}")
 
 
 class VerifyBFDPeersHealth(AntaTest):
@@ -246,7 +247,7 @@ class VerifyBFDPeersHealth(AntaTest):
 
                     if not (peer_status == "up" and remote_disc != 0):
                         self.result.is_failure(
-                            f"Peer: {peer} VRF: {vrf} - Session not properly established; State: {peer_status}, Remote Discriminator: {remote_disc}"
+                            f"Peer: {peer} VRF: {vrf} - Session not properly established - State: {peer_status} Remote Discriminator: {remote_disc}"
                         )
 
                     # Check if the last down is within the threshold
@@ -296,6 +297,7 @@ class VerifyBFDPeersRegProtocols(AntaTest):
         bfd_peers: list[BFDPeer]
         """List of IPv4 BFD"""
         BFDPeer: ClassVar[type[BFDPeer]] = BFDPeer
+        """To maintain backward compatibility"""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -321,4 +323,5 @@ class VerifyBFDPeersRegProtocols(AntaTest):
             # Check registered protocols
             difference = sorted(set(protocols) - set(get_value(bfd_output, "peerStatsDetail.apps")))
             if difference:
-                self.result.is_failure(f"{bfd_peer} - `{', '.join(difference)}` routing protocol(s) not configured")
+                failures = " ".join(f"`{item}`" for item in difference)
+                self.result.is_failure(f"{bfd_peer} - {failures} routing protocol(s) not configured")

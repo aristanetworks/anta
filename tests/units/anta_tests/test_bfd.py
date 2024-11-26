@@ -160,11 +160,11 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 192.0.255.7 VRF: default - Incorrect Transmit interval; Expected: 1200 Actual: 1300",
-                "Peer: 192.0.255.7 VRF: default - Incorrect Multiplier; Expected: 3 Actual: 4",
-                "Peer: 192.0.255.70 VRF: MGMT - Incorrect Transmit interval; Expected: 1200 Actual: 120",
-                "Peer: 192.0.255.70 VRF: MGMT - Incorrect Receive interval; Expected: 1200 Actual: 120",
-                "Peer: 192.0.255.70 VRF: MGMT - Incorrect Multiplier; Expected: 3 Actual: 5",
+                "Peer: 192.0.255.7 VRF: default - Incorrect Transmit interval - Expected: 1200 Actual: 1300",
+                "Peer: 192.0.255.7 VRF: default - Incorrect Multiplier - Expected: 3 Actual: 4",
+                "Peer: 192.0.255.70 VRF: MGMT - Incorrect Transmit interval - Expected: 1200 Actual: 120",
+                "Peer: 192.0.255.70 VRF: MGMT - Incorrect Receive interval - Expected: 1200 Actual: 120",
+                "Peer: 192.0.255.70 VRF: MGMT - Incorrect Multiplier - Expected: 3 Actual: 5",
             ],
         },
     },
@@ -283,8 +283,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 192.0.255.7 VRF: default - Session not properly established; State: down, Remote Discriminator: 108328132",
-                "Peer: 192.0.255.70 VRF: MGMT - Session not properly established; State: down, Remote Discriminator: 0",
+                "Peer: 192.0.255.7 VRF: default - Session not properly established - State: down Remote Discriminator: 108328132",
+                "Peer: 192.0.255.70 VRF: MGMT - Session not properly established - State: down Remote Discriminator: 0",
             ],
         },
     },
@@ -415,8 +415,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 192.0.255.7 VRF: default - Session not properly established; State: down, Remote Discriminator: 0",
-                "Peer: 192.0.255.71 VRF: MGMT - Session not properly established; State: down, Remote Discriminator: 0",
+                "Peer: 192.0.255.7 VRF: default - Session not properly established - State: down Remote Discriminator: 0",
+                "Peer: 192.0.255.71 VRF: MGMT - Session not properly established - State: down Remote Discriminator: 0",
             ],
         },
     },
@@ -461,8 +461,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 192.0.255.7 VRF: default - Session not properly established; State: up, Remote Discriminator: 0",
-                "Peer: 192.0.255.71 VRF: default - Session not properly established; State: up, Remote Discriminator: 0",
+                "Peer: 192.0.255.7 VRF: default - Session not properly established - State: up Remote Discriminator: 0",
+                "Peer: 192.0.255.71 VRF: default - Session not properly established - State: up Remote Discriminator: 0",
             ],
         },
     },
@@ -622,7 +622,7 @@ DATA: list[dict[str, Any]] = [
             "result": "failure",
             "messages": [
                 "Peer: 192.0.255.7 VRF: default - `isis` routing protocol(s) not configured",
-                "Peer: 192.0.255.70 VRF: MGMT - `isis, ospf` routing protocol(s) not configured",
+                "Peer: 192.0.255.70 VRF: MGMT - `isis` `ospf` routing protocol(s) not configured",
             ],
         },
     },
