@@ -36,11 +36,11 @@ class Host(BaseModel):
 
         Examples
         --------
-        Host 10.1.1.1 (src: 10.2.2.2, vrf: mgmt, size: 100B, repeat: 2)
+        Host 10.1.1.1 (src: 10.2.2.2 vrf: mgmt size: 100B repeat: 2)
 
         """
-        df_status = ", df-bit: enabled" if self.df_bit else ""
-        return f"Host {self.destination} (src: {self.source}, vrf: {self.vrf}, size: {self.size}B, repeat: {self.repeat}{df_status})"
+        df_status = " df-bit: enabled" if self.df_bit else ""
+        return f"Host {self.destination} (src: {self.source} vrf: {self.vrf} size: {self.size}B repeat: {self.repeat}{df_status})"
 
 
 class LLDPNeighbor(BaseModel):
@@ -59,10 +59,10 @@ class LLDPNeighbor(BaseModel):
 
         Examples
         --------
-        Port Ethernet1 (Neighbor: DC1-SPINE2, Neighbor Port: Ethernet2)
+        Port Ethernet1 (Neighbor: DC1-SPINE2 Neighbor_port: Ethernet2)
 
         """
-        return f"Port {self.port} (Neighbor: {self.neighbor_device}, Neighbor Port: {self.neighbor_port})"
+        return f"Port {self.port} (Neighbor: {self.neighbor_device} Neighbor_port: {self.neighbor_port})"
 
 
 class Neighbor(LLDPNeighbor):  # pragma: no cover

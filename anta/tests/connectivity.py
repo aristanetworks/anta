@@ -52,6 +52,7 @@ class VerifyReachability(AntaTest):
         hosts: list[Host]
         """List of host to ping."""
         Host: ClassVar[type[Host]] = Host
+        """To maintain backward compatibility."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each host in the input list."""
@@ -104,7 +105,6 @@ class VerifyLLDPNeighbors(AntaTest):
     ```
     """
 
-    description = "Verifies that the provided LLDP neighbors are connected properly."
     categories: ClassVar[list[str]] = ["connectivity"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show lldp neighbors detail", revision=1)]
 
@@ -114,6 +114,7 @@ class VerifyLLDPNeighbors(AntaTest):
         neighbors: list[LLDPNeighbor]
         """List of LLDP neighbors."""
         Neighbor: ClassVar[type[Neighbor]] = Neighbor
+        """To maintain backward compatibility."""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -136,5 +137,5 @@ class VerifyLLDPNeighbors(AntaTest):
                 for info in lldp_neighbor_info
             )
             if not match_found:
-                failure_msg = [f"{info['systemName']}/{info['neighborInterfaceInfo']['interfaceId_v2']}" for info in lldp_neighbor_info]
-                self.result.is_failure(f"{neighbor} - Wrong LLDP neighbors: {', '.join(failure_msg)}")
+                failure_msg = [f"`{info['systemName']}/{info['neighborInterfaceInfo']['interfaceId_v2']}`" for info in lldp_neighbor_info]
+                self.result.is_failure(f"{neighbor} - Wrong LLDP neighbors: {' '.join(failure_msg)}")

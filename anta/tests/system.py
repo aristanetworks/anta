@@ -350,4 +350,4 @@ class VerifyNTPAssociations(AntaTest):
             act_stratum = get_value(peers[matching_peer], "stratumLevel")
 
             if act_condition != exp_condition or act_stratum != exp_stratum:
-                self.result.is_failure(f"{ntp_server} - Bad association; Condition: {act_condition}, Stratum: {act_stratum}")
+                self.result.is_failure(f"{ntp_server} - Bad association - Condition: {act_condition} Stratum: {act_stratum}")

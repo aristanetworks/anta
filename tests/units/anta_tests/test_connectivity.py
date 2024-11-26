@@ -153,7 +153,7 @@ DATA: list[dict[str, Any]] = [
                 ],
             },
         ],
-        "expected": {"result": "failure", "messages": ["Host 10.0.0.11 (src: 10.0.0.5, vrf: default, size: 100B, repeat: 2) - Unreachable"]},
+        "expected": {"result": "failure", "messages": ["Host 10.0.0.11 (src: 10.0.0.5 vrf: default size: 100B repeat: 2) - Unreachable"]},
     },
     {
         "name": "failure-interface",
@@ -187,7 +187,7 @@ DATA: list[dict[str, Any]] = [
                 ],
             },
         ],
-        "expected": {"result": "failure", "messages": ["Host 10.0.0.11 (src: Management0, vrf: default, size: 100B, repeat: 2) - Unreachable"]},
+        "expected": {"result": "failure", "messages": ["Host 10.0.0.11 (src: Management0 vrf: default size: 100B repeat: 2) - Unreachable"]},
     },
     {
         "name": "failure-size",
@@ -209,7 +209,7 @@ DATA: list[dict[str, Any]] = [
                 ],
             },
         ],
-        "expected": {"result": "failure", "messages": ["Host 10.0.0.1 (src: Management0, vrf: default, size: 1501B, repeat: 5, df-bit: enabled) - Unreachable"]},
+        "expected": {"result": "failure", "messages": ["Host 10.0.0.1 (src: Management0 vrf: default size: 1501B repeat: 5 df-bit: enabled) - Unreachable"]},
     },
     {
         "name": "success",
@@ -330,7 +330,7 @@ DATA: list[dict[str, Any]] = [
                 {"port": "Ethernet2", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"},
             ],
         },
-        "expected": {"result": "failure", "messages": ["Port Ethernet2 (Neighbor: DC1-SPINE2, Neighbor Port: Ethernet1) - Port not found"]},
+        "expected": {"result": "failure", "messages": ["Port Ethernet2 (Neighbor: DC1-SPINE2 Neighbor_port: Ethernet1) - Port not found"]},
     },
     {
         "name": "failure-no-neighbor",
@@ -363,7 +363,7 @@ DATA: list[dict[str, Any]] = [
                 {"port": "Ethernet2", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"},
             ],
         },
-        "expected": {"result": "failure", "messages": ["Port Ethernet2 (Neighbor: DC1-SPINE2, Neighbor Port: Ethernet1) - No LLDP neighbors"]},
+        "expected": {"result": "failure", "messages": ["Port Ethernet2 (Neighbor: DC1-SPINE2 Neighbor_port: Ethernet1) - No LLDP neighbors"]},
     },
     {
         "name": "failure-wrong-neighbor",
@@ -412,7 +412,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Port Ethernet2 (Neighbor: DC1-SPINE2, Neighbor Port: Ethernet1) - Wrong LLDP neighbors: DC1-SPINE2/Ethernet2"],
+            "messages": ["Port Ethernet2 (Neighbor: DC1-SPINE2 Neighbor_port: Ethernet1) - Wrong LLDP neighbors: `DC1-SPINE2/Ethernet2`"],
         },
     },
     {
@@ -450,9 +450,9 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Port Ethernet1 (Neighbor: DC1-SPINE1, Neighbor Port: Ethernet1) - Wrong LLDP neighbors: DC1-SPINE1/Ethernet2",
-                "Port Ethernet2 (Neighbor: DC1-SPINE2, Neighbor Port: Ethernet1) - No LLDP neighbors",
-                "Port Ethernet3 (Neighbor: DC1-SPINE3, Neighbor Port: Ethernet1) - Port not found",
+                "Port Ethernet1 (Neighbor: DC1-SPINE1 Neighbor_port: Ethernet1) - Wrong LLDP neighbors: `DC1-SPINE1/Ethernet2`",
+                "Port Ethernet2 (Neighbor: DC1-SPINE2 Neighbor_port: Ethernet1) - No LLDP neighbors",
+                "Port Ethernet3 (Neighbor: DC1-SPINE3 Neighbor_port: Ethernet1) - Port not found",
             ],
         },
     },
@@ -498,7 +498,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Port Ethernet1 (Neighbor: DC1-SPINE3, Neighbor Port: Ethernet1) - Wrong LLDP neighbors: DC1-SPINE1/Ethernet1, DC1-SPINE2/Ethernet1"],
+            "messages": ["Port Ethernet1 (Neighbor: DC1-SPINE3 Neighbor_port: Ethernet1) - Wrong LLDP neighbors: `DC1-SPINE1/Ethernet1` `DC1-SPINE2/Ethernet1`"],
         },
     },
 ]
