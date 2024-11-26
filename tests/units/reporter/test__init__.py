@@ -84,31 +84,27 @@ class TestReportTable:
         assert report._color_result(status) == expected_status
 
     @pytest.mark.parametrize(
-        ("title", "number_of_tests", "expected_length"),
+        ("number_of_tests", "expected_length"),
         [
-            pytest.param(None, 5, 5, id="all results"),
-            pytest.param(None, 0, 0, id="result for host1 when no host1 test"),
-            pytest.param(None, 5, 5, id="result for test VerifyTest3"),
-            pytest.param("Custom title", 5, 5, id="Change table title"),
+            pytest.param(5, 5, id="all results"),
+            pytest.param(0, 0, id="result for host1 when no host1 test"),
+            pytest.param(5, 5, id="result for test VerifyTest3"),
+            pytest.param(5, 5, id="Change table title"),
         ],
     )
-    def test_report_all(
+    def test_report(
         self,
         result_manager_factory: Callable[[int], ResultManager],
-        title: str | None,
         number_of_tests: int,
         expected_length: int,
     ) -> None:
-        """Test report_all."""
+        """Test report table."""
         manager = result_manager_factory(number_of_tests)
 
         report = ReportTable()
-        kwargs = {"title": title}
-        kwargs = {k: v for k, v in kwargs.items() if v is not None}
-        res = report.report_all(manager, **kwargs)  # type: ignore[arg-type]
+        res = report.report(manager)
 
         assert isinstance(res, Table)
-        assert res.title == (title or "All tests results")
         assert res.row_count == expected_length
 
     @pytest.mark.parametrize(

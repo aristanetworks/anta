@@ -14,13 +14,14 @@ from jinja2 import Template
 from rich.table import Table
 
 from anta import RICH_COLOR_PALETTE, RICH_COLOR_THEME
+from anta.result_manager.models import AtomicTestResult, TestResult
 from anta.tools import convert_categories
 
 if TYPE_CHECKING:
     import pathlib
 
     from anta.result_manager import ResultManager
-    from anta.result_manager.models import AntaTestStatus, TestResult
+    from anta.result_manager.models import AntaTestStatus
 
 logger = logging.getLogger(__name__)
 
@@ -102,35 +103,84 @@ class ReportTable:
         color = RICH_COLOR_THEME.get(str(status), "")
         return f"[{color}]{status}" if color != "" else str(status)
 
-    def report_all(self, manager: ResultManager, title: str = "All tests results") -> Table:
-        """Create a table report with all tests for one or all devices.
+    TITLE_ALL = "All tests results"
 
-        Create table with full output: Device | Test Name | Test Status | Message(s) | Test description | Test category
+    def report_expanded(self, manager: ResultManager) -> Table:
+        """Create a table report with all tests.
+
+        Create table with columns: Category | Test | Device | Description | Status | Message(s) | Inputs
 
         Parameters
         ----------
         manager
             A ResultManager instance.
-        title
-            Title for the report. Defaults to 'All tests results'.
 
         Returns
         -------
         Table
             A fully populated rich `Table`.
         """
-        table = Table(title=title, show_lines=True)
-        headers = ["Device", "Test Name", "Test Status", "Message(s)", "Test description", "Test category"]
+        table = Table(title=ReportTable.TITLE_ALL, show_lines=True)
+        headers = ["Category", "Test", "Device", "Description", "Status", "Message(s)", "Inputs"]
         table = self._build_headers(headers=headers, table=table)
 
-        def add_line(result: TestResult) -> None:
+        def add_line(result: TestResult | AtomicTestResult, name: str | None = None) -> None:
+            categories = device = test = None
+            if isinstance(result, TestResult):
+                categories = ", ".join(convert_categories(result.categories))
+                device = str(result.name)
+                test = result.test
+            else:
+                test = name
+            state = self._color_result(result.result)
+            message = self._split_list_to_txt_list(result.messages) if len(result.messages) > 0 else ""
+            inputs = result.inputs.model_dump_json(indent=2, exclude={"result_overwrite", "filters"}) if result.inputs is not None else None
+            table.add_row(
+                categories,
+                test,
+                device,
+                result.description,
+                state,
+                message,
+                inputs,
+            )
+
+        def add_result(result: TestResult) -> None:
+            add_line(result)
+            for index, atomic_res in enumerate(result.atomic_results):
+                add_line(atomic_res, f"{index+1}/{len(result.atomic_results)}")
+
+        for result in manager.results_by_category:
+            add_result(result)
+        return table
+
+    def report(self, manager: ResultManager) -> Table:
+        """Create a table report with all tests.
+
+        Create table with columns: Category | Device | Test | Status | Message(s)
+
+        Parameters
+        ----------
+        manager
+            A ResultManager instance.
+
+        Returns
+        -------
+        Table
+            A fully populated rich `Table`.
+        """
+        table = Table(title=ReportTable.TITLE_ALL, show_lines=True)
+        headers = ["Category", "Device", "Test", "Status", "Message(s)"]
+        table = self._build_headers(headers=headers, table=table)
+
+        def add_result(result: TestResult) -> None:
             state = self._color_result(result.result)
             message = self._split_list_to_txt_list(result.messages) if len(result.messages) > 0 else ""
             categories = ", ".join(convert_categories(result.categories))
-            table.add_row(str(result.name), result.test, state, message, result.description, categories)
+            table.add_row(categories, str(result.name), result.test, state, message)
 
-        for result in manager.results:
-            add_line(result)
+        for result in manager.results_by_category:
+            add_result(result)
         return table
 
     def report_summary_tests(
