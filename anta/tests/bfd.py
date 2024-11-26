@@ -35,7 +35,7 @@ class VerifyBFDSpecificPeers(AntaTest):
     ----------------
     * Success: If all of the following conditions are met:
         - All specified peers are found in the BFD configuration within the specified VRF.
-        - All BFD peers are up and remote disc is non-zero.
+        - All BFD peers are `up` and remote disc is non-zero.
     * Failure: If any of the following occur:
         - A specified peer is not found in the BFD configuration within the specified VRF.
         - Any BFD peer session is not `up` or the remote discriminator identifier is zero.
