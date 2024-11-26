@@ -67,7 +67,6 @@ repos:
           - --rcfile=pyproject.toml  # Link to config file
         additional_dependencies:
           - anta[cli]
-          - numpydoc
           - types-PyYAML
           - types-requests
           - types-pyOpenSSL

@@ -11,6 +11,7 @@ import inspect
 import json
 import logging
 import pkgutil
+import re
 import textwrap
 from pathlib import Path
 from sys import stdin
@@ -20,7 +21,6 @@ import click
 import requests
 import urllib3
 import yaml
-from numpydoc.docscrape import NumpyDocString
 
 from anta.cli.console import console
 from anta.cli.utils import ExitCode
@@ -261,11 +261,26 @@ def print_tests_examples(qname: str, level: int, test_name: str | None, *, short
         console.print(f"      # {obj.description}", soft_wrap=True)
         if short:
             continue
-        doc = NumpyDocString(obj.__doc__)
-        if "Examples" not in doc or not doc["Examples"]:
+        if not obj.__doc__ or (example := extract_examples(obj.__doc__)) is None:
             msg = f"Test {obj.name} in module {qname} is missing an Example"
             raise LookupError(msg)
         # Picking up only the inputs in the examples
-        if len(doc["Examples"]) > 4 + level:  # otherwise it is a test with no params.
-            inputs = "\n".join(doc["Examples"][level + 3 : -1])
+        # Need to handle the fact that we nest the routing modules in Examples.
+        # This is a bit fragile.
+        if len(example.split("\n")) > 4 + level:  # otherwise it is a test with no params.
+            inputs = "\n".join(example.split("\n")[level + 3 : -1])
             console.print(textwrap.indent(textwrap.dedent(inputs), " " * 6))
+
+
+def extract_examples(docstring: str) -> str | None:
+    """Extract the content of the Example section in a Numpy docstring."""
+    # Define a regular expression to match the Examples section
+    # The regex capture Examples section until a blank newline or End Of String
+    pattern = r"Examples\s*--------\s*(.*?)(?:(?:\n\s*\n)|\Z)"
+
+    # Search for the pattern in the docstring
+    match = re.search(pattern, docstring, flags=re.DOTALL)
+
+    if match:
+        return match.group(1).strip()
+    return None

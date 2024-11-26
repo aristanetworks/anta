@@ -29,8 +29,7 @@ dependencies = [
   "PyYAML>=6.0",
   "requests>=2.31.0",
   "rich>=13.5.2,<14",
-  "httpx>=0.27.0",
-  "numpydoc>=1.8.0"
+  "httpx>=0.27.0"
 ]
 keywords = ["test", "anta", "Arista", "network", "automation", "networking", "devops", "netdevops"]
 classifiers = [

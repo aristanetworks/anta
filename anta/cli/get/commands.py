@@ -141,6 +141,7 @@ def tags(inventory: AntaInventory, **kwargs: Any) -> None:
 @click.command
 def tests(module: str | None, test: str | None, *, short: bool) -> None:
     """Show all builtin ANTA tests with an example output retrieved from each test documentation."""
+    # We can ignore the warning, it is not understood by Numpy but used in our doc.
     filterwarnings("ignore", message="Unknown section Expected Results")
 
     module = module or "anta.tests"
