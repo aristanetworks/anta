@@ -448,13 +448,14 @@ class AntaTest(ABC):
         self.device: AntaDevice = device
         self.inputs: AntaTest.Input
         self.instance_commands: list[AntaCommand] = []
+        self._init_inputs(inputs)
         self.result: TestResult = TestResult(
             name=device.name,
             test=self.name,
+            inputs=self.inputs,
             categories=self.categories,
             description=self.description,
         )
-        self._init_inputs(inputs)
         if self.result.result == AntaTestStatus.UNSET:
             self._init_commands(eos_data)
 
