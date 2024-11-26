@@ -11,7 +11,6 @@ import json
 import logging
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
-from warnings import filterwarnings
 
 import click
 import requests
@@ -135,14 +134,10 @@ def tags(inventory: AntaInventory, **kwargs: Any) -> None:
     console.print_json(json.dumps(sorted(tags), indent=2))
 
 
-@click.option("--module", help="Filter tests by module name. Defaults to 'anta.tests'.", required=False)
-@click.option("--test", help="Filter by specific test name. If module is specified, searches only within that module.", required=False)
-@click.option("--short", help="Display test names without their inputs.", required=False, is_flag=True, default=False)
+@click.option("--module", help="Filter tests by module name. Defaults to 'anta.tests'.", default="anta.tests")
+@click.option("--test", help="Filter by specific test name. If module is specified, searches only within that module.", type=str)
+@click.option("--short", help="Display test names without their inputs.", is_flag=True, default=False)
 @click.command
-def tests(module: str | None, test: str | None, *, short: bool) -> None:
+def tests(module: str, test: str | None, *, short: bool) -> None:
     """Show all builtin ANTA tests with an example output retrieved from each test documentation."""
-    # We can ignore the warning, it is not understood by Numpy but used in our doc.
-    filterwarnings("ignore", message="Unknown section Expected Results")
-
-    module = module or "anta.tests"
     explore_package(module, test_name=test, short=short)
