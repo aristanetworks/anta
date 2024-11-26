@@ -8,6 +8,7 @@ from __future__ import annotations
 from abc import ABC
 from dataclasses import dataclass, field
 from enum import Enum
+from typing import Any
 
 from pydantic import BaseModel, SerializeAsAny
 
@@ -117,8 +118,32 @@ class AtomicTestResult(BaseTestResult):
         Messages reported by the test.
     """
 
+    _parent: TestResult
     description: str | None = None
     inputs: BaseModel | None = None
+
+    def __init__(self, **data: Any) -> None:  # noqa: ANN401
+        """Instantiate the parent TestResult private attribute."""
+        parent = data.pop("parent")
+        super().__init__(**data)
+        self._parent = parent
+
+    def _set_status(self, status: AntaTestStatus, message: str | None = None) -> None:
+        """Set status and insert optional message.
+
+        Parameters
+        ----------
+        status
+            Status of the test.
+        message
+            Optional message.
+        """
+        self.result = status
+        if (self._parent.result == AntaTestStatus.UNSET and status == AntaTestStatus.SUCCESS) or status in [AntaTestStatus.FAILURE, AntaTestStatus.ERROR]:
+            self._parent.result = status
+        if message is not None:
+            self.messages.append(message)
+            self._parent.messages.append(message)
 
 
 class TestResult(BaseTestResult):
@@ -169,7 +194,7 @@ class TestResult(BaseTestResult):
         inputs: BaseModel | None
             If this AtomicTestResult is related to a specific parent test input, this field must be set.
         """
-        res = AtomicTestResult(description=description, inputs=inputs)
+        res = AtomicTestResult(description=description, inputs=inputs, parent=self)
         self.atomic_results.append(res)
         return res
 
