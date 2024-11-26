@@ -5,10 +5,11 @@
 
 from __future__ import annotations
 
+from abc import ABC
 from dataclasses import dataclass, field
 from enum import Enum
 
-from pydantic import BaseModel
+from pydantic import BaseModel, SerializeAsAny
 
 
 class AntaTestStatus(str, Enum):
@@ -28,35 +29,19 @@ class AntaTestStatus(str, Enum):
         return self.value
 
 
-class TestResult(BaseModel):
-    """Describe the result of a test from a single device.
+class BaseTestResult(BaseModel, ABC):
+    """Base model for test results.
 
     Attributes
     ----------
-    name : str
-        Name of the device where the test was run.
-    test : str
-        Name of the test run on the device.
-    categories : list[str]
-        List of categories the TestResult belongs to. Defaults to the AntaTest categories.
-    description : str
-        Description of the TestResult. Defaults to the AntaTest description.
     result : AntaTestStatus
-        Result of the test. Must be one of the AntaTestStatus Enum values: unset, success, failure, error or skipped.
+        Result of the test.
     messages : list[str]
-        Messages to report after the test, if any.
-    custom_field : str | None
-        Custom field to store a string for flexibility in integrating with ANTA.
-
+        Messages reported by the test.
     """
 
-    name: str
-    test: str
-    categories: list[str]
-    description: str
     result: AntaTestStatus = AntaTestStatus.UNSET
     messages: list[str] = []
-    custom_field: str | None = None
 
     def is_success(self, message: str | None = None) -> None:
         """Set status to success.
@@ -111,15 +96,82 @@ class TestResult(BaseModel):
             Status of the test.
         message
             Optional message.
-
         """
         self.result = status
         if message is not None:
             self.messages.append(message)
 
+
+class AtomicTestResult(BaseTestResult):
+    """Describe the result of an atomic test part of a larger test related to a TestResult instance.
+
+    Attributes
+    ----------
+    description : str | None
+        Description of the AtomicTestResult.
+    inputs: BaseModel | None
+        If this AtomicTestResult is related to a specific parent test input, this field must be set.
+    result : AntaTestStatus
+        Result of the atomic test.
+    messages : list[str]
+        Messages reported by the test.
+    """
+
+    description: str | None = None
+    inputs: BaseModel | None = None
+
+
+class TestResult(BaseTestResult):
+    """Describe the result of a test from a single device.
+
+    Attributes
+    ----------
+    name : str
+        Name of the device on which the test was run.
+    test : str
+        Name of the AntaTest subclass.
+    inputs: BaseModel
+        Inputs of the AntaTest instance.
+    categories : list[str]
+        List of categories the TestResult belongs to. Defaults to the AntaTest subclass categories.
+    description : str
+        Description of the TestResult. Defaults to the AntaTest subclass description.
+    result : AntaTestStatus
+        Result of the test.
+    messages : list[str]
+        Messages reported by the test.
+    custom_field : str | None
+        Custom field to store a string for flexibility in integrating with ANTA.
+    atomic_results: list[AtomicTestResult]
+        A list of AtomicTestResult instances which can be used to store atomic results during the test execution.
+        It can then be leveraged in the report to render atomic results over the test global TestResult.
+    """
+
+    name: str
+    test: str
+    description: str
+    inputs: SerializeAsAny[BaseModel]
+    categories: list[str]
+    custom_field: str | None = None
+    atomic_results: list[AtomicTestResult] = []
+
     def __str__(self) -> str:
         """Return a human readable string of this TestResult."""
         return f"Test '{self.test}' (on '{self.name}'): Result '{self.result}'\nMessages: {self.messages}"
+
+    def add(self, description: str | None = None, inputs: BaseModel | None = None) -> AtomicTestResult:
+        """Create and add a new AtomicTestResult to this TestResult instance.
+
+        Parameters
+        ----------
+        description : str | None
+            Description of the AtomicTestResult.
+        inputs: BaseModel | None
+            If this AtomicTestResult is related to a specific parent test input, this field must be set.
+        """
+        res = AtomicTestResult(description=description, inputs=inputs)
+        self.atomic_results.append(res)
+        return res
 
 
 # Pylint does not treat dataclasses differently: https://github.com/pylint-dev/pylint/issues/9058
