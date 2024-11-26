@@ -75,7 +75,7 @@ anta.tests.bfd:
       # Verifies the health of IPv4 BFD peers across all VRFs.
       down_threshold: 2
   - VerifyBFDPeersIntervals:
-      # Verifies the timers of the IPv4 BFD peers in the specified VRF.
+      # Verifies the timers of IPv4 BFD peer sessions.
       bfd_peers:
         - peer_address: 192.0.255.8
           vrf: default
@@ -88,14 +88,14 @@ anta.tests.bfd:
           rx_interval: 1200
           multiplier: 3
   - VerifyBFDPeersRegProtocols:
-      # Verifies that IPv4 BFD peer(s) have the specified protocol(s) registered.
+      # Verifies the registered routing protocol of IPv4 BFD peer sessions.
       bfd_peers:
         - peer_address: 192.0.255.7
           vrf: default
           protocols:
             - bgp
   - VerifyBFDSpecificPeers:
-      # Verifies the IPv4 BFD peer's sessions and remote disc in the specified VRF.
+      # Verifies the state of IPv4 BFD peer sessions.
       bfd_peers:
         - peer_address: 192.0.255.8
           vrf: default
