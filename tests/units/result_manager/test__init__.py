@@ -234,7 +234,8 @@ class TestResultManager:
         with pytest.raises(
             ValueError,
             match=re.escape(
-                "Invalid sort_by fields: ['bad_field']. Accepted fields are: ['name', 'test', 'categories', 'description', 'result', 'messages', 'custom_field']",
+                "Invalid sort_by fields: ['bad_field']. "
+                "Accepted fields are: ['result', 'messages', 'name', 'test', 'description', 'inputs', 'categories', 'custom_field', 'atomic_results']",
             ),
         ):
             all_results = result_manager.get_results(sort_by=["bad_field"])

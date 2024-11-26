@@ -42,11 +42,11 @@ DATA: AntaUnitTestDataDict = {
                 {
                     "result": AntaTestStatus.SUCCESS,
                     "messages": [],
-                    "description": "Host 10.0.0.1 (src: 10.0.0.5, vrf: default, size: 100B, repeat: 2)",
+                    "description": "Host 10.0.0.1 in VRF default",
                     "inputs": {"destination": "10.0.0.1", "source": "10.0.0.5", "vrf": "default", "repeat": 2, "size": 100, "df_bit": False},
                 },
                 {
-                    "description": "Host 10.0.0.2 (src: 10.0.0.5, vrf: default, size: 100B, repeat: 2)",
+                    "description": "Host 10.0.0.2 in VRF default",
                     "inputs": {
                         "destination": "10.0.0.2",
                         "df_bit": False,
@@ -127,11 +127,11 @@ DATA: AntaUnitTestDataDict = {
                 {
                     "result": AntaTestStatus.SUCCESS,
                     "messages": [],
-                    "description": "Host 10.0.0.1 (src: Management0, vrf: default, size: 100B, repeat: 2)",
+                    "description": "Host 10.0.0.1 in VRF default",
                     "inputs": {"destination": "10.0.0.1", "source": "Management0", "vrf": "default", "repeat": 2, "size": 100, "df_bit": False},
                 },
                 {
-                    "description": "Host 10.0.0.2 (src: Management0, vrf: default, size: 100B, repeat: 2)",
+                    "description": "Host 10.0.0.2 in VRF default",
                     "inputs": {
                         "destination": "10.0.0.2",
                         "df_bit": False,
@@ -160,7 +160,7 @@ DATA: AntaUnitTestDataDict = {
         "expected": {"result": AntaTestStatus.SUCCESS,
             "atomic_results": [
                 {
-                    "description": "Host 10.0.0.1 (src: Management0, vrf: default, size: 100B, repeat: 1)",
+                    "description": "Host 10.0.0.1 in VRF default",
                     "inputs": {
                         "destination": "10.0.0.1",
                         "df_bit": False,
@@ -192,7 +192,7 @@ DATA: AntaUnitTestDataDict = {
         "expected": {"result": AntaTestStatus.SUCCESS,
             "atomic_results": [
                 {
-                    "description": "Host 10.0.0.1 (src: Management0, vrf: default, size: 1500B, repeat: 5, df-bit: enabled)",
+                    "description": "Host 10.0.0.1 in VRF default",
                     "inputs": {
                         "destination": "10.0.0.1",
                         "df_bit": True,
@@ -244,7 +244,7 @@ DATA: AntaUnitTestDataDict = {
             "messages": ["Unreachable Host 10.0.0.11 (src: 10.0.0.5, vrf: default, size: 100B, repeat: 2)"],
             "atomic_results": [
                 {
-                    "description": "Host 10.0.0.11 (src: 10.0.0.5, vrf: default, size: 100B, repeat: 2)",
+                    "description": "Host 10.0.0.11 in VRF default",
                     "inputs": {
                         "destination": "10.0.0.11",
                         "df_bit": False,
@@ -257,7 +257,7 @@ DATA: AntaUnitTestDataDict = {
                     "result": AntaTestStatus.FAILURE,
                 },
                 {
-                    "description": "Host 10.0.0.2 (src: 10.0.0.5, vrf: default, size: 100B, repeat: 2)",
+                    "description": "Host 10.0.0.2 in VRF default",
                     "inputs": {
                         "destination": "10.0.0.2",
                         "df_bit": False,
@@ -311,7 +311,7 @@ DATA: AntaUnitTestDataDict = {
             "messages": ["Unreachable Host 10.0.0.11 (src: Management0, vrf: default, size: 100B, repeat: 2)"],
             "atomic_results": [
                 {
-                    "description": "Host 10.0.0.11 (src: Management0, vrf: default, size: 100B, repeat: 2)",
+                    "description": "Host 10.0.0.11 in VRF default",
                     "inputs": {
                         "destination": "10.0.0.11",
                         "df_bit": False,
@@ -324,7 +324,7 @@ DATA: AntaUnitTestDataDict = {
                     "result": AntaTestStatus.FAILURE,
                 },
                 {
-                    "description": "Host 10.0.0.2 (src: Management0, vrf: default, size: 100B, repeat: 2)",
+                    "description": "Host 10.0.0.2 in VRF default",
                     "inputs": {
                         "destination": "10.0.0.2",
                         "df_bit": False,
@@ -357,7 +357,7 @@ DATA: AntaUnitTestDataDict = {
             "messages": ["Unreachable Host 10.0.0.1 (src: Management0, vrf: default, size: 1501B, repeat: 5, df-bit: enabled)"],
             "atomic_results": [
                 {
-                    "description": "Host 10.0.0.1 (src: Management0, vrf: default, size: 1501B, repeat: 5, df-bit: enabled)",
+                    "description": "Host 10.0.0.1 in VRF default",
                     "inputs": {
                         "destination": "10.0.0.1",
                         "df_bit": True,

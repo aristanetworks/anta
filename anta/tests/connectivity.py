@@ -93,7 +93,6 @@ class VerifyReachability(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyReachability."""
-
         for command, host in zip(self.instance_commands, self.inputs.hosts):
             message = command.json_output["messages"][0]
 
