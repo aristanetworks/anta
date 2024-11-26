@@ -69,8 +69,11 @@ class VerifyReachability(AntaTest):
         self.result.is_success()
 
         for command, host in zip(self.instance_commands, self.inputs.hosts):
+            host_result = self.result.add(description=str(host), inputs=host)
+            host_result.is_success()
             if f"{host.repeat} received" not in command.json_output["messages"][0]:
-                self.result.is_failure(f"{host} - Unreachable")
+                host_result.is_failure()
+                self.result.is_failure(f"Unreachable {host}")
 
 
 class VerifyLLDPNeighbors(AntaTest):

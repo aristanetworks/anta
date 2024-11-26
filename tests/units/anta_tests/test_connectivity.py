@@ -43,7 +43,30 @@ DATA: list[dict[str, Any]] = [
                 ],
             },
         ],
-        "expected": {"result": "success"},
+        "expected": {
+            "result": "success",
+            "atomic_results": [
+                {
+                    "result": "success",
+                    "messages": [],
+                    "description": "Host 10.0.0.1 (src: 10.0.0.5, vrf: default, size: 100B, repeat: 2)",
+                    "inputs": {"destination": "10.0.0.1", "source": "10.0.0.5", "vrf": "default", "repeat": 2, "size": 100, "df_bit": False},
+                },
+                {
+                    "description": "Host 10.0.0.2 (src: 10.0.0.5, vrf: default, size: 100B, repeat: 2)",
+                    "inputs": {
+                        "destination": "10.0.0.2",
+                        "df_bit": False,
+                        "repeat": 2,
+                        "size": 100,
+                        "source": "10.0.0.5",
+                        "vrf": "default",
+                    },
+                    "messages": [],
+                    "result": "success",
+                },
+            ],
+        },
     },
     {
         "name": "success-interface",
@@ -77,7 +100,30 @@ DATA: list[dict[str, Any]] = [
                 ],
             },
         ],
-        "expected": {"result": "success"},
+        "expected": {
+            "result": "success",
+            "atomic_results": [
+                {
+                    "result": "success",
+                    "messages": [],
+                    "description": "Host 10.0.0.1 (src: Management0, vrf: default, size: 100B, repeat: 2)",
+                    "inputs": {"destination": "10.0.0.1", "source": "Management0", "vrf": "default", "repeat": 2, "size": 100, "df_bit": False},
+                },
+                {
+                    "description": "Host 10.0.0.2 (src: Management0, vrf: default, size: 100B, repeat: 2)",
+                    "inputs": {
+                        "destination": "10.0.0.2",
+                        "df_bit": False,
+                        "repeat": 2,
+                        "size": 100,
+                        "source": "Management0",
+                        "vrf": "default",
+                    },
+                    "messages": [],
+                    "result": "success",
+                },
+            ],
+        },
     },
     {
         "name": "success-repeat",
@@ -97,7 +143,24 @@ DATA: list[dict[str, Any]] = [
                 ],
             },
         ],
-        "expected": {"result": "success"},
+        "expected": {
+            "result": "success",
+            "atomic_results": [
+                {
+                    "description": "Host 10.0.0.1 (src: Management0, vrf: default, size: 100B, repeat: 1)",
+                    "inputs": {
+                        "destination": "10.0.0.1",
+                        "df_bit": False,
+                        "repeat": 1,
+                        "size": 100,
+                        "source": "Management0",
+                        "vrf": "default",
+                    },
+                    "messages": [],
+                    "result": "success",
+                },
+            ],
+        },
     },
     {
         "name": "success-df-bit-size",
@@ -119,7 +182,24 @@ DATA: list[dict[str, Any]] = [
                 ],
             },
         ],
-        "expected": {"result": "success"},
+        "expected": {
+            "result": "success",
+            "atomic_results": [
+                {
+                    "description": "Host 10.0.0.1 (src: Management0, vrf: default, size: 1500B, repeat: 5, df-bit: enabled)",
+                    "inputs": {
+                        "destination": "10.0.0.1",
+                        "df_bit": True,
+                        "repeat": 5,
+                        "size": 1500,
+                        "source": "Management0",
+                        "vrf": "default",
+                    },
+                    "messages": [],
+                    "result": "success",
+                },
+            ],
+        },
     },
     {
         "name": "failure-ip",
@@ -153,7 +233,38 @@ DATA: list[dict[str, Any]] = [
                 ],
             },
         ],
-        "expected": {"result": "failure", "messages": ["Host 10.0.0.11 (src: 10.0.0.5, vrf: default, size: 100B, repeat: 2) - Unreachable"]},
+        "expected": {
+            "result": "failure",
+            "messages": ["Unreachable Host 10.0.0.11 (src: 10.0.0.5, vrf: default, size: 100B, repeat: 2)"],
+            "atomic_results": [
+                {
+                    "description": "Host 10.0.0.11 (src: 10.0.0.5, vrf: default, size: 100B, repeat: 2)",
+                    "inputs": {
+                        "destination": "10.0.0.11",
+                        "df_bit": False,
+                        "repeat": 2,
+                        "size": 100,
+                        "source": "10.0.0.5",
+                        "vrf": "default",
+                    },
+                    "messages": [],
+                    "result": "failure",
+                },
+                {
+                    "description": "Host 10.0.0.2 (src: 10.0.0.5, vrf: default, size: 100B, repeat: 2)",
+                    "inputs": {
+                        "destination": "10.0.0.2",
+                        "df_bit": False,
+                        "repeat": 2,
+                        "size": 100,
+                        "source": "10.0.0.5",
+                        "vrf": "default",
+                    },
+                    "messages": [],
+                    "result": "success",
+                },
+            ],
+        },
     },
     {
         "name": "failure-interface",
@@ -187,7 +298,38 @@ DATA: list[dict[str, Any]] = [
                 ],
             },
         ],
-        "expected": {"result": "failure", "messages": ["Host 10.0.0.11 (src: Management0, vrf: default, size: 100B, repeat: 2) - Unreachable"]},
+        "expected": {
+            "result": "failure",
+            "messages": ["Unreachable Host 10.0.0.11 (src: Management0, vrf: default, size: 100B, repeat: 2)"],
+            "atomic_results": [
+                {
+                    "description": "Host 10.0.0.11 (src: Management0, vrf: default, size: 100B, repeat: 2)",
+                    "inputs": {
+                        "destination": "10.0.0.11",
+                        "df_bit": False,
+                        "repeat": 2,
+                        "size": 100,
+                        "source": "Management0",
+                        "vrf": "default",
+                    },
+                    "messages": [],
+                    "result": "failure",
+                },
+                {
+                    "description": "Host 10.0.0.2 (src: Management0, vrf: default, size: 100B, repeat: 2)",
+                    "inputs": {
+                        "destination": "10.0.0.2",
+                        "df_bit": False,
+                        "repeat": 2,
+                        "size": 100,
+                        "source": "Management0",
+                        "vrf": "default",
+                    },
+                    "messages": [],
+                    "result": "success",
+                },
+            ],
+        },
     },
     {
         "name": "failure-size",
@@ -209,7 +351,25 @@ DATA: list[dict[str, Any]] = [
                 ],
             },
         ],
-        "expected": {"result": "failure", "messages": ["Host 10.0.0.1 (src: Management0, vrf: default, size: 1501B, repeat: 5, df-bit: enabled) - Unreachable"]},
+        "expected": {
+            "result": "failure",
+            "messages": ["Unreachable Host 10.0.0.1 (src: Management0, vrf: default, size: 1501B, repeat: 5, df-bit: enabled)"],
+            "atomic_results": [
+                {
+                    "description": "Host 10.0.0.1 (src: Management0, vrf: default, size: 1501B, repeat: 5, df-bit: enabled)",
+                    "inputs": {
+                        "destination": "10.0.0.1",
+                        "df_bit": True,
+                        "repeat": 5,
+                        "size": 1501,
+                        "source": "Management0",
+                        "vrf": "default",
+                    },
+                    "messages": [],
+                    "result": "failure",
+                },
+            ],
+        },
     },
     {
         "name": "success",
