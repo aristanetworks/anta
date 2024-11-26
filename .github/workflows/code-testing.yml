@@ -123,6 +123,9 @@ jobs:
     name: Pytest on 3.12 for windows
     runs-on: windows-2022
     needs: [lint-python, type-python]
+    env:
+      # Required to prevent asyncssh to fail.
+      USERNAME: WindowsUser
     steps:
       - uses: actions/checkout@v4
       - name: Setup Python
