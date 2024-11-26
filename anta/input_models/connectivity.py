@@ -32,15 +32,8 @@ class Host(BaseModel):
     """Enable do not fragment bit in IP header. Defaults to False."""
 
     def __str__(self) -> str:
-        """Return a human-readable string representation of the Host for reporting.
-
-        Examples
-        --------
-        Host 10.1.1.1 (src: 10.2.2.2, vrf: mgmt, size: 100B, repeat: 2)
-
-        """
-        df_status = ", df-bit: enabled" if self.df_bit else ""
-        return f"Host {self.destination} (src: {self.source}, vrf: {self.vrf}, size: {self.size}B, repeat: {self.repeat}{df_status})"
+        """Return a human-readable string representation of the Host for reporting."""
+        return f"Host {self.destination} in VRF {self.vrf}"
 
 
 class LLDPNeighbor(BaseModel):

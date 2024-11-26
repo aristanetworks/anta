@@ -49,11 +49,11 @@ DATA: list[dict[str, Any]] = [
                 {
                     "result": "success",
                     "messages": [],
-                    "description": "Host 10.0.0.1 (src: 10.0.0.5, vrf: default, size: 100B, repeat: 2)",
+                    "description": "Host 10.0.0.1 in VRF default",
                     "inputs": {"destination": "10.0.0.1", "source": "10.0.0.5", "vrf": "default", "repeat": 2, "size": 100, "df_bit": False},
                 },
                 {
-                    "description": "Host 10.0.0.2 (src: 10.0.0.5, vrf: default, size: 100B, repeat: 2)",
+                    "description": "Host 10.0.0.2 in VRF default",
                     "inputs": {
                         "destination": "10.0.0.2",
                         "df_bit": False,
@@ -106,11 +106,11 @@ DATA: list[dict[str, Any]] = [
                 {
                     "result": "success",
                     "messages": [],
-                    "description": "Host 10.0.0.1 (src: Management0, vrf: default, size: 100B, repeat: 2)",
+                    "description": "Host 10.0.0.1 in VRF default",
                     "inputs": {"destination": "10.0.0.1", "source": "Management0", "vrf": "default", "repeat": 2, "size": 100, "df_bit": False},
                 },
                 {
-                    "description": "Host 10.0.0.2 (src: Management0, vrf: default, size: 100B, repeat: 2)",
+                    "description": "Host 10.0.0.2 in VRF default",
                     "inputs": {
                         "destination": "10.0.0.2",
                         "df_bit": False,
@@ -147,7 +147,7 @@ DATA: list[dict[str, Any]] = [
             "result": "success",
             "atomic_results": [
                 {
-                    "description": "Host 10.0.0.1 (src: Management0, vrf: default, size: 100B, repeat: 1)",
+                    "description": "Host 10.0.0.1 in VRF default",
                     "inputs": {
                         "destination": "10.0.0.1",
                         "df_bit": False,
@@ -186,7 +186,7 @@ DATA: list[dict[str, Any]] = [
             "result": "success",
             "atomic_results": [
                 {
-                    "description": "Host 10.0.0.1 (src: Management0, vrf: default, size: 1500B, repeat: 5, df-bit: enabled)",
+                    "description": "Host 10.0.0.1 in VRF default",
                     "inputs": {
                         "destination": "10.0.0.1",
                         "df_bit": True,
@@ -235,10 +235,10 @@ DATA: list[dict[str, Any]] = [
         ],
         "expected": {
             "result": "failure",
-            "messages": ["Unreachable Host 10.0.0.11 (src: 10.0.0.5, vrf: default, size: 100B, repeat: 2)"],
+            "messages": ["Unreachable Host 10.0.0.11 in VRF default"],
             "atomic_results": [
                 {
-                    "description": "Host 10.0.0.11 (src: 10.0.0.5, vrf: default, size: 100B, repeat: 2)",
+                    "description": "Host 10.0.0.11 in VRF default",
                     "inputs": {
                         "destination": "10.0.0.11",
                         "df_bit": False,
@@ -247,11 +247,11 @@ DATA: list[dict[str, Any]] = [
                         "source": "10.0.0.5",
                         "vrf": "default",
                     },
-                    "messages": [],
+                    "messages": ["Unreachable Host 10.0.0.11 in VRF default"],
                     "result": "failure",
                 },
                 {
-                    "description": "Host 10.0.0.2 (src: 10.0.0.5, vrf: default, size: 100B, repeat: 2)",
+                    "description": "Host 10.0.0.2 in VRF default",
                     "inputs": {
                         "destination": "10.0.0.2",
                         "df_bit": False,
@@ -300,10 +300,10 @@ DATA: list[dict[str, Any]] = [
         ],
         "expected": {
             "result": "failure",
-            "messages": ["Unreachable Host 10.0.0.11 (src: Management0, vrf: default, size: 100B, repeat: 2)"],
+            "messages": ["Unreachable Host 10.0.0.11 in VRF default"],
             "atomic_results": [
                 {
-                    "description": "Host 10.0.0.11 (src: Management0, vrf: default, size: 100B, repeat: 2)",
+                    "description": "Host 10.0.0.11 in VRF default",
                     "inputs": {
                         "destination": "10.0.0.11",
                         "df_bit": False,
@@ -312,11 +312,11 @@ DATA: list[dict[str, Any]] = [
                         "source": "Management0",
                         "vrf": "default",
                     },
-                    "messages": [],
+                    "messages": ["Unreachable Host 10.0.0.11 in VRF default"],
                     "result": "failure",
                 },
                 {
-                    "description": "Host 10.0.0.2 (src: Management0, vrf: default, size: 100B, repeat: 2)",
+                    "description": "Host 10.0.0.2 in VRF default",
                     "inputs": {
                         "destination": "10.0.0.2",
                         "df_bit": False,
@@ -353,10 +353,10 @@ DATA: list[dict[str, Any]] = [
         ],
         "expected": {
             "result": "failure",
-            "messages": ["Unreachable Host 10.0.0.1 (src: Management0, vrf: default, size: 1501B, repeat: 5, df-bit: enabled)"],
+            "messages": ["Unreachable Host 10.0.0.1 in VRF default"],
             "atomic_results": [
                 {
-                    "description": "Host 10.0.0.1 (src: Management0, vrf: default, size: 1501B, repeat: 5, df-bit: enabled)",
+                    "description": "Host 10.0.0.1 in VRF default",
                     "inputs": {
                         "destination": "10.0.0.1",
                         "df_bit": True,
@@ -365,7 +365,7 @@ DATA: list[dict[str, Any]] = [
                         "source": "Management0",
                         "vrf": "default",
                     },
-                    "messages": [],
+                    "messages": ["Unreachable Host 10.0.0.1 in VRF default"],
                     "result": "failure",
                 },
             ],
