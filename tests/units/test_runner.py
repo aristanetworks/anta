@@ -16,12 +16,15 @@ import pytest
 from anta.catalog import AntaCatalog
 from anta.inventory import AntaInventory
 from anta.result_manager import ResultManager
-from anta.runner import adjust_rlimit_nofile, main, prepare_tests
+from anta.runner import main, prepare_tests
 
 from .test_models import FakeTest, FakeTestWithMissingTest
 
 if os.name == "posix":
+    # The function is not defined on non-POSIX system
     import resource
+
+    from anta.runner import adjust_rlimit_nofile
 
 DATA_DIR: Path = Path(__file__).parent.parent.resolve() / "data"
 FAKE_CATALOG: AntaCatalog = AntaCatalog.from_list([(FakeTest, None)])
@@ -142,7 +145,7 @@ async def test_check_runner_log_for_windows(caplog: pytest.LogCaptureFixture, in
     manager = ResultManager()
     # Using dry-run to shorten the test
     await main(manager, inventory, FAKE_CATALOG, dry_run=True)
-    assert "Running on a none POSIX system, cannot adjust the maximum number of file descriptors." in caplog.records[-2].message
+    assert "Running on a non-POSIX system, cannot adjust the maximum number of file descriptors." in caplog.records[-2].message
 
 
 @pytest.mark.parametrize(

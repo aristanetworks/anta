@@ -277,9 +277,9 @@ async def main(  # noqa: PLR0913
             limits = adjust_rlimit_nofile()
             run_info += f"Maximum number of open file descriptors for the current ANTA process: {limits[0]}\n"
         else:
-            # Running on none Posix system, cannot manage the resource.
+            # Running on non-Posix system, cannot manage the resource.
             limits = (sys.maxsize, sys.maxsize)
-            run_info += "Running on a none POSIX system, cannot adjust the maximum number of file descriptors.\n"
+            run_info += "Running on a non-POSIX system, cannot adjust the maximum number of file descriptors.\n"
 
         run_info += "---------------------------------"
 
