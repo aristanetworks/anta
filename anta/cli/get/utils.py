@@ -354,6 +354,6 @@ def extract_examples(docstring: str) -> str | None:
     str | None
         The content of the section if present, None if the section is absent or empty.
     """
-    pattern = r"Examples\s*--------\s*(.*?)(?:(?:\n\s*\n)|\Z)"
+    pattern = r"Examples\s*--------\s*(.*)(?:\n\s*\n|\Z)"
     match = re.search(pattern, docstring, flags=re.DOTALL)
     return match[1].strip() if match and match[1].strip() != "" else None
