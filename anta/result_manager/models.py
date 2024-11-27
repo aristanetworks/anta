@@ -10,7 +10,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from pydantic import BaseModel
+from pydantic import BaseModel, SkipValidation, field_serializer
 
 
 class AntaTestStatus(str, Enum):
@@ -41,8 +41,15 @@ class BaseTestResult(BaseModel, ABC):
         Messages reported by the test.
     """
 
+    description: str
     result: AntaTestStatus = AntaTestStatus.UNSET
     messages: list[str] = []
+    inputs: SkipValidation[BaseModel | None] = None
+
+    @field_serializer("inputs")
+    def serialize_inputs(self, inputs: BaseModel | None) -> dict[str, Any] | None:
+        """Serialize the inputs field to a dictionary."""
+        return inputs.model_dump(mode="json", serialize_as_any=True, exclude_none=True, exclude={"result_overwrite"}) if inputs else None
 
     def is_success(self, message: str | None = None) -> None:
         """Set status to success.
@@ -119,8 +126,6 @@ class AtomicTestResult(BaseTestResult):
     """
 
     _parent: TestResult
-    description: str | None = None
-    inputs: BaseModel | None = None
 
     def __init__(self, **data: Any) -> None:  # noqa: ANN401
         """Instantiate the parent TestResult private attribute."""
@@ -174,8 +179,6 @@ class TestResult(BaseTestResult):
 
     name: str
     test: str
-    description: str
-    inputs: BaseModel | None = None
     categories: list[str]
     custom_field: str | None = None
     atomic_results: list[AtomicTestResult] = []

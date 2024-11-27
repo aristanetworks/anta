@@ -84,61 +84,67 @@ class TestReportTable:
         assert report._color_result(status) == expected_status
 
     @pytest.mark.parametrize(
-        ("number_of_tests", "expected_length"),
+        ("results_size"),
         [
-            pytest.param(5, 5, id="all results"),
-            pytest.param(0, 0, id="result for host1 when no host1 test"),
-            pytest.param(5, 5, id="result for test VerifyTest3"),
-            pytest.param(5, 5, id="Change table title"),
+            pytest.param(5, id="5 results"),
+            pytest.param(0, id="no results"),
         ],
     )
     def test_report(
         self,
-        result_manager_factory: Callable[[int], ResultManager],
-        number_of_tests: int,
-        expected_length: int,
+        result_manager_factory: Callable[..., ResultManager],
+        results_size: int,
     ) -> None:
         """Test report table."""
-        manager = result_manager_factory(number_of_tests)
+        manager = result_manager_factory(size=results_size)
 
         report = ReportTable()
         res = report.report(manager)
 
         assert isinstance(res, Table)
-        assert res.row_count == expected_length
+        assert res.row_count == results_size
 
     @pytest.mark.parametrize(
-        ("test", "title", "number_of_tests", "expected_length"),
+        ("results_size", "atomic_results_size"),
         [
-            pytest.param(None, None, 5, 5, id="all results"),
-            pytest.param("FakeTest3", None, 5, 1, id="result for test FakeTest3"),
-            pytest.param(None, "Custom title", 5, 5, id="Change table title"),
+            pytest.param(5, 0, id="5 results no atomic"),
+            pytest.param(0, 0, id="no results"),
+            pytest.param(5, 5, id="5 results 5 atomic"),
+        ],
+    )
+    def test_report_expanded(
+        self,
+        result_manager_factory: Callable[..., ResultManager],
+        results_size: int,
+        atomic_results_size: int,
+    ) -> None:
+        """Test report table."""
+        manager = result_manager_factory(size=results_size, nb_atomic_results=atomic_results_size)
+
+        report = ReportTable()
+        res = report.report_expanded(manager)
+
+        assert isinstance(res, Table)
+        assert res.row_count == results_size + results_size * atomic_results_size
+
+    @pytest.mark.parametrize(
+        ("results_size", "expected_length", "distinct", "tests_filter"),
+        [
+            pytest.param(5, 1, False, None, id="5 results, same test"),
+            pytest.param(5, 5, True, None, id="5 results, different tests"),
+            pytest.param(0, 0, False, None, id="no results"),
         ],
     )
     def test_report_summary_tests(
-        self,
-        result_manager_factory: Callable[[int], ResultManager],
-        test: str | None,
-        title: str | None,
-        number_of_tests: int,
-        expected_length: int,
+        self, result_manager_factory: Callable[..., ResultManager], results_size: int, expected_length: int, distinct: bool, tests_filter: list[str] | None
     ) -> None:
         """Test report_summary_tests."""
-        # TODO: refactor this later... this is injecting double test results by modyfing the device name
-        # should be a fixture
-        manager = result_manager_factory(number_of_tests)
-        new_results = [result.model_copy() for result in manager.results]
-        for result in new_results:
-            result.name = "test_device"
-            result.result = AntaTestStatus.FAILURE
+        manager = result_manager_factory(size=results_size, distinct_tests=distinct)
 
         report = ReportTable()
-        kwargs = {"tests": [test] if test is not None else None, "title": title}
-        kwargs = {k: v for k, v in kwargs.items() if v is not None}
-        res = report.report_summary_tests(manager, **kwargs)  # type: ignore[arg-type]
+        res = report.report_summary_tests(manager, tests=tests_filter)
 
         assert isinstance(res, Table)
-        assert res.title == (title or "Summary per test")
         assert res.row_count == expected_length
 
     @pytest.mark.parametrize(
