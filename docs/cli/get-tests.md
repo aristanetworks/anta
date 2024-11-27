@@ -18,10 +18,11 @@ Usage: anta get tests [OPTIONS]
   documentation.
 
 Options:
-  --module TEXT  Filter tests by module name. Defaults to 'anta.tests'.
+  --module TEXT  Filter tests by module name.  [default: anta.tests]
   --test TEXT    Filter by specific test name. If module is specified,
                  searches only within that module.
   --short        Display test names without their inputs.
+  --count        Print only the number of tests found.
   --help         Show this message and exit.
 ```
 
@@ -111,4 +112,10 @@ anta.tests.aaa:
       # Verifies TACACS source-interface for a specified VRF.
       intf: Management0
       vrf: MGMT
+```
+
+#### Count the tests
+
+```bash title="anta get tests --count"
+There are 155 tests available in `anta.tests`.
 ```

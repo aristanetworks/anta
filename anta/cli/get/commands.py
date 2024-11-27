@@ -136,14 +136,21 @@ def tags(inventory: AntaInventory, **kwargs: Any) -> None:
 
 @click.command
 @click.pass_context
-@click.option("--module", help="Filter tests by module name. Defaults to 'anta.tests'.", default="anta.tests")
+@click.option("--module", help="Filter tests by module name.", default="anta.tests", show_default=True)
 @click.option("--test", help="Filter by specific test name. If module is specified, searches only within that module.", type=str)
 @click.option("--short", help="Display test names without their inputs.", is_flag=True, default=False)
-def tests(ctx: click.Context, module: str, test: str | None, *, short: bool) -> None:
+@click.option("--count", help="Print only the number of tests found.", is_flag=True, default=False)
+def tests(ctx: click.Context, module: str, test: str | None, *, short: bool, count: bool) -> None:
     """Show all builtin ANTA tests with an example output retrieved from each test documentation."""
     try:
-        if not explore_package(module, test_name=test, short=short):
+        tests_found = explore_package(module, test_name=test, short=short, count=count)
+        if tests_found == 0:
             console.print(f"No test found in {module}")
+        elif count:
+            if tests_found == 1:
+                console.print(f"There is 1 test available in `{module}`.")
+            else:
+                console.print(f"There are {tests_found} tests available in `{module}`.")
     except ValueError as e:
         logger.error(str(e))
         ctx.exit(ExitCode.USAGE_ERROR)

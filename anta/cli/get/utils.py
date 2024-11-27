@@ -213,7 +213,7 @@ def create_inventory_from_ansible(inventory: Path, output: Path, ansible_group: 
     write_inventory_to_file(ansible_hosts, output)
 
 
-def explore_package(module_name: str, level: int = 0, test_name: str | None = None, *, short: bool = False) -> bool:
+def explore_package(module_name: str, level: int = 0, test_name: str | None = None, *, short: bool = False, count: bool = False) -> int:
     """Parse ANTA test submodules recursively and print AntaTest examples.
 
     Parameters
@@ -226,11 +226,13 @@ def explore_package(module_name: str, level: int = 0, test_name: str | None = No
         If provided, only show tests starting with this name.
     short
         If True, only print test names without their inputs.
+    count
+        If True, only count the tests.
 
     Returns
     -------
-    bool:
-        True if any test was printed for the module, False otherwise.
+    int:
+        The number of tests found.
     """
     try:
         module_spec = importlib.util.find_spec(module_name)
@@ -247,59 +249,94 @@ def explore_package(module_name: str, level: int = 0, test_name: str | None = No
         msg = f"Module `{module_name}` was not found!"
         raise ValueError(msg)
 
-    any_test_printed = False
+    tests_found = 0
     if module_spec.submodule_search_locations:
         for _, sub_module_name, ispkg in pkgutil.walk_packages(module_spec.submodule_search_locations):
             qname = f"{module_name}.{sub_module_name}"
             if ispkg:
-                any_test_printed = explore_package(qname, level=level + 1, test_name=test_name) or any_test_printed
+                tests_found += explore_package(qname, level=level + 1, test_name=test_name, short=short, count=count)
                 continue
-            any_test_printed = print_tests_examples(qname, level, test_name, short=short) or any_test_printed
+            tests_found += find_tests_examples(qname, level, test_name, short=short, count=count)
 
     else:
-        any_test_printed = print_tests_examples(module_spec.name, level, test_name, short=short) or any_test_printed
+        tests_found += find_tests_examples(module_spec.name, level, test_name, short=short, count=count)
 
-    return any_test_printed
+    return tests_found
 
 
-def print_tests_examples(qname: str, level: int, test_name: str | None, *, short: bool = False) -> bool:
+def find_tests_examples(qname: str, level: int, test_name: str | None, *, short: bool = False, count: bool = False) -> int:
     """Print tests from `qname`, filtered by `test_name` if provided.
 
-    TODO: Allow to give a package argument to import_module.
+    Parameters
+    ----------
+    qname
+        Name of the module to explore (e.g., 'anta.tests.routing.bgp').
+    level
+        Current recursion level, used for indentation.
+    test_name
+        If provided, only show tests starting with this name.
+    short
+        If True, only print test names without their inputs.
+    count
+        If True, only count the tests.
 
     Returns
     -------
-    bool:
-        True if any test was printed for qname, False otherwise.
+    int:
+        The number of tests found.
     """
     try:
         qname_module = importlib.import_module(qname)
     except (AssertionError, ImportError) as e:
         msg = f"Error when importing `{qname}` using importlib!"
         raise ValueError(msg) from e
+
     module_printed = False
+    tests_found = 0
+
     for _name, obj in inspect.getmembers(qname_module):
+        # Only retrieves the subclasses of AntaTest
         if not inspect.isclass(obj) or not issubclass(obj, AntaTest) or obj == AntaTest:
             continue
         if test_name and not obj.name.startswith(test_name):
             continue
         if not module_printed:
-            console.print(f"{qname}:")
+            if not count:
+                console.print(f"{qname}:")
             module_printed = True
-        console.print(f"  - {obj.name}:")
-        console.print(f"      # {obj.description}", soft_wrap=True)
-        if short:
+        tests_found += 1
+        if count:
             continue
-        if not obj.__doc__ or (example := extract_examples(obj.__doc__)) is None:
-            msg = f"Test {obj.name} in module {qname} is missing an Example"
-            raise LookupError(msg)
-        # Picking up only the inputs in the examples
-        # Need to handle the fact that we nest the routing modules in Examples.
-        # This is a bit fragile.
-        if len(example.split("\n")) > 4 + level:  # otherwise it is a test with no params.
-            inputs = "\n".join(example.split("\n")[level + 3 : -1])
-            console.print(textwrap.indent(textwrap.dedent(inputs), " " * 6))
-    return module_printed
+        print_test(obj, level, short=short)
+
+    return tests_found
+
+
+def print_test(test: type[AntaTest], level: int, *, short: bool = False) -> None:
+    """Print a single test.
+
+    Parameters
+    ----------
+    test
+        the representation of the AntaTest as returned by inspect.getmembers
+    level
+        Current recursion level, used for indentation.
+    short
+        If True, only print test names without their inputs.
+    """
+    console.print(f"  - {test.name}:")
+    console.print(f"      # {test.description}", soft_wrap=True)
+    if short:
+        return
+    if not test.__doc__ or (example := extract_examples(test.__doc__)) is None:
+        msg = f"Test {test.name} in module {test.__module__} is missing an Example"
+        raise LookupError(msg)
+    # Picking up only the inputs in the examples
+    # Need to handle the fact that we nest the routing modules in Examples.
+    # This is a bit fragile.
+    if len(example.split("\n")) > 4 + level:  # otherwise it is a test with no params.
+        inputs = "\n".join(example.split("\n")[level + 3 : -1])
+        console.print(textwrap.indent(textwrap.dedent(inputs), " " * 6))
 
 
 def extract_examples(docstring: str) -> str | None:
