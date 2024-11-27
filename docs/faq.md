@@ -128,13 +128,13 @@ anta_title: Frequently Asked Questions (FAQ)
 
 ???+ faq "EOS AAA configuration for an ANTA-only user"
 
-    Here is a startingguide to confihgure an ANTA-only user to run ANTA tests on a device.
+    Here is a starting guide to configure an ANTA-only user to run ANTA tests on a device.
 
     !!! warning
 
         This example is not using TACACS / RADIUS but only local AAA
 
-    1. Configure the following role
+    1. Configure the following role.
 
         ```bash
         role anta-users
@@ -142,15 +142,15 @@ anta_title: Frequently Asked Questions (FAQ)
            20 deny command .*
         ```
 
-        You can then add other commands if they are required for your test catalog (`ping` for example) and then tighten down the show commands.
+        You can then add other commands if they are required for your test catalog (`ping` for example) and then tighten down the show commands to only those required for your tests.
 
-    2. Configure the following authorization (You may need to adapt depending on your AAA setup)
+    2. Configure the following authorization (You may need to adapt depending on your AAA setup).
 
         ```bash
         aaa authorization commands all default local
         ```
 
-    3. Configure a user for the role
+    3. Configure a user for the role.
 
         ```bash
         user anta role anta-users secret <secret>
