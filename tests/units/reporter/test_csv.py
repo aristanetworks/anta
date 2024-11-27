@@ -7,8 +7,8 @@
 
 import csv
 import pathlib
-import stat
 from typing import Any, Callable
+from unittest.mock import patch
 
 import pytest
 
@@ -50,12 +50,10 @@ class TestReportCsv:
         # Generate the CSV report
         ReportCsv.generate(result_manager, csv_filename)
 
-        # Read the generated CSV file
-        with pathlib.Path.open(csv_filename, encoding="utf-8") as csvfile:
+        # Read the generated CSV file - newline required on Windows..
+        with pathlib.Path.open(csv_filename, encoding="utf-8", newline="") as csvfile:
             reader = csv.reader(csvfile, delimiter=",")
             rows = list(reader)
-
-        print(rows)  # noqa: T201
 
         # Assert the headers
         assert rows[0] == [
@@ -85,12 +83,9 @@ class TestReportCsv:
         max_test_entries = 10
         result_manager = result_manager_factory(max_test_entries)
 
-        # Create a temporary CSV file path and make tmp_path read_only
-        # using S_IREAD to be compatible on Windows
-        tmp_path.chmod(stat.S_IREAD)
         csv_filename = tmp_path / "read_only.csv"
 
-        with pytest.raises(OSError, match="Permission denied"):
+        with patch("pathlib.Path.open", side_effect=OSError("Any OSError")), pytest.raises(OSError, match="Any OSError"):
             # Generate the CSV report
             ReportCsv.generate(result_manager, csv_filename)
 
