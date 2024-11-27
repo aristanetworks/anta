@@ -124,11 +124,15 @@ anta_title: Frequently Asked Questions (FAQ)
         export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
         ```
 
-## `EOS AAA configuration for a special ANTA user`
+## EOS AAA configuration for an ANTA-only user
 
-???+ faq "`EOS AAA configuration for a special ANTA user`
+???+ faq "EOS AAA configuration for an ANTA-only user"
 
-    anyone hardened eos aaa for a role that can only run anta validatio
+    Here is a startingguide to confihgure an ANTA-only user to run ANTA tests on a device.
+
+    !!! warning
+
+        This example is not using TACACS / RADIUS but only local AAA
 
     1. Configure the following role
 
@@ -138,7 +142,7 @@ anta_title: Frequently Asked Questions (FAQ)
            20 deny command .*
         ```
 
-        You can then add other commands if they're required (ping for example) and then tighten down the show commands.
+        You can then add other commands if they are required for your test catalog (`ping` for example) and then tighten down the show commands.
 
     2. Configure the following authorization (You may need to adapt depending on your AAA setup)
 
@@ -151,6 +155,8 @@ anta_title: Frequently Asked Questions (FAQ)
         ```bash
         user anta role anta-users secret <secret>
         ```
+
+    4. You can then use the credentials `anta` / `<secret>` to run ANTA against the device and adjust the role as required.
 
 # Still facing issues?
 
