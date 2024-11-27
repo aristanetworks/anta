@@ -213,14 +213,14 @@ def create_inventory_from_ansible(inventory: Path, output: Path, ansible_group: 
     write_inventory_to_file(ansible_hosts, output)
 
 
-def explore_package(module_name: str, level: int = 0, test_name: str | None = None, *, short: bool = False, count: bool = False) -> int:
+def explore_package(module_name: str, indent_level: int = 0, test_name: str | None = None, *, short: bool = False, count: bool = False) -> int:
     """Parse ANTA test submodules recursively and print AntaTest examples.
 
     Parameters
     ----------
     module_name
         Name of the module to explore (e.g., 'anta.tests.routing.bgp').
-    level
+    indent_level
         Current recursion level, used for indentation.
     test_name
         If provided, only show tests starting with this name.
@@ -257,24 +257,24 @@ def explore_package(module_name: str, level: int = 0, test_name: str | None = No
         for _, sub_module_name, ispkg in pkgutil.walk_packages(module_spec.submodule_search_locations):
             qname = f"{module_name}.{sub_module_name}"
             if ispkg:
-                tests_found += explore_package(qname, level=level + 1, test_name=test_name, short=short, count=count)
+                tests_found += explore_package(qname, indent_level=indent_level + 1, test_name=test_name, short=short, count=count)
                 continue
-            tests_found += find_tests_examples(qname, level, test_name, short=short, count=count)
+            tests_found += find_tests_examples(qname, indent_level, test_name, short=short, count=count)
 
     else:
-        tests_found += find_tests_examples(module_spec.name, level, test_name, short=short, count=count)
+        tests_found += find_tests_examples(module_spec.name, indent_level, test_name, short=short, count=count)
 
     return tests_found
 
 
-def find_tests_examples(qname: str, level: int, test_name: str | None, *, short: bool = False, count: bool = False) -> int:
+def find_tests_examples(qname: str, indent_level: int, test_name: str | None, *, short: bool = False, count: bool = False) -> int:
     """Print tests from `qname`, filtered by `test_name` if provided.
 
     Parameters
     ----------
     qname
         Name of the module to explore (e.g., 'anta.tests.routing.bgp').
-    level
+    indent_level
         Current recursion level, used for indentation.
     test_name
         If provided, only show tests starting with this name.
@@ -310,19 +310,19 @@ def find_tests_examples(qname: str, level: int, test_name: str | None, *, short:
         tests_found += 1
         if count:
             continue
-        print_test(obj, level, short=short)
+        print_test(obj, indent_level, short=short)
 
     return tests_found
 
 
-def print_test(test: type[AntaTest], level: int, *, short: bool = False) -> None:
+def print_test(test: type[AntaTest], indent_level: int, *, short: bool = False) -> None:
     """Print a single test.
 
     Parameters
     ----------
     test
         the representation of the AntaTest as returned by inspect.getmembers
-    level
+    indent_level
         Current recursion level, used for indentation.
     short
         If True, only print test names without their inputs.
@@ -337,8 +337,8 @@ def print_test(test: type[AntaTest], level: int, *, short: bool = False) -> None
     # Picking up only the inputs in the examples
     # Need to handle the fact that we nest the routing modules in Examples.
     # This is a bit fragile.
-    if len(example.split("\n")) > 4 + level:  # otherwise it is a test with no params.
-        inputs = "\n".join(example.split("\n")[level + 3 : -1])
+    if len(example.split("\n")) > 4 + indent_level:  # otherwise it is a test with no params.
+        inputs = "\n".join(example.split("\n")[indent_level + 3 : -1])
         console.print(textwrap.indent(textwrap.dedent(inputs), " " * 6))
 
 
