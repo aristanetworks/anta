@@ -12,9 +12,9 @@ import json
 import logging
 import pkgutil
 import re
+import sys
 import textwrap
 from pathlib import Path
-from sys import stdin
 from typing import Any, Callable
 
 import click
@@ -67,7 +67,7 @@ def inventory_output_options(f: Callable[..., Any]) -> Callable[..., Any]:
         output_is_not_empty = output.exists() and output.stat().st_size != 0
         # Check overwrite when file is not empty
         if not overwrite and output_is_not_empty:
-            is_tty = stdin.isatty()
+            is_tty = sys.stdin.isatty()
             if is_tty:
                 # File has content and it is in an interactive TTY --> Prompt user
                 click.confirm(
@@ -213,7 +213,7 @@ def create_inventory_from_ansible(inventory: Path, output: Path, ansible_group: 
     write_inventory_to_file(ansible_hosts, output)
 
 
-def explore_package(module_name: str, level: int = 0, test_name: str | None = None, *, short: bool = False) -> None:
+def explore_package(module_name: str, level: int = 0, test_name: str | None = None, *, short: bool = False) -> bool:
     """Parse ANTA test submodules recursively and print AntaTest examples.
 
     Parameters
@@ -226,28 +226,57 @@ def explore_package(module_name: str, level: int = 0, test_name: str | None = No
         If provided, only show tests starting with this name.
     short
         If True, only print test names without their inputs.
-    """
-    if (module_spec := importlib.util.find_spec(module_name)) is None or module_spec.origin is None:
-        return
 
+    Returns
+    -------
+    bool:
+        True if any test was printed for the module, False otherwise.
+    """
+    try:
+        module_spec = importlib.util.find_spec(module_name)
+        if module_spec is None:
+            logger.info("Could not find module `%s`, injecting CWD in PYTHONPATH and retrying...", module_name)
+
+            sys.path = [str(Path.cwd()), *sys.path]
+            module_spec = importlib.util.find_spec(module_name)
+    except ImportError as e:
+        msg = "`anta get tests --module <module>` does not support relative imports"
+        raise ValueError(msg) from e
+
+    if module_spec is None or module_spec.origin is None:
+        msg = f"Module `{module_name}` was not found!"
+        raise ValueError(msg)
+
+    any_test_printed = False
     if module_spec.submodule_search_locations:
         for _, sub_module_name, ispkg in pkgutil.walk_packages(module_spec.submodule_search_locations):
             qname = f"{module_name}.{sub_module_name}"
             if ispkg:
-                explore_package(qname, level=level + 1, test_name=test_name)
+                any_test_printed = explore_package(qname, level=level + 1, test_name=test_name) or any_test_printed
                 continue
-            print_tests_examples(qname, level, test_name, short=short)
+            any_test_printed = print_tests_examples(qname, level, test_name, short=short) or any_test_printed
 
     else:
-        print_tests_examples(module_spec.name, level, test_name, short=short)
+        any_test_printed = print_tests_examples(module_spec.name, level, test_name, short=short) or any_test_printed
+
+    return any_test_printed
 
 
-def print_tests_examples(qname: str, level: int, test_name: str | None, *, short: bool = False) -> None:
+def print_tests_examples(qname: str, level: int, test_name: str | None, *, short: bool = False) -> bool:
     """Print tests from `qname`, filtered by `test_name` if provided.
 
     TODO: Allow to give a package argument to import_module.
+
+    Returns
+    -------
+    bool:
+        True if any test was printed for qname, False otherwise.
     """
-    qname_module = importlib.import_module(qname)
+    try:
+        qname_module = importlib.import_module(qname)
+    except (AssertionError, ImportError) as e:
+        msg = f"Error when importing `{qname}` using importlib!"
+        raise ValueError(msg) from e
     module_printed = False
     for _name, obj in inspect.getmembers(qname_module):
         if not inspect.isclass(obj) or not issubclass(obj, AntaTest) or obj == AntaTest:
@@ -270,17 +299,11 @@ def print_tests_examples(qname: str, level: int, test_name: str | None, *, short
         if len(example.split("\n")) > 4 + level:  # otherwise it is a test with no params.
             inputs = "\n".join(example.split("\n")[level + 3 : -1])
             console.print(textwrap.indent(textwrap.dedent(inputs), " " * 6))
+    return module_printed
 
 
 def extract_examples(docstring: str) -> str | None:
     """Extract the content of the Example section in a Numpy docstring."""
-    # Define a regular expression to match the Examples section
-    # The regex capture Examples section until a blank newline or End Of String
     pattern = r"Examples\s*--------\s*(.*?)(?:(?:\n\s*\n)|\Z)"
-
-    # Search for the pattern in the docstring
     match = re.search(pattern, docstring, flags=re.DOTALL)
-
-    if match:
-        return match.group(1).strip()
-    return None
+    return match[1].strip() if match else None

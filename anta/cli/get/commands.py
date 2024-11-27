@@ -134,10 +134,16 @@ def tags(inventory: AntaInventory, **kwargs: Any) -> None:
     console.print_json(json.dumps(sorted(tags), indent=2))
 
 
+@click.command
+@click.pass_context
 @click.option("--module", help="Filter tests by module name. Defaults to 'anta.tests'.", default="anta.tests")
 @click.option("--test", help="Filter by specific test name. If module is specified, searches only within that module.", type=str)
 @click.option("--short", help="Display test names without their inputs.", is_flag=True, default=False)
-@click.command
-def tests(module: str, test: str | None, *, short: bool) -> None:
+def tests(ctx: click.Context, module: str, test: str | None, *, short: bool) -> None:
     """Show all builtin ANTA tests with an example output retrieved from each test documentation."""
-    explore_package(module, test_name=test, short=short)
+    try:
+        if not explore_package(module, test_name=test, short=short):
+            console.print(f"No test found in {module}")
+    except ValueError as e:
+        logger.error(str(e))
+        ctx.exit(ExitCode.USAGE_ERROR)
