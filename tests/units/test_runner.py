@@ -145,7 +145,7 @@ async def test_check_runner_log_for_windows(caplog: pytest.LogCaptureFixture, in
     manager = ResultManager()
     # Using dry-run to shorten the test
     await main(manager, inventory, FAKE_CATALOG, dry_run=True)
-    print(caplog.records)
+    print(caplog.records)  # noqa: T201
     assert "Running on a non-POSIX system, cannot adjust the maximum number of file descriptors." in caplog.records[-2].message
 
 

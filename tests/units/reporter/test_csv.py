@@ -55,7 +55,7 @@ class TestReportCsv:
             reader = csv.reader(csvfile, delimiter=",")
             rows = list(reader)
 
-        print(rows)
+        print(rows)  # noqa: T201
 
         # Assert the headers
         assert rows[0] == [
