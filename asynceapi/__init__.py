@@ -9,4 +9,4 @@ from .config_session import SessionConfig
 from .device import Device
 from .errors import EapiCommandError
 
-__all__ = ["Device", "SessionConfig", "EapiCommandError"]
+__all__ = ["Device", "EapiCommandError", "SessionConfig"]
