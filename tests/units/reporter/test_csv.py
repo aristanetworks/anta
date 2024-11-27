@@ -7,6 +7,7 @@
 
 import csv
 import pathlib
+import stat
 from typing import Any, Callable
 
 import pytest
@@ -54,6 +55,8 @@ class TestReportCsv:
             reader = csv.reader(csvfile, delimiter=",")
             rows = list(reader)
 
+        print(rows)
+
         # Assert the headers
         assert rows[0] == [
             ReportCsv.Headers.device,
@@ -83,7 +86,8 @@ class TestReportCsv:
         result_manager = result_manager_factory(max_test_entries)
 
         # Create a temporary CSV file path and make tmp_path read_only
-        tmp_path.chmod(0o400)
+        # using S_IREAD to be compatible on Windows
+        tmp_path.chmod(stat.S_IREAD)
         csv_filename = tmp_path / "read_only.csv"
 
         with pytest.raises(OSError, match="Permission denied"):
