@@ -12,20 +12,20 @@ import pytest
 from anta.device import AntaDevice
 from anta.result_manager import ResultManager
 from anta.result_manager.models import TestResult
-from tests.units.test_models import FakeTest
+from tests.units.test_models import FakeTestWithInput
 
 TEST_RESULTS: Path = Path(__file__).parent.resolve() / "test_files" / "test_md_report_results.json"
 
 
 @pytest.fixture
-def result_manager_factory(list_result_factory: Callable[[int], list[TestResult]]) -> Callable[[int], ResultManager]:
+def result_manager_factory(list_result_factory: Callable[[int, int, bool, bool], list[TestResult]]) -> Callable[[int, int, bool, bool], ResultManager]:
     """Return a ResultManager factory that takes as input a number of tests."""
     # pylint: disable=redefined-outer-name
 
-    def _factory(number: int = 0) -> ResultManager:
+    def _factory(size: int = 0, nb_atomic_results: int = 0, distinct_tests: bool = False, distinct_devices: bool = False) -> ResultManager:
         """Create a factory for list[TestResult] entry of size entries."""
         result_manager = ResultManager()
-        result_manager.results = list_result_factory(number)
+        result_manager.results = list_result_factory(size, nb_atomic_results, distinct_tests, distinct_devices)
         return result_manager
 
     return _factory
@@ -57,31 +57,35 @@ def result_manager() -> ResultManager:
 
 
 @pytest.fixture
-def test_result_factory(device: AntaDevice) -> Callable[[int], TestResult]:
+def test_result_factory(device: AntaDevice) -> Callable[[int, int, bool, bool], TestResult]:
     """Return a anta.result_manager.models.TestResult object."""
     # pylint: disable=redefined-outer-name
 
-    def _create(index: int = 0) -> TestResult:
+    def _create(index: int = 0, nb_atomic_results: int = 0, distinct_tests: bool = False, distinct_devices: bool = False) -> TestResult:
         """Actual Factory."""
-        return TestResult(
-            name=device.name,
-            test=f"{FakeTest.name}{index}",
-            inputs=FakeTest.Input(),
+        test = FakeTestWithInput(device=device, inputs={"string": f"Test instance {index}"})
+        res = TestResult(
+            name=device.name if not distinct_devices else f"{device.name}{index}",
+            test=test.name if not distinct_tests else f"{test.name}{index}",
+            inputs=test.inputs,
             categories=["test"],
-            description=FakeTest.description,
+            description=test.description,
             custom_field=None,
         )
+        for i in range(nb_atomic_results):
+            res.add(description=f"{test.name}{index}AtomicTestResult{i}", inputs=test.inputs)
+        return res
 
     return _create
 
 
 @pytest.fixture
-def list_result_factory(test_result_factory: Callable[[int], TestResult]) -> Callable[[int], list[TestResult]]:
+def list_result_factory(test_result_factory: Callable[[int, int, bool, bool], TestResult]) -> Callable[[int, int, bool, bool], list[TestResult]]:
     """Return a list[TestResult] with 'size' TestResult instantiated using the test_result_factory fixture."""
     # pylint: disable=redefined-outer-name
 
-    def _factory(size: int = 0) -> list[TestResult]:
+    def _factory(size: int = 0, nb_atomic_results: int = 0, distinct_tests: bool = False, distinct_devices: bool = False) -> list[TestResult]:
         """Create a factory for list[TestResult] entry of size entries."""
-        return [test_result_factory(i) for i in range(size)]
+        return [test_result_factory(i, nb_atomic_results, distinct_tests, distinct_devices) for i in range(size)]
 
     return _factory

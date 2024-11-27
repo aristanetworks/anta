@@ -66,4 +66,4 @@ class TestTestResultModels:
         assert len(testresult.messages) == 0
         testresult._set_status(target, message)
         assert testresult.result == target
-        assert str(testresult) == f"Test 'FakeTest1' (on '{DEVICE_NAME}'): Result '{target}'\nMessages: {[message]}"
+        assert str(testresult) == f"Test 'FakeTestWithInput' (on '{DEVICE_NAME}'): Result '{target}'\nMessages: {[message]}"
