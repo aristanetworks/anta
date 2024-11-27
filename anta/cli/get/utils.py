@@ -241,6 +241,9 @@ def explore_package(module_name: str, level: int = 0, test_name: str | None = No
 
             sys.path = [str(Path.cwd()), *sys.path]
             module_spec = importlib.util.find_spec(module_name)
+    except ModuleNotFoundError:
+        # Relying on module_spec check below.
+        module_spec = None
     except ImportError as e:
         msg = "`anta get tests --module <module>` does not support relative imports"
         raise ValueError(msg) from e
