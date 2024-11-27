@@ -115,7 +115,7 @@ class VerifyCoredump(AntaTest):
     --------
     ```yaml
     anta.tests.system:
-      - VerifyCoreDump:
+      - VerifyCoredump:
     ```
     """
 

@@ -145,12 +145,12 @@ def tests(ctx: click.Context, module: str, test: str | None, *, short: bool, cou
     try:
         tests_found = explore_package(module, test_name=test, short=short, count=count)
         if tests_found == 0:
-            console.print(f"No test found in {module}")
+            console.print(f"""No test {f"'{test}' " if test else ""}found in '{module}'.""")
         elif count:
             if tests_found == 1:
-                console.print(f"There is 1 test available in `{module}`.")
+                console.print(f"There is 1 test available in '{module}'.")
             else:
-                console.print(f"There are {tests_found} tests available in `{module}`.")
+                console.print(f"There are {tests_found} tests available in '{module}'.")
     except ValueError as e:
         logger.error(str(e))
         ctx.exit(ExitCode.USAGE_ERROR)

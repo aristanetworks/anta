@@ -352,7 +352,6 @@ class VerifyAcctConsoleMethods(AntaTest):
     ```
     """
 
-    description = "Verifies the AAA accounting console method lists for different accounting types (system, exec, commands, dot1x)."
     categories: ClassVar[list[str]] = ["aaa"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show aaa methods accounting", revision=1)]
 

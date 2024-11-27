@@ -257,8 +257,7 @@ def test_from_ansible_overwrite(
     else:
         temp_env["ANTA_INVENTORY"] = None
         tmp_inv = tmp_output
-        cli_args.extend(["--output", str(tmp_output)])
-
+        cli_args.extend(["--output", str(tmp_inv)])
     if overwrite:
         cli_args.append("--overwrite")
 
@@ -278,81 +277,122 @@ def test_from_ansible_overwrite(
 
 
 @pytest.mark.parametrize(
-    ("module", "test_name", "short", "expected_output"),
+    ("module", "test_name", "short", "count", "expected_output", "expected_exit_code"),
     [
         pytest.param(
             None,
             None,
             False,
+            False,
             "VerifyAcctConsoleMethods",
+            ExitCode.OK,
             id="Get all tests",
         ),
         pytest.param(
             "anta.tests.aaa",
             None,
             False,
+            False,
             "VerifyAcctConsoleMethods",
+            ExitCode.OK,
             id="Get tests, filter on module",
         ),
         pytest.param(
             None,
             "VerifyNTPAssociations",
             False,
+            False,
             "VerifyNTPAssociations",
+            ExitCode.OK,
             id="Get tests, filter on exact test name",
         ),
         pytest.param(
             None,
             "VerifyNTP",
             False,
+            False,
             "anta.tests.system",
+            ExitCode.OK,
             id="Get tests, filter on included test name",
         ),
         pytest.param(
             None,
             "VerifyNTP",
             True,
+            False,
             "VerifyNTPAssociations",
+            ExitCode.OK,
             id="Get tests --short",
         ),
         pytest.param(
             "unknown_module",
             None,
             True,
-            "",
+            False,
+            "Module `unknown_module` was not found!",
+            ExitCode.USAGE_ERROR,
             id="Get tests wrong module",
+        ),
+        pytest.param(
+            "unknown_module.unknown",
+            None,
+            True,
+            False,
+            "Module `unknown_module.unknown` was not found!",
+            ExitCode.USAGE_ERROR,
+            id="Get tests wrong submodule",
+        ),
+        pytest.param(
+            ".unknown_module",
+            None,
+            True,
+            False,
+            "`anta get tests --module <module>` does not support relative imports",
+            ExitCode.USAGE_ERROR,
+            id="Use relative module name",
         ),
         pytest.param(
             None,
             "VerifySomething",
             True,
-            "",
+            False,
+            "No test 'VerifySomething' found in 'anta.tests'",
+            ExitCode.OK,
             id="Get tests wrong test name",
         ),
         pytest.param(
             "anta.tests.aaa",
             "VerifyNTP",
             True,
-            "",
+            False,
+            "No test 'VerifyNTP' found in 'anta.tests.aaa'",
+            ExitCode.OK,
             id="Get tests test exists but not in module",
+        ),
+        pytest.param(
+            "anta.tests.system",
+            "VerifyNTPAssociations",
+            False,
+            True,
+            "There is 1 test available in 'anta.tests.system'.",
+            ExitCode.OK,
+            id="Get single test count",
+        ),
+        pytest.param(
+            "anta.tests.stun",
+            None,
+            False,
+            True,
+            "There are 2 tests available in 'anta.tests.stun'",
+            ExitCode.OK,
+            id="Get multiple test count",
         ),
     ],
 )
-def test_get_tests(click_runner: CliRunner, module: str | None, test_name: str | None, *, short: bool, expected_output: str) -> None:
-    """Test `anta get tests`.
-
-    The test uses a static ansible-inventory and output as these are tested in other functions
-
-    This test verifies:
-    * that overwrite is working as expected with or without init data in the target file
-    * that when the target file is not empty and a tty is present, the user is prompt with confirmation
-    * Check the behavior when the prompt is filled
-
-    The initial content of the ANTA inventory is set using init_anta_inventory, if it is None, no inventory is set.
-
-    * With overwrite True, the expectation is that the from-ansible command succeeds
-    * With no init (init_anta_inventory == None), the expectation is also that command succeeds
-    """
+def test_get_tests(
+    click_runner: CliRunner, module: str | None, test_name: str | None, *, short: bool, count: bool, expected_output: str, expected_exit_code: str
+) -> None:
+    """Test `anta get tests`."""
     cli_args = [
         "get",
         "tests",
@@ -366,7 +406,30 @@ def test_get_tests(click_runner: CliRunner, module: str | None, test_name: str |
     if short:
         cli_args.append("--short")
 
+    if count:
+        cli_args.append("--count")
+
     result = click_runner.invoke(anta, cli_args)
 
-    assert result.exit_code == ExitCode.OK
+    assert result.exit_code == expected_exit_code
     assert expected_output in result.output
+
+
+def test_get_tests_local_module(click_runner: CliRunner) -> None:
+    """Test injecting CWD in sys.
+
+    The test overwrite CWD to return this file parents and local_module is located there.
+    """
+    cli_args = ["get", "tests", "--module", "local_module"]
+
+    cwd = Path.cwd()
+    local_module_parent_path = Path(__file__).parent
+    with patch("anta.cli.get.utils.Path.cwd", return_value=local_module_parent_path):
+        result = click_runner.invoke(anta, cli_args)
+
+    assert result.exit_code == ExitCode.OK
+
+    # In the rare case where people would be running `pytest .` in this directory
+    if cwd != local_module_parent_path:
+        assert "injecting CWD in PYTHONPATH and retrying..." in result.output
+    assert "No test found in 'local_module'" in result.output

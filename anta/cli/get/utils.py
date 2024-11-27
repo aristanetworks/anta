@@ -15,6 +15,7 @@ import re
 import sys
 import textwrap
 from pathlib import Path
+from sys import stdin
 from typing import Any, Callable
 
 import click
@@ -67,7 +68,7 @@ def inventory_output_options(f: Callable[..., Any]) -> Callable[..., Any]:
         output_is_not_empty = output.exists() and output.stat().st_size != 0
         # Check overwrite when file is not empty
         if not overwrite and output_is_not_empty:
-            is_tty = sys.stdin.isatty()
+            is_tty = stdin.isatty()
             if is_tty:
                 # File has content and it is in an interactive TTY --> Prompt user
                 click.confirm(
@@ -213,15 +214,13 @@ def create_inventory_from_ansible(inventory: Path, output: Path, ansible_group: 
     write_inventory_to_file(ansible_hosts, output)
 
 
-def explore_package(module_name: str, indent_level: int = 0, test_name: str | None = None, *, short: bool = False, count: bool = False) -> int:
+def explore_package(module_name: str, test_name: str | None = None, *, short: bool = False, count: bool = False) -> int:
     """Parse ANTA test submodules recursively and print AntaTest examples.
 
     Parameters
     ----------
     module_name
         Name of the module to explore (e.g., 'anta.tests.routing.bgp').
-    indent_level
-        Current recursion level, used for indentation.
     test_name
         If provided, only show tests starting with this name.
     short
@@ -236,17 +235,21 @@ def explore_package(module_name: str, indent_level: int = 0, test_name: str | No
     """
     try:
         module_spec = importlib.util.find_spec(module_name)
-        if module_spec is None:
-            logger.info("Could not find module `%s`, injecting CWD in PYTHONPATH and retrying...", module_name)
-
-            sys.path = [str(Path.cwd()), *sys.path]
-            module_spec = importlib.util.find_spec(module_name)
     except ModuleNotFoundError:
         # Relying on module_spec check below.
         module_spec = None
     except ImportError as e:
         msg = "`anta get tests --module <module>` does not support relative imports"
         raise ValueError(msg) from e
+
+    # Giving a second chance adding CWD to PYTHONPATH
+    if module_spec is None:
+        try:
+            logger.info("Could not find module `%s`, injecting CWD in PYTHONPATH and retrying...", module_name)
+            sys.path = [str(Path.cwd()), *sys.path]
+            module_spec = importlib.util.find_spec(module_name)
+        except ImportError:
+            module_spec = None
 
     if module_spec is None or module_spec.origin is None:
         msg = f"Module `{module_name}` was not found!"
@@ -257,25 +260,23 @@ def explore_package(module_name: str, indent_level: int = 0, test_name: str | No
         for _, sub_module_name, ispkg in pkgutil.walk_packages(module_spec.submodule_search_locations):
             qname = f"{module_name}.{sub_module_name}"
             if ispkg:
-                tests_found += explore_package(qname, indent_level=indent_level + 1, test_name=test_name, short=short, count=count)
+                tests_found += explore_package(qname, test_name=test_name, short=short, count=count)
                 continue
-            tests_found += find_tests_examples(qname, indent_level, test_name, short=short, count=count)
+            tests_found += find_tests_examples(qname, test_name, short=short, count=count)
 
     else:
-        tests_found += find_tests_examples(module_spec.name, indent_level, test_name, short=short, count=count)
+        tests_found += find_tests_examples(module_spec.name, test_name, short=short, count=count)
 
     return tests_found
 
 
-def find_tests_examples(qname: str, indent_level: int, test_name: str | None, *, short: bool = False, count: bool = False) -> int:
+def find_tests_examples(qname: str, test_name: str | None, *, short: bool = False, count: bool = False) -> int:
     """Print tests from `qname`, filtered by `test_name` if provided.
 
     Parameters
     ----------
     qname
         Name of the module to explore (e.g., 'anta.tests.routing.bgp').
-    indent_level
-        Current recursion level, used for indentation.
     test_name
         If provided, only show tests starting with this name.
     short
@@ -310,40 +311,49 @@ def find_tests_examples(qname: str, indent_level: int, test_name: str | None, *,
         tests_found += 1
         if count:
             continue
-        print_test(obj, indent_level, short=short)
+        print_test(obj, short=short)
 
     return tests_found
 
 
-def print_test(test: type[AntaTest], indent_level: int, *, short: bool = False) -> None:
+def print_test(test: type[AntaTest], *, short: bool = False) -> None:
     """Print a single test.
 
     Parameters
     ----------
     test
         the representation of the AntaTest as returned by inspect.getmembers
-    indent_level
-        Current recursion level, used for indentation.
     short
         If True, only print test names without their inputs.
     """
-    console.print(f"  - {test.name}:")
-    console.print(f"      # {test.description}", soft_wrap=True)
-    if short:
-        return
     if not test.__doc__ or (example := extract_examples(test.__doc__)) is None:
         msg = f"Test {test.name} in module {test.__module__} is missing an Example"
         raise LookupError(msg)
     # Picking up only the inputs in the examples
     # Need to handle the fact that we nest the routing modules in Examples.
     # This is a bit fragile.
-    if len(example.split("\n")) > 4 + indent_level:  # otherwise it is a test with no params.
-        inputs = "\n".join(example.split("\n")[indent_level + 3 : -1])
-        console.print(textwrap.indent(textwrap.dedent(inputs), " " * 6))
+    inputs = example.split("\n")
+    try:
+        test_name_line = next((i for i, input_entry in enumerate(inputs) if test.name in input_entry))
+    except StopIteration as e:
+        msg = f"Could not find the name of the test '{test.name}' in the Example section in the docstring."
+        raise ValueError(msg) from e
+    # TODO: handle not found
+    console.print(f"  {inputs[test_name_line].strip()}")
+    # Injecting the description
+    console.print(f"      # {test.description}", soft_wrap=True)
+    if not short and len(inputs) > test_name_line + 2:  # There are params
+        console.print(textwrap.indent(textwrap.dedent("\n".join(inputs[test_name_line + 1 : -1])), " " * 6))
 
 
 def extract_examples(docstring: str) -> str | None:
-    """Extract the content of the Example section in a Numpy docstring."""
+    """Extract the content of the Example section in a Numpy docstring.
+
+    Returns
+    -------
+    str | None
+        The content of the section if present, None if the section is absent or empty.
+    """
     pattern = r"Examples\s*--------\s*(.*?)(?:(?:\n\s*\n)|\Z)"
     match = re.search(pattern, docstring, flags=re.DOTALL)
-    return match[1].strip() if match else None
+    return match[1].strip() if match and match[1].strip() != "" else None
