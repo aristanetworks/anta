@@ -107,8 +107,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Following BFD peers are not configured or timers are not correct:\n"
-                "{'192.0.255.7': {'CS': 'Not Configured'}, '192.0.255.70': {'MGMT': 'Not Configured'}}"
+                "Peer: 192.0.255.7 VRF: CS - Not found",
+                "Peer: 192.0.255.70 VRF: MGMT - Not found",
             ],
         },
     },
@@ -160,9 +160,11 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Following BFD peers are not configured or timers are not correct:\n"
-                "{'192.0.255.7': {'default': {'tx_interval': 1300, 'rx_interval': 1200, 'multiplier': 4}}, "
-                "'192.0.255.70': {'MGMT': {'tx_interval': 120, 'rx_interval': 120, 'multiplier': 5}}}"
+                "Peer: 192.0.255.7 VRF: default - Incorrect Transmit interval - Expected: 1200 Actual: 1300",
+                "Peer: 192.0.255.7 VRF: default - Incorrect Multiplier - Expected: 3 Actual: 4",
+                "Peer: 192.0.255.70 VRF: MGMT - Incorrect Transmit interval - Expected: 1200 Actual: 120",
+                "Peer: 192.0.255.70 VRF: MGMT - Incorrect Receive interval - Expected: 1200 Actual: 120",
+                "Peer: 192.0.255.70 VRF: MGMT - Incorrect Multiplier - Expected: 3 Actual: 5",
             ],
         },
     },
@@ -239,8 +241,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Following BFD peers are not configured, status is not up or remote disc is zero:\n"
-                "{'192.0.255.7': {'CS': 'Not Configured'}, '192.0.255.70': {'MGMT': 'Not Configured'}}"
+                "Peer: 192.0.255.7 VRF: CS - Not found",
+                "Peer: 192.0.255.70 VRF: MGMT - Not found",
             ],
         },
     },
@@ -255,7 +257,7 @@ DATA: list[dict[str, Any]] = [
                             "192.0.255.7": {
                                 "peerStats": {
                                     "": {
-                                        "status": "Down",
+                                        "status": "down",
                                         "remoteDisc": 108328132,
                                     }
                                 }
@@ -267,7 +269,7 @@ DATA: list[dict[str, Any]] = [
                             "192.0.255.70": {
                                 "peerStats": {
                                     "": {
-                                        "status": "Down",
+                                        "status": "down",
                                         "remoteDisc": 0,
                                     }
                                 }
@@ -281,9 +283,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Following BFD peers are not configured, status is not up or remote disc is zero:\n"
-                "{'192.0.255.7': {'default': {'status': 'Down', 'remote_disc': 108328132}}, "
-                "'192.0.255.70': {'MGMT': {'status': 'Down', 'remote_disc': 0}}}"
+                "Peer: 192.0.255.7 VRF: default - Session not properly established - State: down Remote Discriminator: 108328132",
+                "Peer: 192.0.255.70 VRF: MGMT - Session not properly established - State: down Remote Discriminator: 0",
             ],
         },
     },
@@ -414,7 +415,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Following BFD peers are not up:\n192.0.255.7 is down in default VRF with remote disc 0.\n192.0.255.71 is down in MGMT VRF with remote disc 0."
+                "Peer: 192.0.255.7 VRF: default - Session not properly established - State: down Remote Discriminator: 0",
+                "Peer: 192.0.255.71 VRF: MGMT - Session not properly established - State: down Remote Discriminator: 0",
             ],
         },
     },
@@ -458,7 +460,10 @@ DATA: list[dict[str, Any]] = [
         "inputs": {},
         "expected": {
             "result": "failure",
-            "messages": ["Following BFD peers were down:\n192.0.255.7 in default VRF has remote disc 0.\n192.0.255.71 in default VRF has remote disc 0."],
+            "messages": [
+                "Peer: 192.0.255.7 VRF: default - Session not properly established - State: up Remote Discriminator: 0",
+                "Peer: 192.0.255.71 VRF: default - Session not properly established - State: up Remote Discriminator: 0",
+            ],
         },
     },
     {
@@ -512,8 +517,9 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Following BFD peers were down:\n192.0.255.7 in default VRF was down 3 hours ago.\n"
-                "192.0.255.71 in default VRF was down 3 hours ago.\n192.0.255.17 in default VRF was down 3 hours ago."
+                "Peer: 192.0.255.7 VRF: default - Session failure detected within the expected uptime threshold (3 hours ago)",
+                "Peer: 192.0.255.71 VRF: default - Session failure detected within the expected uptime threshold (3 hours ago)",
+                "Peer: 192.0.255.17 VRF: default - Session failure detected within the expected uptime threshold (3 hours ago)",
             ],
         },
     },
@@ -609,15 +615,14 @@ DATA: list[dict[str, Any]] = [
         "inputs": {
             "bfd_peers": [
                 {"peer_address": "192.0.255.7", "vrf": "default", "protocols": ["isis"]},
-                {"peer_address": "192.0.255.70", "vrf": "MGMT", "protocols": ["isis"]},
+                {"peer_address": "192.0.255.70", "vrf": "MGMT", "protocols": ["isis", "ospf"]},
             ]
         },
         "expected": {
             "result": "failure",
             "messages": [
-                "The following BFD peers are not configured or have non-registered protocol(s):\n"
-                "{'192.0.255.7': {'default': ['isis']}, "
-                "'192.0.255.70': {'MGMT': ['isis']}}"
+                "Peer: 192.0.255.7 VRF: default - `isis` routing protocol(s) not configured",
+                "Peer: 192.0.255.70 VRF: MGMT - `isis` `ospf` routing protocol(s) not configured",
             ],
         },
     },
@@ -641,8 +646,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "The following BFD peers are not configured or have non-registered protocol(s):\n"
-                "{'192.0.255.7': {'default': 'Not Configured'}, '192.0.255.70': {'MGMT': 'Not Configured'}}"
+                "Peer: 192.0.255.7 VRF: default - Not found",
+                "Peer: 192.0.255.70 VRF: MGMT - Not found",
             ],
         },
     },
