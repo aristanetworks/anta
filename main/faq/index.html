@@ -2230,6 +2230,18 @@
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#eos-aaa-configuration-for-an-anta-only-user" class="md-nav__link">
+      <span class="md-ellipsis">
+        EOS AAA configuration for an ANTA-only user
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#still-facing-issues" class="md-nav__link">
       <span class="md-ellipsis">
         Still facing issues?
@@ -2374,6 +2386,18 @@
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#eos-aaa-configuration-for-an-anta-only-user" class="md-nav__link">
+      <span class="md-ellipsis">
+        EOS AAA configuration for an ANTA-only user
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#still-facing-issues" class="md-nav__link">
       <span class="md-ellipsis">
         Still facing issues?
@@ -2507,6 +2531,38 @@ pip3<span class="w"> </span>install<span class="w"> </span><span class="nv">urll
 </li>
 </ol>
 </details>
+<h3 id="eos-aaa-configuration-for-an-anta-only-user">EOS AAA configuration for an ANTA-only user<a class="headerlink" href="#eos-aaa-configuration-for-an-anta-only-user" title="Permanent link">&para;</a></h3>
+<details class="faq" open="open">
+<summary>EOS AAA configuration for an ANTA-only user</summary>
+<p>Here is a starting guide to configure an ANTA-only user to run ANTA tests on a device.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This example is not using TACACS / RADIUS but only local AAA</p>
+</div>
+<ol>
+<li>
+<p>Configure the following role.</p>
+<div class="highlight"><pre><span></span><code>role<span class="w"> </span>anta-users
+<span class="w">   </span><span class="m">10</span><span class="w"> </span>permit<span class="w"> </span><span class="nb">command</span><span class="w"> </span>show
+<span class="w">   </span><span class="m">20</span><span class="w"> </span>deny<span class="w"> </span><span class="nb">command</span><span class="w"> </span>.*
+</code></pre></div>
+<p>You can then add other commands if they are required for your test catalog (<code>ping</code> for example) and then tighten down the show commands to only those required for your tests.</p>
+</li>
+<li>
+<p>Configure the following authorization (You may need to adapt depending on your AAA setup).</p>
+<div class="highlight"><pre><span></span><code>aaa<span class="w"> </span>authorization<span class="w"> </span>commands<span class="w"> </span>all<span class="w"> </span>default<span class="w"> </span><span class="nb">local</span>
+</code></pre></div>
+</li>
+<li>
+<p>Configure a user for the role.</p>
+<div class="highlight"><pre><span></span><code>user<span class="w"> </span>anta<span class="w"> </span>role<span class="w"> </span>anta-users<span class="w"> </span>secret<span class="w"> </span>&lt;secret&gt;
+</code></pre></div>
+</li>
+<li>
+<p>You can then use the credentials <code>anta</code> / <code>&lt;secret&gt;</code> to run ANTA against the device and adjust the role as required.</p>
+</li>
+</ol>
+</details>
 <h2 id="still-facing-issues">Still facing issues?<a class="headerlink" href="#still-facing-issues" title="Permanent link">&para;</a></h2>
 <p>If you&rsquo;ve tried the above solutions and continue to experience problems, please follow the <a href="../troubleshooting/">troubleshooting</a> instructions and report the issue in our <a href="https://github.com/aristanetworks/anta">GitHub repository</a>.</p>
 
@@ -2529,7 +2585,7 @@ pip3<span class="w"> </span>install<span class="w"> </span><span class="nv">urll
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 11, 2024</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">November 28, 2024</span>
   </span>
 
     
