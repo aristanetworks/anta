@@ -10,7 +10,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from pydantic import BaseModel
+from pydantic import BaseModel, InstanceOf
 
 
 class AntaTestStatus(str, Enum):
@@ -120,7 +120,7 @@ class AtomicTestResult(BaseTestResult):
 
     _parent: TestResult
     description: str | None = None
-    inputs: BaseModel | None = None
+    inputs: InstanceOf[BaseModel] | None = None
 
     def __init__(self, **data: Any) -> None:  # noqa: ANN401
         """Instantiate the parent TestResult private attribute."""
@@ -175,7 +175,7 @@ class TestResult(BaseTestResult):
     name: str
     test: str
     description: str
-    inputs: BaseModel | None = None
+    inputs: InstanceOf[BaseModel] | None = None
     categories: list[str]
     custom_field: str | None = None
     atomic_results: list[AtomicTestResult] = []
