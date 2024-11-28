@@ -727,7 +727,6 @@ class VerifySpecificIPSecConn(AntaTest):
     ```
     """
 
-    description = "Verifies the IPv4 security connections."
     categories: ClassVar[list[str]] = ["security"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show ip security connection vrf {vrf} path peer {peer}", revision=2)]
 
@@ -737,6 +736,7 @@ class VerifySpecificIPSecConn(AntaTest):
         ip_security_connections: list[IPSecPeer]
         """List of IP4v security peers."""
         IPSecPeers: ClassVar[type[IPSecPeers]] = IPSecPeers
+        """To maintain backward compatibility."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each input IP Sec connection."""
@@ -764,7 +764,9 @@ class VerifySpecificIPSecConn(AntaTest):
                     if state != "Established":
                         source = conn_data.get("saddr")
                         destination = conn_data.get("daddr")
-                        self.result.is_failure(f"{input_peer} Source: {source} Destination: {destination} - Connection down; Expected: Established Actual: {state}")
+                        self.result.is_failure(
+                            f"{input_peer} Source: {source} Destination: {destination} - Connection down - Expected: Established, Actual: {state}"
+                        )
                 continue
 
             # Create a dictionary of existing connections for faster lookup
@@ -779,9 +781,8 @@ class VerifySpecificIPSecConn(AntaTest):
                 if (source_input, destination_input, vrf) in existing_connections:
                     existing_state = existing_connections[(source_input, destination_input, vrf)]
                     if existing_state != "Established":
-                        self.result.is_failure(
-                            f"{input_peer} Source: {source_input} Destination: {destination_input} - Connection down; Expected: Established Actual: {existing_state}"
-                        )
+                        failure = f"Expected: Established, Actual: {existing_state}"
+                        self.result.is_failure(f"{input_peer} Source: {source_input} Destination: {destination_input} - Connection down - {failure}")
                 else:
                     self.result.is_failure(f"{input_peer} Source: {source_input} Destination: {destination_input} - Connection not found.")
 
