@@ -1639,14 +1639,14 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 172.30.11.1 VRF: default - ipv4Unicast not negotiated; Advertised: False, Received: False, Enabled: False",
-                "Peer: 172.30.11.1 VRF: default - ipv4MplsVpn not negotiated; Advertised: False, Received: True, Enabled: False",
+                "Peer: 172.30.11.1 VRF: default - ipv4Unicast not negotiated - Advertised: False, Received: False, Enabled: False",
+                "Peer: 172.30.11.1 VRF: default - ipv4MplsVpn not negotiated - Advertised: False, Received: True, Enabled: False",
                 "Peer: 172.30.11.1 VRF: default - l2VpnEvpn not found",
                 "Peer: 172.30.11.10 VRF: MGMT - ipv4Unicast not found",
-                "Peer: 172.30.11.10 VRF: MGMT - ipv4MplsVpn not negotiated; Advertised: False, Received: False, Enabled: True",
-                "Peer: 172.30.11.10 VRF: MGMT - l2VpnEvpn not negotiated; Advertised: True, Received: False, Enabled: False",
-                "Peer: 172.30.11.11 VRF: MGMT - ipv4Unicast not negotiated; Advertised: False, Received: False, Enabled: False",
-                "Peer: 172.30.11.11 VRF: MGMT - ipv4MplsVpn not negotiated; Advertised: False, Received: False, Enabled: False",
+                "Peer: 172.30.11.10 VRF: MGMT - ipv4MplsVpn not negotiated - Advertised: False, Received: False, Enabled: True",
+                "Peer: 172.30.11.10 VRF: MGMT - l2VpnEvpn not negotiated - Advertised: True, Received: False, Enabled: False",
+                "Peer: 172.30.11.11 VRF: MGMT - ipv4Unicast not negotiated - Advertised: False, Received: False, Enabled: False",
+                "Peer: 172.30.11.11 VRF: MGMT - ipv4MplsVpn not negotiated - Advertised: False, Received: False, Enabled: False",
                 "Peer: 172.30.11.11 VRF: MGMT - l2VpnEvpn not found",
             ],
         },
@@ -1790,8 +1790,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 172.30.11.1 VRF: default - Mismatch; Expected: ipv4Unicast Actual: ipv4Unicast, ipv4MplsLabels",
-                "Peer: 172.30.11.10 VRF: MGMT - Mismatch; Expected: ipv4MplsVpn, l2VpnEvpn Actual: ipv4Unicast, ipv4MplsVpn",
+                "Peer: 172.30.11.1 VRF: default - Mismatch - Expected: ipv4Unicast Actual: ipv4Unicast, ipv4MplsLabels",
+                "Peer: 172.30.11.10 VRF: MGMT - Mismatch - Expected: ipv4MplsVpn, l2VpnEvpn Actual: ipv4Unicast, ipv4MplsVpn",
             ],
         },
     },
@@ -1985,8 +1985,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 172.30.11.1 VRF: default - 4-octet ASN capability not negotiated; Advertised: False, Received: False, Enabled: False",
-                "Peer: 172.30.11.10 VRF: MGMT - 4-octet ASN capability not negotiated; Advertised: True, Received: False, Enabled: True",
+                "Peer: 172.30.11.1 VRF: default - 4-octet ASN capability not negotiated - Advertised: False, Received: False, Enabled: False",
+                "Peer: 172.30.11.10 VRF: MGMT - 4-octet ASN capability not negotiated - Advertised: True, Received: False, Enabled: True",
             ],
         },
     },
@@ -2203,7 +2203,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 172.30.11.1 VRF: default - Route refresh capability not negotiated; Advertised: False, Received: False, Enabled: False",
+                "Peer: 172.30.11.1 VRF: default - Route refresh capability not negotiated - Advertised: False, Received: False, Enabled: False",
             ],
         },
     },
@@ -2337,8 +2337,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 172.30.11.1 VRF: default - Session state is not established; State: Idle",
-                "Peer: 172.30.11.10 VRF: MGMT - Session state is not established; State: Idle",
+                "Peer: 172.30.11.1 VRF: default - Session state is not established - State: Idle",
+                "Peer: 172.30.11.10 VRF: MGMT - Session state is not established - State: Idle",
             ],
         },
     },
@@ -2995,9 +2995,9 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 172.30.11.1 VRF: default - Hold time mismatch; Expected: 180 Actual: 160",
-                "Peer: 172.30.11.11 VRF: MGMT - Hold time mismatch; Expected: 180 Actual: 120",
-                "Peer: 172.30.11.11 VRF: MGMT - Keepalive time mismatch; Expected: 60 Actual: 40",
+                "Peer: 172.30.11.1 VRF: default - Hold time mismatch - Expected: 180, Actual: 160",
+                "Peer: 172.30.11.11 VRF: MGMT - Hold time mismatch - Expected: 180, Actual: 120",
+                "Peer: 172.30.11.11 VRF: MGMT - Keepalive time mismatch - Expected: 60, Actual: 40",
             ],
         },
     },
@@ -3138,10 +3138,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 10.100.0.8 VRF: default - Non-zero NLRI drop statistics counter; prefixDroppedMartianV4: 1",
-                "Peer: 10.100.0.8 VRF: default - Non-zero NLRI drop statistics counter; prefixDroppedMaxRouteLimitViolatedV4: 1",
-                "Peer: 10.100.0.9 VRF: MGMT - Non-zero NLRI drop statistics counter; inDropOrigId: 1",
-                "Peer: 10.100.0.9 VRF: MGMT - Non-zero NLRI drop statistics counter; inDropNhLocal: 1",
+                "Peer: 10.100.0.8 VRF: default - Non-zero NLRI drop statistics counter - prefixDroppedMartianV4: 1",
+                "Peer: 10.100.0.8 VRF: default - Non-zero NLRI drop statistics counter - prefixDroppedMaxRouteLimitViolatedV4: 1",
+                "Peer: 10.100.0.9 VRF: MGMT - Non-zero NLRI drop statistics counter - inDropOrigId: 1",
+                "Peer: 10.100.0.9 VRF: MGMT - Non-zero NLRI drop statistics counter - inDropNhLocal: 1",
             ],
         },
     },
@@ -3252,14 +3252,14 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 10.100.0.8 VRF: default - Non-zero NLRI drop statistics counter; inDropAsloop: 3",
-                "Peer: 10.100.0.8 VRF: default - Non-zero NLRI drop statistics counter; inDropOrigId: 1",
-                "Peer: 10.100.0.8 VRF: default - Non-zero NLRI drop statistics counter; inDropNhLocal: 1",
-                "Peer: 10.100.0.8 VRF: default - Non-zero NLRI drop statistics counter; prefixDroppedMartianV4: 1",
-                "Peer: 10.100.0.8 VRF: default - Non-zero NLRI drop statistics counter; prefixDroppedMaxRouteLimitViolatedV4: 1",
-                "Peer: 10.100.0.9 VRF: MGMT - Non-zero NLRI drop statistics counter; inDropAsloop: 2",
-                "Peer: 10.100.0.9 VRF: MGMT - Non-zero NLRI drop statistics counter; inDropOrigId: 1",
-                "Peer: 10.100.0.9 VRF: MGMT - Non-zero NLRI drop statistics counter; inDropNhLocal: 1",
+                "Peer: 10.100.0.8 VRF: default - Non-zero NLRI drop statistics counter - inDropAsloop: 3",
+                "Peer: 10.100.0.8 VRF: default - Non-zero NLRI drop statistics counter - inDropOrigId: 1",
+                "Peer: 10.100.0.8 VRF: default - Non-zero NLRI drop statistics counter - inDropNhLocal: 1",
+                "Peer: 10.100.0.8 VRF: default - Non-zero NLRI drop statistics counter - prefixDroppedMartianV4: 1",
+                "Peer: 10.100.0.8 VRF: default - Non-zero NLRI drop statistics counter - prefixDroppedMaxRouteLimitViolatedV4: 1",
+                "Peer: 10.100.0.9 VRF: MGMT - Non-zero NLRI drop statistics counter - inDropAsloop: 2",
+                "Peer: 10.100.0.9 VRF: MGMT - Non-zero NLRI drop statistics counter - inDropOrigId: 1",
+                "Peer: 10.100.0.9 VRF: MGMT - Non-zero NLRI drop statistics counter - inDropNhLocal: 1",
             ],
         },
     },
@@ -3374,8 +3374,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 10.100.0.8 VRF: default - Non-zero update error counter; disabledAfiSafi: ipv4Unicast",
-                "Peer: 10.100.0.9 VRF: MGMT - Non-zero update error counter; inUpdErrWithdraw: 1",
+                "Peer: 10.100.0.8 VRF: default - Non-zero update error counter - disabledAfiSafi: ipv4Unicast",
+                "Peer: 10.100.0.9 VRF: MGMT - Non-zero update error counter - inUpdErrWithdraw: 1",
             ],
         },
     },
@@ -3474,10 +3474,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 10.100.0.8 VRF: default - Non-zero update error counter; inUpdErrWithdraw: 1",
-                "Peer: 10.100.0.8 VRF: default - Non-zero update error counter; disabledAfiSafi: ipv4Unicast",
-                "Peer: 10.100.0.9 VRF: MGMT - Non-zero update error counter; inUpdErrWithdraw: 1",
-                "Peer: 10.100.0.9 VRF: MGMT - Non-zero update error counter; inUpdErrDisableAfiSafi: 1",
+                "Peer: 10.100.0.8 VRF: default - Non-zero update error counter - inUpdErrWithdraw: 1",
+                "Peer: 10.100.0.8 VRF: default - Non-zero update error counter - disabledAfiSafi: ipv4Unicast",
+                "Peer: 10.100.0.9 VRF: MGMT - Non-zero update error counter - inUpdErrWithdraw: 1",
+                "Peer: 10.100.0.9 VRF: MGMT - Non-zero update error counter - inUpdErrDisableAfiSafi: 1",
             ],
         },
     },
@@ -3529,10 +3529,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 10.100.0.8 VRF: default - Non-zero update error counter; inUpdErrWithdraw: Not Found",
-                "Peer: 10.100.0.8 VRF: default - Non-zero update error counter; disabledAfiSafi: ipv4Unicast",
-                "Peer: 10.100.0.9 VRF: MGMT - Non-zero update error counter; inUpdErrWithdraw: 1",
-                "Peer: 10.100.0.9 VRF: MGMT - Non-zero update error counter; inUpdErrDisableAfiSafi: Not Found",
+                "Peer: 10.100.0.8 VRF: default - Non-zero update error counter - inUpdErrWithdraw: Not Found",
+                "Peer: 10.100.0.8 VRF: default - Non-zero update error counter - disabledAfiSafi: ipv4Unicast",
+                "Peer: 10.100.0.9 VRF: MGMT - Non-zero update error counter - inUpdErrWithdraw: 1",
+                "Peer: 10.100.0.9 VRF: MGMT - Non-zero update error counter - inUpdErrDisableAfiSafi: Not Found",
             ],
         },
     },
@@ -3607,10 +3607,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 10.100.0.8 VRF: default - Inbound route-map mismatch; Expected: RM-MLAG-PEER-IN Actual: RM-MLAG-PEER",
-                "Peer: 10.100.0.8 VRF: default - Outbound route-map mismatch; Expected: RM-MLAG-PEER-OUT Actual: RM-MLAG-PEER",
-                "Peer: 10.100.0.10 VRF: MGMT - Inbound route-map mismatch; Expected: RM-MLAG-PEER-IN Actual: RM-MLAG-PEER",
-                "Peer: 10.100.0.10 VRF: MGMT - Outbound route-map mismatch; Expected: RM-MLAG-PEER-OUT Actual: RM-MLAG-PEER",
+                "Peer: 10.100.0.8 VRF: default - Inbound route-map mismatch - Expected: RM-MLAG-PEER-IN, Actual: RM-MLAG-PEER",
+                "Peer: 10.100.0.8 VRF: default - Outbound route-map mismatch - Expected: RM-MLAG-PEER-OUT, Actual: RM-MLAG-PEER",
+                "Peer: 10.100.0.10 VRF: MGMT - Inbound route-map mismatch - Expected: RM-MLAG-PEER-IN, Actual: RM-MLAG-PEER",
+                "Peer: 10.100.0.10 VRF: MGMT - Outbound route-map mismatch - Expected: RM-MLAG-PEER-OUT, Actual: RM-MLAG-PEER",
             ],
         },
     },
@@ -3650,8 +3650,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 10.100.0.8 VRF: default - Inbound route-map mismatch; Expected: RM-MLAG-PEER-IN Actual: RM-MLAG-PEER",
-                "Peer: 10.100.0.10 VRF: MGMT - Inbound route-map mismatch; Expected: RM-MLAG-PEER-IN Actual: RM-MLAG-PEER",
+                "Peer: 10.100.0.8 VRF: default - Inbound route-map mismatch - Expected: RM-MLAG-PEER-IN, Actual: RM-MLAG-PEER",
+                "Peer: 10.100.0.10 VRF: MGMT - Inbound route-map mismatch - Expected: RM-MLAG-PEER-IN, Actual: RM-MLAG-PEER",
             ],
         },
     },
@@ -3687,10 +3687,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 10.100.0.8 VRF: default - Inbound route-map mismatch; Expected: RM-MLAG-PEER-IN Actual: Not Configured",
-                "Peer: 10.100.0.8 VRF: default - Outbound route-map mismatch; Expected: RM-MLAG-PEER-OUT Actual: Not Configured",
-                "Peer: 10.100.0.10 VRF: MGMT - Inbound route-map mismatch; Expected: RM-MLAG-PEER-IN Actual: Not Configured",
-                "Peer: 10.100.0.10 VRF: MGMT - Outbound route-map mismatch; Expected: RM-MLAG-PEER-OUT Actual: Not Configured",
+                "Peer: 10.100.0.8 VRF: default - Inbound route-map mismatch - Expected: RM-MLAG-PEER-IN, Actual: Not Configured",
+                "Peer: 10.100.0.8 VRF: default - Outbound route-map mismatch - Expected: RM-MLAG-PEER-OUT, Actual: Not Configured",
+                "Peer: 10.100.0.10 VRF: MGMT - Inbound route-map mismatch - Expected: RM-MLAG-PEER-IN, Actual: Not Configured",
+                "Peer: 10.100.0.10 VRF: MGMT - Outbound route-map mismatch - Expected: RM-MLAG-PEER-OUT, Actual: Not Configured",
             ],
         },
     },
@@ -3815,10 +3815,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 10.100.0.8 VRF: default - Maximum routes mismatch; Expected: 12000 Actual: 13000",
-                "Peer: 10.100.0.8 VRF: default - Maximum route warning limit mismatch; Expected: 10000 Actual: 11000",
-                "Peer: 10.100.0.9 VRF: MGMT - Maximum routes mismatch; Expected: 10000 Actual: 11000",
-                "Peer: 10.100.0.9 VRF: MGMT - Maximum route warning limit mismatch; Expected: 9000 Actual: 10000",
+                "Peer: 10.100.0.8 VRF: default - Maximum routes mismatch - Expected: 12000, Actual: 13000",
+                "Peer: 10.100.0.8 VRF: default - Maximum route warning limit mismatch - Expected: 10000, Actual: 11000",
+                "Peer: 10.100.0.9 VRF: MGMT - Maximum routes mismatch - Expected: 10000, Actual: 11000",
+                "Peer: 10.100.0.9 VRF: MGMT - Maximum route warning limit mismatch - Expected: 9000, Actual: 10000",
             ],
         },
     },
@@ -3855,9 +3855,9 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 10.100.0.8 VRF: default - Maximum route warning limit mismatch; Expected: 10000 Actual: Not Found",
-                "Peer: 10.100.0.9 VRF: MGMT - Maximum routes mismatch; Expected: 10000 Actual: Not Found",
-                "Peer: 10.100.0.9 VRF: MGMT - Maximum route warning limit mismatch; Expected: 9000 Actual: Not Found",
+                "Peer: 10.100.0.8 VRF: default - Maximum route warning limit mismatch - Expected: 10000, Actual: Not Found",
+                "Peer: 10.100.0.9 VRF: MGMT - Maximum routes mismatch - Expected: 10000, Actual: Not Found",
+                "Peer: 10.100.0.9 VRF: MGMT - Maximum route warning limit mismatch - Expected: 9000, Actual: Not Found",
             ],
         },
     },
