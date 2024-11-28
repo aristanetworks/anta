@@ -88,8 +88,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Client 100.64.3.2 Port: 4500 - Incorrect public-facing address; Expected: 192.164.3.2 Actual: 192.64.3.2",
-                "Client 172.18.3.2 Port: 4500 - Incorrect public-facing address; Expected: 192.118.3.2 Actual: 192.18.3.2",
+                "Client 100.64.3.2 Port: 4500 - Incorrect public-facing address - Expected: 192.164.3.2 Actual: 192.64.3.2",
+                "Client 172.18.3.2 Port: 4500 - Incorrect public-facing address - Expected: 192.118.3.2 Actual: 192.18.3.2",
             ],
         },
     },
@@ -108,7 +108,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Client 100.64.3.2 Port: 4500 - STUN client transaction not found.", "Client 172.18.3.2 Port: 4500 - STUN client transaction not found."],
+            "messages": ["Client 100.64.3.2 Port: 4500 - STUN client translation not found.", "Client 172.18.3.2 Port: 4500 - STUN client translation not found."],
         },
     },
     {
@@ -134,9 +134,9 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Client 100.64.3.2 Port: 4500 - STUN client transaction not found.",
-                "Client 172.18.3.2 Port: 4500 - Incorrect public-facing address; Expected: 192.118.3.2 Actual: 192.18.3.2",
-                "Client 172.18.3.2 Port: 4500 - Incorrect public-facing port; Expected: 6006 Actual: 4800",
+                "Client 100.64.3.2 Port: 4500 - STUN client translation not found.",
+                "Client 172.18.3.2 Port: 4500 - Incorrect public-facing address - Expected: 192.118.3.2 Actual: 192.18.3.2",
+                "Client 172.18.3.2 Port: 4500 - Incorrect public-facing port - Expected: 6006 Actual: 4800",
             ],
         },
     },
@@ -163,9 +163,9 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Client 100.64.3.2 Port: 4500 - STUN client transaction not found.",
-                "Client 172.18.4.2 Port: 4800 - Incorrect public-facing address; Expected: 192.118.3.2 Actual: 192.18.3.2",
-                "Client 172.18.4.2 Port: 4800 - Incorrect public-facing port; Expected: 6006 Actual: 4800",
+                "Client 100.64.3.2 Port: 4500 - STUN client translation not found.",
+                "Client 172.18.4.2 Port: 4800 - Incorrect public-facing address - Expected: 192.118.3.2 Actual: 192.18.3.2",
+                "Client 172.18.4.2 Port: 4800 - Incorrect public-facing port - Expected: 6006 Actual: 4800",
             ],
         },
     },

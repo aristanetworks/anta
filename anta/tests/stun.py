@@ -19,7 +19,7 @@ class VerifyStunClient(AntaTest):
 
     This test performs the following checks for each specified address family:
 
-      1. Validates that the STUN client is configured.
+      1. Validates that there is a translation for the STUN client.
       2. If public IP and port details are provided, validates their correctness against the configuration.
 
     Expected Results
@@ -75,19 +75,19 @@ class VerifyStunClient(AntaTest):
 
             # If no bindings are found for the STUN client, mark the test as a failure and continue with the next client
             if not bindings:
-                self.result.is_failure(f"{client_input} - STUN client transaction not found.")
+                self.result.is_failure(f"{client_input} - STUN client translation not found.")
                 continue
 
             # Extract the transaction ID from the bindings
             transaction_id = next(iter(bindings.keys()))
 
-            # If public address is provided, add it to the actual and expected STUN data
+            # Verifying the public address if provided
             if input_public_address and str(input_public_address) != (actual_public_address := get_value(bindings, f"{transaction_id}.publicAddress.ip")):
-                self.result.is_failure(f"{client_input} - Incorrect public-facing address; Expected: {input_public_address} Actual: {actual_public_address}")
+                self.result.is_failure(f"{client_input} - Incorrect public-facing address - Expected: {input_public_address} Actual: {actual_public_address}")
 
-            # If public port is provided, add it to the actual and expected STUN data
+            # Verifying the public port if provided
             if input_public_port and input_public_port != (actual_public_port := get_value(bindings, f"{transaction_id}.publicAddress.port")):
-                self.result.is_failure(f"{client_input} - Incorrect public-facing port; Expected: {input_public_port} Actual: {actual_public_port}")
+                self.result.is_failure(f"{client_input} - Incorrect public-facing port - Expected: {input_public_port} Actual: {actual_public_port}")
 
 
 class VerifyStunServer(AntaTest):
