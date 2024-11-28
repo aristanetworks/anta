@@ -7,7 +7,6 @@ from __future__ import annotations
 
 import asyncio
 import logging
-import os
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from typing import TYPE_CHECKING, Any, Literal
@@ -17,12 +16,13 @@ import httpcore
 from aiocache import Cache
 from aiocache.plugins import HitMissRatioPlugin
 from asyncssh import SSHClientConnection, SSHClientConnectionOptions
-from httpx import ConnectError, HTTPError, Limits, Timeout, TimeoutException
+from httpx import ConnectError, HTTPError, TimeoutException
 
 import asynceapi
 from anta import __DEBUG__
 from anta.logger import anta_log_exception, exc_to_str
 from anta.models import AntaCommand
+from anta.settings import get_httpx_limits, get_httpx_timeout
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -33,78 +33,6 @@ logger = logging.getLogger(__name__)
 # Do not load the default keypairs multiple times due to a performance issue introduced in cryptography 37.0
 # https://github.com/pyca/cryptography/issues/7236#issuecomment-1131908472
 CLIENT_KEYS = asyncssh.public_key.load_default_keypairs()
-
-ANTA_DEFAULT_TIMEOUT = 30.0
-
-
-def get_httpx_limits() -> Limits:
-    """Adjust the underlying HTTPX client resource limits.
-
-    The limits are set using the following environment variables:
-        - ANTA_MAX_CONNECTIONS: Maximum number of allowable connections.
-        - ANTA_MAX_KEEPALIVE_CONNECTIONS: Number of allowable keep-alive connections.
-        - ANTA_KEEPALIVE_EXPIRY: Time limit on idle keep-alive connections in seconds.
-
-    If any environment variable is not set or is invalid, the following HTTPX default limits are used:
-        - max_connections: 100
-        - max_keepalive_connections: 20
-        - keepalive_expiry: 5.0
-
-    These limits are set for all devices.
-
-    Returns
-    -------
-    Limits
-        HTTPX Limits object with configured connection limits.
-
-    TODO: HTTPX supports None to disable limits. This is not implemented yet.
-    """
-    try:
-        max_connections = int(os.environ.get("ANTA_MAX_CONNECTIONS", 100))
-        max_keepalive_connections = int(os.environ.get("ANTA_MAX_KEEPALIVE_CONNECTIONS", 20))
-        keepalive_expiry = float(os.environ.get("ANTA_KEEPALIVE_EXPIRY", 5.0))
-    except ValueError as exc:
-        default_limits = Limits(max_connections=100, max_keepalive_connections=20, keepalive_expiry=5.0)
-        logger.warning("Error parsing HTTPX resource limits from environment variables: %s\nDefaults to %s", exc, default_limits)
-        return default_limits
-    return Limits(max_connections=max_connections, max_keepalive_connections=max_keepalive_connections, keepalive_expiry=keepalive_expiry)
-
-
-def get_httpx_timeout(timeout: float | None) -> Timeout:
-    """Adjust the underlying HTTPX client timeout.
-
-    The timeouts are set using the following environment variables:
-        - ANTA_CONNECT_TIMEOUT: Maximum amount of time to wait until a socket connection to the requested host is established.
-        - ANTA_READ_TIMEOUT: Maximum duration to wait for a chunk of data to be received (for example, a chunk of the response body).
-        - ANTA_WRITE_TIMEOUT: Maximum duration to wait for a chunk of data to be sent (for example, a chunk of the request body).
-        - ANTA_POOL_TIMEOUT: Maximum duration to wait for acquiring a connection from the connection pool.
-
-    If any environment variable is not set or is invalid, the provided timeout value is used.
-    If no timeout is provided, 30 seconds is used which is the default when running ANTA.
-
-    Parameters
-    ----------
-    timeout : float | None
-        Global timeout value in seconds. Used if specific timeouts are not set.
-
-    Returns
-    -------
-    Timeout
-        HTTPX Timeout object with configured timeout values.
-
-    TODO: HTTPX supports None to disable timeouts. This is not implemented yet.
-    """
-    timeout = timeout if timeout is not None else ANTA_DEFAULT_TIMEOUT
-    try:
-        connect = float(os.environ.get("ANTA_CONNECT_TIMEOUT", timeout))
-        read = float(os.environ.get("ANTA_READ_TIMEOUT", timeout))
-        write = float(os.environ.get("ANTA_WRITE_TIMEOUT", timeout))
-        pool = float(os.environ.get("ANTA_POOL_TIMEOUT", timeout))
-    except ValueError as exc:
-        default_timeout = Timeout(timeout=timeout)
-        logger.warning("Error parsing HTTPX timeouts from environment variables: %s\nDefaults to %s", exc, default_timeout)
-        return default_timeout
-    return Timeout(connect=connect, read=read, write=write, pool=pool)
 
 
 class AntaDevice(ABC):
@@ -405,7 +333,7 @@ class AsyncEOSDevice(AntaDevice):
         self, host: str, port: int | None, username: str, password: str, proto: Literal["http", "https"], timeout: float | None
     ) -> asynceapi.Device:
         """Create the asynceapi client with the provided parameters."""
-        # Get resource limits and timeout values from environment variables or use default values
+        # Get resource limits and timeout values
         client_limits = get_httpx_limits()
         client_timeout = get_httpx_timeout(timeout)
 

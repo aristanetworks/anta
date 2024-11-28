@@ -7,7 +7,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from anta.runner import prepare_tests
+from anta.result_manager import ResultManager
+from anta.runner import get_coroutines, prepare_tests
 
 if TYPE_CHECKING:
     from collections import defaultdict
@@ -33,19 +34,15 @@ def test_prepare_tests(benchmark: BenchmarkFixture, catalog: AntaCatalog, invent
     assert sum(len(tests) for tests in selected_tests.values()) == len(inventory) * len(catalog.tests)
 
 
-# ruff: noqa: ERA001
-# TODO: see what can be done with this benchmark
-# def test_get_coroutines(benchmark: BenchmarkFixture, catalog: AntaCatalog, inventory: AntaInventory) -> None:
-#     """Benchmark `anta.runner.get_coroutines`."""
-#     result = setup_tests(inventory=inventory, catalog=catalog, tests=None, tags=None)
-#     assert result is not None
-#     count, selected_tests = result
-#
-#     assert selected_tests is not None
-#
-#     coroutines = benchmark(lambda: get_coroutines(selected_tests=selected_tests, manager=ResultManager()))
-#     for coros in coroutines:
-#         coros.close()
-#
-#     count = sum(len(tests) for tests in selected_tests.values())
-#     assert count == len(coroutines)
+def test_get_coroutines(benchmark: BenchmarkFixture, catalog: AntaCatalog, inventory: AntaInventory) -> None:
+    """Benchmark `anta.runner.get_coroutines`."""
+    selected_tests = prepare_tests(inventory=inventory, catalog=catalog, tests=None, tags=None)
+
+    assert selected_tests is not None
+
+    coroutines = benchmark(lambda: get_coroutines(selected_tests=selected_tests, manager=ResultManager()))
+    for coros in coroutines:
+        coros.close()
+
+    count = sum(len(tests) for tests in selected_tests.values())
+    assert count == len(coroutines)

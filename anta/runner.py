@@ -15,9 +15,9 @@ from warnings import warn
 
 from anta import GITHUB_SUGGESTION
 from anta.cli.console import console
-from anta.device import get_httpx_limits
 from anta.logger import anta_log_exception, exc_to_str
 from anta.models import AntaTest
+from anta.settings import get_httpx_limits, get_max_concurrency
 from anta.tools import Catchtime, cprofile
 
 if TYPE_CHECKING:
@@ -34,8 +34,6 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_NOFILE = 16384
 """Default number of open file descriptors for the ANTA process."""
-DEFAULT_MAX_CONCURRENCY = 10000
-"""Default maximum number of tests to run concurrently."""
 
 
 def log_run_information(
@@ -95,32 +93,12 @@ def log_run_information(
         )
 
 
-def get_max_concurrency() -> int:
-    """Adjust the maximum number of tests (coroutines) to run concurrently.
-
-    The limit is set to the value of the ANTA_MAX_CONCURRENCY environment variable.
-
-    If the `ANTA_MAX_CONCURRENCY` environment variable is not set or is invalid, `DEFAULT_MAX_CONCURRENCY` is used (10000).
-
-    Returns
-    -------
-    int
-        The maximum number of tests to run concurrently.
-    """
-    try:
-        max_concurrency = int(os.environ.get("ANTA_MAX_CONCURRENCY", DEFAULT_MAX_CONCURRENCY))
-    except ValueError as exception:
-        logger.warning("The ANTA_MAX_CONCURRENCY environment variable value is invalid: %s\nDefault to %s.", exc_to_str(exception), DEFAULT_MAX_CONCURRENCY)
-        return DEFAULT_MAX_CONCURRENCY
-    return max_concurrency
-
-
 def adjust_rlimit_nofile() -> tuple[int, int]:
     """Adjust the maximum number of open file descriptors for the ANTA process.
 
     The limit is set to the lower of the current hard limit and the value of the ANTA_NOFILE environment variable.
 
-    If the `ANTA_NOFILE` environment variable is not set or is invalid, `DEFAULT_NOFILE` is used (16384).
+    If the `ANTA_NOFILE` environment variable is not set or is invalid, `DEFAULT_NOFILE` is used.
 
     Returns
     -------
@@ -181,6 +159,10 @@ async def run(tests_generator: AsyncGenerator[Coroutine[Any, Any, TestResult], N
     ------
         The result of each completed test.
     """
+    if limit <= 0:
+        msg = "Concurrency limit must be greater than 0."
+        raise RuntimeError(msg)
+
     # NOTE: The `aiter` built-in function is not available in Python 3.9
     aws = tests_generator.__aiter__()  # pylint: disable=unnecessary-dunder-call
     aws_ended = False
