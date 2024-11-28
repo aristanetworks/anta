@@ -137,5 +137,5 @@ class VerifyLLDPNeighbors(AntaTest):
                 for info in lldp_neighbor_info
             )
             if not match_found:
-                failure_msg = [f"`{info['systemName']}/{info['neighborInterfaceInfo']['interfaceId_v2']}`" for info in lldp_neighbor_info]
-                self.result.is_failure(f"{neighbor} - Wrong LLDP neighbors: {' '.join(failure_msg)}")
+                failure_msg = [f"{info['systemName']}/{info['neighborInterfaceInfo']['interfaceId_v2']}" for info in lldp_neighbor_info]
+                self.result.is_failure(f"{neighbor} - Wrong LLDP neighbors: {', '.join(failure_msg)}")

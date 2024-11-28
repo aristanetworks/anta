@@ -1126,7 +1126,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"interfaces": [{"name": "Ethernet2", "status": "up"}, {"name": "Ethernet8", "status": "up"}, {"name": "Ethernet3", "status": "up"}]},
         "expected": {
             "result": "failure",
-            "messages": ["Ethernet8 - Expected: up/up Actual: down/down"],
+            "messages": ["Ethernet8 - Expected: up/up, Actual: down/down"],
         },
     },
     {
@@ -1150,7 +1150,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Ethernet8 - Expected: up/up Actual: up/down"],
+            "messages": ["Ethernet8 - Expected: up/up, Actual: up/down"],
         },
     },
     {
@@ -1166,7 +1166,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"interfaces": [{"name": "PortChannel100", "status": "up"}]},
         "expected": {
             "result": "failure",
-            "messages": ["Port-Channel100 - Expected: up/up Actual: down/lowerLayerDown"],
+            "messages": ["Port-Channel100 - Expected: up/up, Actual: down/lowerLayerDown"],
         },
     },
     {
@@ -1191,8 +1191,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Ethernet2 - Expected: up/down Actual: up/unknown",
-                "Ethernet8 - Expected: up/up Actual: up/down",
+                "Ethernet2 - Expected: up/down, Actual: up/unknown",
+                "Ethernet8 - Expected: up/up, Actual: up/down",
             ],
         },
     },
@@ -1218,9 +1218,9 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Ethernet2 - Expected: down Actual: up",
-                "Ethernet8 - Expected: down Actual: up",
-                "Ethernet3 - Expected: down Actual: up",
+                "Ethernet2 - Expected: down, Actual: up",
+                "Ethernet8 - Expected: down, Actual: up",
+                "Ethernet3 - Expected: down, Actual: up",
             ],
         },
     },

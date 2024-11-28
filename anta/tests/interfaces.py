@@ -243,15 +243,15 @@ class VerifyInterfacesStatus(AntaTest):
             # If line protocol status is provided, prioritize checking against both status and line protocol status
             if interface.line_protocol_status:
                 if interface.status != status or interface.line_protocol_status != proto:
-                    actual_state = f"Expected: {interface.status}/{interface.line_protocol_status} Actual: {status}/{proto}"
+                    actual_state = f"Expected: {interface.status}/{interface.line_protocol_status}, Actual: {status}/{proto}"
                     self.result.is_failure(f"{interface.name} - {actual_state}")
 
             # If line protocol status is not provided and interface status is "up", expect both status and proto to be "up"
             # If interface status is not "up", check only the interface status without considering line protocol status
             elif interface.status == "up" and (status != "up" or proto != "up"):
-                self.result.is_failure(f"{interface.name} - Expected: up/up Actual: {status}/{proto}")
+                self.result.is_failure(f"{interface.name} - Expected: up/up, Actual: {status}/{proto}")
             elif interface.status != status:
-                self.result.is_failure(f"{interface.name} - Expected: {interface.status} Actual: {status}")
+                self.result.is_failure(f"{interface.name} - Expected: {interface.status}, Actual: {status}")
 
 
 class VerifyStormControlDrops(AntaTest):
