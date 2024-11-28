@@ -18,10 +18,7 @@ from anta.tools import get_failed_logs, get_value
 
 
 class VerifyStunClient(AntaTest):
-    """
-    Verifies the configuration of the STUN client, specifically the IPv4 source address and port.
-
-    Optionally, it can also verify the public address and port.
+    """Verifies STUN client settings, including local IP/port and optionally public IP/port.
 
     Expected Results
     ----------------
@@ -45,8 +42,6 @@ class VerifyStunClient(AntaTest):
     ```
     """
 
-    name = "VerifyStunClient"
-    description = "Verifies the STUN client is configured with the specified IPv4 source address and port. Validate the public IP and port if provided."
     categories: ClassVar[list[str]] = ["stun"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show stun client translations {source_address} {source_port}")]
 
@@ -118,8 +113,7 @@ class VerifyStunClient(AntaTest):
 
 
 class VerifyStunServer(AntaTest):
-    """
-    Verifies the STUN server status is enabled and running.
+    """Verifies the STUN server status is enabled and running.
 
     Expected Results
     ----------------
@@ -134,8 +128,6 @@ class VerifyStunServer(AntaTest):
     ```
     """
 
-    name = "VerifyStunServer"
-    description = "Verifies the STUN server status is enabled and running."
     categories: ClassVar[list[str]] = ["stun"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show stun server status", revision=1)]
 

@@ -116,8 +116,12 @@ def print_text(ctx: click.Context) -> None:
     """Print results as simple text."""
     console.print()
     for test in _get_result_manager(ctx).results:
-        message = f" ({test.messages[0]!s})" if len(test.messages) > 0 else ""
-        console.print(f"{test.name} :: {test.test} :: [{test.result}]{test.result.upper()}[/{test.result}]{message}", highlight=False)
+        if len(test.messages) <= 1:
+            message = test.messages[0] if len(test.messages) == 1 else ""
+            console.print(f"{test.name} :: {test.test} :: [{test.result}]{test.result.upper()}[/{test.result}]({message})", highlight=False)
+        else:  # len(test.messages) > 1
+            console.print(f"{test.name} :: {test.test} :: [{test.result}]{test.result.upper()}[/{test.result}]", highlight=False)
+            console.print("\n".join(f"    {message}" for message in test.messages), highlight=False)
 
 
 def print_jinja(results: ResultManager, template: pathlib.Path, output: pathlib.Path | None = None) -> None:

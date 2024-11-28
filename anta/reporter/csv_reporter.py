@@ -58,8 +58,7 @@ class ReportCsv:
 
     @classmethod
     def convert_to_list(cls, result: TestResult) -> list[str]:
-        """
-        Convert a TestResult into a list of string for creating file content.
+        """Convert a TestResult into a list of string for creating file content.
 
         Parameters
         ----------

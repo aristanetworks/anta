@@ -146,20 +146,26 @@ def prepare_tests(
     # Using a set to avoid inserting duplicate tests
     device_to_tests: defaultdict[AntaDevice, set[AntaTestDefinition]] = defaultdict(set)
 
+    total_test_count = 0
+
     # Create the device to tests mapping from the tags
     for device in inventory.devices:
         if tags:
-            if not any(tag in device.tags for tag in tags):
+            # If there are CLI tags, execute tests with matching tags for this device
+            if not (matching_tags := tags.intersection(device.tags)):
                 # The device does not have any selected tag, skipping
                 continue
+            device_to_tests[device].update(catalog.get_tests_by_tags(matching_tags))
         else:
             # If there is no CLI tags, execute all tests that do not have any tags
             device_to_tests[device].update(catalog.tag_to_tests[None])
 
-        # Add the tests with matching tags from device tags
-        device_to_tests[device].update(catalog.get_tests_by_tags(device.tags))
+            # Then add the tests with matching tags from device tags
+            device_to_tests[device].update(catalog.get_tests_by_tags(device.tags))
 
-    if len(device_to_tests.values()) == 0:
+        total_test_count += len(device_to_tests[device])
+
+    if total_test_count == 0:
         msg = (
             f"There are no tests{f' matching the tags {tags} ' if tags else ' '}to run in the current test catalog and device inventory, please verify your inputs."
         )

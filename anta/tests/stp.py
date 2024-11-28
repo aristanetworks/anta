@@ -36,8 +36,6 @@ class VerifySTPMode(AntaTest):
     ```
     """
 
-    name = "VerifySTPMode"
-    description = "Verifies the configured STP mode for a provided list of VLAN(s)."
     categories: ClassVar[list[str]] = ["stp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show spanning-tree vlan {vlan}", revision=1)]
 
@@ -93,8 +91,6 @@ class VerifySTPBlockedPorts(AntaTest):
     ```
     """
 
-    name = "VerifySTPBlockedPorts"
-    description = "Verifies there is no STP blocked ports."
     categories: ClassVar[list[str]] = ["stp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show spanning-tree blockedports", revision=1)]
 
@@ -126,8 +122,6 @@ class VerifySTPCounters(AntaTest):
     ```
     """
 
-    name = "VerifySTPCounters"
-    description = "Verifies there is no errors in STP BPDU packets."
     categories: ClassVar[list[str]] = ["stp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show spanning-tree counters", revision=1)]
 
@@ -163,7 +157,6 @@ class VerifySTPForwardingPorts(AntaTest):
     ```
     """
 
-    name = "VerifySTPForwardingPorts"
     description = "Verifies that all interfaces are forwarding for a provided list of VLAN(s)."
     categories: ClassVar[list[str]] = ["stp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show spanning-tree topology vlan {vlan} status", revision=1)]
@@ -222,8 +215,6 @@ class VerifySTPRootPriority(AntaTest):
     ```
     """
 
-    name = "VerifySTPRootPriority"
-    description = "Verifies the STP root priority for a provided list of VLAN or MST instance ID(s)."
     categories: ClassVar[list[str]] = ["stp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show spanning-tree root detail", revision=1)]
 
@@ -279,8 +270,6 @@ class VerifyStpTopologyChanges(AntaTest):
     ```
     """
 
-    name = "VerifyStpTopologyChanges"
-    description = "Verifies the number of changes across all interfaces in the Spanning Tree Protocol (STP) topology is below a threshold."
     categories: ClassVar[list[str]] = ["stp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show spanning-tree topology status detail", revision=1)]
 

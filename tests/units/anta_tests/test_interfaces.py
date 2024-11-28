@@ -1108,7 +1108,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"interfaces": [{"name": "Ethernet2", "status": "up"}, {"name": "Ethernet8", "status": "up"}, {"name": "Ethernet3", "status": "up"}]},
         "expected": {
             "result": "failure",
-            "messages": ["The following interface(s) are not configured: ['Ethernet8']"],
+            "messages": ["Ethernet8 - Not configured"],
         },
     },
     {
@@ -1126,7 +1126,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"interfaces": [{"name": "Ethernet2", "status": "up"}, {"name": "Ethernet8", "status": "up"}, {"name": "Ethernet3", "status": "up"}]},
         "expected": {
             "result": "failure",
-            "messages": ["The following interface(s) are not in the expected state: ['Ethernet8 is down/down'"],
+            "messages": ["Ethernet8 - Expected: up/up, Actual: down/down"],
         },
     },
     {
@@ -1150,7 +1150,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["The following interface(s) are not in the expected state: ['Ethernet8 is up/down'"],
+            "messages": ["Ethernet8 - Expected: up/up, Actual: up/down"],
         },
     },
     {
@@ -1166,7 +1166,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"interfaces": [{"name": "PortChannel100", "status": "up"}]},
         "expected": {
             "result": "failure",
-            "messages": ["The following interface(s) are not in the expected state: ['Port-Channel100 is down/lowerLayerDown'"],
+            "messages": ["Port-Channel100 - Expected: up/up, Actual: down/lowerLayerDown"],
         },
     },
     {
@@ -1190,7 +1190,38 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["The following interface(s) are not in the expected state: ['Ethernet2 is up/unknown'"],
+            "messages": [
+                "Ethernet2 - Expected: up/down, Actual: up/unknown",
+                "Ethernet8 - Expected: up/up, Actual: up/down",
+            ],
+        },
+    },
+    {
+        "name": "failure-interface-status-down",
+        "test": VerifyInterfacesStatus,
+        "eos_data": [
+            {
+                "interfaceDescriptions": {
+                    "Ethernet8": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "down"},
+                    "Ethernet2": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "unknown"},
+                    "Ethernet3": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
+                }
+            }
+        ],
+        "inputs": {
+            "interfaces": [
+                {"name": "Ethernet2", "status": "down"},
+                {"name": "Ethernet8", "status": "down"},
+                {"name": "Ethernet3", "status": "down"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Ethernet2 - Expected: down, Actual: up",
+                "Ethernet8 - Expected: down, Actual: up",
+                "Ethernet3 - Expected: down, Actual: up",
+            ],
         },
     },
     {

@@ -26,8 +26,6 @@ if TYPE_CHECKING:
 class FakeTest(AntaTest):
     """ANTA test that always succeed."""
 
-    name = "FakeTest"
-    description = "ANTA test that always succeed"
     categories: ClassVar[list[str]] = []
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = []
 
@@ -40,8 +38,6 @@ class FakeTest(AntaTest):
 class FakeTestWithFailedCommand(AntaTest):
     """ANTA test with a command that failed."""
 
-    name = "FakeTestWithFailedCommand"
-    description = "ANTA test with a command that failed"
     categories: ClassVar[list[str]] = []
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show version", errors=["failed command"])]
 
@@ -54,8 +50,6 @@ class FakeTestWithFailedCommand(AntaTest):
 class FakeTestWithUnsupportedCommand(AntaTest):
     """ANTA test with an unsupported command."""
 
-    name = "FakeTestWithUnsupportedCommand"
-    description = "ANTA test with an unsupported command"
     categories: ClassVar[list[str]] = []
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
         AntaCommand(
@@ -73,8 +67,6 @@ class FakeTestWithUnsupportedCommand(AntaTest):
 class FakeTestWithInput(AntaTest):
     """ANTA test with inputs that always succeed."""
 
-    name = "FakeTestWithInput"
-    description = "ANTA test with inputs that always succeed"
     categories: ClassVar[list[str]] = []
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = []
 
@@ -92,8 +84,6 @@ class FakeTestWithInput(AntaTest):
 class FakeTestWithTemplate(AntaTest):
     """ANTA test with template that always succeed."""
 
-    name = "FakeTestWithTemplate"
-    description = "ANTA test with template that always succeed"
     categories: ClassVar[list[str]] = []
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show interface {interface}")]
 
@@ -115,8 +105,6 @@ class FakeTestWithTemplate(AntaTest):
 class FakeTestWithTemplateNoRender(AntaTest):
     """ANTA test with template that miss the render() method."""
 
-    name = "FakeTestWithTemplateNoRender"
-    description = "ANTA test with template that miss the render() method"
     categories: ClassVar[list[str]] = []
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show interface {interface}")]
 
@@ -134,8 +122,6 @@ class FakeTestWithTemplateNoRender(AntaTest):
 class FakeTestWithTemplateBadRender1(AntaTest):
     """ANTA test with template that raises a AntaTemplateRenderError exception."""
 
-    name = "FakeTestWithTemplateBadRender"
-    description = "ANTA test with template that raises a AntaTemplateRenderError exception"
     categories: ClassVar[list[str]] = []
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show interface {interface}")]
 
@@ -157,8 +143,6 @@ class FakeTestWithTemplateBadRender1(AntaTest):
 class FakeTestWithTemplateBadRender2(AntaTest):
     """ANTA test with template that raises an arbitrary exception in render()."""
 
-    name = "FakeTestWithTemplateBadRender2"
-    description = "ANTA test with template that raises an arbitrary exception in render()"
     categories: ClassVar[list[str]] = []
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show interface {interface}")]
 
@@ -180,8 +164,6 @@ class FakeTestWithTemplateBadRender2(AntaTest):
 class FakeTestWithTemplateBadRender3(AntaTest):
     """ANTA test with template that gives extra template parameters in render()."""
 
-    name = "FakeTestWithTemplateBadRender3"
-    description = "ANTA test with template that gives extra template parameters in render()"
     categories: ClassVar[list[str]] = []
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show interface {interface}")]
 
@@ -203,8 +185,6 @@ class FakeTestWithTemplateBadRender3(AntaTest):
 class FakeTestWithTemplateBadTest(AntaTest):
     """ANTA test with template that tries to access an undefined template parameter in test()."""
 
-    name = "FakeTestWithTemplateBadTest"
-    description = "ANTA test with template that tries to access an undefined template parameter in test()"
     categories: ClassVar[list[str]] = []
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show interface {interface}")]
 
@@ -227,8 +207,6 @@ class FakeTestWithTemplateBadTest(AntaTest):
 class SkipOnPlatformTest(AntaTest):
     """ANTA test that is skipped."""
 
-    name = "SkipOnPlatformTest"
-    description = "ANTA test that is skipped on a specific platform"
     categories: ClassVar[list[str]] = []
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = []
 
@@ -242,8 +220,6 @@ class SkipOnPlatformTest(AntaTest):
 class UnSkipOnPlatformTest(AntaTest):
     """ANTA test that is skipped."""
 
-    name = "UnSkipOnPlatformTest"
-    description = "ANTA test that is skipped on a specific platform"
     categories: ClassVar[list[str]] = []
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = []
 
@@ -257,8 +233,6 @@ class UnSkipOnPlatformTest(AntaTest):
 class SkipOnPlatformTestWithInput(AntaTest):
     """ANTA test skipped on platforms but with Input."""
 
-    name = "SkipOnPlatformTestWithInput"
-    description = "ANTA test skipped on platforms but with Input"
     categories: ClassVar[list[str]] = []
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = []
 
@@ -277,8 +251,6 @@ class SkipOnPlatformTestWithInput(AntaTest):
 class DeprecatedTestWithoutNewTest(AntaTest):
     """ANTA test that is deprecated without new test."""
 
-    name = "DeprecatedTestWitouthNewTest"
-    description = "ANTA test that is deprecated without new test"
     categories: ClassVar[list[str]] = []
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = []
 
@@ -292,8 +264,6 @@ class DeprecatedTestWithoutNewTest(AntaTest):
 class DeprecatedTestWithNewTest(AntaTest):
     """ANTA test that is deprecated with new test."""
 
-    name = "DeprecatedTestWithNewTest"
-    description = "ANTA deprecated test with New Test"
     categories: ClassVar[list[str]] = []
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = []
 
@@ -307,8 +277,6 @@ class DeprecatedTestWithNewTest(AntaTest):
 class FakeTestWithMissingTest(AntaTest):
     """ANTA test with missing test() method implementation."""
 
-    name = "FakeTestWithMissingTest"
-    description = "ANTA test with missing test() method implementation"
     categories: ClassVar[list[str]] = []
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = []
 
@@ -526,65 +494,61 @@ class TestAntaTest:
 
     def test__init_subclass__(self) -> None:
         """Test __init_subclass__."""
-        with pytest.raises(NotImplementedError) as exec_info:
-
-            class _WrongTestNoName(AntaTest):
-                """ANTA test that is missing a name."""
-
-                description = "ANTA test that is missing a name"
-                categories: ClassVar[list[str]] = []
-                commands: ClassVar[list[AntaCommand | AntaTemplate]] = []
-
-                @AntaTest.anta_test
-                def test(self) -> None:
-                    self.result.is_success()
-
-        assert exec_info.value.args[0] == "Class tests.units.test_models._WrongTestNoName is missing required class attribute name"
-
-        with pytest.raises(NotImplementedError) as exec_info:
-
-            class _WrongTestNoDescription(AntaTest):
-                """ANTA test that is missing a description."""
-
-                name = "WrongTestNoDescription"
-                categories: ClassVar[list[str]] = []
-                commands: ClassVar[list[AntaCommand | AntaTemplate]] = []
-
-                @AntaTest.anta_test
-                def test(self) -> None:
-                    self.result.is_success()
-
-        assert exec_info.value.args[0] == "Class tests.units.test_models._WrongTestNoDescription is missing required class attribute description"
-
-        with pytest.raises(NotImplementedError) as exec_info:
+        with pytest.raises(AttributeError) as exec_info:
 
             class _WrongTestNoCategories(AntaTest):
                 """ANTA test that is missing categories."""
 
-                name = "WrongTestNoCategories"
-                description = "ANTA test that is missing categories"
                 commands: ClassVar[list[AntaCommand | AntaTemplate]] = []
 
                 @AntaTest.anta_test
                 def test(self) -> None:
                     self.result.is_success()
 
-        assert exec_info.value.args[0] == "Class tests.units.test_models._WrongTestNoCategories is missing required class attribute categories"
+        assert exec_info.value.args[0] == "Class tests.units.test_models._WrongTestNoCategories is missing required class attribute(s): categories"
 
-        with pytest.raises(NotImplementedError) as exec_info:
+        with pytest.raises(AttributeError) as exec_info:
 
             class _WrongTestNoCommands(AntaTest):
                 """ANTA test that is missing commands."""
 
-                name = "WrongTestNoCommands"
-                description = "ANTA test that is missing commands"
                 categories: ClassVar[list[str]] = []
 
                 @AntaTest.anta_test
                 def test(self) -> None:
                     self.result.is_success()
 
-        assert exec_info.value.args[0] == "Class tests.units.test_models._WrongTestNoCommands is missing required class attribute commands"
+        assert exec_info.value.args[0] == "Class tests.units.test_models._WrongTestNoCommands is missing required class attribute(s): commands"
+
+        with pytest.raises(
+            AttributeError,
+            match="Cannot set the description for class _WrongTestNoDescription, either set it in the class definition or add a docstring to the class.",
+        ):
+
+            class _WrongTestNoDescription(AntaTest):
+                # ANTA test that is missing a description and does not have a doctstring.
+
+                commands: ClassVar[list[AntaCommand | AntaTemplate]] = []
+                categories: ClassVar[list[str]] = []
+
+                @AntaTest.anta_test
+                def test(self) -> None:
+                    self.result.is_success()
+
+        class _TestOverwriteNameAndDescription(AntaTest):
+            """ANTA test where both the test name and description are overwritten in the class definition."""
+
+            name: ClassVar[str] = "CustomName"
+            description: ClassVar[str] = "Custom description"
+            commands: ClassVar[list[AntaCommand | AntaTemplate]] = []
+            categories: ClassVar[list[str]] = []
+
+            @AntaTest.anta_test
+            def test(self) -> None:
+                self.result.is_success()
+
+        assert _TestOverwriteNameAndDescription.name == "CustomName"
+        assert _TestOverwriteNameAndDescription.description == "Custom description"
 
     def test_abc(self) -> None:
         """Test that an error is raised if AntaTest is not implemented."""
@@ -626,8 +590,6 @@ class TestAntaTest:
         class FakeTestWithBlacklist(AntaTest):
             """Fake Test for blacklist."""
 
-            name = "FakeTestWithBlacklist"
-            description = "ANTA test that has blacklisted command"
             categories: ClassVar[list[str]] = []
             commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command=command)]
 

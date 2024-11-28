@@ -35,7 +35,7 @@ except ImportError as exc:
 
     cli = build_cli(exc)
 
-__all__ = ["cli", "anta"]
+__all__ = ["anta", "cli"]
 
 if __name__ == "__main__":
     cli()

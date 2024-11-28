@@ -59,8 +59,6 @@ class VerifyLoggingPersistent(AntaTest):
     ```
     """
 
-    name = "VerifyLoggingPersistent"
-    description = "Verifies if logging persistent is enabled and logs are saved in flash."
     categories: ClassVar[list[str]] = ["logging"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
         AntaCommand(command="show logging", ofmt="text"),
@@ -100,8 +98,6 @@ class VerifyLoggingSourceIntf(AntaTest):
     ```
     """
 
-    name = "VerifyLoggingSourceIntf"
-    description = "Verifies logging source-interface for a specified VRF."
     categories: ClassVar[list[str]] = ["logging"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show logging", ofmt="text")]
 
@@ -144,8 +140,6 @@ class VerifyLoggingHosts(AntaTest):
     ```
     """
 
-    name = "VerifyLoggingHosts"
-    description = "Verifies logging hosts (syslog servers) for a specified VRF."
     categories: ClassVar[list[str]] = ["logging"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show logging", ofmt="text")]
 
@@ -176,10 +170,22 @@ class VerifyLoggingHosts(AntaTest):
 class VerifyLoggingLogsGeneration(AntaTest):
     """Verifies if logs are generated.
 
+    This test performs the following checks:
+
+      1. Sends a test log message at the **informational** level
+      2. Retrieves the most recent logs (last 30 seconds)
+      3. Verifies that the test message was successfully logged
+
+    !!! warning
+        EOS logging buffer should be set to severity level `informational` or higher for this test to work.
+
     Expected Results
     ----------------
-    * Success: The test will pass if logs are generated.
-    * Failure: The test will fail if logs are NOT generated.
+    * Success: If logs are being generated and the test message is found in recent logs.
+    * Failure: If any of the following occur:
+        - The test message is not found in recent logs
+        - The logging system is not capturing new messages
+        - No logs are being generated
 
     Examples
     --------
@@ -189,8 +195,6 @@ class VerifyLoggingLogsGeneration(AntaTest):
     ```
     """
 
-    name = "VerifyLoggingLogsGeneration"
-    description = "Verifies if logs are generated."
     categories: ClassVar[list[str]] = ["logging"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
         AntaCommand(command="send log level informational message ANTA VerifyLoggingLogsGeneration validation", ofmt="text"),
@@ -213,10 +217,23 @@ class VerifyLoggingLogsGeneration(AntaTest):
 class VerifyLoggingHostname(AntaTest):
     """Verifies if logs are generated with the device FQDN.
 
+    This test performs the following checks:
+
+      1. Retrieves the device's configured FQDN
+      2. Sends a test log message at the **informational** level
+      3. Retrieves the most recent logs (last 30 seconds)
+      4. Verifies that the test message includes the complete FQDN of the device
+
+    !!! warning
+          EOS logging buffer should be set to severity level `informational` or higher for this test to work.
+
     Expected Results
     ----------------
-    * Success: The test will pass if logs are generated with the device FQDN.
-    * Failure: The test will fail if logs are NOT generated with the device FQDN.
+    * Success: If logs are generated with the device's complete FQDN.
+    * Failure: If any of the following occur:
+        - The test message is not found in recent logs
+        - The log message does not include the device's FQDN
+        - The FQDN in the log message doesn't match the configured FQDN
 
     Examples
     --------
@@ -226,8 +243,6 @@ class VerifyLoggingHostname(AntaTest):
     ```
     """
 
-    name = "VerifyLoggingHostname"
-    description = "Verifies if logs are generated with the device FQDN."
     categories: ClassVar[list[str]] = ["logging"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
         AntaCommand(command="show hostname", revision=1),
@@ -257,10 +272,24 @@ class VerifyLoggingHostname(AntaTest):
 class VerifyLoggingTimestamp(AntaTest):
     """Verifies if logs are generated with the appropriate timestamp.
 
+    This test performs the following checks:
+
+      1. Sends a test log message at the **informational** level
+      2. Retrieves the most recent logs (last 30 seconds)
+      3. Verifies that the test message is present with a high-resolution RFC3339 timestamp format
+        - Example format: `2024-01-25T15:30:45.123456+00:00`
+        - Includes microsecond precision
+        - Contains timezone offset
+
+    !!! warning
+          EOS logging buffer should be set to severity level `informational` or higher for this test to work.
+
     Expected Results
     ----------------
-    * Success: The test will pass if logs are generated with the appropriate timestamp.
-    * Failure: The test will fail if logs are NOT generated with the appropriate timestamp.
+    * Success: If logs are generated with the correct high-resolution RFC3339 timestamp format.
+    * Failure: If any of the following occur:
+        - The test message is not found in recent logs
+        - The timestamp format does not match the expected RFC3339 format
 
     Examples
     --------
@@ -270,8 +299,6 @@ class VerifyLoggingTimestamp(AntaTest):
     ```
     """
 
-    name = "VerifyLoggingTimestamp"
-    description = "Verifies if logs are generated with the appropriate timestamp."
     categories: ClassVar[list[str]] = ["logging"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
         AntaCommand(command="send log level informational message ANTA VerifyLoggingTimestamp validation", ofmt="text"),
@@ -312,8 +339,6 @@ class VerifyLoggingAccounting(AntaTest):
     ```
     """
 
-    name = "VerifyLoggingAccounting"
-    description = "Verifies if AAA accounting logs are generated."
     categories: ClassVar[list[str]] = ["logging"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show aaa accounting logs | tail", ofmt="text")]
 
@@ -344,8 +369,6 @@ class VerifyLoggingErrors(AntaTest):
     ```
     """
 
-    name = "VerifyLoggingErrors"
-    description = "Verifies there are no syslog messages with a severity of ERRORS or higher."
     categories: ClassVar[list[str]] = ["logging"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show logging threshold errors", ofmt="text")]
 

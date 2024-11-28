@@ -42,8 +42,6 @@ class VerifySSHStatus(AntaTest):
     ```
     """
 
-    name = "VerifySSHStatus"
-    description = "Verifies if the SSHD agent is disabled in the default VRF."
     categories: ClassVar[list[str]] = ["security"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management ssh", ofmt="text")]
 
@@ -83,7 +81,6 @@ class VerifySSHIPv4Acl(AntaTest):
     ```
     """
 
-    name = "VerifySSHIPv4Acl"
     description = "Verifies if the SSHD agent has IPv4 ACL(s) configured."
     categories: ClassVar[list[str]] = ["security"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management ssh ip access-list summary", revision=1)]
@@ -132,7 +129,6 @@ class VerifySSHIPv6Acl(AntaTest):
     ```
     """
 
-    name = "VerifySSHIPv6Acl"
     description = "Verifies if the SSHD agent has IPv6 ACL(s) configured."
     categories: ClassVar[list[str]] = ["security"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management ssh ipv6 access-list summary", revision=1)]
@@ -179,8 +175,6 @@ class VerifyTelnetStatus(AntaTest):
     ```
     """
 
-    name = "VerifyTelnetStatus"
-    description = "Verifies if Telnet is disabled in the default VRF."
     categories: ClassVar[list[str]] = ["security"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management telnet", revision=1)]
 
@@ -210,8 +204,6 @@ class VerifyAPIHttpStatus(AntaTest):
     ```
     """
 
-    name = "VerifyAPIHttpStatus"
-    description = "Verifies if eAPI HTTP server is disabled globally."
     categories: ClassVar[list[str]] = ["security"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management api http-commands", revision=1)]
 
@@ -242,7 +234,6 @@ class VerifyAPIHttpsSSL(AntaTest):
     ```
     """
 
-    name = "VerifyAPIHttpsSSL"
     description = "Verifies if the eAPI has a valid SSL profile."
     categories: ClassVar[list[str]] = ["security"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management api http-commands", revision=1)]
@@ -285,8 +276,6 @@ class VerifyAPIIPv4Acl(AntaTest):
     ```
     """
 
-    name = "VerifyAPIIPv4Acl"
-    description = "Verifies if eAPI has the right number IPv4 ACL(s) configured for a specified VRF."
     categories: ClassVar[list[str]] = ["security"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management api http-commands ip access-list summary", revision=1)]
 
@@ -335,8 +324,6 @@ class VerifyAPIIPv6Acl(AntaTest):
     ```
     """
 
-    name = "VerifyAPIIPv6Acl"
-    description = "Verifies if eAPI has the right number IPv6 ACL(s) configured for a specified VRF."
     categories: ClassVar[list[str]] = ["security"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management api http-commands ipv6 access-list summary", revision=1)]
 
@@ -395,8 +382,6 @@ class VerifyAPISSLCertificate(AntaTest):
     ```
     """
 
-    name = "VerifyAPISSLCertificate"
-    description = "Verifies the eAPI SSL certificate expiry, common subject name, encryption algorithm and key size."
     categories: ClassVar[list[str]] = ["security"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
         AntaCommand(command="show management security ssl certificate", revision=1),
@@ -505,8 +490,6 @@ class VerifyBannerLogin(AntaTest):
     ```
     """
 
-    name = "VerifyBannerLogin"
-    description = "Verifies the login banner of a device."
     categories: ClassVar[list[str]] = ["security"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show banner login", revision=1)]
 
@@ -549,8 +532,6 @@ class VerifyBannerMotd(AntaTest):
     ```
     """
 
-    name = "VerifyBannerMotd"
-    description = "Verifies the motd banner of a device."
     categories: ClassVar[list[str]] = ["security"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show banner motd", revision=1)]
 
@@ -604,8 +585,6 @@ class VerifyIPv4ACL(AntaTest):
     ```
     """
 
-    name = "VerifyIPv4ACL"
-    description = "Verifies the configuration of IPv4 ACLs."
     categories: ClassVar[list[str]] = ["security"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show ip access-lists {acl}", revision=1)]
 
@@ -669,8 +648,7 @@ class VerifyIPv4ACL(AntaTest):
 
 
 class VerifyIPSecConnHealth(AntaTest):
-    """
-    Verifies all IPv4 security connections.
+    """Verifies all IPv4 security connections.
 
     Expected Results
     ----------------
@@ -685,8 +663,6 @@ class VerifyIPSecConnHealth(AntaTest):
     ```
     """
 
-    name = "VerifyIPSecConnHealth"
-    description = "Verifies all IPv4 security connections."
     categories: ClassVar[list[str]] = ["security"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip security connection vrf all")]
 
@@ -716,8 +692,7 @@ class VerifyIPSecConnHealth(AntaTest):
 
 
 class VerifySpecificIPSecConn(AntaTest):
-    """
-    Verifies the state of IPv4 security connections for a specified peer.
+    """Verifies the state of IPv4 security connections for a specified peer.
 
     It optionally allows for the verification of a specific path for a peer by providing source and destination addresses.
     If these addresses are not provided, it will verify all paths for the specified peer.
@@ -744,7 +719,6 @@ class VerifySpecificIPSecConn(AntaTest):
     ```
     """
 
-    name = "VerifySpecificIPSecConn"
     description = "Verifies IPv4 security connections for a peer."
     categories: ClassVar[list[str]] = ["security"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show ip security connection vrf {vrf} path peer {peer}")]
@@ -831,8 +805,7 @@ class VerifySpecificIPSecConn(AntaTest):
 
 
 class VerifyHardwareEntropy(AntaTest):
-    """
-    Verifies hardware entropy generation is enabled on device.
+    """Verifies hardware entropy generation is enabled on device.
 
     Expected Results
     ----------------
@@ -847,8 +820,6 @@ class VerifyHardwareEntropy(AntaTest):
     ```
     """
 
-    name = "VerifyHardwareEntropy"
-    description = "Verifies hardware entropy generation is enabled on device."
     categories: ClassVar[list[str]] = ["security"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management security")]
 

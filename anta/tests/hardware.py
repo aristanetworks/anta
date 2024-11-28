@@ -36,8 +36,6 @@ class VerifyTransceiversManufacturers(AntaTest):
     ```
     """
 
-    name = "VerifyTransceiversManufacturers"
-    description = "Verifies if all transceivers come from approved manufacturers."
     categories: ClassVar[list[str]] = ["hardware"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show inventory", revision=2)]
 
@@ -77,8 +75,6 @@ class VerifyTemperature(AntaTest):
     ```
     """
 
-    name = "VerifyTemperature"
-    description = "Verifies the device temperature."
     categories: ClassVar[list[str]] = ["hardware"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show system environment temperature", revision=1)]
 
@@ -110,8 +106,6 @@ class VerifyTransceiversTemperature(AntaTest):
     ```
     """
 
-    name = "VerifyTransceiversTemperature"
-    description = "Verifies the transceivers temperature."
     categories: ClassVar[list[str]] = ["hardware"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show system environment temperature transceiver", revision=1)]
 
@@ -151,8 +145,6 @@ class VerifyEnvironmentSystemCooling(AntaTest):
     ```
     """
 
-    name = "VerifyEnvironmentSystemCooling"
-    description = "Verifies the system cooling status."
     categories: ClassVar[list[str]] = ["hardware"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show system environment cooling", revision=1)]
 
@@ -232,8 +224,6 @@ class VerifyEnvironmentPower(AntaTest):
     ```
     """
 
-    name = "VerifyEnvironmentPower"
-    description = "Verifies the power supplies status."
     categories: ClassVar[list[str]] = ["hardware"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show system environment power", revision=1)]
 
@@ -274,7 +264,6 @@ class VerifyAdverseDrops(AntaTest):
     ```
     """
 
-    name = "VerifyAdverseDrops"
     description = "Verifies there are no adverse drops on DCS-7280 and DCS-7500 family switches."
     categories: ClassVar[list[str]] = ["hardware"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show hardware counter drop", revision=1)]

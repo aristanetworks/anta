@@ -4,9 +4,7 @@
   ~ that can be found in the LICENSE file.
   -->
 
-ANTA commands can be used with a `--tags` option. This option **filters the inventory** with the specified tag(s) when running the command.
-
-Tags can also be used to **restrict a specific test** to a set of devices when using `anta nrfu`.
+ANTA uses tags to define test-to-device mappings (tests run on devices with matching tags) and the `--tags` CLI option acts as a filter to execute specific test/device combinations.
 
 ## Defining tags
 

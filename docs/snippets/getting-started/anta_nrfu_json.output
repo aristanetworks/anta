@@ -1,0 +1,54 @@
+╭────────────────────── Settings ──────────────────────╮
+│ - ANTA Inventory contains 5 devices (AsyncEOSDevice) │
+│ - Tests catalog contains 9 tests                     │
+╰──────────────────────────────────────────────────────╯
+
+[10:53:11] INFO     Preparing ANTA NRFU Run ...                                                                                                     tools.py:294
+           INFO     Connecting to devices ...                                                                                                       tools.py:294
+           INFO     Connecting to devices completed in: 0:00:00.053.                                                                                tools.py:302
+           INFO     Preparing the tests ...                                                                                                         tools.py:294
+           INFO     Preparing the tests completed in: 0:00:00.001.                                                                                  tools.py:302
+           INFO     --- ANTA NRFU Run Information ---                                                                                              runner.py:276
+                    Number of devices: 5 (5 established)
+                    Total number of selected tests: 45
+                    Maximum number of open file descriptors for the current ANTA process: 16384
+                    ---------------------------------
+           INFO     Preparing ANTA NRFU Run completed in: 0:00:00.065.                                                                              tools.py:302
+           INFO     Running ANTA tests ...                                                                                                          tools.py:294
+[10:53:12] INFO     Running ANTA tests completed in: 0:00:00.857.                                                                                   tools.py:302
+           INFO     Cache statistics for 's1-spine1': 1 hits / 9 command(s) (11.11%)                                                                runner.py:75
+           INFO     Cache statistics for 's1-spine2': 1 hits / 9 command(s) (11.11%)                                                                runner.py:75
+           INFO     Cache statistics for 's1-leaf1': 1 hits / 9 command(s) (11.11%)                                                                 runner.py:75
+           INFO     Cache statistics for 's1-leaf2': 1 hits / 9 command(s) (11.11%)                                                                 runner.py:75
+           INFO     Cache statistics for 's1-leaf3': 1 hits / 9 command(s) (11.11%)                                                                 runner.py:75
+  • Running NRFU Tests...100% ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 45/45 • 0:00:00 • 0:00:00
+
+╭──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ JSON results                                                                                                                                                 │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+[
+  {
+    "name": "s1-spine1",
+    "test": "VerifyNTP",
+    "categories": [
+      "system"
+    ],
+    "description": "Verifies if NTP is synchronised.",
+    "result": "success",
+    "messages": [],
+    "custom_field": null
+  },
+  {
+    "name": "s1-spine1",
+    "test": "VerifyMlagConfigSanity",
+    "categories": [
+      "mlag"
+    ],
+    "description": "Verifies there are no MLAG config-sanity inconsistencies.",
+    "result": "skipped",
+    "messages": [
+      "MLAG is disabled"
+    ],
+    "custom_field": null
+  },
+  [...]

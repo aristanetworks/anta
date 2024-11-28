@@ -1,0 +1,13 @@
+---
+anta.tests.interfaces:
+  - VerifyInterfacesSpeed:
+      interfaces:
+        - name: Ethernet2
+          auto: False
+          speed: 10
+        - name: Ethernet3
+          auto: True
+          speed: 100
+        - name: Ethernet4
+          auto: False
+          speed: 2.5
