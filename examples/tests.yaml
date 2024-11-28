@@ -113,7 +113,7 @@ anta.tests.configuration:
       # Verifies ZeroTouch is disabled.
 anta.tests.connectivity:
   - VerifyLLDPNeighbors:
-      # Verifies that the provided LLDP neighbors are connected properly.
+      # Verifies the connection status of the specified LLDP (Link Layer Discovery Protocol) neighbors.
       neighbors:
         - port: Ethernet1
           neighbor_device: DC1-SPINE1
@@ -660,7 +660,7 @@ anta.tests.services:
         - www.google.com
         - arista.ca
   - VerifyDNSServers:
-      # Verifies if the DNS servers are correctly configured.
+      # Verifies if the DNS (Domain Name Service) servers are correctly configured.
       dns_servers:
         - server_address: 10.14.0.1
           vrf: default
