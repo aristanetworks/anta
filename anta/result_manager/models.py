@@ -44,7 +44,7 @@ class BaseTestResult(BaseModel, ABC):
     description: str
     result: AntaTestStatus = AntaTestStatus.UNSET
     messages: list[str] = []
-    inputs: SkipValidation[BaseModel | None]
+    inputs: SkipValidation[BaseModel | None] = None
 
     def is_success(self, message: str | None = None) -> None:
         """Set status to success.
