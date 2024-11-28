@@ -297,7 +297,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "AFI: vpn-ipv4 - Expected: 2 Actual: 0",
+                "AFI: vpn-ipv4 - Expected: 2, Actual: 0",
             ],
         },
     },
@@ -366,8 +366,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "AFI: evpn - Expected: 3 Actual: 2",
-                "AFI: ipv4 SAFI: unicast VRF: DEV - Expected: 2 Actual: 1",
+                "AFI: evpn - Expected: 3, Actual: 2",
+                "AFI: ipv4 SAFI: unicast VRF: DEV - Expected: 2, Actual: 1",
             ],
         },
     },
@@ -415,9 +415,9 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "AFI: evpn - Expected: 2 Actual: 1",
-                "AFI: ipv4 SAFI: unicast VRF: default - Expected: 2 Actual: 1",
-                "AFI: ipv4 SAFI: unicast VRF: DEV - Expected: 2 Actual: 1",
+                "AFI: evpn - Expected: 2, Actual: 1",
+                "AFI: ipv4 SAFI: unicast VRF: default - Expected: 2, Actual: 1",
+                "AFI: ipv4 SAFI: unicast VRF: DEV - Expected: 2, Actual: 1",
             ],
         },
     },

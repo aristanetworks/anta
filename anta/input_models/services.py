@@ -26,6 +26,6 @@ class DnsServer(BaseModel):
 
         Examples
         --------
-        Server 10.0.0.1 (VRF: default Priority: 1)
+        Server 10.0.0.1 (VRF: default, Priority: 1)
         """
         return f"Server {self.server_address} (VRF: {self.vrf}, Priority: {self.priority})"

@@ -193,7 +193,7 @@ class VerifyBGPPeerCount(AntaTest):
 
             # Check if the count matches the expected count
             if address_family.num_peers != peer_count:
-                self.result.is_failure(f"{address_family} - Expected: {address_family.num_peers} Actual: {peer_count}")
+                self.result.is_failure(f"{address_family} - Expected: {address_family.num_peers}, Actual: {peer_count}")
 
 
 class VerifyBGPPeersHealth(AntaTest):
