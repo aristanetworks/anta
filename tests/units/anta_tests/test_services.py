@@ -109,7 +109,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Server 10.14.0.1 (VRF: CS, Priority: 0) - Incorrect priority; Priority: 1",
+                "Server 10.14.0.1 (VRF: CS, Priority: 0) - Incorrect priority - Priority: 1",
                 "Server 10.14.0.11 (VRF: default, Priority: 0) - Not configured",
                 "Server 10.14.0.110 (VRF: MGMT, Priority: 0) - Not configured",
             ],
