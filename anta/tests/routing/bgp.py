@@ -383,7 +383,7 @@ class VerifyBGPExchangedRoutes(AntaTest):
         @field_validator("bgp_peers")
         @classmethod
         def validate_bgp_peers(cls, bgp_peers: list[BgpPeer]) -> list[BgpPeer]:
-            """Validate that 'peers' field is provided in each address family."""
+            """Validate that 'advertised_routes' or 'received_routes' field is provided in each address family."""
             for peer in bgp_peers:
                 if peer.advertised_routes is None or peer.received_routes is None:
                     msg = f"{peer} 'advertised_routes' or 'received_routes' field missing in the input"
@@ -486,7 +486,7 @@ class VerifyBGPPeerMPCaps(AntaTest):
         @field_validator("bgp_peers")
         @classmethod
         def validate_bgp_peers(cls, bgp_peers: list[T]) -> list[T]:
-            """Validate that 'peers' field is provided in each address family."""
+            """Validate that 'capabilities' field is provided in each address family."""
             for peer in bgp_peers:
                 if peer.capabilities is None:
                     msg = f"{peer} 'capabilities' field missing in the input"
@@ -927,7 +927,7 @@ class VerifyBGPTimers(AntaTest):
         @field_validator("bgp_peers")
         @classmethod
         def validate_bgp_peers(cls, bgp_peers: list[T]) -> list[T]:
-            """Validate that 'peers' field is provided in each address family."""
+            """Validate that 'hold_time' or 'keep_alive_time'  field is provided in each address family."""
             for peer in bgp_peers:
                 if peer.hold_time is None or peer.keep_alive_time is None:
                     msg = f"{peer} 'hold_time' or 'keep_alive_time' field missing in the input"

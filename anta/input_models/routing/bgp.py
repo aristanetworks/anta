@@ -178,7 +178,7 @@ class BgpPeer(BaseModel):
         return f"Peer: {self.peer_address} VRF: {self.vrf}"
 
 
-class BgpNeighbor(BgpPeer):
+class BgpNeighbor(BgpPeer):  # pragma: no cover
     """Alias for the BgpPeer model to maintain backward compatibility.
 
     When initialized, it will emit a depreciation warning and call the BgpPeer model.
