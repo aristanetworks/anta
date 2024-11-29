@@ -15,20 +15,20 @@ from anta.tools import get_value
 
 
 class VerifyStunClient(AntaTest):
-    """Verifies the STUN client configuration.
+    """Verifies the translation for a source address on a STUN client.
 
     This test performs the following checks for each specified address family:
 
-      1. Validates that there is a translation for the STUN client.
+      1. Validates that there is a translation for the source address on the STUN client.
       2. If public IP and port details are provided, validates their correctness against the configuration.
 
     Expected Results
     ----------------
     * Success: If all of the following conditions are met:
-        - The test will pass if the STUN client is correctly configured.
-        - If public IP and port details are provided, they must also match the configuration.
+        - The test will pass if the source address translation is present.
+        - If public IP and port details are provided, they must also match the translation information.
     * Failure: If any of the following occur:
-        - The STUN client is not configured.
+        - There is no translation for the source address on the STUN client.
         - The public IP or port details, if specified, are incorrect.
 
     Examples
