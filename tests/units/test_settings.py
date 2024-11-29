@@ -99,6 +99,43 @@ class TestHttpxLimits:
         assert limits.max_keepalive_connections == 50
         assert limits.keepalive_expiry == 15.0
 
+    def test_httpx_limits_validation(self, setenvvar: pytest.MonkeyPatch) -> None:
+        """Test validation of HTTPX resource limits values."""
+        # Test negative values
+        setenvvar.setenv("ANTA_MAX_CONNECTIONS", "-1")
+        with pytest.raises(ValidationError):
+            HttpxResourceLimitsSettings()
+
+        setenvvar.setenv("ANTA_MAX_KEEPALIVE_CONNECTIONS", "-5")
+        with pytest.raises(ValidationError):
+            HttpxResourceLimitsSettings()
+
+        setenvvar.setenv("ANTA_KEEPALIVE_EXPIRY", "-2.5")
+        with pytest.raises(ValidationError):
+            HttpxResourceLimitsSettings()
+
+        # Test invalid string values
+        setenvvar.setenv("ANTA_MAX_CONNECTIONS", "unlimited")
+        with pytest.raises(ValidationError):
+            HttpxResourceLimitsSettings()
+
+        setenvvar.setenv("ANTA_MAX_KEEPALIVE_CONNECTIONS", "infinity")
+        with pytest.raises(ValidationError):
+            HttpxResourceLimitsSettings()
+
+        setenvvar.setenv("ANTA_KEEPALIVE_EXPIRY", "forever")
+        with pytest.raises(ValidationError):
+            HttpxResourceLimitsSettings()
+
+        # Test zero values (should be valid for NonNegative types)
+        setenvvar.setenv("ANTA_MAX_CONNECTIONS", "0")
+        setenvvar.setenv("ANTA_MAX_KEEPALIVE_CONNECTIONS", "0")
+        setenvvar.setenv("ANTA_KEEPALIVE_EXPIRY", "0.0")
+        settings = HttpxResourceLimitsSettings()
+        assert settings.max_connections == 0
+        assert settings.max_keepalive_connections == 0
+        assert settings.keepalive_expiry == 0.0
+
 
 class TestHttpxTimeouts:
     """Tests for the HttpxTimeoutsSettings class."""
@@ -172,3 +209,50 @@ class TestHttpxTimeouts:
         assert timeout.read is None
         assert timeout.write == 10.0
         assert timeout.pool == 10.0
+
+    def test_httpx_timeouts_validation(self, setenvvar: pytest.MonkeyPatch) -> None:
+        """Test validation of HTTPX timeout values."""
+        # Test negative values
+        setenvvar.setenv("ANTA_CONNECT_TIMEOUT", "-1.0")
+        with pytest.raises(ValidationError):
+            HttpxTimeoutsSettings()
+
+        setenvvar.setenv("ANTA_READ_TIMEOUT", "-5.0")
+        with pytest.raises(ValidationError):
+            HttpxTimeoutsSettings()
+
+        setenvvar.setenv("ANTA_WRITE_TIMEOUT", "-2.5")
+        with pytest.raises(ValidationError):
+            HttpxTimeoutsSettings()
+
+        setenvvar.setenv("ANTA_POOL_TIMEOUT", "-3.0")
+        with pytest.raises(ValidationError):
+            HttpxTimeoutsSettings()
+
+        # Test invalid string values
+        setenvvar.setenv("ANTA_CONNECT_TIMEOUT", "instant")
+        with pytest.raises(ValidationError):
+            HttpxTimeoutsSettings()
+
+        setenvvar.setenv("ANTA_READ_TIMEOUT", "forever")
+        with pytest.raises(ValidationError):
+            HttpxTimeoutsSettings()
+
+        setenvvar.setenv("ANTA_WRITE_TIMEOUT", "unlimited")
+        with pytest.raises(ValidationError):
+            HttpxTimeoutsSettings()
+
+        setenvvar.setenv("ANTA_POOL_TIMEOUT", "infinite")
+        with pytest.raises(ValidationError):
+            HttpxTimeoutsSettings()
+
+        # Test zero values (should be valid for NonNegative types)
+        setenvvar.setenv("ANTA_CONNECT_TIMEOUT", "0.0")
+        setenvvar.setenv("ANTA_READ_TIMEOUT", "0.0")
+        setenvvar.setenv("ANTA_WRITE_TIMEOUT", "0.0")
+        setenvvar.setenv("ANTA_POOL_TIMEOUT", "0.0")
+        settings = HttpxTimeoutsSettings()
+        assert settings.connect_timeout == 0.0
+        assert settings.read_timeout == 0.0
+        assert settings.write_timeout == 0.0
+        assert settings.pool_timeout == 0.0

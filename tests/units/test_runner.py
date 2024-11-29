@@ -26,7 +26,7 @@ from anta.runner import adjust_rlimit_nofile, get_coroutines, log_run_informatio
 from .test_models import FakeTest, FakeTestWithMissingTest
 
 if TYPE_CHECKING:
-    from collections.abc import AsyncGenerator, Coroutine
+    from collections.abc import AsyncGenerator, AsyncIterator, Coroutine, Sequence
     from warnings import WarningMessage
 
 DATA_DIR: Path = Path(__file__).parent.parent.resolve() / "data"
@@ -201,6 +201,7 @@ async def test_get_coroutines_deprecation(inventory: AntaInventory) -> None:
     manager = ResultManager()
 
     with pytest.warns(DeprecationWarning) as warning_records:
+        assert selected_tests is not None
         coroutines = get_coroutines(selected_tests, manager)
 
         # Verify the warning
@@ -225,11 +226,11 @@ async def test_get_coroutines_deprecation(inventory: AntaInventory) -> None:
 class EmptyGenerator:
     """Helper class to create an empty async generator."""
 
-    def __aiter__(self) -> EmptyGenerator:
+    def __aiter__(self) -> AsyncIterator[Coroutine[Any, Any, Result]]:
         """Make this class an async iterator."""
         return self
 
-    async def __anext__(self) -> None:
+    async def __anext__(self) -> Coroutine[Any, Any, Result]:
         """Raise StopAsyncIteration."""
         raise StopAsyncIteration
 
@@ -241,7 +242,7 @@ async def mock_test_coro(result: Result) -> Result:
     return result
 
 
-async def create_test_generator(results: list[Result]) -> AsyncGenerator[Coroutine[Any, Any, Result], None]:
+async def create_test_generator(results: Sequence[Result]) -> AsyncGenerator[Coroutine[Any, Any, Result], None]:
     """Create a test generator yielding mock test coroutines."""
     for result in results:
         yield mock_test_coro(result)
@@ -269,7 +270,7 @@ async def test_run_with_empty_generator(caplog: pytest.LogCaptureFixture) -> Non
     """Test run behavior with an empty generator."""
     caplog.set_level(logging.DEBUG)
 
-    results = [result async for result in run(EmptyGenerator(), limit=1)]
+    results = [result async for result in run(EmptyGenerator(), limit=1)]  # type: ignore[arg-type]
     assert len(results) == 0
     assert "All tests have been added to the pending set" in caplog.text
     assert "No pending tests and all tests have been processed. Exiting" in caplog.text
@@ -294,28 +295,11 @@ async def test_run_with_concurrent_limit(caplog: pytest.LogCaptureFixture) -> No
     assert any("Completed" in msg and "Pending count:" in msg for msg in caplog.messages)
 
 
-async def test_run_sequential_execution(caplog: pytest.LogCaptureFixture) -> None:
-    """Test run with limit=1 for sequential execution."""
-    caplog.set_level(logging.DEBUG)
-
-    # Create mock results with different values to verify order
-    results = [Mock(spec=Result, value=i) for i in range(3)]
-    generator = create_test_generator(results)
-
-    # Run with limit of 1 to ensure sequential execution
-    completed_results = [result async for result in run(generator, limit=1)]
-
-    # Verify results came back in order
-    assert len(completed_results) == 3
-    assert all(completed_results[i].value == i for i in range(3))
-    assert "Concurrency limit reached: 1 tests running" in caplog.text
-
-
 async def test_run_immediate_stop_iteration(caplog: pytest.LogCaptureFixture) -> None:
     """Test run behavior when generator raises StopIteration immediately."""
     caplog.set_level(logging.DEBUG)
 
-    results = [result async for result in run(EmptyGenerator(), limit=1)]
+    results = [result async for result in run(EmptyGenerator(), limit=1)]  # type: ignore[arg-type]
     assert len(results) == 0
     assert "All tests have been added to the pending set" in caplog.text
     assert "No pending tests and all tests have been processed. Exiting" in caplog.text

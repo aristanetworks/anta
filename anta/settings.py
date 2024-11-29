@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 from httpx import Limits, Timeout
-from pydantic import Field, PositiveInt
+from pydantic import Field, NonNegativeFloat, NonNegativeInt, PositiveInt
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # Default values for HTTPX resource limits
@@ -53,9 +53,9 @@ class HttpxResourceLimitsSettings(BaseSettings):
     # The 'None' string is used to allow the environment variable to be set to `None`.
     model_config = SettingsConfigDict(env_parse_none_str="None", env_prefix="ANTA_")
 
-    max_connections: int | None = Field(default=HTTPX_MAX_CONNECTIONS)
-    max_keepalive_connections: int | None = Field(default=HTTPX_MAX_KEEPALIVE_CONNECTIONS)
-    keepalive_expiry: float | None = Field(default=HTTPX_KEEPALIVE_EXPIRY)
+    max_connections: NonNegativeInt | None = Field(default=HTTPX_MAX_CONNECTIONS)
+    max_keepalive_connections: NonNegativeInt | None = Field(default=HTTPX_MAX_KEEPALIVE_CONNECTIONS)
+    keepalive_expiry: NonNegativeFloat | None = Field(default=HTTPX_KEEPALIVE_EXPIRY)
 
 
 class HttpxTimeoutsSettings(BaseSettings):
@@ -76,10 +76,10 @@ class HttpxTimeoutsSettings(BaseSettings):
     # The 'None' string is used to allow the environment variable to be set to `None`.
     model_config = SettingsConfigDict(env_parse_none_str="None", env_prefix="ANTA_")
 
-    connect_timeout: float | None = Field(default=HTTPX_CONNECT_TIMEOUT)
-    read_timeout: float | None = Field(default=HTTPX_READ_TIMEOUT)
-    write_timeout: float | None = Field(default=HTTPX_WRITE_TIMEOUT)
-    pool_timeout: float | None = Field(default=HTTPX_POOL_TIMEOUT)
+    connect_timeout: NonNegativeFloat | None = Field(default=HTTPX_CONNECT_TIMEOUT)
+    read_timeout: NonNegativeFloat | None = Field(default=HTTPX_READ_TIMEOUT)
+    write_timeout: NonNegativeFloat | None = Field(default=HTTPX_WRITE_TIMEOUT)
+    pool_timeout: NonNegativeFloat | None = Field(default=HTTPX_POOL_TIMEOUT)
 
     # The following properties are used to determine if a specific timeout was set by an environment variable
     @property
