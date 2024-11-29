@@ -42,15 +42,6 @@ class IPSecConn(BaseModel):
     destination_address: IPv4Address
     """The IPv4 address of the destination in the security connection."""
 
-    def __str__(self) -> str:
-        """Return a string representation of the IPSecConn model. Used in failure messages.
-
-        Examples
-        --------
-        - Source: 1.1.1.1 Destination: 2.2.2.2
-        """
-        return f"Source: {self.source_address} Destination: {self.destination_address}"
-
 
 class IPSecPeers(IPSecPeer):  # pragma: no cover
     """Alias for the IPSecPeers model to maintain backward compatibility.
