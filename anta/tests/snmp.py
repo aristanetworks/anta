@@ -27,8 +27,7 @@ def _get_snmp_group_failures(
     authentication: Literal["v3Auth", "v3Priv", "v3NoAuth"] | None,
     group_details: dict[str, Any],
 ) -> str:
-    """
-    Validate SNMP group configurations and return failure messages if issues are found.
+    """Validate SNMP group configurations and return failure messages if issues are found.
 
     Parameters
     ----------
