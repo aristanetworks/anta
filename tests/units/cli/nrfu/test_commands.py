@@ -76,6 +76,19 @@ def test_anta_nrfu_text(click_runner: CliRunner) -> None:
     assert "leaf1 :: VerifyEOSVersion :: SUCCESS" in result.output
 
 
+def test_anta_nrfu_text_multiple_failures(click_runner: CliRunner) -> None:
+    """Test anta nrfu text with multiple failures, catalog is given via env."""
+    result = click_runner.invoke(anta, ["nrfu", "text"], env={"ANTA_CATALOG": str(DATA_DIR / "test_catalog_double_failure.yml")})
+    assert result.exit_code == ExitCode.OK
+    assert (
+        """spine1 :: VerifyInterfacesSpeed :: FAILURE
+    Interface `Ethernet2` is not found.
+    Interface `Ethernet3` is not found.
+    Interface `Ethernet4` is not found."""
+        in result.output
+    )
+
+
 def test_anta_nrfu_json(click_runner: CliRunner) -> None:
     """Test anta nrfu, catalog is given via env."""
     result = click_runner.invoke(anta, ["nrfu", "json"])

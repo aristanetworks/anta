@@ -35,8 +35,6 @@ class VerifyTacacsSourceIntf(AntaTest):
     ```
     """
 
-    name = "VerifyTacacsSourceIntf"
-    description = "Verifies TACACS source-interface for a specified VRF."
     categories: ClassVar[list[str]] = ["aaa"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show tacacs", revision=1)]
 
@@ -81,8 +79,6 @@ class VerifyTacacsServers(AntaTest):
     ```
     """
 
-    name = "VerifyTacacsServers"
-    description = "Verifies TACACS servers are configured for a specified VRF."
     categories: ClassVar[list[str]] = ["aaa"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show tacacs", revision=1)]
 
@@ -134,8 +130,6 @@ class VerifyTacacsServerGroups(AntaTest):
     ```
     """
 
-    name = "VerifyTacacsServerGroups"
-    description = "Verifies if the provided TACACS server group(s) are configured."
     categories: ClassVar[list[str]] = ["aaa"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show tacacs", revision=1)]
 
@@ -184,8 +178,6 @@ class VerifyAuthenMethods(AntaTest):
     ```
     """
 
-    name = "VerifyAuthenMethods"
-    description = "Verifies the AAA authentication method lists for different authentication types (login, enable, dot1x)."
     categories: ClassVar[list[str]] = ["aaa"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show aaa methods authentication", revision=1)]
 
@@ -245,8 +237,6 @@ class VerifyAuthzMethods(AntaTest):
     ```
     """
 
-    name = "VerifyAuthzMethods"
-    description = "Verifies the AAA authorization method lists for different authorization types (commands, exec)."
     categories: ClassVar[list[str]] = ["aaa"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show aaa methods authorization", revision=1)]
 
@@ -301,8 +291,6 @@ class VerifyAcctDefaultMethods(AntaTest):
     ```
     """
 
-    name = "VerifyAcctDefaultMethods"
-    description = "Verifies the AAA accounting default method lists for different accounting types (system, exec, commands, dot1x)."
     categories: ClassVar[list[str]] = ["aaa"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show aaa methods accounting", revision=1)]
 
@@ -364,8 +352,6 @@ class VerifyAcctConsoleMethods(AntaTest):
     ```
     """
 
-    name = "VerifyAcctConsoleMethods"
-    description = "Verifies the AAA accounting console method lists for different accounting types (system, exec, commands, dot1x)."
     categories: ClassVar[list[str]] = ["aaa"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show aaa methods accounting", revision=1)]
 

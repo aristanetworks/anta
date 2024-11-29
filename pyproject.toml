@@ -45,6 +45,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3 :: Only",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Software Development :: Testing",
@@ -75,7 +76,7 @@ dev = [
   "pytest-metadata>=3.0.0",
   "pytest>=7.4.0",
   "respx>=0.21.1",
-  "ruff>=0.5.4,<0.7.0",
+  "ruff>=0.5.4,<0.9.0",
   "tox>=4.10.0,<5.0.0",
   "types-PyYAML",
   "types-pyOpenSSL",
@@ -238,7 +239,7 @@ envlist =
   clean,
   lint,
   type,
-  py{39,310,311,312},
+  py{39,310,311,312,313},
   report
 
 [gh-actions]
@@ -247,6 +248,7 @@ python =
   3.10: py310
   3.11: erase, py311, report
   3.12: py312
+  3.13: py313
 
 [testenv]
 description = Run pytest with {basepython}
@@ -337,10 +339,9 @@ select = ["ALL",
     # By enabling a convention for docstrings, ruff automatically ignore some rules that need to be
     # added back if we want them.
     # https://docs.astral.sh/ruff/faq/#does-ruff-support-numpy-or-google-style-docstrings
-    # TODO: Augment the numpy convention rules to make sure we add all the params
-    #       Uncomment below D417
     "D415",
     "D417",
+    "D212",
 ]
 ignore = [
   "COM812",  # Ignoring conflicting rules that may cause conflicts when used with the formatter
