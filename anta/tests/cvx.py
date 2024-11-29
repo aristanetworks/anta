@@ -7,7 +7,7 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, ClassVar, Literal, TypedDict
+from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
 from anta.models import AntaCommand, AntaTest
 
@@ -15,13 +15,6 @@ if TYPE_CHECKING:
     from anta.models import AntaTemplate
 from anta.input_models.cvx import CVXPeers
 from anta.tools import get_value
-
-
-class Peer(TypedDict):
-    """Class for holding CVX Peer information."""
-
-    peer_name: str
-    registration_state: str
 
 
 class VerifyMcsClientMounts(AntaTest):
@@ -106,7 +99,7 @@ class VerifyCVXClusterStatus(AntaTest):
     * Success: The test will pass if the CVX Server Cluster is enabled.
     * Failure: The test will fail if any of the following conditions are met:
         - If the CVX Status is disabled
-        - If the peers are not in "Registration ok" state
+        - If the peers are not in the expected state
 
     Examples
     --------
@@ -175,6 +168,12 @@ class VerifyCVXClusterStatus(AntaTest):
         if not (command_output.get("clusterMode") and cluster_status):
             self.result.is_failure("CVX Server is not a cluster")
             return False
+
+        # Check cluster role
+        if (cluster_role := cluster_status.get("role")) != self.inputs.role:
+            self.result.is_failure(f"CVX Role is not valid: {cluster_role}")
+            return False
+
         return True
 
     def _validate_peer_status(self, cluster_status: dict[str, Any] | None) -> bool:
@@ -183,40 +182,17 @@ class VerifyCVXClusterStatus(AntaTest):
             self.result.is_failure("Cluster status is missing")
             return False
 
-        peer_cluster = cluster_status.get("peerStatus")
-
-        # Check if peer_cluster is None or not sized
-        if not peer_cluster or not isinstance(peer_cluster, dict):
-            self.result.is_failure("Peer status data is invalid")
-            return False
+        peer_cluster = cluster_status.get("peerStatus", {})
 
         # Check peer count
         if len(peer_cluster) != len(self.inputs.peer_status):
             self.result.is_failure("Unexpected number of peers")
 
-        # Check cluster role
-        cluster_role = cluster_status.get("role")
-        if cluster_role != self.inputs.role:
-            self.result.is_failure(f"CVX Role is not valid: {cluster_role}")
-            return False
-
         # Check each peer
-        for peer in self.inputs.peer_status:
-            if not self._validate_individual_peer(peer, peer_cluster):
-                continue
-        return True
+        return all(self._validate_individual_peer(peer, peer_cluster) for peer in self.inputs.peer_status)
 
-    def _validate_individual_peer(self, peer: Peer, peer_cluster: dict[str, Any]) -> bool:
-        """Check an individual peer in the cluster.
-
-        Args:
-            peer (Peer): The peer object containing expected peer details.
-            peer_cluster (dict[str, Any]): The dictionary representing the peer statuses in the cluster.
-
-        Returns
-        -------
-            bool: True if the peer is valid, False otherwise.
-        """
+    def _validate_individual_peer(self, peer: CVXPeers, peer_cluster: dict[str, Any]) -> bool:
+        """Check an individual peer in the cluster."""
         # Retrieve the peer status from the peer cluster
         eos_peer_status = get_value(peer_cluster, peer.peer_name, separator="..")
         if eos_peer_status is None:
