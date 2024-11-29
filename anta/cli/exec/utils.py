@@ -154,7 +154,7 @@ async def collect_show_tech(inv: AntaInventory, root_dir: Path, *, configure: bo
                 )
                 logger.warning("Configuring 'aaa authorization exec default local' on device %s", device.name)
                 command = AntaCommand(command="show running-config | include aaa authorization exec default local", ofmt="text")
-                await device._client.cli(commands=commands)
+                await device._session.cli(commands=commands)
                 logger.info("Configured 'aaa authorization exec default local' on device %s", device.name)
 
             logger.debug("'aaa authorization exec default local' is already configured on device %s", device.name)

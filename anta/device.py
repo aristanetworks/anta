@@ -324,20 +324,20 @@ class AsyncEOSDevice(AntaDevice):
         self._enable_password = enable_password
 
         # Create the async eAPI client
-        self._client = self._create_asynceapi_client(host, port, username, password, proto, timeout)
+        self._session = self._create_asynceapi_session(host, port, username, password, proto, timeout)
 
         # Create the SSH connection options
         self._ssh_opts = self._create_ssh_options(host, ssh_port, username, password, insecure=insecure)
 
-    def _create_asynceapi_client(
+    def _create_asynceapi_session(
         self, host: str, port: int | None, username: str, password: str, proto: Literal["http", "https"], timeout: float | None
     ) -> asynceapi.Device:
         """Create the asynceapi client with the provided parameters."""
         # Get resource limits and timeout values
-        client_limits = get_httpx_limits()
-        client_timeout = get_httpx_timeout(timeout)
+        session_limits = get_httpx_limits()
+        session_timeout = get_httpx_timeout(timeout)
 
-        return asynceapi.Device(host=host, port=port, username=username, password=password, proto=proto, timeout=client_timeout, limits=client_limits)
+        return asynceapi.Device(host=host, port=port, username=username, password=password, proto=proto, timeout=session_timeout, limits=session_limits)
 
     def _create_ssh_options(self, host: str, port: int, username: str, password: str, *, insecure: bool) -> SSHClientConnectionOptions:
         """Create the SSH connection options with the provided parameters."""
@@ -351,8 +351,8 @@ class AsyncEOSDevice(AntaDevice):
         https://rich.readthedocs.io/en/stable/pretty.html#rich-repr-protocol.
         """
         yield from super().__rich_repr__()
-        yield ("host", self._client.host)
-        yield ("eapi_port", self._client.port)
+        yield ("host", self._session.host)
+        yield ("eapi_port", self._session.port)
         yield ("username", self._ssh_opts.username)
         yield ("enable", self.enable)
         yield ("insecure", self._ssh_opts.known_hosts is None)
@@ -361,7 +361,7 @@ class AsyncEOSDevice(AntaDevice):
             removed_pw = "<removed>"
             _ssh_opts["password"] = removed_pw
             _ssh_opts["kwargs"]["password"] = removed_pw
-            yield ("_client", vars(self._client))
+            yield ("_session", vars(self._session))
             yield ("_ssh_opts", _ssh_opts)
 
     def __repr__(self) -> str:
@@ -373,8 +373,8 @@ class AsyncEOSDevice(AntaDevice):
             f"is_online={self.is_online!r}, "
             f"established={self.established!r}, "
             f"disable_cache={self.cache is None!r}, "
-            f"host={self._client.host!r}, "
-            f"eapi_port={self._client.port!r}, "
+            f"host={self._session.host!r}, "
+            f"eapi_port={self._session.port!r}, "
             f"username={self._ssh_opts.username!r}, "
             f"enable={self.enable!r}, "
             f"insecure={self._ssh_opts.known_hosts is None!r})"
@@ -386,7 +386,7 @@ class AsyncEOSDevice(AntaDevice):
 
         This covers the use case of port forwarding when the host is localhost and the devices have different ports.
         """
-        return (self._client.host, self._client.port)
+        return (self._session.host, self._session.port)
 
     async def _collect(self, command: AntaCommand, *, collection_id: str | None = None) -> None:  # noqa: C901  function is too complex - because of many required except blocks
         """Collect device command output from EOS using aio-eapi.
@@ -415,7 +415,7 @@ class AsyncEOSDevice(AntaDevice):
             commands.append({"cmd": "enable"})
         commands += [{"cmd": command.command, "revision": command.revision}] if command.revision else [{"cmd": command.command}]
         try:
-            response: list[dict[str, Any] | str] = await self._client.cli(
+            response: list[dict[str, Any] | str] = await self._session.cli(
                 commands=commands,
                 ofmt=command.ofmt,
                 version=command.version,
@@ -437,7 +437,7 @@ class AsyncEOSDevice(AntaDevice):
         except TimeoutException as e:
             # This block catches Timeout exceptions.
             command.errors = [exc_to_str(e)]
-            timeouts = self._client.timeout.as_dict()
+            timeouts = self._session.timeout.as_dict()
             logger.error(
                 "%s occurred while sending a command to %s.\n"
                 "Current timeouts: Connect: %s | Read: %s | Write: %s | Pool: %s\n"
@@ -475,7 +475,7 @@ class AsyncEOSDevice(AntaDevice):
         - hw_model: The hardware model of the device
         """
         logger.debug("Refreshing device %s", self.name)
-        self.is_online = await self._client.check_connection()
+        self.is_online = await self._session.check_connection()
         if self.is_online:
             show_version = AntaCommand(command="show version")
             await self._collect(show_version)

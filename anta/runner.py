@@ -59,7 +59,7 @@ def log_run_information(
         System file descriptor limit.
     """
     # TODO: 34 is a magic numbers from RichHandler formatting catering for date, level and path
-    width = min(int(console.width) - 34, len("Maximum number of open file descriptors for the current ANTA process: 0000000000\n"))
+    width = min(int(console.width) - 34, len("Devices: 000 total, 000 established\n"))
 
     devices_total, devices_established = device_count
 
