@@ -7,7 +7,7 @@ anta_title: Retrieving Tests information
   ~ that can be found in the LICENSE file.
   -->
 
-`anta get tests` commands allow to list the tests available to ANTA.
+`anta get tests` commands help you discover available tests in ANTA.
 
 ### Command overview
 
@@ -27,7 +27,7 @@ Options:
 ```
 
 !!! tip
-    By default `anta get tests` will retrieve the tests available in ANTA
+    By default, `anta get tests` will retrieve all tests available in ANTA.
 
 ### Examples
 
@@ -93,7 +93,7 @@ anta.tests.aaa:
 
 !!! tip
 
-    The test check is using `startswith` in python so you can retrieve all the tests starting with a certain string
+    You can filter tests by providing a prefix - ANTA will return all tests that start with your specified string.
 
 ```yaml title="anta get tests --test VerifyTacacs"
 anta.tests.aaa:
