@@ -108,3 +108,19 @@ repos:
           - --config=.github/markdownlint.yaml
           - --ignore-path=.github/markdownlintignore
           - --fix
+
+  - repo: local
+    hooks:
+      - id: examples-test
+        name: Generate examples/tests.yaml
+        entry: >-
+          sh -c "docs/scripts/generate_examples_tests.py"
+        language: python
+        types: [python]
+        files: anta/
+        verbose: true
+        pass_filenames: false
+        additional_dependencies:
+          - anta[cli]
+          # TODO: next can go once we have it added to anta properly
+          - numpydoc
