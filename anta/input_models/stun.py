@@ -12,8 +12,8 @@ from pydantic import BaseModel, ConfigDict
 from anta.custom_types import Port
 
 
-class ClientAddress(BaseModel):
-    """STUN (Session Traversal Utilities for NAT) model represents the configuration of an IPv4-based client."""
+class StunClientTranslation(BaseModel):
+    """STUN (Session Traversal Utilities for NAT) model represents the configuration of an IPv4-based client translations."""
 
     model_config = ConfigDict(extra="forbid")
     source_address: IPv4Address
@@ -26,7 +26,7 @@ class ClientAddress(BaseModel):
     """The public-facing port number of the STUN client, discovered via the STUN server."""
 
     def __str__(self) -> str:
-        """Return a human-readable string representation of the ClientAddress for reporting.
+        """Return a human-readable string representation of the StunClientTranslation for reporting.
 
         Examples
         --------

@@ -7,13 +7,13 @@ from __future__ import annotations
 
 from typing import Any
 
-from anta.tests.stun import VerifyStunClient, VerifyStunServer
+from anta.tests.stun import VerifyStunClientTranslation, VerifyStunServer
 from tests.units.anta_tests import test
 
 DATA: list[dict[str, Any]] = [
     {
         "name": "success",
-        "test": VerifyStunClient,
+        "test": VerifyStunClientTranslation,
         "eos_data": [
             {
                 "bindings": {
@@ -60,7 +60,7 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "failure-incorrect-public-ip",
-        "test": VerifyStunClient,
+        "test": VerifyStunClientTranslation,
         "eos_data": [
             {
                 "bindings": {
@@ -95,7 +95,7 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "failure-no-client",
-        "test": VerifyStunClient,
+        "test": VerifyStunClientTranslation,
         "eos_data": [
             {"bindings": {}},
             {"bindings": {}},
@@ -113,7 +113,7 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "failure-incorrect-public-port",
-        "test": VerifyStunClient,
+        "test": VerifyStunClientTranslation,
         "eos_data": [
             {"bindings": {}},
             {
@@ -142,7 +142,7 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "failure-all-type",
-        "test": VerifyStunClient,
+        "test": VerifyStunClientTranslation,
         "eos_data": [
             {"bindings": {}},
             {

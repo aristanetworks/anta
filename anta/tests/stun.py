@@ -9,12 +9,12 @@ from __future__ import annotations
 
 from typing import ClassVar
 
-from anta.input_models.stun import ClientAddress
+from anta.input_models.stun import StunClientTranslation
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_value
 
 
-class VerifyStunClient(AntaTest):
+class VerifyStunClientTranslation(AntaTest):
     """Verifies the translation for a source address on a STUN client.
 
     This test performs the following checks for each specified address family:
@@ -35,7 +35,7 @@ class VerifyStunClient(AntaTest):
     --------
     ```yaml
     anta.tests.stun:
-      - VerifyStunClient:
+      - VerifyStunClientTranslation:
           stun_clients:
             - source_address: 172.18.3.2
               public_address: 172.18.3.21
@@ -52,11 +52,11 @@ class VerifyStunClient(AntaTest):
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show stun client translations {source_address} {source_port}", revision=1)]
 
     class Input(AntaTest.Input):
-        """Input model for the VerifyStunClient test."""
+        """Input model for the VerifyStunClientTranslation test."""
 
-        stun_clients: list[ClientAddress]
+        stun_clients: list[StunClientTranslation]
         """List of STUN clients."""
-        ClientAddress: ClassVar[type[ClientAddress]] = ClientAddress
+        StunClientTranslation: ClassVar[type[StunClientTranslation]] = StunClientTranslation
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each STUN translation."""
@@ -64,7 +64,7 @@ class VerifyStunClient(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """Main test function for VerifyStunClient."""
+        """Main test function for VerifyStunClientTranslation."""
         self.result.is_success()
 
         # Iterate over each command output and corresponding client input

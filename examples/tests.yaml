@@ -744,8 +744,7 @@ anta.tests.stp:
       # Verifies the number of changes across all interfaces in the Spanning Tree Protocol (STP) topology is below a threshold.
       threshold: 10
 anta.tests.stun:
-  - VerifyStunClient:
-      # Verifies STUN client settings, including local IP/port and optionally public IP/port.
+  - VerifyStunClientTranslation:
       stun_clients:
         - source_address: 172.18.3.2
           public_address: 172.18.3.21
