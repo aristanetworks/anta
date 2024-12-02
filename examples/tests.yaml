@@ -410,6 +410,12 @@ anta.tests.snmp:
       error_counters:
         - inVersionErrs
         - inBadCommunityNames
+  - VerifySnmpLogging:
+      hosts:
+        - hostname: 192.168.1.100
+          vrf: default
+        - hostname: 192.168.1.103
+          vrf: MGMT
 
 anta.tests.software:
   - VerifyEOSVersion:
