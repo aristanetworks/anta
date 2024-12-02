@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.46">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.47">
     
     
       
@@ -393,6 +393,8 @@
       
         
       
+        
+      
     
     
     
@@ -538,6 +540,27 @@
   
   <span class="md-ellipsis">
     Get Inventory Information
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cli/get-tests/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Get Tests Information
   </span>
   
 
@@ -797,6 +820,8 @@
       
         
       
+        
+      
     
     
     
@@ -942,6 +967,27 @@
   
   <span class="md-ellipsis">
     Connectivity
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tests.cvx/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CVX
   </span>
   
 
@@ -1229,10 +1275,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_19" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_20" checked>
         
           
-          <label class="md-nav__link" for="__nav_7_19" id="__nav_7_19_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7_20" id="__nav_7_20_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -1243,8 +1289,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_19_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_7_19">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_20_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7_20">
             <span class="md-nav__icon md-icon"></span>
             Routing
           </label>
@@ -3927,8 +3973,7 @@
 <span class="normal">432</span>
 <span class="normal">433</span>
 <span class="normal">434</span>
-<span class="normal">435</span>
-<span class="normal">436</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyISISSegmentRoutingAdjacencySegments</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">435</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyISISSegmentRoutingAdjacencySegments</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verify that all expected Adjacency segments are correctly visible for each interface.</span>
 
 <span class="sd">    Expected Results</span>
@@ -3950,7 +3995,6 @@
 <span class="sd">                  - interface: Ethernet2</span>
 <span class="sd">                    address: 10.0.1.3</span>
 <span class="sd">                    sid_origin: dynamic</span>
-
 <span class="sd">    ```</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -4178,7 +4222,8 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/routing/isis.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">439</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">438</span>
+<span class="normal">439</span>
 <span class="normal">440</span>
 <span class="normal">441</span>
 <span class="normal">442</span>
@@ -4255,8 +4300,7 @@
 <span class="normal">513</span>
 <span class="normal">514</span>
 <span class="normal">515</span>
-<span class="normal">516</span>
-<span class="normal">517</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyISISSegmentRoutingDataplane</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">516</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyISISSegmentRoutingDataplane</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verify dataplane of a list of ISIS-SR instances.</span>
 
 <span class="sd">    Expected Results</span>
@@ -4371,21 +4415,21 @@
 <details class="example" open>
   <summary>Examples</summary>
         <div class="highlight"><pre><span></span><code><span class="nt">anta.tests.routing</span><span class="p">:</span>
-<span class="nt">isis</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">isis</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyISISSegmentRoutingTunnels</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">entries</span><span class="p">:</span>
-<span class="w">        </span><span class="c1"># Check only endpoint</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">endpoint</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.0.0.122/32</span>
-<span class="w">        </span><span class="c1"># Check endpoint and via TI-LFA</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">endpoint</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.0.0.13/32</span>
-<span class="w">          </span><span class="nt">vias</span><span class="p">:</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tunnel</span>
-<span class="w">              </span><span class="nt">tunnel_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ti-lfa</span>
-<span class="w">        </span><span class="c1"># Check endpoint and via IP routers</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">endpoint</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.0.0.14/32</span>
-<span class="w">          </span><span class="nt">vias</span><span class="p">:</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ip</span>
-<span class="w">              </span><span class="nt">nexthop</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.1.1.1</span>
+<span class="w">          </span><span class="c1"># Check only endpoint</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">endpoint</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.0.0.122/32</span>
+<span class="w">          </span><span class="c1"># Check endpoint and via TI-LFA</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">endpoint</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.0.0.13/32</span>
+<span class="w">            </span><span class="nt">vias</span><span class="p">:</span>
+<span class="w">              </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tunnel</span>
+<span class="w">                </span><span class="nt">tunnel_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ti-lfa</span>
+<span class="w">          </span><span class="c1"># Check endpoint and via IP routers</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">endpoint</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.0.0.14/32</span>
+<span class="w">            </span><span class="nt">vias</span><span class="p">:</span>
+<span class="w">              </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ip</span>
+<span class="w">                </span><span class="nt">nexthop</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.1.1.1</span>
 </code></pre></div>
 </details>
 
@@ -4561,7 +4605,8 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/routing/isis.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">520</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">519</span>
+<span class="normal">520</span>
 <span class="normal">521</span>
 <span class="normal">522</span>
 <span class="normal">523</span>
@@ -4771,8 +4816,7 @@
 <span class="normal">727</span>
 <span class="normal">728</span>
 <span class="normal">729</span>
-<span class="normal">730</span>
-<span class="normal">731</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyISISSegmentRoutingTunnels</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">730</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyISISSegmentRoutingTunnels</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verify ISIS-SR tunnels computed by device.</span>
 
 <span class="sd">    Expected Results</span>
@@ -4785,21 +4829,21 @@
 <span class="sd">    --------</span>
 <span class="sd">    ```yaml</span>
 <span class="sd">    anta.tests.routing:</span>
-<span class="sd">    isis:</span>
+<span class="sd">      isis:</span>
 <span class="sd">        - VerifyISISSegmentRoutingTunnels:</span>
 <span class="sd">            entries:</span>
-<span class="sd">            # Check only endpoint</span>
-<span class="sd">            - endpoint: 1.0.0.122/32</span>
-<span class="sd">            # Check endpoint and via TI-LFA</span>
-<span class="sd">            - endpoint: 1.0.0.13/32</span>
-<span class="sd">              vias:</span>
-<span class="sd">                - type: tunnel</span>
-<span class="sd">                  tunnel_id: ti-lfa</span>
-<span class="sd">            # Check endpoint and via IP routers</span>
-<span class="sd">            - endpoint: 1.0.0.14/32</span>
-<span class="sd">              vias:</span>
-<span class="sd">                - type: ip</span>
-<span class="sd">                  nexthop: 1.1.1.1</span>
+<span class="sd">              # Check only endpoint</span>
+<span class="sd">              - endpoint: 1.0.0.122/32</span>
+<span class="sd">              # Check endpoint and via TI-LFA</span>
+<span class="sd">              - endpoint: 1.0.0.13/32</span>
+<span class="sd">                vias:</span>
+<span class="sd">                  - type: tunnel</span>
+<span class="sd">                    tunnel_id: ti-lfa</span>
+<span class="sd">              # Check endpoint and via IP routers</span>
+<span class="sd">              - endpoint: 1.0.0.14/32</span>
+<span class="sd">                vias:</span>
+<span class="sd">                  - type: ip</span>
+<span class="sd">                    nexthop: 1.1.1.1</span>
 <span class="sd">    ```</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 

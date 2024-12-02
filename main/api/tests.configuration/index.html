@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.46">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.47">
     
     
       
@@ -393,6 +393,8 @@
       
         
       
+        
+      
     
     
     
@@ -538,6 +540,27 @@
   
   <span class="md-ellipsis">
     Get Inventory Information
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cli/get-tests/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Get Tests Information
   </span>
   
 
@@ -740,6 +763,8 @@
   
     
     
+      
+        
       
         
       
@@ -1050,6 +1075,27 @@
   
   
     <li class="md-nav__item">
+      <a href="../tests.cvx/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CVX
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../tests.field_notices/" class="md-nav__link">
         
   
@@ -1319,10 +1365,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_19" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_20" >
         
           
-          <label class="md-nav__link" for="__nav_7_19" id="__nav_7_19_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7_20" id="__nav_7_20_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -1333,8 +1379,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_19_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_7_19">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_20_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_20">
             <span class="md-nav__icon md-icon"></span>
             Routing
           </label>
@@ -2480,9 +2526,9 @@ drastically impact performance and should only be used if no other test is avail
   <summary>Examples</summary>
         <div class="highlight"><pre><span></span><code><span class="nt">anta.tests.configuration</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyRunningConfigLines</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">regex_patterns</span><span class="p">:</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;^enable</span><span class="nv"> </span><span class="s">password.*$&quot;</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;bla</span><span class="nv"> </span><span class="s">bla&quot;</span>
+<span class="w">      </span><span class="nt">regex_patterns</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;^enable</span><span class="nv"> </span><span class="s">password.*$&quot;</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;bla</span><span class="nv"> </span><span class="s">bla&quot;</span>
 </code></pre></div>
 </details>
 
@@ -2607,9 +2653,9 @@ drastically impact performance and should only be used if no other test is avail
 <span class="sd">    ```yaml</span>
 <span class="sd">    anta.tests.configuration:</span>
 <span class="sd">      - VerifyRunningConfigLines:</span>
-<span class="sd">            regex_patterns:</span>
-<span class="sd">                - &quot;^enable password.*$&quot;</span>
-<span class="sd">                - &quot;bla bla&quot;</span>
+<span class="sd">          regex_patterns:</span>
+<span class="sd">            - &quot;^enable password.*$&quot;</span>
+<span class="sd">            - &quot;bla bla&quot;</span>
 <span class="sd">    ```</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
