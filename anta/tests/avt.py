@@ -121,38 +121,35 @@ class VerifyAVTSpecificPath(AntaTest):
         for avt_path in self.inputs.avt_paths:
             if (path_output := get_value(self.instance_commands[0].json_output, f"vrfs.{avt_path.vrf}.avts.{avt_path.avt_name}.avtPaths")) is None:
                 self.result.is_failure("No AVT path configured")
-                continue
+                return
 
             path_found = path_type_found = False
 
             # Check each AVT path
             for path, path_data in path_output.items():
-                # If the path does not match the expected destination and next hop, skip to the next path
-                if path_data.get("destination") != str(avt_path.destination) or path_data.get("nexthopAddr") != str(avt_path.next_hop):
-                    continue
-                path_found = True
-
-                # If the path type does not match the expected path type, skip to the next path
+                dest = path_data.get("destination")
+                nexthop = path_data.get("nexthopAddr")
                 path_type = "direct" if get_value(path_data, "flags.directPath") else "multihop"
-                if avt_path.path_type and path_type != avt_path.path_type:
-                    continue
-                path_type_found = True
 
-                # Check the path status and type against the expected values
-                valid = get_value(path_data, "flags.valid")
-                active = get_value(path_data, "flags.active")
-                if not all([valid, active]):
-                    self.result.is_failure(f"{avt_path} - Incorrect path {path} - Valid: {valid}, Active: {active}")
+                if not avt_path.path_type:
+                    path_found = all([dest == str(avt_path.destination), nexthop == str(avt_path.next_hop)])
+
+                else:
+                    path_type_found = all([dest == str(avt_path.destination), nexthop == str(avt_path.next_hop), path_type == avt_path.path_type])
+                    if path_type_found:
+                        path_found = True
+                        # Check the path status and type against the expected values
+                        valid = get_value(path_data, "flags.valid")
+                        active = get_value(path_data, "flags.active")
+                        if not all([valid, active]):
+                            self.result.is_failure(f"{avt_path} - Incorrect path {path} - Valid: {valid}, Active: {active}")
 
             # If no matching path found, mark the test as failed
             if not path_found:
                 if avt_path.path_type and not path_type_found:
-                    self.result.is_failure(f"{avt_path} Path Type: {avt_path.path_type} - Path not found.")
+                    self.result.is_failure(f"{avt_path} Path Type: {avt_path.path_type} - Path not found")
                 else:
-                    self.result.is_failure(f"{avt_path} - Path not found.")
-
-            elif avt_path.path_type and not path_type_found:
-                self.result.is_failure(f"{avt_path} Path Type: {avt_path.path_type} - Path not found.")
+                    self.result.is_failure(f"{avt_path} - Path not found")
 
 
 class VerifyAVTRole(AntaTest):
