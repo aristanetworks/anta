@@ -25,8 +25,9 @@ class VerifyGreenTCounters(AntaTest):
     --------
     ```yaml
     anta.tests.greent:
-      - VerifyGreenT:
+      - VerifyGreenTCounters:
     ```
+
     """
 
     description = "Verifies if the GreenT counters are incremented."
@@ -56,8 +57,9 @@ class VerifyGreenT(AntaTest):
     --------
     ```yaml
     anta.tests.greent:
-      - VerifyGreenTCounters:
+      - VerifyGreenT:
     ```
+
     """
 
     description = "Verifies if a GreenT policy other than the default is created."

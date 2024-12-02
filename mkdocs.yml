@@ -175,6 +175,7 @@ nav:
     - Inventory from CVP: cli/inv-from-cvp.md
     - Inventory from Ansible: cli/inv-from-ansible.md
     - Get Inventory Information: cli/get-inventory-information.md
+    - Get Tests Information: cli/get-tests.md
     - Check commands: cli/check.md
     - Debug commands: cli/debug.md
     - Tag Management: cli/tag-management.md
@@ -189,6 +190,7 @@ nav:
     - BFD: api/tests.bfd.md
     - Configuration: api/tests.configuration.md
     - Connectivity: api/tests.connectivity.md
+    - CVX: api/tests.cvx.md
     - Field Notices: api/tests.field_notices.md
     - Flow Tracking: api/tests.flow_tracking.md
     - GreenT: api/tests.greent.md
