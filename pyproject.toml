@@ -75,7 +75,7 @@ dev = [
   "pytest-httpx>=0.30.0",
   "pytest-metadata>=3.0.0",
   "pytest>=7.4.0",
-  "respx>=0.21.1",
+  "respx @ git+https://github.com/ndhansen/respx",  # until https://github.com/lundberg/respx/pull/278 is merged
   "ruff>=0.5.4,<0.9.0",
   "tox>=4.10.0,<5.0.0",
   "types-PyYAML",
@@ -342,9 +342,9 @@ select = ["ALL",
     # By enabling a convention for docstrings, ruff automatically ignore some rules that need to be
     # added back if we want them.
     # https://docs.astral.sh/ruff/faq/#does-ruff-support-numpy-or-google-style-docstrings
+    "D212",
     "D415",
     "D417",
-    "D212",
 ]
 ignore = [
   "COM812",  # Ignoring conflicting rules that may cause conflicts when used with the formatter

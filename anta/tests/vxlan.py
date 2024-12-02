@@ -23,8 +23,8 @@ if TYPE_CHECKING:
 class VerifyVxlan1Interface(AntaTest):
     """Verifies if the Vxlan1 interface is configured and 'up/up'.
 
-    Warning
-    -------
+    Warnings
+    --------
     The name of this test has been updated from 'VerifyVxlan' for better representation.
 
     Expected Results
