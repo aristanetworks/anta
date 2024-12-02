@@ -98,16 +98,16 @@ class VerifyBFDPeersIntervals(AntaTest):
 
       1. Confirms that the specified VRF is configured.
       2. Verifies that the peer exists in the BFD configuration.
-      3. Confirms that BFD peer is correctly configured with the `Transmit interval, Receive interval and Multiplier`.
+      3. Confirms that BFD peer is correctly configured with the `Transmit interval, Receive interval, Detection time and Multiplier`.
 
     Expected Results
     ----------------
     * Success: If all of the following conditions are met:
         - All specified peers are found in the BFD configuration within the specified VRF.
-        - All BFD peers are correctly configured with the `Transmit interval, Receive interval and Multiplier`.
+        - All BFD peers are correctly configured with the `Transmit interval, Receive interval, Detection time and Multiplier`.
     * Failure: If any of the following occur:
         - A specified peer is not found in the BFD configuration within the specified VRF.
-        - Any BFD peer not correctly configured with the `Transmit interval, Receive interval and Multiplier`.
+        - Any BFD peer not correctly configured with the `Transmit interval, Receive interval, Detection time and Multiplier`.
 
     Examples
     --------
@@ -147,13 +147,13 @@ class VerifyBFDPeersIntervals(AntaTest):
         self.result.is_success()
 
         # Iterating over BFD peers
-        for bfd_peers in self.inputs.bfd_peers:
-            peer = str(bfd_peers.peer_address)
-            vrf = bfd_peers.vrf
-            tx_interval = bfd_peers.tx_interval
-            rx_interval = bfd_peers.rx_interval
-            multiplier = bfd_peers.multiplier
-            detect_time = bfd_peers.detection_time
+        for bfd_peer in self.inputs.bfd_peers:
+            peer = str(bfd_peer.peer_address)
+            vrf = bfd_peer.vrf
+            tx_interval = bfd_peer.tx_interval
+            rx_interval = bfd_peer.rx_interval
+            multiplier = bfd_peer.multiplier
+            detect_time = bfd_peer.detection_time
 
             # Check if BFD peer configured
             bfd_output = get_value(
@@ -172,19 +172,17 @@ class VerifyBFDPeersIntervals(AntaTest):
             op_detection_time = bfd_details.get("detectTime") // 1000
             detect_multiplier = bfd_details.get("detectMult")
 
-            intervals_ok = op_tx_interval == tx_interval and op_rx_interval == rx_interval and detect_multiplier == multiplier and op_detection_time == detect_time
-
-            # Check timers of BFD peer
-            if not intervals_ok:
-                failures[peer] = {
-                    vrf: {"tx_interval": op_tx_interval, "rx_interval": op_rx_interval, "multiplier": detect_multiplier, "detection_time": op_detection_time}
-                }
+            if op_tx_interval != tx_interval:
+                self.result.is_failure(f"{bfd_peer} - Incorrect Transmit interval - Expected: {tx_interval} Actual: {op_tx_interval}")
 
             if op_rx_interval != rx_interval:
                 self.result.is_failure(f"{bfd_peer} - Incorrect Receive interval - Expected: {rx_interval} Actual: {op_rx_interval}")
 
             if detect_multiplier != multiplier:
                 self.result.is_failure(f"{bfd_peer} - Incorrect Multiplier - Expected: {multiplier} Actual: {detect_multiplier}")
+
+            if op_detection_time != detect_time:
+                self.result.is_failure(f"{bfd_peer} - Incorrect Detection Time - Expected: {detect_time} Actual: {op_detection_time}")
 
 
 class VerifyBFDPeersHealth(AntaTest):
