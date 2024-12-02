@@ -147,8 +147,7 @@ class VerifyCVXClusterStatus(AntaTest):
             return
 
         # Validate peer status
-        if not self._validate_peer_status(command_output.get("clusterStatus")):
-            return
+       self._validate_peer_status(command_output.get("clusterStatus"))
 
     def _validate_cluster_status(self, command_output: dict[str, Any]) -> bool:
         """Check if the cluster status is available."""
