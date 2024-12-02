@@ -133,7 +133,6 @@ class VerifyDNSServers(AntaTest):
     ```
     """
 
-    description = "Verifies if the DNS servers are correctly configured."
     categories: ClassVar[list[str]] = ["services"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip name-server", revision=1)]
 
@@ -163,7 +162,7 @@ class VerifyDNSServers(AntaTest):
 
             # Check if the DNS server priority matches with expected.
             if output["priority"] != priority:
-                self.result.is_failure(f"{server} - Incorrect priority; Priority: {output['priority']}")
+                self.result.is_failure(f"{server} - Incorrect priority - Priority: {output['priority']}")
 
 
 class VerifyErrdisableRecovery(AntaTest):
