@@ -167,14 +167,14 @@ class VerifyAuthenMethods(AntaTest):
     ```yaml
     anta.tests.aaa:
       - VerifyAuthenMethods:
-        methods:
-          - local
-          - none
-          - logging
-        types:
-          - login
-          - enable
-          - dot1x
+          methods:
+            - local
+            - none
+            - logging
+          types:
+            - login
+            - enable
+            - dot1x
     ```
     """
 

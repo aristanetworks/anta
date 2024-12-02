@@ -483,10 +483,10 @@ class VerifyBannerLogin(AntaTest):
     ```yaml
     anta.tests.security:
       - VerifyBannerLogin:
-            login_banner: |
-                # Copyright (c) 2023-2024 Arista Networks, Inc.
-                # Use of this source code is governed by the Apache License 2.0
-                # that can be found in the LICENSE file.
+          login_banner: |
+            # Copyright (c) 2023-2024 Arista Networks, Inc.
+            # Use of this source code is governed by the Apache License 2.0
+            # that can be found in the LICENSE file.
     ```
     """
 
@@ -525,10 +525,10 @@ class VerifyBannerMotd(AntaTest):
     ```yaml
     anta.tests.security:
       - VerifyBannerMotd:
-            motd_banner: |
-                # Copyright (c) 2023-2024 Arista Networks, Inc.
-                # Use of this source code is governed by the Apache License 2.0
-                # that can be found in the LICENSE file.
+          motd_banner: |
+            # Copyright (c) 2023-2024 Arista Networks, Inc.
+            # Use of this source code is governed by the Apache License 2.0
+            # that can be found in the LICENSE file.
     ```
     """
 

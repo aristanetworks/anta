@@ -94,9 +94,9 @@ class VerifyRunningConfigLines(AntaTest):
     ```yaml
     anta.tests.configuration:
       - VerifyRunningConfigLines:
-            regex_patterns:
-                - "^enable password.*$"
-                - "bla bla"
+          regex_patterns:
+            - "^enable password.*$"
+            - "bla bla"
     ```
     """
 
