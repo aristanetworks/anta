@@ -130,7 +130,6 @@ class VerifyCVXClusterStatus(AntaTest):
         cluster_mode: bool
         role: Literal["Master", "Standby", "Disconnected"] = "Master"
         peer_status: list[CVXPeers]
-        CVXPeers: ClassVar[type[CVXPeers]] = CVXPeers
 
     @AntaTest.anta_test
     def test(self) -> None:
