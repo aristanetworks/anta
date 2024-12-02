@@ -410,6 +410,20 @@ anta.tests.snmp:
       error_counters:
         - inVersionErrs
         - inBadCommunityNames
+  - VerifySNMPNotificationHost:
+      notification_hosts:
+        - hostname: 192.168.1.100
+          vrf: default
+          notification_type: trap
+          version: v3
+          udp_port: 162
+          user: public
+        - hostname: 192.168.1.101
+          vrf: default
+          notification_type: trap
+          version: v2c
+          udp_port: 162
+          community_string: public
 
 anta.tests.software:
   - VerifyEOSVersion:
