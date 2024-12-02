@@ -237,6 +237,7 @@ anta.tests.lanz:
   - VerifyLANZ:
 
 anta.tests.logging:
+  - VerifySyslogLogging:
   - VerifyLoggingPersistent:
   - VerifyLoggingSourceIntf:
       interface: Management1
