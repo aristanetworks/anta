@@ -7,6 +7,9 @@ anta_title: ANTA catalog for BGP tests
   ~ that can be found in the LICENSE file.
   -->
 
+!!! info "`multi-agent` Service Routing Protocols Model Requirements"
+    The BGP tests in this section are only supported on switches running the `multi-agent` routing protocols model. Starting from EOS version 4.30.1F, `service routing protocols model` is set to `multi-agent` by default. These BGP commands are **not** compatible with switches running the legacy `ribd` routing protocols model and might fail if attempted.
+
 # Tests
 
 ::: anta.tests.routing.bgp
@@ -39,3 +42,4 @@ anta_title: ANTA catalog for BGP tests
         - "!^__str__"
         - "!AFI_SAFI_EOS_KEY"
         - "!eos_key"
+        - "!BgpAfi"
