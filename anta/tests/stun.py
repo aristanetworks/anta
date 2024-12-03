@@ -7,8 +7,7 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from typing import Any, ClassVar
-from warnings import warn
+from typing import ClassVar
 
 from anta.decorators import deprecated_test
 from anta.input_models.stun import StunClientTranslation
@@ -118,7 +117,7 @@ class VerifyStunClient(VerifyStunClientTranslation):
 
     @deprecated_test("VerifyStunClientTranslation")
     def test(self):
-        super.test()
+        super().test()
 
 
 class VerifyStunServer(AntaTest):
