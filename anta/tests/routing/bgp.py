@@ -273,6 +273,7 @@ class VerifyBGPPeersHealth(AntaTest):
                 # Check if the BGP session is established
                 if peer["state"] != "Established":
                     self.result.is_failure(f"{address_family} Peer: {peer['peerAddress']} - Session state is not established - State: {peer['state']}")
+                    continue
 
                 # Check if the AFI/SAFI state is negotiated
                 capability_status = get_value(peer, f"neighborCapabilities.multiprotocolCaps.{address_family.eos_key}")
@@ -280,10 +281,11 @@ class VerifyBGPPeersHealth(AntaTest):
                     self.result.is_failure(f"{address_family} Peer: {peer['peerAddress']} - AFI/SAFI state is not negotiated - {format_data(capability_status)}")
 
                 # Check the TCP session message queues
-                inq = peer["peerTcpInfo"]["inputQueueLength"]
-                outq = peer["peerTcpInfo"]["outputQueueLength"]
-                if address_family.check_tcp_queues and (inq != 0 or outq != 0):
-                    self.result.is_failure(f"{address_family} Peer: {peer['peerAddress']} - Session has non-empty message queues - InQ: {inq}, OutQ: {outq}")
+                if address_family.check_tcp_queues:
+                    inq = peer["peerTcpInfo"]["inputQueueLength"]
+                    outq = peer["peerTcpInfo"]["outputQueueLength"]
+                    if inq != 0 or outq != 0:
+                        self.result.is_failure(f"{address_family} Peer: {peer['peerAddress']} - Session has non-empty message queues - InQ: {inq}, OutQ: {outq}")
 
 
 class VerifyBGPSpecificPeers(AntaTest):
@@ -374,6 +376,7 @@ class VerifyBGPSpecificPeers(AntaTest):
                 # Check if the BGP session is established
                 if peer_data["state"] != "Established":
                     self.result.is_failure(f"{address_family} Peer: {peer_ip} - Session state is not established - State: {peer_data['state']}")
+                    continue
 
                 # Check if the AFI/SAFI state is negotiated
                 capability_status = get_value(peer_data, f"neighborCapabilities.multiprotocolCaps.{address_family.eos_key}")
@@ -384,10 +387,11 @@ class VerifyBGPSpecificPeers(AntaTest):
                     self.result.is_failure(f"{address_family} Peer: {peer_ip} - AFI/SAFI state is not negotiated - {format_data(capability_status)}")
 
                 # Check the TCP session message queues
-                inq = peer_data["peerTcpInfo"]["inputQueueLength"]
-                outq = peer_data["peerTcpInfo"]["outputQueueLength"]
-                if address_family.check_tcp_queues and (inq != 0 or outq != 0):
-                    self.result.is_failure(f"{address_family} Peer: {peer_ip} - Session has non-empty message queues - InQ: {inq}, OutQ: {outq}")
+                if address_family.check_tcp_queues:
+                    inq = peer_data["peerTcpInfo"]["inputQueueLength"]
+                    outq = peer_data["peerTcpInfo"]["outputQueueLength"]
+                    if inq != 0 or outq != 0:
+                        self.result.is_failure(f"{address_family} Peer: {peer_ip} - Session has non-empty message queues - InQ: {inq}, OutQ: {outq}")
 
 
 class VerifyBGPExchangedRoutes(AntaTest):
