@@ -2180,20 +2180,6 @@
   </li>
           
           
-          
-            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#anta.input_models.routing.bgp.BgpAfi" class="md-nav__link">
-      <span class="md-ellipsis">
-        BgpAfi
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-  </li>
-          
-          
         </ul>
       </nav>
     
@@ -3861,20 +3847,6 @@
   </li>
           
           
-          
-            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#anta.input_models.routing.bgp.BgpAfi" class="md-nav__link">
-      <span class="md-ellipsis">
-        BgpAfi
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-  </li>
-          
-          
         </ul>
       </nav>
     
@@ -3908,6 +3880,10 @@
   ~ that can be found in the LICENSE file.
   -->
 
+<div class="admonition info">
+<p class="admonition-title"><code>multi-agent</code> Service Routing Protocols Model Requirements</p>
+<p>The BGP tests in this section are only supported on switches running the <code>multi-agent</code> routing protocols model. Starting from EOS version 4.30.1F, <code>service routing protocols model</code> is set to <code>multi-agent</code> by default. These BGP commands may <strong>not</strong> be compatible with switches running the legacy <code>ribd</code> routing protocols model and may fail if attempted.</p>
+</div>
 <h2 id="tests">Tests<a class="headerlink" href="#tests" title="Permanent link">&para;</a></h2>
 
 
@@ -9116,84 +9092,6 @@ Can be enabled in the `VerifyBGPPeerCount` tests.
 
 </div>
 
-<div class="doc doc-object doc-class">
-
-
-
-<h2 id="anta.input_models.routing.bgp.BgpAfi" class="doc doc-heading">
-            <span class="doc doc-object-name doc-class-name">BgpAfi</span>
-
-
-<a href="#anta.input_models.routing.bgp.BgpAfi" class="headerlink" title="Permanent link">&para;</a></h2>
-
-
-    <div class="doc doc-contents ">
-
-  
-        <p>Alias for the BgpAddressFamily model to maintain backward compatibility.</p>
-<p>When initialized, it will emit a deprecation warning and call the BgpAddressFamily model.</p>
-<p>TODO: Remove this class in ANTA v2.0.0.</p>
-
-
-
-
-
-
-
-  
-
-  <div class="doc doc-children">
-
-
-
-
-
-
-
-
-
-
-
-  </div>
-  <details class="quote">
-  <summary>Source code in <code>anta/input_models/routing/bgp.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span>
-<span class="normal">128</span>
-<span class="normal">129</span>
-<span class="normal">130</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BgpAfi</span><span class="p">(</span><span class="n">BgpAddressFamily</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Alias for the BgpAddressFamily model to maintain backward compatibility.</span>
-
-<span class="sd">    When initialized, it will emit a deprecation warning and call the BgpAddressFamily model.</span>
-
-<span class="sd">    TODO: Remove this class in ANTA v2.0.0.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: ANN401</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the BgpAfi class, emitting a deprecation warning.&quot;&quot;&quot;</span>
-        <span class="n">warn</span><span class="p">(</span>
-            <span class="n">message</span><span class="o">=</span><span class="s2">&quot;BgpAfi model is deprecated and will be removed in ANTA v2.0.0. Use the BgpAddressFamily model instead.&quot;</span><span class="p">,</span>
-            <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
-            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-  </details>
-    </div>
-
-</div>
-
 
 
 
@@ -9222,7 +9120,7 @@ Can be enabled in the `VerifyBGPPeerCount` tests.
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">November 14, 2024</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">December 3, 2024</span>
   </span>
 
     
