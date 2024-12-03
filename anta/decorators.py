@@ -104,7 +104,7 @@ def deprecated_test_class(new_tests: list[str] | None = None, removal_in_version
             orig_init(*args, **kwargs)
 
         if removal_in_version is not None:
-            cls.removal_in_version = removal_in_version
+            cls.__removal_in_version = removal_in_version
 
         # NOTE: we are ignoring mypy warning as we want to assign to a method here
         cls.__init__ = new_init  # type: ignore[method-assign]

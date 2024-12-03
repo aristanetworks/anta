@@ -328,6 +328,7 @@ class AntaTest(ABC):
     # Optional class attributes
     name: ClassVar[str]
     description: ClassVar[str]
+    __removal_in_version: ClassVar[str]
 
     # Mandatory class attributes
     # TODO: find a way to tell mypy these are mandatory for child classes
