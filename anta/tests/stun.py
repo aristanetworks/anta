@@ -7,8 +7,10 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from typing import ClassVar
+from typing import Any, ClassVar
+from warnings import warn
 
+from anta.decorators import deprecated_test
 from anta.input_models.stun import StunClientTranslation
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_value
@@ -88,6 +90,35 @@ class VerifyStunClientTranslation(AntaTest):
             # Verifying the public port if provided
             if input_public_port and input_public_port != (actual_public_port := get_value(bindings, f"{transaction_id}.publicAddress.port")):
                 self.result.is_failure(f"{client_input} - Incorrect public-facing port - Expected: {input_public_port} Actual: {actual_public_port}")
+
+
+class VerifyStunClient(VerifyStunClientTranslation):
+    """[deprecated] Verifies the translation for a source address on a STUN client.
+
+    Alias for the VerifyStunClientTranslation test to maintain backward compatibility.
+    When initialized, it will emit a deprecation warning and call the VerifyStunClientTranslation test.
+
+    TODO: Remove this class in ANTA v2.0.0.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.stun:
+      - VerifyStunClient:
+          stun_clients:
+            - source_address: 172.18.3.2
+              public_address: 172.18.3.21
+              source_port: 4500
+              public_port: 6006
+    ```
+    """
+
+    name = "VerifyStunClient"
+    description = "[deprecated] Verifies the translation for a source address on a STUN client."
+
+    @deprecated_test("VerifyStunClientTranslation")
+    def test(self):
+        super.test()
 
 
 class VerifyStunServer(AntaTest):
