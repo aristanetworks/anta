@@ -12,9 +12,11 @@
 {%     set anta_test_input_model.found = True %}
 {% endif %}
 {% block children %}
+
 {%   if anta_test.found %}
   {% set root = False %}
   {% set heading_level = heading_level + 1 %}
+
   {% include "anta_test.html.jinja" with context %}
   {# render source after children - TODO make add flag to respect disabling it.. though do we want to disable?#}
   <details class="quote">
@@ -53,3 +55,21 @@
   {{ super() }}
 {%   endif %}
 {% endblock source %}
+
+{# overwrite block base to render some stuff on deprecation for anta_test #}
+{% block bases %}
+{{ super() }}
+
+{% for dec in class.decorators %}
+{# TODO all the strings are rendered with extra quotes .. #}
+{% if dec.value.function.name == "deprecated_test_class" %}
+<img alt="Static Badge" src="https://img.shields.io/badge/DEPRECATED-yellow?style=flat&logoSize=auto">
+{% for arg in dec.value.arguments | selectattr("name", "equalto", "removal_in_version") | list %}
+<img alt="Static Badge" src="https://img.shields.io/badge/REMOVAL-{{ arg.value[1:-1] }}-grey?style=flat&logoSize=auto&labelColor=red">
+{% endfor %}
+{% for arg in dec.value.arguments | selectattr("name", "equalto", "new_tests") | list %}
+Replaced with: {{ arg.value.elements | map("replace", "'", "`") | join(", ") }}
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% endblock bases %}

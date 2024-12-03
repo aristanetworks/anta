@@ -62,13 +62,15 @@ def deprecated_test(new_tests: list[str] | None = None) -> Callable[[F], F]:
     return decorator
 
 
-def deprecated_test_class(new_tests: list[str] | None = None) -> Callable[[type[AntaTest]], type[AntaTest]]:
+def deprecated_test_class(new_tests: list[str] | None = None, removal_in_version: str | None = None) -> Callable[[type[AntaTest]], type[AntaTest]]:
     """Return a decorator to log a message of WARNING severity when a test is deprecated.
 
     Parameters
     ----------
     new_tests
         A list of new test classes that should replace the deprecated test.
+    removal_in_version
+        A string indicating the version in which the test will be removed.
 
     Returns
     -------
@@ -100,6 +102,9 @@ def deprecated_test_class(new_tests: list[str] | None = None) -> Callable[[type[
             else:
                 logger.warning("%s test is deprecated.", cls.name)
             orig_init(*args, **kwargs)
+
+        if removal_in_version is not None:
+            cls.removal_in_version = removal_in_version
 
         # NOTE: we are ignoring mypy warning as we want to assign to a method here
         cls.__init__ = new_init  # type: ignore[method-assign]
