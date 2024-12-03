@@ -62,6 +62,52 @@ def deprecated_test(new_tests: list[str] | None = None) -> Callable[[F], F]:
     return decorator
 
 
+def deprecated_test_class(new_tests: list[str] | None = None) -> Callable[[type[AntaTest]], type[AntaTest]]:
+    """Return a decorator to log a message of WARNING severity when a test is deprecated.
+
+    Parameters
+    ----------
+    new_tests
+        A list of new test classes that should replace the deprecated test.
+
+    Returns
+    -------
+    Callable[[type], type]
+        A decorator that can be used to wrap test functions.
+
+    """
+
+    def decorator(cls: type[AntaTest]) -> type[AntaTest]:
+        """Actual decorator that logs the message.
+
+        Parameters
+        ----------
+        cls
+            The cls to be decorated.
+
+        Returns
+        -------
+        cls
+            The decorated cls.
+        """
+        orig_init = cls.__init__
+
+        def new_init(*args: Any, **kwargs: Any) -> None:
+            """Overload __init__ to generate a warning message for deprecation."""
+            if new_tests:
+                new_test_names = ", ".join(new_tests)
+                logger.warning("%s test is deprecated. Consider using the following new tests: %s.", cls.name, new_test_names)
+            else:
+                logger.warning("%s test is deprecated.", cls.name)
+            orig_init(*args, **kwargs)
+
+        # NOTE: we are ignoring mypy warning as we want to assign to a method here
+        cls.__init__ = new_init  # type: ignore[method-assign]
+        return cls
+
+    return decorator
+
+
 def skip_on_platforms(platforms: list[str]) -> Callable[[F], F]:
     """Return a decorator to skip a test based on the device's hardware model.
 

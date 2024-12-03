@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import ClassVar
 
-from anta.decorators import deprecated_test
+from anta.decorators import deprecated_test_class
 from anta.input_models.stun import StunClientTranslation
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_value
@@ -91,8 +91,9 @@ class VerifyStunClientTranslation(AntaTest):
                 self.result.is_failure(f"{client_input} - Incorrect public-facing port - Expected: {input_public_port} Actual: {actual_public_port}")
 
 
+@deprecated_test_class(new_tests=["VerifyStunClientTranslation"])
 class VerifyStunClient(VerifyStunClientTranslation):
-    """[deprecated] Verifies the translation for a source address on a STUN client.
+    """(deprecated) Verifies the translation for a source address on a STUN client.
 
     Alias for the VerifyStunClientTranslation test to maintain backward compatibility.
     When initialized, it will emit a deprecation warning and call the VerifyStunClientTranslation test.
@@ -112,12 +113,9 @@ class VerifyStunClient(VerifyStunClientTranslation):
     ```
     """
 
+    # required to redefine name an description to overwrite parent class.
     name = "VerifyStunClient"
-    description = "[deprecated] Verifies the translation for a source address on a STUN client."
-
-    @deprecated_test("VerifyStunClientTranslation")
-    def test(self):
-        super().test()
+    description = "(deprecated) Verifies the translation for a source address on a STUN client."
 
 
 class VerifyStunServer(AntaTest):
