@@ -263,7 +263,7 @@ DATA: list[dict[str, Any]] = [
                 {"peer_name": "cvx-red-3", "registrationState": "Registration complete"},
             ],
         },
-        "expected": {"result": "failure", "messages": ["Unexpected number of peers", "cvx-red-3 is not present"]},
+        "expected": {"result": "failure", "messages": ["Unexpected number of peers 1 vs 2", "cvx-red-3 is not present"]},
     },
     {
         "name": "failure-invalid-peers",

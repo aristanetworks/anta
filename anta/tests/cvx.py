@@ -149,7 +149,7 @@ class VerifyCVXClusterStatus(AntaTest):
             return
 
         # Validate peer status
-        self._validate_peer_status(command_output.get("clusterStatus"))
+        self._validate_peer_status(command_output.get("clusterStatus", {}))
 
     def _validate_cluster_status(self, command_output: dict[str, Any]) -> bool:
         """Check if the cluster status is available."""
@@ -177,17 +177,15 @@ class VerifyCVXClusterStatus(AntaTest):
 
         return True
 
-    def _validate_peer_status(self, cluster_status: dict[str, Any] | None) -> bool:
+    def _validate_peer_status(self, cluster_status: dict[str, Any]) -> bool:
         """Check peer statuses in the cluster."""
-        if cluster_status is None:
-            self.result.is_failure("Cluster status is missing")
-            return False
-
         peer_cluster = cluster_status.get("peerStatus", {})
 
         # Check peer count
-        if len(peer_cluster) != len(self.inputs.peer_status):
-            self.result.is_failure("Unexpected number of peers")
+        num_of_peers = len(peer_cluster)
+        expected_num_of_peers = len(self.inputs.peer_status)
+        if num_of_peers != expected_num_of_peers:
+            self.result.is_failure(f"Unexpected number of peers {num_of_peers} vs {expected_num_of_peers}")
 
         # Check each peer
         return all(self._validate_individual_peer(peer, peer_cluster) for peer in self.inputs.peer_status)
