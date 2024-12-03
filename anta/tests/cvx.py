@@ -96,10 +96,13 @@ class VerifyCVXClusterStatus(AntaTest):
 
     Expected Results
     ----------------
-    * Success: The test will pass if the CVX Server Cluster is enabled.
     * Failure: The test will fail if any of the following conditions are met:
-        - If the CVX Status is disabled
-        - If the peers are not in the expected state
+    * Success: The test will pass if all of the following conditions is met
+    * Conditions:
+        - CVX Enabled state is true
+        - Cluster Mode is true
+        - Role is either Master or standby
+        - peer_status matches defined state
 
     Examples
     --------
@@ -146,7 +149,7 @@ class VerifyCVXClusterStatus(AntaTest):
             return
 
         # Validate peer status
-       self._validate_peer_status(command_output.get("clusterStatus"))
+        self._validate_peer_status(command_output.get("clusterStatus"))
 
     def _validate_cluster_status(self, command_output: dict[str, Any]) -> bool:
         """Check if the cluster status is available."""
