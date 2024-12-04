@@ -66,8 +66,8 @@ async def test_skip_on_platforms(device: AntaDevice, platforms: list[str], devic
 
     Leverage the ExampleTest defined at the top of the module.
     """
-    # Apply the decorator
-    ExampleTest.test = skip_on_platforms(platforms)(ExampleTest.test)
+    # Apply the decorator - ignoring mypy warning - this is for testing
+    ExampleTest.test = skip_on_platforms(platforms)(ExampleTest.test)  # type: ignore[method-assign]
 
     device.hw_model = device_platform
 
