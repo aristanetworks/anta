@@ -694,21 +694,20 @@ class VerifyIPSecConnHealth(AntaTest):
 class VerifySpecificIPSecConn(AntaTest):
     """Verifies the IPv4 security connections.
 
-    This test performs the following checks for each specified address family:
+    This test performs the following checks for each peer:
 
       1. Validates that the VRF is configured.
       2. Checks for the presence of IPv4 security connections for the specified peer.
       3. For each relevant peer:
-        - If source and destination addresses are provided, Verifies the security connection for the specific path.
-        - If no addresses are provided, Verifies all security connections associated with the peer.
-        - Verifies that the connection is in the `Established` state.
+        - If source and destination addresses are provided, verifies the security connection for the specific path exists and is `Established`.
+        - If no addresses are provided, verifies that all security connections associated with the peer are `Established`.
 
     Expected Results
     ----------------
     * Success: If all checks pass for all specified IPv4 security connections.
     * Failure: If any of the following occur:
         - No IPv4 security connections are found for the peer
-        - The security connection is not established for the specified path or any of the peer's connections when no path is specified.
+        - The security connection is not established for the specified path or any of the peer connections is not established when no path is specified.
 
     Examples
     --------
