@@ -21,19 +21,28 @@ class InterfaceState(BaseModel):
     status: Literal["up", "down", "adminDown"] | None = None
     """Expected status of the interface. Required field in the `VerifyInterfacesStatus` test."""
     line_protocol_status: Literal["up", "down", "testing", "unknown", "dormant", "notPresent", "lowerLayerDown"] | None = None
-    """Expected line protocol status of the interface."""
+    """Expected line protocol status of the interface. Optional field in the `VerifyInterfacesStatus` test."""
     portchannel: PortChannelInterface | None = None
-    """Port Channel in which the interface is bundled. Required field in the `VerifyLACPInterfacesStatus` test."""
+    """Port-Channel in which the interface is bundled. Required field in the `VerifyLACPInterfacesStatus` test."""
+    lacp_rate_fast: bool = False
+    """Specifies the LACP timeout mode for the link aggregation group.
+
+    Options:
+    - True: Also referred to as fast mode.
+    - False: The default mode, also known as slow mode.
+
+    Can be enabled in the `VerifyLACPInterfacesStatus` tests.
+    """
 
     def __str__(self) -> str:
-        """Return a string representation of the InterfaceState model. Used in failure messages.
+        """Return a human-readable string representation of the InterfaceState for reporting.
 
         Examples
         --------
-        - Interface: Ethernet1 Port Channel: Port-Channel100
+        - Interface: Ethernet1 Port-Channel: Port-Channel100
         - Interface: Ethernet1
         """
         base_string = f"Interface: {self.name}"
         if self.portchannel is not None:
-            base_string += f" Port Channel: {self.portchannel}"
+            base_string += f" Port-Channel: {self.portchannel}"
         return base_string

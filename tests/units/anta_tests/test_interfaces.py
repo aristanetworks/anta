@@ -2511,6 +2511,43 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
+        "name": "success-short-timeout",
+        "test": VerifyLACPInterfacesStatus,
+        "eos_data": [
+            {
+                "portChannels": {
+                    "Port-Channel5": {
+                        "interfaces": {
+                            "Ethernet5": {
+                                "actorPortStatus": "bundled",
+                                "partnerPortState": {
+                                    "activity": True,
+                                    "timeout": True,
+                                    "aggregation": True,
+                                    "synchronization": True,
+                                    "collecting": True,
+                                    "distributing": True,
+                                },
+                                "actorPortState": {
+                                    "activity": True,
+                                    "timeout": True,
+                                    "aggregation": True,
+                                    "synchronization": True,
+                                    "collecting": True,
+                                    "distributing": True,
+                                },
+                            }
+                        }
+                    }
+                },
+                "interface": "Ethernet5",
+                "orphanPorts": {},
+            }
+        ],
+        "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "Port-Channel5", "lacp_rate_fast": True}]},
+        "expected": {"result": "success"},
+    },
+    {
         "name": "failure-not-bundled",
         "test": VerifyLACPInterfacesStatus,
         "eos_data": [
@@ -2531,7 +2568,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "Po5"}]},
         "expected": {
             "result": "failure",
-            "messages": ["Interface: Ethernet5 Port Channel: Port-Channel5 - Not bundled - Port Status: No Aggregate"],
+            "messages": ["Interface: Ethernet5 Port-Channel: Port-Channel5 - Not bundled - Port Status: No Aggregate"],
         },
     },
     {
@@ -2545,7 +2582,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "Po 5"}]},
         "expected": {
             "result": "failure",
-            "messages": ["Interface: Ethernet5 Port Channel: Port-Channel5 - Not configured"],
+            "messages": ["Interface: Ethernet5 Port-Channel: Port-Channel5 - Not configured"],
         },
     },
     {
@@ -2586,10 +2623,55 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Interface: Ethernet5 Port Channel: Port-Channel5 - Actor port details mismatched - Activity: False, Aggregation: False, "
+                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Actor port details mismatch - Activity: False, Aggregation: False, "
                 "Synchronization: False, Collecting: True, Distributing: True, Timeout: False",
-                "Interface: Ethernet5 Port Channel: Port-Channel5 - Partner port details mismatched - Activity: False, Aggregation: False, "
+                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Partner port details mismatch - Activity: False, Aggregation: False, "
                 "Synchronization: False, Collecting: True, Distributing: True, Timeout: False",
+            ],
+        },
+    },
+    {
+        "name": "failure-short-timeout",
+        "test": VerifyLACPInterfacesStatus,
+        "eos_data": [
+            {
+                "portChannels": {
+                    "Port-Channel5": {
+                        "interfaces": {
+                            "Ethernet5": {
+                                "actorPortStatus": "bundled",
+                                "partnerPortState": {
+                                    "activity": True,
+                                    "timeout": False,
+                                    "aggregation": True,
+                                    "synchronization": True,
+                                    "collecting": True,
+                                    "distributing": True,
+                                },
+                                "actorPortState": {
+                                    "activity": True,
+                                    "timeout": False,
+                                    "aggregation": True,
+                                    "synchronization": True,
+                                    "collecting": True,
+                                    "distributing": True,
+                                },
+                            }
+                        }
+                    }
+                },
+                "interface": "Ethernet5",
+                "orphanPorts": {},
+            }
+        ],
+        "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "port-channel 5", "lacp_rate_fast": True}]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Actor port details mismatch - Activity: True, Aggregation: True, "
+                "Synchronization: True, Collecting: True, Distributing: True, Timeout: False",
+                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Partner port details mismatch - Activity: True, Aggregation: True, "
+                "Synchronization: True, Collecting: True, Distributing: True, Timeout: False",
             ],
         },
     },

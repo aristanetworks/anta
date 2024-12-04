@@ -853,9 +853,13 @@ class VerifyLACPInterfacesStatus(AntaTest):
     This test performs the following checks for each specified interface:
 
       1. Verifies that the interface is a member of the LACP port channel.
-      2. Ensures that the synchronization is established.
-      3. Ensures the interfaces are in the correct state for collecting and distributing traffic.
-      4. Validates that LACP settings, such as timeouts, are correctly configured. (i.e The long timeout mode, also known as "slow" mode, is the default setting.)
+      4. Validates that LACP settings are correctly configured to ensure reliable link aggregation. This includes:
+        - Activity: Active LACP mode (initiates)
+        - Timeout: Long timeout
+        - Aggregation: Port aggregable
+        - Synchronization: Port in sync with partner
+        - Collecting: Incoming frames aggregating
+        - Distributing: Outgoing frames aggregating
 
     Expected Results
     ----------------
@@ -919,9 +923,12 @@ class VerifyLACPInterfacesStatus(AntaTest):
 
             # Forming expected interface details
             expected_details = {param: param != "timeout" for param in member_port_details}
+            # Updating the short LACP timeout, if expected.
+            if interface.lacp_rate_fast:
+                expected_details["timeout"] = True
 
             if (act_port_details := actual_interface_output["actor_port_details"]) != expected_details:
-                self.result.is_failure(f"{interface} - Actor port details mismatched - {format_data(act_port_details)}")
+                self.result.is_failure(f"{interface} - Actor port details mismatch - {format_data(act_port_details)}")
 
             if (part_port_details := actual_interface_output["partner_port_details"]) != expected_details:
-                self.result.is_failure(f"{interface} - Partner port details mismatched - {format_data(part_port_details)}")
+                self.result.is_failure(f"{interface} - Partner port details mismatch - {format_data(part_port_details)}")
