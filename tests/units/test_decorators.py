@@ -49,7 +49,7 @@ def test_deprecated_test_class(caplog: pytest.LogCaptureFixture, device: AntaDev
     if new_tests is None:
         assert "ExampleTest test is deprecated." in caplog.messages
     else:
-        assert f"ExampleTest test is deprecated. Consider using the following new tests: {", ".join(new_tests)}." in caplog.messages
+        assert f"ExampleTest test is deprecated. Consider using the following new tests: {', '.join(new_tests)}." in caplog.messages
 
 
 @pytest.mark.parametrize(
