@@ -640,7 +640,7 @@ anta.tests.security:
   - VerifySSHStatus:
       # Verifies if the SSHD agent is disabled in the default VRF.
   - VerifySpecificIPSecConn:
-      # Verifies IPv4 security connections for a peer.
+      # Verifies the IPv4 security connections.
       ip_security_connections:
         - peer: 10.255.0.1
         - peer: 10.255.0.2
@@ -745,7 +745,7 @@ anta.tests.stp:
       threshold: 10
 anta.tests.stun:
   - VerifyStunClient:
-      # (deprecated) Verifies the translation for a source address on a STUN client.
+      # (Deprecated) Verifies the translation for a source address on a STUN client.
       stun_clients:
         - source_address: 172.18.3.2
           public_address: 172.18.3.21

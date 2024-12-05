@@ -17,7 +17,8 @@ if TYPE_CHECKING:
 F = TypeVar("F", bound=Callable[..., Any])
 
 
-def deprecated_test(new_tests: list[str] | None = None) -> Callable[[F], F]:
+# TODO: Remove this decorator in ANTA v2.0.0 in favor of deprecated_test_class
+def deprecated_test(new_tests: list[str] | None = None) -> Callable[[F], F]:  # pragma: no cover
     """Return a decorator to log a message of WARNING severity when a test is deprecated.
 
     Parameters

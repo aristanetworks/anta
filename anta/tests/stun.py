@@ -93,7 +93,7 @@ class VerifyStunClientTranslation(AntaTest):
 
 @deprecated_test_class(new_tests=["VerifyStunClientTranslation"], removal_in_version="v2.0.0")
 class VerifyStunClient(VerifyStunClientTranslation):
-    """(deprecated) Verifies the translation for a source address on a STUN client.
+    """(Deprecated) Verifies the translation for a source address on a STUN client.
 
     Alias for the VerifyStunClientTranslation test to maintain backward compatibility.
     When initialized, it will emit a deprecation warning and call the VerifyStunClientTranslation test.
@@ -115,7 +115,7 @@ class VerifyStunClient(VerifyStunClientTranslation):
 
     # required to redefine name an description to overwrite parent class.
     name = "VerifyStunClient"
-    description = "(deprecated) Verifies the translation for a source address on a STUN client."
+    description = "(Deprecated) Verifies the translation for a source address on a STUN client."
 
 
 class VerifyStunServer(AntaTest):
