@@ -115,7 +115,7 @@ class VerifyStunClient(VerifyStunClientTranslation):
 
     # required to redefine name an description to overwrite parent class.
     name = "VerifyStunClient"
-    description = "(deprecated) Verifies the translation for a source address on a STUN client."
+    description = "(Deprecated) Verifies the translation for a source address on a STUN client."
 
 
 class VerifyStunServer(AntaTest):
