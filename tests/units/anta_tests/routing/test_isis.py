@@ -163,7 +163,9 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": ["Some neighbors are not in the correct state (UP): [{'vrf': 'default', 'instance': 'CORE-ISIS', 'neighbor': 's1-p01', 'state': 'down'}]."],
+            "messages": [
+                "Instance: CORE-ISIS VRF: default Neighbor: s1-p01 - Session (adjacency) down"
+            ],
         },
     },
     {

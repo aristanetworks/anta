@@ -14,73 +14,24 @@ from pydantic import BaseModel
 
 from anta.custom_types import Interface
 from anta.models import AntaCommand, AntaTemplate, AntaTest
-from anta.tools import get_value
+from anta.tools import get_value, get_item
+from anta.input_models.routing.isis import ISISInterface, InterfaceCount, ISISInstance
 
 
-def _count_isis_neighbor(isis_neighbor_json: dict[str, Any]) -> int:
-    """Count the number of isis neighbors.
-
-    Parameters
-    ----------
-    isis_neighbor_json
-        The JSON output of the `show isis neighbors` command.
-
-    Returns
-    -------
-    int
-        The number of isis neighbors.
-
-    """
-    count = 0
-    for vrf_data in isis_neighbor_json["vrfs"].values():
-        for instance_data in vrf_data["isisInstances"].values():
-            count += len(instance_data.get("neighbors", {}))
-    return count
-
-
-def _get_not_full_isis_neighbors(isis_neighbor_json: dict[str, Any]) -> list[dict[str, Any]]:
-    """Return the isis neighbors whose adjacency state is not `up`.
-
-    Parameters
-    ----------
-    isis_neighbor_json
-        The JSON output of the `show isis neighbors` command.
-
-    Returns
-    -------
-    list[dict[str, Any]]
-        A list of isis neighbors whose adjacency state is not `UP`.
-
-    """
-    return [
-        {
-            "vrf": vrf,
-            "instance": instance,
-            "neighbor": adjacency["hostname"],
-            "state": state,
-        }
-        for vrf, vrf_data in isis_neighbor_json["vrfs"].items()
-        for instance, instance_data in vrf_data.get("isisInstances").items()
-        for neighbor, neighbor_data in instance_data.get("neighbors").items()
-        for adjacency in neighbor_data.get("adjacencies")
-        if (state := adjacency["state"]) != "up"
-    ]
-
-
-def _get_full_isis_neighbors(isis_neighbor_json: dict[str, Any], neighbor_state: Literal["up", "down"] = "up") -> list[dict[str, Any]]:
-    """Return the isis neighbors whose adjacency state is `up`.
+def _get_isis_neighbor_details(isis_neighbor_json: dict[str, Any], neighbor_state: Literal["up", "down"] | None = None) -> list[dict[str, Any]]:
+    """Return the list of isis neighbors.
 
     Parameters
     ----------
     isis_neighbor_json
         The JSON output of the `show isis neighbors` command.
     neighbor_state
-        Value of the neihbor state we are looking for. Defaults to `up`.
+        Value of the neihbor state we are looking for. Defaults to `None`.
 
     Returns
     -------
     list[dict[str, Any]]
-        A list of isis neighbors whose adjacency state is not `UP`.
+        A list of isis neighbors.
 
     """
     return [
@@ -90,40 +41,51 @@ def _get_full_isis_neighbors(isis_neighbor_json: dict[str, Any], neighbor_state:
             "neighbor": adjacency["hostname"],
             "neighbor_address": adjacency["routerIdV4"],
             "interface": adjacency["interfaceName"],
-            "state": state,
+            "state": adjacency["state"],
         }
         for vrf, vrf_data in isis_neighbor_json["vrfs"].items()
-        for instance, instance_data in vrf_data.get("isisInstances").items()
-        for neighbor, neighbor_data in instance_data.get("neighbors").items()
-        for adjacency in neighbor_data.get("adjacencies")
-        if (state := adjacency["state"]) == neighbor_state
+        for instance, instance_data in vrf_data.get("isisInstances", {}).items()
+        for neighbor, neighbor_data in instance_data.get("neighbors", {}).items()
+        for adjacency in neighbor_data.get("adjacencies", [])
+        if neighbor_state is None or adjacency["state"] == neighbor_state
     ]
 
 
-def _get_isis_neighbors_count(isis_neighbor_json: dict[str, Any]) -> list[dict[str, Any]]:
+def _get_isis_interface_details(isis_neighbor_json: dict[str, Any]) -> list[dict[str, Any]]:
     """Count number of IS-IS neighbor of the device."""
-    return [
-        {"vrf": vrf, "interface": interface, "mode": mode, "count": int(level_data["numAdjacencies"]), "level": int(level)}
-        for vrf, vrf_data in isis_neighbor_json["vrfs"].items()
-        for instance, instance_data in vrf_data.get("isisInstances").items()
-        for interface, interface_data in instance_data.get("interfaces").items()
-        for level, level_data in interface_data.get("intfLevels").items()
-        if (mode := level_data["passive"]) is not True
-    ]
+    # result = {"vrfs": {}}
+    # for vrf, vrf_data in isis_neighbor_json["vrfs"].items():
+    #     result["vrfs"][vrf] = {
+    #         instance: [
+    #             {
+    #                 "interface": interface,
+    #                 "passive": level_data.get("passive"),
+    #                 "count": int(level_data.get("numAdjacencies", 0)),
+    #                 "level": int(level),
+    #             }
+    #             for interface, interface_data in instance_data.get("interfaces", {}).items()
+    #             for level, level_data in interface_data.get("intfLevels", {}).items()
+    #         ]
+    #         for instance, instance_data in vrf_data.get("isisInstances", {}).items()
+    #     }
+    # return result
 
-
-def _get_interface_data(interface: str, vrf: str, command_output: dict[str, Any]) -> dict[str, Any] | None:
-    """Extract data related to an IS-IS interface for testing."""
-    if (vrf_data := get_value(command_output, f"vrfs.{vrf}")) is None:
-        return None
-
-    for instance_data in vrf_data.get("isisInstances").values():
-        if (intf_dict := get_value(dictionary=instance_data, key="interfaces")) is not None:
-            try:
-                return next(ifl_data for ifl, ifl_data in intf_dict.items() if ifl == interface)
-            except StopIteration:
-                return None
-    return None
+    result = {}
+    for vrf, vrf_data in isis_neighbor_json["vrfs"].items():
+        result[vrf] = {
+            instance: {
+                interface: {
+                    level: {
+                        "passive": level_data.get("passive"),
+                        "count": int(level_data.get("numAdjacencies", 0)),
+                    }
+                    for level, level_data in interface_data.get("intfLevels", {}).items()
+                }
+                for interface, interface_data in instance_data.get("interfaces", {}).items()
+            }
+            for instance, instance_data in vrf_data.get("isisInstances", {}).items()
+        }
+    return result
 
 
 def _get_adjacency_segment_data_by_neighbor(neighbor: str, instance: str, vrf: str, command_output: dict[str, Any]) -> dict[str, Any] | None:
@@ -146,7 +108,7 @@ class VerifyISISNeighborState(AntaTest):
     Expected Results
     ----------------
     * Success: The test will pass if all IS-IS neighbors are in UP state.
-    * Failure: The test will fail if some IS-IS neighbors are not in UP state.
+    * Failure: The test will fail if any IS-IS neighbor adjance session is down.
     * Skipped: The test will be skipped if no IS-IS neighbor is found.
 
     Examples
@@ -164,14 +126,19 @@ class VerifyISISNeighborState(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyISISNeighborState."""
+        self.result.is_success()
+
+        # Verify the ISIS neighbor configure. If not then skip the test.
         command_output = self.instance_commands[0].json_output
-        if _count_isis_neighbor(command_output) == 0:
+        neighbor_details = _get_isis_neighbor_details(command_output)
+        if not neighbor_details:
             self.result.is_skipped("No IS-IS neighbor detected")
             return
-        self.result.is_success()
-        not_full_neighbors = _get_not_full_isis_neighbors(command_output)
-        if not_full_neighbors:
-            self.result.is_failure(f"Some neighbors are not in the correct state (UP): {not_full_neighbors}.")
+
+        # Verify that no neighbor has a session in the down state
+        not_full_neighbors = _get_isis_neighbor_details(command_output, neighbor_state="down")
+        for neighbor in not_full_neighbors:
+            self.result.is_failure(f"Instance: {neighbor['instance']} VRF: {neighbor['vrf']} Neighbor: {neighbor['neighbor']} - Session (adjacency) down")
 
 
 class VerifyISISNeighborCount(AntaTest):
@@ -208,39 +175,35 @@ class VerifyISISNeighborCount(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyISISNeighborCount test."""
 
-        interfaces: list[InterfaceCount]
+        instances: list[ISISInstance]
         """list of interfaces with their information."""
-
-        class InterfaceCount(BaseModel):
-            """Input model for the VerifyISISNeighborCount test."""
-
-            name: Interface
-            """Interface name to check."""
-            level: int = 2
-            """IS-IS level to check."""
-            count: int
-            """Number of IS-IS neighbors."""
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyISISNeighborCount."""
         command_output = self.instance_commands[0].json_output
         self.result.is_success()
-        isis_neighbor_count = _get_isis_neighbors_count(command_output)
-        if len(isis_neighbor_count) == 0:
+        neighbor_details = _get_isis_interface_details(command_output)
+
+        if all(len(neighbor) == 0 for instance in neighbor_details.values() for neighbor in instance.values()):
             self.result.is_skipped("No IS-IS neighbor detected")
             return
-        for interface in self.inputs.interfaces:
-            eos_data = [ifl_data for ifl_data in isis_neighbor_count if ifl_data["interface"] == interface.name and ifl_data["level"] == interface.level]
-            if not eos_data:
-                self.result.is_failure(f"No neighbor detected for interface {interface.name}")
+
+        for instance in self.inputs.instances:
+            if not (instance_detail := get_value(neighbor_details, f"{instance.vrf}.{instance.name}")):
+                self.result.is_failure(f"{instance} - No IS-IS neighbor detected")
                 continue
-            if eos_data[0]["count"] != interface.count:
-                self.result.is_failure(
-                    f"Interface {interface.name}: "
-                    f"expected Level {interface.level}: count {interface.count}, "
-                    f"got Level {eos_data[0]['level']}: count {eos_data[0]['count']}"
-                )
+
+            for interface in instance.interfaces:
+                if not (interface_detail := get_value(instance_detail, interface.name, separator="..")):
+                    self.result.is_failure(f"{interface} - No neighbor detected")
+                    continue
+
+                if interface.level and (count := interface_detail[str(interface.level)]["count"]) != interface.neighbor_count:
+                    self.result.is_failure(f"{interface} - Neighbor count mismatch - Expected: {interface.neighbor_count} Actual: {count}")
+                # verifying the both level-1 and level-2 (is-type level-1-2)
+                elif not ("1" in interface_detail or "2" in interface_detail or all(level["count"] == interface.neighbor_count for level in interface_detail)):
+                    self.result.is_failure(f"{interface} - Level(1-2) not correctly configured")
 
 
 class VerifyISISInterfaceMode(AntaTest):
@@ -307,11 +270,7 @@ class VerifyISISInterfaceMode(AntaTest):
 
         # Check for p2p interfaces
         for interface in self.inputs.interfaces:
-            interface_data = _get_interface_data(
-                interface=interface.name,
-                vrf=interface.vrf,
-                command_output=command_output,
-            )
+            interface_data = _get_isis_interface_details(command_output)
             # Check for correct VRF
             if interface_data is not None:
                 interface_type = get_value(dictionary=interface_data, key="interfaceType", default="unset")
