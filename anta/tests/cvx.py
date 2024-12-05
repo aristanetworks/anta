@@ -96,13 +96,11 @@ class VerifyCVXClusterStatus(AntaTest):
 
     Expected Results
     ----------------
-    * Failure: The test will fail if any of the following conditions are met:
-    * Success: The test will pass if all of the following conditions is met
-    * Conditions:
-        - CVX Enabled state is true
+    * Success: The test will pass if all of the following conditions is met:
         - Cluster Mode is true
-        - Role is either Master or standby
+        - Role is either Master or Standby
         - peer_status matches defined state
+    * Failure: The test will fail if any of the success conditions is not met.
 
     Examples
     --------
@@ -120,8 +118,6 @@ class VerifyCVXClusterStatus(AntaTest):
     ```
     """
 
-    name = "VerifyCVXClusterStatus"
-    description = "Verifies the CVX Cluster Status."
     categories: ClassVar[list[str]] = ["cvx"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show cvx", revision=1)]
 
@@ -140,51 +136,29 @@ class VerifyCVXClusterStatus(AntaTest):
         command_output = self.instance_commands[0].json_output
         self.result.is_success()
 
-        # Validate cluster status
-        if not self._validate_cluster_status(command_output):
-            return
-
-        # Validate cluster mode and enabled status
-        if not self._validate_cluster_mode_and_enabled(command_output):
-            return
-
-        # Validate peer status
-        self._validate_peer_status(command_output.get("clusterStatus", {}))
-
-    def _validate_cluster_status(self, command_output: dict[str, Any]) -> bool:
-        """Check if the cluster status is available."""
-        cluster_status = command_output.get("clusterStatus")
-        if not cluster_status:
-            self.result.is_failure("CVX Server is not a cluster")
-            return False
-        return True
-
-    def _validate_cluster_mode_and_enabled(self, command_output: dict[str, Any]) -> bool:
-        """Check if the cluster mode and enabled status are correct."""
+        # Validate Server enabled status
         if not command_output.get("enabled"):
             self.result.is_failure("CVX Server status is not enabled")
-            return False
 
-        cluster_status = command_output.get("clusterStatus")
-        if not (command_output.get("clusterMode") and cluster_status):
+        # Validate cluster status and mode
+        if not (cluster_status := command_output.get("clusterStatus")) or not command_output.get("clusterMode"):
             self.result.is_failure("CVX Server is not a cluster")
-            return False
+            return
 
         # Check cluster role
         if (cluster_role := cluster_status.get("role")) != self.inputs.role:
             self.result.is_failure(f"CVX Role is not valid: {cluster_role}")
-            return False
+            return
 
-        return True
+        # Validate peer status
+        self._validate_peer_status(cluster_status)
 
     def _validate_peer_status(self, cluster_status: dict[str, Any]) -> bool:
         """Check peer statuses in the cluster."""
         peer_cluster = cluster_status.get("peerStatus", {})
 
         # Check peer count
-        num_of_peers = len(peer_cluster)
-        expected_num_of_peers = len(self.inputs.peer_status)
-        if num_of_peers != expected_num_of_peers:
+        if (num_of_peers := len(peer_cluster)) != (expected_num_of_peers := len(self.inputs.peer_status)):
             self.result.is_failure(f"Unexpected number of peers {num_of_peers} vs {expected_num_of_peers}")
 
         # Check each peer

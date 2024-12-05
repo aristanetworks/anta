@@ -136,7 +136,7 @@ anta.tests.connectivity:
           size: 100
 anta.tests.cvx:
   - VerifyCVXClusterStatus:
-      # Verifies the CVX Cluster Status.
+      # Verifies the CVX Server Cluster status.
       enabled: true
       cluster_mode: true
       role: Master
