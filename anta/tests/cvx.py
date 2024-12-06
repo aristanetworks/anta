@@ -99,7 +99,7 @@ class VerifyCVXClusterStatus(AntaTest):
     * Success: The test will pass if all of the following conditions is met:
         - CVX Enabled state is true
         - Cluster Mode is true
-        - Role is either Master or Standby
+        - Role is either Master or Standby.
         - peer_status matches defined state
     * Failure: The test will fail if any of the success conditions is not met.
 
