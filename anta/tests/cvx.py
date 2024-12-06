@@ -115,7 +115,7 @@ class VerifyCVXClusterStatus(AntaTest):
             - peer_name : cvx-red-2
               registration_state: Registration complete
             - peer_name: cvx-red-3
-              registration_state: Registration complete
+              registration_state: Registration error
     ```
     """
 
