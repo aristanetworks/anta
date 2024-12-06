@@ -525,19 +525,16 @@ DATA: list[dict[str, Any]] = [
                                 "peerAddress": "10.100.0.12",
                                 "state": "Idle",
                                 "neighborCapabilities": {"multiprotocolCaps": {"ipv4Unicast": {"advertised": True, "received": True, "enabled": True}}},
-                                "peerTcpInfo": {"state": "ESTABLISHED", "outputQueueLength": 0, "inputQueueLength": 0},
                             },
                             {
                                 "peerAddress": "10.100.0.13",
                                 "state": "Idle",
                                 "neighborCapabilities": {"multiprotocolCaps": {"dps": {"advertised": True, "received": True, "enabled": True}}},
-                                "peerTcpInfo": {"state": "ESTABLISHED", "outputQueueLength": 0, "inputQueueLength": 0},
                             },
                             {
                                 "peerAddress": "10.100.0.14",
-                                "state": "Idle",
+                                "state": "Active",
                                 "neighborCapabilities": {"multiprotocolCaps": {"linkState": {"advertised": True, "received": True, "enabled": True}}},
-                                "peerTcpInfo": {"state": "ESTABLISHED", "outputQueueLength": 0, "inputQueueLength": 0},
                             },
                         ]
                     },
@@ -545,9 +542,8 @@ DATA: list[dict[str, Any]] = [
                         "peerList": [
                             {
                                 "peerAddress": "10.100.0.12",
-                                "state": "Idle",
+                                "state": "Active",
                                 "neighborCapabilities": {"multiprotocolCaps": {"ipv4SrTe": {"advertised": True, "received": True, "enabled": True}}},
-                                "peerTcpInfo": {"state": "ESTABLISHED", "outputQueueLength": 0, "inputQueueLength": 0},
                             },
                         ]
                     },
@@ -565,10 +561,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.12 - Session state is not established; State: Idle",
-                "AFI: ipv4 SAFI: sr-te VRF: MGMT Peer: 10.100.0.12 - Session state is not established; State: Idle",
-                "AFI: path-selection Peer: 10.100.0.13 - Session state is not established; State: Idle",
-                "AFI: link-state Peer: 10.100.0.14 - Session state is not established; State: Idle",
+                "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.12 - Session state is not established - State: Idle",
+                "AFI: ipv4 SAFI: sr-te VRF: MGMT Peer: 10.100.0.12 - Session state is not established - State: Active",
+                "AFI: path-selection Peer: 10.100.0.13 - Session state is not established - State: Idle",
+                "AFI: link-state Peer: 10.100.0.14 - Session state is not established - State: Active",
             ],
         },
     },
@@ -582,19 +578,19 @@ DATA: list[dict[str, Any]] = [
                         "peerList": [
                             {
                                 "peerAddress": "10.100.0.12",
-                                "state": "Idle",
+                                "state": "Established",
                                 "neighborCapabilities": {"multiprotocolCaps": {"ipv4Unicast": {"advertised": False, "received": False, "enabled": True}}},
                                 "peerTcpInfo": {"state": "ESTABLISHED", "outputQueueLength": 0, "inputQueueLength": 0},
                             },
                             {
                                 "peerAddress": "10.100.0.13",
-                                "state": "Idle",
+                                "state": "Established",
                                 "neighborCapabilities": {"multiprotocolCaps": {"dps": {"advertised": True, "received": False, "enabled": False}}},
                                 "peerTcpInfo": {"state": "ESTABLISHED", "outputQueueLength": 0, "inputQueueLength": 0},
                             },
                             {
                                 "peerAddress": "10.100.0.14",
-                                "state": "Idle",
+                                "state": "Established",
                                 "neighborCapabilities": {"multiprotocolCaps": {"linkState": {"advertised": False, "received": False, "enabled": False}}},
                                 "peerTcpInfo": {"state": "ESTABLISHED", "outputQueueLength": 0, "inputQueueLength": 0},
                             },
@@ -604,7 +600,7 @@ DATA: list[dict[str, Any]] = [
                         "peerList": [
                             {
                                 "peerAddress": "10.100.0.12",
-                                "state": "Idle",
+                                "state": "Established",
                                 "neighborCapabilities": {"multiprotocolCaps": {"ipv4SrTe": {"advertised": False, "received": False, "enabled": False}}},
                                 "peerTcpInfo": {"state": "ESTABLISHED", "outputQueueLength": 0, "inputQueueLength": 0},
                             },
@@ -624,14 +620,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.12 - Session state is not established; State: Idle",
-                "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.12 - AFI/SAFI state is not negotiated; Advertised: False, Received: False, Enabled: True",
-                "AFI: ipv4 SAFI: sr-te VRF: MGMT Peer: 10.100.0.12 - Session state is not established; State: Idle",
-                "AFI: ipv4 SAFI: sr-te VRF: MGMT Peer: 10.100.0.12 - AFI/SAFI state is not negotiated; Advertised: False, Received: False, Enabled: False",
-                "AFI: path-selection Peer: 10.100.0.13 - Session state is not established; State: Idle",
-                "AFI: path-selection Peer: 10.100.0.13 - AFI/SAFI state is not negotiated; Advertised: True, Received: False, Enabled: False",
-                "AFI: link-state Peer: 10.100.0.14 - Session state is not established; State: Idle",
-                "AFI: link-state Peer: 10.100.0.14 - AFI/SAFI state is not negotiated; Advertised: False, Received: False, Enabled: False",
+                "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.12 - AFI/SAFI state is not negotiated - Advertised: False, Received: False, Enabled: True",
+                "AFI: ipv4 SAFI: sr-te VRF: MGMT Peer: 10.100.0.12 - AFI/SAFI state is not negotiated - Advertised: False, Received: False, Enabled: False",
+                "AFI: path-selection Peer: 10.100.0.13 - AFI/SAFI state is not negotiated - Advertised: True, Received: False, Enabled: False",
+                "AFI: link-state Peer: 10.100.0.14 - AFI/SAFI state is not negotiated - Advertised: False, Received: False, Enabled: False",
             ],
         },
     },
@@ -645,19 +637,19 @@ DATA: list[dict[str, Any]] = [
                         "peerList": [
                             {
                                 "peerAddress": "10.100.0.12",
-                                "state": "Idle",
+                                "state": "Established",
                                 "neighborCapabilities": {"multiprotocolCaps": {"ipv4Unicast": {"advertised": True, "received": True, "enabled": True}}},
                                 "peerTcpInfo": {"state": "ESTABLISHED", "outputQueueLength": 4, "inputQueueLength": 2},
                             },
                             {
                                 "peerAddress": "10.100.0.13",
-                                "state": "Idle",
+                                "state": "Established",
                                 "neighborCapabilities": {"multiprotocolCaps": {"dps": {"advertised": True, "received": True, "enabled": True}}},
                                 "peerTcpInfo": {"state": "ESTABLISHED", "outputQueueLength": 1, "inputQueueLength": 1},
                             },
                             {
                                 "peerAddress": "10.100.0.14",
-                                "state": "Idle",
+                                "state": "Established",
                                 "neighborCapabilities": {"multiprotocolCaps": {"linkState": {"advertised": True, "received": True, "enabled": True}}},
                                 "peerTcpInfo": {"state": "ESTABLISHED", "outputQueueLength": 2, "inputQueueLength": 3},
                             },
@@ -667,7 +659,7 @@ DATA: list[dict[str, Any]] = [
                         "peerList": [
                             {
                                 "peerAddress": "10.100.0.12",
-                                "state": "Idle",
+                                "state": "Established",
                                 "neighborCapabilities": {"multiprotocolCaps": {"ipv4SrTe": {"advertised": True, "received": True, "enabled": True}}},
                                 "peerTcpInfo": {"state": "ESTABLISHED", "outputQueueLength": 1, "inputQueueLength": 5},
                             },
@@ -687,14 +679,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.12 - Session state is not established; State: Idle",
-                "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.12 - Session has non-empty message queues; InQ: 2, OutQ: 4",
-                "AFI: ipv4 SAFI: sr-te VRF: MGMT Peer: 10.100.0.12 - Session state is not established; State: Idle",
-                "AFI: ipv4 SAFI: sr-te VRF: MGMT Peer: 10.100.0.12 - Session has non-empty message queues; InQ: 5, OutQ: 1",
-                "AFI: path-selection Peer: 10.100.0.13 - Session state is not established; State: Idle",
-                "AFI: path-selection Peer: 10.100.0.13 - Session has non-empty message queues; InQ: 1, OutQ: 1",
-                "AFI: link-state Peer: 10.100.0.14 - Session state is not established; State: Idle",
-                "AFI: link-state Peer: 10.100.0.14 - Session has non-empty message queues; InQ: 3, OutQ: 2",
+                "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.12 - Session has non-empty message queues - InQ: 2, OutQ: 4",
+                "AFI: ipv4 SAFI: sr-te VRF: MGMT Peer: 10.100.0.12 - Session has non-empty message queues - InQ: 5, OutQ: 1",
+                "AFI: path-selection Peer: 10.100.0.13 - Session has non-empty message queues - InQ: 1, OutQ: 1",
+                "AFI: link-state Peer: 10.100.0.14 - Session has non-empty message queues - InQ: 3, OutQ: 2",
             ],
         },
     },
@@ -823,7 +811,6 @@ DATA: list[dict[str, Any]] = [
                                 "peerAddress": "10.100.0.12",
                                 "state": "Idle",
                                 "neighborCapabilities": {"multiprotocolCaps": {"ipv4Unicast": {"advertised": True, "received": True, "enabled": True}}},
-                                "peerTcpInfo": {"state": "ESTABLISHED", "outputQueueLength": 0, "inputQueueLength": 0},
                             }
                         ]
                     },
@@ -833,7 +820,6 @@ DATA: list[dict[str, Any]] = [
                                 "peerAddress": "10.100.0.14",
                                 "state": "Idle",
                                 "neighborCapabilities": {"multiprotocolCaps": {"ipv4Unicast": {"advertised": True, "received": True, "enabled": True}}},
-                                "peerTcpInfo": {"state": "ESTABLISHED", "outputQueueLength": 0, "inputQueueLength": 0},
                             },
                         ]
                     },
@@ -849,8 +835,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.12 - Session state is not established; State: Idle",
-                "AFI: ipv4 SAFI: unicast VRF: MGMT Peer: 10.100.0.14 - Session state is not established; State: Idle",
+                "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.12 - Session state is not established - State: Idle",
+                "AFI: ipv4 SAFI: unicast VRF: MGMT Peer: 10.100.0.14 - Session state is not established - State: Idle",
             ],
         },
     },
@@ -892,8 +878,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.12 - AFI/SAFI state is not negotiated; Advertised: False, Received: False, Enabled: True",
-                "AFI: ipv4 SAFI: unicast VRF: MGMT Peer: 10.100.0.14 - AFI/SAFI state is not negotiated; Advertised: False, Received: False, Enabled: False",
+                "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.12 - AFI/SAFI state is not negotiated - Advertised: False, Received: False, Enabled: True",
+                "AFI: ipv4 SAFI: unicast VRF: MGMT Peer: 10.100.0.14 - AFI/SAFI state is not negotiated - Advertised: False, Received: False, Enabled: False",
             ],
         },
     },
@@ -978,8 +964,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.12 - Session has non-empty message queues; InQ: 3, OutQ: 3",
-                "AFI: ipv4 SAFI: unicast VRF: MGMT Peer: 10.100.0.14 - Session has non-empty message queues; InQ: 2, OutQ: 2",
+                "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.12 - Session has non-empty message queues - InQ: 3, OutQ: 3",
+                "AFI: ipv4 SAFI: unicast VRF: MGMT Peer: 10.100.0.14 - Session has non-empty message queues - InQ: 2, OutQ: 2",
             ],
         },
     },

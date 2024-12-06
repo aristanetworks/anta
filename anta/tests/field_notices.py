@@ -109,15 +109,11 @@ class VerifyFieldNotice44Resolution(AntaTest):
 
         self.result.is_success()
         incorrect_aboot_version = (
-            aboot_version.startswith("4.0.")
-            and int(aboot_version.split(".")[2]) < 7
-            or aboot_version.startswith("4.1.")
-            and int(aboot_version.split(".")[2]) < 1
+            (aboot_version.startswith("4.0.") and int(aboot_version.split(".")[2]) < 7)
+            or (aboot_version.startswith("4.1.") and int(aboot_version.split(".")[2]) < 1)
             or (
-                aboot_version.startswith("6.0.")
-                and int(aboot_version.split(".")[2]) < 9
-                or aboot_version.startswith("6.1.")
-                and int(aboot_version.split(".")[2]) < 7
+                (aboot_version.startswith("6.0.") and int(aboot_version.split(".")[2]) < 9)
+                or (aboot_version.startswith("6.1.") and int(aboot_version.split(".")[2]) < 7)
             )
         )
         if incorrect_aboot_version:
