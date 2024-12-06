@@ -15,7 +15,7 @@ from anta.custom_types import Interface
 
 
 class ISISInstance(BaseModel):
-    """"""
+    """Model"""
     model_config = ConfigDict(extra="forbid")
     name: str
     """ISIS instance name."""
@@ -24,7 +24,7 @@ class ISISInstance(BaseModel):
     dataplane: Literal["MPLS", "mpls", "unset"] = "MPLS"
     """Configured dataplane for the instance."""
     interfaces: list[ISISInterface] | None = None
-    """"""
+    """interface"""
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the ISISInstance for reporting."""
@@ -40,12 +40,12 @@ class ISISInterface(BaseModel):
     # Should have support for is-type level-1-2 ================================================== Added 0 for this, Need to verify that can be neigbor and passive true/false is same or not
     level: Literal[1, 2, 0] = 2
     """ISIS level (1 or 2) configured for the interface. Default is 2."""
-    neighbor_count: int
+    neighbor_count: int | None = None
     """The total number of IS-IS neighbors associated with interface."""
     mode: Literal["point-to-point", "broadcast", "passive"] | None = None
     """The operational mode of the IS-IS interface."""
     segment: Segment | None = None
-    """"""
+    """segment"""
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the ISISInterface for reporting."""
@@ -63,8 +63,4 @@ class Segment(BaseModel):
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the Segment for reporting."""
-        return f"Interface: {self.interface} Level: {self.level} Origin: {self.sid_origin} Endpoint: {self.address}"
-
-class InterfaceCount(ISISInterface):
-    pass
-
+        return f"Origin: {self.sid_origin} Endpoint: {self.address}"
