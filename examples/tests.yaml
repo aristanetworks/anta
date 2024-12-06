@@ -144,7 +144,7 @@ anta.tests.cvx:
         - peer_name : cvx-red-2
           registration_state: Registration complete
         - peer_name: cvx-red-3
-          registration_state: Registration complete
+          registration_state: Registration error
   - VerifyManagementCVX:
       # Verifies the management CVX global status.
       enabled: true
