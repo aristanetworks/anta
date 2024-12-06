@@ -505,47 +505,41 @@ anta.tests.routing.generic:
 anta.tests.routing.isis:
   - VerifyISISInterfaceMode:
       # Verifies interface mode for IS-IS
-      interfaces:
-        - name: Loopback0
-          mode: passive
-          # vrf is set to default by default
-        - name: Ethernet2
-          mode: passive
-          level: 2
-          # vrf is set to default by default
-        - name: Ethernet1
-          mode: point-to-point
-          vrf: default
-          # level is set to 2 by default
+      instances:
+          - name: TEST
+            vrf: default
+            interfaces:
+              - name: Ethernet1
+                level: 1
+                mode: passive
   - VerifyISISNeighborCount:
       # Verifies number of IS-IS neighbors per level and per interface.
-      interfaces:
-        - name: Ethernet1
-          level: 1
-          count: 2
-        - name: Ethernet2
-          level: 2
-          count: 1
-        - name: Ethernet3
-          count: 2
-          # level is set to 2 by default
+      instances:
+          - name: TEST
+            vrf: default
+            interfaces:
+              - name: Ethernet1
+                level: 1
+                neighbor_count: 2
   - VerifyISISNeighborState:
       # Verifies all IS-IS neighbors are in UP state.
   - VerifyISISSegmentRoutingAdjacencySegments:
       # Verify that all expected Adjacency segments are correctly visible for each interface.
       instances:
-        - name: CORE-ISIS
-          vrf: default
-          segments:
-            - interface: Ethernet2
-              address: 10.0.1.3
-              sid_origin: dynamic
+          - name: TEST
+            vrf: default
+            interfaces:
+              - name: Ethernet1
+                level: 1
+                segment:
+                  sid_origin: dynamic
+                  address: "10.0.12.2"
   - VerifyISISSegmentRoutingDataplane:
       # Verify dataplane of a list of ISIS-SR instances.
       instances:
-        - name: CORE-ISIS
-          vrf: default
-          dataplane: MPLS
+          - name: TEST
+            vrf: default
+            dataplane: unset
   - VerifyISISSegmentRoutingTunnels:
       # Verify ISIS-SR tunnels computed by device.
       entries:

@@ -5,17 +5,17 @@
 
 from __future__ import annotations
 
-from ipaddress import IPv4Address, IPv6Address
-from typing import TYPE_CHECKING, Any, Literal
-from warnings import warn
+from ipaddress import IPv4Address
+from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, PositiveInt, model_validator
+from pydantic import BaseModel, ConfigDict
 
 from anta.custom_types import Interface
 
 
 class ISISInstance(BaseModel):
     """Model"""
+
     model_config = ConfigDict(extra="forbid")
     name: str
     """ISIS instance name."""

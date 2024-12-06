@@ -163,9 +163,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": [
-                "Instance: CORE-ISIS VRF: default Neighbor: s1-p01 - Session (adjacency) down"
-            ],
+            "messages": ["Instance: CORE-ISIS VRF: default Neighbor: s1-p01 - Session (adjacency) down"],
         },
     },
     {
@@ -244,7 +242,11 @@ DATA: list[dict[str, Any]] = [
                 }
             },
         ],
-        "inputs": {"instances":[{"name": "CORE-ISIS", "interfaces":[{"name": "Ethernet1", "neighbor_count": 1, "level": 2}, {"name": "Ethernet2", "neighbor_count": 1, "level": 2}]}]},
+        "inputs": {
+            "instances": [
+                {"name": "CORE-ISIS", "interfaces": [{"name": "Ethernet1", "neighbor_count": 1, "level": 2}, {"name": "Ethernet2", "neighbor_count": 1, "level": 2}]}
+            ]
+        },
         "expected": {"result": "success"},
     },
     {
@@ -253,7 +255,11 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [
             {"vrfs": {"default": {"isisInstances": {"CORE-ISIS": {"interfaces": {}}}}}},
         ],
-        "inputs": {"instances":[{"name": "CORE-ISIS", "interfaces":[{"name": "Ethernet1", "neighbor_count": 1, "level": 2}, {"name": "Ethernet2", "neighbor_count": 1, "level": 2}]}]},
+        "inputs": {
+            "instances": [
+                {"name": "CORE-ISIS", "interfaces": [{"name": "Ethernet1", "neighbor_count": 1, "level": 2}, {"name": "Ethernet2", "neighbor_count": 1, "level": 2}]}
+            ]
+        },
         "expected": {
             "result": "skipped",
             "messages": ["No IS-IS neighbor detected"],
@@ -292,12 +298,16 @@ DATA: list[dict[str, Any]] = [
                 }
             },
         ],
-        "inputs": {"instances":[{"name": "CORE-ISIS", "interfaces":[{"name": "Ethernet1", "neighbor_count": 1, "level": 2}, {"name": "Ethernet2", "neighbor_count": 1, "level": 2}]}]},
+        "inputs": {
+            "instances": [
+                {"name": "CORE-ISIS", "interfaces": [{"name": "Ethernet1", "neighbor_count": 1, "level": 2}, {"name": "Ethernet2", "neighbor_count": 1, "level": 2}]}
+            ]
+        },
         "expected": {
             "result": "failure",
             "messages": [
                 "Instance: CORE-ISIS VRF: default Interface: Ethernet1 Level: 2 - Neighbor count mismatch - Expected: 1 Actual: 0",
-                "Instance: CORE-ISIS VRF: default Interface: Ethernet2 Level: 2 - No neighbor detected"
+                "Instance: CORE-ISIS VRF: default Interface: Ethernet2 Level: 2 - No neighbor detected",
             ],
         },
     },
@@ -350,12 +360,16 @@ DATA: list[dict[str, Any]] = [
                 }
             },
         ],
-        "inputs": {"instances":[{"name": "CORE-ISIS", "interfaces":[{"name": "Ethernet1", "neighbor_count": 1, "level": 2}, {"name": "Ethernet2", "neighbor_count": 2, "level": 2}]}]},
+        "inputs": {
+            "instances": [
+                {"name": "CORE-ISIS", "interfaces": [{"name": "Ethernet1", "neighbor_count": 1, "level": 2}, {"name": "Ethernet2", "neighbor_count": 2, "level": 2}]}
+            ]
+        },
         "expected": {
             "result": "failure",
             "messages": [
                 "Instance: CORE-ISIS VRF: default Interface: Ethernet1 Level: 2 - Neighbor count mismatch - Expected: 1 Actual: 3",
-                "Instance: CORE-ISIS VRF: default Interface: Ethernet2 Level: 2 - Neighbor count mismatch - Expected: 2 Actual: 1"
+                "Instance: CORE-ISIS VRF: default Interface: Ethernet2 Level: 2 - Neighbor count mismatch - Expected: 2 Actual: 1",
             ],
         },
     },
@@ -432,7 +446,18 @@ DATA: list[dict[str, Any]] = [
                 }
             }
         ],
-        "inputs": {"instances":[{"name": "CORE-ISIS", "interfaces":[{"name": "Loopback0", "mode": "passive"}, {"name": "Ethernet2", "mode": "broadcast"}, {"name": "Ethernet1", "mode": "point-to-point"}]}]},
+        "inputs": {
+            "instances": [
+                {
+                    "name": "CORE-ISIS",
+                    "interfaces": [
+                        {"name": "Loopback0", "mode": "passive"},
+                        {"name": "Ethernet2", "mode": "broadcast"},
+                        {"name": "Ethernet1", "mode": "point-to-point"},
+                    ],
+                }
+            ]
+        },
         "expected": {"result": "success"},
     },
     {
@@ -508,7 +533,18 @@ DATA: list[dict[str, Any]] = [
                 }
             }
         ],
-        "inputs": {"instances":[{"name": "CORE-ISIS", "interfaces":[{"name": "Loopback0", "mode": "passive"}, {"name": "Ethernet2", "mode": "broadcast"}, {"name": "Ethernet1", "mode": "point-to-point"}]}]},
+        "inputs": {
+            "instances": [
+                {
+                    "name": "CORE-ISIS",
+                    "interfaces": [
+                        {"name": "Loopback0", "mode": "passive"},
+                        {"name": "Ethernet2", "mode": "broadcast"},
+                        {"name": "Ethernet1", "mode": "point-to-point"},
+                    ],
+                }
+            ]
+        },
         "expected": {
             "result": "failure",
             "messages": ["Instance: CORE-ISIS VRF: default Interface: Ethernet2 Level: 2 - Incorrect mode - Expected: broadcast Actual: point-to-point"],
@@ -587,7 +623,18 @@ DATA: list[dict[str, Any]] = [
                 }
             }
         ],
-        "inputs": {"instances":[{"name": "CORE-ISIS", "interfaces":[{"name": "Loopback0", "mode": "passive"}, {"name": "Ethernet2", "mode": "broadcast"}, {"name": "Ethernet1", "mode": "point-to-point"}]}]},
+        "inputs": {
+            "instances": [
+                {
+                    "name": "CORE-ISIS",
+                    "interfaces": [
+                        {"name": "Loopback0", "mode": "passive"},
+                        {"name": "Ethernet2", "mode": "broadcast"},
+                        {"name": "Ethernet1", "mode": "point-to-point"},
+                    ],
+                }
+            ]
+        },
         "expected": {
             "result": "failure",
             "messages": ["Instance: CORE-ISIS VRF: default Interface: Ethernet1 Level: 2 - Incorrect mode - Expected: point-to-point Actual: broadcast"],
@@ -666,7 +713,18 @@ DATA: list[dict[str, Any]] = [
                 }
             }
         ],
-        "inputs": {"instances":[{"name": "CORE-ISIS", "interfaces":[{"name": "Loopback0", "mode": "passive"}, {"name": "Ethernet2", "mode": "broadcast"}, {"name": "Ethernet1", "mode": "point-to-point"}]}]},
+        "inputs": {
+            "instances": [
+                {
+                    "name": "CORE-ISIS",
+                    "interfaces": [
+                        {"name": "Loopback0", "mode": "passive"},
+                        {"name": "Ethernet2", "mode": "broadcast"},
+                        {"name": "Ethernet1", "mode": "point-to-point"},
+                    ],
+                }
+            ]
+        },
         "expected": {
             "result": "failure",
             "messages": ["Instance: CORE-ISIS VRF: default - No IS-IS neighbor detected"],
@@ -676,7 +734,18 @@ DATA: list[dict[str, Any]] = [
         "name": "skipped VerifyISISInterfaceMode no vrf",
         "test": VerifyISISInterfaceMode,
         "eos_data": [{"vrfs": {}}],
-        "inputs": {"instances":[{"name": "CORE-ISIS", "interfaces":[{"name": "Loopback0", "mode": "passive"}, {"name": "Ethernet2", "mode": "broadcast"}, {"name": "Ethernet1", "mode": "point-to-point"}]}]},
+        "inputs": {
+            "instances": [
+                {
+                    "name": "CORE-ISIS",
+                    "interfaces": [
+                        {"name": "Loopback0", "mode": "passive"},
+                        {"name": "Ethernet2", "mode": "broadcast"},
+                        {"name": "Ethernet1", "mode": "point-to-point"},
+                    ],
+                }
+            ]
+        },
         "expected": {"result": "skipped", "messages": ["No IS-IS neighbor detected"]},
     },
     {

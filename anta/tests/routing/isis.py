@@ -8,14 +8,14 @@
 from __future__ import annotations
 
 from ipaddress import IPv4Address, IPv4Network
-from typing import Any, ClassVar, Literal, Counter
+from typing import Any, ClassVar, Literal
 
 from pydantic import BaseModel
 
 from anta.custom_types import Interface
+from anta.input_models.routing.isis import ISISInstance
 from anta.models import AntaCommand, AntaTemplate, AntaTest
-from anta.tools import get_value, get_item
-from anta.input_models.routing.isis import ISISInterface, InterfaceCount, ISISInstance
+from anta.tools import get_item, get_value
 
 
 def _get_isis_neighbor_details(isis_neighbor_json: dict[str, Any], neighbor_state: Literal["up", "down"] | None = None) -> list[dict[str, Any]]:
@@ -305,9 +305,17 @@ class VerifyISISSegmentRoutingAdjacencySegments(AntaTest):
                     if not (adjancency_data := get_item(instance_data["adjacencySegments"], "localIntf", interface.name)):
                         self.result.is_failure(f"{instance} {interface} - Not configured")
                         continue
-                    
-                    if not all([(act_origin := adjancency_data["sidOrigin"]) == interface.segment.sid_origin, (endpoint := adjancency_data["ipAddress"]) == str(interface.segment.address), (actual_level := adjancency_data["level"]) == interface.level]):
-                        self.result.is_failure(f"{instance} {interface} {interface.segment} - Not correctly configured - Origin: {act_origin} Endpoint: {endpoint} Level: {actual_level}")
+
+                    if not all(
+                        [
+                            (act_origin := adjancency_data["sidOrigin"]) == interface.segment.sid_origin,
+                            (endpoint := adjancency_data["ipAddress"]) == str(interface.segment.address),
+                            (actual_level := adjancency_data["level"]) == interface.level,
+                        ]
+                    ):
+                        self.result.is_failure(
+                            f"{instance} {interface} {interface.segment} - Not correctly configured - Origin: {act_origin} Endpoint: {endpoint} Level: {actual_level}"
+                        )
 
                 # level_check = Counter(data["localIntf"] for data in instance_data["adjacencySegments"])
                 # elif not level_check.interface == 2:
