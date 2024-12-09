@@ -108,8 +108,6 @@ class VerifyCVXClusterStatus(AntaTest):
     ```yaml
     anta.tests.cvx:
       - VerifyCVXClusterStatus:
-          enabled: true
-          cluster_mode: true
           role: Master
           peer_status:
             - peer_name : cvx-red-2
@@ -125,9 +123,6 @@ class VerifyCVXClusterStatus(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyCVXClusterStatus test."""
 
-        enabled: bool
-        """Whether management CVX must be enabled (True) or disabled (False)."""
-        cluster_mode: bool
         role: Literal["Master", "Standby", "Disconnected"] = "Master"
         peer_status: list[CVXPeers]
 

@@ -163,8 +163,6 @@ DATA: list[dict[str, Any]] = [
             }
         ],
         "inputs": {
-            "enabled": True,
-            "cluster_mode": True,
             "role": "Master",
             "peer_status": [
                 {"peer_name": "cvx-red-2", "registrationState": "Registration complete"},
@@ -190,8 +188,6 @@ DATA: list[dict[str, Any]] = [
             }
         ],
         "inputs": {
-            "enabled": True,
-            "cluster_mode": True,
             "role": "Master",
             "peer_status": [
                 {"peer_name": "cvx-red-2", "registrationState": "Registration complete"},
@@ -214,8 +210,6 @@ DATA: list[dict[str, Any]] = [
             }
         ],
         "inputs": {
-            "enabled": True,
-            "cluster_mode": True,
             "role": "Master",
             "peer_status": [],
         },
@@ -232,8 +226,6 @@ DATA: list[dict[str, Any]] = [
             }
         ],
         "inputs": {
-            "enabled": True,
-            "cluster_mode": True,
             "role": "Master",
             "peer_status": [],
         },
@@ -255,8 +247,6 @@ DATA: list[dict[str, Any]] = [
             }
         ],
         "inputs": {
-            "enabled": True,
-            "cluster_mode": True,
             "role": "Master",
             "peer_status": [
                 {"peer_name": "cvx-red-2", "registrationState": "Registration complete"},
@@ -279,8 +269,6 @@ DATA: list[dict[str, Any]] = [
             }
         ],
         "inputs": {
-            "enabled": True,
-            "cluster_mode": True,
             "role": "Master",
             "peer_status": [
                 {"peer_name": "cvx-red-2", "registrationState": "Registration complete"},
@@ -306,8 +294,6 @@ DATA: list[dict[str, Any]] = [
             }
         ],
         "inputs": {
-            "enabled": True,
-            "cluster_mode": True,
             "role": "Master",
             "peer_status": [
                 {"peer_name": "cvx-red-2", "registrationState": "Registration complete"},

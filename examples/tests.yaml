@@ -137,14 +137,12 @@ anta.tests.connectivity:
 anta.tests.cvx:
   - VerifyCVXClusterStatus:
       # Verifies the CVX Server Cluster status.
-      enabled: true
-      cluster_mode: true
       role: Master
       peer_status:
         - peer_name : cvx-red-2
           registration_state: Registration complete
         - peer_name: cvx-red-3
-          registration_state: Registration complete
+          registration_state: Registration error
   - VerifyManagementCVX:
       # Verifies the management CVX global status.
       enabled: true
