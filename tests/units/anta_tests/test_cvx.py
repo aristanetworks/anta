@@ -140,9 +140,16 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
-        "name": "failure",
+        "name": "failure - no enabled state",
         "test": VerifyManagementCVX,
         "eos_data": [{"clusterStatus": {}}],
+        "inputs": {"enabled": False},
+        "expected": {"result": "failure", "messages": ["Management CVX status is not valid: None"]},
+    },
+    {
+        "name": "failure - no clusterStatus",
+        "test": VerifyManagementCVX,
+        "eos_data": [{}],
         "inputs": {"enabled": False},
         "expected": {"result": "failure", "messages": ["Management CVX status is not valid: None"]},
     },
