@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from anta.tests.cvx import VerifyManagementCVX, VerifyMcsClientMounts
+from anta.tests.cvx import VerifyActiveCVXConnections, VerifyManagementCVX, VerifyMcsClientMounts
 from tests.units.anta_tests import test
 
 DATA: list[dict[str, Any]] = [
@@ -145,5 +145,49 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [{"clusterStatus": {}}],
         "inputs": {"enabled": False},
         "expected": {"result": "failure", "messages": ["Management CVX status is not valid: None"]},
+    },
+    {
+        "name": "success",
+        "test": VerifyActiveCVXConnections,
+        "eos_data": [
+            {
+                "connections": [
+                    {
+                        "switchId": "fc:bd:67:c3:16:55",
+                        "hostname": "lyv563",
+                        "oobConnectionActive": True,
+                    },
+                    {
+                        "switchId": "00:1c:73:3c:e3:9e",
+                        "hostname": "tg264",
+                        "oobConnectionActive": True,
+                    },
+                ]
+            }
+        ],
+        "inputs": {"expected_connection_count": 2},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure",
+        "test": VerifyActiveCVXConnections,
+        "eos_data": [
+            {
+                "connections": [
+                    {
+                        "switchId": "fc:bd:67:c3:16:55",
+                        "hostname": "lyv563",
+                        "oobConnectionActive": False,
+                    },
+                    {
+                        "switchId": "00:1c:73:3c:e3:9e",
+                        "hostname": "tg264",
+                        "oobConnectionActive": True,
+                    },
+                ]
+            }
+        ],
+        "inputs": {"expected_connection_count": 2},
+        "expected": {"result": "failure", "messages": ["Mismatch in expected connection count. Active connections: 1"]},
     },
 ]
