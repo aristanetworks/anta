@@ -190,4 +190,11 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"expected_connection_count": 2},
         "expected": {"result": "failure", "messages": ["Mismatch in expected connection count. Active connections: 1"]},
     },
+    {
+        "name": "failure-no-connections",
+        "test": VerifyActiveCVXConnections,
+        "eos_data": [{}],
+        "inputs": {"expected_connection_count": 2},
+        "expected": {"result": "failure", "messages": ["CVX connections are not available"]},
+    },
 ]
