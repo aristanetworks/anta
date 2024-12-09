@@ -87,3 +87,47 @@ class VerifyManagementCVX(AntaTest):
         cluster_status = command_output["clusterStatus"]
         if (cluster_state := cluster_status.get("enabled")) != self.inputs.enabled:
             self.result.is_failure(f"Management CVX status is not valid: {cluster_state}")
+
+
+class VerifyActiveCVXConnections(AntaTest):
+    """Verifies the expected number of active CVX Connections.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the expected number of connections is present.
+    * Failure: The test will fail if the unexpected number of connections is present.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.cvx:
+      - VerifyActiveCVXConnections:
+          expected_connection_count: 100
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["cvx"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show cvx connections brief", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyActiveCVXConnections test."""
+
+        expected_connection_count: int
+        """The expected number of active CVX Connections"""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyActiveCVXConnections."""
+        command_output = self.instance_commands[0].json_output
+        self.result.is_success()
+        connections = command_output.get("connections", {})
+        active_count = 0
+        if not connections:
+            self.result.is_failure("CVX connections are not available")
+        else:
+            for connection in connections:
+                if connection["oobConnectionActive"]:
+                    active_count += 1
+
+            if self.inputs.expected_connection_count != active_count:
+                self.result.is_failure(f"Mismatch in expected connection count. Active connections: {active_count}")
