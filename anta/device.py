@@ -414,10 +414,12 @@ class AsyncEOSDevice(AntaDevice):
                 logger.error(
                     "Command '%s' requires privileged mode on %s. Verify user permissions and if the `enable` option is required.", command.command, self.name
                 )
-            if command.supported:
-                logger.error("Command '%s' failed on %s: %s", command.command, self.name, e.errors[0] if len(e.errors) == 1 else e.errors)
-            else:
+            if not command.supported:
                 logger.debug("Command '%s' is not supported on '%s' (%s)", command.command, self.name, self.hw_model)
+            elif command.returned_known_eos_error:
+                logger.debug("Command '%s' returned a known error '%s'", command.command, self.name)
+            else:
+                logger.error("Command '%s' failed on %s: %s", command.command, self.name, e.errors[0] if len(e.errors) == 1 else e.errors)
         except TimeoutException as e:
             # This block catches Timeout exceptions.
             command.errors = [exc_to_str(e)]

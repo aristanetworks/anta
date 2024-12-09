@@ -240,10 +240,29 @@ class AntaCommand(BaseModel):
 
     @property
     def supported(self) -> bool:
-        """Return True if the command is supported on the device hardware platform, False otherwise.
+        """Indicates if the command is supported on the device.
+
+        Returns
+        -------
+        bool
+            True if the command is supported on the device hardware platform, False otherwise.
 
         Raises
         ------
+        RuntimeError
+            If the command has not been collected and has not returned an error.
+            AntaDevice.collect() must be called before this property.
+        """
+        if not self.collected and not self.error:
+            msg = f"Command '{self.command}' has not been collected and has not returned an error. Call AntaDevice.collect()."
+
+            raise RuntimeError(msg)
+        return all("not supported on this hardware platform" not in e for e in self.errors)
+
+    @property
+    def returned_known_eos_error(self) -> bool:
+        """Return True if the command returned a known_eos_error on the device, False otherwise.
+
         RuntimeError
             If the command has not been collected and has not returned an error.
             AntaDevice.collect() must be called before this property.
@@ -630,10 +649,15 @@ class AntaTest(ABC):
 
                 if cmds := self.failed_commands:
                     unsupported_commands = [f"'{c.command}' is not supported on {self.device.hw_model}" for c in cmds if not c.supported]
+                    returned_known_eos_error = [f"'{c.command}' failed on {self.device.name}: {', '.join(c.errors)}" for c in cmds if c.returned_known_eos_error]
                     if unsupported_commands:
                         msg = f"Test {self.name} has been skipped because it is not supported on {self.device.hw_model}: {GITHUB_SUGGESTION}"
                         self.logger.warning(msg)
                         self.result.is_skipped("\n".join(unsupported_commands))
+                    elif returned_known_eos_error:
+                        msg = f"Test {self.name} has failed."
+                        self.logger.warning(msg)
+                        self.result.is_failure("\n".join(returned_known_eos_error))
                     else:
                         self.result.is_error(message="\n".join([f"{c.command} has failed: {', '.join(c.errors)}" for c in cmds]))
                     AntaTest.update_progress()
