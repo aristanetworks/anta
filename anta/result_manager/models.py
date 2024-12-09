@@ -49,7 +49,7 @@ class BaseTestResult(BaseModel, ABC):
     @field_serializer("inputs")
     def serialize_inputs(self, inputs: BaseModel | None) -> dict[str, Any] | None:
         """Serialize the inputs field to a dictionary."""
-        return inputs.model_dump(mode="json", serialize_as_any=True, exclude={"result_overwrite", "filters"}, exclude_unset=True) if inputs else None
+        return inputs.model_dump(mode="json", serialize_as_any=True, exclude_none=True) if inputs else None
 
     def is_success(self, message: str | None = None) -> None:
         """Set status to success.
