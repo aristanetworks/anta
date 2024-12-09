@@ -853,9 +853,9 @@ class VerifyLACPInterfacesStatus(AntaTest):
     This test performs the following checks for each specified interface:
 
       1. Verifies that the interface is a member of the LACP port channel.
-      4. Validates that LACP settings are correctly configured to ensure reliable link aggregation. This includes:
+      2. Verifies LACP port states and operational status:
         - Activity: Active LACP mode (initiates)
-        - Timeout: Short (Fast Mode), Long (Slow Mode) as specified.
+        - Timeout: Short (Fast Mode), Long (Slow Mode - default)
         - Aggregation: Port aggregable
         - Synchronization: Port in sync with partner
         - Collecting: Incoming frames aggregating
@@ -863,11 +863,12 @@ class VerifyLACPInterfacesStatus(AntaTest):
 
     Expected Results
     ----------------
-    * Success: If the provided interfaces are bundled in port channel and all specified parameters are correct.
+    * Success: Interface is bundled and all LACP states match expected values for both actor and partner
     * Failure: If any of the following occur:
-        - The specified interface and port channel is not configured.
-        - The specified interface is not bundled in given port channel.
-        - The specified parameters does not match the expected operational state for any interface.
+        - Interface or port channel is not configued.
+        - Interface is not bundled in port channel.
+        - Actor or partner port LACP states don't match expected configuration.
+        - LACP rate (timeout) mismatch when fast mode is configued.
 
     Examples
     --------
