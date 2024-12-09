@@ -19,7 +19,7 @@ from anta.inventory import AntaInventory
 from anta.inventory.exceptions import InventoryIncorrectSchemaError, InventoryRootKeyError
 
 if TYPE_CHECKING:
-    from click import Option
+    from click import Context, Option, Parameter
 
 logger = logging.getLogger(__name__)
 
@@ -37,6 +37,32 @@ class ExitCode(enum.IntEnum):
     TESTS_ERROR = 3
     # Tests failed
     TESTS_FAILED = 4
+
+
+class FloatOrNoneParamType(click.ParamType):
+    """Click ParamType that accepts float values or 'None'.
+
+    https://click.palletsprojects.com/en/stable/parameters/#how-to-implement-custom-types
+    """
+
+    name = "float_or_none"
+
+    # pylint: disable=inconsistent-return-statements
+    def convert(self, value: str | float | None, param: Parameter | None, ctx: Context | None) -> float | None:
+        """Convert the value to a float or None."""
+        if value is None or isinstance(value, float):
+            return value
+
+        try:
+            if isinstance(value, str) and value.lower() == "none":
+                return None
+            return float(value)
+        except ValueError:
+            self.fail(f"{value!r} is not a valid float or 'None'", param, ctx)
+            # No return here because `self.fail` raises an exception
+
+
+FLOAT_OR_NONE = FloatOrNoneParamType()
 
 
 def parse_tags(ctx: click.Context, param: Option, value: str | None) -> set[str] | None:
@@ -162,6 +188,7 @@ def core_options(f: Callable[..., Any]) -> Callable[..., Any]:
         show_envvar=True,
         envvar="ANTA_TIMEOUT",
         show_default=True,
+        type=FLOAT_OR_NONE,
     )
     @click.option(
         "--insecure",
@@ -201,7 +228,7 @@ def core_options(f: Callable[..., Any]) -> Callable[..., Any]:
         enable_password: str | None,
         enable: bool,
         prompt: bool,
-        timeout: float,
+        timeout: float | None,
         insecure: bool,
         disable_cache: bool,
         **kwargs: dict[str, Any],
