@@ -6,8 +6,11 @@
 from __future__ import annotations
 
 from ipaddress import IPv4Address, IPv6Address
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
+
+from anta.custom_types import ErrDisableInterval, ErrDisableReasons
 
 
 class DnsServer(BaseModel):
@@ -29,3 +32,24 @@ class DnsServer(BaseModel):
         Server 10.0.0.1 (VRF: default, Priority: 1)
         """
         return f"Server {self.server_address} (VRF: {self.vrf}, Priority: {self.priority})"
+
+
+class ErrDisableReason(BaseModel):
+    """Model for an errdisable reason."""
+
+    model_config = ConfigDict(extra="forbid")
+    reason: ErrDisableReasons
+    """Type or name of the errdisable reason."""
+    status: Literal["Enabled", "Disabled"] = "Enabled"
+    """Operational status of the reason. Defaults to 'Enabled'."""
+    interval: ErrDisableInterval
+    """Interval of the reason in seconds."""
+
+    def __str__(self) -> str:
+        """Return a human-readable string representation of the ErrDisableReason for reporting.
+
+        Examples
+        --------
+        Reason: acl Status: Enabled Interval: 300
+        """
+        return f"Reason: {self.reason} Status: {self.status} Interval: {self.interval}"

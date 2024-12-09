@@ -669,12 +669,14 @@ anta.tests.services:
           vrf: MGMT
           priority: 0
   - VerifyErrdisableRecovery:
-      # Verifies the errdisable recovery reason, status, and interval.
+      # Verifies the errdisable recovery reason.
       reasons:
         - reason: acl
           interval: 30
+          status: Enabled
         - reason: bpduguard
           interval: 30
+          status: Enabled
   - VerifyHostname:
       # Verifies the hostname of a device.
       hostname: s1-spine1
