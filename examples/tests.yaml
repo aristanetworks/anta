@@ -584,7 +584,7 @@ anta.tests.security:
       number: 3
       vrf: default
   - VerifyAPISSLCertificate:
-      # Verifies the eAPI SSL certificate expiry, common subject name, encryption algorithm and key size.
+      # Verifies the eAPI SSL certificate.
       certificates:
         - certificate_name: ARISTA_SIGNING_CA.crt
           expiry_threshold: 30
