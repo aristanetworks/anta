@@ -528,12 +528,22 @@ class VerifyBannerMotd(AntaTest):
 
 
 class VerifyIPv4ACL(AntaTest):
-    """Verifies the configuration of IPv4 ACLs.
+    """Verifies the IPv4 ACLs.
+
+    This test performs the following checks for each IPv4 ACL:
+
+      1. Validates that the IPv4 ACL is properly configured.
+      2. Validates that the sequence entries in the ACL are correctly ordered.
 
     Expected Results
     ----------------
-    * Success: The test will pass if an IPv4 ACL is configured with the correct sequence entries.
-    * Failure: The test will fail if an IPv4 ACL is not configured or entries are not in sequence.
+    * Success: If all of the following occur:
+        - The IPv4 ACL is properly configured.
+        - The sequency entries are correctly configured.
+    * Failure: If any of the following occur:
+        - The IPv4 ACL is not configured.
+        - The any IPv4 ACL entry is not configured.
+        - The action for any entry does not match the expected input.
 
     Examples
     --------

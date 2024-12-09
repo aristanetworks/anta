@@ -613,7 +613,7 @@ anta.tests.security:
   - VerifyIPSecConnHealth:
       # Verifies all IPv4 security connections.
   - VerifyIPv4ACL:
-      # Verifies the configuration of IPv4 ACLs.
+      # Verifies the IPv4 ACLs.
       ipv4_access_lists:
         - name: default-control-plane-acl
           entries:
