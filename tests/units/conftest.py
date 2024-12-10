@@ -5,8 +5,10 @@
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
+from unittest import mock
 from unittest.mock import patch
 
 import pytest
@@ -15,7 +17,7 @@ import yaml
 from anta.device import AntaDevice, AsyncEOSDevice
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator
+    from collections.abc import Generator, Iterator
 
     from anta.models import AntaCommand
 
@@ -83,3 +85,10 @@ def yaml_file(request: pytest.FixtureRequest, tmp_path: Path) -> Path:
     content: dict[str, Any] = request.param
     file.write_text(yaml.dump(content, allow_unicode=True))
     return file
+
+
+@pytest.fixture
+def setenvvar(monkeypatch: pytest.MonkeyPatch) -> Generator[pytest.MonkeyPatch, None, None]:
+    """Fixture to set environment variables for testing."""
+    with mock.patch.dict(os.environ, clear=True):
+        yield monkeypatch
