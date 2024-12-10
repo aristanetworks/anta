@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from anta.tests.cvx import VerifyManagementCVX, VerifyMcsClientMounts
+from anta.tests.cvx import VerifyManagementCVX, VerifyMcsClientMounts, VerifyMcsServerMounts
 from tests.units.anta_tests import test
 
 DATA: list[dict[str, Any]] = [
@@ -145,5 +145,148 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [{"clusterStatus": {}}],
         "inputs": {"enabled": False},
         "expected": {"result": "failure", "messages": ["Management CVX status is not valid: None"]},
+    },
+    {
+        "name": "success",
+        "test": VerifyMcsServerMounts,
+        "eos_data": [
+            {
+                "connections": [
+                    {
+                        "hostname": "media-leaf-1",
+                        "mounts": [
+                            {
+                                "service": "Mcs",
+                                "mountStates": [
+                                    {
+                                        "pathStates": [
+                                            {"path": "mcs/v1/apiCfgRedStatus", "type": "Mcs::ApiConfigRedundancyStatus", "state": "mountStateMountComplete"},
+                                            {"path": "mcs/v1/activeflows", "type": "Mcs::ActiveFlows", "state": "mountStateMountComplete"},
+                                            {"path": "mcs/switch/status", "type": "Mcs::Client::Status", "state": "mountStateMountComplete"},
+                                        ]
+                                    }
+                                ],
+                            }
+                        ],
+                    }
+                ]
+            }
+        ],
+        "inputs": {"expected_connection_count": 1},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-no-mounts",
+        "test": VerifyMcsServerMounts,
+        "eos_data": [{"connections": [{"hostname": "media-leaf-1", "mounts": []}]}],
+        "inputs": {"expected_connection_count": 1},
+        "expected": {"result": "failure", "messages": ["No mount status for media-leaf-1", "Only 0 successful connections"]},
+    },
+    {
+        "name": "failure-unexpected-number-paths",
+        "test": VerifyMcsServerMounts,
+        "eos_data": [
+            {
+                "connections": [
+                    {
+                        "hostname": "media-leaf-1",
+                        "mounts": [
+                            {
+                                "service": "Mcs",
+                                "mountStates": [
+                                    {
+                                        "pathStates": [
+                                            {"path": "mcs/v1/activeflows", "type": "Mcs::ActiveFlows", "state": "mountStateMountComplete"},
+                                            {"path": "mcs/switch/status", "type": "Mcs::Client::Status", "state": "mountStateMountComplete"},
+                                        ]
+                                    }
+                                ],
+                            }
+                        ],
+                    }
+                ]
+            }
+        ],
+        "inputs": {"expected_connection_count": 1},
+        "expected": {"result": "failure", "messages": ["Unexpected number of mount path states: 2"]},
+    },
+    {
+        "name": "failure-unexpected-path-type",
+        "test": VerifyMcsServerMounts,
+        "eos_data": [
+            {
+                "connections": [
+                    {
+                        "hostname": "media-leaf-1",
+                        "mounts": [
+                            {
+                                "service": "Mcs",
+                                "mountStates": [
+                                    {
+                                        "pathStates": [
+                                            {"path": "mcs/v1/apiCfgRedStatus", "type": "Mcs::ApiStatus", "state": "mountStateMountComplete"},
+                                            {"path": "mcs/v1/activeflows", "type": "Mcs::ActiveFlows", "state": "mountStateMountComplete"},
+                                            {"path": "mcs/switch/status", "type": "Mcs::Client::Status", "state": "mountStateMountComplete"},
+                                        ]
+                                    }
+                                ],
+                            }
+                        ],
+                    }
+                ]
+            }
+        ],
+        "inputs": {"expected_connection_count": 1},
+        "expected": {"result": "failure", "messages": ["Unexpected MCS path type: Mcs::ApiStatus"]},
+    },
+    {
+        "name": "failure-invalid-mount-state",
+        "test": VerifyMcsServerMounts,
+        "eos_data": [
+            {
+                "connections": [
+                    {
+                        "hostname": "media-leaf-1",
+                        "mounts": [
+                            {
+                                "service": "Mcs",
+                                "mountStates": [
+                                    {
+                                        "pathStates": [
+                                            {"path": "mcs/v1/apiCfgRedStatus", "type": "Mcs::ApiConfigRedundancyStatus", "state": "mountStateMountFailed"},
+                                            {"path": "mcs/v1/activeflows", "type": "Mcs::ActiveFlows", "state": "mountStateMountComplete"},
+                                            {"path": "mcs/switch/status", "type": "Mcs::Client::Status", "state": "mountStateMountComplete"},
+                                        ]
+                                    }
+                                ],
+                            }
+                        ],
+                    }
+                ]
+            }
+        ],
+        "inputs": {"expected_connection_count": 1},
+        "expected": {"result": "failure", "messages": ["MCS server mount state is not valid: mountStateMountFailed"]},
+    },
+    {
+        "name": "failure-no-mcs-mount",
+        "test": VerifyMcsServerMounts,
+        "eos_data": [
+            {
+                "connections": [
+                    {
+                        "hostname": "media-leaf-1",
+                        "mounts": [
+                            {
+                                "service": "blah-blah",
+                                "mountStates": [{"pathStates": [{"path": "blah-blah-path", "type": "blah-blah-type", "state": "blah-blah-state"}]}],
+                            }
+                        ],
+                    }
+                ]
+            }
+        ],
+        "inputs": {"expected_connection_count": 1},
+        "expected": {"result": "failure", "messages": ["MCS mount state not detected", "Only 0 successful connections"]},
     },
 ]

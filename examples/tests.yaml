@@ -140,6 +140,9 @@ anta.tests.cvx:
       enabled: true
   - VerifyMcsClientMounts:
       # Verify if all MCS client mounts are in mountStateMountComplete.
+  - VerifyMcsServerMounts:
+      # Verify if all MCS server mounts are in mountStateMountComplete.
+      expected_connection_count: 100
 anta.tests.field_notices:
   - VerifyFieldNotice44Resolution:
       # Verifies that the device is using the correct Aboot version per FN0044.
