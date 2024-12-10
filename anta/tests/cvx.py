@@ -95,7 +95,7 @@ class VerifyMcsServerMounts(AntaTest):
     Expected Results
     ----------------
     * Success: The test will pass if all the MCS mount status on MCS server are mountStateMountComplete.
-    * Failure: The test will fail even if one switch's MCS server mount status is not  mountStateMountComplete.
+    * Failure: The test will fail even if any MCS server mount status is not mountStateMountComplete.
 
     Examples
     --------
