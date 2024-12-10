@@ -329,6 +329,7 @@ class AntaTest(ABC):
     name: ClassVar[str]
     description: ClassVar[str]
     __removal_in_version: ClassVar[str]
+    """Internal class variable set by the `deprecated_test_class` decorator."""
 
     # Mandatory class attributes
     # TODO: find a way to tell mypy these are mandatory for child classes
