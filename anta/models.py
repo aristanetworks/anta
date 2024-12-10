@@ -5,11 +5,12 @@
 
 from __future__ import annotations
 
+import asyncio
 import hashlib
 import logging
 import re
 from abc import ABC, abstractmethod
-from functools import wraps
+from functools import cached_property, wraps
 from string import Formatter
 from typing import TYPE_CHECKING, Any, Callable, ClassVar, Literal, TypeVar
 
@@ -165,7 +166,9 @@ class AntaCommand(BaseModel):
         Pydantic Model containing the variables values used to render the template.
     use_cache
         Enable or disable caching for this AntaCommand if the AntaDevice supports it.
-
+    event
+        Event to signal that the command has been collected. Used by an AntaDevice to signal an AntaTest that the command has been collected.
+        Only relevant when an AntaTest runs with `command_queuing=True`.
     """
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
@@ -179,13 +182,13 @@ class AntaCommand(BaseModel):
     errors: list[str] = []
     params: AntaParamsBaseModel = AntaParamsBaseModel()
     use_cache: bool = True
+    event: asyncio.Event | None = None
 
-    @property
+    @cached_property
     def uid(self) -> str:
         """Generate a unique identifier for this command."""
         uid_str = f"{self.command}_{self.version}_{self.revision or 'NA'}_{self.ofmt}"
-        # Ignoring S324 probable use of insecure hash function - sha1 is enough for our needs.
-        return hashlib.sha1(uid_str.encode()).hexdigest()  # noqa: S324
+        return hashlib.sha256(uid_str.encode()).hexdigest()
 
     @property
     def json_output(self) -> dict[str, Any]:
@@ -411,6 +414,8 @@ class AntaTest(ABC):
         device: AntaDevice,
         inputs: dict[str, Any] | AntaTest.Input | None = None,
         eos_data: list[dict[Any, Any] | str] | None = None,
+        *,
+        command_queuing: bool = False,
     ) -> None:
         """AntaTest Constructor.
 
@@ -423,10 +428,14 @@ class AntaTest(ABC):
         eos_data
             Populate outputs of the test commands instead of collecting from devices.
             This list must have the same length and order than the `instance_commands` instance attribute.
+        command_queuing
+            If True, the commands of this test will be queued in the device command queue and be sent in batches.
+            Default is False, which means the commands will be sent one by one to the device.
         """
         self.logger: logging.Logger = logging.getLogger(f"{self.module}.{self.__class__.__name__}")
         self.device: AntaDevice = device
         self.inputs: AntaTest.Input
+        self.command_queuing = command_queuing
         self.instance_commands: list[AntaCommand] = []
         self.result: TestResult = TestResult(
             name=device.name,
@@ -476,10 +485,17 @@ class AntaTest(ABC):
         if self.__class__.commands:
             for cmd in self.__class__.commands:
                 if isinstance(cmd, AntaCommand):
-                    self.instance_commands.append(cmd.model_copy())
+                    command = cmd.model_copy()
+                    if self.command_queuing:
+                        command.event = asyncio.Event()
+                    self.instance_commands.append(command)
                 elif isinstance(cmd, AntaTemplate):
                     try:
-                        self.instance_commands.extend(self.render(cmd))
+                        rendered_commands = self.render(cmd)
+                        if self.command_queuing:
+                            for command in rendered_commands:
+                                command.event = asyncio.Event()
+                        self.instance_commands.extend(rendered_commands)
                     except AntaTemplateRenderError as e:
                         self.result.is_error(message=f"Cannot render template {{{e.template}}}")
                         return
@@ -570,7 +586,7 @@ class AntaTest(ABC):
         """Collect outputs of all commands of this test class from the device of this test instance."""
         try:
             if self.blocked is False:
-                await self.device.collect_commands(self.instance_commands, collection_id=self.name)
+                await self.device.collect_commands(self.instance_commands, collection_id=self.name, command_queuing=self.command_queuing)
         except Exception as e:  # noqa: BLE001
             # device._collect() is user-defined code.
             # We need to catch everything if we want the AntaTest object
@@ -595,7 +611,6 @@ class AntaTest(ABC):
         async def wrapper(
             self: AntaTest,
             eos_data: list[dict[Any, Any] | str] | None = None,
-            **kwargs: dict[str, Any],
         ) -> TestResult:
             """Inner function for the anta_test decorator.
 
@@ -642,7 +657,7 @@ class AntaTest(ABC):
                     return self.result
 
             try:
-                function(self, **kwargs)
+                function(self)
             except Exception as e:  # noqa: BLE001
                 # test() is user-defined code.
                 # We need to catch everything if we want the AntaTest object
@@ -664,7 +679,7 @@ class AntaTest(ABC):
             cls.progress.update(cls.nrfu_task, advance=1)
 
     @abstractmethod
-    def test(self) -> Coroutine[Any, Any, TestResult]:
+    def test(self) -> None:
         """Core of the test logic.
 
         This is an abstractmethod that must be implemented by child classes.
