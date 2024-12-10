@@ -12,11 +12,9 @@
 {%     set anta_test_input_model.found = True %}
 {% endif %}
 {% block children %}
-
 {%   if anta_test.found %}
   {% set root = False %}
   {% set heading_level = heading_level + 1 %}
-
   {% include "anta_test.html.jinja" with context %}
   {# render source after children - TODO make add flag to respect disabling it.. though do we want to disable?#}
   <details class="quote">
