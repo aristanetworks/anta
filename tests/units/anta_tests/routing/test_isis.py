@@ -163,7 +163,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": ["Some neighbors are not in the correct state (UP): [{'vrf': 'default', 'instance': 'CORE-ISIS', 'neighbor': 's1-p01', 'state': 'down'}]."],
+            "messages": ["Instance: CORE-ISIS VRF: default Neighbor: s1-p01 - Session (adjacency) down"],
         },
     },
     {
@@ -306,7 +306,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["No neighbor detected for interface Ethernet2"],
+            "messages": ["Interface: Ethernet2 VRF: default Level: 2 - Not configured"],
         },
     },
     {
@@ -349,7 +349,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Interface Ethernet1: expected Level 2: count 1, got Level 2: count 3"],
+            "messages": ["Interface: Ethernet1 VRF: default Level: 2 - Neighbor count mismatch - Expected: 1 Actual: 3"],
         },
     },
     {
@@ -516,7 +516,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Interface Ethernet2 in VRF default is not running in passive mode"],
+            "messages": ["Interface: Ethernet2 VRF: default Level: 2 - Not running in passive mode"],
         },
     },
     {
@@ -601,7 +601,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Interface Ethernet1 in VRF default is not running in point-to-point reporting broadcast"],
+            "messages": ["Interface: Ethernet1 VRF: default Level: 2 - Incorrect mode - Expected: point-to-point Actual: broadcast"],
         },
     },
     {
@@ -687,9 +687,9 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Interface Loopback0 not found in VRF default",
-                "Interface Ethernet2 not found in VRF default",
-                "Interface Ethernet1 not found in VRF default",
+                "Interface: Loopback0 VRF: default Level: 2 - Not configured",
+                "Interface: Ethernet2 VRF: default Level: 2 - Not configured",
+                "Interface: Ethernet1 VRF: default Level: 2 - Not configured",
             ],
         },
     },
@@ -885,7 +885,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Your segment has not been found: interface='Ethernet3' level=2 sid_origin='dynamic' address=IPv4Address('10.0.1.2')."],
+            "messages": ["Instance: CORE-ISIS VRF: default Interface: Ethernet3 Endpoint: 10.0.1.2 - Segment not configured"],
         },
     },
     {
@@ -968,7 +968,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["VRF custom is not configured to run segment routging."],
+            "messages": ["Instance: CORE-ISIS VRF: custom - VRF not configured"],
         },
     },
     {
@@ -1051,7 +1051,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Instance CORE-ISIS2 is not found in vrf default."],
+            "messages": ["Instance: CORE-ISIS2 VRF: default - Not configured"],
         },
     },
     {
@@ -1115,11 +1115,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                (
-                    "Your segment is not correct: Expected: interface='Ethernet2' level=1 sid_origin='dynamic' address=IPv4Address('10.0.1.3') - "
-                    "Found: {'ipAddress': '10.0.1.3', 'localIntf': 'Ethernet2', 'sid': 116384, 'lan': False, 'sidOrigin': 'dynamic', 'protection': "
-                    "'unprotected', 'flags': {'b': False, 'v': True, 'l': True, 'f': False, 's': False}, 'level': 2}."
-                )
+                "Instance: CORE-ISIS VRF: default Interface: Ethernet2 Endpoint: 10.0.1.3 - Not correctly configured - Origin: dynamic Endpoint: 10.0.1.3 Level: 2"
             ],
         },
     },
@@ -1186,7 +1182,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["ISIS instance CORE-ISIS is not running dataplane unset (MPLS)"],
+            "messages": ["Instance: CORE-ISIS VRF: default - Dataplane not correctly configured - Expected: UNSET Actual: MPLS"],
         },
     },
     {
@@ -1219,7 +1215,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Instance CORE-ISIS2 is not found in vrf default."],
+            "messages": ["Instance: CORE-ISIS2 VRF: default - Not configured"],
         },
     },
     {
@@ -1252,7 +1248,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["VRF wrong_vrf is not configured to run segment routing."],
+            "messages": ["Instance: CORE-ISIS VRF: wrong_vrf - Not configured"],
         },
     },
     {
@@ -1270,7 +1266,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "skipped",
-            "messages": ["IS-IS-SR is not running on device"],
+            "messages": ["No IS-IS neighbor detected"],
         },
     },
     {
