@@ -502,6 +502,17 @@ anta.tests.routing.generic:
       # Verifies the size of the IP routing table of the default VRF.
       minimum: 2
       maximum: 20
+  - VerifyIPV4RouteType:
+      routes_entries:
+        - prefix: 10.10.0.1/32
+          vrf: default
+          route_type: eBGP
+        - prefix: 10.100.0.12/31
+          vrf: default
+          route_type: connected
+        - prefix: 10.100.1.5/32
+          vrf: default
+          route_type: iBGP
 anta.tests.routing.isis:
   - VerifyISISInterfaceMode:
       # Verifies interface mode for IS-IS
