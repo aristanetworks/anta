@@ -15,11 +15,11 @@ from pydantic import BaseModel, Field
 from pydantic_extra_types.mac_address import MacAddress
 
 from anta import GITHUB_SUGGESTION
-from anta.custom_types import EthernetInterface, Interface, Percent, PortChannelInterface, PositiveInteger
+from anta.custom_types import EthernetInterface, Interface, Percent, PositiveInteger
 from anta.decorators import skip_on_platforms
 from anta.input_models.interfaces import InterfaceState
 from anta.models import AntaCommand, AntaTemplate, AntaTest
-from anta.tools import custom_division, get_failed_logs, get_item, get_value
+from anta.tools import custom_division, format_data, get_failed_logs, get_item, get_value
 
 BPS_GBPS_CONVERSIONS = 1000000000
 
@@ -848,17 +848,27 @@ class VerifyInterfacesSpeed(AntaTest):
 
 
 class VerifyLACPInterfacesStatus(AntaTest):
-    """Verifies the Link Aggregation Control Protocol (LACP) status of the provided interfaces.
+    """Verifies the Link Aggregation Control Protocol (LACP) status of the interface.
 
-    - Verifies that the interface is a member of the LACP port channel.
-    - Ensures that the synchronization is established.
-    - Ensures the interfaces are in the correct state for collecting and distributing traffic.
-    - Validates that LACP settings, such as timeouts, are correctly configured. (i.e The long timeout mode, also known as "slow" mode, is the default setting.)
+    This test performs the following checks for each specified interface:
+
+      1. Verifies that the interface is a member of the LACP port channel.
+      2. Verifies LACP port states and operational status:
+        - Activity: Active LACP mode (initiates)
+        - Timeout: Short (Fast Mode), Long (Slow Mode - default)
+        - Aggregation: Port aggregable
+        - Synchronization: Port in sync with partner
+        - Collecting: Incoming frames aggregating
+        - Distributing: Outgoing frames aggregating
 
     Expected Results
     ----------------
-    * Success: The test will pass if the provided interfaces are bundled in port channel and all specified parameters are correct.
-    * Failure: The test will fail if any interface is not bundled in port channel or any of specified parameter is not correct.
+    * Success: Interface is bundled and all LACP states match expected values for both actor and partner
+    * Failure: If any of the following occur:
+        - Interface or port channel is not configured.
+        - Interface is not bundled in port channel.
+        - Actor or partner port LACP states don't match expected configuration.
+        - LACP rate (timeout) mismatch when fast mode is configured.
 
     Examples
     --------
@@ -872,25 +882,14 @@ class VerifyLACPInterfacesStatus(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["interfaces"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show lacp interface {interface}", revision=1)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show lacp interface", revision=1)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyLACPInterfacesStatus test."""
 
-        interfaces: list[LACPInterface]
-        """List of LACP member interface."""
-
-        class LACPInterface(BaseModel):
-            """Model for an LACP member interface."""
-
-            name: EthernetInterface
-            """Ethernet interface to validate."""
-            portchannel: PortChannelInterface
-            """Port Channel in which the interface is bundled."""
-
-    def render(self, template: AntaTemplate) -> list[AntaCommand]:
-        """Render the template for each interface in the input list."""
-        return [template.render(interface=interface.name) for interface in self.inputs.interfaces]
+        interfaces: list[InterfaceState]
+        """List of interfaces with their expected state."""
+        InterfaceState: ClassVar[type[InterfaceState]] = InterfaceState
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -900,21 +899,17 @@ class VerifyLACPInterfacesStatus(AntaTest):
         # Member port verification parameters.
         member_port_details = ["activity", "aggregation", "synchronization", "collecting", "distributing", "timeout"]
 
-        # Iterating over command output for different interfaces
-        for command, input_entry in zip(self.instance_commands, self.inputs.interfaces):
-            interface = input_entry.name
-            portchannel = input_entry.portchannel
-
+        command_output = self.instance_commands[0].json_output
+        for interface in self.inputs.interfaces:
             # Verify if a PortChannel is configured with the provided interface
-            if not (interface_details := get_value(command.json_output, f"portChannels.{portchannel}.interfaces.{interface}")):
-                self.result.is_failure(f"Interface '{interface}' is not configured to be a member of LACP '{portchannel}'.")
+            if not (interface_details := get_value(command_output, f"portChannels..{interface.portchannel}..interfaces..{interface.name}", separator="..")):
+                self.result.is_failure(f"{interface} - Not configured")
                 continue
 
             # Verify the interface is bundled in port channel.
             actor_port_status = interface_details.get("actorPortStatus")
             if actor_port_status != "bundled":
-                message = f"For Interface {interface}:\nExpected `bundled` as the local port status, but found `{actor_port_status}` instead.\n"
-                self.result.is_failure(message)
+                self.result.is_failure(f"{interface} - Not bundled - Port Status: {actor_port_status}")
                 continue
 
             # Collecting actor and partner port details
@@ -929,21 +924,12 @@ class VerifyLACPInterfacesStatus(AntaTest):
 
             # Forming expected interface details
             expected_details = {param: param != "timeout" for param in member_port_details}
-            expected_interface_output = {"actor_port_details": expected_details, "partner_port_details": expected_details}
+            # Updating the short LACP timeout, if expected.
+            if interface.lacp_rate_fast:
+                expected_details["timeout"] = True
 
-            # Forming failure message
-            if actual_interface_output != expected_interface_output:
-                message = f"For Interface {interface}:\n"
-                actor_port_failed_log = get_failed_logs(
-                    expected_interface_output.get("actor_port_details", {}), actual_interface_output.get("actor_port_details", {})
-                )
-                partner_port_failed_log = get_failed_logs(
-                    expected_interface_output.get("partner_port_details", {}), actual_interface_output.get("partner_port_details", {})
-                )
+            if (act_port_details := actual_interface_output["actor_port_details"]) != expected_details:
+                self.result.is_failure(f"{interface} - Actor port details mismatch - {format_data(act_port_details)}")
 
-                if actor_port_failed_log:
-                    message += f"Actor port details:{actor_port_failed_log}\n"
-                if partner_port_failed_log:
-                    message += f"Partner port details:{partner_port_failed_log}\n"
-
-                self.result.is_failure(message)
+            if (part_port_details := actual_interface_output["partner_port_details"]) != expected_details:
+                self.result.is_failure(f"{interface} - Partner port details mismatch - {format_data(part_port_details)}")
