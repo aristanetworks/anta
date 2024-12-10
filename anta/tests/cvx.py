@@ -94,7 +94,7 @@ class VerifyActiveCVXConnections(AntaTest):
 
     Expected Results
     ----------------
-    * Success: The test will pass if the expected number of connections is present.
+    * Success: The test will pass if number of connections is equal to the expected number of connections.
     * Failure: The test will fail if the unexpected number of connections is present.
 
     Examples
