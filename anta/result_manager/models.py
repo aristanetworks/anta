@@ -7,8 +7,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
+from typing import TYPE_CHECKING, Optional
 
 from pydantic import BaseModel
+
+if TYPE_CHECKING:
+    from anta.result_manager import ResultManager
 
 
 class AntaTestStatus(str, Enum):
@@ -57,6 +61,9 @@ class TestResult(BaseModel):
     result: AntaTestStatus = AntaTestStatus.UNSET
     messages: list[str] = []
     custom_field: str | None = None
+
+    # This is a circular import, so we need to use Optional
+    _manager: Optional["ResultManager"] = None
 
     def is_success(self, message: str | None = None) -> None:
         """Set status to success.
@@ -113,9 +120,24 @@ class TestResult(BaseModel):
             Optional message.
 
         """
-        self.result = status
+        # Set the status via its ResultManager if available
+        if self._manager is not None:
+            self._manager.update_test_result(self, status, message)
+        else:
+            self.result = status
+            self.add_message(message)
+
+    def add_message(self, message: str | None = None) -> None:
+        """Add a message to the TestResult."""
         if message is not None:
             self.messages.append(message)
+
+    def register_manager(self, manager: ResultManager) -> None:
+        """Register the ResultManager instance to this TestResult to allow status updates."""
+        if self._manager is not None:
+            msg = f"A ResultManager is already registered to the following TestResult instance: {self}"
+            raise ValueError(msg)
+        self._manager = manager
 
     def __str__(self) -> str:
         """Return a human readable string of this TestResult."""
