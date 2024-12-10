@@ -310,9 +310,8 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {
-                        "routes": {"10.10.0.1/32": {"routeType": "eBGP"}, "10.100.0.12/31": {"routeType": "connected"}, "10.100.1.5/32": {"routeType": "iBGP"}}
-                    }
+                    "default": {"routes": {"10.10.0.1/32": {"routeType": "eBGP"}, "10.100.0.12/31": {"routeType": "connected"}}},
+                    "MGMT": {"routes": {"10.100.1.5/32": {"routeType": "iBGP"}}},
                 }
             }
         ],
@@ -320,7 +319,7 @@ DATA: list[dict[str, Any]] = [
             "routes_entries": [
                 {"vrf": "default", "prefix": "10.10.0.1/32", "route_type": "eBGP"},
                 {"vrf": "default", "prefix": "10.100.0.12/31", "route_type": "connected"},
-                {"vrf": "default", "prefix": "10.100.1.5/32", "route_type": "iBGP"},
+                {"vrf": "MGMT", "prefix": "10.100.1.5/32", "route_type": "iBGP"},
             ]
         },
         "expected": {"result": "success"},
@@ -339,7 +338,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"routes_entries": [{"vrf": "default", "prefix": "10.10.0.1/32", "route_type": "iBGP"}]},
         "expected": {
             "result": "failure",
-            "messages": ["Prefix: 10.10.0.1/32 VRF: default - Incorrect route type, Expected: iBGP Actual: eBGP"],
+            "messages": ["Prefix: 10.10.0.1/32 VRF: default - Incorrect route type - Expected: iBGP Actual: eBGP"],
         },
     },
     {

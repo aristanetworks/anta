@@ -186,9 +186,9 @@ class VerifyRoutingTableEntry(AntaTest):
 
 
 class VerifyIPv4RouteType(AntaTest):
-    """Verifies the IPV4 route-type of the provided prefixes within a specified VRF.
+    """Verifies the route-type of the IPv4 prefixes.
 
-    This test performs the following checks for each specific ipv4 route:
+    This test performs the following checks for each ipv4 route:
         1. Verifies that the specified VRF is configured.
         2. Verifies that the specified ipv4 route is exists in the configuration.
         3. Verifies that the the specified ipv4 route is of the expected type.
@@ -255,4 +255,4 @@ class VerifyIPv4RouteType(AntaTest):
 
             # Verifying that the specified ipv4 routes are of the expected type.
             if expected_route_type != (actual_route_type := route_data.get("routeType")):
-                self.result.is_failure(f"{entry} - Incorrect route type, Expected: {expected_route_type} Actual: {actual_route_type}")
+                self.result.is_failure(f"{entry} - Incorrect route type - Expected: {expected_route_type} Actual: {actual_route_type}")

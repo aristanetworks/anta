@@ -490,7 +490,7 @@ anta.tests.routing.bgp:
           vni: 10010
 anta.tests.routing.generic:
   - VerifyIPv4RouteType:
-      # Verifies the IPV4 route-type of the provided prefixes within a specified VRF.
+      # Verifies the route-type of the IPv4 prefixes.
       routes_entries:
         - prefix: 10.10.0.1/32
           vrf: default
