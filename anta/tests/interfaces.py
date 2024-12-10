@@ -865,10 +865,10 @@ class VerifyLACPInterfacesStatus(AntaTest):
     ----------------
     * Success: Interface is bundled and all LACP states match expected values for both actor and partner
     * Failure: If any of the following occur:
-        - Interface or port channel is not configued.
+        - Interface or port channel is not configured.
         - Interface is not bundled in port channel.
         - Actor or partner port LACP states don't match expected configuration.
-        - LACP rate (timeout) mismatch when fast mode is configued.
+        - LACP rate (timeout) mismatch when fast mode is configured.
 
     Examples
     --------
