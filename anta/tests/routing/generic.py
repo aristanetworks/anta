@@ -209,7 +209,7 @@ class VerifyIPv4RouteType(AntaTest):
     ```yaml
     anta.tests.routing:
       generic:
-        - VerifyIPV4RouteType:
+        - VerifyIPv4RouteType:
             routes_entries:
               - prefix: 10.10.0.1/32
                 vrf: default
@@ -227,13 +227,13 @@ class VerifyIPv4RouteType(AntaTest):
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip route vrf all", revision=4)]
 
     class Input(AntaTest.Input):
-        """Input model for the VerifyIPV4RouteType test."""
+        """Input model for the VerifyIPv4RouteType test."""
 
         routes_entries: list[IPv4Routes]
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """Main test function for VerifyIPV4RouteType."""
+        """Main test function for VerifyIPv4RouteType."""
         self.result.is_success()
         output = self.instance_commands[0].json_output
 
