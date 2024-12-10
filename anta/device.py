@@ -386,6 +386,7 @@ class AsyncEOSDevice(AntaDevice):
         collection_id
             An identifier used to build the eAPI request ID.
         """
+        # pylint: disable=too-many-branches
         commands: list[dict[str, str | int]] = []
         if self.enable and self._enable_password is not None:
             commands.append(
