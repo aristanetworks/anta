@@ -79,7 +79,7 @@ def test_anta_nrfu_text(click_runner: CliRunner) -> None:
 def test_anta_nrfu_text_multiple_failures(click_runner: CliRunner) -> None:
     """Test anta nrfu text with multiple failures, catalog is given via env."""
     result = click_runner.invoke(anta, ["nrfu", "text"], env={"ANTA_CATALOG": str(DATA_DIR / "test_catalog_double_failure.yml")})
-    assert result.exit_code == ExitCode.OK
+    assert result.exit_code == ExitCode.TESTS_FAILED
     assert (
         """spine1 :: VerifyInterfacesSpeed :: FAILURE
     Interface `Ethernet2` is not found.
