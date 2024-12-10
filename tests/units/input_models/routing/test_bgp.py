@@ -11,8 +11,16 @@ from typing import TYPE_CHECKING
 import pytest
 from pydantic import ValidationError
 
-from anta.input_models.routing.bgp import BgpAddressFamily
-from anta.tests.routing.bgp import VerifyBGPPeerCount, VerifyBGPSpecificPeers
+from anta.input_models.routing.bgp import BgpAddressFamily, BgpPeer
+from anta.tests.routing.bgp import (
+    VerifyBGPExchangedRoutes,
+    VerifyBGPPeerCount,
+    VerifyBGPPeerMPCaps,
+    VerifyBGPPeerRouteLimit,
+    VerifyBgpRouteMaps,
+    VerifyBGPSpecificPeers,
+    VerifyBGPTimers,
+)
 
 if TYPE_CHECKING:
     from anta.custom_types import Afi, Safi
@@ -96,3 +104,135 @@ class TestVerifyBGPSpecificPeersInput:
         """Test VerifyBGPSpecificPeers.Input invalid inputs."""
         with pytest.raises(ValidationError):
             VerifyBGPSpecificPeers.Input(address_families=address_families)
+
+
+class TestVerifyBGPExchangedRoutesInput:
+    """Test anta.tests.routing.bgp.VerifyBGPExchangedRoutes.Input."""
+
+    @pytest.mark.parametrize(
+        ("bgp_peers"),
+        [
+            pytest.param(
+                [{"peer_address": "172.30.255.5", "vrf": "default", "advertised_routes": ["192.0.254.5/32"], "received_routes": ["192.0.255.4/32"]}],
+                id="valid_both_received_advertised",
+            ),
+        ],
+    )
+    def test_valid(self, bgp_peers: list[BgpPeer]) -> None:
+        """Test VerifyBGPExchangedRoutes.Input valid inputs."""
+        VerifyBGPExchangedRoutes.Input(bgp_peers=bgp_peers)
+
+    @pytest.mark.parametrize(
+        ("bgp_peers"),
+        [
+            pytest.param([{"peer_address": "172.30.255.5", "vrf": "default"}], id="invalid"),
+            pytest.param([{"peer_address": "172.30.255.5", "vrf": "default", "advertised_routes": ["192.0.254.5/32"]}], id="invalid_received_route"),
+            pytest.param([{"peer_address": "172.30.255.5", "vrf": "default", "received_routes": ["192.0.254.5/32"]}], id="invalid_advertised_route"),
+        ],
+    )
+    def test_invalid(self, bgp_peers: list[BgpPeer]) -> None:
+        """Test VerifyBGPExchangedRoutes.Input invalid inputs."""
+        with pytest.raises(ValidationError):
+            VerifyBGPExchangedRoutes.Input(bgp_peers=bgp_peers)
+
+
+class TestVerifyBGPPeerMPCapsInput:
+    """Test anta.tests.routing.bgp.VerifyBGPPeerMPCaps.Input."""
+
+    @pytest.mark.parametrize(
+        ("bgp_peers"),
+        [
+            pytest.param([{"peer_address": "172.30.255.5", "vrf": "default", "capabilities": ["ipv4Unicast"]}], id="valid"),
+        ],
+    )
+    def test_valid(self, bgp_peers: list[BgpPeer]) -> None:
+        """Test VerifyBGPPeerMPCaps.Input valid inputs."""
+        VerifyBGPPeerMPCaps.Input(bgp_peers=bgp_peers)
+
+    @pytest.mark.parametrize(
+        ("bgp_peers"),
+        [
+            pytest.param([{"peer_address": "172.30.255.5", "vrf": "default"}], id="invalid"),
+        ],
+    )
+    def test_invalid(self, bgp_peers: list[BgpPeer]) -> None:
+        """Test VerifyBGPPeerMPCaps.Input invalid inputs."""
+        with pytest.raises(ValidationError):
+            VerifyBGPPeerMPCaps.Input(bgp_peers=bgp_peers)
+
+
+class TestVerifyBGPTimersInput:
+    """Test anta.tests.routing.bgp.VerifyBGPTimers.Input."""
+
+    @pytest.mark.parametrize(
+        ("bgp_peers"),
+        [
+            pytest.param([{"peer_address": "172.30.255.5", "vrf": "default", "hold_time": 180, "keep_alive_time": 60}], id="valid"),
+        ],
+    )
+    def test_valid(self, bgp_peers: list[BgpPeer]) -> None:
+        """Test VerifyBGPTimers.Input valid inputs."""
+        VerifyBGPTimers.Input(bgp_peers=bgp_peers)
+
+    @pytest.mark.parametrize(
+        ("bgp_peers"),
+        [
+            pytest.param([{"peer_address": "172.30.255.5", "vrf": "default"}], id="invalid"),
+            pytest.param([{"peer_address": "172.30.255.5", "vrf": "default", "hold_time": 180}], id="invalid_keep_alive"),
+            pytest.param([{"peer_address": "172.30.255.5", "vrf": "default", "keep_alive_time": 180}], id="invalid_hold_time"),
+        ],
+    )
+    def test_invalid(self, bgp_peers: list[BgpPeer]) -> None:
+        """Test VerifyBGPTimers.Input invalid inputs."""
+        with pytest.raises(ValidationError):
+            VerifyBGPTimers.Input(bgp_peers=bgp_peers)
+
+
+class TestVerifyBgpRouteMapsInput:
+    """Test anta.tests.routing.bgp.VerifyBgpRouteMaps.Input."""
+
+    @pytest.mark.parametrize(
+        ("bgp_peers"),
+        [
+            pytest.param([{"peer_address": "172.30.255.5", "vrf": "default", "inbound_route_map": "Test", "outbound_route_map": "Test"}], id="valid"),
+        ],
+    )
+    def test_valid(self, bgp_peers: list[BgpPeer]) -> None:
+        """Test VerifyBgpRouteMaps.Input valid inputs."""
+        VerifyBgpRouteMaps.Input(bgp_peers=bgp_peers)
+
+    @pytest.mark.parametrize(
+        ("bgp_peers"),
+        [
+            pytest.param([{"peer_address": "172.30.255.5", "vrf": "default"}], id="invalid"),
+        ],
+    )
+    def test_invalid(self, bgp_peers: list[BgpPeer]) -> None:
+        """Test VerifyBgpRouteMaps.Input invalid inputs."""
+        with pytest.raises(ValidationError):
+            VerifyBgpRouteMaps.Input(bgp_peers=bgp_peers)
+
+
+class TestVerifyBGPPeerRouteLimitInput:
+    """Test anta.tests.routing.bgp.VerifyBGPPeerRouteLimit.Input."""
+
+    @pytest.mark.parametrize(
+        ("bgp_peers"),
+        [
+            pytest.param([{"peer_address": "172.30.255.5", "vrf": "default", "maximum_routes": 10000}], id="valid"),
+        ],
+    )
+    def test_valid(self, bgp_peers: list[BgpPeer]) -> None:
+        """Test VerifyBGPPeerRouteLimit.Input valid inputs."""
+        VerifyBGPPeerRouteLimit.Input(bgp_peers=bgp_peers)
+
+    @pytest.mark.parametrize(
+        ("bgp_peers"),
+        [
+            pytest.param([{"peer_address": "172.30.255.5", "vrf": "default"}], id="invalid"),
+        ],
+    )
+    def test_invalid(self, bgp_peers: list[BgpPeer]) -> None:
+        """Test VerifyBGPPeerRouteLimit.Input invalid inputs."""
+        with pytest.raises(ValidationError):
+            VerifyBGPPeerRouteLimit.Input(bgp_peers=bgp_peers)
