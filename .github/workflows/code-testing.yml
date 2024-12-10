@@ -119,6 +119,23 @@ jobs:
         run: pip install tox tox-gh-actions
       - name: "Run pytest via tox for ${{ matrix.python }}"
         run: tox
+  test-python-windows:
+    name: Pytest on 3.12 for windows
+    runs-on: windows-2022
+    needs: [lint-python, type-python]
+    env:
+      # Required to prevent asyncssh to fail.
+      USERNAME: WindowsUser
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.12
+      - name: Install dependencies
+        run: pip install tox tox-gh-actions
+      - name: Run pytest via tox for 3.12 on Windows
+        run: tox
   test-documentation:
     name: Build offline documentation for testing
     runs-on: ubuntu-20.04
