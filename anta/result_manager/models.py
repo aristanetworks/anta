@@ -5,14 +5,17 @@
 
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
 
 if TYPE_CHECKING:
     from anta.result_manager import ResultManager
+
+logger = logging.getLogger(__name__)
 
 
 class AntaTestStatus(str, Enum):
@@ -62,8 +65,8 @@ class TestResult(BaseModel):
     messages: list[str] = []
     custom_field: str | None = None
 
-    # This is a circular import, so we need to use Optional
-    _manager: Optional["ResultManager"] = None
+    # Using forward refs since Pydantic private fields don't evaluate type hints at runtime but Ruff seems to not know about this
+    _manager: "ResultManager | None" = None
 
     def is_success(self, message: str | None = None) -> None:
         """Set status to success.
@@ -134,9 +137,13 @@ class TestResult(BaseModel):
 
     def register_manager(self, manager: ResultManager) -> None:
         """Register the ResultManager instance to this TestResult to allow status updates."""
-        if self._manager is not None:
-            msg = f"A ResultManager is already registered to the following TestResult instance: {self}"
-            raise ValueError(msg)
+        if self._manager is not None and self._manager is not manager:
+            msg = (
+                f"TestResult {self.test} on {self.name} is being re-registered to a different ResultManager. "
+                f"Status and statistics updates will be done by the new ResultManager."
+            )
+            logger.warning(msg)
+
         self._manager = manager
 
     def __str__(self) -> str:
