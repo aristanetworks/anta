@@ -5,10 +5,17 @@
 
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass, field
 from enum import Enum
+from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
+
+if TYPE_CHECKING:
+    from anta.result_manager import ResultManager
+
+logger = logging.getLogger(__name__)
 
 
 class AntaTestStatus(str, Enum):
@@ -57,6 +64,9 @@ class TestResult(BaseModel):
     result: AntaTestStatus = AntaTestStatus.UNSET
     messages: list[str] = []
     custom_field: str | None = None
+
+    # Using forward refs since Pydantic private fields don't evaluate type hints at runtime but Ruff seems to not know about this
+    _manager: "ResultManager | None" = None
 
     def is_success(self, message: str | None = None) -> None:
         """Set status to success.
@@ -113,9 +123,28 @@ class TestResult(BaseModel):
             Optional message.
 
         """
-        self.result = status
+        # Set the status via its ResultManager if available
+        if self._manager is not None:
+            self._manager.update_test_result(self, status, message)
+        else:
+            self.result = status
+            self.add_message(message)
+
+    def add_message(self, message: str | None = None) -> None:
+        """Add a message to the TestResult."""
         if message is not None:
             self.messages.append(message)
+
+    def register_manager(self, manager: ResultManager) -> None:
+        """Register the ResultManager instance to this TestResult to allow status updates."""
+        if self._manager is not None and self._manager is not manager:
+            msg = (
+                f"TestResult {self.test} on {self.name} is being re-registered to a different ResultManager. "
+                f"Status and statistics updates will be done by the new ResultManager."
+            )
+            logger.warning(msg)
+
+        self._manager = manager
 
     def __str__(self) -> str:
         """Return a human readable string of this TestResult."""

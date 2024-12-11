@@ -5,10 +5,12 @@
 
 from __future__ import annotations
 
+import logging
 from typing import TYPE_CHECKING, Callable
 
 import pytest
 
+from anta.result_manager import ResultManager
 from anta.result_manager.models import AntaTestStatus
 from tests.units.conftest import DEVICE_NAME
 
@@ -67,3 +69,71 @@ class TestTestResultModels:
         testresult._set_status(target, message)
         assert testresult.result == target
         assert str(testresult) == f"Test 'VerifyTest1' (on '{DEVICE_NAME}'): Result '{target}'\nMessages: {[message]}"
+
+    def test_register_manager(self, test_result_factory: Callable[[], Result], caplog: pytest.LogCaptureFixture) -> None:
+        """Test TestResult.register_manager."""
+        test_result = test_result_factory()
+        manager1 = ResultManager()
+        manager2 = ResultManager()
+
+        # Initial registration
+        assert test_result._manager is None
+        test_result.register_manager(manager1)
+        assert test_result._manager is manager1
+
+        # Re-register to same manager (no warning)
+        with caplog.at_level(logging.WARNING):
+            test_result.register_manager(manager1)
+        assert len(caplog.records) == 0
+        assert test_result._manager is manager1
+
+        # Register to different manager (should log warning)
+        with caplog.at_level(logging.WARNING):
+            test_result.register_manager(manager2)
+
+        # Verify warning was logged
+        assert len(caplog.records) == 1
+        assert "is being re-registered to a different ResultManager" in caplog.records[0].message
+        assert test_result._manager is manager2
+
+    def test_add_message(self, test_result_factory: Callable[[], Result]) -> None:
+        """Test TestResult.add_message."""
+        test_result = test_result_factory()
+        assert len(test_result.messages) == 0
+
+        # Test adding None message (shouldn't add)
+        test_result.add_message(None)
+        assert len(test_result.messages) == 0
+
+        # Test adding first message
+        test_result.add_message("First message")
+        assert len(test_result.messages) == 1
+        assert test_result.messages == ["First message"]
+
+        # Test adding second message
+        test_result.add_message("Second message")
+        assert len(test_result.messages) == 2
+        assert test_result.messages == ["First message", "Second message"]
+
+    def test_status_updates_with_manager(self, test_result_factory: Callable[[], Result]) -> None:
+        """Test status updates with and without manager."""
+        test_result = test_result_factory()
+        manager = ResultManager()
+
+        # Before adding to manager, status updates are direct
+        test_result.is_success("Direct update")
+        assert test_result.result == AntaTestStatus.SUCCESS
+        assert test_result not in manager.results
+
+        # Add to manager (this also registers the manager)
+        manager.add(test_result)
+        assert test_result._manager is manager
+        assert test_result in manager.results
+
+        # Now status updates should go through manager
+        test_result.is_failure("Through manager")
+        assert test_result.result == AntaTestStatus.FAILURE
+        assert len(manager.get_results(status={AntaTestStatus.FAILURE})) == 1
+
+        # Verify message was added
+        assert "Through manager" in test_result.messages

@@ -184,6 +184,75 @@ class ResultManager:
         if result.result in ("failure", "error"):
             test_stats.devices_failure.add(result.name)
 
+    def _remove_from_stats(self, result: TestResult, old_status: AntaTestStatus) -> None:
+        """Remove a TestResult's contribution to statistics.
+
+        Parameters
+        ----------
+        result
+            TestResult being removed.
+        old_status
+            The previous status of the TestResult.
+        """
+        count_attr = f"tests_{old_status}_count"
+
+        # Remove device stats
+        device_stats: DeviceStats = self.device_stats[result.name]
+        curr_count = getattr(device_stats, count_attr)
+        setattr(device_stats, count_attr, max(0, curr_count - 1))
+        if old_status in ("failure", "error"):
+            device_stats.tests_failure.discard(result.test)
+
+        # Remove category stats
+        for category in result.categories:
+            category_stats: CategoryStats = self.category_stats[category]
+            curr_count = getattr(category_stats, count_attr)
+            setattr(category_stats, count_attr, max(0, curr_count - 1))
+
+            # After decrementing the count, we need to cleanup the sets if needed
+            if category_stats.tests_failure_count + category_stats.tests_error_count == 0:
+                device_stats.categories_failed.discard(category)
+            if category_stats.tests_skipped_count == 0:
+                device_stats.categories_skipped.discard(category)
+
+        # Remove test stats
+        count_attr = f"devices_{old_status}_count"
+        test_stats: TestStats = self.test_stats[result.test]
+        curr_count = getattr(test_stats, count_attr)
+        setattr(test_stats, count_attr, max(0, curr_count - 1))
+
+        # We remove the device from the failure set if it has no more failures
+        if device_stats.tests_failure_count + device_stats.tests_error_count == 0:
+            test_stats.devices_failure.discard(result.name)
+
+    def clear_cache(self) -> None:
+        """Clear the cached properties."""
+        self.__dict__.pop("results_by_status", None)
+
+    def update_test_result(self, managed_result: TestResult, new_status: AntaTestStatus, message: str | None = None) -> None:
+        """Update the status and message of the provided TestResult instance.
+
+        The provided TestResult instance must already exist and be registered to this ResultManager instance (i.e. added using the `add` method).
+        """
+        if managed_result not in self._result_entries:
+            msg = f"Cannot update status of a TestResult not managed by this ResultManager: {managed_result}"
+            raise ValueError(msg)
+
+        # Remove the old status from the stats
+        old_status = managed_result.result
+        self._remove_from_stats(managed_result, old_status)
+
+        # Update with the new status and message
+        managed_result.result = new_status
+        managed_result.add_message(message)
+
+        # Update the status and stats with the new status and the updated TestResult
+        self._update_status(new_status)
+        self._update_stats(managed_result)
+
+        # Clear cached properties every time a TestResult is updated
+        self.clear_cache()
+
     def add(self, result: TestResult) -> None:
         """Add a result to the ResultManager instance.
 
@@ -195,12 +264,15 @@ class ResultManager:
         result
             TestResult to add to the ResultManager instance.
         """
+        # Register the manager to the result to allow status updates
+        result.register_manager(self)
+
         self._result_entries.append(result)
         self._update_status(result.result)
         self._update_stats(result)
 
         # Every time a new result is added, we need to clear the cached property
-        self.__dict__.pop("results_by_status", None)
+        self.clear_cache()
 
     def get_results(self, status: set[AntaTestStatus] | None = None, sort_by: list[str] | None = None) -> list[TestResult]:
         """Get the results, optionally filtered by status and sorted by TestResult fields.

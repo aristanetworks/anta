@@ -379,3 +379,145 @@ class TestResultManager:
 
         assert len(result_manager.get_devices()) == 2
         assert all(t in result_manager.get_devices() for t in ["Device1", "Device2"])
+
+    def test_update_test_result_invalid_result(self, result_manager: ResultManager, test_result_factory: Callable[[], TestResult]) -> None:
+        """Test ResultManager.update_test_result with an unmanaged TestResult."""
+        unmanaged_result = test_result_factory()
+
+        with pytest.raises(ValueError, match="Cannot update status of a TestResult not managed by this ResultManager"):
+            result_manager.update_test_result(unmanaged_result, AntaTestStatus.SUCCESS)
+
+    def test_update_test_result_updates(self, result_manager: ResultManager) -> None:
+        """Test ResultManager.update_test_result comprehensive update behavior."""
+        # Get an existing success result and record initial state
+        success_result = result_manager.get_results(status={AntaTestStatus.SUCCESS})[0]
+        device_name = success_result.name
+        categories = success_result.categories
+
+        # Record initial stats
+        initial_device_stats = result_manager.device_stats[device_name]
+        initial_success_count = initial_device_stats.tests_success_count
+        initial_failure_count = initial_device_stats.tests_failure_count
+        initial_failed_tests = set(initial_device_stats.tests_failure)
+
+        initial_category_stats = {category: result_manager.category_stats[category].tests_success_count for category in categories}
+
+        # Update the result with new status and message
+        result_manager.update_test_result(success_result, AntaTestStatus.FAILURE, "Test failed after update")
+
+        # Verify result was updated
+        assert success_result.result == "failure"
+        assert success_result.messages == ["Test failed after update"]
+
+        # Verify device stats were properly decremented and incremented
+        updated_device_stats = result_manager.device_stats[device_name]
+        assert updated_device_stats.tests_success_count == initial_success_count - 1
+        assert updated_device_stats.tests_failure_count == initial_failure_count + 1
+        assert success_result.test in updated_device_stats.tests_failure
+        assert len(updated_device_stats.tests_failure) == len(initial_failed_tests) + 1
+
+        # Verify category stats were properly updated
+        for category in categories:
+            cat_stats = result_manager.category_stats[category]
+            assert cat_stats.tests_success_count == initial_category_stats[category] - 1
+            assert cat_stats.tests_failure_count >= 1
+
+    def test_update_test_result_device_failure_cleanup(
+        self, result_manager_factory: Callable[[int], ResultManager], test_result_factory: Callable[[], TestResult]
+    ) -> None:
+        """Test ResultManager.update_test_result removes device from test's failure set when its failures are fixed."""
+        result_manager = result_manager_factory(0)  # Start with empty manager
+
+        # Create two failing tests for device1
+        device1_test1 = test_result_factory()
+        device1_test1.name = "device1"
+        device1_test1.result = AntaTestStatus.FAILURE
+        result_manager.add(device1_test1)
+
+        device1_test2 = test_result_factory()
+        device1_test2.name = "device1"
+        device1_test2.result = AntaTestStatus.FAILURE
+        result_manager.add(device1_test2)
+
+        # Create one failing test for device2 with same test as device1_test1
+        device2_test = test_result_factory()
+        device2_test.name = "device2"
+        device2_test.test = device1_test1.test  # Same test as device1_test1
+        device2_test.result = AntaTestStatus.FAILURE
+        result_manager.add(device2_test)
+
+        # Verify initial state
+        test1_stats = result_manager.test_stats[device1_test1.test]
+        assert "device1" in test1_stats.devices_failure
+        assert "device2" in test1_stats.devices_failure
+
+        # Fix one failing test for device1
+        result_manager.update_test_result(device1_test1, AntaTestStatus.SUCCESS)
+
+        # device1 should still be in the failure set (has another failing test)
+        assert "device1" in test1_stats.devices_failure
+
+        # Fix the second failing test for device1
+        result_manager.update_test_result(device1_test2, AntaTestStatus.SUCCESS)
+
+        # Now device1 should be removed from failure set (all its failures fixed)
+        # while device2 remains (still failing)
+        assert "device1" not in test1_stats.devices_failure
+        assert "device2" in test1_stats.devices_failure
+
+        # Fix device2's failing test
+        result_manager.update_test_result(device2_test, AntaTestStatus.SUCCESS)
+
+        # Now device2 should also be removed
+        assert "device2" not in test1_stats.devices_failure
+
+    def test_update_test_result_category_cleanup(
+        self, result_manager_factory: Callable[[int], ResultManager], test_result_factory: Callable[[], TestResult]
+    ) -> None:
+        """Test ResultManager.update_test_result removes categories from failed/skipped sets appropriately."""
+        result_manager = result_manager_factory(0)  # Start with empty manager
+
+        # Create two failing tests with same category for one device
+        test1 = test_result_factory()
+        test1.name = "device1"
+        test1.categories = ["category1"]
+        test1.result = AntaTestStatus.FAILURE
+        result_manager.add(test1)
+
+        test2 = test_result_factory()
+        test2.name = "device1"
+        test2.categories = ["category1"]
+        test2.result = AntaTestStatus.FAILURE
+        result_manager.add(test2)
+
+        # Verify initial state
+        device_stats = result_manager.device_stats["device1"]
+        assert "category1" in device_stats.categories_failed
+
+        # Fix one failing test
+        result_manager.update_test_result(test1, AntaTestStatus.SUCCESS)
+
+        # Category should still be in failed set
+        assert "category1" in device_stats.categories_failed
+
+        # Fix second failing test
+        result_manager.update_test_result(test2, AntaTestStatus.SUCCESS)
+
+        # Category should be removed from failed set
+        assert "category1" not in device_stats.categories_failed
+
+        # Test skipped category cleanup
+        skipped_test = test_result_factory()
+        skipped_test.name = "device1"
+        skipped_test.categories = ["category2"]
+        skipped_test.result = AntaTestStatus.SKIPPED
+        result_manager.add(skipped_test)
+
+        # Verify initial skipped state
+        assert "category2" in device_stats.categories_skipped
+
+        # Update skipped test to success
+        result_manager.update_test_result(skipped_test, AntaTestStatus.SUCCESS)
+
+        # Category should be removed from skipped set
+        assert "category2" not in device_stats.categories_skipped
