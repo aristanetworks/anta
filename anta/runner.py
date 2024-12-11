@@ -195,7 +195,7 @@ def get_coroutines(selected_tests: defaultdict[AntaDevice, set[AntaTestDefinitio
         for test in test_definitions:
             try:
                 test_instance = test.test(device=device, inputs=test.inputs)
-                if manager:
+                if manager is not None:
                     manager.add(test_instance.result)
                 coros.append(test_instance.test())
             except Exception as e:  # noqa: PERF203, BLE001
