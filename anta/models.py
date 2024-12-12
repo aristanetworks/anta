@@ -270,7 +270,7 @@ class AntaCommand(BaseModel):
         if not self.collected and not self.error:
             msg = f"Command '{self.command}' has not been collected and has not returned an error. Call AntaDevice.collect()."
             raise RuntimeError(msg)
-        known_eos_errors = ["BGP inactive", "VRF '.*' is not active", ".* does not support IP "]
+        known_eos_errors = ["BGP inactive", "VRF '.*' is not active", ".* does not support IP"]
         return any(any(re.match(pattern, e) for e in self.errors) for pattern in known_eos_errors)
 
 
