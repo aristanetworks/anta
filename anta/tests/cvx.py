@@ -149,7 +149,7 @@ class VerifyCVXClusterStatus(AntaTest):
         # Validate peer status
         self._validate_peer_status(cluster_status)
 
-    def _validate_peer_status(self, cluster_status: dict[str, Any]) -> bool:
+    def _validate_peer_status(self, cluster_status: dict[str, Any]) -> None:
         """Check peer statuses in the cluster."""
         peer_cluster = cluster_status.get("peerStatus", {})
 
@@ -158,20 +158,12 @@ class VerifyCVXClusterStatus(AntaTest):
             self.result.is_failure(f"Unexpected number of peers {num_of_peers} vs {expected_num_of_peers}")
 
         # Check each peer
-        return all(self._validate_individual_peer(peer, peer_cluster) for peer in self.inputs.peer_status)
-
-    def _validate_individual_peer(self, peer: CVXPeers, peer_cluster: dict[str, Any]) -> bool:
-        """Check an individual peer in the cluster."""
-        # Retrieve the peer status from the peer cluster
-        eos_peer_status = get_value(peer_cluster, peer.peer_name, separator="..")
-        if eos_peer_status is None:
-            self.result.is_failure(f"{peer.peer_name} is not present")
-            return False
-
-        # Validate the registration state of the peer
-        peer_reg_state = eos_peer_status.get("registrationState")
-        if peer_reg_state != peer.registration_state:
-            self.result.is_failure(f"{peer.peer_name} registration state is not complete: {peer_reg_state}")
-            return False
-
-        return True
+        for peer in self.inputs.peer_status:
+            # Retrieve the peer status from the peer cluster
+            if (eos_peer_status := get_value(peer_cluster, peer.peer_name, separator="..")) is None:
+                self.result.is_failure(f"{peer.peer_name} is not present")
+                continue
+                
+             # Validate the registration state of the peer
+            if (peer_reg_state := eos_peer_status.get("registrationState")) != peer.registration_state:
+                self.result.is_failure(f"{peer.peer_name} registration state is not complete: {peer_reg_state}")
