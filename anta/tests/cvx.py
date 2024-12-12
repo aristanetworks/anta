@@ -147,10 +147,6 @@ class VerifyCVXClusterStatus(AntaTest):
             return
 
         # Validate peer status
-        self._validate_peer_status(cluster_status)
-
-    def _validate_peer_status(self, cluster_status: dict[str, Any]) -> None:
-        """Check peer statuses in the cluster."""
         peer_cluster = cluster_status.get("peerStatus", {})
 
         # Check peer count
