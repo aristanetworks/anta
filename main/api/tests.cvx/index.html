@@ -89,7 +89,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#anta.tests.cvx.VerifyManagementCVX" class="md-skip">
+        <a href="#anta.tests.cvx.VerifyCVXClusterStatus" class="md-skip">
           Skip to content
         </a>
       
@@ -1023,6 +1023,38 @@
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.cvx.VerifyCVXClusterStatus" class="md-nav__link">
+      <span class="md-ellipsis">
+        VerifyCVXClusterStatus
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="VerifyCVXClusterStatus">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.cvx.VerifyCVXClusterStatus-attributes" class="md-nav__link">
+      <span class="md-ellipsis">
+        Inputs
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
@@ -2256,6 +2288,38 @@
       
         <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#anta.tests.cvx.VerifyCVXClusterStatus" class="md-nav__link">
+      <span class="md-ellipsis">
+        VerifyCVXClusterStatus
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="VerifyCVXClusterStatus">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.cvx.VerifyCVXClusterStatus-attributes" class="md-nav__link">
+      <span class="md-ellipsis">
+        Inputs
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#anta.tests.cvx.VerifyManagementCVX" class="md-nav__link">
       <span class="md-ellipsis">
         VerifyManagementCVX
@@ -2356,6 +2420,240 @@
 
 
 
+<h2 id="anta.tests.cvx.VerifyCVXClusterStatus" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">VerifyCVXClusterStatus</span>
+
+
+<a href="#anta.tests.cvx.VerifyCVXClusterStatus" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+  
+        <p>Verifies the CVX Server Cluster status.</p>
+
+
+<details class="expected-results" open>
+  <summary>Expected Results</summary>
+  <ul>
+<li>Success: The test will pass if all of the following conditions is met:<ul>
+<li>CVX Enabled state is true</li>
+<li>Cluster Mode is true</li>
+<li>Role is either Master or Standby.</li>
+<li>peer_status matches defined state</li>
+</ul>
+</li>
+<li>Failure: The test will fail if any of the success conditions is not met.</li>
+</ul>
+</details>
+
+
+<details class="example" open>
+  <summary>Examples</summary>
+        <div class="highlight"><pre><span></span><code><span class="nt">anta.tests.cvx</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyCVXClusterStatus</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">role</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Master</span>
+<span class="w">      </span><span class="nt">peer_status</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">peer_name </span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cvx-red-2</span>
+<span class="w">          </span><span class="nt">registration_state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Registration complete</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">peer_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cvx-red-3</span>
+<span class="w">          </span><span class="nt">registration_state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Registration error</span>
+</code></pre></div>
+</details>
+
+
+
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+<h3 id="anta.tests.cvx.VerifyCVXClusterStatus-attributes">Inputs<a href="#anta.tests.cvx.VerifyCVXClusterStatus-attributes" class="headerlink" title="Permanent link">&para;</a></h3>  
+
+  <div class="doc doc-children">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Description</th>
+              <th>Default</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+  </div>
+
+
+
+
+
+  </div>
+  <details class="quote">
+  <summary>Source code in <code>anta/tests/cvx.py</code></summary>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyCVXClusterStatus</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the CVX Server Cluster status.</span>
+
+<span class="sd">    Expected Results</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    * Success: The test will pass if all of the following conditions is met:</span>
+<span class="sd">        - CVX Enabled state is true</span>
+<span class="sd">        - Cluster Mode is true</span>
+<span class="sd">        - Role is either Master or Standby.</span>
+<span class="sd">        - peer_status matches defined state</span>
+<span class="sd">    * Failure: The test will fail if any of the success conditions is not met.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    ```yaml</span>
+<span class="sd">    anta.tests.cvx:</span>
+<span class="sd">      - VerifyCVXClusterStatus:</span>
+<span class="sd">          role: Master</span>
+<span class="sd">          peer_status:</span>
+<span class="sd">            - peer_name : cvx-red-2</span>
+<span class="sd">              registration_state: Registration complete</span>
+<span class="sd">            - peer_name: cvx-red-3</span>
+<span class="sd">              registration_state: Registration error</span>
+<span class="sd">    ```</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;cvx&quot;</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show cvx&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+
+    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyCVXClusterStatus test.&quot;&quot;&quot;</span>
+
+        <span class="n">role</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;Master&quot;</span><span class="p">,</span> <span class="s2">&quot;Standby&quot;</span><span class="p">,</span> <span class="s2">&quot;Disconnected&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Master&quot;</span>
+        <span class="n">peer_status</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">CVXPeers</span><span class="p">]</span>
+
+    <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run the main test for VerifyCVXClusterStatus.&quot;&quot;&quot;</span>
+        <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+
+        <span class="c1"># Validate Server enabled status</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">command_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;enabled&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;CVX Server status is not enabled&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Validate cluster status and mode</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">cluster_status</span> <span class="o">:=</span> <span class="n">command_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;clusterStatus&quot;</span><span class="p">))</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">command_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;clusterMode&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;CVX Server is not a cluster&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Check cluster role</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">cluster_role</span> <span class="o">:=</span> <span class="n">cluster_status</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;role&quot;</span><span class="p">))</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">role</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CVX Role is not valid: </span><span class="si">{</span><span class="n">cluster_role</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Validate peer status</span>
+        <span class="n">peer_cluster</span> <span class="o">=</span> <span class="n">cluster_status</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;peerStatus&quot;</span><span class="p">,</span> <span class="p">{})</span>
+
+        <span class="c1"># Check peer count</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">num_of_peers</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="n">peer_cluster</span><span class="p">))</span> <span class="o">!=</span> <span class="p">(</span><span class="n">expected_num_of_peers</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">peer_status</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unexpected number of peers </span><span class="si">{</span><span class="n">num_of_peers</span><span class="si">}</span><span class="s2"> vs </span><span class="si">{</span><span class="n">expected_num_of_peers</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Check each peer</span>
+        <span class="k">for</span> <span class="n">peer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">peer_status</span><span class="p">:</span>
+            <span class="c1"># Retrieve the peer status from the peer cluster</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">eos_peer_status</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">peer_cluster</span><span class="p">,</span> <span class="n">peer</span><span class="o">.</span><span class="n">peer_name</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;..&quot;</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">peer</span><span class="o">.</span><span class="n">peer_name</span><span class="si">}</span><span class="s2"> is not present&quot;</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># Validate the registration state of the peer</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">peer_reg_state</span> <span class="o">:=</span> <span class="n">eos_peer_status</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;registrationState&quot;</span><span class="p">))</span> <span class="o">!=</span> <span class="n">peer</span><span class="o">.</span><span class="n">registration_state</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">peer</span><span class="o">.</span><span class="n">peer_name</span><span class="si">}</span><span class="s2"> registration state is not complete: </span><span class="si">{</span><span class="n">peer_reg_state</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+  </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
 <h2 id="anta.tests.cvx.VerifyManagementCVX" class="doc doc-heading">
             <span class="doc doc-object-name doc-class-name">VerifyManagementCVX</span>
 
@@ -2440,8 +2738,7 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/cvx.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">56</span>
-<span class="normal">57</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">57</span>
 <span class="normal">58</span>
 <span class="normal">59</span>
 <span class="normal">60</span>
@@ -2473,7 +2770,8 @@
 <span class="normal">86</span>
 <span class="normal">87</span>
 <span class="normal">88</span>
-<span class="normal">89</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyManagementCVX</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">89</span>
+<span class="normal">90</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyManagementCVX</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the management CVX global status.</span>
 
 <span class="sd">    Expected Results</span>
@@ -2570,8 +2868,7 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/cvx.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">19</span>
-<span class="normal">20</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">20</span>
 <span class="normal">21</span>
 <span class="normal">22</span>
 <span class="normal">23</span>
@@ -2604,7 +2901,8 @@
 <span class="normal">50</span>
 <span class="normal">51</span>
 <span class="normal">52</span>
-<span class="normal">53</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyMcsClientMounts</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">53</span>
+<span class="normal">54</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyMcsClientMounts</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verify if all MCS client mounts are in mountStateMountComplete.</span>
 
 <span class="sd">    Expected Results</span>
