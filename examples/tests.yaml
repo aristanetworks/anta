@@ -137,7 +137,7 @@ anta.tests.connectivity:
 anta.tests.cvx:
   - VerifyActiveCVXConnections:
       # Verifies the expected number of active CVX Connections.
-      expected_connection_count: 100
+      connections_count: 100
   - VerifyManagementCVX:
       # Verifies the management CVX global status.
       enabled: true

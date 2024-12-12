@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar
 
+from anta.custom_types import PositiveInteger
 from anta.models import AntaCommand, AntaTest
 
 if TYPE_CHECKING:
@@ -121,12 +122,12 @@ class VerifyActiveCVXConnections(AntaTest):
         """Main test function for VerifyActiveCVXConnections."""
         command_output = self.instance_commands[0].json_output
         self.result.is_success()
-        
-        if not (connections:= command_output.get("connections"))
+
+        if not (connections := command_output.get("connections")):
             self.result.is_failure("CVX connections are not available.")
             return
 
-        active_count = len([connection for connection in connections if if connection.get("oobConnectionActive")])
+        active_count = len([connection for connection in connections if connection.get("oobConnectionActive")])
 
-        if self.inputs.expected_connection_count != active_count:
-            self.result.is_failure(f"CVX active connections count. Expected: {self.inputs.expected_connection_count} , Actual : {active_count}")
+        if self.inputs.connections_count != active_count:
+            self.result.is_failure(f"CVX active connections count. Expected: {self.inputs.connections_count} , Actual : {active_count}")
