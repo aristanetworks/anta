@@ -97,8 +97,8 @@ class VerifyMcsServerMounts(AntaTest):
     ----------------
     * Success: The test will pass if all the MCS mount status on MCS server are mountStateMountComplete.
     * Failure: The test will fail even if any MCS server mount status is not mountStateMountComplete.
-    
-        Examples
+
+    Examples
     --------
     ```yaml
     anta.tests.cvx:
@@ -107,10 +107,10 @@ class VerifyMcsServerMounts(AntaTest):
         expected_connection_count: 100
     ```
     """
-    
+
     categories: ClassVar[list[str]] = ["cvx"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show cvx mounts", revision=1)]
-    
+
     class Input(AntaTest.Input):
         """Input model for the VerifyMcsServerMounts test."""
 
@@ -162,7 +162,7 @@ class VerifyMcsServerMounts(AntaTest):
         if active_count != self.inputs.expected_connection_count:
             self.result.is_failure(f"Only {active_count} successful connections")
 
-            
+
 class VerifyCVXClusterStatus(AntaTest):
     """Verifies the CVX Server Cluster status.
 
