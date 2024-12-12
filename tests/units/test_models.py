@@ -707,7 +707,7 @@ class TestAntaCommand:
             command.requires_privileges
 
     @pytest.mark.parametrize(
-        ("command", "error", "is_known"),
+        ("command_str", "error", "is_known"),
         [
             ("show ip interface Ethernet1", "Ethernet1 does not support IP", True),
             ("ping vrf MGMT 1.1.1.1 source Management0 size 100 df-bit repeat 2", "VRF 'MGMT' is not active", True),
@@ -715,10 +715,10 @@ class TestAntaCommand:
             ("show ip interface Ethernet1", None, False),
         ],
     )
-    def test_returned_known_eos_error(self, command: str, error: str | None, is_known: bool) -> None:
+    def test_returned_known_eos_error(self, command_str: str, error: str | None, is_known: bool) -> None:
         """Test the returned_known_eos_error property."""
         # Adding fake output when no error is present to mimic that the command has been collected
-        command = AntaCommand(command=command, errors=[error] if error else [], output=None if error else "{}")
+        command = AntaCommand(command=command_str, errors=[error] if error else [], output=None if error else "{}")
         assert command.returned_known_eos_error is is_known
 
     def test_returned_known_eos_error_failure(self) -> None:
