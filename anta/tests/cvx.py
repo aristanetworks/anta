@@ -15,7 +15,6 @@ from anta.tools import get_value
 if TYPE_CHECKING:
     from anta.models import AntaTemplate
 from anta.input_models.cvx import CVXPeers
-from anta.tools import get_value
 
 
 class VerifyMcsClientMounts(AntaTest):
