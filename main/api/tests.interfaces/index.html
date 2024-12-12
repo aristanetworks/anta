@@ -1535,26 +1535,6 @@
 
     <!-- Table of contents list -->
     
-      <nav class="md-nav" aria-label="Inputs">
-        <ul class="md-nav__list">
-          
-          
-            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#anta.tests.interfaces.VerifyLACPInterfacesStatus-attributes" class="md-nav__link">
-      <span class="md-ellipsis">
-        LACPInterface
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-  </li>
-          
-          
-        </ul>
-      </nav>
-    
   </li>
           
           
@@ -3163,26 +3143,6 @@
     </a>
 
     <!-- Table of contents list -->
-    
-      <nav class="md-nav" aria-label="Inputs">
-        <ul class="md-nav__list">
-          
-          
-            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#anta.tests.interfaces.VerifyLACPInterfacesStatus-attributes" class="md-nav__link">
-      <span class="md-ellipsis">
-        LACPInterface
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-  </li>
-          
-          
-        </ul>
-      </nav>
     
   </li>
           
@@ -5908,20 +5868,33 @@ You can define a global MTU to check and also an MTU per interface and also igno
 
 
   
-        <p>Verifies the Link Aggregation Control Protocol (LACP) status of the provided interfaces.</p>
-<ul>
+        <p>Verifies the Link Aggregation Control Protocol (LACP) status of the interface.</p>
+<p>This test performs the following checks for each specified interface:</p>
+<ol>
 <li>Verifies that the interface is a member of the LACP port channel.</li>
-<li>Ensures that the synchronization is established.</li>
-<li>Ensures the interfaces are in the correct state for collecting and distributing traffic.</li>
-<li>Validates that LACP settings, such as timeouts, are correctly configured. (i.e The long timeout mode, also known as &ldquo;slow&rdquo; mode, is the default setting.)</li>
+<li>Verifies LACP port states and operational status:<ul>
+<li>Activity: Active LACP mode (initiates)</li>
+<li>Timeout: Short (Fast Mode), Long (Slow Mode - default)</li>
+<li>Aggregation: Port aggregable</li>
+<li>Synchronization: Port in sync with partner</li>
+<li>Collecting: Incoming frames aggregating</li>
+<li>Distributing: Outgoing frames aggregating</li>
 </ul>
+</li>
+</ol>
 
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>Success: The test will pass if the provided interfaces are bundled in port channel and all specified parameters are correct.</li>
-<li>Failure: The test will fail if any interface is not bundled in port channel or any of specified parameter is not correct.</li>
+<li>Success: Interface is bundled and all LACP states match expected values for both actor and partner</li>
+<li>Failure: If any of the following occur:<ul>
+<li>Interface or port channel is not configured.</li>
+<li>Interface is not bundled in port channel.</li>
+<li>Actor or partner port LACP states don&rsquo;t match expected configuration.</li>
+<li>LACP rate (timeout) mismatch when fast mode is configured.</li>
+</ul>
+</li>
 </ul>
 </details>
 
@@ -5966,11 +5939,11 @@ You can define a global MTU to check and also an MTU per interface and also igno
               <tr>
                 <td><code>interfaces</code></td>
                 <td>
-                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<span title="anta.tests.interfaces.VerifyLACPInterfacesStatus.Input.LACPInterface">LACPInterface</span>]</code>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<span title="anta.tests.interfaces.VerifyLACPInterfacesStatus.Input.InterfaceState">InterfaceState</span>]</code>
                 </td>
                 <td>
                   <div class="doc-md-description">
-                    List of LACP member interface.
+                    List of interfaces with their expected state.
                   </div>
                 </td>
                 <td>
@@ -5979,52 +5952,6 @@ You can define a global MTU to check and also an MTU per interface and also igno
               </tr>
           </tbody>
         </table>
-<h4 id="anta.tests.interfaces.VerifyLACPInterfacesStatus-attributes">LACPInterface<a href="#anta.tests.interfaces.VerifyLACPInterfacesStatus-attributes" class="headerlink" title="Permanent link">&para;</a></h4>          <div class="doc doc-children doc-contents">
-  
-
-  <div class="doc doc-children">
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Type</th>
-              <th>Description</th>
-              <th>Default</th>
-            </tr>
-          </thead>
-          <tbody>
-              <tr>
-                <td><code>name</code></td>
-                <td>
-                      <code><a class="autorefs autorefs-internal" title="anta.custom_types.EthernetInterface" href="../types/#anta.custom_types.EthernetInterface">EthernetInterface</a></code>
-                </td>
-                <td>
-                  <div class="doc-md-description">
-                    Ethernet interface to validate.
-                  </div>
-                </td>
-                <td>
-                    <em>-</em>
-                </td>
-              </tr>
-              <tr>
-                <td><code>portchannel</code></td>
-                <td>
-                      <code><a class="autorefs autorefs-internal" title="anta.custom_types.PortChannelInterface" href="../types/#anta.custom_types.PortChannelInterface">PortChannelInterface</a></code>
-                </td>
-                <td>
-                  <div class="doc-md-description">
-                    Port Channel in which the interface is bundled.
-                  </div>
-                </td>
-                <td>
-                    <em>-</em>
-                </td>
-              </tr>
-          </tbody>
-        </table>
-  </div>
-          </div>
   </div>
 
 
@@ -6119,32 +6046,28 @@ You can define a global MTU to check and also an MTU per interface and also igno
 <span class="normal">932</span>
 <span class="normal">933</span>
 <span class="normal">934</span>
-<span class="normal">935</span>
-<span class="normal">936</span>
-<span class="normal">937</span>
-<span class="normal">938</span>
-<span class="normal">939</span>
-<span class="normal">940</span>
-<span class="normal">941</span>
-<span class="normal">942</span>
-<span class="normal">943</span>
-<span class="normal">944</span>
-<span class="normal">945</span>
-<span class="normal">946</span>
-<span class="normal">947</span>
-<span class="normal">948</span>
-<span class="normal">949</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyLACPInterfacesStatus</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the Link Aggregation Control Protocol (LACP) status of the provided interfaces.</span>
+<span class="normal">935</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyLACPInterfacesStatus</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the Link Aggregation Control Protocol (LACP) status of the interface.</span>
 
-<span class="sd">    - Verifies that the interface is a member of the LACP port channel.</span>
-<span class="sd">    - Ensures that the synchronization is established.</span>
-<span class="sd">    - Ensures the interfaces are in the correct state for collecting and distributing traffic.</span>
-<span class="sd">    - Validates that LACP settings, such as timeouts, are correctly configured. (i.e The long timeout mode, also known as &quot;slow&quot; mode, is the default setting.)</span>
+<span class="sd">    This test performs the following checks for each specified interface:</span>
+
+<span class="sd">      1. Verifies that the interface is a member of the LACP port channel.</span>
+<span class="sd">      2. Verifies LACP port states and operational status:</span>
+<span class="sd">        - Activity: Active LACP mode (initiates)</span>
+<span class="sd">        - Timeout: Short (Fast Mode), Long (Slow Mode - default)</span>
+<span class="sd">        - Aggregation: Port aggregable</span>
+<span class="sd">        - Synchronization: Port in sync with partner</span>
+<span class="sd">        - Collecting: Incoming frames aggregating</span>
+<span class="sd">        - Distributing: Outgoing frames aggregating</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
-<span class="sd">    * Success: The test will pass if the provided interfaces are bundled in port channel and all specified parameters are correct.</span>
-<span class="sd">    * Failure: The test will fail if any interface is not bundled in port channel or any of specified parameter is not correct.</span>
+<span class="sd">    * Success: Interface is bundled and all LACP states match expected values for both actor and partner</span>
+<span class="sd">    * Failure: If any of the following occur:</span>
+<span class="sd">        - Interface or port channel is not configured.</span>
+<span class="sd">        - Interface is not bundled in port channel.</span>
+<span class="sd">        - Actor or partner port LACP states don&#39;t match expected configuration.</span>
+<span class="sd">        - LACP rate (timeout) mismatch when fast mode is configured.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -6158,25 +6081,14 @@ You can define a global MTU to check and also an MTU per interface and also igno
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;interfaces&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">&quot;show lacp interface </span><span class="si">{interface}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show lacp interface&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
     <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyLACPInterfacesStatus test.&quot;&quot;&quot;</span>
 
-        <span class="n">interfaces</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">LACPInterface</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of LACP member interface.&quot;&quot;&quot;</span>
-
-        <span class="k">class</span> <span class="nc">LACPInterface</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;Model for an LACP member interface.&quot;&quot;&quot;</span>
-
-            <span class="n">name</span><span class="p">:</span> <span class="n">EthernetInterface</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;Ethernet interface to validate.&quot;&quot;&quot;</span>
-            <span class="n">portchannel</span><span class="p">:</span> <span class="n">PortChannelInterface</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;Port Channel in which the interface is bundled.&quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">AntaTemplate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Render the template for each interface in the input list.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">interface</span><span class="o">=</span><span class="n">interface</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">interface</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">interfaces</span><span class="p">]</span>
+        <span class="n">interfaces</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">InterfaceState</span><span class="p">]</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of interfaces with their expected state.&quot;&quot;&quot;</span>
+        <span class="n">InterfaceState</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">InterfaceState</span><span class="p">]]</span> <span class="o">=</span> <span class="n">InterfaceState</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -6186,21 +6098,17 @@ You can define a global MTU to check and also an MTU per interface and also igno
         <span class="c1"># Member port verification parameters.</span>
         <span class="n">member_port_details</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;activity&quot;</span><span class="p">,</span> <span class="s2">&quot;aggregation&quot;</span><span class="p">,</span> <span class="s2">&quot;synchronization&quot;</span><span class="p">,</span> <span class="s2">&quot;collecting&quot;</span><span class="p">,</span> <span class="s2">&quot;distributing&quot;</span><span class="p">,</span> <span class="s2">&quot;timeout&quot;</span><span class="p">]</span>
 
-        <span class="c1"># Iterating over command output for different interfaces</span>
-        <span class="k">for</span> <span class="n">command</span><span class="p">,</span> <span class="n">input_entry</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">interfaces</span><span class="p">):</span>
-            <span class="n">interface</span> <span class="o">=</span> <span class="n">input_entry</span><span class="o">.</span><span class="n">name</span>
-            <span class="n">portchannel</span> <span class="o">=</span> <span class="n">input_entry</span><span class="o">.</span><span class="n">portchannel</span>
-
+        <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
+        <span class="k">for</span> <span class="n">interface</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">interfaces</span><span class="p">:</span>
             <span class="c1"># Verify if a PortChannel is configured with the provided interface</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">interface_details</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">json_output</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;portChannels.</span><span class="si">{</span><span class="n">portchannel</span><span class="si">}</span><span class="s2">.interfaces.</span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Interface &#39;</span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="s2">&#39; is not configured to be a member of LACP &#39;</span><span class="si">{</span><span class="n">portchannel</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">interface_details</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;portChannels..</span><span class="si">{</span><span class="n">interface</span><span class="o">.</span><span class="n">portchannel</span><span class="si">}</span><span class="s2">..interfaces..</span><span class="si">{</span><span class="n">interface</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;..&quot;</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="s2"> - Not configured&quot;</span><span class="p">)</span>
                 <span class="k">continue</span>
 
             <span class="c1"># Verify the interface is bundled in port channel.</span>
             <span class="n">actor_port_status</span> <span class="o">=</span> <span class="n">interface_details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;actorPortStatus&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">actor_port_status</span> <span class="o">!=</span> <span class="s2">&quot;bundled&quot;</span><span class="p">:</span>
-                <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;For Interface </span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="s2">:</span><span class="se">\n</span><span class="s2">Expected `bundled` as the local port status, but found `</span><span class="si">{</span><span class="n">actor_port_status</span><span class="si">}</span><span class="s2">` instead.</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="s2"> - Not bundled - Port Status: </span><span class="si">{</span><span class="n">actor_port_status</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">continue</span>
 
             <span class="c1"># Collecting actor and partner port details</span>
@@ -6215,24 +6123,15 @@ You can define a global MTU to check and also an MTU per interface and also igno
 
             <span class="c1"># Forming expected interface details</span>
             <span class="n">expected_details</span> <span class="o">=</span> <span class="p">{</span><span class="n">param</span><span class="p">:</span> <span class="n">param</span> <span class="o">!=</span> <span class="s2">&quot;timeout&quot;</span> <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">member_port_details</span><span class="p">}</span>
-            <span class="n">expected_interface_output</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;actor_port_details&quot;</span><span class="p">:</span> <span class="n">expected_details</span><span class="p">,</span> <span class="s2">&quot;partner_port_details&quot;</span><span class="p">:</span> <span class="n">expected_details</span><span class="p">}</span>
+            <span class="c1"># Updating the short LACP timeout, if expected.</span>
+            <span class="k">if</span> <span class="n">interface</span><span class="o">.</span><span class="n">lacp_rate_fast</span><span class="p">:</span>
+                <span class="n">expected_details</span><span class="p">[</span><span class="s2">&quot;timeout&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 
-            <span class="c1"># Forming failure message</span>
-            <span class="k">if</span> <span class="n">actual_interface_output</span> <span class="o">!=</span> <span class="n">expected_interface_output</span><span class="p">:</span>
-                <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;For Interface </span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="s2">:</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="n">actor_port_failed_log</span> <span class="o">=</span> <span class="n">get_failed_logs</span><span class="p">(</span>
-                    <span class="n">expected_interface_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;actor_port_details&quot;</span><span class="p">,</span> <span class="p">{}),</span> <span class="n">actual_interface_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;actor_port_details&quot;</span><span class="p">,</span> <span class="p">{})</span>
-                <span class="p">)</span>
-                <span class="n">partner_port_failed_log</span> <span class="o">=</span> <span class="n">get_failed_logs</span><span class="p">(</span>
-                    <span class="n">expected_interface_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;partner_port_details&quot;</span><span class="p">,</span> <span class="p">{}),</span> <span class="n">actual_interface_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;partner_port_details&quot;</span><span class="p">,</span> <span class="p">{})</span>
-                <span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">act_port_details</span> <span class="o">:=</span> <span class="n">actual_interface_output</span><span class="p">[</span><span class="s2">&quot;actor_port_details&quot;</span><span class="p">])</span> <span class="o">!=</span> <span class="n">expected_details</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="s2"> - Actor port details mismatch - </span><span class="si">{</span><span class="n">format_data</span><span class="p">(</span><span class="n">act_port_details</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-                <span class="k">if</span> <span class="n">actor_port_failed_log</span><span class="p">:</span>
-                    <span class="n">message</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;Actor port details:</span><span class="si">{</span><span class="n">actor_port_failed_log</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="k">if</span> <span class="n">partner_port_failed_log</span><span class="p">:</span>
-                    <span class="n">message</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;Partner port details:</span><span class="si">{</span><span class="n">partner_port_failed_log</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">part_port_details</span> <span class="o">:=</span> <span class="n">actual_interface_output</span><span class="p">[</span><span class="s2">&quot;partner_port_details&quot;</span><span class="p">])</span> <span class="o">!=</span> <span class="n">expected_details</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="s2"> - Partner port details mismatch - </span><span class="si">{</span><span class="n">format_data</span><span class="p">(</span><span class="n">part_port_details</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -6902,15 +6801,15 @@ You can define a global MTU to check and also an MTU per interface and also igno
               <tr>
                 <td><code>status</code></td>
                 <td>
-                      <code><a class="autorefs autorefs-external" title="typing.Literal" href="https://docs.python.org/3/library/typing.html#typing.Literal">Literal</a>[&#39;up&#39;, &#39;down&#39;, &#39;adminDown&#39;]</code>
+                      <code><a class="autorefs autorefs-external" title="typing.Literal" href="https://docs.python.org/3/library/typing.html#typing.Literal">Literal</a>[&#39;up&#39;, &#39;down&#39;, &#39;adminDown&#39;] | None</code>
                 </td>
                 <td>
                   <div class="doc-md-description">
-                    Expected status of the interface.
+                    Expected status of the interface. Required field in the `VerifyInterfacesStatus` test.
                   </div>
                 </td>
                 <td>
-                    <em>-</em>
+                      <code>None</code>
                 </td>
               </tr>
               <tr>
@@ -6920,11 +6819,45 @@ You can define a global MTU to check and also an MTU per interface and also igno
                 </td>
                 <td>
                   <div class="doc-md-description">
-                    Expected line protocol status of the interface.
+                    Expected line protocol status of the interface. Optional field in the `VerifyInterfacesStatus` test.
                   </div>
                 </td>
                 <td>
                       <code>None</code>
+                </td>
+              </tr>
+              <tr>
+                <td><code>portchannel</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-internal" title="anta.custom_types.PortChannelInterface" href="../types/#anta.custom_types.PortChannelInterface">PortChannelInterface</a> | None</code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    Port-Channel in which the interface is bundled. Required field in the `VerifyLACPInterfacesStatus` test.
+                  </div>
+                </td>
+                <td>
+                      <code>None</code>
+                </td>
+              </tr>
+              <tr>
+                <td><code>lacp_rate_fast</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    Specifies the LACP timeout mode for the link aggregation group.
+
+Options:
+- True: Also referred to as fast mode.
+- False: The default mode, also known as slow mode.
+
+Can be enabled in the `VerifyLACPInterfacesStatus` tests.
+                  </div>
+                </td>
+                <td>
+                      <code>False</code>
                 </td>
               </tr>
           </tbody>
@@ -6947,15 +6880,65 @@ You can define a global MTU to check and also an MTU per interface and also igno
 <span class="normal">20</span>
 <span class="normal">21</span>
 <span class="normal">22</span>
-<span class="normal">23</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">InterfaceState</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">InterfaceState</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Model for an interface state.&quot;&quot;&quot;</span>
 
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
     <span class="n">name</span><span class="p">:</span> <span class="n">Interface</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Interface to validate.&quot;&quot;&quot;</span>
-    <span class="n">status</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;up&quot;</span><span class="p">,</span> <span class="s2">&quot;down&quot;</span><span class="p">,</span> <span class="s2">&quot;adminDown&quot;</span><span class="p">]</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Expected status of the interface.&quot;&quot;&quot;</span>
+    <span class="n">status</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;up&quot;</span><span class="p">,</span> <span class="s2">&quot;down&quot;</span><span class="p">,</span> <span class="s2">&quot;adminDown&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Expected status of the interface. Required field in the `VerifyInterfacesStatus` test.&quot;&quot;&quot;</span>
     <span class="n">line_protocol_status</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;up&quot;</span><span class="p">,</span> <span class="s2">&quot;down&quot;</span><span class="p">,</span> <span class="s2">&quot;testing&quot;</span><span class="p">,</span> <span class="s2">&quot;unknown&quot;</span><span class="p">,</span> <span class="s2">&quot;dormant&quot;</span><span class="p">,</span> <span class="s2">&quot;notPresent&quot;</span><span class="p">,</span> <span class="s2">&quot;lowerLayerDown&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Expected line protocol status of the interface.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Expected line protocol status of the interface. Optional field in the `VerifyInterfacesStatus` test.&quot;&quot;&quot;</span>
+    <span class="n">portchannel</span><span class="p">:</span> <span class="n">PortChannelInterface</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Port-Channel in which the interface is bundled. Required field in the `VerifyLACPInterfacesStatus` test.&quot;&quot;&quot;</span>
+    <span class="n">lacp_rate_fast</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Specifies the LACP timeout mode for the link aggregation group.</span>
+
+<span class="sd">    Options:</span>
+<span class="sd">    - True: Also referred to as fast mode.</span>
+<span class="sd">    - False: The default mode, also known as slow mode.</span>
+
+<span class="sd">    Can be enabled in the `VerifyLACPInterfacesStatus` tests.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a human-readable string representation of the InterfaceState for reporting.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        - Interface: Ethernet1 Port-Channel: Port-Channel100</span>
+<span class="sd">        - Interface: Ethernet1</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">base_string</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Interface: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">portchannel</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">base_string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; Port-Channel: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">portchannel</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="n">base_string</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
