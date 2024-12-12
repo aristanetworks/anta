@@ -142,12 +142,21 @@ class VerifyISISNeighborState(AntaTest):
 
 
 class VerifyISISNeighborCount(AntaTest):
-    """Verifies number of IS-IS neighbors per level and per interface.
+    """Verifies the number of IS-IS neighbors.
+
+    This test performs the following checks for each specified interface:
+
+      1. Validates the IS-IS neighbors configured on specified interface.
+      2. Validates the number of IS-IS neighbors for each interface at specified level.
 
     Expected Results
     ----------------
-    * Success: The test will pass if the number of neighbors is correct.
-    * Failure: The test will fail if the number of neighbors is incorrect.
+    * Success: If all of the following occur:
+        - The IS-IS neighbors configured on specified interface.
+        - The number of IS-IS neighbors for each interface at specified level matches the given input.
+    * Failure: If any of the following occur:
+        - The IS-IS neighbors are not configured on specified interface.
+        - The number of IS-IS neighbors for each interface at specified level does not matches the given input.
     * Skipped: The test will be skipped if no IS-IS neighbor is found.
 
     Examples
@@ -201,7 +210,12 @@ class VerifyISISNeighborCount(AntaTest):
 
 
 class VerifyISISInterfaceMode(AntaTest):
-    """Verifies ISIS Interfaces are running in correct mode.
+    """Verifies the operational mode of IS-IS Interfaces.
+
+    This test performs the following checks:
+
+      1. Validates that all specified IS-IS interfaces are configured.
+      2. Validates the operational mode of each IS-IS interface (e.g., "active," "passive," or "unset").
 
     Expected Results
     ----------------
@@ -248,7 +262,7 @@ class VerifyISISInterfaceMode(AntaTest):
 
         command_output = self.instance_commands[0].json_output
         if len(command_output["vrfs"]) == 0:
-            self.result.is_skipped("IS-IS is not configured on device")
+            self.result.is_skipped("No IS-IS neighbor detected")
             return
 
         # Check for p2p interfaces
@@ -274,7 +288,7 @@ class VerifyISISInterfaceMode(AntaTest):
 
 
 class VerifyISISSegmentRoutingAdjacencySegments(AntaTest):
-    """Verify that all expected Adjacency segments are correctly visible for each interface.
+    """Verifies the ISIS SR Adjacency Segments.
 
     Expected Results
     ----------------
@@ -315,7 +329,7 @@ class VerifyISISSegmentRoutingAdjacencySegments(AntaTest):
 
         command_output = self.instance_commands[0].json_output
         if len(command_output["vrfs"]) == 0:
-            self.result.is_skipped("IS-IS is not configured on device")
+            self.result.is_skipped("No IS-IS neighbor detected")
             return
 
         # Check if VRFs and instances are present in output.
@@ -356,13 +370,22 @@ class VerifyISISSegmentRoutingAdjacencySegments(AntaTest):
 
 
 class VerifyISISSegmentRoutingDataplane(AntaTest):
-    """Verify dataplane of a list of ISIS-SR instances.
+    """Verifies the Dataplane of ISIS-SR Instances.
+
+    This test performs the following checks:
+
+      1. Validates that listed ISIS-SR instance exists.
+      2. Validates the configured dataplane matches the expected value for each instance.
 
     Expected Results
     ----------------
-    * Success: The test will pass if all instances have correct dataplane configured
-    * Failure: The test will fail if one of the instances has incorrect dataplane configured
-    * Skipped: The test will be skipped if ISIS is not running
+    * Success: If all of the following occur:
+        - All specified ISIS-SR instances are configured.
+        - Each instance has the correct dataplane.
+    * Failure: If any of the following occur:
+        - Any specified ISIS-SR instance is not configured.
+        - Any instance has an incorrect dataplane configuration.
+    * Skipped: The test will be skipped if no IS-IS neighbor is found.
 
     Examples
     --------

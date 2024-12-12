@@ -704,7 +704,7 @@ DATA: list[dict[str, Any]] = [
                 {"name": "Ethernet1", "mode": "point-to-point", "vrf": "default"},
             ]
         },
-        "expected": {"result": "skipped", "messages": ["IS-IS is not configured on device"]},
+        "expected": {"result": "skipped", "messages": ["No IS-IS neighbor detected"]},
     },
     {
         "name": "Skipped of VerifyISISSegmentRoutingAdjacencySegments no VRF.",
@@ -725,7 +725,7 @@ DATA: list[dict[str, Any]] = [
                 }
             ]
         },
-        "expected": {"result": "skipped", "messages": ["IS-IS is not configured on device"]},
+        "expected": {"result": "skipped", "messages": ["No IS-IS neighbor detected"]},
     },
     {
         "test": VerifyISISSegmentRoutingAdjacencySegments,

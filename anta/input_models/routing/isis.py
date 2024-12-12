@@ -19,13 +19,13 @@ class ISISInstance(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
     name: str
-    """ISIS instance name."""
+    """The name of the IS-IS instance."""
     vrf: str = "default"
-    """VRF name where ISIS instance is configured."""
+    """VRF context where the IS-IS instance is configured. Defaults to `default`."""
     dataplane: Literal["MPLS", "mpls", "unset"] = "MPLS"
-    """Configured dataplane for the instance."""
+    """Configured dataplane for the IS-IS instance."""
     segments: list[Segment] | None = None
-    """List of ISIS segments"""
+    """A list of IS-IS segments associated with the instance. Required field in the `VerifyISISSegmentRoutingDataplane` test"""
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the ISISInstance for reporting."""
