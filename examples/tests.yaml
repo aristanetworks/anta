@@ -261,7 +261,7 @@ anta.tests.interfaces:
       specific_mtu:
           - Ethernet1: 2500
   - VerifyLACPInterfacesStatus:
-      # Verifies the Link Aggregation Control Protocol (LACP) status of the provided interfaces.
+      # Verifies the Link Aggregation Control Protocol (LACP) status of the interface.
       interfaces:
         - name: Ethernet1
           portchannel: Port-Channel100
