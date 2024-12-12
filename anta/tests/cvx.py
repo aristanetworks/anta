@@ -175,8 +175,6 @@ class VerifyCVXClusterStatus(AntaTest):
         - peer_status matches defined state
     * Failure: The test will fail if any of the success conditions is not met.
 
-
-
     Examples
     --------
     ```yaml
