@@ -163,7 +163,7 @@ class VerifyCVXClusterStatus(AntaTest):
             if (eos_peer_status := get_value(peer_cluster, peer.peer_name, separator="..")) is None:
                 self.result.is_failure(f"{peer.peer_name} is not present")
                 continue
-                
-             # Validate the registration state of the peer
+
+            # Validate the registration state of the peer
             if (peer_reg_state := eos_peer_status.get("registrationState")) != peer.registration_state:
                 self.result.is_failure(f"{peer.peer_name} registration state is not complete: {peer_reg_state}")
