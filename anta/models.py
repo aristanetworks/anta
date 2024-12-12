@@ -34,6 +34,14 @@ F = TypeVar("F", bound=Callable[..., Any])
 
 logger = logging.getLogger(__name__)
 
+KNOWN_EOS_ERRORS = [
+    r"BGP inactive",
+    r"VRF '.*' is not active",
+    r".* does not support IP",
+    r"IS-IS (.*) is disabled because: .*",
+]
+"""List of known EOS errors that should set a test status to 'failure' with the error message."""
+
 
 class AntaParamsBaseModel(BaseModel):
     """Extends BaseModel and overwrite __getattr__ to return None on missing attribute."""
@@ -270,8 +278,7 @@ class AntaCommand(BaseModel):
         if not self.collected and not self.error:
             msg = f"Command '{self.command}' has not been collected and has not returned an error. Call AntaDevice.collect()."
             raise RuntimeError(msg)
-        known_eos_errors = ["BGP inactive", "VRF '.*' is not active", ".* does not support IP"]
-        return any(any(re.match(pattern, e) for e in self.errors) for pattern in known_eos_errors)
+        return any(any(re.match(pattern, e) for e in self.errors) for pattern in KNOWN_EOS_ERRORS)
 
 
 class AntaTemplateRenderError(RuntimeError):
@@ -650,19 +657,9 @@ class AntaTest(ABC):
                     AntaTest.update_progress()
                     return self.result
 
-                if cmds := self.failed_commands:
-                    unsupported_commands = [f"'{c.command}' is not supported on {self.device.hw_model}" for c in cmds if not c.supported]
-                    returned_known_eos_error = [f"'{c.command}' failed on {self.device.name}: {', '.join(c.errors)}" for c in cmds if c.returned_known_eos_error]
-                    if unsupported_commands:
-                        msg = f"Test {self.name} has been skipped because it is not supported on {self.device.hw_model}: {GITHUB_SUGGESTION}"
-                        self.logger.warning(msg)
-                        self.result.is_skipped("\n".join(unsupported_commands))
-                    elif returned_known_eos_error:
-                        msg = f"Test {self.name} has failed."
-                        self.logger.warning(msg)
-                        self.result.is_failure("\n".join(returned_known_eos_error))
-                    else:
-                        self.result.is_error(message="\n".join([f"{c.command} has failed: {', '.join(c.errors)}" for c in cmds]))
+                if self.failed_commands:
+                    self._handle_failed_commands()
+
                     AntaTest.update_progress()
                     return self.result
 
@@ -681,6 +678,30 @@ class AntaTest(ABC):
             return self.result
 
         return wrapper
+
+    def _handle_failed_commands(self) -> None:
+        """Handle failed commands inside a test.
+
+        There can be 3 types:
+        * unsupported on hardware commands which set the test status to 'skipped'
+        * known EOS error which set the test status to 'failure'
+        * unknown failure which set the test status to 'error'
+        """
+        cmds = self.failed_commands
+        unsupported_commands = [f"'{c.command}' is not supported on {self.device.hw_model}" for c in cmds if not c.supported]
+        if unsupported_commands:
+            msg = f"Test {self.name} has been skipped because it is not supported on {self.device.hw_model}: {GITHUB_SUGGESTION}"
+            self.logger.warning(msg)
+            self.result.is_skipped("\n".join(unsupported_commands))
+            return
+        returned_known_eos_error = [f"'{c.command}' failed on {self.device.name}: {', '.join(c.errors)}" for c in cmds if c.returned_known_eos_error]
+        if returned_known_eos_error:
+            msg = f"Test {self.name} has failed."
+            self.logger.warning(msg)
+            self.result.is_failure("\n".join(returned_known_eos_error))
+            return
+
+        self.result.is_error(message="\n".join([f"{c.command} has failed: {', '.join(c.errors)}" for c in cmds]))
 
     @classmethod
     def update_progress(cls: type[AntaTest]) -> None:
