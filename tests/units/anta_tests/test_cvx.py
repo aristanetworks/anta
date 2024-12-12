@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from anta.tests.cvx import VerifyManagementCVX, VerifyMcsClientMounts, VerifyMcsServerMounts
+from anta.tests.cvx import VerifyCVXClusterStatus, VerifyManagementCVX, VerifyMcsClientMounts, VerifyMcsServerMounts
 from tests.units.anta_tests import test
 
 DATA: list[dict[str, Any]] = [
@@ -140,7 +140,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
-        "name": "failure",
+        "name": "failure - no enabled state",
         "test": VerifyManagementCVX,
         "eos_data": [{"clusterStatus": {}}],
         "inputs": {"enabled": False},
@@ -288,5 +288,168 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {"expected_connection_count": 1},
         "expected": {"result": "failure", "messages": ["MCS mount state not detected", "Only 0 successful connections"]},
+    },
+    {
+        "name": "failure - no clusterStatus",
+        "test": VerifyManagementCVX,
+        "eos_data": [{}],
+        "inputs": {"enabled": False},
+        "expected": {"result": "failure", "messages": ["Management CVX status is not valid: None"]},
+    },
+    {
+        "name": "success-all",
+        "test": VerifyCVXClusterStatus,
+        "eos_data": [
+            {
+                "enabled": True,
+                "clusterMode": True,
+                "clusterStatus": {
+                    "role": "Master",
+                    "peerStatus": {
+                        "cvx-red-2": {"peerName": "cvx-red-2", "registrationState": "Registration complete"},
+                        "cvx-red-3": {"peerName": "cvx-red-3", "registrationState": "Registration complete"},
+                    },
+                },
+            }
+        ],
+        "inputs": {
+            "role": "Master",
+            "peer_status": [
+                {"peer_name": "cvx-red-2", "registrationState": "Registration complete"},
+                {"peer_name": "cvx-red-3", "registrationState": "Registration complete"},
+            ],
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-invalid-role",
+        "test": VerifyCVXClusterStatus,
+        "eos_data": [
+            {
+                "enabled": True,
+                "clusterMode": True,
+                "clusterStatus": {
+                    "role": "Standby",
+                    "peerStatus": {
+                        "cvx-red-2": {"peerName": "cvx-red-2", "registrationState": "Registration complete"},
+                        "cvx-red-3": {"peerName": "cvx-red-3", "registrationState": "Registration complete"},
+                    },
+                },
+            }
+        ],
+        "inputs": {
+            "role": "Master",
+            "peer_status": [
+                {"peer_name": "cvx-red-2", "registrationState": "Registration complete"},
+                {"peer_name": "cvx-red-3", "registrationState": "Registration complete"},
+            ],
+        },
+        "expected": {"result": "failure", "messages": ["CVX Role is not valid: Standby"]},
+    },
+    {
+        "name": "failure-cvx-enabled",
+        "test": VerifyCVXClusterStatus,
+        "eos_data": [
+            {
+                "enabled": False,
+                "clusterMode": True,
+                "clusterStatus": {
+                    "role": "Master",
+                    "peerStatus": {},
+                },
+            }
+        ],
+        "inputs": {
+            "role": "Master",
+            "peer_status": [],
+        },
+        "expected": {"result": "failure", "messages": ["CVX Server status is not enabled"]},
+    },
+    {
+        "name": "failure-cluster-enabled",
+        "test": VerifyCVXClusterStatus,
+        "eos_data": [
+            {
+                "enabled": True,
+                "clusterMode": False,
+                "clusterStatus": {},
+            }
+        ],
+        "inputs": {
+            "role": "Master",
+            "peer_status": [],
+        },
+        "expected": {"result": "failure", "messages": ["CVX Server is not a cluster"]},
+    },
+    {
+        "name": "failure-missing-peers",
+        "test": VerifyCVXClusterStatus,
+        "eos_data": [
+            {
+                "enabled": True,
+                "clusterMode": True,
+                "clusterStatus": {
+                    "role": "Master",
+                    "peerStatus": {
+                        "cvx-red-2": {"peerName": "cvx-red-2", "registrationState": "Registration complete"},
+                    },
+                },
+            }
+        ],
+        "inputs": {
+            "role": "Master",
+            "peer_status": [
+                {"peer_name": "cvx-red-2", "registrationState": "Registration complete"},
+                {"peer_name": "cvx-red-3", "registrationState": "Registration complete"},
+            ],
+        },
+        "expected": {"result": "failure", "messages": ["Unexpected number of peers 1 vs 2", "cvx-red-3 is not present"]},
+    },
+    {
+        "name": "failure-invalid-peers",
+        "test": VerifyCVXClusterStatus,
+        "eos_data": [
+            {
+                "enabled": True,
+                "clusterMode": True,
+                "clusterStatus": {
+                    "role": "Master",
+                    "peerStatus": {},
+                },
+            }
+        ],
+        "inputs": {
+            "role": "Master",
+            "peer_status": [
+                {"peer_name": "cvx-red-2", "registrationState": "Registration complete"},
+                {"peer_name": "cvx-red-3", "registrationState": "Registration complete"},
+            ],
+        },
+        "expected": {"result": "failure", "messages": ["Unexpected number of peers 0 vs 2", "cvx-red-2 is not present", "cvx-red-3 is not present"]},
+    },
+    {
+        "name": "failure-registration-error",
+        "test": VerifyCVXClusterStatus,
+        "eos_data": [
+            {
+                "enabled": True,
+                "clusterMode": True,
+                "clusterStatus": {
+                    "role": "Master",
+                    "peerStatus": {
+                        "cvx-red-2": {"peerName": "cvx-red-2", "registrationState": "Registration error"},
+                        "cvx-red-3": {"peerName": "cvx-red-3", "registrationState": "Registration complete"},
+                    },
+                },
+            }
+        ],
+        "inputs": {
+            "role": "Master",
+            "peer_status": [
+                {"peer_name": "cvx-red-2", "registrationState": "Registration complete"},
+                {"peer_name": "cvx-red-3", "registrationState": "Registration complete"},
+            ],
+        },
+        "expected": {"result": "failure", "messages": ["cvx-red-2 registration state is not complete: Registration error"]},
     },
 ]

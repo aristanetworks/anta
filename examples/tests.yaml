@@ -135,6 +135,14 @@ anta.tests.connectivity:
           df_bit: True
           size: 100
 anta.tests.cvx:
+  - VerifyCVXClusterStatus:
+      # Verifies the CVX Server Cluster status.
+      role: Master
+      peer_status:
+        - peer_name : cvx-red-2
+          registration_state: Registration complete
+        - peer_name: cvx-red-3
+          registration_state: Registration error
   - VerifyManagementCVX:
       # Verifies the management CVX global status.
       enabled: true
@@ -256,7 +264,7 @@ anta.tests.interfaces:
       specific_mtu:
           - Ethernet1: 2500
   - VerifyLACPInterfacesStatus:
-      # Verifies the Link Aggregation Control Protocol (LACP) status of the provided interfaces.
+      # Verifies the Link Aggregation Control Protocol (LACP) status of the interface.
       interfaces:
         - name: Ethernet1
           portchannel: Port-Channel100
