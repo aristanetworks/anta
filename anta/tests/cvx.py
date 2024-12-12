@@ -112,7 +112,7 @@ class VerifyActiveCVXConnections(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyActiveCVXConnections test."""
 
-        expected_connection_count: int
+        connections_count: PositiveInteger
         """The expected number of active CVX Connections"""
 
     @AntaTest.anta_test
