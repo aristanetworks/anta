@@ -125,10 +125,8 @@ class VerifyActiveCVXConnections(AntaTest):
         if not (connections:= command_output.get("connections"))
             self.result.is_failure("CVX connections are not available.")
             return
-        else:
-            for connection in connections:
-                if connection["oobConnectionActive"]:
-                    active_count += 1
 
-            if self.inputs.expected_connection_count != active_count:
-                self.result.is_failure(f"Mismatch in expected connection count. Active connections: {active_count}")
+        active_count = len([connection for connection in connections if if connection.get("oobConnectionActive")])
+
+        if self.inputs.expected_connection_count != active_count:
+            self.result.is_failure(f"CVX active connections count. Expected: {self.inputs.expected_connection_count} , Actual : {active_count}")
