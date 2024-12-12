@@ -70,7 +70,6 @@ dev = [
   "pytest-cov>=4.1.0",
   "pytest-dependency",
   "pytest-codspeed>=2.2.0",
-  "respx",
   "pytest-html>=3.2.0",
   "pytest-httpx>=0.30.0",
   "pytest-metadata>=3.0.0",
