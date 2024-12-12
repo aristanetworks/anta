@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import re
 from contextlib import AbstractContextManager, nullcontext
 from typing import TYPE_CHECKING, Callable
@@ -380,144 +381,102 @@ class TestResultManager:
         assert len(result_manager.get_devices()) == 2
         assert all(t in result_manager.get_devices() for t in ["Device1", "Device2"])
 
-    def test_update_test_result_invalid_result(self, result_manager: ResultManager, test_result_factory: Callable[[], TestResult]) -> None:
-        """Test ResultManager.update_test_result with an unmanaged TestResult."""
-        unmanaged_result = test_result_factory()
+    def test_stats_computation_methods(self, test_result_factory: Callable[[], TestResult], caplog: pytest.LogCaptureFixture) -> None:
+        """Test ResultManager internal stats computation methods."""
+        result_manager = ResultManager()
 
-        with pytest.raises(ValueError, match="Cannot update status of a TestResult not managed by this ResultManager"):
-            result_manager.update_test_result(unmanaged_result, AntaTestStatus.SUCCESS)
+        # Initially stats should be unsynced
+        assert result_manager._stats_in_sync is False
 
-    def test_update_test_result_updates(self, result_manager: ResultManager) -> None:
-        """Test ResultManager.update_test_result comprehensive update behavior."""
-        # Get an existing success result and record initial state
-        success_result = result_manager.get_results(status={AntaTestStatus.SUCCESS})[0]
-        device_name = success_result.name
-        categories = success_result.categories
+        # Test _reset_stats
+        result_manager._reset_stats()
+        assert result_manager._stats_in_sync is False
+        assert len(result_manager._device_stats) == 0
+        assert len(result_manager._category_stats) == 0
+        assert len(result_manager._test_stats) == 0
 
-        # Record initial stats
-        initial_device_stats = result_manager.device_stats[device_name]
-        initial_success_count = initial_device_stats.tests_success_count
-        initial_failure_count = initial_device_stats.tests_failure_count
-        initial_failed_tests = set(initial_device_stats.tests_failure)
-
-        initial_category_stats = {category: result_manager.category_stats[category].tests_success_count for category in categories}
-
-        # Update the result with new status and message
-        result_manager.update_test_result(success_result, AntaTestStatus.FAILURE, "Test failed after update")
-
-        # Verify result was updated
-        assert success_result.result == "failure"
-        assert success_result.messages == ["Test failed after update"]
-
-        # Verify device stats were properly decremented and incremented
-        updated_device_stats = result_manager.device_stats[device_name]
-        assert updated_device_stats.tests_success_count == initial_success_count - 1
-        assert updated_device_stats.tests_failure_count == initial_failure_count + 1
-        assert success_result.test in updated_device_stats.tests_failure
-        assert len(updated_device_stats.tests_failure) == len(initial_failed_tests) + 1
-
-        # Verify category stats were properly updated
-        for category in categories:
-            cat_stats = result_manager.category_stats[category]
-            assert cat_stats.tests_success_count == initial_category_stats[category] - 1
-            assert cat_stats.tests_failure_count >= 1
-
-    def test_update_test_result_device_failure_cleanup(
-        self, result_manager_factory: Callable[[int], ResultManager], test_result_factory: Callable[[], TestResult]
-    ) -> None:
-        """Test ResultManager.update_test_result removes device from test's failure set when its failures are fixed."""
-        result_manager = result_manager_factory(0)  # Start with empty manager
-
-        # Create two failing tests for device1
-        device1_test1 = test_result_factory()
-        device1_test1.name = "device1"
-        device1_test1.result = AntaTestStatus.FAILURE
-        result_manager.add(device1_test1)
-
-        device1_test2 = test_result_factory()
-        device1_test2.name = "device1"
-        device1_test2.result = AntaTestStatus.FAILURE
-        result_manager.add(device1_test2)
-
-        # Create one failing test for device2 with same test as device1_test1
-        device2_test = test_result_factory()
-        device2_test.name = "device2"
-        device2_test.test = device1_test1.test  # Same test as device1_test1
-        device2_test.result = AntaTestStatus.FAILURE
-        result_manager.add(device2_test)
-
-        # Verify initial state
-        test1_stats = result_manager.test_stats[device1_test1.test]
-        assert "device1" in test1_stats.devices_failure
-        assert "device2" in test1_stats.devices_failure
-
-        # Fix one failing test for device1
-        result_manager.update_test_result(device1_test1, AntaTestStatus.SUCCESS)
-
-        # device1 should still be in the failure set (has another failing test)
-        assert "device1" in test1_stats.devices_failure
-
-        # Fix the second failing test for device1
-        result_manager.update_test_result(device1_test2, AntaTestStatus.SUCCESS)
-
-        # Now device1 should be removed from failure set (all its failures fixed)
-        # while device2 remains (still failing)
-        assert "device1" not in test1_stats.devices_failure
-        assert "device2" in test1_stats.devices_failure
-
-        # Fix device2's failing test
-        result_manager.update_test_result(device2_test, AntaTestStatus.SUCCESS)
-
-        # Now device2 should also be removed
-        assert "device2" not in test1_stats.devices_failure
-
-    def test_update_test_result_category_cleanup(
-        self, result_manager_factory: Callable[[int], ResultManager], test_result_factory: Callable[[], TestResult]
-    ) -> None:
-        """Test ResultManager.update_test_result removes categories from failed/skipped sets appropriately."""
-        result_manager = result_manager_factory(0)  # Start with empty manager
-
-        # Create two failing tests with same category for one device
+        # Add some test results
         test1 = test_result_factory()
         test1.name = "device1"
-        test1.categories = ["category1"]
-        test1.result = AntaTestStatus.FAILURE
+        test1.result = AntaTestStatus.SUCCESS
+        test1.categories = ["system"]
+        test1.test = "test1"
+
+        test2 = test_result_factory()
+        test2.name = "device2"
+        test2.result = AntaTestStatus.FAILURE
+        test2.categories = ["interfaces"]
+        test2.test = "test2"
+
+        result_manager.add(test1)
+        result_manager.add(test2)
+
+        # Stats should still be unsynced after adding results
+        assert result_manager._stats_in_sync is False
+
+        # Test _compute_stats directly
+        with caplog.at_level(logging.INFO):
+            result_manager._compute_stats()
+        assert "Computing statistics for all results" in caplog.text
+        assert result_manager._stats_in_sync is True
+
+        # Verify stats content
+        assert len(result_manager._device_stats) == 2
+        assert len(result_manager._category_stats) == 2
+        assert len(result_manager._test_stats) == 2
+        assert result_manager._device_stats["device1"].tests_success_count == 1
+        assert result_manager._device_stats["device2"].tests_failure_count == 1
+        assert result_manager._category_stats["system"].tests_success_count == 1
+        assert result_manager._category_stats["interfaces"].tests_failure_count == 1
+        assert result_manager._test_stats["test1"].devices_success_count == 1
+        assert result_manager._test_stats["test2"].devices_failure_count == 1
+
+    def test_stats_property_computation(self, test_result_factory: Callable[[], TestResult], caplog: pytest.LogCaptureFixture) -> None:
+        """Test that stats are computed only once when accessed via properties."""
+        result_manager = ResultManager()
+
+        # Add some test results
+        test1 = test_result_factory()
+        test1.name = "device1"
+        test1.result = AntaTestStatus.SUCCESS
+        test1.categories = ["system"]
         result_manager.add(test1)
 
         test2 = test_result_factory()
-        test2.name = "device1"
-        test2.categories = ["category1"]
+        test2.name = "device2"
         test2.result = AntaTestStatus.FAILURE
+        test2.categories = ["interfaces"]
         result_manager.add(test2)
 
-        # Verify initial state
-        device_stats = result_manager.device_stats["device1"]
-        assert "category1" in device_stats.categories_failed
+        # Stats should be unsynced after adding results
+        assert result_manager._stats_in_sync is False
+        assert "Computing statistics" not in caplog.text
 
-        # Fix one failing test
-        result_manager.update_test_result(test1, AntaTestStatus.SUCCESS)
+        # Access device_stats property - should trigger computation
+        with caplog.at_level(logging.INFO):
+            _ = result_manager.device_stats
+        assert "Computing statistics for all results" in caplog.text
+        assert result_manager._stats_in_sync is True
 
-        # Category should still be in failed set
-        assert "category1" in device_stats.categories_failed
+        # Clear the log
+        caplog.clear()
 
-        # Fix second failing test
-        result_manager.update_test_result(test2, AntaTestStatus.SUCCESS)
+        # Access other stats properties - should not trigger computation again
+        with caplog.at_level(logging.INFO):
+            _ = result_manager.category_stats
+            _ = result_manager.test_stats
+            _ = result_manager.sorted_category_stats
+        assert "Computing statistics" not in caplog.text
 
-        # Category should be removed from failed set
-        assert "category1" not in device_stats.categories_failed
+        # Add another result - should mark stats as unsynced
+        test3 = test_result_factory()
+        test3.name = "device3"
+        test3.result = "error"
+        result_manager.add(test3)
+        assert result_manager._stats_in_sync is False
 
-        # Test skipped category cleanup
-        skipped_test = test_result_factory()
-        skipped_test.name = "device1"
-        skipped_test.categories = ["category2"]
-        skipped_test.result = AntaTestStatus.SKIPPED
-        result_manager.add(skipped_test)
-
-        # Verify initial skipped state
-        assert "category2" in device_stats.categories_skipped
-
-        # Update skipped test to success
-        result_manager.update_test_result(skipped_test, AntaTestStatus.SUCCESS)
-
-        # Category should be removed from skipped set
-        assert "category2" not in device_stats.categories_skipped
+        # Access stats again - should trigger recomputation
+        with caplog.at_level(logging.INFO):
+            _ = result_manager.device_stats
+        assert "Computing statistics for all results" in caplog.text
+        assert result_manager._stats_in_sync is True

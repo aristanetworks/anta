@@ -165,7 +165,7 @@ class TestReportTable:
         # TODO: refactor this later... this is injecting double test results by modyfing the device name
         # should be a fixture
         manager = result_manager_factory(number_of_tests)
-        new_results = [result.model_copy(update={"_manager": None}) for result in manager.results]
+        new_results = [result.model_copy() for result in manager.results]
         for result in new_results:
             result.name = dev or "test_device"
             result.result = AntaTestStatus.FAILURE
