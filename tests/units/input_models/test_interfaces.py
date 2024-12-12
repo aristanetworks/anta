@@ -18,6 +18,7 @@ if TYPE_CHECKING:
 
 class TestInterfaceState:
     """Test anta.input_models.interfaces.InterfaceState."""
+
     # pylint: disable=too-few-public-methods
 
     @pytest.mark.parametrize(
