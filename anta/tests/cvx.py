@@ -107,6 +107,7 @@ class VerifyActiveCVXConnections(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["cvx"]
+    # TODO: @gmuloc - cover "% Unavailable command (controller not ready)"
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show cvx connections brief", revision=1)]
 
     class Input(AntaTest.Input):
