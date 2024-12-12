@@ -102,7 +102,7 @@ class VerifyActiveCVXConnections(AntaTest):
     ```yaml
     anta.tests.cvx:
       - VerifyActiveCVXConnections:
-          expected_connection_count: 100
+          connections_count: 100
     ```
     """
 
