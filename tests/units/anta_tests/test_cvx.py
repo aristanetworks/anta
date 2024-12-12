@@ -275,7 +275,7 @@ DATA: list[dict[str, Any]] = [
                 {"peer_name": "cvx-red-3", "registrationState": "Registration complete"},
             ],
         },
-        "expected": {"result": "failure", "messages": ["Unexpected number of peers", "cvx-red-2 is not present"]},
+        "expected": {"result": "failure", "messages": ["Unexpected number of peers", "cvx-red-2 is not present", "cvx-red-3 is not present"]},
     },
     {
         "name": "failure-registration-error",
