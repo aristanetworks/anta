@@ -148,6 +148,18 @@ async def test_check_runner_log_for_windows(caplog: pytest.LogCaptureFixture, in
     assert "Running on a non-POSIX system, cannot adjust the maximum number of file descriptors." in caplog.records[-3].message
 
 
+# We could instead merge multiple coverage report together but that requires more work than just this.
+@pytest.mark.skipif(os.name != "posix", reason="Fake non-posix for coverage")
+async def test_check_runner_log_for_windows_fake(caplog: pytest.LogCaptureFixture, inventory: AntaInventory) -> None:
+    """Test log output for Windows host regarding rlimit."""
+    with patch("os.name", new="win32"):
+        caplog.set_level(logging.INFO)
+        manager = ResultManager()
+        # Using dry-run to shorten the test
+        await main(manager, inventory, FAKE_CATALOG, dry_run=True)
+        assert "Running on a non-POSIX system, cannot adjust the maximum number of file descriptors." in caplog.records[-3].message
+
+
 @pytest.mark.parametrize(
     ("inventory", "tags", "tests", "devices_count", "tests_count"),
     [
