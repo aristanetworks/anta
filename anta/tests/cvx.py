@@ -10,6 +10,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, ClassVar
 
 from anta.models import AntaCommand, AntaTest
+from anta.tools import get_value
 
 if TYPE_CHECKING:
     from anta.models import AntaTemplate
@@ -71,7 +72,7 @@ class VerifyManagementCVX(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["cvx"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management cvx", revision=1)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management cvx", revision=3)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyManagementCVX test."""
@@ -84,6 +85,5 @@ class VerifyManagementCVX(AntaTest):
         """Main test function for VerifyManagementCVX."""
         command_output = self.instance_commands[0].json_output
         self.result.is_success()
-        cluster_status = command_output["clusterStatus"]
-        if (cluster_state := cluster_status.get("enabled")) != self.inputs.enabled:
+        if (cluster_state := get_value(command_output, "clusterStatus.enabled")) != self.inputs.enabled:
             self.result.is_failure(f"Management CVX status is not valid: {cluster_state}")
