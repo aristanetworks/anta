@@ -121,9 +121,8 @@ class VerifyActiveCVXConnections(AntaTest):
         """Main test function for VerifyActiveCVXConnections."""
         command_output = self.instance_commands[0].json_output
         self.result.is_success()
-        connections = command_output.get("connections", {})
-        active_count = 0
-        if not connections:
+        
+        if not (connections:= command_output.get("connections"))
             self.result.is_failure("CVX connections are not available")
         else:
             for connection in connections:
