@@ -136,7 +136,7 @@ anta.tests.connectivity:
           size: 100
 anta.tests.cvx:
   - VerifyActiveCVXConnections:
-      # Verifies the expected number of active CVX Connections.
+      # Verifies the number of active CVX Connections.
       connections_count: 100
   - VerifyCVXClusterStatus:
       # Verifies the CVX Server Cluster status.

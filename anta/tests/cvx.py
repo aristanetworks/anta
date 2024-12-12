@@ -92,7 +92,7 @@ class VerifyManagementCVX(AntaTest):
 
 
 class VerifyActiveCVXConnections(AntaTest):
-    """Verifies the expected number of active CVX Connections.
+    """Verifies the number of active CVX Connections.
 
     Expected Results
     ----------------
