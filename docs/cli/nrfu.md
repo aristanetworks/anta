@@ -26,7 +26,7 @@ ANTA provides a set of commands for performing NRFU tests on devices. These comm
 
 All commands under the `anta nrfu` namespace require a catalog yaml file specified with the `--catalog` option and a device inventory file specified with the `--inventory` option.
 
-!!! info
+> [!TIP]
     Issuing the command `anta nrfu` will run `anta nrfu table` without any option.
 
 ### Tag management

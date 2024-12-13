@@ -86,9 +86,9 @@ Success: no issues found in 82 source files
 
 > NOTE: Typing is configured quite strictly, do not hesitate to reach out if you have any questions, struggles, nightmares.
 
-## Unit tests
+## Unit tests with Pytest
 
-To keep high quality code, we require to provide a Pytest for every tests implemented in ANTA.
+To keep high quality code, we require to provide a __Pytest__ for every tests implemented in ANTA.
 
 All submodule should have its own pytest section under `tests/units/anta_tests/<submodule-name>.py`.
 

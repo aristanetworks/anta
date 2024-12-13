@@ -94,8 +94,10 @@ anta.tests.interfaces:
 
 > A tag used to filter a test can also be a device name
 
-!!! tip "Use different input values for a specific test"
-    Leverage tags to define different input values for a specific test. See the `VerifyUptime` example above.
+> [!TIP]
+> __Use different input values for a specific test__
+>
+> Leverage tags to define different input values for a specific test. See the `VerifyUptime` example above.
 
 ## Using tags
 
