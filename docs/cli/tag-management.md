@@ -92,10 +92,11 @@ anta.tests.interfaces:
         tags: ['spine']
 ```
 
+> [!TIP]
 > A tag used to filter a test can also be a device name
 
-> [!TIP]
-> **Use different input values for a specific test**
+> [!NOTE]
+> __Use different input values for a specific test__
 >
 > Leverage tags to define different input values for a specific test. See the `VerifyUptime` example above.
 
