@@ -444,7 +444,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["No AVT path configured"],
+            "messages": ["AVT MGMT-AVT-POLICY-DEFAULT VRF: default (Destination: 10.101.255.2, Next-hop: 10.101.255.1) - No AVT path configured"],
         },
     },
     {

@@ -6,8 +6,6 @@
 from __future__ import annotations
 
 from ipaddress import IPv4Address
-from typing import Any
-from warnings import warn
 
 from pydantic import BaseModel, ConfigDict
 
@@ -36,21 +34,3 @@ class AVTPath(BaseModel):
 
         """
         return f"AVT {self.avt_name} VRF: {self.vrf} (Destination: {self.destination}, Next-hop: {self.next_hop})"
-
-
-class AVTPaths(AVTPath):  # pragma: no cover
-    """Alias for the AVTPaths model to maintain backward compatibility.
-
-    When initialized, it will emit a deprecation warning and call the AVTPath model.
-
-    TODO: Remove this class in ANTA v2.0.0.
-    """
-
-    def __init__(self, **data: Any) -> None:  # noqa: ANN401
-        """Initialize the AVTPath class, emitting a depreciation warning."""
-        warn(
-            message="AVTPaths model is deprecated and will be removed in ANTA v2.0.0. Use the AVTPath model instead.",
-            category=DeprecationWarning,
-            stacklevel=2,
-        )
-        super().__init__(**data)

@@ -10,7 +10,7 @@ from __future__ import annotations
 from typing import ClassVar
 
 from anta.decorators import skip_on_platforms
-from anta.input_models.avt import AVTPath, AVTPaths
+from anta.input_models.avt import AVTPath
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_value
 
@@ -79,7 +79,7 @@ class VerifyAVTSpecificPath(AntaTest):
 
     Expected Results
     ----------------
-    * Success: The test will fail if any of the following conditions are met:
+    * Success: The test will pass if all of the following conditions are met:
         - All AVT paths for the specified VRF are active, valid, and match the specified path type (direct/multihop), if provided.
         - If multiple paths are configured, the test will pass only if all paths meet these criteria.
     * Failure: The test will fail if any of the following conditions are met:
@@ -108,7 +108,7 @@ class VerifyAVTSpecificPath(AntaTest):
 
         avt_paths: list[AVTPath]
         """List of AVT paths to verify."""
-        AVTPaths: ClassVar[type[AVTPaths]] = AVTPaths
+        AVTPaths: ClassVar[type[AVTPath]] = AVTPath
         """To maintain backward compatibility."""
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
@@ -118,9 +118,10 @@ class VerifyAVTSpecificPath(AntaTest):
         # Assume the test is successful until a failure is detected
         self.result.is_success()
 
+        command_output = self.instance_commands[0].json_output
         for avt_path in self.inputs.avt_paths:
-            if (path_output := get_value(self.instance_commands[0].json_output, f"vrfs.{avt_path.vrf}.avts.{avt_path.avt_name}.avtPaths")) is None:
-                self.result.is_failure("No AVT path configured")
+            if (path_output := get_value(command_output, f"vrfs.{avt_path.vrf}.avts.{avt_path.avt_name}.avtPaths")) is None:
+                self.result.is_failure(f"{avt_path} - No AVT path configured")
                 return
 
             path_found = path_type_found = False
