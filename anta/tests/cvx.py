@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar, Literal
 
+from anta.custom_types import PositiveInteger
 from anta.models import AntaCommand, AntaTest
 from anta.tools import get_value
 
@@ -88,6 +89,49 @@ class VerifyManagementCVX(AntaTest):
         self.result.is_success()
         if (cluster_state := get_value(command_output, "clusterStatus.enabled")) != self.inputs.enabled:
             self.result.is_failure(f"Management CVX status is not valid: {cluster_state}")
+
+
+class VerifyActiveCVXConnections(AntaTest):
+    """Verifies the number of active CVX Connections.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if number of connections is equal to the expected number of connections.
+    * Failure: The test will fail otherwise.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.cvx:
+      - VerifyActiveCVXConnections:
+          connections_count: 100
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["cvx"]
+    # TODO: @gmuloc - cover "% Unavailable command (controller not ready)"
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show cvx connections brief", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyActiveCVXConnections test."""
+
+        connections_count: PositiveInteger
+        """The expected number of active CVX Connections"""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyActiveCVXConnections."""
+        command_output = self.instance_commands[0].json_output
+        self.result.is_success()
+
+        if not (connections := command_output.get("connections")):
+            self.result.is_failure("CVX connections are not available.")
+            return
+
+        active_count = len([connection for connection in connections if connection.get("oobConnectionActive")])
+
+        if self.inputs.connections_count != active_count:
+            self.result.is_failure(f"CVX active connections count. Expected: {self.inputs.connections_count} , Actual : {active_count}")
 
 
 class VerifyCVXClusterStatus(AntaTest):

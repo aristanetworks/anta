@@ -135,6 +135,9 @@ anta.tests.connectivity:
           df_bit: True
           size: 100
 anta.tests.cvx:
+  - VerifyActiveCVXConnections:
+      # Verifies the number of active CVX Connections.
+      connections_count: 100
   - VerifyCVXClusterStatus:
       # Verifies the CVX Server Cluster status.
       role: Master
