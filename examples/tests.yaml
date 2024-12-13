@@ -149,7 +149,7 @@ anta.tests.cvx:
   - VerifyMcsClientMounts:
       # Verify if all MCS client mounts are in mountStateMountComplete.
   - VerifyMcsServerMounts:
-      # Verify if all MCS server mounts are in mountStateMountComplete.
+      # Verify if all MCS server mounts are in a MountComplete state.
       expected_connection_count: 100
 anta.tests.field_notices:
   - VerifyFieldNotice44Resolution:

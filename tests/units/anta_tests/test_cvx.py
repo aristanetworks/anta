@@ -237,7 +237,7 @@ DATA: list[dict[str, Any]] = [
             }
         ],
         "inputs": {"expected_connection_count": 1},
-        "expected": {"result": "failure", "messages": ["Unexpected MCS path type: Mcs::ApiStatus"]},
+        "expected": {"result": "failure", "messages": ["Unexpected MCS path type: 'Mcs::ApiStatus'."]},
     },
     {
         "name": "failure-invalid-mount-state",
@@ -266,7 +266,7 @@ DATA: list[dict[str, Any]] = [
             }
         ],
         "inputs": {"expected_connection_count": 1},
-        "expected": {"result": "failure", "messages": ["MCS server mount state is not valid: mountStateMountFailed"]},
+        "expected": {"result": "failure", "messages": ["MCS server mount state for path 'Mcs::ApiConfigRedundancyStatus' is not valid: 'mountStateMountFailed'."]},
     },
     {
         "name": "failure-no-mcs-mount",
