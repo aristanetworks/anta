@@ -11,11 +11,12 @@ from typing import Callable
 
 from anta import __DEBUG__
 
+
 # Note: need to separate this file from _main to be able to fail on the import.
 try:
     from ._main import cli
 
-except ImportError as exc:
+except (ImportError, ModuleNotFoundError) as exc:
     if exc.name == "click":
 
         def build_cli(exception: Exception) -> Callable[[], None]:
