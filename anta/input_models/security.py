@@ -158,21 +158,3 @@ class IPSecPeers(IPSecPeer):  # pragma: no cover
             stacklevel=2,
         )
         super().__init__(**data)
-
-
-class IPv4ACL(ACL):  # pragma: no cover
-    """Alias for the ACL model to maintain backward compatibility.
-
-    When initialized, it will emit a deprecation warning and call the ACL model.
-
-    TODO: Remove this class in ANTA v2.0.0.
-    """
-
-    def __init__(self, **data: Any) -> None:  # noqa: ANN401
-        """Initialize the ACL class, emitting a deprecation warning."""
-        warn(
-            message="IPv4ACL model is deprecated and will be removed in ANTA v2.0.0. Use the ACL model instead.",
-            category=DeprecationWarning,
-            stacklevel=2,
-        )
-        super().__init__(**data)

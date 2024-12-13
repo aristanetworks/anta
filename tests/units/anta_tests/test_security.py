@@ -742,6 +742,24 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
+        "name": "failure-no-acl-list",
+        "test": VerifyIPv4ACL,
+        "eos_data": [
+            {"aclList": []},
+        ],
+        "inputs": {
+            "ipv4_access_lists": [
+                {
+                    "name": "default-control-plane-acl",
+                    "entries": [
+                        {"sequence": 10, "action": "permit icmp any any"},
+                    ],
+                },
+            ]
+        },
+        "expected": {"result": "failure", "messages": ["No Access Control List (ACL) configured"]},
+    },
+    {
         "name": "failure-acl-not-found",
         "test": VerifyIPv4ACL,
         "eos_data": [

@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 from typing import ClassVar
 
 from anta.custom_types import PositiveInteger
-from anta.input_models.security import ACL, APISSLCertificate, IPSecPeer, IPSecPeers, IPv4ACL
+from anta.input_models.security import ACL, APISSLCertificate, IPSecPeer, IPSecPeers
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_item, get_value
 
@@ -576,7 +576,7 @@ class VerifyIPv4ACL(AntaTest):
 
         ipv4_access_lists: list[ACL]
         """List of IPv4 ACLs to verify."""
-        IPv4ACL: ClassVar[type[IPv4ACL]] = IPv4ACL
+        IPv4ACL: ClassVar[type[ACL]] = ACL
         """To maintain backward compatibility."""
 
     @AntaTest.anta_test
