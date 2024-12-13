@@ -48,7 +48,7 @@ The [AntaInventory](../api/inventory.md#anta.inventory.AntaInventory) class is a
 ```
 
 > [!NOTE]
-> __How to create your inventory file__
+> **How to create your inventory file**
 >
 > Please visit this [dedicated section](../usage-inventory-catalog.md) for how to use inventory and catalog files.
 

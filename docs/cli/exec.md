@@ -253,7 +253,7 @@ ANTA uses SCP to download files from devices and will not trust unknown SSH host
 The configuration `aaa authorization exec default` must be present on devices to be able to use SCP.
 
 > [!CAUTION]
-> __Deprecation__
+> **Deprecation**
 >
 > ANTA can automatically configure `aaa authorization exec default local` using the `anta exec collect-tech-support --configure` option but this option is deprecated and will be removed in ANTA 2.0.0.
 

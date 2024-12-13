@@ -278,7 +278,7 @@ custom.tests.system:
 ```
 
 > [!TIP]
-> __How to create custom tests__
+> **How to create custom tests**
 >
 > To create your custom tests, you should refer to this [documentation](advanced_usages/custom-tests.md)
 

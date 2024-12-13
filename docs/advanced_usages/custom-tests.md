@@ -83,12 +83,12 @@ Full AntaTest API documentation is available in the [API documentation section](
         heading_level: 10
 
 > [!NOTE]
-> __Logger object__
+> **Logger object**
 >
 > ANTA already provides comprehensive logging at every steps of a test execution. The [AntaTest](../api/models.md#anta.models.AntaTest) class also provides a `logger` attribute that is a Python logger specific to the test instance. See [Python documentation](https://docs.python.org/3/library/logging.html) for more information.
 
 > [!NOTE]
-> __AntaDevice object__
+> **AntaDevice object**
 >
 > Even if `device` is not a private attribute, you should not need to access this object in your code.
 
@@ -198,13 +198,13 @@ class <YourTestName>(AntaTest):
 ```
 
 > [!TIP]
-> __Command revision and version__
+> **Command revision and version**
 >
-> * Most of EOS commands return a JSON structure according to a model (some commands may not be modeled hence the necessity to use `text` outformat sometimes.
-> * The model can change across time (adding feature, ... ) and when the model is changed in a non backward-compatible way, the **revision** number is bumped. The initial model starts with **revision** 1.
-> * A **revision** applies to a particular CLI command whereas a **version** is global to an eAPI call. The **version** is internally translated to a specific **revision** for each CLI command in the RPC call. The currently supported **version** values  are `1` and `latest`.
-> * A **revision takes precedence over a version** (e.g. if a command is run with version="latest" and revision=1, the first revision of the model is returned)
-> * By default, eAPI returns the first revision of each model to ensure that when upgrading, integrations with existing tools are not broken. This is done by using by default `version=1` in eAPI calls.
+> - Most of EOS commands return a JSON structure according to a model (some commands may not be modeled hence the necessity to use `text` outformat sometimes.
+> - The model can change across time (adding feature, ... ) and when the model is changed in a non backward-compatible way, the **revision** number is bumped. The initial model starts with **revision** 1.
+> - A **revision** applies to a particular CLI command whereas a **version** is global to an eAPI call. The **version** is internally translated to a specific **revision** for each CLI command in the RPC call. The currently supported **version** values  are `1` and `latest`.
+> - A **revision takes precedence over a version** (e.g. if a command is run with version="latest" and revision=1, the first revision of the model is returned)
+> - By default, eAPI returns the first revision of each model to ensure that when upgrading, integrations with existing tools are not broken. This is done by using by default `version=1` in eAPI calls.
 >
 > By default, ANTA uses `version="latest"` in AntaCommand, but when developing tests, the revision MUST be provided when the outformat of the command is `json`. As explained earlier, this is to ensure that the eAPI always returns the same output model and that the test remains always valid from the day it was created. For some commands, you may also want to run them with a different revision or version.
 >
