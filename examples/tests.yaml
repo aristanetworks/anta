@@ -134,6 +134,7 @@ anta.tests.connectivity:
           vrf: MGMT
           df_bit: True
           size: 100
+<<<<<<< HEAD
 anta.tests.cvx:
   - VerifyCVXClusterStatus:
       # Verifies the CVX Server Cluster status.
@@ -828,3 +829,5 @@ anta.tests.vxlan:
       vteps:
         - 10.1.1.5
         - 10.1.1.6
+=======
+>>>>>>> 6e43cccd4c5db092e626b504e7803689214897f7
