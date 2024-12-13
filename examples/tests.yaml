@@ -135,6 +135,9 @@ anta.tests.connectivity:
           df_bit: True
           size: 100
 anta.tests.cvx:
+  - VerifyActiveCVXConnections:
+      # Verifies the number of active CVX Connections.
+      connections_count: 100
   - VerifyCVXClusterStatus:
       # Verifies the CVX Server Cluster status.
       role: Master
@@ -150,7 +153,7 @@ anta.tests.cvx:
       # Verify if all MCS client mounts are in mountStateMountComplete.
   - VerifyMcsServerMounts:
       # Verify if all MCS server mounts are in a MountComplete state.
-      expected_connection_count: 100
+      connections_count: 100
 anta.tests.field_notices:
   - VerifyFieldNotice44Resolution:
       # Verifies that the device is using the correct Aboot version per FN0044.
