@@ -134,7 +134,6 @@ anta.tests.connectivity:
           vrf: MGMT
           df_bit: True
           size: 100
-<<<<<<< HEAD
 anta.tests.cvx:
   - VerifyCVXClusterStatus:
       # Verifies the CVX Server Cluster status.
@@ -151,7 +150,7 @@ anta.tests.cvx:
       # Verify if all MCS client mounts are in mountStateMountComplete.
   - VerifyMcsServerMounts:
       # Verify if all MCS server mounts are in a MountComplete state.
-      expected_connection_count: 100
+      connections_count: 100
 anta.tests.field_notices:
   - VerifyFieldNotice44Resolution:
       # Verifies that the device is using the correct Aboot version per FN0044.
@@ -829,5 +828,3 @@ anta.tests.vxlan:
       vteps:
         - 10.1.1.5
         - 10.1.1.6
-=======
->>>>>>> 6e43cccd4c5db092e626b504e7803689214897f7

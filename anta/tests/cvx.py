@@ -104,7 +104,7 @@ class VerifyMcsServerMounts(AntaTest):
     anta.tests.cvx:
 
     - VerifyMcsServerMounts:
-        expected_connection_count: 100
+        connections_count: 100
     ```
     """
 
@@ -114,7 +114,7 @@ class VerifyMcsServerMounts(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyMcsServerMounts test."""
 
-        expected_connection_count: int
+        connections_count: int
         """The expected number of active CVX Connections with mountStateMountComplete"""
 
     def validate_mount_states(self, mount: dict[str, Any], mcs_path_types: list[str]) -> None:
@@ -159,7 +159,7 @@ class VerifyMcsServerMounts(AntaTest):
             if not mcs_mount_state_detected:
                 self.result.is_failure(f"MCS mount state not detected for {hostname}")
 
-        if active_count != self.inputs.expected_connection_count:
+        if active_count != self.inputs.connections_count:
             self.result.is_failure(f"Only {active_count} successful connections")
 
 

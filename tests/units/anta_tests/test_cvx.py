@@ -172,14 +172,14 @@ DATA: list[dict[str, Any]] = [
                 ]
             }
         ],
-        "inputs": {"expected_connection_count": 1},
+        "inputs": {"connections_count": 1},
         "expected": {"result": "success"},
     },
     {
         "name": "failure-no-mounts",
         "test": VerifyMcsServerMounts,
         "eos_data": [{"connections": [{"hostname": "media-leaf-1", "mounts": []}]}],
-        "inputs": {"expected_connection_count": 1},
+        "inputs": {"connections_count": 1},
         "expected": {"result": "failure", "messages": ["No mount status for media-leaf-1", "Only 0 successful connections"]},
     },
     {
@@ -207,7 +207,7 @@ DATA: list[dict[str, Any]] = [
                 ]
             }
         ],
-        "inputs": {"expected_connection_count": 1},
+        "inputs": {"connections_count": 1},
         "expected": {"result": "failure", "messages": ["Unexpected number of mount path states: 2"]},
     },
     {
@@ -236,7 +236,7 @@ DATA: list[dict[str, Any]] = [
                 ]
             }
         ],
-        "inputs": {"expected_connection_count": 1},
+        "inputs": {"connections_count": 1},
         "expected": {"result": "failure", "messages": ["Unexpected MCS path type: 'Mcs::ApiStatus'."]},
     },
     {
@@ -265,7 +265,7 @@ DATA: list[dict[str, Any]] = [
                 ]
             }
         ],
-        "inputs": {"expected_connection_count": 1},
+        "inputs": {"connections_count": 1},
         "expected": {"result": "failure", "messages": ["MCS server mount state for path 'Mcs::ApiConfigRedundancyStatus' is not valid: 'mountStateMountFailed'."]},
     },
     {
@@ -286,7 +286,7 @@ DATA: list[dict[str, Any]] = [
                 ]
             }
         ],
-        "inputs": {"expected_connection_count": 1},
+        "inputs": {"connections_count": 1},
         "expected": {"result": "failure", "messages": ["MCS mount state not detected", "Only 0 successful connections"]},
     },
     {
