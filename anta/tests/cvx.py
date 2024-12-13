@@ -146,22 +146,21 @@ class VerifyMcsServerMounts(AntaTest):
             return
 
         for connection in connections:
-            mounts = connection.get("mounts")
+            mounts = connection.get("mounts", [])
             hostname = connection["hostname"]
+
+            mcs_mounts = [mount for mount in mounts if mount["service"] == "Mcs"]
 
             if not mounts:
                 self.result.is_failure(f"No mount status for {hostname}")
                 continue
 
-            mcs_mount_state_detected = False
-            for mount in mounts:
-                if mount["service"] == "Mcs":
+            if not mcs_mounts:
+                self.result.is_failure(f"MCS mount state not detected for {hostname}")
+            else:
+                for mount in mcs_mounts:
                     self.validate_mount_states(mount, hostname)
                     active_count += 1
-                    mcs_mount_state_detected = True
-
-            if not mcs_mount_state_detected:
-                self.result.is_failure(f"MCS mount state not detected for {hostname}")
 
         if active_count != self.inputs.connections_count:
             self.result.is_failure(f"Incorrect CVX successful connections count. Expected: {self.inputs.connections_count}, Actual : {active_count}")
