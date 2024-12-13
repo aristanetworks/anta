@@ -71,18 +71,18 @@ class VerifySpecificPath(AntaTest):
     """Verifies the path and telemetry state of a specific path for an IPv4 peer.
 
     This test performs the following checks for each specified routerpath:
-    1. Verifies that the specified peer is configured.
-    2. Verifies that the specified path group is found.
-    3. Verifies that the expected source and destination address are matched for the specified path group.
-    4. Verifies that the state of the path is `ipsecEstablished` or `routeResolved`.
-    5. Verifies that the the telemetry state is `active`.
+        1. Verifies that the specified peer is configured.
+        2. Verifies that the specified path group is found.
+        3. Verifies that the expected source and destination address match the path group.
+        4. Verifies that the state of the path is `ipsecEstablished` or `routeResolved`.
+        5. Verifies that the telemetry state is `active`.
 
     Expected Results
     ----------------
-    * Success: The test will pass if the path state under router path-selection is either 'IPsecEstablished' or 'Resolved'
+    * Success: The test will pass if the path state under router path selection is either 'IPsecEstablished' or 'Resolved'
                and telemetry state as 'active'.
-    * Failure: The test will fail if router path-selection is not configured or if the path state is not 'IPsec established' or 'Resolved',
-               or if the telemetry state is 'inactive'.
+    * Failure: The test will fail if router path selection is not configured, the path state is not 'IPsec established' or 'Resolved',
+               or the telemetry state is 'inactive'.
 
     Examples
     --------
@@ -117,8 +117,7 @@ class VerifySpecificPath(AntaTest):
 
         # If the dpsPeers details are not found in the command output, the test fails.
         if not (dps_peers_details := get_value(command_output, "dpsPeers")):
-            self.result.is_failure("No Router path configured")
-
+            self.result.is_failure("Router path not configured")
             return
 
         # Iterating on each router path mentioned in the inputs.
@@ -131,19 +130,19 @@ class VerifySpecificPath(AntaTest):
 
             # If the peer is not configured for the path group, the test fails
             if not peer_details:
-                self.result.is_failure(f"{peer} - peer not configured")
+                self.result.is_failure(f"{router_path} - Peer not found")
                 continue
 
             path_group_details = get_value(peer_details, f"dpsGroups..{path_group}..dpsPaths", separator="..")
             # If the expected pathgroup is not found for the peer, the test fails.
             if not path_group_details:
-                self.result.is_failure(f"{peer} - path-group {path_group} not found")
+                self.result.is_failure(f"{router_path} - Path-group not found")
                 continue
 
             path_data = next((path for path in path_group_details.values() if (path.get("source") == source and path.get("destination") == destination)), None)
             # If the expected and actual source and destion address of the pathgroup are not matched, test fails.
             if not path_data:
-                self.result.is_failure(f"{peer} - source: {source} destination: {destination} is not configured for path-group {path_group}")
+                self.result.is_failure(f"{router_path} - Source and/or Destination address not found")
                 continue
 
             path_state = path_data.get("state")
@@ -151,8 +150,6 @@ class VerifySpecificPath(AntaTest):
             expected_state = ["ipsecEstablished", "routeResolved"]
             # If the state of the path is not 'ipsecEstablished' or 'routeResolved', or the telemetry state is 'inactive', the test fails
             if path_state not in expected_state:
-                self.result.is_failure(
-                    f"{peer} - in path-group {path_group} - Incorrect path state - Expected: is {' or '.join(expected_state)} Actual: {path_state}"
-                )
+                self.result.is_failure(f"{router_path} - Incorrect path state - Expected: {' or '.join(expected_state)} Actual: {path_state}")
             elif not session:
-                self.result.is_failure(f"{peer} - in path-group {path_group}  Incorrect telemetry state - Expected: active Actual: inactive")
+                self.result.is_failure(f"{router_path} - Incorrect telemetry state - Expected: active Actual: inactive")

@@ -223,7 +223,10 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["10.255.0.1 - path-group internet not found", "10.255.0.2 - path-group mpls not found"],
+            "messages": [
+                "Peer: 10.255.0.1 PathGroup: internet Source: 100.64.3.2 Destination: 100.64.1.2 - Path-group not found",
+                "Peer: 10.255.0.2 PathGroup: mpls Source: 172.18.13.2 Destination: 172.18.15.2 - Path-group not found",
+            ],
         },
     },
     {
@@ -231,14 +234,14 @@ DATA: list[dict[str, Any]] = [
         "test": VerifySpecificPath,
         "eos_data": [{"dpsPeers": {}}],
         "inputs": {"paths": [{"peer": "10.255.0.1", "path_group": "internet", "source_address": "100.64.3.2", "destination_address": "100.64.1.2"}]},
-        "expected": {"result": "failure", "messages": ["No Router path configured"]},
+        "expected": {"result": "failure", "messages": ["Router path not configured"]},
     },
     {
         "name": "failure-no-specific-peer-configured",
         "test": VerifySpecificPath,
         "eos_data": [{"dpsPeers": {"10.255.0.2": {}}}],
         "inputs": {"paths": [{"peer": "10.255.0.1", "path_group": "internet", "source_address": "172.18.3.2", "destination_address": "172.18.5.2"}]},
-        "expected": {"result": "failure", "messages": ["10.255.0.1 - peer not configured"]},
+        "expected": {"result": "failure", "messages": ["Peer: 10.255.0.1 PathGroup: internet Source: 172.18.3.2 Destination: 172.18.5.2 - Peer not found"]},
     },
     {
         "name": "failure-not-established",
@@ -284,8 +287,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "10.255.0.1 - in path-group internet - Incorrect path state - Expected: is ipsecEstablished or routeResolved Actual: ipsecPending",
-                "10.255.0.2 - in path-group mpls - Incorrect path state - Expected: is ipsecEstablished or routeResolved Actual: ipsecPending",
+                "Peer: 10.255.0.1 PathGroup: internet Source: 172.18.3.2 Destination: 172.18.5.2 - Incorrect path state - Expected:"
+                " ipsecEstablished or routeResolved Actual: ipsecPending",
+                "Peer: 10.255.0.2 PathGroup: mpls Source: 172.18.13.2 Destination: 172.18.15.2 - Incorrect path state - Expected:"
+                " ipsecEstablished or routeResolved Actual: ipsecPending",
             ],
         },
     },
@@ -330,8 +335,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "10.255.0.1 - in path-group internet  Incorrect telemetry state - Expected: active Actual: inactive",
-                "10.255.0.2 - in path-group mpls  Incorrect telemetry state - Expected: active Actual: inactive",
+                "Peer: 10.255.0.1 PathGroup: internet Source: 172.18.3.2 Destination: 172.18.5.2 - Incorrect telemetry state - Expected: active Actual: inactive",
+                "Peer: 10.255.0.2 PathGroup: mpls Source: 172.18.13.2 Destination: 172.18.15.2 - Incorrect telemetry state - Expected: active Actual: inactive",
             ],
         },
     },
@@ -371,8 +376,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "10.255.0.1 - source: 172.18.3.2 destination: 172.18.5.2 is not configured for path-group internet",
-                "10.255.0.2 - source: 172.18.13.2 destination: 172.18.15.2 is not configured for path-group mpls",
+                "Peer: 10.255.0.1 PathGroup: internet Source: 172.18.3.2 Destination: 172.18.5.2 - Source and/or Destination address not found",
+                "Peer: 10.255.0.2 PathGroup: mpls Source: 172.18.13.2 Destination: 172.18.15.2 - Source and/or Destination address not found",
             ],
         },
     },
