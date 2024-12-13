@@ -91,7 +91,7 @@ class VerifyManagementCVX(AntaTest):
 
 
 class VerifyMcsServerMounts(AntaTest):
-    """Verify if all MCS server mounts are in mountStateMountComplete.
+    """Verify if all MCS server mounts are in a MountComplete state.
 
     Expected Results
     ----------------
@@ -120,17 +120,17 @@ class VerifyMcsServerMounts(AntaTest):
     def validate_mount_states(self, mount: dict[str, Any], mcs_path_types: list[str]) -> None:
         """Validate the mount states of a given mount."""
         mount_states = mount["mountStates"][0]
-        num_path_states = len(mount_states["pathStates"])
-        if num_path_states != len(mcs_path_types):
+        
+        if (num_path_states := len(mount_states["pathStates"])) != len(mcs_path_types):
             self.result.is_failure(f"Unexpected number of mount path states: {num_path_states}")
 
         for path in mount_states["pathStates"]:
             path_type = path["type"]
             path_state = path["state"]
             if path_type not in mcs_path_types:
-                self.result.is_failure(f"Unexpected MCS path type: {path_type}")
+                self.result.is_failure(f"Unexpected MCS path type: '{path_type}'".)
             if path_state != "mountStateMountComplete":
-                self.result.is_failure(f"MCS server mount state is not valid: {path_state}")
+                self.result.is_failure(f"MCS server mount state for path '{path_type}' is not valid: '{path_state}'.")
 
     @AntaTest.anta_test
     def test(self) -> None:
