@@ -86,8 +86,7 @@ Full AntaTest API documentation is available in the [API documentation section](
 > **Logger object**
 >
 > ANTA already provides comprehensive logging at every steps of a test execution. The [AntaTest](../api/models.md#anta.models.AntaTest) class also provides a `logger` attribute that is a Python logger specific to the test instance. See [Python documentation](https://docs.python.org/3/library/logging.html) for more information.
-
-> [!NOTE]
+>
 > **AntaDevice object**
 >
 > Even if `device` is not a private attribute, you should not need to access this object in your code.
