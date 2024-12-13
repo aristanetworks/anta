@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
+from anta.custom_types import PositiveInteger
 from anta.models import AntaCommand, AntaTest
 from anta.tools import get_value
 
@@ -111,38 +112,41 @@ class VerifyMcsServerMounts(AntaTest):
     categories: ClassVar[list[str]] = ["cvx"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show cvx mounts", revision=1)]
 
+    mcs_path_types: ClassVar[list[str]] = ["Mcs::ApiConfigRedundancyStatus", "Mcs::ActiveFlows", "Mcs::Client::Status"]
+    """The list of expected MCS path types to verify."""
+
     class Input(AntaTest.Input):
         """Input model for the VerifyMcsServerMounts test."""
 
         connections_count: int
         """The expected number of active CVX Connections with mountStateMountComplete"""
 
-    def validate_mount_states(self, mount: dict[str, Any], mcs_path_types: list[str]) -> None:
+    def validate_mount_states(self, mount: dict[str, Any], hostname: str) -> None:
         """Validate the mount states of a given mount."""
         mount_states = mount["mountStates"][0]
 
-        if (num_path_states := len(mount_states["pathStates"])) != len(mcs_path_types):
-            self.result.is_failure(f"Unexpected number of mount path states: {num_path_states}")
+        if (num_path_states := len(mount_states["pathStates"])) != (expected_num := len(self.mcs_path_types)):
+            self.result.is_failure(f"Incorrect number of mount path states for {hostname} - Expected: {expected_num}, Actual: {num_path_states}")
 
         for path in mount_states["pathStates"]:
-            path_type = path["type"]
-            path_state = path["state"]
-            if path_type not in mcs_path_types:
-                self.result.is_failure(f"Unexpected MCS path type: '{path_type}'.")
-            if path_state != "mountStateMountComplete":
-                self.result.is_failure(f"MCS server mount state for path '{path_type}' is not valid: '{path_state}'.")
+            if (path_type := path.get("type")) not in self.mcs_path_types:
+                self.result.is_failure(f"Unexpected MCS path type for {hostname}: '{path_type}'.")
+            if (path_state := path.get("state")) != "mountStateMountComplete":
+                self.result.is_failure(f"MCS server mount state for path '{path_type}' is not valid is for {hostname}: '{path_state}'.")
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyMcsServerMounts."""
         command_output = self.instance_commands[0].json_output
         self.result.is_success()
-        connections = command_output["connections"]
         active_count = 0
-        mcs_path_types = ["Mcs::ApiConfigRedundancyStatus", "Mcs::ActiveFlows", "Mcs::Client::Status"]
+
+        if not (connections := command_output.get("connections")):
+            self.result.is_failure("CVX connections are not available.")
+            return
 
         for connection in connections:
-            mounts = connection["mounts"]
+            mounts = connection.get("mounts")
             hostname = connection["hostname"]
 
             if not mounts:
@@ -152,7 +156,7 @@ class VerifyMcsServerMounts(AntaTest):
             mcs_mount_state_detected = False
             for mount in mounts:
                 if mount["service"] == "Mcs":
-                    self.validate_mount_states(mount, mcs_path_types)
+                    self.validate_mount_states(mount, hostname)
                     active_count += 1
                     mcs_mount_state_detected = True
 
@@ -160,7 +164,50 @@ class VerifyMcsServerMounts(AntaTest):
                 self.result.is_failure(f"MCS mount state not detected for {hostname}")
 
         if active_count != self.inputs.connections_count:
-            self.result.is_failure(f"Only {active_count} successful connections")
+            self.result.is_failure(f"Incorrect CVX successful connections count. Expected: {self.inputs.connections_count}, Actual : {active_count}")
+
+
+class VerifyActiveCVXConnections(AntaTest):
+    """Verifies the number of active CVX Connections.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if number of connections is equal to the expected number of connections.
+    * Failure: The test will fail otherwise.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.cvx:
+      - VerifyActiveCVXConnections:
+          connections_count: 100
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["cvx"]
+    # TODO: @gmuloc - cover "% Unavailable command (controller not ready)"
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show cvx connections brief", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyActiveCVXConnections test."""
+
+        connections_count: PositiveInteger
+        """The expected number of active CVX Connections."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyActiveCVXConnections."""
+        command_output = self.instance_commands[0].json_output
+        self.result.is_success()
+
+        if not (connections := command_output.get("connections")):
+            self.result.is_failure("CVX connections are not available.")
+            return
+
+        active_count = len([connection for connection in connections if connection.get("oobConnectionActive")])
+
+        if self.inputs.connections_count != active_count:
+            self.result.is_failure(f"CVX active connections count. Expected: {self.inputs.connections_count}, Actual : {active_count}")
 
 
 class VerifyCVXClusterStatus(AntaTest):
