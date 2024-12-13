@@ -120,7 +120,7 @@ class VerifyMcsServerMounts(AntaTest):
     def validate_mount_states(self, mount: dict[str, Any], mcs_path_types: list[str]) -> None:
         """Validate the mount states of a given mount."""
         mount_states = mount["mountStates"][0]
-        
+
         if (num_path_states := len(mount_states["pathStates"])) != len(mcs_path_types):
             self.result.is_failure(f"Unexpected number of mount path states: {num_path_states}")
 
