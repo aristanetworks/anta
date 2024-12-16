@@ -15,7 +15,7 @@ A test is a Python class where a test function is defined and will be run by the
 
 ANTA provides an abstract class [AntaTest](../api/models.md#anta.models.AntaTest). This class does the heavy lifting and provide the logic to define, collect and test data. The code below is an example of a simple test in ANTA, which is an [AntaTest](../api/models.md#anta.models.AntaTest) subclass:
 
-```python
+````python
 from anta.models import AntaTest, AntaCommand
 from anta.decorators import skip_on_platforms
 
@@ -49,7 +49,7 @@ class VerifyTemperature(AntaTest):
             self.result.is_success()
         else:
             self.result.is_failure(f"Device temperature exceeds acceptable limits. Current system status: '{temperature_status}'")
-```
+````
 
 [AntaTest](../api/models.md#anta.models.AntaTest) also provide more advanced capabilities like [AntaCommand](../api/models.md#anta.models.AntaCommand) templating using the [AntaTemplate](../api/models.md#anta.models.AntaTemplate) class or test inputs definition and validation using [AntaTest.Input](../api/models.md#anta.models.AntaTest.Input) [pydantic](https://docs.pydantic.dev/latest/) model. This will be discussed in the sections below.
 
@@ -83,13 +83,14 @@ Full AntaTest API documentation is available in the [API documentation section](
         heading_level: 10
 
 > [!NOTE]
-> **Logger object**
 >
-> ANTA already provides comprehensive logging at every steps of a test execution. The [AntaTest](../api/models.md#anta.models.AntaTest) class also provides a `logger` attribute that is a Python logger specific to the test instance. See [Python documentation](https://docs.python.org/3/library/logging.html) for more information.
+> - **Logger object**
 >
-> **AntaDevice object**
+>     ANTA already provides comprehensive logging at every steps of a test execution. The [AntaTest](../api/models.md#anta.models.AntaTest) class also provides a `logger` attribute that is a Python logger specific to the test instance. See [Python documentation](https://docs.python.org/3/library/logging.html) for more information.
 >
-> Even if `device` is not a private attribute, you should not need to access this object in your code.
+> - **AntaDevice object**
+>
+>     Even if `device` is not a private attribute, you should not need to access this object in your code.
 
 ### Test Inputs
 
