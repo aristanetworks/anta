@@ -99,7 +99,7 @@ doc = [
   "mkdocstrings[python]>=0.26.0",
   "mkdocstrings-python>=1.11.0",
   "black>=24.10.0",
-  "mkdocs-github-admonitions-plugin"
+  "mkdocs-github-admonitions-plugin>=0.0.3"
 ]
 
 [project.urls]
