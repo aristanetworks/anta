@@ -31,7 +31,7 @@ Options:
   --help                    Show this message and exit.
 ```
 
-> [!WARNING]warning
+> [!WARNING]
 >
 > - `anta get from-ansible` does not support inline vaulted variables, comment them out to generate your inventory.
 >
