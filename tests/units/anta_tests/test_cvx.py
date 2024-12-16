@@ -309,6 +309,13 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "failure", "messages": ["MCS mount state not detected", "Incorrect CVX successful connections count. Expected: 1, Actual : 0"]},
     },
     {
+        "name": "failure-connections",
+        "test": VerifyMcsServerMounts,
+        "eos_data": [{}],
+        "inputs": {"connections_count": 1},
+        "expected": {"result": "failure", "messages": ["CVX connections are not available."]},
+    },
+    {
         "name": "success",
         "test": VerifyActiveCVXConnections,
         "eos_data": [
