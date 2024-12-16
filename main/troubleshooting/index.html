@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.48">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
     
     
       
@@ -2351,7 +2351,7 @@
 <p>To help document the issue in Github, it is important to capture some logs so the developers can understand what is affecting your system. No logs mean that the first question asked on the issue will probably be <em>&ldquo;Can you share some logs please?&rdquo;</em>.</p>
 <p>ANTA provides very verbose logs when using the <code>DEBUG</code> level.  When using DEBUG log level with a log file, the DEBUG logging level is not sent to stdout, but only to the file.</p>
 <div class="admonition danger">
-<p class="admonition-title">Danger</p>
+<p class="admonition-title">Caution</p>
 <p>On real deployments, do not use DEBUG logging level without setting a log file at the same time.</p>
 </div>
 <p>To save the logs to a file called <code>anta.log</code>, use the following flags:</p>
@@ -2362,8 +2362,8 @@ anta<span class="w"> </span>-l<span class="w"> </span>DEBUG<span class="w"> </sp
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>Remember that in ANTA, each level of command has its own options and they can only be set at this level.
-so the <code>-l</code> and <code>--log-file</code> MUST be between <code>anta</code> and the <code>ANTA_COMMAND</code>.
-similarly, all the <code>nrfu</code> options MUST be set between the <code>nrfu</code> and the <code>ANTA_NRFU_SUBCOMMAND</code> (<code>json</code>, <code>text</code>, <code>table</code> or <code>tpl-report</code>).</p>
+ so the <code>-l</code> and <code>--log-file</code> MUST be between <code>anta</code> and the <code>ANTA_COMMAND</code>.
+ similarly, all the <code>nrfu</code> options MUST be set between the <code>nrfu</code> and the <code>ANTA_NRFU_SUBCOMMAND</code> (<code>json</code>, <code>text</code>, <code>table</code> or <code>tpl-report</code>).</p>
 </div>
 <p>As an example, for the <code>nrfu</code> command, it would look like:</p>
 <div class="highlight"><pre><span></span><code>anta<span class="w"> </span>-l<span class="w"> </span>DEBUG<span class="w"> </span>--log-file<span class="w"> </span>anta.log<span class="w"> </span>nrfu<span class="w"> </span>--enable<span class="w"> </span>--username<span class="w"> </span>username<span class="w"> </span>--password<span class="w"> </span>arista<span class="w"> </span>--inventory<span class="w"> </span>inventory.yml<span class="w"> </span>-c<span class="w"> </span>nrfu.yml<span class="w"> </span>text
@@ -2405,7 +2405,7 @@ similarly, all the <code>nrfu</code> options MUST be set between the <code>nrfu<
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 2, 2024</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">December 16, 2024</span>
   </span>
 
     
@@ -2504,7 +2504,7 @@ similarly, all the <code>nrfu</code> options MUST be set between the <code>nrfu<
     <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes", "content.tabs.link"], "search": "../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable"], "provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.83f73b43.min.js"></script>
+      <script src="../assets/javascripts/bundle.88dd0f4e.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
       

@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.48">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
     
     
       
@@ -2868,12 +2868,17 @@
     </div>
 
 </div><div class="admonition note">
-<p class="admonition-title">Logger object</p>
+<p class="admonition-title">Note</p>
+<ul>
+<li>
+<p><strong>Logger object</strong></p>
 <p>ANTA already provides comprehensive logging at every steps of a test execution. The <a href="../../api/models/#anta.models.AntaTest">AntaTest</a> class also provides a <code>logger</code> attribute that is a Python logger specific to the test instance. See <a href="https://docs.python.org/3/library/logging.html">Python documentation</a> for more information.</p>
-</div>
-<div class="admonition note">
-<p class="admonition-title">AntaDevice object</p>
+</li>
+<li>
+<p><strong>AntaDevice object</strong></p>
 <p>Even if <code>device</code> is not a private attribute, you should not need to access this object in your code.</p>
+</li>
+</ul>
 </div>
 <h4 id="test-inputs">Test Inputs<a class="headerlink" href="#test-inputs" title="Permanent link">&para;</a></h4>
 <p><a href="../../api/models/#anta.models.AntaTest.Input">AntaTest.Input</a> is a <a href="https://docs.pydantic.dev/latest/usage/models/">pydantic model</a> that allow test developers to define their test inputs. <a href="https://docs.pydantic.dev/latest/">pydantic</a> provides out of the box <a href="https://docs.pydantic.dev/latest/usage/models/#error-handling">error handling</a> for test input validation based on the type hints defined by the test developer.</p>
@@ -3063,8 +3068,8 @@
 <h4 id="class-definition">Class definition<a class="headerlink" href="#class-definition" title="Permanent link">&para;</a></h4>
 <p>Import <a href="../../api/models/#anta.models.AntaTest">anta.models.AntaTest</a> and define your own class.
 Define the mandatory class attributes using <a href="../../api/models/#anta.models.AntaCommand">anta.models.AntaCommand</a>, <a href="../../api/models/#anta.models.AntaTemplate">anta.models.AntaTemplate</a> or both.</p>
-<div class="admonition info">
-<p class="admonition-title">Info</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
 <p>Caching can be disabled per <code>AntaCommand</code> or <code>AntaTemplate</code> by setting the <code>use_cache</code> argument to <code>False</code>. For more details about how caching is implemented in ANTA, please refer to <a href="../caching/">Caching in ANTA</a>.</p>
 </div>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">anta.models</span> <span class="kn">import</span> <span class="n">AntaTest</span><span class="p">,</span> <span class="n">AntaCommand</span><span class="p">,</span> <span class="n">AntaTemplate</span>
@@ -3096,7 +3101,8 @@ Define the mandatory class attributes using <a href="../../api/models/#anta.mode
     <span class="p">]</span>
 </code></pre></div>
 <div class="admonition tip">
-<p class="admonition-title">Command revision and version</p>
+<p class="admonition-title">Tip</p>
+<p><strong>Command revision and version</strong></p>
 <ul>
 <li>Most of EOS commands return a JSON structure according to a model (some commands may not be modeled hence the necessity to use <code>text</code> outformat sometimes.</li>
 <li>The model can change across time (adding feature, &hellip; ) and when the model is changed in a non backward-compatible way, the <strong>revision</strong> number is bumped. The initial model starts with <strong>revision</strong> 1.</li>
@@ -3106,8 +3112,8 @@ Define the mandatory class attributes using <a href="../../api/models/#anta.mode
 </ul>
 <p>By default, ANTA uses <code>version="latest"</code> in AntaCommand, but when developing tests, the revision MUST be provided when the outformat of the command is <code>json</code>. As explained earlier, this is to ensure that the eAPI always returns the same output model and that the test remains always valid from the day it was created. For some commands, you may also want to run them with a different revision or version.</p>
 <p>For instance, the <code>VerifyBFDPeersHealth</code> test leverages the first revision of <code>show bfd peers</code>:</p>
-<div class="highlight"><pre><span></span><code># revision 1 as later revision introduce additional nesting for type
-commands = [AntaCommand(command=&quot;show bfd peers&quot;, revision=1)]
+<div class="highlight"><pre><span></span><code><span class="c1"># revision 1 as later revision introduce additional nesting for type</span>
+<span class="n">commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show bfd peers&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 </code></pre></div>
 </div>
 <h4 id="inputs-definition">Inputs definition<a class="headerlink" href="#inputs-definition" title="Permanent link">&para;</a></h4>
@@ -3214,6 +3220,7 @@ You can also leverage <a href="../../api/types/">anta.custom_types</a> that prov
 </code></pre></div>
 <h3 id="access-your-custom-tests-in-the-test-catalog">Access your custom tests in the test catalog<a class="headerlink" href="#access-your-custom-tests-in-the-test-catalog" title="Permanent link">&para;</a></h3>
 <div class="admonition warning">
+<p class="admonition-title">Warning</p>
 <p>This section is required only if you are not merging your development into ANTA. Otherwise, just follow <a href="../../contribution/">contribution guide</a>.</p>
 </div>
 <p>For that, you need to create your own Python package as described in this <a href="https://the-hitchhikers-guide-to-packaging.readthedocs.io/en/latest/">hitchhiker&rsquo;s guide</a> to package Python code. We assume it is well known and we won&rsquo;t focus on this aspect. Thus, your package must be importable by ANTA hence available in the module search path <code>sys.path</code> (you can use <code>PYTHONPATH</code> for example).</p>
@@ -3252,7 +3259,7 @@ leaf04<span class="w"> </span>::<span class="w"> </span>verify_dynamic_vlan<span
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">December 3, 2024</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">December 16, 2024</span>
   </span>
 
     
@@ -3351,7 +3358,7 @@ leaf04<span class="w"> </span>::<span class="w"> </span>verify_dynamic_vlan<span
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.top", "content.tabs.link", "content.code.copy", "toc.follow", "navigation.indexes", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": ["stable"], "provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.83f73b43.min.js"></script>
+      <script src="../../assets/javascripts/bundle.88dd0f4e.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
       
