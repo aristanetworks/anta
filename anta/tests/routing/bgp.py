@@ -885,6 +885,7 @@ class VerifyEVPNType2Route(AntaTest):
                     route_type = path.get("routeType", {})
                     if route_type.get("active") and route_type.get("valid"):
                         has_active_path = True
+                        break
             if not has_active_path:
                 bad_evpn_routes.extend(list(evpn_routes))
 
