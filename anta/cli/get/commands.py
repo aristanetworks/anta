@@ -111,13 +111,14 @@ def from_ansible(ctx: click.Context, output: Path, ansible_group: str, ansible_i
 @inventory_output_options
 @click.option("--nb-instance", "-nbi", help="Name of the NetBox instance", type=str, required=True)
 @click.option("--nb-token", "-nbt", help="NetBox token", type=str, required=True)
-@click.option("--nb-platform", "-nbt", help="NetBox device platform", type=str, default="Arista EOS", required=True)
+@click.option("--nb-platform", "-nbp", help="NetBox device platform", type=str, default="Arista EOS", required=False)
+@click.option("--nb-site", "-nbs", help="NetBox site (case sensitive)", type=str, default=None, required=False)
 @click.option("--nb-verify", "-nbf", help="NetBox verify SSL", type=bool, default=False, required=False)
-def from_netbox(ctx: click.Context, nb_instance: str, output: Path, nb_token: str, nb_platform: str, nb_verify: bool = False) -> None:
+def from_netbox(ctx: click.Context, nb_instance: str, output: Path, nb_token: str, nb_platform: str, nb_site: str | None = None, nb_verify: bool = False) -> None:
     """Build ANTA inventory from a NetBox instance."""
     logger.info("Building inventory from netbox instance file '%s'", nb_instance)
     try:
-        create_inventory_from_netbox(nb_instance=nb_instance, output=output, token=nb_token, platform=nb_platform, verify=nb_verify)
+        create_inventory_from_netbox(nb_instance=nb_instance, output=output, token=nb_token, platform=nb_platform, site=nb_site, verify=nb_verify)
     except ValueError as e:
         logger.error(str(e))
         ctx.exit(ExitCode.USAGE_ERROR)
