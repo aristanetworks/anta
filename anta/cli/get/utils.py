@@ -215,7 +215,7 @@ def create_inventory_from_ansible(inventory: Path, output: Path, ansible_group: 
     write_inventory_to_file(ansible_hosts, output)
 
 
-def create_inventory_from_netbox(nb_instance: str, output: Path, token: str, platform: str = "Arista EOS", verify: bool=False) -> None:
+def create_inventory_from_netbox(nb_instance: str, output: Path, token: str, platform: str = "Arista EOS", verify: bool = False) -> None:
     """Fetch devices from NetBox filtered by a specific platform.
 
     Parameters
@@ -227,7 +227,7 @@ def create_inventory_from_netbox(nb_instance: str, output: Path, token: str, pla
     token
         The token used to authenticate to the NetBox instance.
     platform
-        The query of the platform to filter devices by.
+        The platform to filter devices by.
     verify
         Verify the SSL certification of the NetBox instance.
 
