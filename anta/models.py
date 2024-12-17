@@ -16,6 +16,7 @@ from typing import TYPE_CHECKING, Any, Callable, ClassVar, Literal, TypeVar
 from pydantic import BaseModel, ConfigDict, ValidationError, create_model
 
 from anta import GITHUB_SUGGESTION
+from anta.constants import KNOWN_EOS_ERRORS
 from anta.custom_types import REGEXP_EOS_BLACKLIST_CMDS, Revision
 from anta.logger import anta_log_exception, exc_to_str
 from anta.result_manager.models import AntaTestStatus, TestResult
@@ -33,14 +34,6 @@ F = TypeVar("F", bound=Callable[..., Any])
 # https://stackoverflow.com/questions/74103528/type-hinting-an-instance-of-a-nested-class
 
 logger = logging.getLogger(__name__)
-
-KNOWN_EOS_ERRORS = [
-    r"BGP inactive",
-    r"VRF '.*' is not active",
-    r".* does not support IP",
-    r"IS-IS (.*) is disabled because: .*",
-]
-"""List of known EOS errors that should set a test status to 'failure' with the error message."""
 
 
 class AntaParamsBaseModel(BaseModel):
@@ -696,8 +689,6 @@ class AntaTest(ABC):
             return
         returned_known_eos_error = [f"'{c.command}' failed on {self.device.name}: {', '.join(c.errors)}" for c in cmds if c.returned_known_eos_error]
         if returned_known_eos_error:
-            msg = f"Test {self.name} has failed."
-            self.logger.warning(msg)
             self.result.is_failure("\n".join(returned_known_eos_error))
             return
 

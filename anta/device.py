@@ -446,7 +446,7 @@ class AsyncEOSDevice(AntaDevice):
         if not command.supported:
             logger.debug("Command '%s' is not supported on '%s' (%s)", command.command, self.name, self.hw_model)
         elif command.returned_known_eos_error:
-            logger.debug("Command '%s' returned a known error '%s'", command.command, self.name)
+            logger.debug("Command '%s' returned a known error '%s': %s", command.command, self.name, command.errors)
         else:
             logger.error("Command '%s' failed on %s: %s", command.command, self.name, e.errors[0] if len(e.errors) == 1 else e.errors)
 

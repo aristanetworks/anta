@@ -711,6 +711,7 @@ class TestAntaCommand:
         [
             ("show ip interface Ethernet1", "Ethernet1 does not support IP", True),
             ("ping vrf MGMT 1.1.1.1 source Management0 size 100 df-bit repeat 2", "VRF 'MGMT' is not active", True),
+            ("ping vrf MGMT 1.1.1.1 source Management1 size 100 df-bit repeat 2", "No source interface Management1", True),
             ("show bgp evpn route-type mac-ip aa:c1:ab:de:50:ad vni 10010", "BGP inactive", True),
             ("show isis BLAH  neighbors", "IS-IS (BLAH) is disabled because: IS-IS Network Entity Title (NET) configuration is not present", True),
             ("show ip interface Ethernet1", None, False),
