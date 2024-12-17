@@ -91,7 +91,6 @@ repos:
         name: Check typing with mypy
         args:
           - --config-file=pyproject.toml
-          - --explicit-package-bases
         additional_dependencies:
           - anta[cli]
           - types-PyYAML
