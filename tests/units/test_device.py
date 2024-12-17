@@ -74,7 +74,10 @@ EQUALITY_PARAMS: list[ParameterSet] = [
         id="not-equal-port",
     ),
     pytest.param(
-        {"host": "42.42.42.41", "username": "anta", "password": "anta"}, {"host": "42.42.42.42", "username": "anta", "password": "anta"}, False, id="not-equal-host"
+        {"host": "42.42.42.41", "username": "anta", "password": "anta"},
+        {"host": "42.42.42.42", "username": "anta", "password": "anta"},
+        False,
+        id="not-equal-host",
     ),
 ]
 ASYNCEAPI_COLLECT_PARAMS: list[ParameterSet] = [
@@ -348,6 +351,23 @@ ASYNCEAPI_COLLECT_PARAMS: list[ParameterSet] = [
         },
         {"output": None, "errors": ["BGP inactive"]},
         id="asynceapi.EapiCommandError - known EOS error",
+    ),
+    pytest.param(
+        {},
+        {
+            "command": "show version",
+            "patch_kwargs": {
+                "side_effect": EapiCommandError(
+                    passed=[],
+                    failed="show version",
+                    errors=["Invalid input (privileged mode required)"],
+                    errmsg="Invalid command",
+                    not_exec=[],
+                )
+            },
+        },
+        {"output": None, "errors": ["Invalid input (privileged mode required)"]},
+        id="asynceapi.EapiCommandError - requires privileges",
     ),
     pytest.param(
         {},
