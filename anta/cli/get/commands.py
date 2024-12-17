@@ -22,7 +22,7 @@ from anta.cli.console import console
 from anta.cli.get.utils import inventory_output_options
 from anta.cli.utils import ExitCode, inventory_options
 
-from .utils import create_inventory_from_ansible, create_inventory_from_cvp, explore_package, get_cv_token
+from .utils import create_inventory_from_ansible, create_inventory_from_cvp, create_inventory_from_netbox, explore_package, get_cv_token
 
 if TYPE_CHECKING:
     from anta.inventory import AntaInventory
@@ -100,6 +100,29 @@ def from_ansible(ctx: click.Context, output: Path, ansible_group: str, ansible_i
             inventory=ansible_inventory,
             output=output,
             ansible_group=ansible_group,
+        )
+    except ValueError as e:
+        logger.error(str(e))
+        ctx.exit(ExitCode.USAGE_ERROR)
+
+@click.command
+@click.pass_context
+@inventory_output_options
+@click.option("--nb-instance", "-nbi", help="Name of NetBox instance", type=str, required=True)
+@click.option("--nb-token", "-nbt", help="NetBox Token", type=str, required=True)
+@click.option("--nb-platform", "-nbt", help="NetBox device platform", type=str, default="Arista EOS", required=True)
+@click.option("--nb-token", "-nbt", help="NetBox Token", type=str, required=True)
+@click.option("--nb-verify", "-nbf", help="NetBox Verify", type=bool, default=False, required=False)
+def from_netbox(ctx: click.Context, nb_instance: str, output: Path, nb_token: str, nb_platform: str, nb_verify: bool=False) -> None:
+    """Build ANTA inventory from a NetBox instance."""
+    logger.info("Building inventory from netbox instance file '%s'", nb_instance)
+    try:
+        create_inventory_from_netbox(
+            nb_instance=nb_instance,
+            output=output,
+            token=nb_token,
+            platform=nb_platform,
+            verify=nb_verify
         )
     except ValueError as e:
         logger.error(str(e))

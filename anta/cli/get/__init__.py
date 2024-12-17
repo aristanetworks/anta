@@ -15,6 +15,7 @@ def get() -> None:
 
 get.add_command(commands.from_cvp)
 get.add_command(commands.from_ansible)
+get.add_command(commands.from_netbox)
 get.add_command(commands.inventory)
 get.add_command(commands.tags)
 get.add_command(commands.tests)
