@@ -17,3 +17,12 @@ MD_REPORT_TOC = """**Table of Contents:**
     - [Summary Totals Per Category](#summary-totals-per-category)
   - [Test Results](#test-results)"""
 """Table of Contents for the Markdown report."""
+
+KNOWN_EOS_ERRORS = [
+    r"BGP inactive",
+    r"VRF '.*' is not active",
+    r".* does not support IP",
+    r"IS-IS (.*) is disabled because: .*",
+    r"No source interface .*",
+]
+"""List of known EOS errors that should set a test status to 'failure' with the error message."""

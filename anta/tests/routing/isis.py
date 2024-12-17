@@ -349,7 +349,6 @@ class VerifyISISSegmentRoutingAdjacencySegments(AntaTest):
                   - interface: Ethernet2
                     address: 10.0.1.3
                     sid_origin: dynamic
-
     ```
     """
 
@@ -530,21 +529,21 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
     --------
     ```yaml
     anta.tests.routing:
-    isis:
+      isis:
         - VerifyISISSegmentRoutingTunnels:
             entries:
-            # Check only endpoint
-            - endpoint: 1.0.0.122/32
-            # Check endpoint and via TI-LFA
-            - endpoint: 1.0.0.13/32
-              vias:
-                - type: tunnel
-                  tunnel_id: ti-lfa
-            # Check endpoint and via IP routers
-            - endpoint: 1.0.0.14/32
-              vias:
-                - type: ip
-                  nexthop: 1.1.1.1
+              # Check only endpoint
+              - endpoint: 1.0.0.122/32
+              # Check endpoint and via TI-LFA
+              - endpoint: 1.0.0.13/32
+                vias:
+                  - type: tunnel
+                    tunnel_id: ti-lfa
+              # Check endpoint and via IP routers
+              - endpoint: 1.0.0.14/32
+                vias:
+                  - type: ip
+                    nexthop: 1.1.1.1
     ```
     """
 
