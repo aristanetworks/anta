@@ -3,7 +3,6 @@
 # that can be found in the LICENSE file.
 """ANTA CLI."""
 
-
 from __future__ import annotations
 
 import sys

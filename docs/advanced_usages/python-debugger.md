@@ -41,9 +41,9 @@ The `.vscode` folder contains the `launch.json` file, which defines the debugger
 
 1. Open the Project in VSCode: Open the ANTA project folder in VSCode.
 
-2. __Set Breakpoints__: Navigate to the Python file where you want to set breakpoints. Click on the left margin next to the line numbers to set a breakpoint.
+2. **Set Breakpoints**: Navigate to the Python file where you want to set breakpoints. Click on the left margin next to the line numbers to set a breakpoint.
 
-3. __Configure the Debugger__: Open the launch.json file and ensure the configuration is set up as shown above. Modify the args field to include the CLI command and options you want to debug.
+3. **Configure the Debugger**: Open the launch.json file and ensure the configuration is set up as shown above. Modify the args field to include the CLI command and options you want to debug.
 
 4. Start Debugging with the side panel tool or by pressing `F5`:
 
@@ -53,21 +53,20 @@ The `.vscode` folder contains the `launch.json` file, which defines the debugger
 
     4.3 Click the green play button to start debugging.
 
-5. __Inspect__ Variables and Step Through Code:
+5. **Inspect** Variables and Step Through Code:
 
     5.1 Use the Debug toolbar to step through the code, inspect variables, and evaluate expressions.
 
     5.2 The Debug Console allows you to interact with the running program.
 
-
 ## Available debugger in anta project
 
 To make life easier, anta project has 2 pre-configured debugger configuration to run anta CLI in debug mode:
 
-- __anta cli nrfu text__: Run anta using CLI to get nrfu in text mode
-- __anta cli nrfu table__: Run anta using CLI to get nrfu in text mode
+- **anta cli nrfu text**: Run anta using CLI to get nrfu in text mode
+- **anta cli nrfu table**: Run anta using CLI to get nrfu in text mode
 
-Both are based on a variable file you have to configure prior to run debugger. This file must be named __`.vscode/debugger.env`__ and have all the variable you need for running the CLI. Below is an example:
+Both are based on a variable file you have to configure prior to run debugger. This file must be named **`.vscode/debugger.env`** and have all the variable you need for running the CLI. Below is an example:
 
 ```bash
 # .vscode/debugger.env

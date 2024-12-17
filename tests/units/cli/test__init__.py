@@ -5,8 +5,8 @@
 
 from __future__ import annotations
 
-import sys
 import logging
+import sys
 from importlib import reload
 from typing import TYPE_CHECKING, Any
 from unittest.mock import patch
@@ -27,22 +27,23 @@ builtins_import = __import__
 def import_mock(name: str, *args: Any) -> ModuleType:  # noqa: ANN401
     """Mock."""
     if name == "click":
-        msg = "No module named 'click'",
+        msg = ("No module named 'click'",)
         raise ModuleNotFoundError(name=name)
     return builtins_import(name, *args)
 
 
 def test_cli_error_missing(caplog: pytest.CaptureFixture[Any]) -> None:
     """Test ANTA errors out when anta[cli] was not installed."""
-
     with patch.dict(sys.modules) as sys_modules, patch("builtins.__import__", import_mock):
         import anta.cli._main
+
         del sys_modules["anta.cli._main"]
         del sys_modules["anta.cli._main"]
         # del sys_modules["anta.cli.console"]
 
         with pytest.raises(SystemExit) as e_info:
             import anta.cli.__main__
+
             anta.cli.__main__.cli()
 
         logging.warning(f">> CAPLOG: {caplog.text}")
@@ -59,9 +60,6 @@ def test_cli_error_missing(caplog: pytest.CaptureFixture[Any]) -> None:
 
         captured = caplog.text
         assert "The ANTA command line client could not run because the required dependencies were not installed." in captured
-        assert (
-            "Make sure you've installed everything with: pip install 'anta[cli]'"
-            in captured
-        )
+        assert "Make sure you've installed everything with: pip install 'anta[cli]'" in captured
         assert "The caught exception was:" in captured
         assert e_info.value.code == 1

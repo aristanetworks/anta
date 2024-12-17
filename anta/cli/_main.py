@@ -31,9 +31,7 @@ logger = logging.getLogger(__name__)
     "--log-file",
     help="Send the logs to a file. If logging level is DEBUG, only INFO or higher will be sent to stdout.",
     show_envvar=True,
-    type=click.Path(
-        file_okay=True, dir_okay=False, writable=True, path_type=pathlib.Path
-    ),
+    type=click.Path(file_okay=True, dir_okay=False, writable=True, path_type=pathlib.Path),
 )
 @click.option(
     "--log-level",
