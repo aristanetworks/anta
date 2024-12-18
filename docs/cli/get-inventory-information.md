@@ -52,8 +52,8 @@ Options:
   --help                         Show this message and exit.
 ```
 
-!!! tip
-    By default, `anta get inventory` only provides information that doesn't rely on a device connection. If you are interested in obtaining connection-dependent details, like the hardware model, use the `--connected` option.
+> [!TIP]
+> By default, `anta get inventory` only provides information that doesn't rely on a device connection. If you are interested in obtaining connection-dependent details, like the hardware model, use the `--connected` option.
 
 ### Example
 

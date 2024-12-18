@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 import logging
-import resource
+import os
 import sys
 from pathlib import Path
 from unittest.mock import patch
@@ -16,9 +16,15 @@ import pytest
 from anta.catalog import AntaCatalog
 from anta.inventory import AntaInventory
 from anta.result_manager import ResultManager
-from anta.runner import adjust_rlimit_nofile, main, prepare_tests
+from anta.runner import main, prepare_tests
 
 from .test_models import FakeTest, FakeTestWithMissingTest
+
+if os.name == "posix":
+    # The function is not defined on non-POSIX system
+    import resource
+
+    from anta.runner import adjust_rlimit_nofile
 
 DATA_DIR: Path = Path(__file__).parent.parent.resolve() / "data"
 FAKE_CATALOG: AntaCatalog = AntaCatalog.from_list([(FakeTest, None)])
@@ -65,8 +71,10 @@ async def test_no_selected_device(caplog: pytest.LogCaptureFixture, inventory: A
     assert msg in caplog.messages
 
 
+@pytest.mark.skipif(os.name != "posix", reason="Cannot run this test on Windows")
 def test_adjust_rlimit_nofile_valid_env(caplog: pytest.LogCaptureFixture) -> None:
     """Test adjust_rlimit_nofile with valid environment variables."""
+    # pylint: disable=E0606
     with (
         caplog.at_level(logging.DEBUG),
         patch.dict("os.environ", {"ANTA_NOFILE": "20480"}),
@@ -96,6 +104,7 @@ def test_adjust_rlimit_nofile_valid_env(caplog: pytest.LogCaptureFixture) -> Non
         setrlimit_mock.assert_called_once_with(resource.RLIMIT_NOFILE, (20480, 1048576))
 
 
+@pytest.mark.skipif(os.name != "posix", reason="Cannot run this test on Windows")
 def test_adjust_rlimit_nofile_invalid_env(caplog: pytest.LogCaptureFixture) -> None:
     """Test adjust_rlimit_nofile with valid environment variables."""
     with (
@@ -127,6 +136,31 @@ def test_adjust_rlimit_nofile_invalid_env(caplog: pytest.LogCaptureFixture) -> N
         assert "Setting soft limit for open file descriptors for the current ANTA process to 16384" in caplog.text
 
         setrlimit_mock.assert_called_once_with(resource.RLIMIT_NOFILE, (16384, 1048576))
+
+
+@pytest.mark.skipif(os.name == "posix", reason="Run this test on Windows only")
+async def test_check_runner_log_for_windows(caplog: pytest.LogCaptureFixture, inventory: AntaInventory) -> None:
+    """Test log output for Windows host regarding rlimit."""
+    caplog.set_level(logging.INFO)
+    manager = ResultManager()
+    # Using dry-run to shorten the test
+    await main(manager, inventory, FAKE_CATALOG, dry_run=True)
+    assert "Running on a non-POSIX system, cannot adjust the maximum number of file descriptors." in caplog.records[-3].message
+
+
+# We could instead merge multiple coverage report together but that requires more work than just this.
+@pytest.mark.skipif(os.name != "posix", reason="Fake non-posix for coverage")
+async def test_check_runner_log_for_windows_fake(caplog: pytest.LogCaptureFixture, inventory: AntaInventory) -> None:
+    """Test log output for Windows host regarding rlimit."""
+    with patch("os.name", new="win32"):
+        del sys.modules["anta.runner"]
+        from anta.runner import main  # pylint: disable=W0621
+
+        caplog.set_level(logging.INFO)
+        manager = ResultManager()
+        # Using dry-run to shorten the test
+        await main(manager, inventory, FAKE_CATALOG, dry_run=True)
+        assert "Running on a non-POSIX system, cannot adjust the maximum number of file descriptors." in caplog.records[-3].message
 
 
 @pytest.mark.parametrize(

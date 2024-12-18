@@ -52,8 +52,8 @@ anta_inventory:
     - pod2
 ```
 
-!!! warning
-    The current implementation only considers devices directly attached to a specific container when using the `--cvp-container` option.
+> [!WARNING]
+> The current implementation only considers devices directly attached to a specific container when using the `--cvp-container` option.
 
 ## Creating an inventory from multiple containers
 

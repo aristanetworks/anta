@@ -17,7 +17,7 @@ from anta.cli.utils import ExitCode
 if TYPE_CHECKING:
     from click.testing import CliRunner
 
-DATA_DIR: Path = Path(__file__).parent.parent.parent.parent.resolve() / "data"
+DATA_DIR: Path = Path(__file__).parents[3].resolve() / "data"
 
 
 def test_anta_nrfu_table_help(click_runner: CliRunner) -> None:

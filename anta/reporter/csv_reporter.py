@@ -107,7 +107,7 @@ class ReportCsv:
         ]
 
         try:
-            with csv_filename.open(mode="w", encoding="utf-8") as csvfile:
+            with csv_filename.open(mode="w", encoding="utf-8", newline="") as csvfile:
                 csvwriter = csv.writer(
                     csvfile,
                     delimiter=",",

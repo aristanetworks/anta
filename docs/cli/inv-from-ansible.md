@@ -31,12 +31,13 @@ Options:
   --help                    Show this message and exit.
 ```
 
-!!! warning "Warnings"
-
-    * `anta get from-ansible` does not support inline vaulted variables, comment them out to generate your inventory.
-    If the vaulted variable is necessary to build the inventory (e.g. `ansible_host`), it needs to be unvaulted for `from-ansible` command to work."
-
-    * The current implementation only considers devices directly attached to a specific Ansible group and does not support inheritance when using the `--ansible-group` option.
+> [!WARNING]
+>
+> - `anta get from-ansible` does not support inline vaulted variables, comment them out to generate your inventory.
+>
+> - If the vaulted variable is necessary to build the inventory (e.g. `ansible_host`), it needs to be unvaulted for `from-ansible` command to work."
+>
+> - The current implementation only considers devices directly attached to a specific Ansible group and does not support inheritance when using the `--ansible-group` option.
 
 By default, if user does not provide `--output` file, anta will save output to configured anta inventory (`anta --inventory`). If the output file has content, anta will ask user to overwrite when running in interactive console. This mechanism can be controlled by triggers in case of CI usage: `--overwrite` to force anta to overwrite file. If not set, anta will exit
 

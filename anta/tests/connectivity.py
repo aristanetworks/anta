@@ -56,13 +56,12 @@ class VerifyReachability(AntaTest):
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each host in the input list."""
-        commands = []
-        for host in self.inputs.hosts:
-            # df_bit includes leading space when enabled, empty string when disabled
-            df_bit = " df-bit" if host.df_bit else ""
-            command = template.render(destination=host.destination, source=host.source, vrf=host.vrf, repeat=host.repeat, size=host.size, df_bit=df_bit)
-            commands.append(command)
-        return commands
+        return [
+            template.render(
+                destination=host.destination, source=host.source, vrf=host.vrf, repeat=host.repeat, size=host.size, df_bit=" df-bit" if host.df_bit else ""
+            )
+            for host in self.inputs.hosts
+        ]
 
     @AntaTest.anta_test
     def test(self) -> None:

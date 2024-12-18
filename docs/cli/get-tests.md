@@ -26,8 +26,8 @@ Options:
   --help         Show this message and exit.
 ```
 
-!!! tip
-    By default, `anta get tests` will retrieve all tests available in ANTA.
+> [!TIP]
+> By default, `anta get tests` will retrieve all tests available in ANTA.
 
 ### Examples
 
@@ -91,9 +91,8 @@ anta.tests.aaa:
       vrf: MGMT
 ```
 
-!!! tip
-
-    You can filter tests by providing a prefix - ANTA will return all tests that start with your specified string.
+> [!TIP]
+> You can filter tests by providing a prefix - ANTA will return all tests that start with your specified string.
 
 ```yaml title="anta get tests --test VerifyTacacs"
 anta.tests.aaa:
