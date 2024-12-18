@@ -13,7 +13,7 @@ from typing import Any, ClassVar, Literal
 from pydantic import BaseModel
 
 from anta.custom_types import Interface
-from anta.input_models.routing.isis import InterfaceCount, InterfaceState, ISISInstance, IsisInstance, ISISInterface
+from anta.input_models.routing.isis import ISISInstance, ISISInterface
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_value
 
@@ -186,7 +186,7 @@ class VerifyISISNeighborCount(AntaTest):
 
         interfaces: list[ISISInterface]
         """list of interfaces with their information."""
-        InterfaceCount: ClassVar[type[InterfaceCount]] = InterfaceCount
+        InterfaceCount: ClassVar[type[ISISInterface]] = ISISInterface
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -253,7 +253,7 @@ class VerifyISISInterfaceMode(AntaTest):
 
         interfaces: list[ISISInterface]
         """list of interfaces with their information."""
-        InterfaceState: ClassVar[type[InterfaceState]] = InterfaceState
+        InterfaceState: ClassVar[type[ISISInterface]] = ISISInterface
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -277,7 +277,7 @@ class VerifyISISInterfaceMode(AntaTest):
                 interface_type = get_value(dictionary=interface_data, key="interfaceType", default="unset")
                 # Check for interfaceType
                 if interface.mode == "point-to-point" and interface.mode != interface_type:
-                    self.result.is_failure(f"{interface} - Incorrect mode - Expected: point-to-point Actual: {interface_type}")
+                    self.result.is_failure(f"{interface} - Incorrect circuit type - Expected: point-to-point Actual: {interface_type}")
                 # Check for passive
                 elif interface.mode == "passive":
                     json_path = f"intfLevels.{interface.level}.passive"
@@ -320,7 +320,7 @@ class VerifyISISSegmentRoutingAdjacencySegments(AntaTest):
 
         instances: list[ISISInstance]
         """list of ISIS instances with their information."""
-        IsisInstance: ClassVar[type[IsisInstance]] = IsisInstance
+        IsisInstance: ClassVar[type[ISISInstance]] = ISISInstance
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -356,17 +356,18 @@ class VerifyISISSegmentRoutingAdjacencySegments(AntaTest):
                 )
                 if eos_segment is None:
                     self.result.is_failure(f"{instance} {input_segment} - Segment not configured")
+                    continue
 
-                elif not all(
-                    [
-                        (act_origin := eos_segment["sidOrigin"]) == input_segment.sid_origin,
-                        (endpoint := eos_segment["ipAddress"]) == str(input_segment.address),
-                        (actual_level := eos_segment["level"]) == input_segment.level,
-                    ]
-                ):
+                if (act_origin := eos_segment["sidOrigin"]) != input_segment.sid_origin:
                     self.result.is_failure(
-                        f"{instance} {input_segment} - Not correctly configured - Origin: {act_origin} Endpoint: {endpoint} Level: {actual_level}"
+                        f"{instance} {input_segment} - Incorrect Segment Identifier origin - Expected: {input_segment.sid_origin} Actual: {act_origin}"
                     )
+
+                if (endpoint := eos_segment["ipAddress"]) != str(input_segment.address):
+                    self.result.is_failure(f"{instance} {input_segment} - Incorrect Segment endpoint - Expected: {input_segment.address} Actual: {endpoint}")
+
+                if (actual_level := eos_segment["level"]) != input_segment.level:
+                    self.result.is_failure(f"{instance} {input_segment} - Incorrect IS-IS level - Expected: {input_segment.level} Actual: {actual_level}")
 
 
 class VerifyISISSegmentRoutingDataplane(AntaTest):
@@ -408,7 +409,7 @@ class VerifyISISSegmentRoutingDataplane(AntaTest):
 
         instances: list[ISISInstance]
         """list of ISIS instances with their information."""
-        IsisInstance: ClassVar[type[IsisInstance]] = IsisInstance
+        IsisInstance: ClassVar[type[ISISInstance]] = ISISInstance
 
     @AntaTest.anta_test
     def test(self) -> None:

@@ -601,7 +601,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Interface: Ethernet1 VRF: default Level: 2 - Incorrect mode - Expected: point-to-point Actual: broadcast"],
+            "messages": ["Interface: Ethernet1 VRF: default Level: 2 - Incorrect circuit type - Expected: point-to-point Actual: broadcast"],
         },
     },
     {
@@ -885,7 +885,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Instance: CORE-ISIS VRF: default Interface: Ethernet3 Endpoint: 10.0.1.2 - Segment not configured"],
+            "messages": ["Instance: CORE-ISIS VRF: default Interface: Ethernet3 IP Addr: 10.0.1.2 - Segment not configured"],
         },
     },
     {
@@ -1114,9 +1114,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": [
-                "Instance: CORE-ISIS VRF: default Interface: Ethernet2 Endpoint: 10.0.1.3 - Not correctly configured - Origin: dynamic Endpoint: 10.0.1.3 Level: 2"
-            ],
+            "messages": ["Instance: CORE-ISIS VRF: default Interface: Ethernet2 IP Addr: 10.0.1.3 - Incorrect IS-IS level - Expected: 1 Actual: 2"],
         },
     },
     {
