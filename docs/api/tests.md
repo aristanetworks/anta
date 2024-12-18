@@ -18,6 +18,7 @@ Here are the tests that we currently provide:
 - [BFD](tests.bfd.md)
 - [Configuration](tests.configuration.md)
 - [Connectivity](tests.connectivity.md)
+- [CVX](tests.cvx.md)
 - [Field Notices](tests.field_notices.md)
 - [Flow Tracking](tests.flow_tracking.md)
 - [GreenT](tests.greent.md)
@@ -43,6 +44,10 @@ Here are the tests that we currently provide:
 - [System](tests.system.md)
 - [VLAN](tests.vlan.md)
 - [VXLAN](tests.vxlan.md)
+
+!!! tip
+
+    You can use `anta get tests` from the CLI to list all the tests available with an example. Refer to [documentation](../cli/get-tests.md) for more options.
 
 ## Using the Tests
 

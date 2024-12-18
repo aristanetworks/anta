@@ -70,7 +70,6 @@ dev = [
   "pytest-cov>=4.1.0",
   "pytest-dependency",
   "pytest-codspeed>=2.2.0",
-  "respx",
   "pytest-html>=3.2.0",
   "pytest-httpx>=0.30.0",
   "pytest-metadata>=3.0.0",
@@ -98,7 +97,8 @@ doc = [
   "mkdocs-material>=9.5.34",
   "mkdocstrings[python]>=0.26.0",
   "mkdocstrings-python>=1.11.0",
-  "black>=24.10.0"
+  "black>=24.10.0",
+  "mkdocs-github-admonitions-plugin>=0.0.3"
 ]
 
 [project.urls]
@@ -339,9 +339,9 @@ select = ["ALL",
     # By enabling a convention for docstrings, ruff automatically ignore some rules that need to be
     # added back if we want them.
     # https://docs.astral.sh/ruff/faq/#does-ruff-support-numpy-or-google-style-docstrings
+    "D212",
     "D415",
     "D417",
-    "D212",
 ]
 ignore = [
   "COM812",  # Ignoring conflicting rules that may cause conflicts when used with the formatter

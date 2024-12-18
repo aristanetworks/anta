@@ -86,7 +86,7 @@ class VerifyHardwareFlowTrackerStatus(AntaTest):
     --------
     ```yaml
     anta.tests.flow_tracking:
-      - VerifyFlowTrackingHardware:
+      - VerifyHardwareFlowTrackerStatus:
           trackers:
             - name: FLOW-TRACKER
               record_export:
