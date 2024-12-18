@@ -73,6 +73,15 @@ class ResultManager:
         ]
     """
 
+    _result_entries: list[TestResult]
+    status: AntaTestStatus
+    error_status: bool
+
+    _device_stats: defaultdict[str, DeviceStats]
+    _category_stats: defaultdict[str, CategoryStats]
+    _test_stats: defaultdict[str, TestStats]
+    _stats_in_sync: bool
+
     def __init__(self) -> None:
         """Class constructor.
 
@@ -102,11 +111,8 @@ class ResultManager:
         self.status: AntaTestStatus = AntaTestStatus.UNSET
         self.error_status = False
 
-        # Initialize the stats attributes
-        self._device_stats: defaultdict[str, DeviceStats] = defaultdict(DeviceStats)
-        self._category_stats: defaultdict[str, CategoryStats] = defaultdict(CategoryStats)
-        self._test_stats: defaultdict[str, TestStats] = defaultdict(TestStats)
-        self._stats_in_sync = False
+        # Initialize the statistics attributes
+        self._reset_stats()
 
     def __len__(self) -> int:
         """Implement __len__ method to count number of results."""
@@ -121,11 +127,7 @@ class ResultManager:
     def results(self, value: list[TestResult]) -> None:
         """Set the list of TestResult."""
         # When setting the results, we need to reset the state of the current instance
-        self._result_entries = []
-        self.status = AntaTestStatus.UNSET
-        self.error_status = False
-
-        self._reset_stats()
+        self.reset()
 
         for result in value:
             self.add(result)
@@ -186,7 +188,7 @@ class ResultManager:
             self.status = AntaTestStatus.FAILURE
 
     def _reset_stats(self) -> None:
-        """Reset the statistics."""
+        """Create or reset the statistics attributes."""
         self._device_stats = defaultdict(DeviceStats)
         self._category_stats = defaultdict(CategoryStats)
         self._test_stats = defaultdict(TestStats)
