@@ -10,6 +10,7 @@ import logging
 from collections import defaultdict
 from functools import cached_property
 from itertools import chain
+from typing import Any
 
 from anta.result_manager.models import AntaTestStatus, TestResult
 
@@ -93,6 +94,10 @@ class ResultManager:
         If the status of the added test is error, the status is untouched and the
         error_status is set to True.
         """
+        self.reset()
+
+    def reset(self) -> None:
+        """Create or reset the attributes of the ResultManager instance."""
         self._result_entries: list[TestResult] = []
         self.status: AntaTestStatus = AntaTestStatus.UNSET
         self.error_status = False
@@ -126,9 +131,14 @@ class ResultManager:
             self.add(result)
 
     @property
+    def dump(self) -> list[dict[str, Any]]:
+        """Get a list of dictionary of the results."""
+        return [result.model_dump() for result in self._result_entries]
+
+    @property
     def json(self) -> str:
         """Get a JSON representation of the results."""
-        return json.dumps([result.model_dump() for result in self._result_entries], indent=4)
+        return json.dumps(self.dump, indent=4)
 
     @property
     def device_stats(self) -> defaultdict[str, DeviceStats]:
