@@ -211,7 +211,7 @@ def get_coroutines(selected_tests: defaultdict[AntaDevice, set[AntaTestDefinitio
 
 
 @cprofile()
-async def main(  # noqa: PLR0913
+async def main(
     manager: ResultManager,
     inventory: AntaInventory,
     catalog: AntaCatalog,
