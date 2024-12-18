@@ -74,6 +74,7 @@ repos:
           - pytest
           - pytest-codspeed
           - respx
+          - pydantic-settings
 
   - repo: https://github.com/codespell-project/codespell
     rev: v2.3.0
