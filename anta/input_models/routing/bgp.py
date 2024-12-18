@@ -5,8 +5,8 @@
 
 from __future__ import annotations
 
-from ipaddress import IPv4Address, IPv6Address
-from typing import TYPE_CHECKING, Any
+from ipaddress import IPv4Address, IPv4Network, IPv6Address
+from typing import TYPE_CHECKING, Any, Literal
 from warnings import warn
 
 from pydantic import BaseModel, ConfigDict, PositiveInt, model_validator
@@ -128,3 +128,50 @@ class BgpAfi(BgpAddressFamily):  # pragma: no cover
             stacklevel=2,
         )
         super().__init__(**data)
+
+
+class BgpRoute(BaseModel):
+    """Model representing BGP routes.
+
+    Only IPv4 prefixes are supported for now.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+    prefix: IPv4Network
+    """The IPv4 network address."""
+    vrf: str = "default"
+    """Optional VRF for the BGP peer. Defaults to `default`."""
+    paths: list[RoutePath] | None = None
+    """A list of paths for the BGP route. Required field in the `VerifyBGPRouteOrigin` test."""
+
+    def __str__(self) -> str:
+        """Return a human-readable string representation of the BgpRoute for reporting.
+
+        Examples
+        --------
+        - Prefix: 192.168.66.100/24 VRF: default
+        """
+        return f"Prefix: {self.prefix} VRF: {self.vrf}"
+
+
+class RoutePath(BaseModel):
+    """Model representing a BGP route path."""
+
+    model_config = ConfigDict(extra="forbid")
+    nexthop: IPv4Address
+    """The next-hop IPv4 address for the path."""
+    origin: Literal["Igp", "Egp", "Incomplete"]
+    """The origin type of the BGP route path:
+        - 'Igp': Indicates the route originated from an interior gateway protocol (IGP).
+        - 'Egp': Indicates the route originated from an exterior gateway protocol (EGP).
+        - 'Incomplete': Indicates the origin is unknown or learned by other means.
+    """
+
+    def __str__(self) -> str:
+        """Return a human-readable string representation of the RoutePath for reporting.
+
+        Examples
+        --------
+        - Nexthop: 192.168.66.101 Origin: Igp
+        """
+        return f"Nexthop: {self.nexthop}"

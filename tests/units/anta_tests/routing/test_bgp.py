@@ -4522,11 +4522,7 @@ DATA: list[dict[str, Any]] = [
                                 ],
                             }
                         }
-                    }
-                }
-            },
-            {
-                "vrfs": {
+                    },
                     "MGMT": {
                         "bgpRouteEntries": {
                             "10.100.0.130/31": {
@@ -4546,7 +4542,7 @@ DATA: list[dict[str, Any]] = [
                                 ],
                             }
                         }
-                    }
+                    },
                 }
             },
         ],
@@ -4555,12 +4551,12 @@ DATA: list[dict[str, Any]] = [
                 {
                     "prefix": "10.100.0.128/31",
                     "vrf": "default",
-                    "route_paths": [{"nexthop": "10.100.0.10", "origin": "Igp"}, {"nexthop": "10.100.4.5", "origin": "Incomplete"}],
+                    "paths": [{"nexthop": "10.100.0.10", "origin": "Igp"}, {"nexthop": "10.100.4.5", "origin": "Incomplete"}],
                 },
                 {
                     "prefix": "10.100.0.130/31",
                     "vrf": "MGMT",
-                    "route_paths": [{"nexthop": "10.100.0.8", "origin": "Igp"}, {"nexthop": "10.100.0.10", "origin": "Igp"}],
+                    "paths": [{"nexthop": "10.100.0.8", "origin": "Igp"}, {"nexthop": "10.100.0.10", "origin": "Igp"}],
                 },
             ]
         },
@@ -4591,11 +4587,7 @@ DATA: list[dict[str, Any]] = [
                                 ],
                             }
                         }
-                    }
-                }
-            },
-            {
-                "vrfs": {
+                    },
                     "MGMT": {
                         "bgpRouteEntries": {
                             "10.100.0.130/31": {
@@ -4615,7 +4607,7 @@ DATA: list[dict[str, Any]] = [
                                 ],
                             }
                         }
-                    }
+                    },
                 }
             },
         ],
@@ -4624,23 +4616,22 @@ DATA: list[dict[str, Any]] = [
                 {
                     "prefix": "10.100.0.128/31",
                     "vrf": "default",
-                    "route_paths": [{"nexthop": "10.100.0.10", "origin": "Incomplete"}, {"nexthop": "10.100.4.5", "origin": "Igp"}],
+                    "paths": [{"nexthop": "10.100.0.10", "origin": "Incomplete"}, {"nexthop": "10.100.4.5", "origin": "Igp"}],
                 },
                 {
                     "prefix": "10.100.0.130/31",
                     "vrf": "MGMT",
-                    "route_paths": [{"nexthop": "10.100.0.8", "origin": "Incomplete"}, {"nexthop": "10.100.0.10", "origin": "Incomplete"}],
+                    "paths": [{"nexthop": "10.100.0.8", "origin": "Incomplete"}, {"nexthop": "10.100.0.10", "origin": "Incomplete"}],
                 },
             ]
         },
         "expected": {
             "result": "failure",
             "messages": [
-                "Following BGP route entry(s) or nexthop path(s) not found or origin type is not correct:\n"
-                "{'10.100.0.128/31': {'default': {'10.100.0.10': 'Expected `Incomplete` as the origin, but found `Igp` instead.', "
-                "'10.100.4.5': 'Expected `Igp` as the origin, but found `Incomplete` instead.'}}, "
-                "'10.100.0.130/31': {'MGMT': {'10.100.0.8': 'Expected `Incomplete` as the origin, but found `Igp` instead.', "
-                "'10.100.0.10': 'Expected `Incomplete` as the origin, but found `Igp` instead.'}}}"
+                "Prefix: 10.100.0.128/31 VRF: default Nexthop: 10.100.0.10 - Origin mismatch - Expected: Incomplete Actual: Igp",
+                "Prefix: 10.100.0.128/31 VRF: default Nexthop: 10.100.4.5 - Origin mismatch - Expected: Igp Actual: Incomplete",
+                "Prefix: 10.100.0.130/31 VRF: MGMT Nexthop: 10.100.0.8 - Origin mismatch - Expected: Incomplete Actual: Igp",
+                "Prefix: 10.100.0.130/31 VRF: MGMT Nexthop: 10.100.0.10 - Origin mismatch - Expected: Incomplete Actual: Igp",
             ],
         },
     },
@@ -4663,11 +4654,7 @@ DATA: list[dict[str, Any]] = [
                                 ],
                             }
                         }
-                    }
-                }
-            },
-            {
-                "vrfs": {
+                    },
                     "MGMT": {
                         "bgpRouteEntries": {
                             "10.100.0.130/31": {
@@ -4681,7 +4668,7 @@ DATA: list[dict[str, Any]] = [
                                 ],
                             }
                         }
-                    }
+                    },
                 }
             },
         ],
@@ -4690,21 +4677,22 @@ DATA: list[dict[str, Any]] = [
                 {
                     "prefix": "10.100.0.128/31",
                     "vrf": "default",
-                    "route_paths": [{"nexthop": "10.100.0.10", "origin": "Incomplete"}, {"nexthop": "10.100.4.5", "origin": "Igp"}],
+                    "paths": [{"nexthop": "10.100.0.10", "origin": "Incomplete"}, {"nexthop": "10.100.4.5", "origin": "Igp"}],
                 },
                 {
                     "prefix": "10.100.0.130/31",
                     "vrf": "MGMT",
-                    "route_paths": [{"nexthop": "10.100.0.8", "origin": "Incomplete"}, {"nexthop": "10.100.0.10", "origin": "Incomplete"}],
+                    "paths": [{"nexthop": "10.100.0.8", "origin": "Incomplete"}, {"nexthop": "10.100.0.10", "origin": "Incomplete"}],
                 },
             ]
         },
         "expected": {
             "result": "failure",
             "messages": [
-                "Following BGP route entry(s) or nexthop path(s) not found or origin type is not correct:\n"
-                "{'10.100.0.128/31': {'default': {'10.100.0.10': 'Path not found.', '10.100.4.5': 'Path not found.'}}, "
-                "'10.100.0.130/31': {'MGMT': {'10.100.0.8': 'Path not found.', '10.100.0.10': 'Path not found.'}}}"
+                "Prefix: 10.100.0.128/31 VRF: default Nexthop: 10.100.0.10 - path not found",
+                "Prefix: 10.100.0.128/31 VRF: default Nexthop: 10.100.4.5 - path not found",
+                "Prefix: 10.100.0.130/31 VRF: MGMT Nexthop: 10.100.0.8 - path not found",
+                "Prefix: 10.100.0.130/31 VRF: MGMT Nexthop: 10.100.0.10 - path not found",
             ],
         },
     },
@@ -4712,29 +4700,25 @@ DATA: list[dict[str, Any]] = [
         "name": "failure-route-not-found",
         "test": VerifyBGPRouteOrigin,
         "eos_data": [
-            {"vrfs": {"default": {"bgpRouteEntries": {}}}},
-            {"vrfs": {"MGMT": {"bgpRouteEntries": {}}}},
+            {"vrfs": {"default": {"bgpRouteEntries": {}}, "MGMT": {"bgpRouteEntries": {}}}},
         ],
         "inputs": {
             "route_entries": [
                 {
                     "prefix": "10.100.0.128/31",
                     "vrf": "default",
-                    "route_paths": [{"nexthop": "10.100.0.10", "origin": "Incomplete"}, {"nexthop": "10.100.4.5", "origin": "Igp"}],
+                    "paths": [{"nexthop": "10.100.0.10", "origin": "Incomplete"}, {"nexthop": "10.100.4.5", "origin": "Igp"}],
                 },
                 {
                     "prefix": "10.100.0.130/31",
                     "vrf": "MGMT",
-                    "route_paths": [{"nexthop": "10.100.0.8", "origin": "Incomplete"}, {"nexthop": "10.100.0.10", "origin": "Incomplete"}],
+                    "paths": [{"nexthop": "10.100.0.8", "origin": "Incomplete"}, {"nexthop": "10.100.0.10", "origin": "Incomplete"}],
                 },
             ]
         },
         "expected": {
             "result": "failure",
-            "messages": [
-                "Following BGP route entry(s) or nexthop path(s) not found or origin type is not correct:\n"
-                "{'10.100.0.128/31': {'default': 'Not configured'}, '10.100.0.130/31': {'MGMT': 'Not configured'}}"
-            ],
+            "messages": ["Prefix: 10.100.0.128/31 VRF: default - routes not found", "Prefix: 10.100.0.130/31 VRF: MGMT - routes not found"],
         },
     },
 ]

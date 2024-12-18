@@ -463,6 +463,16 @@ anta.tests.routing.bgp:
           safi: "unicast"
           vrf: "DEV"
           check_tcp_queues: false
+  - VerifyBGPRouteOrigin:
+      # Verifies BGP route origin.
+      route_entries:
+          - prefix: 10.100.0.128/31
+            vrf: default
+            route_paths:
+              - nexthop: 10.100.0.10
+                origin: Igp
+              - nexthop: 10.100.4.5
+                origin: Incomplete
   - VerifyBGPSpecificPeers:
       # Verifies the health of specific BGP peer(s) for given address families.
       address_families:

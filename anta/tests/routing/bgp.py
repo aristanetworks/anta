@@ -7,15 +7,15 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from ipaddress import IPv4Address, IPv4Network, IPv6Address
-from typing import TYPE_CHECKING, Any, ClassVar, Literal
+from ipaddress import IPv4Address, IPv4Network
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from pydantic import BaseModel, Field, field_validator, model_validator
 from pydantic.v1.utils import deep_update
 from pydantic_extra_types.mac_address import MacAddress
 
 from anta.custom_types import BgpDropStats, BgpUpdateError, MultiProtocolCaps, Vni
-from anta.input_models.routing.bgp import BgpAddressFamily, BgpAfi
+from anta.input_models.routing.bgp import BgpAddressFamily, BgpAfi, BgpRoute
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import format_data, get_item, get_value
 
@@ -1398,12 +1398,23 @@ class VerifyBGPPeerRouteLimit(AntaTest):
 
 
 class VerifyBGPRouteOrigin(AntaTest):
-    """Verifies BGP route origin for the provided IPv4 Network(s).
+    """Verifies BGP route origin.
+
+    This test performs the following checks for each specified bgp route entry:
+      1. Checks whether the specified BGP route entries exist.
+      2. Confirms that the path exists and corresponds to the next-hop address.
+      3. Verifies that the origin type of the BGP route matches the expected type.
 
     Expected Results
     ----------------
-    * Success: The test will pass if the BGP route's origin matches expected origin type and next-hop address.
-    * Failure: The test will fail if the BGP route's origin does not matches with expected origin type, next-hop address or BGP route entry(s) not found.
+    * Success: The test will pass if:
+        - The BGP route entries exist for specified prefixes.
+        - Path exists and corresponds to the specified next-hop address.
+        - The origin type of the BGP route matches the expected type.
+    * Failure: The test will fail if:
+        - The BGP route entries does not exist for specified prefixes.
+        - The Path does not exists and corresponds to the specified next-hop address.
+        - The origin type does not match the configured value.
 
     Examples
     --------
@@ -1422,10 +1433,8 @@ class VerifyBGPRouteOrigin(AntaTest):
     ```
     """
 
-    name = "VerifyBGPRouteOrigin"
-    description = "Verifies BGP route origin for the provided IPv4 Network(s)."
     categories: ClassVar[list[str]] = ["bgp"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show ip bgp {prefix} vrf {vrf}", revision=3)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip bgp detail vrf all", revision=3)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPRouteOrigin test."""
@@ -1433,61 +1442,26 @@ class VerifyBGPRouteOrigin(AntaTest):
         route_entries: list[BgpRoute]
         """List of BGP route(s)"""
 
-        class BgpRoute(BaseModel):
-            """Model for a BGP route(s)."""
-
-            prefix: IPv4Network
-            """IPv4 network address"""
-            vrf: str = "default"
-            """Optional VRF. If not provided, it defaults to `default`."""
-            route_paths: list[RoutePath]
-            """List of BGP route path(s)"""
-
-            class RoutePath(BaseModel):
-                """Model for a BGP route path(s)."""
-
-                nexthop: IPv4Address
-                """The next-hop IPv4 address for the path."""
-                origin: Literal["Igp", "Egp", "Incomplete"]
-                """The origin of the route."""
-
-    def render(self, template: AntaTemplate) -> list[AntaCommand]:
-        """Render the template for each BGP peer in the input list."""
-        return [template.render(prefix=route.prefix, vrf=route.vrf) for route in self.inputs.route_entries]
-
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyBGPRouteOrigin."""
-        failures: dict[Any, Any] = {}
+        self.result.is_success()
 
-        for command, input_entry in zip(self.instance_commands, self.inputs.route_entries):
-            prefix = str(command.params.prefix)
-            vrf = command.params.vrf
-            paths = input_entry.route_paths
-
-            # Verify if a BGP peer is configured with the provided vrf
-            if not (bgp_routes := get_value(command.json_output, f"vrfs..{vrf}..bgpRouteEntries..{prefix}..bgpRoutePaths", separator="..")):
-                failures[prefix] = {vrf: "Not configured"}
+        for route in self.inputs.route_entries:
+            # Verify if a BGP routes are present with the provided vrf
+            if not (
+                bgp_routes := get_value(self.instance_commands[0].json_output, f"vrfs..{route.vrf}..bgpRouteEntries..{route.prefix}..bgpRoutePaths", separator="..")
+            ):
+                self.result.is_failure(f"{route} - routes not found")
                 continue
 
-            # Iterating over each nexthop.
-            failure: dict[Any, Any] = {}
-            for path in paths:
+            # Iterating over each path.
+            for path in route.paths:
                 nexthop = str(path.nexthop)
                 origin = path.origin
                 if not (route_path := get_item(bgp_routes, "nextHop", nexthop)):
-                    failure[nexthop] = "Path not found."
+                    self.result.is_failure(f"{route} {path} - path not found")
                     continue
 
                 if (actual_origin := route_path.get("routeDetail", {}).get("origin", "Not Found")) != origin:
-                    failure[nexthop] = f"Expected `{origin}` as the origin, but found `{actual_origin}` instead."
-
-            # Updating failures.
-            if failure:
-                failures[prefix] = {vrf: failure}
-
-        # Check if any failures
-        if not failures:
-            self.result.is_success()
-        else:
-            self.result.is_failure(f"Following BGP route entry(s) or nexthop path(s) not found or origin type is not correct:\n{failures}")
+                    self.result.is_failure(f"{route} {path} - Origin mismatch - Expected: {origin} Actual: {actual_origin}")
