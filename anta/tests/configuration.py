@@ -33,8 +33,6 @@ class VerifyZeroTouch(AntaTest):
     ```
     """
 
-    name = "VerifyZeroTouch"
-    description = "Verifies ZeroTouch is disabled"
     categories: ClassVar[list[str]] = ["configuration"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show zerotouch", revision=1)]
 
@@ -64,8 +62,6 @@ class VerifyRunningConfigDiffs(AntaTest):
     ```
     """
 
-    name = "VerifyRunningConfigDiffs"
-    description = "Verifies there is no difference between the running-config and the startup-config"
     categories: ClassVar[list[str]] = ["configuration"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show running-config diffs", ofmt="text")]
 
@@ -98,13 +94,12 @@ class VerifyRunningConfigLines(AntaTest):
     ```yaml
     anta.tests.configuration:
       - VerifyRunningConfigLines:
-            regex_patterns:
-                - "^enable password.*$"
-                - "bla bla"
+          regex_patterns:
+            - "^enable password.*$"
+            - "bla bla"
     ```
     """
 
-    name = "VerifyRunningConfigLines"
     description = "Search the Running-Config for the given RegEx patterns."
     categories: ClassVar[list[str]] = ["configuration"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show running-config", ofmt="text")]

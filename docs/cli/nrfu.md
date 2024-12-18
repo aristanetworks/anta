@@ -9,10 +9,12 @@ anta_title: Execute Network Readiness For Use (NRFU) Testing
 
 ANTA provides a set of commands for performing NRFU tests on devices. These commands are under the `anta nrfu` namespace and offer multiple output format options:
 
-- [Text view](#performing-nrfu-with-text-rendering)
-- [Table view](#performing-nrfu-with-table-rendering)
-- [JSON view](#performing-nrfu-with-json-rendering)
-- [Custom template view](#performing-nrfu-with-custom-reports)
+- [Text report](#performing-nrfu-with-text-rendering)
+- [Table report](#performing-nrfu-with-table-rendering)
+- [JSON report](#performing-nrfu-with-json-rendering)
+- [Custom template report](#performing-nrfu-with-custom-reports)
+- [CSV report](#performing-nrfu-and-saving-results-in-a-csv-file)
+- [Markdown report](#performing-nrfu-and-saving-results-in-a-markdown-file)
 
 ## NRFU Command overview
 
@@ -24,21 +26,12 @@ ANTA provides a set of commands for performing NRFU tests on devices. These comm
 
 All commands under the `anta nrfu` namespace require a catalog yaml file specified with the `--catalog` option and a device inventory file specified with the `--inventory` option.
 
-!!! info
-    Issuing the command `anta nrfu` will run `anta nrfu table` without any option.
+> [!TIP]
+> Issuing the command `anta nrfu` will run `anta nrfu table` without any option.
 
 ### Tag management
 
-The `--tags` option can be used to target specific devices in your inventory and run only tests configured with this specific tags from your catalog. The default tag is set to `all` and is implicit. Expected behaviour is provided below:
-
-| Command | Description |
-| ------- | ----------- |
-| `none` | Run all tests on all devices according `tag` definition in your inventory and test catalog. And tests with no tag are executed on all devices|
-| `--tags leaf` | Run all tests marked with `leaf` tag on all devices configured with `leaf` tag.<br/> All other tags are ignored |
-| `--tags leaf,spine` | Run all tests marked with `leaf` tag on all devices configured with `leaf` tag.<br/>Run all tests marked with `spine` tag on all devices configured with `spine` tag.<br/> All other tags are ignored |
-
-!!! info
-    [More examples](tag-management.md) available on this dedicated page.
+The `--tags` option can be used to target specific devices in your inventory and run only tests configured with this specific tags from your catalog. Refer to the [dedicated page](tag-management.md) for more information.
 
 ### Device and test filtering
 

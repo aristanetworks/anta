@@ -1,5 +1,6 @@
 ---
-toc_depth: 2
+toc_depth: 3
+anta_title: Frequently Asked Questions (FAQ)
 ---
 <!--
   ~ Copyright (c) 2023-2024 Arista Networks, Inc.
@@ -7,7 +8,7 @@ toc_depth: 2
   ~ that can be found in the LICENSE file.
   -->
 <style>
-  .md-typeset h2 {
+  .md-typeset h3 {
     visibility: hidden;
     font-size: 0em;
     height: 0em;
@@ -20,8 +21,6 @@ toc_depth: 2
     margin-bottom: 0.8em;
   }
 </style>
-
-# Frequently Asked Questions (FAQ)
 
 ## A local OS error occurred while connecting to a device
 
@@ -124,6 +123,40 @@ toc_depth: 2
         ```bash
         export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
         ```
+
+## EOS AAA configuration for an ANTA-only user
+
+???+ faq "EOS AAA configuration for an ANTA-only user"
+
+    Here is a starting guide to configure an ANTA-only user to run ANTA tests on a device.
+
+    !!! warning
+
+        This example is not using TACACS / RADIUS but only local AAA
+
+    1. Configure the following role.
+
+        ```bash
+        role anta-users
+           10 permit command show
+           20 deny command .*
+        ```
+
+        You can then add other commands if they are required for your test catalog (`ping` for example) and then tighten down the show commands to only those required for your tests.
+
+    2. Configure the following authorization (You may need to adapt depending on your AAA setup).
+
+        ```bash
+        aaa authorization commands all default local
+        ```
+
+    3. Configure a user for the role.
+
+        ```bash
+        user anta role anta-users secret <secret>
+        ```
+
+    4. You can then use the credentials `anta` / `<secret>` to run ANTA against the device and adjust the role as required.
 
 # Still facing issues?
 

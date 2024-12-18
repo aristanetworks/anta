@@ -133,7 +133,7 @@
   }
 
   .md-typeset h4 {
-    font-size: 0.9rem;
+    font-size: 1.1rem;
     margin: 1em 0;
     font-weight: 700;
     letter-spacing: -.01em;
@@ -149,7 +149,6 @@
     letter-spacing: -.01em;
     color: var(--md-default-fg-color--light);
     font-style: italic;
-    text-decoration: underline;
   }
 
   .md-typeset table:not([class]) th {

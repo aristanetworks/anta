@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from anta.logger import anta_log_exception
+from anta.tools import convert_categories
 
 if TYPE_CHECKING:
     import pathlib
@@ -57,8 +58,7 @@ class ReportCsv:
 
     @classmethod
     def convert_to_list(cls, result: TestResult) -> list[str]:
-        """
-        Convert a TestResult into a list of string for creating file content.
+        """Convert a TestResult into a list of string for creating file content.
 
         Parameters
         ----------
@@ -71,7 +71,7 @@ class ReportCsv:
             TestResult converted into a list.
         """
         message = cls.split_list_to_txt_list(result.messages) if len(result.messages) > 0 else ""
-        categories = cls.split_list_to_txt_list(result.categories) if len(result.categories) > 0 else "None"
+        categories = cls.split_list_to_txt_list(convert_categories(result.categories)) if len(result.categories) > 0 else "None"
         return [
             str(result.name),
             result.test,
