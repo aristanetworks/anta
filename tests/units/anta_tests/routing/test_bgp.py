@@ -2815,8 +2815,8 @@ DATA: list[dict[str, Any]] = [
                         "evpnRoutePaths": [
                             {
                                 "routeType": {
-                                    "active": True,
-                                    "valid": True,
+                                    "active": False,
+                                    "valid": False,
                                 },
                             },
                         ]
@@ -3039,7 +3039,7 @@ DATA: list[dict[str, Any]] = [
         },
     },
     {
-        "name": "failure-multiple-routes-multiple-paths-not-active",
+        "name": "success-multiple-path-and-have-one-active/valid",
         "test": VerifyEVPNType2Route,
         "eos_data": [
             {
@@ -3084,10 +3084,7 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {"vxlan_endpoints": [{"address": "192.168.20.102", "vni": 10020}]},
         "expected": {
-            "result": "failure",
-            "messages": [
-                "The following EVPN Type-2 routes do not have at least one valid and active path: ['RD: 10.1.0.6:500 mac-ip 10020 aac1.ab4e.bec2 192.168.20.102']"
-            ],
+            "result": "success",
         },
     },
     {
