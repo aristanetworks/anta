@@ -7,7 +7,15 @@ from __future__ import annotations
 
 from typing import Any
 
-from anta.tests.snmp import VerifySnmpContact, VerifySnmpIPv4Acl, VerifySnmpIPv6Acl, VerifySnmpLocation, VerifySnmpStatus
+from anta.tests.snmp import (
+    VerifySnmpContact,
+    VerifySnmpErrorCounters,
+    VerifySnmpIPv4Acl,
+    VerifySnmpIPv6Acl,
+    VerifySnmpLocation,
+    VerifySnmpPDUCounters,
+    VerifySnmpStatus,
+)
 from tests.units.anta_tests import test
 
 DATA: list[dict[str, Any]] = [
@@ -150,6 +158,165 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": ["SNMP contact is not configured."],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifySnmpPDUCounters,
+        "eos_data": [
+            {
+                "counters": {
+                    "inGetPdus": 3,
+                    "inGetNextPdus": 2,
+                    "inSetPdus": 3,
+                    "outGetResponsePdus": 3,
+                    "outTrapPdus": 9,
+                },
+            }
+        ],
+        "inputs": {},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-specific-pdus",
+        "test": VerifySnmpPDUCounters,
+        "eos_data": [
+            {
+                "counters": {
+                    "inGetPdus": 3,
+                    "inGetNextPdus": 0,
+                    "inSetPdus": 0,
+                    "outGetResponsePdus": 0,
+                    "outTrapPdus": 9,
+                },
+            }
+        ],
+        "inputs": {"pdus": ["inGetPdus", "outTrapPdus"]},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-counters-not-found",
+        "test": VerifySnmpPDUCounters,
+        "eos_data": [
+            {
+                "counters": {},
+            }
+        ],
+        "inputs": {},
+        "expected": {"result": "failure", "messages": ["SNMP counters not found."]},
+    },
+    {
+        "name": "failure-incorrect-counters",
+        "test": VerifySnmpPDUCounters,
+        "eos_data": [
+            {
+                "counters": {
+                    "inGetPdus": 0,
+                    "inGetNextPdus": 2,
+                    "inSetPdus": 0,
+                    "outGetResponsePdus": 3,
+                    "outTrapPdus": 9,
+                },
+            }
+        ],
+        "inputs": {},
+        "expected": {
+            "result": "failure",
+            "messages": ["The following SNMP PDU counters are not found or have zero PDU counters:\n{'inGetPdus': 0, 'inSetPdus': 0}"],
+        },
+    },
+    {
+        "name": "failure-pdu-not-found",
+        "test": VerifySnmpPDUCounters,
+        "eos_data": [
+            {
+                "counters": {
+                    "inGetNextPdus": 0,
+                    "inSetPdus": 0,
+                    "outGetResponsePdus": 0,
+                },
+            }
+        ],
+        "inputs": {"pdus": ["inGetPdus", "outTrapPdus"]},
+        "expected": {
+            "result": "failure",
+            "messages": ["The following SNMP PDU counters are not found or have zero PDU counters:\n{'inGetPdus': 'Not Found', 'outTrapPdus': 'Not Found'}"],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifySnmpErrorCounters,
+        "eos_data": [
+            {
+                "counters": {
+                    "inVersionErrs": 0,
+                    "inBadCommunityNames": 0,
+                    "inBadCommunityUses": 0,
+                    "inParseErrs": 0,
+                    "outTooBigErrs": 0,
+                    "outNoSuchNameErrs": 0,
+                    "outBadValueErrs": 0,
+                    "outGeneralErrs": 0,
+                },
+            }
+        ],
+        "inputs": {},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-specific-counters",
+        "test": VerifySnmpErrorCounters,
+        "eos_data": [
+            {
+                "counters": {
+                    "inVersionErrs": 0,
+                    "inBadCommunityNames": 0,
+                    "inBadCommunityUses": 0,
+                    "inParseErrs": 0,
+                    "outTooBigErrs": 5,
+                    "outNoSuchNameErrs": 0,
+                    "outBadValueErrs": 10,
+                    "outGeneralErrs": 1,
+                },
+            }
+        ],
+        "inputs": {"error_counters": ["inVersionErrs", "inParseErrs"]},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-counters-not-found",
+        "test": VerifySnmpErrorCounters,
+        "eos_data": [
+            {
+                "counters": {},
+            }
+        ],
+        "inputs": {},
+        "expected": {"result": "failure", "messages": ["SNMP counters not found."]},
+    },
+    {
+        "name": "failure-incorrect-counters",
+        "test": VerifySnmpErrorCounters,
+        "eos_data": [
+            {
+                "counters": {
+                    "inVersionErrs": 1,
+                    "inBadCommunityNames": 0,
+                    "inBadCommunityUses": 0,
+                    "inParseErrs": 2,
+                    "outTooBigErrs": 0,
+                    "outNoSuchNameErrs": 0,
+                    "outBadValueErrs": 2,
+                    "outGeneralErrs": 0,
+                },
+            }
+        ],
+        "inputs": {},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "The following SNMP error counters are not found or have non-zero error counters:\n{'inVersionErrs': 1, 'inParseErrs': 2, 'outBadValueErrs': 2}"
+            ],
         },
     },
 ]

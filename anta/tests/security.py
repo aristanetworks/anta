@@ -8,12 +8,12 @@ from __future__ import annotations
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
 from datetime import datetime, timezone
-from ipaddress import IPv4Address
 from typing import TYPE_CHECKING, ClassVar, get_args
 
 from pydantic import BaseModel, Field, model_validator
 
 from anta.custom_types import EcdsaKeySize, EncryptionAlgorithm, PositiveInteger, RsaKeySize
+from anta.input_models.security import IPSecPeer, IPSecPeers
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_failed_logs, get_item, get_value
 
@@ -42,8 +42,6 @@ class VerifySSHStatus(AntaTest):
     ```
     """
 
-    name = "VerifySSHStatus"
-    description = "Verifies if the SSHD agent is disabled in the default VRF."
     categories: ClassVar[list[str]] = ["security"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management ssh", ofmt="text")]
 
@@ -83,7 +81,6 @@ class VerifySSHIPv4Acl(AntaTest):
     ```
     """
 
-    name = "VerifySSHIPv4Acl"
     description = "Verifies if the SSHD agent has IPv4 ACL(s) configured."
     categories: ClassVar[list[str]] = ["security"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management ssh ip access-list summary", revision=1)]
@@ -132,7 +129,6 @@ class VerifySSHIPv6Acl(AntaTest):
     ```
     """
 
-    name = "VerifySSHIPv6Acl"
     description = "Verifies if the SSHD agent has IPv6 ACL(s) configured."
     categories: ClassVar[list[str]] = ["security"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management ssh ipv6 access-list summary", revision=1)]
@@ -179,8 +175,6 @@ class VerifyTelnetStatus(AntaTest):
     ```
     """
 
-    name = "VerifyTelnetStatus"
-    description = "Verifies if Telnet is disabled in the default VRF."
     categories: ClassVar[list[str]] = ["security"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management telnet", revision=1)]
 
@@ -210,8 +204,6 @@ class VerifyAPIHttpStatus(AntaTest):
     ```
     """
 
-    name = "VerifyAPIHttpStatus"
-    description = "Verifies if eAPI HTTP server is disabled globally."
     categories: ClassVar[list[str]] = ["security"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management api http-commands", revision=1)]
 
@@ -242,7 +234,6 @@ class VerifyAPIHttpsSSL(AntaTest):
     ```
     """
 
-    name = "VerifyAPIHttpsSSL"
     description = "Verifies if the eAPI has a valid SSL profile."
     categories: ClassVar[list[str]] = ["security"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management api http-commands", revision=1)]
@@ -285,8 +276,6 @@ class VerifyAPIIPv4Acl(AntaTest):
     ```
     """
 
-    name = "VerifyAPIIPv4Acl"
-    description = "Verifies if eAPI has the right number IPv4 ACL(s) configured for a specified VRF."
     categories: ClassVar[list[str]] = ["security"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management api http-commands ip access-list summary", revision=1)]
 
@@ -335,8 +324,6 @@ class VerifyAPIIPv6Acl(AntaTest):
     ```
     """
 
-    name = "VerifyAPIIPv6Acl"
-    description = "Verifies if eAPI has the right number IPv6 ACL(s) configured for a specified VRF."
     categories: ClassVar[list[str]] = ["security"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management api http-commands ipv6 access-list summary", revision=1)]
 
@@ -395,8 +382,6 @@ class VerifyAPISSLCertificate(AntaTest):
     ```
     """
 
-    name = "VerifyAPISSLCertificate"
-    description = "Verifies the eAPI SSL certificate expiry, common subject name, encryption algorithm and key size."
     categories: ClassVar[list[str]] = ["security"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
         AntaCommand(command="show management security ssl certificate", revision=1),
@@ -498,15 +483,13 @@ class VerifyBannerLogin(AntaTest):
     ```yaml
     anta.tests.security:
       - VerifyBannerLogin:
-            login_banner: |
-                # Copyright (c) 2023-2024 Arista Networks, Inc.
-                # Use of this source code is governed by the Apache License 2.0
-                # that can be found in the LICENSE file.
+          login_banner: |
+            # Copyright (c) 2023-2024 Arista Networks, Inc.
+            # Use of this source code is governed by the Apache License 2.0
+            # that can be found in the LICENSE file.
     ```
     """
 
-    name = "VerifyBannerLogin"
-    description = "Verifies the login banner of a device."
     categories: ClassVar[list[str]] = ["security"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show banner login", revision=1)]
 
@@ -542,15 +525,13 @@ class VerifyBannerMotd(AntaTest):
     ```yaml
     anta.tests.security:
       - VerifyBannerMotd:
-            motd_banner: |
-                # Copyright (c) 2023-2024 Arista Networks, Inc.
-                # Use of this source code is governed by the Apache License 2.0
-                # that can be found in the LICENSE file.
+          motd_banner: |
+            # Copyright (c) 2023-2024 Arista Networks, Inc.
+            # Use of this source code is governed by the Apache License 2.0
+            # that can be found in the LICENSE file.
     ```
     """
 
-    name = "VerifyBannerMotd"
-    description = "Verifies the motd banner of a device."
     categories: ClassVar[list[str]] = ["security"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show banner motd", revision=1)]
 
@@ -604,8 +585,6 @@ class VerifyIPv4ACL(AntaTest):
     ```
     """
 
-    name = "VerifyIPv4ACL"
-    description = "Verifies the configuration of IPv4 ACLs."
     categories: ClassVar[list[str]] = ["security"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show ip access-lists {acl}", revision=1)]
 
@@ -669,8 +648,7 @@ class VerifyIPv4ACL(AntaTest):
 
 
 class VerifyIPSecConnHealth(AntaTest):
-    """
-    Verifies all IPv4 security connections.
+    """Verifies all IPv4 security connections.
 
     Expected Results
     ----------------
@@ -685,8 +663,6 @@ class VerifyIPSecConnHealth(AntaTest):
     ```
     """
 
-    name = "VerifyIPSecConnHealth"
-    description = "Verifies all IPv4 security connections."
     categories: ClassVar[list[str]] = ["security"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip security connection vrf all")]
 
@@ -716,16 +692,22 @@ class VerifyIPSecConnHealth(AntaTest):
 
 
 class VerifySpecificIPSecConn(AntaTest):
-    """
-    Verifies the state of IPv4 security connections for a specified peer.
+    """Verifies the IPv4 security connections.
 
-    It optionally allows for the verification of a specific path for a peer by providing source and destination addresses.
-    If these addresses are not provided, it will verify all paths for the specified peer.
+    This test performs the following checks for each peer:
+
+      1. Validates that the VRF is configured.
+      2. Checks for the presence of IPv4 security connections for the specified peer.
+      3. For each relevant peer:
+        - If source and destination addresses are provided, verifies the security connection for the specific path exists and is `Established`.
+        - If no addresses are provided, verifies that all security connections associated with the peer are `Established`.
 
     Expected Results
     ----------------
-    * Success: The test passes if the IPv4 security connection for a peer is established in the specified VRF.
-    * Failure: The test fails if IPv4 security is not configured, a connection is not found for a peer, or the connection is not established in the specified VRF.
+    * Success: If all checks pass for all specified IPv4 security connections.
+    * Failure: If any of the following occur:
+        - No IPv4 security connections are found for the peer
+        - The security connection is not established for the specified path or any of the peer connections is not established when no path is specified.
 
     Examples
     --------
@@ -744,36 +726,16 @@ class VerifySpecificIPSecConn(AntaTest):
     ```
     """
 
-    name = "VerifySpecificIPSecConn"
-    description = "Verifies IPv4 security connections for a peer."
     categories: ClassVar[list[str]] = ["security"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show ip security connection vrf {vrf} path peer {peer}")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show ip security connection vrf {vrf} path peer {peer}", revision=2)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifySpecificIPSecConn test."""
 
-        ip_security_connections: list[IPSecPeers]
+        ip_security_connections: list[IPSecPeer]
         """List of IP4v security peers."""
-
-        class IPSecPeers(BaseModel):
-            """Details of IPv4 security peers."""
-
-            peer: IPv4Address
-            """IPv4 address of the peer."""
-
-            vrf: str = "default"
-            """Optional VRF for the IP security peer."""
-
-            connections: list[IPSecConn] | None = None
-            """Optional list of IPv4 security connections of a peer."""
-
-            class IPSecConn(BaseModel):
-                """Details of IPv4 security connections for a peer."""
-
-                source_address: IPv4Address
-                """Source IPv4 address of the connection."""
-                destination_address: IPv4Address
-                """Destination IPv4 address of the connection."""
+        IPSecPeers: ClassVar[type[IPSecPeers]] = IPSecPeers
+        """To maintain backward compatibility."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each input IP Sec connection."""
@@ -783,15 +745,15 @@ class VerifySpecificIPSecConn(AntaTest):
     def test(self) -> None:
         """Main test function for VerifySpecificIPSecConn."""
         self.result.is_success()
+
         for command_output, input_peer in zip(self.instance_commands, self.inputs.ip_security_connections):
             conn_output = command_output.json_output["connections"]
-            peer = command_output.params.peer
-            vrf = command_output.params.vrf
             conn_input = input_peer.connections
+            vrf = input_peer.vrf
 
             # Check if IPv4 security connection is configured
             if not conn_output:
-                self.result.is_failure(f"No IPv4 security connection configured for peer `{peer}`.")
+                self.result.is_failure(f"{input_peer} - Not configured")
                 continue
 
             # If connection details are not provided then check all connections of a peer
@@ -801,10 +763,8 @@ class VerifySpecificIPSecConn(AntaTest):
                     if state != "Established":
                         source = conn_data.get("saddr")
                         destination = conn_data.get("daddr")
-                        vrf = conn_data.get("tunnelNs")
                         self.result.is_failure(
-                            f"Expected state of IPv4 security connection `source:{source} destination:{destination} vrf:{vrf}` for peer `{peer}` is `Established` "
-                            f"but found `{state}` instead."
+                            f"{input_peer} Source: {source} Destination: {destination} - Connection down - Expected: Established, Actual: {state}"
                         )
                 continue
 
@@ -820,19 +780,14 @@ class VerifySpecificIPSecConn(AntaTest):
                 if (source_input, destination_input, vrf) in existing_connections:
                     existing_state = existing_connections[(source_input, destination_input, vrf)]
                     if existing_state != "Established":
-                        self.result.is_failure(
-                            f"Expected state of IPv4 security connection `source:{source_input} destination:{destination_input} vrf:{vrf}` "
-                            f"for peer `{peer}` is `Established` but found `{existing_state}` instead."
-                        )
+                        failure = f"Expected: Established, Actual: {existing_state}"
+                        self.result.is_failure(f"{input_peer} Source: {source_input} Destination: {destination_input} - Connection down - {failure}")
                 else:
-                    self.result.is_failure(
-                        f"IPv4 security connection `source:{source_input} destination:{destination_input} vrf:{vrf}` for peer `{peer}` is not found."
-                    )
+                    self.result.is_failure(f"{input_peer} Source: {source_input} Destination: {destination_input} - Connection not found.")
 
 
 class VerifyHardwareEntropy(AntaTest):
-    """
-    Verifies hardware entropy generation is enabled on device.
+    """Verifies hardware entropy generation is enabled on device.
 
     Expected Results
     ----------------
@@ -847,8 +802,6 @@ class VerifyHardwareEntropy(AntaTest):
     ```
     """
 
-    name = "VerifyHardwareEntropy"
-    description = "Verifies hardware entropy generation is enabled on device."
     categories: ClassVar[list[str]] = ["security"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management security")]
 

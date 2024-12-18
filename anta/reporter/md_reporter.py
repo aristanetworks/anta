@@ -112,8 +112,8 @@ class MDReportBase(ABC):
 
         Example
         -------
-        - `ANTAReport` will become ANTA Report.
-        - `TestResultsSummary` will become Test Results Summary.
+        - `ANTAReport` will become `ANTA Report`.
+        - `TestResultsSummary` will become `Test Results Summary`.
         """
         class_name = self.__class__.__name__
 
@@ -153,7 +153,7 @@ class MDReportBase(ABC):
 
         Example
         -------
-        ## Test Results Summary
+        `## Test Results Summary`
         """
         # Ensure the heading level is within the valid range of 1 to 6
         heading_level = max(1, min(heading_level, 6))
