@@ -190,19 +190,19 @@ class VerifyIPv4RouteType(AntaTest):
 
     This test performs the following checks for each IPv4 route:
         1. Verifies that the specified VRF is configured.
-        2. Verifies that the specified ipv4 route is exists in the configuration.
-        3. Verifies that the the specified ipv4 route is of the expected type.
+        2. Verifies that the specified IPv4 route is exists in the configuration.
+        3. Verifies that the the specified IPv4 route is of the expected type.
 
     Expected Results
     ----------------
     * Success: If all of the following conditions are met:
         - All the specified VRFs are configured.
-        - All the specified ipv4 routes are found.
-        - All the specified ipv4 routes are of the expected type.
+        - All the specified IPv4 routes are found.
+        - All the specified IPv4 routes are of the expected type.
     * Failure: If any of the following occur:
         - A specified VRF is not configured.
-        - A specified ipv4 route is not found.
-        - Any specified ipv4 route is not of the expected type.
+        - A specified IPv4 route is not found.
+        - Any specified IPv4 route is not of the expected type.
 
     Examples
     --------
@@ -248,11 +248,11 @@ class VerifyIPv4RouteType(AntaTest):
                 self.result.is_failure(f"{entry} - VRF not configured")
                 continue
 
-            # Verifying that the expected ipv4 route is present or not on the device
+            # Verifying that the expected IPv4 route is present or not on the device
             if (route_data := routes_details.get(prefix)) is None:
-                self.result.is_failure(f"{entry} - Routes not found")
+                self.result.is_failure(f"{entry} - Route not found")
                 continue
 
-            # Verifying that the specified ipv4 routes are of the expected type.
+            # Verifying that the specified IPv4 routes are of the expected type.
             if expected_route_type != (actual_route_type := route_data.get("routeType")):
                 self.result.is_failure(f"{entry} - Incorrect route type - Expected: {expected_route_type} Actual: {actual_route_type}")

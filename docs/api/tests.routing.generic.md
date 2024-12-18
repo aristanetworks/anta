@@ -10,6 +10,7 @@ anta_title: ANTA catalog for generic routing tests
 # Tests
 
 ::: anta.tests.routing.generic
+
     options:
       show_root_heading: false
       show_root_toc_entry: false

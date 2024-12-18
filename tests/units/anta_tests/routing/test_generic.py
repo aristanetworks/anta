@@ -305,7 +305,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "failure", "messages": ["The following route(s) are missing from the routing table of VRF default: ['10.1.0.2']"]},
     },
     {
-        "name": "Success-valid-route-type",
+        "name": "success-valid-route-type",
         "test": VerifyIPv4RouteType,
         "eos_data": [
             {
@@ -325,14 +325,14 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
-        "name": "Failure-route-not-found",
+        "name": "failure-route-not-found",
         "test": VerifyIPv4RouteType,
         "eos_data": [{"vrfs": {"default": {"routes": {}}}}],
         "inputs": {"routes_entries": [{"vrf": "default", "prefix": "10.10.0.1/32", "route_type": "eBGP"}]},
-        "expected": {"result": "failure", "messages": ["Prefix: 10.10.0.1/32 VRF: default - Routes not found"]},
+        "expected": {"result": "failure", "messages": ["Prefix: 10.10.0.1/32 VRF: default - Route not found"]},
     },
     {
-        "name": "Failure-invalid-route-type",
+        "name": "failure-invalid-route-type",
         "test": VerifyIPv4RouteType,
         "eos_data": [{"vrfs": {"default": {"routes": {"10.10.0.1/32": {"routeType": "eBGP"}}}}}],
         "inputs": {"routes_entries": [{"vrf": "default", "prefix": "10.10.0.1/32", "route_type": "iBGP"}]},
@@ -342,7 +342,7 @@ DATA: list[dict[str, Any]] = [
         },
     },
     {
-        "name": "Failure-vrf-not-configured",
+        "name": "failure-vrf-not-configured",
         "test": VerifyIPv4RouteType,
         "eos_data": [{"vrfs": {}}],
         "inputs": {"routes_entries": [{"vrf": "default", "prefix": "10.10.0.1/32", "route_type": "eBGP"}]},
