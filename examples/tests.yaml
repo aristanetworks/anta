@@ -63,7 +63,7 @@ anta.tests.avt:
       # Verifies the AVT role of a device.
       role: edge
   - VerifyAVTSpecificPath:
-      # Verifies the status and type of an AVT path for a specified VRF.
+      # Verifies the Adaptive Virtual Topology (AVT) path.
       avt_paths:
         - avt_name: CONTROL-PLANE-PROFILE
           vrf: default

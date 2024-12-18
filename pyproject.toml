@@ -23,13 +23,13 @@ dependencies = [
   "asyncssh>=2.16",
   "cvprac>=1.3.1",
   "eval-type-backport>=0.1.3",  # Support newer typing features in older Python versions (required until Python 3.9 support is removed)
+  "httpx>=0.27.0",
   "Jinja2>=3.1.2",
   "pydantic>=2.7",
   "pydantic-extra-types>=2.3.0",
   "PyYAML>=6.0",
   "requests>=2.31.0",
-  "rich>=13.5.2,<14",
-  "httpx>=0.27.0"
+  "rich>=13.5.2,<14"
 ]
 keywords = ["test", "anta", "Arista", "network", "automation", "networking", "devops", "netdevops"]
 classifiers = [
@@ -259,6 +259,9 @@ extras =
 # tox -e <env> -- path/to/my/test::test
 commands =
    pytest {posargs}
+# To test on non-POSIX system
+# https://github.com/tox-dev/tox/issues/1455
+passenv = USERNAME
 
 [testenv:lint]
 description = Check the code style
@@ -467,7 +470,8 @@ disable = [ # Any rule listed here can be disabled: https://github.com/astral-sh
     "unnecessary-lambda",
     "abstract-class-instantiated", # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-instantiation-of-abstract-classes-abstract
     "unexpected-keyword-arg", # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-arguments-in-calls-call-arg and other rules
-    "no-value-for-parameter" # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-arguments-in-calls-call-arg
+    "no-value-for-parameter", # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-arguments-in-calls-call-arg
+    "import-outside-toplevel"
 ]
 max-statements=61
 max-returns=8
