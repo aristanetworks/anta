@@ -188,7 +188,7 @@ class VerifyRoutingTableEntry(AntaTest):
 class VerifyIPv4RouteType(AntaTest):
     """Verifies the route-type of the IPv4 prefixes.
 
-    This test performs the following checks for each ipv4 route:
+    This test performs the following checks for each IPv4 route:
         1. Verifies that the specified VRF is configured.
         2. Verifies that the specified ipv4 route is exists in the configuration.
         3. Verifies that the the specified ipv4 route is of the expected type.
