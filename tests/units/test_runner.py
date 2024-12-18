@@ -153,6 +153,9 @@ async def test_check_runner_log_for_windows(caplog: pytest.LogCaptureFixture, in
 async def test_check_runner_log_for_windows_fake(caplog: pytest.LogCaptureFixture, inventory: AntaInventory) -> None:
     """Test log output for Windows host regarding rlimit."""
     with patch("os.name", new="win32"):
+        del sys.modules["anta.runner"]
+        from anta.runner import main  # pylint: disable=W0621
+
         caplog.set_level(logging.INFO)
         manager = ResultManager()
         # Using dry-run to shorten the test

@@ -470,7 +470,8 @@ disable = [ # Any rule listed here can be disabled: https://github.com/astral-sh
     "unnecessary-lambda",
     "abstract-class-instantiated", # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-instantiation-of-abstract-classes-abstract
     "unexpected-keyword-arg", # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-arguments-in-calls-call-arg and other rules
-    "no-value-for-parameter" # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-arguments-in-calls-call-arg
+    "no-value-for-parameter", # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-arguments-in-calls-call-arg
+    "import-outside-toplevel"
 ]
 max-statements=61
 max-returns=8
