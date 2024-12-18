@@ -109,12 +109,12 @@ Contributing = "https://anta.arista.com/main/contribution/"
 [project.scripts]
 anta = "anta.cli:cli"
 
-################################
-# Tools
-################################
 [tool.setuptools.packages.find]
 include = ["anta*", "asynceapi*"]
 namespaces = false
+
+[tool.setuptools.package-data]
+"anta" = ["py.typed"]
 
 ################################
 # Version
