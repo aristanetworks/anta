@@ -35,8 +35,6 @@ class VerifyIGMPSnoopingVlans(AntaTest):
     ```
     """
 
-    name = "VerifyIGMPSnoopingVlans"
-    description = "Verifies the IGMP snooping status for the provided VLANs."
     categories: ClassVar[list[str]] = ["multicast"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip igmp snooping", revision=1)]
 
@@ -78,8 +76,6 @@ class VerifyIGMPSnoopingGlobal(AntaTest):
     ```
     """
 
-    name = "VerifyIGMPSnoopingGlobal"
-    description = "Verifies the IGMP snooping global configuration."
     categories: ClassVar[list[str]] = ["multicast"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip igmp snooping", revision=1)]
 

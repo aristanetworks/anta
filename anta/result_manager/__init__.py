@@ -9,8 +9,8 @@ import json
 from collections import defaultdict
 from functools import cached_property
 from itertools import chain
+from typing import Any
 
-from anta.constants import ACRONYM_CATEGORIES
 from anta.result_manager.models import AntaTestStatus, TestResult
 
 from .models import CategoryStats, DeviceStats, TestStats
@@ -90,6 +90,10 @@ class ResultManager:
         If the status of the added test is error, the status is untouched and the
         error_status is set to True.
         """
+        self.reset()
+
+    def reset(self) -> None:
+        """Create or reset the attributes of the ResultManager instance."""
         self._result_entries: list[TestResult] = []
         self.status: AntaTestStatus = AntaTestStatus.UNSET
         self.error_status = False
@@ -124,9 +128,14 @@ class ResultManager:
             self.add(result)
 
     @property
+    def dump(self) -> list[dict[str, Any]]:
+        """Get a list of dictionary of the results."""
+        return [result.model_dump() for result in self._result_entries]
+
+    @property
     def json(self) -> str:
         """Get a JSON representation of the results."""
-        return json.dumps([result.model_dump() for result in self._result_entries], indent=4)
+        return json.dumps(self.dump, indent=4)
 
     @property
     def sorted_category_stats(self) -> dict[str, CategoryStats]:
@@ -149,7 +158,7 @@ class ResultManager:
         if test_status == "error":
             self.error_status = True
             return
-        if self.status == "unset" or self.status == "skipped" and test_status in {"success", "failure"}:
+        if self.status == "unset" or (self.status == "skipped" and test_status in {"success", "failure"}):
             self.status = test_status
         elif self.status == "success" and test_status == "failure":
             self.status = AntaTestStatus.FAILURE
@@ -162,9 +171,6 @@ class ResultManager:
         result
             TestResult to update the statistics.
         """
-        result.categories = [
-            " ".join(word.upper() if word.lower() in ACRONYM_CATEGORIES else word.title() for word in category.split()) for category in result.categories
-        ]
         count_attr = f"tests_{result.result}_count"
 
         # Update device stats

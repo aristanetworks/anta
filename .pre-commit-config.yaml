@@ -1,11 +1,14 @@
 ---
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
+ci:
+  autoupdate_commit_msg: "ci: pre-commit autoupdate"
+
 files: ^(anta|docs|scripts|tests|asynceapi)/
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: v5.0.0
     hooks:
       - id: trailing-whitespace
         exclude: docs/.*.svg
@@ -43,7 +46,7 @@ repos:
           - '<!--|  ~|  -->'
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.6.8
+    rev: v0.8.3
     hooks:
     - id: ruff
       name: Run Ruff linter
@@ -52,7 +55,7 @@ repos:
       name: Run Ruff formatter
 
   - repo: https://github.com/pycqa/pylint
-    rev: "v3.3.1"
+    rev: "v3.3.2"
     hooks:
       - id: pylint
         name: Check code style with pylint
@@ -82,7 +85,7 @@ repos:
         types: [text]
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.11.2
+    rev: v1.13.0
     hooks:
       - id: mypy
         name: Check typing with mypy
@@ -97,7 +100,7 @@ repos:
         files: ^(anta|tests)/
 
   - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.41.0
+    rev: v0.43.0
     hooks:
       - id: markdownlint
         name: Check Markdown files style.
@@ -105,3 +108,19 @@ repos:
           - --config=.github/markdownlint.yaml
           - --ignore-path=.github/markdownlintignore
           - --fix
+
+  - repo: local
+    hooks:
+      - id: examples-test
+        name: Generate examples/tests.yaml
+        entry: >-
+          sh -c "docs/scripts/generate_examples_tests.py"
+        language: python
+        types: [python]
+        files: anta/
+        verbose: true
+        pass_filenames: false
+        additional_dependencies:
+          - anta[cli]
+          # TODO: next can go once we have it added to anta properly
+          - numpydoc

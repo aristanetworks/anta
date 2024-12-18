@@ -45,11 +45,31 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "failure", "messages": ["Could not find SSH status in returned output."]},
     },
     {
-        "name": "failure-ssh-disabled",
+        "name": "failure-ssh-enabled",
         "test": VerifySSHStatus,
         "eos_data": ["SSHD status for Default VRF is enabled\nSSH connection limit is 50\nSSH per host connection limit is 20\nFIPS status: disabled\n\n"],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["SSHD status for Default VRF is enabled"]},
+    },
+    {
+        "name": "success-4.32",
+        "test": VerifySSHStatus,
+        "eos_data": [
+            "User certificate authentication methods: none (neither trusted CA nor SSL profile configured)\n"
+            "SSHD status for Default VRF: disabled\nSSH connection limit: 50\nSSH per host connection limit: 20\nFIPS status: disabled\n\n"
+        ],
+        "inputs": None,
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-ssh-enabled-4.32",
+        "test": VerifySSHStatus,
+        "eos_data": [
+            "User certificate authentication methods: none (neither trusted CA nor SSL profile configured)\n"
+            "SSHD status for Default VRF: enabled\nSSH connection limit: 50\nSSH per host connection limit: 20\nFIPS status: disabled\n\n"
+        ],
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["SSHD status for Default VRF: enabled"]},
     },
     {
         "name": "success",
@@ -1059,7 +1079,7 @@ DATA: list[dict[str, Any]] = [
                 },
             ]
         },
-        "expected": {"result": "failure", "messages": ["No IPv4 security connection configured for peer `10.255.0.1`."]},
+        "expected": {"result": "failure", "messages": ["Peer: 10.255.0.1 VRF: default - Not configured"]},
     },
     {
         "name": "failure-not-established",
@@ -1107,14 +1127,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Expected state of IPv4 security connection `source:172.18.3.2 destination:172.18.2.2 vrf:default` for peer `10.255.0.1` is `Established` "
-                "but found `Idle` instead.",
-                "Expected state of IPv4 security connection `source:100.64.2.2 destination:100.64.1.2 vrf:default` for peer `10.255.0.1` is `Established` "
-                "but found `Idle` instead.",
-                "Expected state of IPv4 security connection `source:100.64.2.2 destination:100.64.1.2 vrf:MGMT` for peer `10.255.0.2` is `Established` "
-                "but found `Idle` instead.",
-                "Expected state of IPv4 security connection `source:172.18.2.2 destination:172.18.1.2 vrf:MGMT` for peer `10.255.0.2` is `Established` "
-                "but found `Idle` instead.",
+                "Peer: 10.255.0.1 VRF: default Source: 172.18.3.2 Destination: 172.18.2.2 - Connection down - Expected: Established, Actual: Idle",
+                "Peer: 10.255.0.1 VRF: default Source: 100.64.2.2 Destination: 100.64.1.2 - Connection down - Expected: Established, Actual: Idle",
+                "Peer: 10.255.0.2 VRF: MGMT Source: 100.64.2.2 Destination: 100.64.1.2 - Connection down - Expected: Established, Actual: Idle",
+                "Peer: 10.255.0.2 VRF: MGMT Source: 172.18.2.2 Destination: 172.18.1.2 - Connection down - Expected: Established, Actual: Idle",
             ],
         },
     },
@@ -1174,12 +1190,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Expected state of IPv4 security connection `source:172.18.3.2 destination:172.18.2.2 vrf:default` for peer `10.255.0.1` is `Established` "
-                "but found `Idle` instead.",
-                "Expected state of IPv4 security connection `source:100.64.3.2 destination:100.64.2.2 vrf:default` for peer `10.255.0.1` is `Established` "
-                "but found `Idle` instead.",
-                "IPv4 security connection `source:100.64.4.2 destination:100.64.1.2 vrf:default` for peer `10.255.0.2` is not found.",
-                "IPv4 security connection `source:172.18.4.2 destination:172.18.1.2 vrf:default` for peer `10.255.0.2` is not found.",
+                "Peer: 10.255.0.1 VRF: default Source: 172.18.3.2 Destination: 172.18.2.2 - Connection down - Expected: Established, Actual: Idle",
+                "Peer: 10.255.0.1 VRF: default Source: 100.64.3.2 Destination: 100.64.2.2 - Connection down - Expected: Established, Actual: Idle",
+                "Peer: 10.255.0.2 VRF: default Source: 100.64.4.2 Destination: 100.64.1.2 - Connection not found.",
+                "Peer: 10.255.0.2 VRF: default Source: 172.18.4.2 Destination: 172.18.1.2 - Connection not found.",
             ],
         },
     },

@@ -8,6 +8,7 @@ anta_title: ANTA catalog for OSPF tests
   -->
 
 ::: anta.tests.routing.ospf
+
     options:
       show_root_heading: false
       show_root_toc_entry: false
@@ -18,3 +19,4 @@ anta_title: ANTA catalog for OSPF tests
       filters:
         - "!test"
         - "!render"
+        - "!^_[^_]"
