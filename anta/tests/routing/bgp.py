@@ -27,6 +27,9 @@ if TYPE_CHECKING:
     else:
         from typing_extensions import Self
 
+# pylint: disable=C0302
+# TODO: Refactor to reduce the number of lines in this module later
+
 
 def _add_bgp_routes_failure(
     bgp_routes: list[str], bgp_output: dict[str, Any], peer: str, vrf: str, route_type: str = "advertised_routes"
@@ -1396,3 +1399,85 @@ class VerifyBGPPeerRouteLimit(AntaTest):
             self.result.is_success()
         else:
             self.result.is_failure(f"The following BGP peer(s) are not configured or maximum routes and maximum routes warning limit is not correct:\n{failures}")
+
+
+class VerifyBGPPeerPrefixes(AntaTest):
+    """Verifies the consistency of IPv4 prefixes in a BGP session.
+
+    This test performs the following checks for each specified address family:
+
+      1. Confirms that the specified VRF is configured.
+      2. Confirms all received prefixes were accepted.
+
+    Expected Results
+    ----------------
+    * Success: If the `PfxRcd` equals `PfxAcc`, indicating that all received prefixes were accepted.
+    * Failure: If any of the following occur:
+        - The specified VRF is not configured.
+        - The `PfxRcd` is not equal to `PfxAcc`, indicating that some prefix(s) were rejected/filtered out or peers are not configured.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      bgp:
+        - VerifyBGPPeerPrefixes:
+            address_families:
+              - afi: ipv4
+                safi: unicast
+                peers:
+                  - 10.100.0.8
+                  - 10.100.0.10
+              - afi: ipv4
+                safi: multicast
+              - afi: evpn
+              - afi: vpn-ipv4
+              - afi: ipv4
+                safi: labeled-unicast
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["bgp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp summary vrf all", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyBGPPeerPrefixes test."""
+
+        address_families: list[BgpAddressFamily]
+        """List of BGP address."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyBGPPeerPrefixes."""
+        self.result.is_success()
+
+        output = self.instance_commands[0].json_output
+        for address_family in self.inputs.address_families:
+            # Check if the VRF is configured
+            vrf_output = get_value(output, f"vrfs.{address_family.vrf}")
+            if vrf_output is None:
+                self.result.is_failure(f"{address_family} - VRF not configured")
+                continue
+
+            peers_data = vrf_output.get("peers", {})
+            eos_key = address_family.eos_key
+
+            # Determine peers to check, all peers if not explicitly provided.
+            peers_to_check = (
+                {peer: details[eos_key] for peer, details in peers_data.items() if eos_key in details}
+                if not address_family.peers
+                else {peer: get_value(peers_data, f"{peer}..{eos_key}", separator="..") for peer in address_family.peers}
+            )
+
+            if not peers_to_check:
+                self.result.is_failure(f"{address_family} - None of the peers are negotiated")
+                continue
+
+            # Verify peer details
+            for peer, peer_detail in peers_to_check.items():
+                if not peer_detail:
+                    self.result.is_failure(f"{address_family} Peer: {peer} - Not negotiated")
+                    continue
+
+                if (received := peer_detail.get("nlrisReceived")) != (accepted := peer_detail.get("nlrisAccepted")):
+                    self.result.is_failure(f"{address_family} Peer: {peer} - prefixes are not consistent - Accepted: {accepted} Received: {received}")
