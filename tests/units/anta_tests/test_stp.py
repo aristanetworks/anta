@@ -509,12 +509,21 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "failure", "messages": ["STP is not configured"]},
     },
     {
-        "name": "failure-stp-disabled-vlans-enabled",
+        "name": "failure-stp-disabled-vlans-not-found",
+        "test": VerifySTPDisabledVlans,
+        "eos_data": [
+            {"spanningTreeVlanInstances": {"1": {"spanningTreeVlanInstance": {}}, "6": {"spanningTreeVlanInstance": {}}, "4094": {"spanningTreeVlanInstance": {}}}}
+        ],
+        "inputs": {"vlans": ["16", "4093"]},
+        "expected": {"result": "failure", "messages": ["VLAN: 16 is not found on the device", "VLAN: 4093 is not found on the device"]},
+    },
+    {
+        "name": "failure-stp-disabled-vlans",
         "test": VerifySTPDisabledVlans,
         "eos_data": [
             {"spanningTreeVlanInstances": {"1": {"spanningTreeVlanInstance": {}}, "6": {"spanningTreeVlanInstance": {}}, "4094": {"spanningTreeVlanInstance": {}}}}
         ],
         "inputs": {"vlans": ["6", "4094"]},
-        "expected": {"result": "failure", "messages": ["STP is enabled for the following VLANS: 6 4094"]},
+        "expected": {"result": "failure", "messages": ["VLAN: 6 STP is enabled", "VLAN: 4094 STP is enabled"]},
     },
 ]
