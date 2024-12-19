@@ -208,3 +208,33 @@ SnmpPdu = Literal["inGetPdus", "inGetNextPdus", "inSetPdus", "outGetResponsePdus
 SnmpErrorCounter = Literal[
     "inVersionErrs", "inBadCommunityNames", "inBadCommunityUses", "inParseErrs", "outTooBigErrs", "outNoSuchNameErrs", "outBadValueErrs", "outGeneralErrs"
 ]
+
+IPv4RouteType = Literal[
+    "connected",
+    "static",
+    "kernel",
+    "OSPF",
+    "OSPF inter area",
+    "OSPF external type 1",
+    "OSPF external type 2",
+    "OSPF NSSA external type 1",
+    "OSPF NSSA external type2",
+    "Other BGP Routes",
+    "iBGP",
+    "eBGP",
+    "RIP",
+    "IS-IS level 1",
+    "IS-IS level 2",
+    "OSPFv3",
+    "BGP Aggregate",
+    "OSPF Summary",
+    "Nexthop Group Static Route",
+    "VXLAN Control Service",
+    "Martian",
+    "DHCP client installed default route",
+    "Dynamic Policy Route",
+    "VRF Leaked",
+    "gRIBI",
+    "Route Cache Route",
+    "CBF Leaked Route",
+]

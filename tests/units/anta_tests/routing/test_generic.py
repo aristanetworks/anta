@@ -11,7 +11,7 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
-from anta.tests.routing.generic import VerifyRoutingProtocolModel, VerifyRoutingTableEntry, VerifyRoutingTableSize
+from anta.tests.routing.generic import VerifyIPv4RouteType, VerifyRoutingProtocolModel, VerifyRoutingTableEntry, VerifyRoutingTableSize
 from tests.units.anta_tests import test
 
 DATA: list[dict[str, Any]] = [
@@ -303,6 +303,50 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {"vrf": "default", "routes": ["10.1.0.1", "10.1.0.2"], "collect": "all"},
         "expected": {"result": "failure", "messages": ["The following route(s) are missing from the routing table of VRF default: ['10.1.0.2']"]},
+    },
+    {
+        "name": "success-valid-route-type",
+        "test": VerifyIPv4RouteType,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {"routes": {"10.10.0.1/32": {"routeType": "eBGP"}, "10.100.0.12/31": {"routeType": "connected"}}},
+                    "MGMT": {"routes": {"10.100.1.5/32": {"routeType": "iBGP"}}},
+                }
+            }
+        ],
+        "inputs": {
+            "routes_entries": [
+                {"vrf": "default", "prefix": "10.10.0.1/32", "route_type": "eBGP"},
+                {"vrf": "default", "prefix": "10.100.0.12/31", "route_type": "connected"},
+                {"vrf": "MGMT", "prefix": "10.100.1.5/32", "route_type": "iBGP"},
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-route-not-found",
+        "test": VerifyIPv4RouteType,
+        "eos_data": [{"vrfs": {"default": {"routes": {}}}}],
+        "inputs": {"routes_entries": [{"vrf": "default", "prefix": "10.10.0.1/32", "route_type": "eBGP"}]},
+        "expected": {"result": "failure", "messages": ["Prefix: 10.10.0.1/32 VRF: default - Route not found"]},
+    },
+    {
+        "name": "failure-invalid-route-type",
+        "test": VerifyIPv4RouteType,
+        "eos_data": [{"vrfs": {"default": {"routes": {"10.10.0.1/32": {"routeType": "eBGP"}}}}}],
+        "inputs": {"routes_entries": [{"vrf": "default", "prefix": "10.10.0.1/32", "route_type": "iBGP"}]},
+        "expected": {
+            "result": "failure",
+            "messages": ["Prefix: 10.10.0.1/32 VRF: default - Incorrect route type - Expected: iBGP Actual: eBGP"],
+        },
+    },
+    {
+        "name": "failure-vrf-not-configured",
+        "test": VerifyIPv4RouteType,
+        "eos_data": [{"vrfs": {}}],
+        "inputs": {"routes_entries": [{"vrf": "default", "prefix": "10.10.0.1/32", "route_type": "eBGP"}]},
+        "expected": {"result": "failure", "messages": ["Prefix: 10.10.0.1/32 VRF: default - VRF not configured"]},
     },
 ]
 
