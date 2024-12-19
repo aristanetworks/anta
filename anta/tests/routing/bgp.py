@@ -1401,19 +1401,19 @@ class VerifyBGPRouteOrigin(AntaTest):
     """Verifies BGP route origin.
 
     This test performs the following checks for each specified bgp route entry:
-      1. Checks whether the specified BGP route entries exist.
-      2. Confirms that the path exists and corresponds to the next-hop address.
+      1. Checks whether the specified BGP route entry exists.
+      2. Confirms that each path for the route entry exists and corresponds to the next-hop address.
       3. Verifies that the origin type of the BGP route matches the expected type.
 
     Expected Results
     ----------------
     * Success: The test will pass if:
         - The BGP route entries exist for specified prefixes.
-        - Path exists and corresponds to the specified next-hop address.
+        - Every path exists and corresponds to the specified next-hop address.
         - The origin type of the BGP route matches the expected type.
     * Failure: The test will fail if:
         - The BGP route entries does not exist for specified prefixes.
-        - The Path does not exists and corresponds to the specified next-hop address.
+        - Any Path does not exists and corresponds to the specified next-hop address.
         - The origin type does not match the configured value.
 
     Examples
@@ -1425,7 +1425,7 @@ class VerifyBGPRouteOrigin(AntaTest):
             route_entries:
                 - prefix: 10.100.0.128/31
                   vrf: default
-                  route_paths:
+                  paths:
                     - nexthop: 10.100.0.10
                       origin: Igp
                     - nexthop: 10.100.4.5
@@ -1463,5 +1463,5 @@ class VerifyBGPRouteOrigin(AntaTest):
                     self.result.is_failure(f"{route} {path} - path not found")
                     continue
 
-                if (actual_origin := route_path.get("routeDetail", {}).get("origin", "Not Found")) != origin:
+                if (actual_origin := route_path.get("routeType", {}).get("origin", "Not Found")) != origin:
                     self.result.is_failure(f"{route} {path} - Origin mismatch - Expected: {origin} Actual: {actual_origin}")

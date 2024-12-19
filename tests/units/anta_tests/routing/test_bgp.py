@@ -4509,13 +4509,13 @@ DATA: list[dict[str, Any]] = [
                                 "bgpRoutePaths": [
                                     {
                                         "nextHop": "10.100.0.10",
-                                        "routeDetail": {
+                                        "routeType": {
                                             "origin": "Igp",
                                         },
                                     },
                                     {
                                         "nextHop": "10.100.4.5",
-                                        "routeDetail": {
+                                        "routeType": {
                                             "origin": "Incomplete",
                                         },
                                     },
@@ -4529,13 +4529,13 @@ DATA: list[dict[str, Any]] = [
                                 "bgpRoutePaths": [
                                     {
                                         "nextHop": "10.100.0.8",
-                                        "routeDetail": {
+                                        "routeType": {
                                             "origin": "Igp",
                                         },
                                     },
                                     {
                                         "nextHop": "10.100.0.10",
-                                        "routeDetail": {
+                                        "routeType": {
                                             "origin": "Igp",
                                         },
                                     },
@@ -4574,13 +4574,13 @@ DATA: list[dict[str, Any]] = [
                                 "bgpRoutePaths": [
                                     {
                                         "nextHop": "10.100.0.10",
-                                        "routeDetail": {
+                                        "routeType": {
                                             "origin": "Igp",
                                         },
                                     },
                                     {
                                         "nextHop": "10.100.4.5",
-                                        "routeDetail": {
+                                        "routeType": {
                                             "origin": "Incomplete",
                                         },
                                     },
@@ -4594,13 +4594,13 @@ DATA: list[dict[str, Any]] = [
                                 "bgpRoutePaths": [
                                     {
                                         "nextHop": "10.100.0.8",
-                                        "routeDetail": {
+                                        "routeType": {
                                             "origin": "Igp",
                                         },
                                     },
                                     {
                                         "nextHop": "10.100.0.10",
-                                        "routeDetail": {
+                                        "routeType": {
                                             "origin": "Igp",
                                         },
                                     },
@@ -4647,7 +4647,7 @@ DATA: list[dict[str, Any]] = [
                                 "bgpRoutePaths": [
                                     {
                                         "nextHop": "10.100.0.15",
-                                        "routeDetail": {
+                                        "routeType": {
                                             "origin": "Igp",
                                         },
                                     },
@@ -4661,7 +4661,7 @@ DATA: list[dict[str, Any]] = [
                                 "bgpRoutePaths": [
                                     {
                                         "nextHop": "10.100.0.15",
-                                        "routeDetail": {
+                                        "routeType": {
                                             "origin": "Igp",
                                         },
                                     },
