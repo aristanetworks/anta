@@ -7,6 +7,8 @@ anta_title: ANTA catalog for Router path-selection tests
   ~ that can be found in the LICENSE file.
   -->
 
+# Tests
+
 ::: anta.tests.path_selection
     options:
       show_root_heading: false
@@ -18,3 +20,16 @@ anta_title: ANTA catalog for Router path-selection tests
       filters:
         - "!test"
         - "!render"
+
+# Input models
+
+::: anta.input_models.path_selection
+
+    options:
+      show_root_heading: false
+      show_root_toc_entry: false
+      show_bases: false
+      merge_init_into_class: false
+      anta_hide_test_module_description: true
+      show_labels: true
+      filters:  ["!^__str__"]
