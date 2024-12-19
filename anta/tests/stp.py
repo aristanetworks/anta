@@ -309,3 +309,56 @@ class VerifyStpTopologyChanges(AntaTest):
             self.result.is_failure(f"The following STP topologies are not configured or number of changes not within the threshold:\n{failures}")
         else:
             self.result.is_success()
+
+
+class VerifySTPDisabledVlans(AntaTest):
+    """Verifies the STP disabled VLANs.
+
+    This test performs the following checks:
+        1. Verifies that the STP is configured.
+        2. Verifies that the expected VLANs are disabled in STP configuration.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass, if the expected VLANs are disabled.
+    * Failure: The test will fail, if the expected VLANs are not disabled.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.stp:
+      - VerifySTPDisabledVlans:
+            vlans:
+              - 6
+              - 4094
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["stp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show spanning-tree vlan detail", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifySTPDisabledVlans test."""
+
+        vlans: list[Vlan]
+        # TODO: what if this list is empty? do we need to check for all the vlans?
+        """List of STP disabled VLANs"""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifySTPDisabledVlans."""
+        self.result.is_success()
+
+        command_output = self.instance_commands[0].json_output
+        stp_vlan_instances = command_output.get("spanningTreeVlanInstances", {})
+
+        # If the spanningTreeVlanInstances detail are not found in the command output, the test fails.
+        if not stp_vlan_instances:
+            self.result.is_failure("STP is not configured")
+            return
+
+        # Iterating on each VLAN mentioned in the inputs
+        stp_enabled_vlans = [vlan for vlan in self.inputs.vlans if stp_vlan_instances.get(vlan)]
+        # TODO: Do we need to have a check for the VLAN is present or not then check for the disabled or enabled?
+        if stp_enabled_vlans:
+            self.result.is_failure(f"STP is enabled for the following VLANS: {' '.join(stp_enabled_vlans)}")
