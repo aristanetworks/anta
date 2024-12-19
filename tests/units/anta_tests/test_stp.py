@@ -7,7 +7,15 @@ from __future__ import annotations
 
 from typing import Any
 
-from anta.tests.stp import VerifySTPBlockedPorts, VerifySTPCounters, VerifySTPForwardingPorts, VerifySTPMode, VerifySTPRootPriority, VerifyStpTopologyChanges
+from anta.tests.stp import (
+    VerifySTPBlockedPorts,
+    VerifySTPCounters,
+    VerifySTPDisabledVlans,
+    VerifySTPForwardingPorts,
+    VerifySTPMode,
+    VerifySTPRootPriority,
+    VerifyStpTopologyChanges,
+)
 from tests.units.anta_tests import test
 
 DATA: list[dict[str, Any]] = [
@@ -485,5 +493,37 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {"threshold": 10},
         "expected": {"result": "failure", "messages": ["STP is not configured."]},
+    },
+    {
+        "name": "success-stp-disabled-vlans",
+        "test": VerifySTPDisabledVlans,
+        "eos_data": [{"spanningTreeVlanInstances": {"1": {"spanningTreeVlanInstance": {}}, "6": {}, "4094": {}}}],
+        "inputs": {"vlans": ["6", "4094"]},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-stp-not-configured",
+        "test": VerifySTPDisabledVlans,
+        "eos_data": [{"spanningTreeVlanInstances": {}}],
+        "inputs": {"vlans": ["6", "4094"]},
+        "expected": {"result": "failure", "messages": ["STP is not configured"]},
+    },
+    {
+        "name": "failure-stp-disabled-vlans-not-found",
+        "test": VerifySTPDisabledVlans,
+        "eos_data": [
+            {"spanningTreeVlanInstances": {"1": {"spanningTreeVlanInstance": {}}, "6": {"spanningTreeVlanInstance": {}}, "4094": {"spanningTreeVlanInstance": {}}}}
+        ],
+        "inputs": {"vlans": ["16", "4093"]},
+        "expected": {"result": "failure", "messages": ["VLAN: 16 is not found on the device", "VLAN: 4093 is not found on the device"]},
+    },
+    {
+        "name": "failure-stp-disabled-vlans",
+        "test": VerifySTPDisabledVlans,
+        "eos_data": [
+            {"spanningTreeVlanInstances": {"1": {"spanningTreeVlanInstance": {}}, "6": {"spanningTreeVlanInstance": {}}, "4094": {"spanningTreeVlanInstance": {}}}}
+        ],
+        "inputs": {"vlans": ["6", "4094"]},
+        "expected": {"result": "failure", "messages": ["VLAN: 6 STP is enabled", "VLAN: 4094 STP is enabled"]},
     },
 ]
