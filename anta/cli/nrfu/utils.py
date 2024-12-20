@@ -90,8 +90,10 @@ def print_table(ctx: click.Context, group_by: Literal["device", "test"] | None =
         console.print(reporter.report_summary_devices(results))
     elif group_by == "test":
         console.print(reporter.report_summary_tests(results))
+    elif ctx.obj["expand_atomic"]:
+        console.print(reporter.report_expanded(results))
     else:
-        console.print(reporter.report_all(results))
+        console.print(reporter.report(results))
 
 
 def print_json(ctx: click.Context, output: pathlib.Path | None = None) -> None:

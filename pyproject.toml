@@ -391,6 +391,7 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.In
 "tests/*" = [
   "S101",    # Complains about asserts in units and libs.
   "SLF001",  # Lots of private member accessed for test purposes
+  "FBT002",  # Sometimes we need to define boolean kwargs in fixtures
 ]
 "tests/units/*" = [
   "ARG002",  # Sometimes we need to declare unused arguments when a parameter is not used but declared in @pytest.mark.parametrize
