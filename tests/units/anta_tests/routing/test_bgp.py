@@ -19,6 +19,7 @@ from anta.tests.routing.bgp import (
     VerifyBGPPeerDropStats,
     VerifyBGPPeerMD5Auth,
     VerifyBGPPeerMPCaps,
+    VerifyBGPPeerPrefixes,
     VerifyBGPPeerRouteLimit,
     VerifyBGPPeerRouteRefreshCap,
     VerifyBGPPeersHealth,
@@ -4490,6 +4491,399 @@ DATA: list[dict[str, Any]] = [
                 "The following BGP peer(s) are not configured or maximum routes and maximum routes warning limit is not correct:\n"
                 "{'10.100.0.8': {'default': {'Warning limit': 'Not Found'}}, "
                 "'10.100.0.9': {'MGMT': {'Maximum total routes': 'Not Found', 'Warning limit': 'Not Found'}}}"
+            ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifyBGPPeerPrefixes,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "vrf": "default",
+                        "routerId": "10.100.1.5",
+                        "asn": "65102",
+                        "peers": {
+                            "10.100.0.8": {
+                                "peerState": "Established",
+                                "peerAsn": "65100",
+                                "ipv4Unicast": {"afiSafiState": "negotiated", "nlrisReceived": 17, "nlrisAccepted": 17},
+                            },
+                            "10.100.0.10": {
+                                "peerState": "Established",
+                                "peerAsn": "65100",
+                                "ipv4Unicast": {"afiSafiState": "negotiated", "nlrisReceived": 17, "nlrisAccepted": 17},
+                            },
+                            "10.100.1.1": {
+                                "peerState": "Established",
+                                "peerAsn": "65100",
+                                "ipv4Multicast": {"afiSafiState": "negotiated", "nlrisReceived": 56, "nlrisAccepted": 56},
+                            },
+                            "10.100.1.2": {
+                                "peerState": "Established",
+                                "peerAsn": "65100",
+                                "l2VpnEvpn": {"afiSafiState": "negotiated", "nlrisReceived": 56, "nlrisAccepted": 56},
+                            },
+                            "10.100.4.5": {
+                                "peerState": "Established",
+                                "peerAsn": "65102",
+                                "ipv4Unicast": {"afiSafiState": "negotiated", "nlrisReceived": 20, "nlrisAccepted": 20},
+                            },
+                        },
+                    },
+                    "MGMT": {
+                        "vrf": "MGMT",
+                        "routerId": "10.100.1.5",
+                        "asn": "65102",
+                        "peers": {
+                            "10.100.4.5": {
+                                "peerState": "Established",
+                                "peerAsn": "65102",
+                                "ipv4Multicast": {"afiSafiState": "negotiated", "nlrisReceived": 14, "nlrisAccepted": 14},
+                            }
+                        },
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "address_families": [
+                {"afi": "ipv4", "safi": "unicast"},
+                {"afi": "ipv4", "safi": "multicast", "vrf": "MGMT"},
+                {"afi": "evpn"},
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-vrf-not-configured",
+        "test": VerifyBGPPeerPrefixes,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "vrf": "default",
+                        "routerId": "10.100.1.5",
+                        "asn": "65102",
+                        "peers": {
+                            "10.100.0.8": {
+                                "peerState": "Established",
+                                "peerAsn": "65100",
+                                "ipv4Unicast": {"afiSafiState": "negotiated", "nlrisReceived": 17, "nlrisAccepted": 17},
+                            },
+                            "10.100.0.10": {
+                                "peerState": "Established",
+                                "peerAsn": "65100",
+                                "ipv4Unicast": {"afiSafiState": "negotiated", "nlrisReceived": 17, "nlrisAccepted": 17},
+                            },
+                            "10.100.1.1": {
+                                "peerState": "Established",
+                                "peerAsn": "65100",
+                                "l2VpnEvpn": {"afiSafiState": "negotiated", "nlrisReceived": 56, "nlrisAccepted": 56},
+                            },
+                            "10.100.1.2": {
+                                "peerState": "Established",
+                                "peerAsn": "65100",
+                                "l2VpnEvpn": {"afiSafiState": "negotiated", "nlrisReceived": 56, "nlrisAccepted": 56},
+                            },
+                            "10.100.4.5": {
+                                "peerState": "Established",
+                                "peerAsn": "65102",
+                                "ipv4Unicast": {"afiSafiState": "negotiated", "nlrisReceived": 20, "nlrisAccepted": 20},
+                            },
+                        },
+                    },
+                    "data": {
+                        "vrf": "data",
+                        "routerId": "10.100.1.5",
+                        "asn": "65102",
+                        "peers": {
+                            "10.100.4.5": {
+                                "peerState": "Established",
+                                "peerAsn": "65102",
+                                "ipv4Unicast": {"afiSafiState": "negotiated", "nlrisReceived": 14, "nlrisAccepted": 14},
+                            }
+                        },
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "address_families": [
+                {"afi": "ipv4", "safi": "unicast"},
+                {"afi": "ipv4", "safi": "multicast", "vrf": "MGMT"},
+                {"afi": "evpn"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": ["AFI: ipv4 SAFI: multicast VRF: MGMT - VRF not configured"],
+        },
+    },
+    {
+        "name": "failure-not-consistent",
+        "test": VerifyBGPPeerPrefixes,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "vrf": "default",
+                        "routerId": "10.100.1.5",
+                        "asn": "65102",
+                        "peers": {
+                            "10.100.0.8": {
+                                "peerState": "Established",
+                                "peerAsn": "65100",
+                                "ipv4Unicast": {"afiSafiState": "negotiated", "nlrisReceived": 18, "nlrisAccepted": 17},
+                            },
+                            "10.100.0.10": {
+                                "peerState": "Established",
+                                "peerAsn": "65100",
+                                "ipv4Unicast": {"afiSafiState": "negotiated", "nlrisReceived": 18, "nlrisAccepted": 17},
+                            },
+                            "10.100.4.5": {
+                                "peerState": "Established",
+                                "peerAsn": "65102",
+                                "ipv4Unicast": {"afiSafiState": "negotiated", "nlrisReceived": 20, "nlrisAccepted": 20},
+                            },
+                        },
+                    },
+                    "MGMT": {
+                        "vrf": "data",
+                        "routerId": "10.100.1.5",
+                        "asn": "65102",
+                        "peers": {
+                            "10.100.4.5": {
+                                "peerState": "Established",
+                                "peerAsn": "65102",
+                                "ipv4Multicast": {"afiSafiState": "negotiated", "nlrisReceived": 15, "nlrisAccepted": 14},
+                            }
+                        },
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "address_families": [
+                {"afi": "ipv4", "safi": "unicast"},
+                {"afi": "ipv4", "safi": "multicast", "vrf": "MGMT"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.8 - prefixes are not consistent - Accepted: 17 Received: 18",
+                "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.10 - prefixes are not consistent - Accepted: 17 Received: 18",
+                "AFI: ipv4 SAFI: multicast VRF: MGMT Peer: 10.100.4.5 - prefixes are not consistent - Accepted: 14 Received: 15",
+            ],
+        },
+    },
+    {
+        "name": "failure-misc",
+        "test": VerifyBGPPeerPrefixes,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "vrf": "default",
+                        "routerId": "10.100.1.5",
+                        "asn": "65102",
+                        "peers": {
+                            "10.100.0.8": {
+                                "peerState": "Established",
+                                "peerAsn": "65100",
+                                "ipv4Unicast": {"afiSafiState": "negotiated", "nlrisReceived": 18, "nlrisAccepted": 17},
+                            },
+                            "10.100.0.10": {
+                                "peerState": "Established",
+                                "peerAsn": "65100",
+                                "ipv4Unicast": {"afiSafiState": "negotiated", "nlrisReceived": 17, "nlrisAccepted": 17},
+                            },
+                            "10.100.1.1": {
+                                "peerState": "Established",
+                                "peerAsn": "65100",
+                                "l2VpnEvpn": {"afiSafiState": "negotiated", "nlrisReceived": 56, "nlrisAccepted": 56},
+                            },
+                            "10.100.1.2": {
+                                "peerState": "Established",
+                                "peerAsn": "65100",
+                                "l2VpnEvpn": {"afiSafiState": "negotiated", "nlrisReceived": 59, "nlrisAccepted": 56},
+                            },
+                            "10.100.4.5": {
+                                "peerState": "Established",
+                                "peerAsn": "65102",
+                                "ipv4Unicast": {"afiSafiState": "negotiated", "nlrisReceived": 20, "nlrisAccepted": 20},
+                            },
+                        },
+                    },
+                    "MGMT": {
+                        "vrf": "data",
+                        "routerId": "10.100.1.5",
+                        "asn": "65102",
+                        "peers": {
+                            "10.100.4.5": {
+                                "peerState": "Established",
+                                "peerAsn": "65102",
+                                "ipv4Unicast": {"afiSafiState": "negotiated", "nlrisReceived": 14, "nlrisAccepted": 14},
+                            }
+                        },
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "address_families": [
+                {"afi": "ipv4", "safi": "unicast"},
+                {"afi": "ipv4", "safi": "multicast", "vrf": "MGMT"},
+                {"afi": "evpn"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.8 - prefixes are not consistent - Accepted: 17 Received: 18",
+                "AFI: ipv4 SAFI: multicast VRF: MGMT - None of the peers are negotiated",
+                "AFI: evpn Peer: 10.100.1.2 - prefixes are not consistent - Accepted: 56 Received: 59",
+            ],
+        },
+    },
+    {
+        "name": "success-specific-peers",
+        "test": VerifyBGPPeerPrefixes,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "vrf": "default",
+                        "routerId": "10.100.1.5",
+                        "asn": "65102",
+                        "peers": {
+                            "10.100.0.15": {
+                                "peerState": "Established",
+                                "peerAsn": "65100",
+                                "ipv4Unicast": {"afiSafiState": "negotiated", "nlrisReceived": 17, "nlrisAccepted": 17},
+                            },
+                            "10.100.0.8": {
+                                "peerState": "Established",
+                                "peerAsn": "65100",
+                                "l2VpnEvpn": {"afiSafiState": "negotiated", "nlrisReceived": 56, "nlrisAccepted": 56},
+                            },
+                            "10.100.0.10": {
+                                "peerState": "Established",
+                                "peerAsn": "65100",
+                                "l2VpnEvpn": {"afiSafiState": "negotiated", "nlrisReceived": 56, "nlrisAccepted": 56},
+                            },
+                            "10.100.4.5": {
+                                "peerState": "Established",
+                                "peerAsn": "65102",
+                                "ipv4Unicast": {"afiSafiState": "negotiated", "nlrisReceived": 20, "nlrisAccepted": 20},
+                            },
+                        },
+                    },
+                    "MGMT": {
+                        "vrf": "MGMT",
+                        "routerId": "10.100.1.5",
+                        "asn": "65102",
+                        "peers": {
+                            "10.100.0.8": {
+                                "peerState": "Established",
+                                "peerAsn": "65102",
+                                "ipv4Multicast": {"afiSafiState": "negotiated", "nlrisReceived": 14, "nlrisAccepted": 14},
+                            },
+                            "10.100.0.10": {
+                                "peerState": "Established",
+                                "peerAsn": "65102",
+                                "ipv4Multicast": {"afiSafiState": "negotiated", "nlrisReceived": 14, "nlrisAccepted": 14},
+                            },
+                        },
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "address_families": [
+                {"afi": "ipv4", "safi": "unicast", "peers": ["10.100.0.15"]},
+                {"afi": "ipv4", "safi": "multicast", "vrf": "MGMT", "peers": ["10.100.0.8", "10.100.0.10"]},
+                {"afi": "evpn", "peers": ["10.100.0.8", "10.100.0.10"]},
+            ]
+        },
+        "expected": {
+            "result": "success",
+        },
+    },
+    {
+        "name": "failure-specific-peers",
+        "test": VerifyBGPPeerPrefixes,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "vrf": "default",
+                        "routerId": "10.100.1.5",
+                        "asn": "65102",
+                        "peers": {
+                            "10.100.0.15": {
+                                "peerState": "Established",
+                                "peerAsn": "65100",
+                                "ipv4Unicast": {"afiSafiState": "negotiated", "nlrisReceived": 19, "nlrisAccepted": 17},
+                            },
+                            "10.100.0.10": {
+                                "peerState": "Established",
+                                "peerAsn": "65100",
+                                "ipv4Unicast": {"afiSafiState": "negotiated", "nlrisReceived": 17, "nlrisAccepted": 17},
+                            },
+                            "10.100.0.8": {
+                                "peerState": "Established",
+                                "peerAsn": "65100",
+                                "l2VpnEvpn": {"afiSafiState": "negotiated", "nlrisReceived": 56, "nlrisAccepted": 56},
+                            },
+                            "10.100.0.12": {
+                                "peerState": "Established",
+                                "peerAsn": "65100",
+                                "l2VpnEvpn": {"afiSafiState": "negotiated", "nlrisReceived": 56, "nlrisAccepted": 56},
+                            },
+                            "10.100.4.5": {
+                                "peerState": "Established",
+                                "peerAsn": "65102",
+                                "ipv4Unicast": {"afiSafiState": "negotiated", "nlrisReceived": 20, "nlrisAccepted": 20},
+                            },
+                        },
+                    },
+                    "MGMT": {
+                        "vrf": "MGMT",
+                        "routerId": "10.100.1.5",
+                        "asn": "65102",
+                        "peers": {
+                            "10.100.0.11": {
+                                "peerState": "Established",
+                                "peerAsn": "65102",
+                                "ipv4Multicast": {"afiSafiState": "negotiated", "nlrisReceived": 14, "nlrisAccepted": 14},
+                            },
+                            "10.100.0.12": {
+                                "peerState": "Established",
+                                "peerAsn": "65102",
+                                "ipv4Multicast": {"afiSafiState": "negotiated", "nlrisReceived": 14, "nlrisAccepted": 14},
+                            },
+                        },
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "address_families": [
+                {"afi": "ipv4", "safi": "unicast", "peers": ["10.100.0.15"]},
+                {"afi": "ipv4", "safi": "multicast", "vrf": "MGMT", "peers": ["10.100.0.8", "10.100.0.10"]},
+                {"afi": "evpn", "peers": ["10.100.0.8", "10.100.0.10"]},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.15 - prefixes are not consistent - Accepted: 17 Received: 19",
+                "AFI: ipv4 SAFI: multicast VRF: MGMT Peer: 10.100.0.8 - Not negotiated",
+                "AFI: ipv4 SAFI: multicast VRF: MGMT Peer: 10.100.0.10 - Not negotiated",
+                "AFI: evpn Peer: 10.100.0.10 - Not negotiated",
             ],
         },
     },
