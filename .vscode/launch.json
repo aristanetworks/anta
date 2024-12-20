@@ -1,0 +1,50 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "anta cli nrfu text",
+            "type": "debugpy",
+            "console": "integratedTerminal",
+            "request": "launch",
+            "module": "anta.cli",
+            "args": [ "nrfu", "text"],
+            "envFile": "${workspaceFolder}/.vscode/debugger.env",
+            "justMyCode": false
+        },
+        {
+            "name": "anta cli nrfu table",
+            "type": "debugpy",
+            "console": "integratedTerminal",
+            "request": "launch",
+            "module": "anta.cli",
+            "args": [
+                "nrfu",
+                "table"
+            ],
+            "envFile": "${workspaceFolder}/.vscode/debugger.env",
+            "justMyCode": false
+        },
+        {
+            "name": "Python: Unit Tests",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/tests",
+            "console": "integratedTerminal",
+            "args": [
+                "-m",
+                "unittest",
+                "discover",
+                "-s",
+                "tests",
+                "-p",
+                "test_*.py"
+            ],
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        }
+    ]
+}
