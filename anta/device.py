@@ -454,12 +454,17 @@ class AsyncEOSDevice(AntaDevice):
         """Update attributes of an AsyncEOSDevice instance.
 
         This coroutine must update the following attributes of AsyncEOSDevice:
-        - is_online: When a device IP is reachable and a port can be open
+        - is_online: When a device eAPI HTTP endpoint is accessible
         - established: When a command execution succeeds
         - hw_model: The hardware model of the device
         """
         logger.debug("Refreshing device %s", self.name)
-        self.is_online = await self._session.check_connection()
+        try:
+            self.is_online = await self._session.check_connection()
+        except HTTPError as e:
+            self.is_online = False
+            logger.warning("Could not connect to device %s: %s", self.name, e)
+
         if self.is_online:
             show_version = AntaCommand(command="show version")
             await self._collect(show_version)
@@ -473,8 +478,6 @@ class AsyncEOSDevice(AntaDevice):
                 # and it is nice to get a meaninfule error message
                 elif self.hw_model == "":
                     logger.critical("Got an empty 'modelName' in the 'show version' returned by device %s", self.name)
-        else:
-            logger.warning("Could not connect to device %s: cannot open eAPI port", self.name)
 
         self.established = bool(self.is_online and self.hw_model)
 
