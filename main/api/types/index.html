@@ -2076,6 +2076,20 @@
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#anta.custom_types.IPv4RouteType" class="md-nav__link">
+      <span class="md-ellipsis">
+        IPv4RouteType
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#anta.custom_types.Interface" class="md-nav__link">
       <span class="md-ellipsis">
         Interface
@@ -3058,6 +3072,20 @@
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#anta.custom_types.IPv4RouteType" class="md-nav__link">
+      <span class="md-ellipsis">
+        IPv4RouteType
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#anta.custom_types.Interface" class="md-nav__link">
       <span class="md-ellipsis">
         Interface
@@ -3910,6 +3938,55 @@
 <a href="#anta.custom_types.Hostname" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="n">Hostname</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span>
     <span class="nb">str</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="n">REGEXP_TYPE_HOSTNAME</span><span class="p">)</span>
+<span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="anta.custom_types.IPv4RouteType" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">IPv4RouteType</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+<a href="#anta.custom_types.IPv4RouteType" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">IPv4RouteType</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span>
+    <span class="s2">&quot;connected&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;static&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;kernel&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;OSPF&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;OSPF inter area&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;OSPF external type 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;OSPF external type 2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;OSPF NSSA external type 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;OSPF NSSA external type2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Other BGP Routes&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;iBGP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;eBGP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;RIP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;IS-IS level 1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;IS-IS level 2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;OSPFv3&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;BGP Aggregate&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;OSPF Summary&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Nexthop Group Static Route&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;VXLAN Control Service&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Martian&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DHCP client installed default route&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Dynamic Policy Route&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;VRF Leaked&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;gRIBI&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Route Cache Route&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CBF Leaked Route&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 </code></pre></div>
 
