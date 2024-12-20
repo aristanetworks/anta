@@ -503,6 +503,18 @@ anta.tests.routing.bgp:
         - address: aac1.ab5d.b41e
           vni: 10010
 anta.tests.routing.generic:
+  - VerifyIPv4RouteType:
+      # Verifies the route-type of the IPv4 prefixes.
+      routes_entries:
+        - prefix: 10.10.0.1/32
+          vrf: default
+          route_type: eBGP
+        - prefix: 10.100.0.12/31
+          vrf: default
+          route_type: connected
+        - prefix: 10.100.1.5/32
+          vrf: default
+          route_type: iBGP
   - VerifyRoutingProtocolModel:
       # Verifies the configured routing protocol model.
       model: multi-agent
