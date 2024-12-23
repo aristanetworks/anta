@@ -750,20 +750,16 @@ class VerifyEVPNType2Route(AntaTest):
     This test performs the following checks for each specified VXLAN endpoint:
 
       1. Verifies that the endpoint exists in the BGP EVPN table.
-      2. For each EVPN route found:
-        - Validates that at least one path exists for the route.
-        - Confirms that at least one path is valid and active.
+      2. Confirms that at least one EVPN Type-2 route with a valid and active path exists.
 
     Expected Results
     ----------------
     * Success: If all of the following conditions are met:
         - All specified VXLAN endpoints are found in the BGP EVPN table.
-        - Each endpoint has at least one EVPN Type-2 route.
-        - Each route has at least one path that is both valid and active.
+        - Each endpoint has at least one EVPN Type-2 route with a valid and active path.
     * Failure: If any of the following occur:
         - A VXLAN endpoint is not found in the BGP EVPN table.
-        - No EVPN Type-2 route exists for an endpoint.
-        - No valid and active path exists for a route.
+        - No EVPN Type-2 route with a valid and active path exists for an endpoint.
 
     Examples
     --------
@@ -805,7 +801,7 @@ class VerifyEVPNType2Route(AntaTest):
                 self.result.is_failure(f"{endpoint} - No EVPN Type-2 route")
                 continue
 
-            # Verify that at least one EVPN route has at least one active/valid path across all learned routes from all RDs combined
+            # Verify that at least one EVPN Type-2 route has at least one active and valid path across all learned routes from all RDs combined
             has_active_path = False
             for route_data in evpn_routes.values():
                 for path in route_data.get("evpnRoutePaths", []):
