@@ -63,7 +63,7 @@ anta.tests.avt:
       # Verifies the AVT role of a device.
       role: edge
   - VerifyAVTSpecificPath:
-      # Verifies the status and type of an AVT path for a specified VRF.
+      # Verifies the Adaptive Virtual Topology (AVT) path.
       avt_paths:
         - avt_name: CONTROL-PLANE-PROFILE
           vrf: default
@@ -135,11 +135,25 @@ anta.tests.connectivity:
           df_bit: True
           size: 100
 anta.tests.cvx:
+  - VerifyActiveCVXConnections:
+      # Verifies the number of active CVX Connections.
+      connections_count: 100
+  - VerifyCVXClusterStatus:
+      # Verifies the CVX Server Cluster status.
+      role: Master
+      peer_status:
+        - peer_name : cvx-red-2
+          registration_state: Registration complete
+        - peer_name: cvx-red-3
+          registration_state: Registration error
   - VerifyManagementCVX:
       # Verifies the management CVX global status.
       enabled: true
   - VerifyMcsClientMounts:
       # Verify if all MCS client mounts are in mountStateMountComplete.
+  - VerifyMcsServerMounts:
+      # Verify if all MCS server mounts are in a MountComplete state.
+      connections_count: 100
 anta.tests.field_notices:
   - VerifyFieldNotice44Resolution:
       # Verifies that the device is using the correct Aboot version per FN0044.
@@ -253,7 +267,7 @@ anta.tests.interfaces:
       specific_mtu:
           - Ethernet1: 2500
   - VerifyLACPInterfacesStatus:
-      # Verifies the Link Aggregation Control Protocol (LACP) status of the provided interfaces.
+      # Verifies the Link Aggregation Control Protocol (LACP) status of the interface.
       interfaces:
         - name: Ethernet1
           portchannel: Port-Channel100
@@ -489,6 +503,18 @@ anta.tests.routing.bgp:
         - address: aac1.ab5d.b41e
           vni: 10010
 anta.tests.routing.generic:
+  - VerifyIPv4RouteType:
+      # Verifies the route-type of the IPv4 prefixes.
+      routes_entries:
+        - prefix: 10.10.0.1/32
+          vrf: default
+          route_type: eBGP
+        - prefix: 10.100.0.12/31
+          vrf: default
+          route_type: connected
+        - prefix: 10.100.1.5/32
+          vrf: default
+          route_type: iBGP
   - VerifyRoutingProtocolModel:
       # Verifies the configured routing protocol model.
       model: multi-agent
@@ -640,7 +666,7 @@ anta.tests.security:
   - VerifySSHStatus:
       # Verifies if the SSHD agent is disabled in the default VRF.
   - VerifySpecificIPSecConn:
-      # Verifies IPv4 security connections for a peer.
+      # Verifies the IPv4 security connections.
       ip_security_connections:
         - peer: 10.255.0.1
         - peer: 10.255.0.2
@@ -745,7 +771,14 @@ anta.tests.stp:
       threshold: 10
 anta.tests.stun:
   - VerifyStunClient:
-      # Verifies STUN client settings, including local IP/port and optionally public IP/port.
+      # (Deprecated) Verifies the translation for a source address on a STUN client.
+      stun_clients:
+        - source_address: 172.18.3.2
+          public_address: 172.18.3.21
+          source_port: 4500
+          public_port: 6006
+  - VerifyStunClientTranslation:
+      # Verifies the translation for a source address on a STUN client.
       stun_clients:
         - source_address: 172.18.3.2
           public_address: 172.18.3.21

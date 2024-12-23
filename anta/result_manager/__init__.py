@@ -6,15 +6,20 @@
 from __future__ import annotations
 
 import json
+import logging
 from collections import defaultdict
 from functools import cached_property
 from itertools import chain
+from typing import Any
 
 from anta.result_manager.models import AntaTestStatus, TestResult
 
 from .models import CategoryStats, DeviceStats, TestStats
 
+logger = logging.getLogger(__name__)
 
+
+# pylint: disable=too-many-instance-attributes
 class ResultManager:
     """Helper to manage Test Results and generate reports.
 
@@ -68,6 +73,15 @@ class ResultManager:
         ]
     """
 
+    _result_entries: list[TestResult]
+    status: AntaTestStatus
+    error_status: bool
+
+    _device_stats: defaultdict[str, DeviceStats]
+    _category_stats: defaultdict[str, CategoryStats]
+    _test_stats: defaultdict[str, TestStats]
+    _stats_in_sync: bool
+
     def __init__(self) -> None:
         """Class constructor.
 
@@ -89,13 +103,16 @@ class ResultManager:
         If the status of the added test is error, the status is untouched and the
         error_status is set to True.
         """
+        self.reset()
+
+    def reset(self) -> None:
+        """Create or reset the attributes of the ResultManager instance."""
         self._result_entries: list[TestResult] = []
         self.status: AntaTestStatus = AntaTestStatus.UNSET
         self.error_status = False
 
-        self.device_stats: defaultdict[str, DeviceStats] = defaultdict(DeviceStats)
-        self.category_stats: defaultdict[str, CategoryStats] = defaultdict(CategoryStats)
-        self.test_stats: defaultdict[str, TestStats] = defaultdict(TestStats)
+        # Initialize the statistics attributes
+        self._reset_stats()
 
     def __len__(self) -> int:
         """Implement __len__ method to count number of results."""
@@ -110,26 +127,43 @@ class ResultManager:
     def results(self, value: list[TestResult]) -> None:
         """Set the list of TestResult."""
         # When setting the results, we need to reset the state of the current instance
-        self._result_entries = []
-        self.status = AntaTestStatus.UNSET
-        self.error_status = False
-
-        # Also reset the stats attributes
-        self.device_stats = defaultdict(DeviceStats)
-        self.category_stats = defaultdict(CategoryStats)
-        self.test_stats = defaultdict(TestStats)
+        self.reset()
 
         for result in value:
             self.add(result)
 
     @property
+    def dump(self) -> list[dict[str, Any]]:
+        """Get a list of dictionary of the results."""
+        return [result.model_dump() for result in self._result_entries]
+
+    @property
     def json(self) -> str:
         """Get a JSON representation of the results."""
-        return json.dumps([result.model_dump() for result in self._result_entries], indent=4)
+        return json.dumps(self.dump, indent=4)
+
+    @property
+    def device_stats(self) -> defaultdict[str, DeviceStats]:
+        """Get the device statistics."""
+        self._ensure_stats_in_sync()
+        return self._device_stats
+
+    @property
+    def category_stats(self) -> defaultdict[str, CategoryStats]:
+        """Get the category statistics."""
+        self._ensure_stats_in_sync()
+        return self._category_stats
+
+    @property
+    def test_stats(self) -> defaultdict[str, TestStats]:
+        """Get the test statistics."""
+        self._ensure_stats_in_sync()
+        return self._test_stats
 
     @property
     def sorted_category_stats(self) -> dict[str, CategoryStats]:
         """A property that returns the category_stats dictionary sorted by key name."""
+        self._ensure_stats_in_sync()
         return dict(sorted(self.category_stats.items()))
 
     @cached_property
@@ -153,6 +187,13 @@ class ResultManager:
         elif self.status == "success" and test_status == "failure":
             self.status = AntaTestStatus.FAILURE
 
+    def _reset_stats(self) -> None:
+        """Create or reset the statistics attributes."""
+        self._device_stats = defaultdict(DeviceStats)
+        self._category_stats = defaultdict(CategoryStats)
+        self._test_stats = defaultdict(TestStats)
+        self._stats_in_sync = False
+
     def _update_stats(self, result: TestResult) -> None:
         """Update the statistics based on the test result.
 
@@ -164,7 +205,7 @@ class ResultManager:
         count_attr = f"tests_{result.result}_count"
 
         # Update device stats
-        device_stats: DeviceStats = self.device_stats[result.name]
+        device_stats: DeviceStats = self._device_stats[result.name]
         setattr(device_stats, count_attr, getattr(device_stats, count_attr) + 1)
         if result.result in ("failure", "error"):
             device_stats.tests_failure.add(result.test)
@@ -174,15 +215,33 @@ class ResultManager:
 
         # Update category stats
         for category in result.categories:
-            category_stats: CategoryStats = self.category_stats[category]
+            category_stats: CategoryStats = self._category_stats[category]
             setattr(category_stats, count_attr, getattr(category_stats, count_attr) + 1)
 
         # Update test stats
         count_attr = f"devices_{result.result}_count"
-        test_stats: TestStats = self.test_stats[result.test]
+        test_stats: TestStats = self._test_stats[result.test]
         setattr(test_stats, count_attr, getattr(test_stats, count_attr) + 1)
         if result.result in ("failure", "error"):
             test_stats.devices_failure.add(result.name)
+
+    def _compute_stats(self) -> None:
+        """Compute all statistics from the current results."""
+        logger.info("Computing statistics for all results.")
+
+        # Reset all stats
+        self._reset_stats()
+
+        # Recompute stats for all results
+        for result in self._result_entries:
+            self._update_stats(result)
+
+        self._stats_in_sync = True
+
+    def _ensure_stats_in_sync(self) -> None:
+        """Ensure statistics are in sync with current results."""
+        if not self._stats_in_sync:
+            self._compute_stats()
 
     def add(self, result: TestResult) -> None:
         """Add a result to the ResultManager instance.
@@ -197,7 +256,7 @@ class ResultManager:
         """
         self._result_entries.append(result)
         self._update_status(result.result)
-        self._update_stats(result)
+        self._stats_in_sync = False
 
         # Every time a new result is added, we need to clear the cached property
         self.__dict__.pop("results_by_status", None)

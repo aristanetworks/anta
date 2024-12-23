@@ -804,16 +804,17 @@ class VerifyEVPNType2Route(AntaTest):
             if not evpn_routes:
                 self.result.is_failure(f"{endpoint} - No EVPN Type-2 route")
                 continue
-            # Verify that each EVPN route has at least one valid and active path
+
+            # Verify that at least one EVPN route has at least one active/valid path across all learned routes from all RDs combined
+            has_active_path = False
             for route_data in evpn_routes.values():
-                has_active_path = False
-                for path in route_data["evpnRoutePaths"]:
-                    if path["routeType"]["valid"] is True and path["routeType"]["active"] is True:
-                        # At least one path is valid and active, no need to check the other paths
+                for path in route_data.get("evpnRoutePaths", []):
+                    route_type = path.get("routeType", {})
+                    if route_type.get("active") and route_type.get("valid"):
                         has_active_path = True
                         break
-                if not has_active_path:
-                    self.result.is_failure(f"{endpoint} - No valid and active path")
+            if not has_active_path:
+                self.result.is_failure(f"{endpoint} - No valid and active path")
 
 
 class VerifyBGPAdvCommunities(AntaTest):

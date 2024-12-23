@@ -110,6 +110,17 @@ anta_title: Frequently Asked Questions (FAQ)
         pip install -U pyopenssl>22.0
         ```
 
+## Caveat running on non-POSIX platforms (e.g. Windows)
+
+???+ faq "Caveat running on non-POSIX platforms (e.g. Windows)"
+
+    While ANTA should in general work on non-POSIX platforms (e.g. Windows),
+    there are some known limitations:
+
+    - On non-Posix platforms, ANTA is not able to check and/or adjust the system limit of file descriptors.
+
+    ANTA test suite is being run in the CI on a Windows runner.
+
 ## `__NSCFConstantString initialize` error on OSX
 
 ???+ faq "`__NSCFConstantString initialize` error on OSX"

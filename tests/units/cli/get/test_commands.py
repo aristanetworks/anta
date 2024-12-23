@@ -383,7 +383,7 @@ def test_from_ansible_overwrite(
             None,
             False,
             True,
-            "There are 2 tests available in 'anta.tests.stun'",
+            "There are 3 tests available in 'anta.tests.stun'",
             ExitCode.OK,
             id="Get multiple test count",
         ),

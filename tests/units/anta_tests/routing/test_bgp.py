@@ -2474,8 +2474,8 @@ DATA: list[dict[str, Any]] = [
                         "evpnRoutePaths": [
                             {
                                 "routeType": {
-                                    "active": True,
-                                    "valid": True,
+                                    "active": False,
+                                    "valid": False,
                                 },
                             },
                         ]
