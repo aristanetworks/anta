@@ -217,9 +217,9 @@ anta.tests.interfaces:
       # Verifies the interface IPv4 addresses.
       interfaces:
         - name: Ethernet2
-          primary_ip: 172.30.11.0/31
+          primary_ip: 172.30.11.1/31
           secondary_ips:
-            - 10.10.10.0/31
+            - 10.10.10.1/31
             - 10.10.10.10/31
   - VerifyInterfaceUtilization:
       # Verifies that the utilization of interfaces is below a certain threshold.
