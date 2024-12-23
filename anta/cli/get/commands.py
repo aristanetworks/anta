@@ -75,7 +75,11 @@ def from_cvp(ctx: click.Context, output: Path, host: str, username: str, passwor
         # Get devices under a container
         logger.info("Getting inventory for container %s from CloudVision instance '%s'", container, host)
         cvp_inventory = clnt.api.get_devices_in_container(container)
-    create_inventory_from_cvp(cvp_inventory, output)
+    try:
+        create_inventory_from_cvp(cvp_inventory, output)
+    except OSError as e:
+        logger.error(str(e))
+        ctx.exit(ExitCode.USAGE_ERROR)
 
 
 @click.command
@@ -101,7 +105,7 @@ def from_ansible(ctx: click.Context, output: Path, ansible_group: str, ansible_i
             output=output,
             ansible_group=ansible_group,
         )
-    except ValueError as e:
+    except (ValueError, OSError) as e:
         logger.error(str(e))
         ctx.exit(ExitCode.USAGE_ERROR)
 
