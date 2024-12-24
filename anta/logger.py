@@ -69,7 +69,12 @@ def setup_logging(level: LogLevel = Log.INFO, file: Path | None = None) -> None:
         # httpx as well
         logging.getLogger("httpx").setLevel(logging.WARNING)
 
-    # Add RichHandler for stdout
+    # Add RichHandler for stdout if not already present
+    if root.hasHandlers(): 
+        logger.handlers = []
+
+    root.
+
     rich_handler = RichHandler(markup=True, rich_tracebacks=True, tracebacks_show_locals=False)
     # Show Python module in stdout at DEBUG level
     fmt_string = "[grey58]\\[%(name)s][/grey58] %(message)s" if loglevel == logging.DEBUG else "%(message)s"
