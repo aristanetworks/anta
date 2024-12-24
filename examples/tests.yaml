@@ -433,6 +433,20 @@ anta.tests.routing.bgp:
           strict: False
           capabilities:
             - ipv4Unicast
+  - VerifyBGPPeerPrefixes:
+      # Verifies the consistency of IPv4 prefixes in a BGP session.
+      address_families:
+        - afi: ipv4
+          safi: unicast
+          peers:
+            - 10.100.0.8
+            - 10.100.0.10
+        - afi: ipv4
+          safi: multicast
+        - afi: evpn
+        - afi: vpn-ipv4
+        - afi: ipv4
+          safi: labeled-unicast
   - VerifyBGPPeerRouteLimit:
       # Verifies the maximum routes and optionally verifies the maximum routes warning limit for the provided BGP IPv4 peer(s).
       bgp_peers:
