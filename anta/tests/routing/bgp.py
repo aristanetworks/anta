@@ -335,7 +335,7 @@ class VerifyBGPExchangedRoutes(AntaTest):
 
     This test performs the following checks for each specified peer:
 
-      1. For each advertised and received route:
+      For each advertised and received route:
         - Confirms that the route exists in the BGP route table.
         - Verifies that the route is in an 'active' and 'valid' state.
 
