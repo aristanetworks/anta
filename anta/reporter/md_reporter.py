@@ -8,7 +8,7 @@ from __future__ import annotations
 import logging
 import re
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, ClassVar, TextIO
 
 from anta.constants import MD_REPORT_TOC
 from anta.logger import anta_log_exception
@@ -17,7 +17,6 @@ from anta.tools import convert_categories
 
 if TYPE_CHECKING:
     from collections.abc import Generator
-    from io import TextIOWrapper
     from pathlib import Path
 
     from anta.result_manager import ResultManager
@@ -72,7 +71,7 @@ class MDReportBase(ABC):
     to generate and write content to the provided markdown file.
     """
 
-    def __init__(self, mdfile: TextIOWrapper, results: ResultManager) -> None:
+    def __init__(self, mdfile: TextIO, results: ResultManager) -> None:
         """Initialize the MDReportBase with an open markdown file object to write to and a ResultManager instance.
 
         Parameters

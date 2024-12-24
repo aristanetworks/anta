@@ -70,17 +70,19 @@ def setup_logging(level: LogLevel = Log.INFO, file: Path | None = None) -> None:
         logging.getLogger("httpx").setLevel(logging.WARNING)
 
     # Add RichHandler for stdout if not already present
+    maybe_add_rich_handler = True
     if root.hasHandlers():
-        logger.handlers = []
+        maybe_add_rich_handler = any(handler.get_name() == "ANTA_RICH_HANDLER" for handler in root.handlers)
 
-    root.
+    if maybe_add_rich_handler:
+        rich_handler = RichHandler(markup=True, rich_tracebacks=True, tracebacks_show_locals=False)
+        rich_handler.set_name("ANTA_RICH_HANDLER")
+        # Show Python module in stdout at DEBUG level
+        fmt_string = "[grey58]\\[%(name)s][/grey58] %(message)s" if loglevel == logging.DEBUG else "%(message)s"
+        formatter = logging.Formatter(fmt=fmt_string, datefmt="[%X]")
+        rich_handler.setFormatter(formatter)
+        root.addHandler(rich_handler)
 
-    rich_handler = RichHandler(markup=True, rich_tracebacks=True, tracebacks_show_locals=False)
-    # Show Python module in stdout at DEBUG level
-    fmt_string = "[grey58]\\[%(name)s][/grey58] %(message)s" if loglevel == logging.DEBUG else "%(message)s"
-    formatter = logging.Formatter(fmt=fmt_string, datefmt="[%X]")
-    rich_handler.setFormatter(formatter)
-    root.addHandler(rich_handler)
     # Add FileHandler if file is provided
     if file:
         file_handler = logging.FileHandler(file)

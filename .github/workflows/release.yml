@@ -7,8 +7,13 @@ on:
 
 jobs:
   pypi:
-    name: Publish version to Pypi servers
+    name: Publish Python 🐍 distribution 📦 to PyPI
     runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://pypi.org/p/anta
+    permissions:
+      id-token: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -19,11 +24,8 @@ jobs:
       - name: Build package
         run: |
           python -m build
-      - name: Publish package to Pypi
+      - name: Publish distribution 📦 to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          user: __token__
-          password: ${{ secrets.PYPI_API_TOKEN }}
 
   release-coverage:
     name: Updated ANTA release coverage badge

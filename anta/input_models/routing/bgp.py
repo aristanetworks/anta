@@ -5,13 +5,14 @@
 
 from __future__ import annotations
 
-from ipaddress import IPv4Address, IPv6Address
+from ipaddress import IPv4Address, IPv4Network, IPv6Address
 from typing import TYPE_CHECKING, Any
 from warnings import warn
 
-from pydantic import BaseModel, ConfigDict, PositiveInt, model_validator
+from pydantic import BaseModel, ConfigDict, Field, PositiveInt, model_validator
+from pydantic_extra_types.mac_address import MacAddress
 
-from anta.custom_types import Afi, Safi
+from anta.custom_types import Afi, BgpDropStats, BgpUpdateError, MultiProtocolCaps, Safi, Vni
 
 if TYPE_CHECKING:
     import sys
@@ -97,7 +98,7 @@ class BgpAddressFamily(BaseModel):
         return AFI_SAFI_EOS_KEY[(self.afi, self.safi)]
 
     def __str__(self) -> str:
-        """Return a string representation of the BgpAddressFamily model. Used in failure messages.
+        """Return a human-readable string representation of the BgpAddressFamily for reporting.
 
         Examples
         --------
@@ -128,3 +129,81 @@ class BgpAfi(BgpAddressFamily):  # pragma: no cover
             stacklevel=2,
         )
         super().__init__(**data)
+
+
+class BgpPeer(BaseModel):
+    """Model for a BGP peer.
+
+    Only IPv4 peers are supported for now.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+    peer_address: IPv4Address
+    """IPv4 address of the BGP peer."""
+    vrf: str = "default"
+    """Optional VRF for the BGP peer. Defaults to `default`."""
+    advertised_routes: list[IPv4Network] | None = None
+    """List of advertised routes in CIDR format. Required field in the `VerifyBGPExchangedRoutes` test."""
+    received_routes: list[IPv4Network] | None = None
+    """List of received routes in CIDR format. Required field in the `VerifyBGPExchangedRoutes` test."""
+    capabilities: list[MultiProtocolCaps] | None = None
+    """List of BGP multiprotocol capabilities. Required field in the `VerifyBGPPeerMPCaps` test."""
+    strict: bool = False
+    """If True, requires exact match of the provided BGP multiprotocol capabilities.
+
+    Optional field in the `VerifyBGPPeerMPCaps` test. Defaults to False."""
+    hold_time: int | None = Field(default=None, ge=3, le=7200)
+    """BGP hold time in seconds. Required field in the `VerifyBGPTimers` test."""
+    keep_alive_time: int | None = Field(default=None, ge=0, le=3600)
+    """BGP keepalive time in seconds. Required field in the `VerifyBGPTimers` test."""
+    drop_stats: list[BgpDropStats] | None = None
+    """List of drop statistics to be verified.
+
+    Optional field in the `VerifyBGPPeerDropStats` test. If not provided, the test will verifies all drop statistics."""
+    update_errors: list[BgpUpdateError] | None = None
+    """List of update error counters to be verified.
+
+    Optional field in the `VerifyBGPPeerUpdateErrors` test. If not provided, the test will verifies all the update error counters."""
+    inbound_route_map: str | None = None
+    """Inbound route map applied, defaults to None. Required field in the `VerifyBgpRouteMaps` test."""
+    outbound_route_map: str | None = None
+    """Outbound route map applied, defaults to None. Required field in the `VerifyBgpRouteMaps` test."""
+    maximum_routes: int | None = Field(default=None, ge=0, le=4294967294)
+    """The maximum allowable number of BGP routes, `0` means unlimited. Required field in the `VerifyBGPPeerRouteLimit` test"""
+    warning_limit: int | None = Field(default=None, ge=0, le=4294967294)
+    """Optional maximum routes warning limit. If not provided, it defaults to `0` meaning no warning limit."""
+
+    def __str__(self) -> str:
+        """Return a human-readable string representation of the BgpPeer for reporting."""
+        return f"Peer: {self.peer_address} VRF: {self.vrf}"
+
+
+class BgpNeighbor(BgpPeer):  # pragma: no cover
+    """Alias for the BgpPeer model to maintain backward compatibility.
+
+    When initialised, it will emit a deprecation warning and call the BgpPeer model.
+
+    TODO: Remove this class in ANTA v2.0.0.
+    """
+
+    def __init__(self, **data: Any) -> None:  # noqa: ANN401
+        """Initialize the BgpPeer class, emitting a depreciation warning."""
+        warn(
+            message="BgpNeighbor model is deprecated and will be removed in ANTA v2.0.0. Use the BgpPeer model instead.",
+            category=DeprecationWarning,
+            stacklevel=2,
+        )
+        super().__init__(**data)
+
+
+class VxlanEndpoint(BaseModel):
+    """Model for a VXLAN endpoint."""
+
+    address: IPv4Address | MacAddress
+    """IPv4 or MAC address of the VXLAN endpoint."""
+    vni: Vni
+    """VNI of the VXLAN endpoint."""
+
+    def __str__(self) -> str:
+        """Return a human-readable string representation of the VxlanEndpoint for reporting."""
+        return f"Address: {self.address} VNI: {self.vni}"

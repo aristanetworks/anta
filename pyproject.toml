@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "anta"
-version = "v1.1.0"
+version = "v1.2.0"
 readme = "docs/README.md"
 authors = [{ name = "Arista Networks ANTA maintainers", email = "anta-dev@arista.com" }]
 maintainers = [
@@ -74,7 +74,7 @@ dev = [
   "pytest-httpx>=0.30.0",
   "pytest-metadata>=3.0.0",
   "pytest>=7.4.0",
-  "respx @ git+https://github.com/ndhansen/respx",  # until https://github.com/lundberg/respx/pull/278 is merged
+  "respx>=0.22.0",
   "ruff>=0.5.4,<0.9.0",
   "tox>=4.10.0,<5.0.0",
   "types-PyYAML",
@@ -120,7 +120,7 @@ namespaces = false
 # Version
 ################################
 [tool.bumpver]
-current_version = "1.1.0"
+current_version = "1.2.0"
 version_pattern = "MAJOR.MINOR.PATCH"
 commit_message  = "bump: Version {old_version} -> {new_version}"
 commit = true
