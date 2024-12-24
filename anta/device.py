@@ -22,6 +22,7 @@ import asynceapi
 from anta import __DEBUG__
 from anta.logger import anta_log_exception, exc_to_str
 from anta.models import AntaCommand
+from anta.settings import get_httpx_limits, get_httpx_timeout
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -263,7 +264,7 @@ class AsyncEOSDevice(AntaDevice):
         name: str | None = None,
         enable_password: str | None = None,
         port: int | None = None,
-        ssh_port: int | None = 22,
+        ssh_port: int = 22,
         tags: set[str] | None = None,
         timeout: float | None = None,
         proto: Literal["http", "https"] = "https",
@@ -321,13 +322,28 @@ class AsyncEOSDevice(AntaDevice):
             raise ValueError(message)
         self.enable = enable
         self._enable_password = enable_password
-        self._session: asynceapi.Device = asynceapi.Device(host=host, port=port, username=username, password=password, proto=proto, timeout=timeout)
-        ssh_params: dict[str, Any] = {}
-        if insecure:
-            ssh_params["known_hosts"] = None
-        self._ssh_opts: SSHClientConnectionOptions = SSHClientConnectionOptions(
-            host=host, port=ssh_port, username=username, password=password, client_keys=CLIENT_KEYS, **ssh_params
-        )
+
+        # Create the async eAPI client
+        self._session = self._create_asynceapi_session(host, port, username, password, proto, timeout)
+
+        # Create the SSH connection options
+        self._ssh_opts = self._create_ssh_options(host, ssh_port, username, password, insecure=insecure)
+
+    def _create_asynceapi_session(
+        self, host: str, port: int | None, username: str, password: str, proto: Literal["http", "https"], timeout: float | None
+    ) -> asynceapi.Device:
+        """Create the asynceapi client with the provided parameters."""
+        # Get resource limits and timeout values
+        session_limits = get_httpx_limits()
+        session_timeout = get_httpx_timeout(timeout)
+
+        return asynceapi.Device(host=host, port=port, username=username, password=password, proto=proto, timeout=session_timeout, limits=session_limits)
+
+    def _create_ssh_options(self, host: str, port: int, username: str, password: str, *, insecure: bool) -> SSHClientConnectionOptions:
+        """Create the SSH connection options with the provided parameters."""
+        ssh_params = {"known_hosts": None} if insecure else {}
+
+        return SSHClientConnectionOptions(host=host, port=port, username=username, password=password, client_keys=CLIENT_KEYS, **ssh_params)
 
     def __rich_repr__(self) -> Iterator[tuple[str, Any]]:
         """Implement Rich Repr Protocol.
@@ -415,7 +431,11 @@ class AsyncEOSDevice(AntaDevice):
             command.errors = [exc_to_str(e)]
             timeouts = self._session.timeout.as_dict()
             logger.error(
-                "%s occurred while sending a command to %s. Consider increasing the timeout.\nCurrent timeouts: Connect: %s | Read: %s | Write: %s | Pool: %s",
+                "%s occurred while sending a command to %s.\n"
+                "Current timeouts: Connect: %s | Read: %s | Write: %s | Pool: %s\n"
+                "You can either increase the global timeout or configure specific timeout behaviors. "
+                "See Scaling ANTA documentation for details: "
+                "https://anta.arista.com/stable/advanced_usages/scaling/",
                 exc_to_str(e),
                 self.name,
                 timeouts["connect"],
