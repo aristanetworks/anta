@@ -9,6 +9,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar, Literal
 
+from pydantic import ConfigDict
+
 from anta.custom_types import Vlan
 from anta.models import AntaCommand, AntaTest
 from anta.tools import get_failed_logs, get_value
@@ -68,3 +70,54 @@ class VerifyVlanInternalPolicy(AntaTest):
             self.result.is_failure(failed_log)
         else:
             self.result.is_success()
+
+
+class VerifyDynamicVlanSource(AntaTest):
+    """Verifies dynamic VLAN source.
+
+    This test performs the following checks for each specified routerpath:
+        1. Verifies that the dynamic VLANs are configured.
+        2. Verifies that the dynamic VLANs are active only within the expected source.
+    Expected Results
+    ----------------
+    * Success: The test will pass if the dynamic VLANs are active only within the expected source.
+    * Failure: The test will fail if the dynamic VLANs are not active within the expected source or activated in other sources.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.vlan:
+      - VerifyDynamicVlanSource:
+          source:
+            - evpn
+            - mlagsync
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["vlan"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show vlan dynamic", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyDynamicVlanSource test."""
+
+        model_config = ConfigDict(extra="forbid")
+        source: list[str]
+        """The dynamic VLAN source list."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyDynamicVlanSource."""
+        self.result.is_success()
+        command_output = self.instance_commands[0].json_output
+        dynamic_vlans = command_output.get("dynamicVlans", {})
+
+        actual_source = [source for source, data in dynamic_vlans.items() if data.get("vlanIds")]
+        # If the dynamic vlans are not configured, test fails.
+        if not actual_source:
+            self.result.is_skipped("Dynamic VLANs are not configured")
+            return
+
+        expected_source = self.inputs.source
+        # If dynamic VLANs are not active for specified source, test fails
+        if not set(actual_source).issubset(expected_source):
+            self.result.is_failure(f"Incorrect source for dynamic VLANs - Expected: {expected_source} Actual: {actual_source}")
