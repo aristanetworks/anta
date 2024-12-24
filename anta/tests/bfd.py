@@ -98,16 +98,16 @@ class VerifyBFDPeersIntervals(AntaTest):
 
       1. Confirms that the specified VRF is configured.
       2. Verifies that the peer exists in the BFD configuration.
-      3. Confirms that BFD peer is correctly configured with the `Transmit interval, Receive interval and Multiplier`.
+      3. Confirms that BFD peer is correctly configured with the `Transmit interval, Receive interval, Detection time and Multiplier`.
 
     Expected Results
     ----------------
     * Success: If all of the following conditions are met:
         - All specified peers are found in the BFD configuration within the specified VRF.
-        - All BFD peers are correctly configured with the `Transmit interval, Receive interval and Multiplier`.
+        - All BFD peers are correctly configured with the `Transmit interval, Receive interval, Detection time and Multiplier`.
     * Failure: If any of the following occur:
         - A specified peer is not found in the BFD configuration within the specified VRF.
-        - Any BFD peer not correctly configured with the `Transmit interval, Receive interval and Multiplier`.
+        - Any BFD peer not correctly configured with the `Transmit interval, Receive interval, Detection time and Multiplier`.
 
     Examples
     --------
@@ -120,11 +120,13 @@ class VerifyBFDPeersIntervals(AntaTest):
               tx_interval: 1200
               rx_interval: 1200
               multiplier: 3
+              detection_time: 3600
             - peer_address: 192.0.255.7
               vrf: default
               tx_interval: 1200
               rx_interval: 1200
               multiplier: 3
+              detection_time: 3600
     ```
     """
 
@@ -151,6 +153,7 @@ class VerifyBFDPeersIntervals(AntaTest):
             tx_interval = bfd_peer.tx_interval
             rx_interval = bfd_peer.rx_interval
             multiplier = bfd_peer.multiplier
+            detect_time = bfd_peer.detection_time
 
             # Check if BFD peer configured
             bfd_output = get_value(
@@ -166,6 +169,7 @@ class VerifyBFDPeersIntervals(AntaTest):
             bfd_details = bfd_output.get("peerStatsDetail", {})
             op_tx_interval = bfd_details.get("operTxInterval") // 1000
             op_rx_interval = bfd_details.get("operRxInterval") // 1000
+            op_detection_time = bfd_details.get("detectTime") // 1000
             detect_multiplier = bfd_details.get("detectMult")
 
             if op_tx_interval != tx_interval:
@@ -176,6 +180,9 @@ class VerifyBFDPeersIntervals(AntaTest):
 
             if detect_multiplier != multiplier:
                 self.result.is_failure(f"{bfd_peer} - Incorrect Multiplier - Expected: {multiplier} Actual: {detect_multiplier}")
+
+            if op_detection_time != detect_time:
+                self.result.is_failure(f"{bfd_peer} - Incorrect Detection Time - Expected: {detect_time} Actual: {op_detection_time}")
 
 
 class VerifyBFDPeersHealth(AntaTest):
