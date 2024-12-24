@@ -877,16 +877,17 @@ class VerifyEVPNType2Route(AntaTest):
             if not evpn_routes:
                 no_evpn_routes.append((address, vni))
                 continue
-            # Verify that each EVPN route has at least one valid and active path
-            for route, route_data in evpn_routes.items():
-                has_active_path = False
-                for path in route_data["evpnRoutePaths"]:
-                    if path["routeType"]["valid"] is True and path["routeType"]["active"] is True:
-                        # At least one path is valid and active, no need to check the other paths
+
+            # Verify that at least one EVPN route has at least one active/valid path across all learned routes from all RDs combined
+            has_active_path = False
+            for route_data in evpn_routes.values():
+                for path in route_data.get("evpnRoutePaths", []):
+                    route_type = path.get("routeType", {})
+                    if route_type.get("active") and route_type.get("valid"):
                         has_active_path = True
                         break
-                if not has_active_path:
-                    bad_evpn_routes.append(route)
+            if not has_active_path:
+                bad_evpn_routes.extend(list(evpn_routes))
 
         if no_evpn_routes:
             self.result.is_failure(f"The following VXLAN endpoint do not have any EVPN Type-2 route: {no_evpn_routes}")

@@ -361,48 +361,63 @@ DATA: list[dict[str, Any]] = [
                         "avts": {
                             "DEFAULT-AVT-POLICY-CONTROL-PLANE": {
                                 "avtPaths": {
-                                    "direct:10": {"flags": {"directPath": True, "valid": True, "active": True}, "nexthopAddr": "10.101.255.1"},
-                                    "direct:9": {"flags": {"directPath": True, "valid": True, "active": True}, "nexthopAddr": "10.101.255.1"},
-                                    "multihop:1": {"flags": {"directPath": False, "valid": True, "active": True}, "nexthopAddr": "10.101.255.1"},
-                                    "multihop:3": {"flags": {"directPath": False, "valid": True, "active": True}, "nexthopAddr": "10.101.255.1"},
+                                    "direct:10": {
+                                        "flags": {"directPath": True, "valid": True, "active": True},
+                                        "nexthopAddr": "10.101.255.1",
+                                        "destination": "10.101.255.2",
+                                    },
+                                    "direct:9": {
+                                        "flags": {"directPath": True, "valid": True, "active": True},
+                                        "nexthopAddr": "10.101.255.1",
+                                        "destination": "10.101.255.2",
+                                    },
+                                    "multihop:1": {
+                                        "flags": {"directPath": False, "valid": True, "active": True},
+                                        "nexthopAddr": "10.101.255.1",
+                                        "destination": "10.101.255.2",
+                                    },
+                                    "multihop:3": {
+                                        "flags": {"directPath": False, "valid": True, "active": True},
+                                        "nexthopAddr": "10.101.255.1",
+                                        "destination": "10.101.255.2",
+                                    },
                                 }
                             }
-                        }
-                    }
-                }
-            },
-            {
-                "vrfs": {
+                        },
+                    },
                     "data": {
                         "avts": {
                             "DATA-AVT-POLICY-CONTROL-PLANE": {
                                 "avtPaths": {
-                                    "direct:10": {"flags": {"directPath": True, "valid": True, "active": True}, "nexthopAddr": "10.101.255.1"},
-                                    "direct:9": {"flags": {"directPath": True, "valid": True, "active": True}, "nexthopAddr": "10.101.255.1"},
-                                    "direct:8": {"flags": {"directPath": True, "valid": True, "active": True}, "nexthopAddr": "10.101.255.2"},
-                                    "multihop:1": {"flags": {"directPath": False, "valid": True, "active": True}, "nexthopAddr": "10.101.255.2"},
-                                    "multihop:3": {"flags": {"directPath": False, "valid": True, "active": True}, "nexthopAddr": "10.101.255.2"},
+                                    "direct:10": {
+                                        "flags": {"directPath": True, "valid": True, "active": True},
+                                        "nexthopAddr": "10.101.255.1",
+                                        "destination": "10.101.255.1",
+                                    },
+                                    "direct:9": {
+                                        "flags": {"directPath": True, "valid": True, "active": True},
+                                        "nexthopAddr": "10.101.255.1",
+                                        "destination": "10.101.255.1",
+                                    },
+                                    "direct:8": {
+                                        "flags": {"directPath": True, "valid": True, "active": True},
+                                        "nexthopAddr": "10.101.255.2",
+                                        "destination": "10.101.255.1",
+                                    },
+                                    "multihop:1": {
+                                        "flags": {"directPath": False, "valid": True, "active": True},
+                                        "nexthopAddr": "10.101.255.2",
+                                        "destination": "10.101.255.1",
+                                    },
+                                    "multihop:3": {
+                                        "flags": {"directPath": False, "valid": True, "active": True},
+                                        "nexthopAddr": "10.101.255.2",
+                                        "destination": "10.101.255.1",
+                                    },
                                 }
-                            }
+                            },
                         }
-                    }
-                }
-            },
-            {
-                "vrfs": {
-                    "data": {
-                        "avts": {
-                            "DATA-AVT-POLICY-CONTROL-PLANE": {
-                                "avtPaths": {
-                                    "direct:10": {"flags": {"directPath": True, "valid": True, "active": True}, "nexthopAddr": "10.101.255.1"},
-                                    "direct:9": {"flags": {"directPath": True, "valid": True, "active": True}, "nexthopAddr": "10.101.255.1"},
-                                    "direct:8": {"flags": {"directPath": True, "valid": True, "active": True}, "nexthopAddr": "10.101.255.2"},
-                                    "multihop:1": {"flags": {"directPath": False, "valid": True, "active": True}, "nexthopAddr": "10.101.255.2"},
-                                    "multihop:3": {"flags": {"directPath": False, "valid": True, "active": True}, "nexthopAddr": "10.101.255.2"},
-                                }
-                            }
-                        }
-                    }
+                    },
                 }
             },
         ],
@@ -420,22 +435,6 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyAVTSpecificPath,
         "eos_data": [
             {"vrfs": {}},
-            {
-                "vrfs": {
-                    "data": {
-                        "avts": {
-                            "DATA-AVT-POLICY-CONTROL-PLANE": {
-                                "avtPaths": {
-                                    "direct:10": {"flags": {"directPath": True, "valid": True, "active": True}, "nexthopAddr": "10.101.255.1"},
-                                    "direct:9": {"flags": {"directPath": True, "valid": True, "active": True}, "nexthopAddr": "10.101.255.1"},
-                                    "multihop:1": {"flags": {"directPath": False, "valid": True, "active": True}, "nexthopAddr": "10.101.255.2"},
-                                    "multihop:3": {"flags": {"directPath": False, "valid": True, "active": True}, "nexthopAddr": "10.101.255.2"},
-                                }
-                            }
-                        }
-                    }
-                }
-            },
         ],
         "inputs": {
             "avt_paths": [
@@ -445,11 +444,11 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["AVT configuration for peer '10.101.255.2' under topology 'MGMT-AVT-POLICY-DEFAULT' in VRF 'default' is not found."],
+            "messages": ["AVT MGMT-AVT-POLICY-DEFAULT VRF: default (Destination: 10.101.255.2, Next-hop: 10.101.255.1) - No AVT path configured"],
         },
     },
     {
-        "name": "failure-no-path-with-correct-next-hop",
+        "name": "failure-path_type_check_true",
         "test": VerifyAVTSpecificPath,
         "eos_data": [
             {
@@ -458,30 +457,38 @@ DATA: list[dict[str, Any]] = [
                         "avts": {
                             "DEFAULT-AVT-POLICY-CONTROL-PLANE": {
                                 "avtPaths": {
-                                    "direct:10": {"flags": {"directPath": True, "valid": True, "active": True}, "nexthopAddr": "10.101.255.2"},
-                                    "direct:9": {"flags": {"directPath": True, "valid": True, "active": True}, "nexthopAddr": "10.101.255.2"},
-                                    "multihop:1": {"flags": {"directPath": False, "valid": True, "active": True}, "nexthopAddr": "10.101.255.1"},
-                                    "multihop:3": {"flags": {"directPath": False, "valid": True, "active": True}, "nexthopAddr": "10.101.255.1"},
+                                    "direct:10": {
+                                        "flags": {"directPath": True, "valid": True, "active": True},
+                                        "nexthopAddr": "10.101.255.1",
+                                        "destination": "10.101.255.2",
+                                    },
+                                    "direct:9": {
+                                        "flags": {"directPath": True, "valid": True, "active": True},
+                                        "nexthopAddr": "10.101.255.1",
+                                        "destination": "10.101.255.2",
+                                    },
                                 }
                             }
-                        }
-                    }
-                }
-            },
-            {
-                "vrfs": {
+                        },
+                    },
                     "data": {
                         "avts": {
                             "DATA-AVT-POLICY-CONTROL-PLANE": {
                                 "avtPaths": {
-                                    "direct:10": {"flags": {"directPath": True, "valid": True, "active": True}, "nexthopAddr": "10.101.255.1"},
-                                    "direct:9": {"flags": {"directPath": True, "valid": True, "active": True}, "nexthopAddr": "10.101.255.1"},
-                                    "multihop:1": {"flags": {"directPath": False, "valid": True, "active": True}, "nexthopAddr": "10.101.255.2"},
-                                    "multihop:3": {"flags": {"directPath": False, "valid": True, "active": True}, "nexthopAddr": "10.101.255.2"},
+                                    "direct:10": {
+                                        "flags": {"directPath": True, "valid": True, "active": True},
+                                        "nexthopAddr": "10.101.255.1",
+                                        "destination": "10.101.255.3",
+                                    },
+                                    "direct:9": {
+                                        "flags": {"directPath": True, "valid": True, "active": True},
+                                        "nexthopAddr": "10.101.255.1",
+                                        "destination": "10.101.255.3",
+                                    },
                                 }
-                            }
+                            },
                         }
-                    }
+                    },
                 }
             },
         ],
@@ -500,10 +507,72 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "No 'multihop' path found with next-hop address '10.101.255.11' for AVT peer '10.101.255.2' under "
-                "topology 'DEFAULT-AVT-POLICY-CONTROL-PLANE' in VRF 'default'.",
-                "No 'direct' path found with next-hop address '10.101.255.21' for AVT peer '10.101.255.1' under "
-                "topology 'DATA-AVT-POLICY-CONTROL-PLANE' in VRF 'data'.",
+                "AVT DEFAULT-AVT-POLICY-CONTROL-PLANE VRF: default (Destination: 10.101.255.2, Next-hop: 10.101.255.11) Path Type: multihop - Path not found",
+                "AVT DATA-AVT-POLICY-CONTROL-PLANE VRF: data (Destination: 10.101.255.1, Next-hop: 10.101.255.21) Path Type: direct - Path not found",
+            ],
+        },
+    },
+    {
+        "name": "failure-path_type_check_false",
+        "test": VerifyAVTSpecificPath,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "avts": {
+                            "DEFAULT-AVT-POLICY-CONTROL-PLANE": {
+                                "avtPaths": {
+                                    "direct:10": {
+                                        "flags": {"directPath": True, "valid": True, "active": True},
+                                        "nexthopAddr": "10.101.255.1",
+                                        "destination": "10.101.255.2",
+                                    },
+                                    "direct:9": {
+                                        "flags": {"directPath": True, "valid": True, "active": True},
+                                        "nexthopAddr": "10.101.255.1",
+                                        "destination": "10.101.255.2",
+                                    },
+                                }
+                            }
+                        },
+                    },
+                    "data": {
+                        "avts": {
+                            "DATA-AVT-POLICY-CONTROL-PLANE": {
+                                "avtPaths": {
+                                    "direct:10": {
+                                        "flags": {"directPath": True, "valid": True, "active": True},
+                                        "nexthopAddr": "10.101.255.1",
+                                        "destination": "10.101.255.3",
+                                    },
+                                    "direct:9": {
+                                        "flags": {"directPath": True, "valid": True, "active": True},
+                                        "nexthopAddr": "10.101.255.1",
+                                        "destination": "10.101.255.3",
+                                    },
+                                }
+                            },
+                        }
+                    },
+                }
+            },
+        ],
+        "inputs": {
+            "avt_paths": [
+                {
+                    "avt_name": "DEFAULT-AVT-POLICY-CONTROL-PLANE",
+                    "vrf": "default",
+                    "destination": "10.101.255.2",
+                    "next_hop": "10.101.255.11",
+                },
+                {"avt_name": "DATA-AVT-POLICY-CONTROL-PLANE", "vrf": "data", "destination": "10.101.255.1", "next_hop": "10.101.255.21"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "AVT DEFAULT-AVT-POLICY-CONTROL-PLANE VRF: default (Destination: 10.101.255.2, Next-hop: 10.101.255.11) - Path not found",
+                "AVT DATA-AVT-POLICY-CONTROL-PLANE VRF: data (Destination: 10.101.255.1, Next-hop: 10.101.255.21) - Path not found",
             ],
         },
     },
@@ -517,30 +586,48 @@ DATA: list[dict[str, Any]] = [
                         "avts": {
                             "DEFAULT-AVT-POLICY-CONTROL-PLANE": {
                                 "avtPaths": {
-                                    "direct:10": {"flags": {"directPath": True, "valid": True, "active": True}, "nexthopAddr": "10.101.255.2"},
-                                    "direct:9": {"flags": {"directPath": True, "valid": True, "active": True}, "nexthopAddr": "10.101.255.2"},
-                                    "multihop:1": {"flags": {"directPath": True, "valid": False, "active": False}, "nexthopAddr": "10.101.255.1"},
-                                    "multihop:3": {"flags": {"directPath": False, "valid": True, "active": False}, "nexthopAddr": "10.101.255.1"},
+                                    "multihop:3": {
+                                        "flags": {"directPath": False, "valid": False, "active": True},
+                                        "nexthopAddr": "10.101.255.1",
+                                        "destination": "10.101.255.2",
+                                    },
                                 }
                             }
-                        }
-                    }
-                }
-            },
-            {
-                "vrfs": {
+                        },
+                    },
                     "data": {
                         "avts": {
                             "DATA-AVT-POLICY-CONTROL-PLANE": {
                                 "avtPaths": {
-                                    "direct:10": {"flags": {"directPath": True, "valid": True, "active": True}, "nexthopAddr": "10.101.255.1"},
-                                    "direct:9": {"flags": {"directPath": True, "valid": False, "active": True}, "nexthopAddr": "10.101.255.1"},
-                                    "multihop:1": {"flags": {"directPath": False, "valid": True, "active": True}, "nexthopAddr": "10.101.255.2"},
-                                    "multihop:3": {"flags": {"directPath": False, "valid": True, "active": True}, "nexthopAddr": "10.101.255.2"},
+                                    "direct:10": {
+                                        "flags": {"directPath": True, "valid": False, "active": True},
+                                        "nexthopAddr": "10.101.255.1",
+                                        "destination": "10.101.255.1",
+                                    },
+                                    "direct:9": {
+                                        "flags": {"directPath": True, "valid": True, "active": False},
+                                        "nexthopAddr": "10.101.255.1",
+                                        "destination": "10.101.255.1",
+                                    },
+                                    "direct:8": {
+                                        "flags": {"directPath": True, "valid": False, "active": False},
+                                        "nexthopAddr": "10.101.255.2",
+                                        "destination": "10.101.255.1",
+                                    },
+                                    "multihop:1": {
+                                        "flags": {"directPath": False, "valid": True, "active": True},
+                                        "nexthopAddr": "10.101.255.2",
+                                        "destination": "10.101.255.1",
+                                    },
+                                    "multihop:3": {
+                                        "flags": {"directPath": False, "valid": True, "active": True},
+                                        "nexthopAddr": "10.101.255.2",
+                                        "destination": "10.101.255.1",
+                                    },
                                 }
-                            }
+                            },
                         }
-                    }
+                    },
                 }
             },
         ],
@@ -559,8 +646,12 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "AVT path 'multihop:3' for topology 'DEFAULT-AVT-POLICY-CONTROL-PLANE' in VRF 'default' is inactive.",
-                "AVT path 'direct:9' for topology 'DATA-AVT-POLICY-CONTROL-PLANE' in VRF 'data' is invalid.",
+                "AVT DEFAULT-AVT-POLICY-CONTROL-PLANE VRF: default (Destination: 10.101.255.2, Next-hop: 10.101.255.1) - "
+                "Incorrect path multihop:3 - Valid: False, Active: True",
+                "AVT DATA-AVT-POLICY-CONTROL-PLANE VRF: data (Destination: 10.101.255.1, Next-hop: 10.101.255.1) - "
+                "Incorrect path direct:10 - Valid: False, Active: True",
+                "AVT DATA-AVT-POLICY-CONTROL-PLANE VRF: data (Destination: 10.101.255.1, Next-hop: 10.101.255.1) - "
+                "Incorrect path direct:9 - Valid: True, Active: False",
             ],
         },
     },
