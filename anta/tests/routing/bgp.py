@@ -331,7 +331,7 @@ class VerifyBGPSpecificPeers(AntaTest):
 
 
 class VerifyBGPExchangedRoutes(AntaTest):
-    """Verifies the advertised and received routes of BGP peers.
+    """Verifies the advertised and received routes of BGP IPv4 peer(s).
 
     This test performs the following checks for each specified peer:
 
@@ -387,7 +387,7 @@ class VerifyBGPExchangedRoutes(AntaTest):
         @field_validator("bgp_peers")
         @classmethod
         def validate_bgp_peers(cls, bgp_peers: list[BgpPeer]) -> list[BgpPeer]:
-            """Validate that 'advertised_routes' or 'received_routes' field is provided in each address family."""
+            """Validate that 'advertised_routes' or 'received_routes' field is provided in each BGP peer."""
             for peer in bgp_peers:
                 if peer.advertised_routes is None or peer.received_routes is None:
                     msg = f"{peer} 'advertised_routes' or 'received_routes' field missing in the input"
@@ -435,7 +435,7 @@ class VerifyBGPExchangedRoutes(AntaTest):
 
 
 class VerifyBGPPeerMPCaps(AntaTest):
-    """Verifies the multiprotocol capabilities of BGP peers.
+    """Verifies the multiprotocol capabilities of BGP IPv4 peer(s).
 
     This test performs the following checks for each specified peer:
 
@@ -490,7 +490,7 @@ class VerifyBGPPeerMPCaps(AntaTest):
         @field_validator("bgp_peers")
         @classmethod
         def validate_bgp_peers(cls, bgp_peers: list[T]) -> list[T]:
-            """Validate that 'capabilities' field is provided in each address family."""
+            """Validate that 'capabilities' field is provided in each BGP peer."""
             for peer in bgp_peers:
                 if peer.capabilities is None:
                     msg = f"{peer} 'capabilities' field missing in the input"
@@ -537,7 +537,7 @@ class VerifyBGPPeerMPCaps(AntaTest):
 
 
 class VerifyBGPPeerASNCap(AntaTest):
-    """Verifies the four octet ASN capability of BGP peers.
+    """Verifies the four octet ASN capability of BGP IPv4 peer(s).
 
     This test performs the following checks for each specified peer:
 
@@ -606,7 +606,7 @@ class VerifyBGPPeerASNCap(AntaTest):
 
 
 class VerifyBGPPeerRouteRefreshCap(AntaTest):
-    """Verifies the route refresh capabilities of a BGP peer in a specified VRF.
+    """Verifies the route refresh capabilities of IPv4 BGP peer(s) in a specified VRF.
 
     This test performs the following checks for each specified peer:
 
@@ -675,7 +675,7 @@ class VerifyBGPPeerRouteRefreshCap(AntaTest):
 
 
 class VerifyBGPPeerMD5Auth(AntaTest):
-    """Verifies the MD5 authentication and state of IPv4 BGP peers in a specified VRF.
+    """Verifies the MD5 authentication and state of IPv4 BGP peer(s) in a specified VRF.
 
     This test performs the following checks for each specified peer:
 
@@ -814,7 +814,7 @@ class VerifyEVPNType2Route(AntaTest):
 
 
 class VerifyBGPAdvCommunities(AntaTest):
-    """Verifies that advertised communities are standard, extended and large for BGP peers.
+    """Verifies that advertised communities are standard, extended and large for BGP IPv4 peer(s).
 
     This test performs the following checks for each specified peer:
 
@@ -880,7 +880,7 @@ class VerifyBGPAdvCommunities(AntaTest):
 
 
 class VerifyBGPTimers(AntaTest):
-    """Verifies the timers of BGP peers.
+    """Verifies the timers of BGP IPv4 peer(s).
 
     This test performs the following checks for each specified peer:
 
@@ -928,7 +928,7 @@ class VerifyBGPTimers(AntaTest):
         @field_validator("bgp_peers")
         @classmethod
         def validate_bgp_peers(cls, bgp_peers: list[T]) -> list[T]:
-            """Validate that 'hold_time' or 'keep_alive_time'  field is provided in each address family."""
+            """Validate that 'hold_time' or 'keep_alive_time'  field is provided in each BGP peer."""
             for peer in bgp_peers:
                 if peer.hold_time is None or peer.keep_alive_time is None:
                     msg = f"{peer} 'hold_time' or 'keep_alive_time' field missing in the input"
@@ -1158,10 +1158,7 @@ class VerifyBgpRouteMaps(AntaTest):
         @field_validator("bgp_peers")
         @classmethod
         def validate_bgp_peers(cls, bgp_peers: list[T]) -> list[T]:
-            """Validate that 'peers' field is provided in each address family.
-
-            At least one of 'inbound' or 'outbound' route-map must be provided.
-            """
+            """Validate that 'inbound_route_map' or 'outbound_route_map' field is provided in each BGP peer."""
             for peer in bgp_peers:
                 if not (peer.inbound_route_map or peer.outbound_route_map):
                     msg = f"{peer}; At least one of 'inbound_route_map' or 'outbound_route_map' must be provided."
@@ -1196,22 +1193,22 @@ class VerifyBgpRouteMaps(AntaTest):
 
 
 class VerifyBGPPeerRouteLimit(AntaTest):
-    """Verifies maximum routes and outbound route-maps of BGP IPv4 peer(s).
+    """Verifies maximum routes and warning limit for BGP IPv4 peer(s).
 
     This test performs the following checks for each specified peer:
 
       1. Confirms that the specified VRF is configured.
       2. Verifies that the peer exists in the BGP configuration.
-      3. Confirms the Maximum routes and maximum routes warning limit, if provided match the expected value.
+      3. Confirms the maximum routes and maximum routes warning limit, if provided, match the expected value.
 
     Expected Results
     ----------------
     * Success: If all of the following conditions are met:
         - All specified peers are found in the BGP configuration.
-        - The maximum routese/maximum routes warning limit match the expected value for a peer.
+        - The maximum routes/maximum routes warning limit match the expected value for a peer.
     * Failure: If any of the following occur:
         - A specified peer is not found in the BGP configuration.
-        - The maximum routese/maximum routes warning limit do not match the expected value for a peer.
+        - The maximum routes/maximum routes warning limit do not match the expected value for a peer.
 
     Examples
     --------
@@ -1240,7 +1237,7 @@ class VerifyBGPPeerRouteLimit(AntaTest):
         @field_validator("bgp_peers")
         @classmethod
         def validate_bgp_peers(cls, bgp_peers: list[T]) -> list[T]:
-            """Validate that 'peers' field is provided in each address family."""
+            """Validate that 'maximum_routes' field is provided in each BGP peer."""
             for peer in bgp_peers:
                 if peer.maximum_routes is None:
                     msg = f"{peer}; 'maximum_routes' field missing in the input"
@@ -1265,10 +1262,10 @@ class VerifyBGPPeerRouteLimit(AntaTest):
                 self.result.is_failure(f"{peer} - Not found")
                 continue
 
-            # Verify maximum routes configured.
-            if (actual_routes := peer_data.get("maxTotalRoutes", "Not Found")) != maximum_routes:
-                self.result.is_failure(f"{peer} - Maximum routes mismatch - Expected: {maximum_routes}, Actual: {actual_routes}")
+            # Verify maximum routes
+            if (actual_maximum_routes := peer_data.get("maxTotalRoutes", "Not Found")) != maximum_routes:
+                self.result.is_failure(f"{peer} - Maximum routes mismatch - Expected: {maximum_routes}, Actual: {actual_maximum_routes}")
 
-            # Verify warning limit if given.
-            if warning_limit and (actual_warning_limit := peer_data.get("totalRoutesWarnLimit", "Not Found")) != warning_limit:
-                self.result.is_failure(f"{peer} - Maximum route warning limit mismatch - Expected: {warning_limit}, Actual: {actual_warning_limit}")
+            # Verify warning limit if provided. By default, EOS does not have a warning limit and `totalRoutesWarnLimit` is not present in the output.
+            if warning_limit is not None and (actual_warning_limit := peer_data.get("totalRoutesWarnLimit", 0)) != warning_limit:
+                self.result.is_failure(f"{peer} - Maximum routes warning limit mismatch - Expected: {warning_limit}, Actual: {actual_warning_limit}")

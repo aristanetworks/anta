@@ -169,9 +169,11 @@ class BgpPeer(BaseModel):
     outbound_route_map: str | None = None
     """Outbound route map applied, defaults to None. Required field in the `VerifyBgpRouteMaps` test."""
     maximum_routes: int | None = Field(default=None, ge=0, le=4294967294)
-    """The maximum allowable number of BGP routes, `0` means unlimited. Required field in the `VerifyBGPPeerRouteLimit` test"""
+    """The maximum allowable number of BGP routes. `0` means unlimited. Required field in the `VerifyBGPPeerRouteLimit` test"""
     warning_limit: int | None = Field(default=None, ge=0, le=4294967294)
-    """Optional maximum routes warning limit. If not provided, it defaults to `0` meaning no warning limit."""
+    """The warning limit for the maximum routes. `0` means no warning.
+
+    Optional field in the `VerifyBGPPeerRouteLimit` test. If not provided, the test will not verify the warning limit."""
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the BgpPeer for reporting."""

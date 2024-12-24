@@ -3741,6 +3741,39 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
+        "name": "success-no-warning-limit",
+        "test": VerifyBGPPeerRouteLimit,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "maxTotalRoutes": 12000,
+                            }
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.9",
+                                "maxTotalRoutes": 10000,
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default", "maximum_routes": 12000, "warning_limit": 0},
+                {"peer_address": "10.100.0.9", "vrf": "MGMT", "maximum_routes": 10000},
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
         "name": "failure-peer-not-found",
         "test": VerifyBGPPeerRouteLimit,
         "eos_data": [
@@ -3802,9 +3835,9 @@ DATA: list[dict[str, Any]] = [
             "result": "failure",
             "messages": [
                 "Peer: 10.100.0.8 VRF: default - Maximum routes mismatch - Expected: 12000, Actual: 13000",
-                "Peer: 10.100.0.8 VRF: default - Maximum route warning limit mismatch - Expected: 10000, Actual: 11000",
+                "Peer: 10.100.0.8 VRF: default - Maximum routes warning limit mismatch - Expected: 10000, Actual: 11000",
                 "Peer: 10.100.0.9 VRF: MGMT - Maximum routes mismatch - Expected: 10000, Actual: 11000",
-                "Peer: 10.100.0.9 VRF: MGMT - Maximum route warning limit mismatch - Expected: 9000, Actual: 10000",
+                "Peer: 10.100.0.9 VRF: MGMT - Maximum routes warning limit mismatch - Expected: 9000, Actual: 10000",
             ],
         },
     },
@@ -3826,6 +3859,7 @@ DATA: list[dict[str, Any]] = [
                         "peerList": [
                             {
                                 "peerAddress": "10.100.0.9",
+                                "maxTotalRoutes": 10000,
                             }
                         ]
                     },
@@ -3841,9 +3875,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 10.100.0.8 VRF: default - Maximum route warning limit mismatch - Expected: 10000, Actual: Not Found",
-                "Peer: 10.100.0.9 VRF: MGMT - Maximum routes mismatch - Expected: 10000, Actual: Not Found",
-                "Peer: 10.100.0.9 VRF: MGMT - Maximum route warning limit mismatch - Expected: 9000, Actual: Not Found",
+                "Peer: 10.100.0.8 VRF: default - Maximum routes warning limit mismatch - Expected: 10000, Actual: 0",
+                "Peer: 10.100.0.9 VRF: MGMT - Maximum routes warning limit mismatch - Expected: 9000, Actual: 0",
             ],
         },
     },
