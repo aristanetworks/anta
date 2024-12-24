@@ -4030,9 +4030,9 @@
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyInterfaceIPv4</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">interfaces</span><span class="p">:</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Ethernet2</span>
-<span class="w">          </span><span class="nt">primary_ip</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.30.11.0/31</span>
+<span class="w">          </span><span class="nt">primary_ip</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.30.11.1/31</span>
 <span class="w">          </span><span class="nt">secondary_ips</span><span class="p">:</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.10.10.0/31</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.10.10.1/31</span>
 <span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.10.10.10/31</span>
 </code></pre></div>
 </details>
@@ -4111,7 +4111,7 @@
               <tr>
                 <td><code>primary_ip</code></td>
                 <td>
-                      <code><a class="autorefs autorefs-external" title="ipaddress.IPv4Network" href="https://docs.python.org/3/library/ipaddress.html#ipaddress.IPv4Network">IPv4Network</a></code>
+                      <code><a class="autorefs autorefs-external" title="ipaddress.IPv4Interface" href="https://docs.python.org/3/library/ipaddress.html#ipaddress.IPv4Interface">IPv4Interface</a></code>
                 </td>
                 <td>
                   <div class="doc-md-description">
@@ -4125,7 +4125,7 @@
               <tr>
                 <td><code>secondary_ips</code></td>
                 <td>
-                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-external" title="ipaddress.IPv4Network" href="https://docs.python.org/3/library/ipaddress.html#ipaddress.IPv4Network">IPv4Network</a>] | None</code>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-external" title="ipaddress.IPv4Interface" href="https://docs.python.org/3/library/ipaddress.html#ipaddress.IPv4Interface">IPv4Interface</a>] | None</code>
                 </td>
                 <td>
                   <div class="doc-md-description">
@@ -4261,9 +4261,9 @@
 <span class="sd">      - VerifyInterfaceIPv4:</span>
 <span class="sd">          interfaces:</span>
 <span class="sd">            - name: Ethernet2</span>
-<span class="sd">              primary_ip: 172.30.11.0/31</span>
+<span class="sd">              primary_ip: 172.30.11.1/31</span>
 <span class="sd">              secondary_ips:</span>
-<span class="sd">                - 10.10.10.0/31</span>
+<span class="sd">                - 10.10.10.1/31</span>
 <span class="sd">                - 10.10.10.10/31</span>
 <span class="sd">    ```</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -4283,9 +4283,9 @@
 
             <span class="n">name</span><span class="p">:</span> <span class="n">Interface</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;Name of the interface.&quot;&quot;&quot;</span>
-            <span class="n">primary_ip</span><span class="p">:</span> <span class="n">IPv4Network</span>
+            <span class="n">primary_ip</span><span class="p">:</span> <span class="n">IPv4Interface</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;Primary IPv4 address in CIDR notation.&quot;&quot;&quot;</span>
-            <span class="n">secondary_ips</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">IPv4Network</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">secondary_ips</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">IPv4Interface</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;Optional list of secondary IPv4 addresses in CIDR notation.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">AntaTemplate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]:</span>
