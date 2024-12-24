@@ -171,6 +171,11 @@ class ResultManager:
         """A cached property that returns the results grouped by status."""
         return {status: [result for result in self._result_entries if result.result == status] for status in AntaTestStatus}
 
+    @cached_property
+    def results_by_category(self) -> list[TestResult]:
+        """A cached property that returns the results grouped by status."""
+        return sorted(self._result_entries, key=lambda res: res.categories)
+
     def _update_status(self, test_status: AntaTestStatus) -> None:
         """Update the status of the ResultManager instance based on the test status.
 
