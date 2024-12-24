@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from anta.tests.vlan import VerifyVlanInternalPolicy
+from anta.tests.vlan import VerifyDynamicVlanSource, VerifyVlanInternalPolicy
 from tests.units.anta_tests import test
 
 DATA: list[dict[str, Any]] = [
@@ -32,5 +32,40 @@ DATA: list[dict[str, Any]] = [
                 "Expected `4094` as the endVlanId, but found `1006` instead."
             ],
         },
+    },
+    {
+        "name": "success",
+        "test": VerifyDynamicVlanSource,
+        "eos_data": [{"dynamicVlans": {"evpn": {"vlanIds": [1199]}, "mlagsync": {"vlanIds": []}}}],
+        "inputs": {"source": ["evpn", "mlagsync"]},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success",
+        "test": VerifyDynamicVlanSource,
+        "eos_data": [{"dynamicVlans": {"evpn": {"vlanIds": [1199]}, "mlagsync": {"vlanIds": [1500]}}}],
+        "inputs": {"source": ["evpn", "mlagsync"]},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success",
+        "test": VerifyDynamicVlanSource,
+        "eos_data": [{"dynamicVlans": {"mlagsync": {"vlanIds": [1500]}}}],
+        "inputs": {"source": ["evpn", "mlagsync"]},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-no-dynamic-vlans",
+        "test": VerifyDynamicVlanSource,
+        "eos_data": [{"dynamicVlans": {}}],
+        "inputs": {"source": ["evpn", "mlagsync"]},
+        "expected": {"result": "skipped", "messages": ["Dynamic VLANs are not configured"]},
+    },
+    {
+        "name": "failure-dynamic-vlan-source-invalid",
+        "test": VerifyDynamicVlanSource,
+        "eos_data": [{"dynamicVlans": {"vccbfd": {"vlanIds": [1500]}, "mlagsync": {"vlanIds": [1501]}}}],
+        "inputs": {"source": ["evpn", "mlagsync"]},
+        "expected": {"result": "failure", "messages": ["Incorrect source for dynamic VLANs - Expected: ['evpn', 'mlagsync'] Actual: ['vccbfd', 'mlagsync']"]},
     },
 ]
