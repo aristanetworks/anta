@@ -7,7 +7,7 @@ on:
 
 jobs:
   pypi:
-    name: Publish version to Pypi servers
+    name: Publish Python 🐍 distribution 📦 to PyPI
     runs-on: ubuntu-latest
     environment:
       name: production
