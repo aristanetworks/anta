@@ -70,7 +70,7 @@ def setup_logging(level: LogLevel = Log.INFO, file: Path | None = None) -> None:
         logging.getLogger("httpx").setLevel(logging.WARNING)
 
     # Add RichHandler for stdout if not already present
-    if root.hasHandlers(): 
+    if root.hasHandlers():
         logger.handlers = []
 
     root.
