@@ -72,7 +72,7 @@ def setup_logging(level: LogLevel = Log.INFO, file: Path | None = None) -> None:
     # Add RichHandler for stdout if not already present
     maybe_add_rich_handler = True
     if root.hasHandlers():
-        maybe_add_rich_handler = any(handler.get_name() == "ANTA_RICH_HANDLER" for handler in root.handlers)
+        maybe_add_rich_handler = all(handler.get_name() != "ANTA_RICH_HANDLER" for handler in root.handlers)
 
     if maybe_add_rich_handler:
         rich_handler = RichHandler(markup=True, rich_tracebacks=True, tracebacks_show_locals=False)
