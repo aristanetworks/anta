@@ -10,7 +10,7 @@ jobs:
     name: Publish version to Pypi servers
     runs-on: ubuntu-latest
     environment:
-      name: pypi
+      name: production
       url: https://pypi.org/p/anta
     permissions:
       id-token: write
