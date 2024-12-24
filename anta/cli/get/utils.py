@@ -8,6 +8,7 @@ from __future__ import annotations
 import functools
 import importlib
 import inspect
+import ipaddress
 import json
 import logging
 import pkgutil
@@ -229,6 +230,56 @@ def create_inventory_from_ansible(inventory: Path, output: Path, ansible_group: 
         raise ValueError(msg)
     ansible_hosts = deep_yaml_parsing(ansible_inventory)
     write_inventory_to_file(ansible_hosts, output)
+
+
+def create_inventory_from_netbox(nb_instance: str, output: Path, token: str, platform: str = "Arista EOS", site: str | None = None, verify: bool = False) -> None:
+    """Fetch devices from NetBox filtered by a specific platform.
+
+    Parameters
+    ----------
+    nb_instance
+        The NetBox API instance.
+    output
+        ANTA inventory file to generate.
+    token
+        The token used to authenticate to the NetBox instance.
+    platform
+        The platform to filter devices by.
+    site
+        The site to filter devices by.
+    verify
+        Verify the SSL certification of the NetBox instance.
+
+    """
+    session = requests.session()
+    session.verify = verify
+    try:
+        import pynetbox
+    except ImportError as e:
+        logging.error(e)
+
+    try:
+        # Initialize NetBox API
+        nb = pynetbox.api(nb_instance, token=token)
+
+        # Platform name to filter
+        platform = nb.dcim.platforms.get(q=[platform])
+
+        devices = nb.dcim.devices.filter(platform=platform.slug, site=site) if site else nb.dcim.devices.filter(platform=platform.slug)
+
+        inventory = []
+        for device in devices:
+            host_entry = {
+                "host": str(ipaddress.ip_interface(device.primary_ip).ip),
+                "name": device.name,
+                "tags": [tag.name for tag in device.tags],
+            }
+            inventory.append(host_entry)
+
+        write_inventory_to_file(inventory, output)
+
+    except Exception as e:
+        raise ValueError(e) from e
 
 
 def explore_package(module_name: str, test_name: str | None = None, *, short: bool = False, count: bool = False) -> int:
