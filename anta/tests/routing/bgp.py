@@ -442,7 +442,7 @@ class VerifyBGPPeerMPCaps(AntaTest):
       1. Confirms that the specified VRF is configured.
       2. Verifies that the peer exists in the BGP configuration.
       3. For each specified capability:
-        - Validates that the capability is present in the peer's configuration.
+        - Validates that the capability is present in the peer configuration.
         - Confirms that the capability is advertised, received, and enabled.
       4. When strict mode is enabled (`strict: true`):
         - Verifies that only the specified capabilities are configured.
@@ -543,14 +543,14 @@ class VerifyBGPPeerASNCap(AntaTest):
 
       1. Confirms that the specified VRF is configured.
       2. Verifies that the peer exists in the BGP configuration.
-      3. Validates that the capability is present in the peer's configuration.
+      3. Validates that the capability is present in the peer configuration.
       4. Confirms that the capability is advertised, received, and enabled.
 
     Expected Results
     ----------------
     * Success: If all of the following conditions are met:
         - All specified peers are found in the BGP configuration.
-        - The four octet ASN capability is present in each peer's configuration.
+        - The four octet ASN capability is present in each peer configuration.
         - The capability is properly negotiated (advertised, received, and enabled) for all peers.
     * Failure: If any of the following occur:
         - A specified peer is not found in the BGP configuration.
@@ -612,14 +612,14 @@ class VerifyBGPPeerRouteRefreshCap(AntaTest):
 
       1. Confirms that the specified VRF is configured.
       2. Verifies that the peer exists in the BGP configuration.
-      3. Validates that the route refresh capability is present in the peer's configuration.
+      3. Validates that the route refresh capability is present in the peer configuration.
       4. Confirms that the capability is advertised, received, and enabled.
 
     Expected Results
     ----------------
     * Success: If all of the following conditions are met:
         - All specified peers are found in the BGP configuration.
-        - The route refresh capability is present in each peer's configuration.
+        - The route refresh capability is present in each peer configuration.
         - The capability is properly negotiated (advertised, received, and enabled) for all peers.
     * Failure: If any of the following occur:
         - A specified peer is not found in the BGP configuration.
