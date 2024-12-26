@@ -800,7 +800,6 @@ class VerifyISISGracefulRestart(AntaTest):
             instance_name = str(instance.name)
             graceful_restart = instance.graceful_restart
             graceful_helper = instance.graceful_helper
-
             if (vrf_details := get_value(isis_details, vrf)) is None:
                 self.result.is_failure(f"{instance} - VRF is not configured")
                 continue
@@ -814,8 +813,6 @@ class VerifyISISGracefulRestart(AntaTest):
                     f"{instance} - Incorrect value for Graceful Restart - Expected: {graceful_restart}, Actual: {instance_details.get('gracefulRestart')}"
                 )
 
-            if instance_details.get("gracefulRestartHelper") != graceful_helper:
-                self.result.is_failure(
-                    f"{instance} - Incorrect value for Graceful Restart Helper - Expected: {graceful_helper}, Actual: {instance_details.get('gracefulRestartHelper')
-                                                                                                                       }"
-                )
+            actual_gr_helper = instance_details.get("gracefulRestartHelper")
+            if actual_gr_helper != graceful_helper:
+                self.result.is_failure(f"{instance} - Incorrect value for Graceful Restart Helper - Expected: {graceful_helper}, Actual: {actual_gr_helper}")
