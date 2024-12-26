@@ -70,7 +70,7 @@ class VerifyPathsHealth(AntaTest):
 class VerifySpecificPath(AntaTest):
     """Verifies the path and telemetry state of a specific path for an IPv4 peer.
 
-    This test performs the following checks for each specified routerpath:
+    This test performs the following checks for each specified router path:
         1. Verifies that the specified peer is configured.
         2. Verifies that the specified path group is found.
         3. Verifies that the expected source and destination address match the path group.
@@ -134,15 +134,15 @@ class VerifySpecificPath(AntaTest):
                 continue
 
             path_group_details = get_value(peer_details, f"dpsGroups..{path_group}..dpsPaths", separator="..")
-            # If the expected pathgroup is not found for the peer, the test fails.
+            # If the expected path group is not found for the peer, the test fails.
             if not path_group_details:
-                self.result.is_failure(f"{router_path} - Path-group not found")
+                self.result.is_failure(f"{router_path} - DPS paths not found")
                 continue
 
             path_data = next((path for path in path_group_details.values() if (path.get("source") == source and path.get("destination") == destination)), None)
-            # If the expected and actual source and destion address of the pathgroup are not matched, test fails.
+            # If the expected and actual source and destination address of the path group are not matched, test fails.
             if not path_data:
-                self.result.is_failure(f"{router_path} - Source and/or Destination address not found")
+                self.result.is_failure(f"{router_path} - Path not found")
                 continue
 
             path_state = path_data.get("state")
@@ -150,6 +150,6 @@ class VerifySpecificPath(AntaTest):
             expected_state = ["ipsecEstablished", "routeResolved"]
             # If the state of the path is not 'ipsecEstablished' or 'routeResolved', or the telemetry state is 'inactive', the test fails
             if path_state not in expected_state:
-                self.result.is_failure(f"{router_path} - Incorrect path state - Expected: {' or '.join(expected_state)} Actual: {path_state}")
+                self.result.is_failure(f"{router_path} - State is not in ipsecEstablished, routeResolved - Actual: {path_state}")
             elif not session:
-                self.result.is_failure(f"{router_path} - Incorrect telemetry state - Expected: active Actual: inactive")
+                self.result.is_failure(f"{router_path} - Telemetry state inactive")
