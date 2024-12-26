@@ -68,7 +68,7 @@ class VerifyPathsHealth(AntaTest):
 
 
 class VerifySpecificPath(AntaTest):
-    """Verifies the path and telemetry state of a specific path for an IPv4 peer.
+    """Verifies the DPS path and telemetry state of an IPv4 peer.
 
     This test performs the following checks for each specified router path:
         1. Verifies that the specified peer is configured.
