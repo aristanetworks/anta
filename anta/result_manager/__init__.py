@@ -5,7 +5,6 @@
 
 from __future__ import annotations
 
-import json
 import logging
 from collections import defaultdict
 from functools import cached_property
@@ -13,6 +12,7 @@ from itertools import chain
 from typing import Any
 
 from typing_extensions import deprecated
+from pydantic import TypeAdapter
 
 from anta.result_manager.models import AntaTestStatus, TestResult
 
@@ -73,8 +73,9 @@ class ResultManager:
 
     def reset(self) -> None:
         """Create or reset the attributes of the ResultManager instance."""
-        self._result_entries: list[TestResult] = []
-        self.status: AntaTestStatus = AntaTestStatus.UNSET
+        self._result_entries = []
+        self._result_entries_ta = TypeAdapter(list[TestResult])
+        self.status = AntaTestStatus.UNSET
         self.error_status = False
 
         # Initialize the statistics attributes
@@ -101,12 +102,12 @@ class ResultManager:
     @property
     def dump(self) -> list[dict[str, Any]]:
         """Get a list of dictionary of the results."""
-        return [result.model_dump() for result in self._result_entries]
+        return self._result_entries_ta.dump_python(self._result_entries)
 
     @property
     def json(self) -> str:
         """Get a JSON representation of the results."""
-        return json.dumps(self.dump, indent=4)
+        return self._result_entries_ta.dump_json(self._result_entries, exclude_none=True, indent=4).decode()
 
     @property
     def device_stats(self) -> dict[str, DeviceStats]:

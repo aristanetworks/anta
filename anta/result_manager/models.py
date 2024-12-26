@@ -10,7 +10,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from pydantic import BaseModel, SkipValidation, field_serializer
+from pydantic import BaseModel, SerializeAsAny
 
 
 class AntaTestStatus(str, Enum):
@@ -44,12 +44,7 @@ class BaseTestResult(BaseModel, ABC):
     description: str
     result: AntaTestStatus = AntaTestStatus.UNSET
     messages: list[str] = []
-    inputs: SkipValidation[BaseModel | None] = None
-
-    @field_serializer("inputs")
-    def serialize_inputs(self, inputs: BaseModel | None) -> dict[str, Any] | None:
-        """Serialize the inputs field to a dictionary."""
-        return inputs.model_dump(mode="json", serialize_as_any=True, exclude_none=True, exclude={"result_overwrite"}) if inputs else None
+    inputs: SerializeAsAny[BaseModel | None] = None
 
     def is_success(self, message: str | None = None) -> None:
         """Set status to success.
