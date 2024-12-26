@@ -91,8 +91,8 @@ class AliasedGroup(click.Group):
     From Click documentation.
     """
 
-    def get_command(self, ctx: click.Context, cmd_name: str) -> Any:
-        """Todo: document code."""
+    def get_command(self, ctx: click.Context, cmd_name: str) -> click.Command | None:
+        """Try to find a command name based on a prefix."""
         rv = click.Group.get_command(self, ctx, cmd_name)
         if rv is not None:
             return rv
@@ -104,12 +104,11 @@ class AliasedGroup(click.Group):
         ctx.fail(f"Too many matches: {', '.join(sorted(matches))}")
         return None
 
-    def resolve_command(self, ctx: click.Context, args: Any) -> Any:
-        """Todo: document code."""
-        # always return the full command name
+    def resolve_command(self, ctx: click.Context, args: list[str]) -> tuple[str | None, click.Command | None, list[str]]:
+        """Return the full command name as first tuple element."""
         _, cmd, args = super().resolve_command(ctx, args)
         if not cmd:
-            return None, None, None
+            return None, None, []
         return cmd.name, cmd, args
 
 
@@ -204,7 +203,7 @@ def core_options(f: Callable[..., Any]) -> Callable[..., Any]:
     @functools.wraps(f)
     def wrapper(
         ctx: click.Context,
-        *args: tuple[Any],
+        *args: Any,
         inventory: Path,
         username: str,
         password: str | None,
@@ -216,7 +215,7 @@ def core_options(f: Callable[..., Any]) -> Callable[..., Any]:
         disable_cache: bool,
         inventory_format: Literal["json", "yaml"],
         **kwargs: dict[str, Any],
-    ) -> Any:
+    ) -> Callable[..., Any]:
         # If help is invoke somewhere, do not parse inventory
         if ctx.obj.get("_anta_help"):
             return f(*args, inventory=None, **kwargs)
@@ -277,10 +276,10 @@ def inventory_options(f: Callable[..., Any]) -> Callable[..., Any]:
     @functools.wraps(f)
     def wrapper(
         ctx: click.Context,
-        *args: tuple[Any],
+        *args: Any,
         tags: set[str] | None,
-        **kwargs: dict[str, Any],
-    ) -> Any:
+        **kwargs: Any,
+    ) -> Callable[..., Any]:
         # If help is invoke somewhere, do not parse inventory
         if ctx.obj.get("_anta_help"):
             return f(*args, tags=tags, **kwargs)
@@ -326,7 +325,7 @@ def catalog_options(*, required: bool = True) -> Callable[..., Callable[..., Any
             catalog: Path | None,
             catalog_format: Literal["yaml", "json"],
             **kwargs: dict[str, Any],
-        ) -> Any:
+        ) -> Callable[..., Any]:
             # If help is invoke somewhere, do not parse catalog
             if ctx.obj.get("_anta_help"):
                 return f(*args, catalog=None, **kwargs)

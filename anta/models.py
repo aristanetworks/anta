@@ -616,7 +616,7 @@ class AntaTest(ABC):
         async def wrapper(
             self: AntaTest,
             eos_data: list[dict[Any, Any] | str] | None = None,
-            **kwargs: dict[str, Any],
+            **kwargs: Any,  # noqa: ANN401
         ) -> TestResult:
             """Inner function for the anta_test decorator.
 

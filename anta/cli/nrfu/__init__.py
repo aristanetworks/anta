@@ -59,15 +59,6 @@ HIDE_STATUS.remove("unset")
 @inventory_options
 @catalog_options()
 @click.option(
-    "--expand-atomic",
-    "-x",
-    default=False,
-    show_envvar=True,
-    is_flag=True,
-    show_default=True,
-    help="Flag to indicate if atomic results should be rendered",
-)
-@click.option(
     "--device",
     "-d",
     help="Run tests on a specific device. Can be provided multiple times.",
@@ -122,7 +113,6 @@ def nrfu(
     test: tuple[str],
     hide: tuple[str],
     *,
-    expand_atomic: bool,
     ignore_status: bool,
     ignore_error: bool,
     dry_run: bool,
@@ -136,7 +126,6 @@ def nrfu(
     # We use ctx.obj to pass stuff to the next Click functions
     ctx.ensure_object(dict)
     ctx.obj["result_manager"] = ResultManager()
-    ctx.obj["expand_atomic"] = expand_atomic
     ctx.obj["ignore_status"] = ignore_status
     ctx.obj["ignore_error"] = ignore_error
     ctx.obj["hide"] = set(hide) if hide else None
