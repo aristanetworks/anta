@@ -738,7 +738,7 @@ anta.tests.stp:
   - VerifySTPCounters:
       # Verifies there is no errors in STP BPDU packets.
   - VerifySTPDisabledVlans:
-      # Verifies the STP disabled VLANs.
+      # Verifies the STP disabled VLAN(s).
       vlans:
         - 6
         - 4094

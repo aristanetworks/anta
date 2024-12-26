@@ -312,17 +312,27 @@ class VerifyStpTopologyChanges(AntaTest):
 
 
 class VerifySTPDisabledVlans(AntaTest):
-    """Verifies the STP disabled VLANs.
+    """Verifies the STP disabled VLAN(s).
 
     This test performs the following checks:
+
         1. Verifies that the STP is configured.
-        2. Verifies that the specified VLAN is present on the device.
-        3. Verifies that the STP is disabled for the specified VLANs.
+        2. Verifies that the specified VLAN is exist on the device.
+        3. Verifies that the STP is disabled for the specified VLAN(s).
 
     Expected Results
     ----------------
-    * Success: The test will pass if STP is disabled for the specified VLANs.
-    * Failure: The test will fail, if STP is enabled for the specified VLANs.
+    *Success: The test will pass if all of the following conditions are met:
+
+      1. STP is properly configured on the device.
+      2. The specified VLAN(s) exist on the device.
+      3. STP is confirmed to be disabled for all the specified VLAN(s).
+
+    *Failure: The test will fail if any of the following condition is met:
+
+      1. STP is not configured on the device.
+      2. The specified VLAN(s) not exist on the device.
+      3. STP is confirmed to be enabled for any of the specified VLAN(s).
 
     Examples
     --------
@@ -342,7 +352,7 @@ class VerifySTPDisabledVlans(AntaTest):
         """Input model for the VerifySTPDisabledVlans test."""
 
         vlans: list[Vlan]
-        """List of STP disabled VLANs"""
+        """List of STP disabled VLAN(s)"""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -358,13 +368,11 @@ class VerifySTPDisabledVlans(AntaTest):
             return
 
         actual_vlans = list(stp_vlan_instances)
-        # Iterating on each VLAN mentioned in the inputs
+        # If the specified VLAN is not present on the device, STP is enabled for the VLAN(s), test fails.
         for vlan in self.inputs.vlans:
-            # If the specified VLAN is not present on the device, the test fails.
             if str(vlan) not in actual_vlans:
-                self.result.is_failure(f"VLAN: {vlan} is not found on the device")
+                self.result.is_failure(f"VLAN: {vlan} - Not configured")
                 continue
 
-            # If the STP is enabled for the specified VLANs, the test fails.
             if stp_vlan_instances.get(str(vlan)):
-                self.result.is_failure(f"VLAN: {vlan} STP is enabled")
+                self.result.is_failure(f"VLAN: {vlan} - STP is enabled")

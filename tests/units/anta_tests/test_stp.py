@@ -497,7 +497,7 @@ DATA: list[dict[str, Any]] = [
     {
         "name": "success-stp-disabled-vlans",
         "test": VerifySTPDisabledVlans,
-        "eos_data": [{"spanningTreeVlanInstances": {"1": {"spanningTreeVlanInstance": {}}, "6": {}, "4094": {}}}],
+        "eos_data": [{"spanningTreeVlanInstances": {"1": {"spanningTreeVlanInstance": {"protocol": "mstp", "bridge": {"priority": 32768}}}, "6": {}, "4094": {}}}],
         "inputs": {"vlans": ["6", "4094"]},
         "expected": {"result": "success"},
     },
@@ -512,18 +512,30 @@ DATA: list[dict[str, Any]] = [
         "name": "failure-stp-disabled-vlans-not-found",
         "test": VerifySTPDisabledVlans,
         "eos_data": [
-            {"spanningTreeVlanInstances": {"1": {"spanningTreeVlanInstance": {}}, "6": {"spanningTreeVlanInstance": {}}, "4094": {"spanningTreeVlanInstance": {}}}}
+            {
+                "spanningTreeVlanInstances": {
+                    "1": {"spanningTreeVlanInstance": {"protocol": "mstp", "bridge": {}}},
+                    "6": {"spanningTreeVlanInstance": {"protocol": "mstp", "bridge": {}}},
+                    "4094": {"spanningTreeVlanInstance": {"protocol": "mstp", "bridge": {}}},
+                }
+            }
         ],
         "inputs": {"vlans": ["16", "4093"]},
-        "expected": {"result": "failure", "messages": ["VLAN: 16 is not found on the device", "VLAN: 4093 is not found on the device"]},
+        "expected": {"result": "failure", "messages": ["VLAN: 16 - Not configured", "VLAN: 4093 - Not configured"]},
     },
     {
         "name": "failure-stp-disabled-vlans",
         "test": VerifySTPDisabledVlans,
         "eos_data": [
-            {"spanningTreeVlanInstances": {"1": {"spanningTreeVlanInstance": {}}, "6": {"spanningTreeVlanInstance": {}}, "4094": {"spanningTreeVlanInstance": {}}}}
+            {
+                "spanningTreeVlanInstances": {
+                    "1": {"spanningTreeVlanInstance": {"protocol": "mstp", "bridge": {}}},
+                    "6": {"spanningTreeVlanInstance": {"protocol": "mstp", "bridge": {}}},
+                    "4094": {"spanningTreeVlanInstance": {"protocol": "mstp", "bridge": {}}},
+                }
+            }
         ],
         "inputs": {"vlans": ["6", "4094"]},
-        "expected": {"result": "failure", "messages": ["VLAN: 6 STP is enabled", "VLAN: 4094 STP is enabled"]},
+        "expected": {"result": "failure", "messages": ["VLAN: 6 - STP is enabled", "VLAN: 4094 - STP is enabled"]},
     },
 ]
