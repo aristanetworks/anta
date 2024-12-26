@@ -125,7 +125,7 @@ def print_text(ctx: click.Context, expand_atomic: bool) -> None:
             console.print("\n".join(f"    {message}" for message in result.messages), highlight=False)
         if expand_atomic:
             for r in result.atomic_results:
-                console.print(f"    {r.description} :: [{result.result}]{result.result.upper()}[/{result.result}]", highlight=False)
+                console.print(f"    {r.description} :: [{r.result}]{r.result.upper()}[/{r.result}]", highlight=False)
                 if r.messages:
                     console.print("\n".join(f"      {message}" for message in r.messages), highlight=False)
 
