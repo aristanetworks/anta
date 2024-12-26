@@ -134,7 +134,7 @@ class ReportTable:
                 test = name
             state = self._color_result(result.result)
             message = self._split_list_to_txt_list(result.messages) if len(result.messages) > 0 else ""
-            inputs = result.inputs.model_dump_json(indent=2, exclude={"result_overwrite", "filters"}) if result.inputs is not None else None
+            inputs = result.inputs.model_dump_json(indent=2) if isinstance(result, AtomicTestResult) and result.inputs is not None else None
             table.add_row(
                 categories,
                 test,
