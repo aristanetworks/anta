@@ -230,8 +230,9 @@ class ResultManager:
         self._update_status(result.result)
         self._stats_in_sync = False
 
-        # Every time a new result is added, we need to clear the cached property
-        self.__dict__.pop("results_by_status", None)
+        # Every time a new result is added, we need to clear the cached properties
+        for name in ["results_by_status", "results_by_category"]:
+            self.__dict__.pop(name, None)
 
     def get_results(self, status: set[AntaTestStatus] | None = None, sort_by: list[str] | None = None) -> list[TestResult]:
         """Get the results, optionally filtered by status and sorted by TestResult fields.
