@@ -224,8 +224,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 10.255.0.1 PathGroup: internet Source: 100.64.3.2 Destination: 100.64.1.2 - Path-group not found",
-                "Peer: 10.255.0.2 PathGroup: mpls Source: 172.18.13.2 Destination: 172.18.15.2 - Path-group not found",
+                "Peer: 10.255.0.1 PathGroup: internet Source: 100.64.3.2 Destination: 100.64.1.2 - DPS paths not found",
+                "Peer: 10.255.0.2 PathGroup: mpls Source: 172.18.13.2 Destination: 172.18.15.2 - DPS paths not found",
             ],
         },
     },
@@ -287,10 +287,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 10.255.0.1 PathGroup: internet Source: 172.18.3.2 Destination: 172.18.5.2 - Incorrect path state - Expected:"
-                " ipsecEstablished or routeResolved Actual: ipsecPending",
-                "Peer: 10.255.0.2 PathGroup: mpls Source: 172.18.13.2 Destination: 172.18.15.2 - Incorrect path state - Expected:"
-                " ipsecEstablished or routeResolved Actual: ipsecPending",
+                "Peer: 10.255.0.1 PathGroup: internet Source: 172.18.3.2 Destination: 172.18.5.2 - State is not in ipsecEstablished, routeResolved -"
+                " Actual: ipsecPending",
+                "Peer: 10.255.0.2 PathGroup: mpls Source: 172.18.13.2 Destination: 172.18.15.2 - State is not in ipsecEstablished, routeResolved -"
+                " Actual: ipsecPending",
             ],
         },
     },
@@ -335,8 +335,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 10.255.0.1 PathGroup: internet Source: 172.18.3.2 Destination: 172.18.5.2 - Incorrect telemetry state - Expected: active Actual: inactive",
-                "Peer: 10.255.0.2 PathGroup: mpls Source: 172.18.13.2 Destination: 172.18.15.2 - Incorrect telemetry state - Expected: active Actual: inactive",
+                "Peer: 10.255.0.1 PathGroup: internet Source: 172.18.3.2 Destination: 172.18.5.2 - Telemetry state inactive",
+                "Peer: 10.255.0.2 PathGroup: mpls Source: 172.18.13.2 Destination: 172.18.15.2 - Telemetry state inactive",
             ],
         },
     },
@@ -376,8 +376,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 10.255.0.1 PathGroup: internet Source: 172.18.3.2 Destination: 172.18.5.2 - Source and/or Destination address not found",
-                "Peer: 10.255.0.2 PathGroup: mpls Source: 172.18.13.2 Destination: 172.18.15.2 - Source and/or Destination address not found",
+                "Peer: 10.255.0.1 PathGroup: internet Source: 172.18.3.2 Destination: 172.18.5.2 - Path not found",
+                "Peer: 10.255.0.2 PathGroup: mpls Source: 172.18.13.2 Destination: 172.18.15.2 - Path not found",
             ],
         },
     },
