@@ -13,6 +13,7 @@ from typing import Any, ClassVar, Literal
 from pydantic import BaseModel
 
 from anta.custom_types import Interface
+from anta.input_models.routing.isis import ISISInstances
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_value
 
@@ -728,3 +729,93 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
                 for eos_via in eos_entry["vias"]
             )
         return True
+
+
+class VerifyISISGracefulRestart(AntaTest):
+    """Verifies the graceful restart and  helper mechanism.
+
+    This test performs the following checks:
+
+     1. Verifies that the ISIS is configured.
+     2. Verifies that the specified VRF is found.
+     3. Verifies that the specified VRF instance is found.
+     4. Verifies that the IS-IS graceful restart and graceful helper are set as expected in the inputs.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if graceful restart and graceful helper are set as expected for a specified VRF instance.
+    * Failure: The test will fail if graceful restart and graceful helper are not set as expected for a specified VRF instance.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      isis:
+        - VerifyISISGracefulRestart:
+            instances:
+              - vrf: default
+                name: 1
+                graceful_restart: True
+                graceful_helper: True
+              - vrf: default
+                name: 2
+                graceful_restart: True
+                graceful_helper: True
+              - vrf: test
+                name: 1
+                graceful_restart: True
+                graceful_helper: True
+              - vrf: test
+                name: 2
+                graceful_restart: True
+                graceful_helper: True
+
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["isis"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show isis summary", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyISISGracefulRestart test."""
+
+        instances: list[ISISInstances]
+        """List of ISIS instance entries."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyISISGracefulRestart."""
+        self.result.is_success()
+        command_output = self.instance_commands[0].json_output
+        isis_details = command_output.get("vrfs")
+
+        # If ISIS is not configured, test fails
+        if not isis_details:
+            self.result.is_failure("ISIS is not configured")
+            return
+
+        # If VRF, vrf-instance is not found or GR and GR helpers are not matching with the expected values, test fails.
+        for instance in self.inputs.instances:
+            vrf = instance.vrf
+            instance_name = str(instance.name)
+            graceful_restart = instance.graceful_restart
+            graceful_helper = instance.graceful_helper
+
+            if (vrf_details := get_value(isis_details, vrf)) is None:
+                self.result.is_failure(f"{instance} - VRF is not configured")
+                continue
+
+            if (instance_details := get_value(vrf_details, f"isisInstances.{instance_name}")) is None:
+                self.result.is_failure(f"{instance} - Not found")
+                continue
+
+            if instance_details.get("gracefulRestart") != graceful_restart:
+                self.result.is_failure(
+                    f"{instance} - Incorrect value for Graceful Restart - Expected: {graceful_restart}, Actual: {instance_details.get('gracefulRestart')}"
+                )
+
+            if instance_details.get("gracefulRestartHelper") != graceful_helper:
+                self.result.is_failure(
+                    f"{instance} - Incorrect value for Graceful Restart Helper - Expected: {graceful_helper}, Actual: {instance_details.get('gracefulRestartHelper')
+                                                                                                                       }"
+                )

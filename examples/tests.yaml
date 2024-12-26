@@ -541,6 +541,26 @@ anta.tests.routing.generic:
       minimum: 2
       maximum: 20
 anta.tests.routing.isis:
+  - VerifyISISGracefulRestart:
+      # Verifies the graceful restart and  helper mechanism.
+      instances:
+        - vrf: default
+          name: 1
+          graceful_restart: True
+          graceful_helper: True
+        - vrf: default
+          name: 2
+          graceful_restart: True
+          graceful_helper: True
+        - vrf: test
+          name: 1
+          graceful_restart: True
+          graceful_helper: True
+        - vrf: test
+          name: 2
+          graceful_restart: True
+          graceful_helper: True
+
   - VerifyISISInterfaceMode:
       # Verifies interface mode for IS-IS
       interfaces:
