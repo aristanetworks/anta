@@ -13,7 +13,7 @@ from functools import wraps
 from string import Formatter
 from typing import TYPE_CHECKING, Any, Callable, ClassVar, Literal, TypeVar
 
-from pydantic import BaseModel, ConfigDict, Field, ValidationError, create_model
+from pydantic import BaseModel, ConfigDict, ValidationError, create_model
 
 from anta.constants import EOS_BLACKLIST_CMDS, KNOWN_EOS_ERRORS, UNSUPPORTED_PLATFORM_ERRORS
 from anta.custom_types import Revision
@@ -385,7 +385,7 @@ class AntaTest(ABC):
         """
 
         model_config = ConfigDict(extra="forbid")
-        result_overwrite: ResultOverwrite | None = Field(None, exclude=True)
+        result_overwrite: ResultOverwrite | None = None
         filters: Filters | None = None
 
         def __hash__(self) -> int:
