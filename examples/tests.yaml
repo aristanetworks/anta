@@ -841,6 +841,7 @@ anta.tests.vlan:
       source:
         - evpn
         - mlagsync
+      all_source_dynamic_vlans: False
   - VerifyVlanInternalPolicy:
       # Verifies the VLAN internal allocation policy and the range of VLANs.
       policy: ascending
