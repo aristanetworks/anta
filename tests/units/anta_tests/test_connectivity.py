@@ -5,8 +5,7 @@
 
 from __future__ import annotations
 
-import sys
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from anta.models import AntaTest
 from anta.result_manager.models import AntaTestStatus
@@ -46,7 +45,7 @@ DATA: AntaUnitTestDataDict = {
                     "inputs": {"destination": "10.0.0.1", "source": "10.0.0.5", "vrf": "default", "repeat": 2, "size": 100, "df_bit": False},
                 },
                 {
-                    "description": "Host 10.0.0.2 in VRF default",
+                    "description": "Destination 10.0.0.2 from 10.0.0.5 in VRF default",
                     "inputs": {
                         "destination": "10.0.0.2",
                         "df_bit": False,
@@ -131,7 +130,73 @@ DATA: AntaUnitTestDataDict = {
                     "inputs": {"destination": "10.0.0.1", "source": "Management0", "vrf": "default", "repeat": 2, "size": 100, "df_bit": False},
                 },
                 {
-                    "description": "Host 10.0.0.2 in VRF default",
+                    "description": "Destination 10.0.0.2 from Management0 in VRF default",
+                    "inputs": {
+                        "destination": "10.0.0.2",
+                        "df_bit": False,
+                        "repeat": 2,
+                        "size": 100,
+                        "source": "Management0",
+                        "vrf": "default",
+                    },
+                    "result": AntaTestStatus.SUCCESS,
+                },
+            ],
+        },
+    },
+    (VerifyReachability, "success-description"): {
+        "inputs": {
+            "hosts": [
+                {"description": "spine1 Ethernet49/1", "destination": "10.0.0.1", "source": "Management0"},
+                {"destination": "10.0.0.2", "source": "Management0"},
+            ]
+        },
+        "eos_data": [
+            {
+                "messages": [
+                    """PING 10.0.0.1 (10.0.0.1) from 10.0.0.5 : 72(100) bytes of data.
+                80 bytes from 10.0.0.1: icmp_seq=1 ttl=64 time=0.247 ms
+                80 bytes from 10.0.0.1: icmp_seq=2 ttl=64 time=0.072 ms
+
+                --- 10.0.0.1 ping statistics ---
+                2 packets transmitted, 2 received, 0% packet loss, time 0ms
+                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms, ipg/ewma 0.370/0.225 ms
+
+                """,
+                ],
+            },
+            {
+                "messages": [
+                    """PING 10.0.0.2 (10.0.0.2) from 10.0.0.5 : 72(100) bytes of data.
+                80 bytes from 10.0.0.2: icmp_seq=1 ttl=64 time=0.247 ms
+                80 bytes from 10.0.0.2: icmp_seq=2 ttl=64 time=0.072 ms
+
+                --- 10.0.0.2 ping statistics ---
+                2 packets transmitted, 2 received, 0% packet loss, time 0ms
+                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms, ipg/ewma 0.370/0.225 ms
+
+                """,
+                ],
+            },
+        ],
+        "expected": {
+            "result": AntaTestStatus.SUCCESS,
+            "atomic_results": [
+                {
+                    "result": AntaTestStatus.SUCCESS,
+                    "description": "Destination 10.0.0.1 (spine1 Ethernet49/1) from Management0 in VRF default",
+                    "inputs": {
+                        "description": "spine1 Ethernet49/1",
+                        "destination": "10.0.0.1",
+                        "source": "Management0",
+                        "vrf": "default",
+                        "repeat": 2,
+                        "size": 100,
+                        "df_bit": False,
+                    },
+                },
+                {
+                    "description": "Destination 10.0.0.2 from Management0 in VRF default",
                     "inputs": {
                         "destination": "10.0.0.2",
                         "df_bit": False,
@@ -160,7 +225,7 @@ DATA: AntaUnitTestDataDict = {
         "expected": {"result": AntaTestStatus.SUCCESS,
             "atomic_results": [
                 {
-                    "description": "Host 10.0.0.1 in VRF default",
+                    "description": "Destination 10.0.0.1 from Management0 in VRF default",
                     "inputs": {
                         "destination": "10.0.0.1",
                         "df_bit": False,
@@ -192,7 +257,7 @@ DATA: AntaUnitTestDataDict = {
         "expected": {"result": AntaTestStatus.SUCCESS,
             "atomic_results": [
                 {
-                    "description": "Host 10.0.0.1 in VRF default",
+                    "description": "Destination 10.0.0.1 from Management0 in VRF default",
                     "inputs": {
                         "destination": "10.0.0.1",
                         "df_bit": True,
@@ -244,7 +309,7 @@ DATA: AntaUnitTestDataDict = {
             "messages": ["Unreachable Host 10.0.0.11 (src: 10.0.0.5, vrf: default, size: 100B, repeat: 2)"],
             "atomic_results": [
                 {
-                    "description": "Host 10.0.0.11 in VRF default",
+                    "description": "Destination 10.0.0.11 from 10.0.0.5 in VRF default",
                     "inputs": {
                         "destination": "10.0.0.11",
                         "df_bit": False,
@@ -257,7 +322,7 @@ DATA: AntaUnitTestDataDict = {
                     "result": AntaTestStatus.FAILURE,
                 },
                 {
-                    "description": "Host 10.0.0.2 in VRF default",
+                    "description": "Destination 10.0.0.2 from 10.0.0.5 in VRF default",
                     "inputs": {
                         "destination": "10.0.0.2",
                         "df_bit": False,
@@ -311,7 +376,7 @@ DATA: AntaUnitTestDataDict = {
             "messages": ["Unreachable Host 10.0.0.11 (src: Management0, vrf: default, size: 100B, repeat: 2)"],
             "atomic_results": [
                 {
-                    "description": "Host 10.0.0.11 in VRF default",
+                    "description": "Destination 10.0.0.11 from Management0 in VRF default",
                     "inputs": {
                         "destination": "10.0.0.11",
                         "df_bit": False,
@@ -324,7 +389,7 @@ DATA: AntaUnitTestDataDict = {
                     "result": AntaTestStatus.FAILURE,
                 },
                 {
-                    "description": "Host 10.0.0.2 in VRF default",
+                    "description": "Destination 10.0.0.2 from Management0 in VRF default",
                     "inputs": {
                         "destination": "10.0.0.2",
                         "df_bit": False,
@@ -357,7 +422,7 @@ DATA: AntaUnitTestDataDict = {
             "messages": ["Unreachable Host 10.0.0.1 (src: Management0, vrf: default, size: 1501B, repeat: 5, df-bit: enabled)"],
             "atomic_results": [
                 {
-                    "description": "Host 10.0.0.1 in VRF default",
+                    "description": "Destination 10.0.0.1 from Management0 in VRF default",
                     "inputs": {
                         "destination": "10.0.0.1",
                         "df_bit": True,

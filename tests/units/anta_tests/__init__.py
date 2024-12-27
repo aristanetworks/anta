@@ -89,8 +89,14 @@ def test(device: AntaDevice, data: tuple[tuple[type[AntaTest], str], AntaUnitTes
         assert len(test_instance.result.atomic_results) == len(
             data["expected"]["atomic_results"]
         ), f"Expected {len(data['expected']['atomic_results'])} atomic results, got {len(test_instance.result.atomic_results)}"
-        for result, expected in zip(test_instance.result.atomic_results, data["expected"]["atomic_results"]):
-            assert result.model_dump(mode="json", exclude_none=True) == expected
+        for atomic_result_model, expected_atomic_result in zip(test_instance.result.atomic_results, data["expected"]["atomic_results"]):
+            atomic_result = atomic_result_model.model_dump(mode="json", exclude_none=True)
+            if len(atomic_result["messages"]):
+                for message, expected in zip(atomic_result["messages"], expected_atomic_result["messages"]):  # NOTE: zip(strict=True) has been added in Python 3.10
+                    assert expected in message
+            else:
+                del atomic_result["messages"]
+            assert atomic_result == expected_atomic_result
     else:
         # Test result should not have atomic results
         assert test_instance.result.atomic_results == [], "There are untested atomic results"
