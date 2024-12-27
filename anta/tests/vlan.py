@@ -76,6 +76,7 @@ class VerifyDynamicVlanSource(AntaTest):
     """Verifies dynamic VLAN source.
 
     This test performs the following checks for each specified dynamic VLAN:
+
         1. Ensures that dynamic VLAN(s) are properly configured in the system.
         2. Confirms that dynamic VLAN(s) are active only within their designated sources.
 
