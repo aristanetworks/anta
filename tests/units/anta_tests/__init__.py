@@ -20,6 +20,18 @@ if TYPE_CHECKING:
     else:
         from typing_extensions import NotRequired
 
+if sys.version_info >= (3, 10):
+    from typing import TypeAlias
+else:
+    TypeAlias = type
+
+class AtomicResult(TypedDict):
+    """Expected atomic result of a unit test of an AntaTest subclass."""
+
+    description: str
+    result: Literal[AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.SKIPPED]
+    messages: NotRequired[list[str]]
+    inputs: NotRequired[dict[str, Any]]
 
 class UnitTestResult(TypedDict):
     """Expected result of a unit test of an AntaTest subclass.
@@ -30,7 +42,7 @@ class UnitTestResult(TypedDict):
 
     result: Literal[AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.SKIPPED]
     messages: NotRequired[list[str]]
-
+    atomic_results: NotRequired[list[AtomicResult]]
 
 class AntaUnitTest(TypedDict):
     """The parameters required for a unit test of an AntaTest subclass."""
@@ -39,15 +51,7 @@ class AntaUnitTest(TypedDict):
     eos_data: list[dict[str, Any] | str]
     expected: UnitTestResult
 
-
-if sys.version_info >= (3, 10):
-    from typing import TypeAlias
-else:
-    TypeAlias = type
-
-
 AntaUnitTestDataDict: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
-
 
 def test(device: AntaDevice, data: tuple[tuple[type[AntaTest], str], AntaUnitTest]) -> None:
     """Generic test function for AntaTest subclass.
@@ -86,7 +90,7 @@ def test(device: AntaDevice, data: tuple[tuple[type[AntaTest], str], AntaUnitTes
             data["expected"]["atomic_results"]
         ), f"Expected {len(data['expected']['atomic_results'])} atomic results, got {len(test_instance.result.atomic_results)}"
         for result, expected in zip(test_instance.result.atomic_results, data["expected"]["atomic_results"]):
-            assert result.model_dump(serialize_as_any=True, mode="json") == expected
+            assert result.model_dump(mode="json", exclude_none=True) == expected
     else:
         # Test result should not have atomic results
         assert test_instance.result.atomic_results == [], "There are untested atomic results"
