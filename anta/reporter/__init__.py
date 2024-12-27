@@ -7,11 +7,13 @@
 from __future__ import annotations
 
 import logging
+import math
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
 from jinja2 import Template
 from rich.table import Table
+from yaml import safe_dump, safe_load
 
 from anta import RICH_COLOR_PALETTE, RICH_COLOR_THEME
 from anta.result_manager.models import AtomicTestResult, TestResult
@@ -134,7 +136,11 @@ class ReportTable:
                 test = name
             state = self._color_result(result.result)
             message = self._split_list_to_txt_list(result.messages) if len(result.messages) > 0 else ""
-            inputs = result.inputs.model_dump_json(indent=2) if isinstance(result, AtomicTestResult) and result.inputs is not None else None
+            inputs = (
+                safe_dump(safe_load(result.inputs.model_dump_json(exclude_none=True)), indent=2, width=math.inf)
+                if isinstance(result, AtomicTestResult) and result.inputs is not None
+                else None
+            )  # See anta.catalog.AntaCatalogFile.yaml() for explanation of this line of code.
             table.add_row(
                 categories,
                 test,
