@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from io import StringIO
+from io import BytesIO, TextIOWrapper
 from pathlib import Path
 
 import pytest
@@ -46,7 +46,7 @@ def test_md_report_base() -> None:
 
     results = ResultManager()
 
-    with StringIO() as mock_file:
+    with TextIOWrapper(BytesIO(b"1 2 3")) as mock_file:
         report = FakeMDReportBase(mock_file, results)
         assert report.generate_heading_name() == "Fake MD Report Base"
 

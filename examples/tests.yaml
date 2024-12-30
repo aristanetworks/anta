@@ -63,7 +63,7 @@ anta.tests.avt:
       # Verifies the AVT role of a device.
       role: edge
   - VerifyAVTSpecificPath:
-      # Verifies the status and type of an AVT path for a specified VRF.
+      # Verifies the Adaptive Virtual Topology (AVT) path.
       avt_paths:
         - avt_name: CONTROL-PLANE-PROFILE
           vrf: default
@@ -217,9 +217,9 @@ anta.tests.interfaces:
       # Verifies the interface IPv4 addresses.
       interfaces:
         - name: Ethernet2
-          primary_ip: 172.30.11.0/31
+          primary_ip: 172.30.11.1/31
           secondary_ips:
-            - 10.10.10.0/31
+            - 10.10.10.1/31
             - 10.10.10.10/31
   - VerifyInterfaceUtilization:
       # Verifies that the utilization of interfaces is below a certain threshold.
@@ -366,7 +366,7 @@ anta.tests.ptp:
       # Verifies the PTP interfaces state.
 anta.tests.routing.bgp:
   - VerifyBGPAdvCommunities:
-      # Verifies the advertised communities of a BGP peer.
+      # Verifies that advertised communities are standard, extended and large for BGP peers.
       bgp_peers:
         - peer_address: 172.30.11.17
           vrf: default
@@ -389,7 +389,7 @@ anta.tests.routing.bgp:
           received_routes:
             - 192.0.254.3/32
   - VerifyBGPPeerASNCap:
-      # Verifies the four octet asn capabilities of a BGP peer.
+      # Verifies the four octet ASN capability of BGP peers.
       bgp_peers:
         - peer_address: 172.30.11.1
           vrf: default
@@ -419,14 +419,14 @@ anta.tests.routing.bgp:
             - inDropAsloop
             - prefixEvpnDroppedUnsupportedRouteType
   - VerifyBGPPeerMD5Auth:
-      # Verifies the MD5 authentication and state of a BGP peer.
+      # Verifies the MD5 authentication and state of IPv4 BGP peers in a specified VRF.
       bgp_peers:
         - peer_address: 172.30.11.1
           vrf: default
         - peer_address: 172.30.11.5
           vrf: default
   - VerifyBGPPeerMPCaps:
-      # Verifies the multiprotocol capabilities of a BGP peer.
+      # Verifies the multiprotocol capabilities of BGP peers.
       bgp_peers:
         - peer_address: 172.30.11.1
           vrf: default
@@ -434,14 +434,14 @@ anta.tests.routing.bgp:
           capabilities:
             - ipv4Unicast
   - VerifyBGPPeerRouteLimit:
-      # Verifies the maximum routes and optionally verifies the maximum routes warning limit for the provided BGP IPv4 peer(s).
+      # Verifies maximum routes and outbound route-maps of BGP IPv4 peer(s).
       bgp_peers:
         - peer_address: 172.30.11.1
           vrf: default
           maximum_routes: 12000
           warning_limit: 10000
   - VerifyBGPPeerRouteRefreshCap:
-      # Verifies the route refresh capabilities of a BGP peer.
+      # Verifies the route refresh capabilities of a BGP peer in a specified VRF.
       bgp_peers:
         - peer_address: 172.30.11.1
           vrf: default
@@ -450,7 +450,7 @@ anta.tests.routing.bgp:
       bgp_peers:
         - peer_address: 172.30.11.1
           vrf: default
-          update_error_filter:
+          update_errors:
             - inUpdErrWithdraw
   - VerifyBGPPeersHealth:
       # Verifies the health of BGP peers for given address families.
@@ -488,7 +488,7 @@ anta.tests.routing.bgp:
             - 10.1.255.2
             - 10.1.255.4
   - VerifyBGPTimers:
-      # Verifies the timers of a BGP peer.
+      # Verifies the timers of BGP peers.
       bgp_peers:
         - peer_address: 172.30.11.1
           vrf: default
@@ -513,6 +513,18 @@ anta.tests.routing.bgp:
         - address: aac1.ab5d.b41e
           vni: 10010
 anta.tests.routing.generic:
+  - VerifyIPv4RouteType:
+      # Verifies the route-type of the IPv4 prefixes.
+      routes_entries:
+        - prefix: 10.10.0.1/32
+          vrf: default
+          route_type: eBGP
+        - prefix: 10.100.0.12/31
+          vrf: default
+          route_type: connected
+        - prefix: 10.100.1.5/32
+          vrf: default
+          route_type: iBGP
   - VerifyRoutingProtocolModel:
       # Verifies the configured routing protocol model.
       model: multi-agent

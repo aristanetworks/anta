@@ -7,8 +7,13 @@ on:
 
 jobs:
   pypi:
-    name: Publish version to Pypi servers
+    name: Publish Python 🐍 distribution 📦 to PyPI
     runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://pypi.org/p/anta
+    permissions:
+      id-token: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -19,33 +24,9 @@ jobs:
       - name: Build package
         run: |
           python -m build
-      - name: Publish package to Pypi
+      - name: Publish distribution 📦 to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          user: __token__
-          password: ${{ secrets.PYPI_API_TOKEN }}
 
-  release-coverage:
-    name: Updated ANTA release coverage badge
-    runs-on: ubuntu-20.04
-    needs: [pypi]
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-      - name: Install dependencies
-        run: pip install genbadge[coverage] tox tox-gh-actions
-      - name: "Run pytest via tox for ${{ matrix.python }}"
-        run: tox
-      - name: Generate coverage badge
-        run: genbadge coverage -i .coverage.xml -o badge/latest-release-coverage.svg
-      - name: Publish coverage badge to gh-pages branch
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          branch: coverage-badge
-          folder: badge
   release-doc:
     name: "Publish documentation for release ${{github.ref_name}}"
     runs-on: ubuntu-latest
