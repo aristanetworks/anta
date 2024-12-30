@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import re
 from contextlib import AbstractContextManager, nullcontext
 from typing import TYPE_CHECKING, Callable
@@ -379,3 +380,103 @@ class TestResultManager:
 
         assert len(result_manager.get_devices()) == 2
         assert all(t in result_manager.get_devices() for t in ["Device1", "Device2"])
+
+    def test_stats_computation_methods(self, test_result_factory: Callable[[], TestResult], caplog: pytest.LogCaptureFixture) -> None:
+        """Test ResultManager internal stats computation methods."""
+        result_manager = ResultManager()
+
+        # Initially stats should be unsynced
+        assert result_manager._stats_in_sync is False
+
+        # Test _reset_stats
+        result_manager._reset_stats()
+        assert result_manager._stats_in_sync is False
+        assert len(result_manager._device_stats) == 0
+        assert len(result_manager._category_stats) == 0
+        assert len(result_manager._test_stats) == 0
+
+        # Add some test results
+        test1 = test_result_factory()
+        test1.name = "device1"
+        test1.result = AntaTestStatus.SUCCESS
+        test1.categories = ["system"]
+        test1.test = "test1"
+
+        test2 = test_result_factory()
+        test2.name = "device2"
+        test2.result = AntaTestStatus.FAILURE
+        test2.categories = ["interfaces"]
+        test2.test = "test2"
+
+        result_manager.add(test1)
+        result_manager.add(test2)
+
+        # Stats should still be unsynced after adding results
+        assert result_manager._stats_in_sync is False
+
+        # Test _compute_stats directly
+        with caplog.at_level(logging.INFO):
+            result_manager._compute_stats()
+        assert "Computing statistics for all results" in caplog.text
+        assert result_manager._stats_in_sync is True
+
+        # Verify stats content
+        assert len(result_manager._device_stats) == 2
+        assert len(result_manager._category_stats) == 2
+        assert len(result_manager._test_stats) == 2
+        assert result_manager._device_stats["device1"].tests_success_count == 1
+        assert result_manager._device_stats["device2"].tests_failure_count == 1
+        assert result_manager._category_stats["system"].tests_success_count == 1
+        assert result_manager._category_stats["interfaces"].tests_failure_count == 1
+        assert result_manager._test_stats["test1"].devices_success_count == 1
+        assert result_manager._test_stats["test2"].devices_failure_count == 1
+
+    def test_stats_property_computation(self, test_result_factory: Callable[[], TestResult], caplog: pytest.LogCaptureFixture) -> None:
+        """Test that stats are computed only once when accessed via properties."""
+        result_manager = ResultManager()
+
+        # Add some test results
+        test1 = test_result_factory()
+        test1.name = "device1"
+        test1.result = AntaTestStatus.SUCCESS
+        test1.categories = ["system"]
+        result_manager.add(test1)
+
+        test2 = test_result_factory()
+        test2.name = "device2"
+        test2.result = AntaTestStatus.FAILURE
+        test2.categories = ["interfaces"]
+        result_manager.add(test2)
+
+        # Stats should be unsynced after adding results
+        assert result_manager._stats_in_sync is False
+        assert "Computing statistics" not in caplog.text
+
+        # Access device_stats property - should trigger computation
+        with caplog.at_level(logging.INFO):
+            _ = result_manager.device_stats
+        assert "Computing statistics for all results" in caplog.text
+        assert result_manager._stats_in_sync is True
+
+        # Clear the log
+        caplog.clear()
+
+        # Access other stats properties - should not trigger computation again
+        with caplog.at_level(logging.INFO):
+            _ = result_manager.category_stats
+            _ = result_manager.test_stats
+            _ = result_manager.sorted_category_stats
+        assert "Computing statistics" not in caplog.text
+
+        # Add another result - should mark stats as unsynced
+        test3 = test_result_factory()
+        test3.name = "device3"
+        test3.result = "error"
+        result_manager.add(test3)
+        assert result_manager._stats_in_sync is False
+
+        # Access stats again - should trigger recomputation
+        with caplog.at_level(logging.INFO):
+            _ = result_manager.device_stats
+        assert "Computing statistics for all results" in caplog.text
+        assert result_manager._stats_in_sync is True
