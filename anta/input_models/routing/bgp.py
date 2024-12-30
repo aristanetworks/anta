@@ -207,10 +207,11 @@ class VxlanEndpoint(BaseModel):
     def __str__(self) -> str:
         """Return a human-readable string representation of the VxlanEndpoint for reporting."""
         return f"Address: {self.address} VNI: {self.vni}"
-    
+
 
 class BgpRoute(BaseModel):
     """Model representing BGP routes.
+
     Only IPv4 prefixes are supported for now.
     """
 
@@ -224,6 +225,7 @@ class BgpRoute(BaseModel):
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the BgpRoute for reporting.
+
         Examples
         --------
         - Prefix: 192.168.66.100/24 VRF: default
@@ -246,6 +248,7 @@ class RoutePath(BaseModel):
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the RoutePath for reporting.
+
         Examples
         --------
         - Nexthop: 192.168.66.101 Origin: Igp
