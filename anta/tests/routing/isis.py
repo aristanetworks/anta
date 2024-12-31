@@ -762,19 +762,19 @@ class VerifyISISGracefulRestart(AntaTest):
         - VerifyISISGracefulRestart:
             instances:
               - vrf: default
-                name: 1
+                name: '1'
                 graceful_restart: True
                 graceful_helper: True
               - vrf: default
-                name: 2
+                name: '2'
                 graceful_restart: True
                 graceful_helper: True
               - vrf: test
-                name: 1
+                name: '1'
                 graceful_restart: True
                 graceful_helper: True
               - vrf: test
-                name: 2
+                name: '2'
                 graceful_restart: True
                 graceful_helper: True
 
