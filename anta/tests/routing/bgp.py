@@ -1277,10 +1277,20 @@ class VerifyBGPPeerRouteLimit(AntaTest):
 class VerifyBGPPeerGroup(AntaTest):
     """Verifies BGP peer group of the IPv4 peer(s).
 
+    This test performs the following checks for each specified peer:
+
+      1. Confirms that the specified VRF is configured.
+      2. Verifies that the peer exists in the BGP configuration.
+      3. Confirms the peer group is correctly assigned to the specified BGP peer.
+
     Expected Results
     ----------------
-    * Success: The test will pass if the peer group is correctly assigned to the BGP peer(s).
-    * Failure: The test will fail if the BGP peer group not correctly assigned or peer is not configured.
+    * Success: If all of the following conditions are met:
+        - All specified peers are found in the BGP configuration.
+        - The peer group is correctly assigned to the specified BGP peer.
+    * Failure: If any of the following occur:
+        - A specified peer is not found in the BGP configuration.
+        - The peer group is not correctly assigned to the specified BGP peer.
 
     Examples
     --------
