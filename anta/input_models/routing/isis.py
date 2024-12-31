@@ -17,9 +17,15 @@ class ISISInstances(BaseModel):
     name: str
     """The instance name or ID to validated the instance specific isis details."""
     graceful_restart: bool = True
-    """Flag to check if the  graceful restart is enabled for isis instance, Defaults to `True`"""
+    """Specifies the Graceful Restart,
+    Options:
+    - True: Default mode, refer as graceful restart is enabled.
+    - False: Refer as graceful restart is disabled."""
     graceful_helper: bool = True
-    """Flag to check if the  graceful helper is enabled for isis instance, Defaults to `True`"""
+    """Specifies the Graceful Restart Helper,
+    Options:
+    - True: Default mode, refer as graceful restart helper is enabled.
+    - False: Refer as graceful restart helper is disabled."""
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the ISISInstances for reporting."""

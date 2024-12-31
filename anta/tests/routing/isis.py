@@ -737,14 +737,22 @@ class VerifyISISGracefulRestart(AntaTest):
     This test performs the following checks:
 
      1. Verifies that the ISIS is configured.
-     2. Verifies that the specified VRF is found.
+     2. Verifies that the specified VRF is configured.
      3. Verifies that the specified VRF instance is found.
      4. Verifies that the IS-IS graceful restart and graceful helper are set as expected in the inputs.
 
     Expected Results
     ----------------
-    * Success: The test will pass if graceful restart and graceful helper are set as expected for a specified VRF instance.
-    * Failure: The test will fail if graceful restart and graceful helper are not set as expected for a specified VRF instance.
+    * Success: The test will pass if all of the following conditions are met:
+        - ISIS is configured on the device.
+        - Specified VRF is configured.
+        - Specified VRF instance is found
+        - Expected and actual IS-IS graceful restart and graceful helper values are matched.
+    * Failure: The test will fail if any of the following conditions is met:
+        - ISIS is not configured on the device.
+        - Specified VRF is not configured.
+        - Specified VRF instance is not found.
+        - Expected and actual IS-IS graceful restart and graceful helper values are not matched.
 
     Examples
     --------
@@ -809,10 +817,8 @@ class VerifyISISGracefulRestart(AntaTest):
                 continue
 
             if instance_details.get("gracefulRestart") != graceful_restart:
-                self.result.is_failure(
-                    f"{instance} - Incorrect value for Graceful Restart - Expected: {graceful_restart}, Actual: {instance_details.get('gracefulRestart')}"
-                )
+                self.result.is_failure(f"{instance} - Graceful Restart disabled")
 
             actual_gr_helper = instance_details.get("gracefulRestartHelper")
             if actual_gr_helper != graceful_helper:
-                self.result.is_failure(f"{instance} - Incorrect value for Graceful Restart Helper - Expected: {graceful_helper}, Actual: {actual_gr_helper}")
+                self.result.is_failure(f"{instance} - Graceful Restart Helper disabled")

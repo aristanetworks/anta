@@ -1925,8 +1925,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "VRF: default Instance: 1 - Incorrect value for Graceful Restart - Expected: True, Actual: False",
-                "VRF: test Instance: 1 - Incorrect value for Graceful Restart - Expected: True, Actual: False",
+                "VRF: default Instance: 1 - Graceful Restart disabled",
+                "VRF: test Instance: 1 - Graceful Restart disabled",
             ],
         },
     },
@@ -1949,10 +1949,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": [
-                "VRF: default Instance: 1 - Incorrect value for Graceful Restart Helper - Expected: True, Actual: False",
-                "VRF: test Instance: 1 - Incorrect value for Graceful Restart Helper - Expected: True, Actual: False",
-            ],
+            "messages": ["VRF: default Instance: 1 - Graceful Restart Helper disabled", "VRF: test Instance: 1 - Graceful Restart Helper disabled"],
         },
     },
 ]
