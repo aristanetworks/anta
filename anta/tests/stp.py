@@ -322,17 +322,14 @@ class VerifySTPDisabledVlans(AntaTest):
 
     Expected Results
     ----------------
-    *Success: The test will pass if all of the following conditions are met:
-
-      1. STP is properly configured on the device.
-      2. The specified VLAN(s) exist on the device.
-      3. STP is confirmed to be disabled for all the specified VLAN(s).
-
-    *Failure: The test will fail if any of the following condition is met:
-
-      1. STP is not configured on the device.
-      2. The specified VLAN(s) not exist on the device.
-      3. STP is confirmed to be enabled for any of the specified VLAN(s).
+    * Success: The test will pass if all of the following conditions are met:
+        - STP is properly configured on the device.
+        - The specified VLAN(s) exist on the device.
+        - STP is confirmed to be disabled for all the specified VLAN(s).
+    * Failure: The test will fail if any of the following condition is met:
+        - STP is not configured on the device.
+        - The specified VLAN(s) not exist on the device.
+        - STP is confirmed to be enabled for any of the specified VLAN(s).
 
     Examples
     --------
