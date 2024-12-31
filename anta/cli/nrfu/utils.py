@@ -157,7 +157,7 @@ def save_markdown_report(ctx: click.Context, md_output: pathlib.Path) -> None:
         Path to save the markdown report.
     """
     try:
-        MDReportGenerator.generate(results=_get_result_manager(ctx), md_filename=md_output)
+        MDReportGenerator.generate(results=_get_result_manager(ctx).sort(["name", "categories", "test"]), md_filename=md_output)
         console.print(f"Markdown report saved to {md_output} ✅", style="cyan")
     except OSError:
         console.print(f"Failed to save Markdown report to {md_output} ❌", style="cyan")

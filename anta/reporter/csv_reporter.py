@@ -111,6 +111,7 @@ class ReportCsv:
                 csvwriter = csv.writer(
                     csvfile,
                     delimiter=",",
+                    lineterminator="\n",
                 )
                 csvwriter.writerow(headers)
                 for entry in results.results:

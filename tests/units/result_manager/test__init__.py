@@ -86,13 +86,14 @@ class TestResultManager:
 
         result_manager.results = results
 
-        # Check the current categories order
-        expected_order = ["ospf", "bgp", "vxlan", "system"]
+        # Check that category_stats returns sorted order by default
+        expected_order = ["bgp", "ospf", "system", "vxlan"]
         assert list(result_manager.category_stats.keys()) == expected_order
 
-        # Check the sorted categories order
-        expected_order = ["bgp", "ospf", "system", "vxlan"]
-        assert list(result_manager.sorted_category_stats.keys()) == expected_order
+        # Verify deprecation warning for sorted_category_stats
+        with pytest.warns(DeprecationWarning, match="sorted_category_stats is deprecated and will be removed in ANTA v2.0.0"):
+            deprecated_stats = result_manager.sorted_category_stats
+            assert list(deprecated_stats.keys()) == expected_order
 
     @pytest.mark.parametrize(
         ("starting_status", "test_status", "expected_status", "expected_raise"),
@@ -465,7 +466,6 @@ class TestResultManager:
         with caplog.at_level(logging.INFO):
             _ = result_manager.category_stats
             _ = result_manager.test_stats
-            _ = result_manager.sorted_category_stats
         assert "Computing statistics" not in caplog.text
 
         # Add another result - should mark stats as unsynced
@@ -480,3 +480,68 @@ class TestResultManager:
             _ = result_manager.device_stats
         assert "Computing statistics for all results" in caplog.text
         assert result_manager._stats_in_sync is True
+
+    def test_sort(self, test_result_factory: Callable[[], TestResult]) -> None:
+        """Test ResultManager.sort method."""
+        result_manager = ResultManager()
+
+        # Add specific test results for predictable sorting
+        test1 = test_result_factory()
+        test1.name = "Device3"
+        test1.result = AntaTestStatus.SUCCESS
+        test1.test = "Test1"
+        test1.categories = ["VXLAN", "networking"]
+
+        test2 = test_result_factory()
+        test2.name = "Device1"
+        test2.result = AntaTestStatus.FAILURE
+        test2.test = "Test2"
+        test2.categories = ["BGP", "routing"]
+
+        test3 = test_result_factory()
+        test3.name = "Device2"
+        test3.result = AntaTestStatus.ERROR
+        test3.test = "Test3"
+        test3.categories = ["system", "hardware"]
+
+        result_manager.results = [test1, test2, test3]
+
+        # Sort by result and check order
+        sorted_manager = result_manager.sort(["result"])
+        assert [r.result for r in sorted_manager.results] == ["error", "failure", "success"]
+
+        # Sort by device name
+        sorted_manager = result_manager.sort(["name"])
+        assert [r.name for r in sorted_manager.results] == ["Device1", "Device2", "Device3"]
+
+        # Sort by categories (which are lists)
+        sorted_manager = result_manager.sort(["categories"])
+        results = sorted_manager.results
+
+        # Python sorts lists by first element, so order should be:
+        # BGP < VXLAN < system
+        assert results[0].categories == ["BGP", "routing"]
+        assert results[1].categories == ["VXLAN", "networking"]
+        assert results[2].categories == ["system", "hardware"]
+
+        # Test multiple sort fields
+        sorted_manager = result_manager.sort(["result", "test"])
+        results = sorted_manager.results
+        assert results[0].result == "error"
+        assert results[0].test == "Test3"
+        assert results[1].result == "failure"
+        assert results[1].test == "Test2"
+        assert results[2].result == "success"
+        assert results[2].test == "Test1"
+
+        # Test invalid sort field
+        with pytest.raises(
+            ValueError,
+            match=re.escape(
+                "Invalid sort_by fields: ['bad_field']. Accepted fields are: ['name', 'test', 'categories', 'description', 'result', 'messages', 'custom_field']",
+            ),
+        ):
+            result_manager.sort(["bad_field"])
+
+        # Verify the method is chainable
+        assert isinstance(result_manager.sort(["name"]), ResultManager)
