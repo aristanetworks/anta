@@ -77,24 +77,25 @@ class VerifyDynamicVlanSource(AntaTest):
 
     This test performs the following checks for each specified dynamic VLAN:
 
-        1. Ensures that dynamic VLAN(s) are properly configured in the system.
-        2. Confirms that dynamic VLAN(s) are active only within their designated sources.
+      1. Ensures that dynamic VLAN(s) are properly configured in the system.
+      2. Confirms that dynamic VLAN(s) are active for any of the designated sources.
+      3. When strict mode is enabled (`strict: true`):
+        - Dynamic VLAN(s) are activated for all the designated sources.
+      4. Confirms that the dynamic VLAN(s) are disabled for other than designated sources.
 
     Expected Results
     ----------------
-    *Success: The test will pass if all of the following conditions are met:
-
-      1. Dynamic VLAN(s) are properly configured in the system.
-      2. Dynamic VLAN(s) are active only within their designated sources.
-
-    *Failure: The test will fail if any of the following conditions is met:
-
-      1. Dynamic VLAN(s) are not active within the designated source
-      2. Dynamic VLAN(s) are activated in other than designated sources.
-
-    *Skipped: The test will Skip if the following conditions is met:
-
-      1. Dynamic VLAN(s) are not configured on the device.
+    * Success: The test will pass if all of the following conditions are met:
+        - Dynamic VLAN(s) are properly configured in the system.
+        - Dynamic VLAN(s) are active for any of the designated sources.
+        - In strict mode, Dynamic Vlans(s) are active for all the designated sources.
+        - Dynamic VLAN(s) are disabled for other than designated sources.
+    * Failure: The test will fail if any of the following conditions is met:
+        - Dynamic VLAN(s) are not active within the designated source
+        - Dynamic VLAN(s) are active for other than designated sources.
+        - In strict mode, dynamic VLAN(s) are disabled for any of the designated sources.
+    * Skipped: The test will Skip if the following conditions is met:
+        - Dynamic VLAN(s) are not configured on the device.
 
     Examples
     --------
@@ -104,7 +105,7 @@ class VerifyDynamicVlanSource(AntaTest):
           source:
             - evpn
             - mlagsync
-          all_source_dynamic_vlans: False
+          strict: False
     ```
     """
 
@@ -117,8 +118,8 @@ class VerifyDynamicVlanSource(AntaTest):
         model_config = ConfigDict(extra="forbid")
         source: list[DynamicVLANSource]
         """The dynamic VLAN source list."""
-        all_source_dynamic_vlans: bool = False
-        """Flag to check that all designated sources should have dynamic VLAN(s), Defaults to `False`"""
+        strict: bool = False
+        """If True, requires exact match of the provided dynamic VLAN sources, Defaults to `False`"""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -137,8 +138,8 @@ class VerifyDynamicVlanSource(AntaTest):
         str_expected_source = ", ".join(expected_source)
         str_actual_source = ", ".join(actual_source)
 
-        # If all designated source should have dynamic VLAN(s)
-        if self.inputs.all_source_dynamic_vlans and sorted(actual_source) != (expected_source):
+        # If strict flag is True and not all designated source have dynamic VLAN(s), test fails.
+        if self.inputs.strict and sorted(actual_source) != (expected_source):
             self.result.is_failure(f"Dynamic VLAN(s) all source are not in {str_expected_source} Actual: {str_actual_source}")
             return
 
