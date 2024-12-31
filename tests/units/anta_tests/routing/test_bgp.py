@@ -21,6 +21,7 @@ from anta.tests.routing.bgp import (
     VerifyBGPPeerMPCaps,
     VerifyBGPPeerRouteLimit,
     VerifyBGPPeerRouteRefreshCap,
+    VerifyBGPPeerSession,
     VerifyBGPPeersHealth,
     VerifyBGPPeerUpdateErrors,
     VerifyBgpRouteMaps,
@@ -1388,50 +1389,6 @@ DATA: list[dict[str, Any]] = [
             ]
         },
         "expected": {"result": "success"},
-    },
-    {
-        "name": "failure-no-vrf",
-        "test": VerifyBGPPeerMPCaps,
-        "eos_data": [
-            {
-                "vrfs": {
-                    "default": {
-                        "peerList": [
-                            {
-                                "peerAddress": "172.30.11.1",
-                                "neighborCapabilities": {
-                                    "multiprotocolCaps": {
-                                        "ipv4Unicast": {
-                                            "advertised": True,
-                                            "received": True,
-                                            "enabled": True,
-                                        },
-                                        "ipv4MplsVpn": {
-                                            "advertised": True,
-                                            "received": True,
-                                            "enabled": True,
-                                        },
-                                    }
-                                },
-                            }
-                        ]
-                    }
-                }
-            }
-        ],
-        "inputs": {
-            "bgp_peers": [
-                {
-                    "peer_address": "172.30.11.1",
-                    "vrf": "MGMT",
-                    "capabilities": ["ipv4 Unicast", "ipv4mplslabels"],
-                }
-            ]
-        },
-        "expected": {
-            "result": "failure",
-            "messages": ["Peer: 172.30.11.1 VRF: MGMT - VRF not configured"],
-        },
     },
     {
         "name": "failure-no-peer",
@@ -3877,6 +3834,215 @@ DATA: list[dict[str, Any]] = [
             "messages": [
                 "Peer: 10.100.0.8 VRF: default - Maximum routes warning limit mismatch - Expected: 10000, Actual: 0",
                 "Peer: 10.100.0.9 VRF: MGMT - Maximum routes warning limit mismatch - Expected: 9000, Actual: 0",
+            ],
+        },
+    },
+    {
+        "name": "success-no-check-tcp-queues",
+        "test": VerifyBGPPeerSession,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "state": "Established",
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 10,
+                                    "inputQueueLength": 5,
+                                },
+                            }
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.9",
+                                "state": "Established",
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 10,
+                                    "inputQueueLength": 5,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default", "check_tcp_queues": False},
+                {"peer_address": "10.100.0.9", "vrf": "MGMT", "check_tcp_queues": False},
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-success-check-tcp-queues",
+        "test": VerifyBGPPeerSession,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "state": "Established",
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 0,
+                                    "inputQueueLength": 0,
+                                },
+                            }
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.9",
+                                "state": "Established",
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 0,
+                                    "inputQueueLength": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default", "check_tcp_queues": True},
+                {"peer_address": "10.100.0.9", "vrf": "MGMT", "check_tcp_queues": True},
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-peer-not-found",
+        "test": VerifyBGPPeerSession,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "state": "Established",
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 0,
+                                    "inputQueueLength": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default"},
+                {"peer_address": "10.100.0.9", "vrf": "MGMT"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Peer: 10.100.0.9 VRF: MGMT - Not found",
+            ],
+        },
+    },
+    {
+        "name": "failure-not-established",
+        "test": VerifyBGPPeerSession,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "state": "Active",
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 0,
+                                    "inputQueueLength": 0,
+                                },
+                            }
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.9",
+                                "state": "Active",
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 0,
+                                    "inputQueueLength": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default"},
+                {"peer_address": "10.100.0.9", "vrf": "MGMT"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Peer: 10.100.0.8 VRF: default - Session state is not established - State: Active",
+                "Peer: 10.100.0.9 VRF: MGMT - Session state is not established - State: Active",
+            ],
+        },
+    },
+    {
+        "name": "failure-check-tcp-queues",
+        "test": VerifyBGPPeerSession,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "state": "Established",
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 10,
+                                    "inputQueueLength": 5,
+                                },
+                            }
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.9",
+                                "state": "Established",
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 0,
+                                    "inputQueueLength": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default"},
+                {"peer_address": "10.100.0.9", "vrf": "MGMT"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Peer: 10.100.0.8 VRF: default - Session has non-empty message queues - InQ: 5, OutQ: 10",
             ],
         },
     },

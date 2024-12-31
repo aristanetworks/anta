@@ -142,6 +142,11 @@ class BgpPeer(BaseModel):
     """IPv4 address of the BGP peer."""
     vrf: str = "default"
     """Optional VRF for the BGP peer. Defaults to `default`."""
+    check_tcp_queues: bool = True
+    """Flag to check if the TCP session queues are empty for a BGP peer. Defaults to `True`.
+
+    Can be disabled in the `VerifyBGPPeerSession` test.
+    """
     advertised_routes: list[IPv4Network] | None = None
     """List of advertised routes in CIDR format. Required field in the `VerifyBGPExchangedRoutes` test."""
     received_routes: list[IPv4Network] | None = None
