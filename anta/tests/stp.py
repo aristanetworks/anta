@@ -317,7 +317,7 @@ class VerifySTPDisabledVlans(AntaTest):
     This test performs the following checks:
 
         1. Verifies that the STP is configured.
-        2. Verifies that the specified VLAN is exist on the device.
+        2. Verifies that the specified VLAN(s) exist on the device.
         3. Verifies that the STP is disabled for the specified VLAN(s).
 
     Expected Results
@@ -328,8 +328,8 @@ class VerifySTPDisabledVlans(AntaTest):
         - STP is confirmed to be disabled for all the specified VLAN(s).
     * Failure: The test will fail if any of the following condition is met:
         - STP is not configured on the device.
-        - The specified VLAN(s) not exist on the device.
-        - STP is confirmed to be enabled for any of the specified VLAN(s).
+        - The specified VLAN(s) do not exist on the device.
+        - STP is enabled for any of the specified VLAN(s).
 
     Examples
     --------
@@ -349,7 +349,7 @@ class VerifySTPDisabledVlans(AntaTest):
         """Input model for the VerifySTPDisabledVlans test."""
 
         vlans: list[Vlan]
-        """List of STP disabled VLAN(s)"""
+        """List of STP disabled VLAN(s)."""
 
     @AntaTest.anta_test
     def test(self) -> None:

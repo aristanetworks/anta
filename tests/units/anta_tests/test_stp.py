@@ -495,7 +495,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "failure", "messages": ["STP is not configured."]},
     },
     {
-        "name": "success-stp-disabled-vlans",
+        "name": "success",
         "test": VerifySTPDisabledVlans,
         "eos_data": [{"spanningTreeVlanInstances": {"1": {"spanningTreeVlanInstance": {"protocol": "mstp", "bridge": {"priority": 32768}}}, "6": {}, "4094": {}}}],
         "inputs": {"vlans": ["6", "4094"]},
@@ -509,7 +509,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "failure", "messages": ["STP is not configured"]},
     },
     {
-        "name": "failure-stp-disabled-vlans-not-found",
+        "name": "failure-vlans-not-found",
         "test": VerifySTPDisabledVlans,
         "eos_data": [
             {
@@ -524,7 +524,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "failure", "messages": ["VLAN: 16 - Not configured", "VLAN: 4093 - Not configured"]},
     },
     {
-        "name": "failure-stp-disabled-vlans",
+        "name": "failure-vlans-enabled",
         "test": VerifySTPDisabledVlans,
         "eos_data": [
             {
