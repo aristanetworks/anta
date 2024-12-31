@@ -11,7 +11,7 @@ from typing import Any
 
 import pytest
 
-from anta.tools import custom_division, get_dict_superset, get_failed_logs, get_item, get_value
+from anta.tools import convert_categories, custom_division, format_data, get_dict_superset, get_failed_logs, get_item, get_value
 
 TEST_GET_FAILED_LOGS_DATA = [
     {"id": 1, "name": "Alice", "age": 30, "email": "alice@example.com"},
@@ -499,3 +499,31 @@ def test_get_item(
 def test_custom_division(numerator: float, denominator: float, expected_result: str) -> None:
     """Test custom_division."""
     assert custom_division(numerator, denominator) == expected_result
+
+
+@pytest.mark.parametrize(
+    ("test_input", "expected_raise", "expected_result"),
+    [
+        pytest.param([], does_not_raise(), [], id="empty list"),
+        pytest.param(["bgp", "system", "vlan", "configuration"], does_not_raise(), ["BGP", "System", "VLAN", "Configuration"], id="list with acronyms and titles"),
+        pytest.param(42, pytest.raises(TypeError, match="Wrong input type"), None, id="wrong input type"),
+    ],
+)
+def test_convert_categories(test_input: list[str], expected_raise: AbstractContextManager[Exception], expected_result: list[str]) -> None:
+    """Test convert_categories."""
+    with expected_raise:
+        assert convert_categories(test_input) == expected_result
+
+
+@pytest.mark.parametrize(
+    ("input_data", "expected_output"),
+    [
+        pytest.param({"advertised": True, "received": True, "enabled": True}, "Advertised: True, Received: True, Enabled: True", id="multiple entry, all True"),
+        pytest.param({"advertised": False, "received": False}, "Advertised: False, Received: False", id="multiple entry, all False"),
+        pytest.param({}, "", id="empty dict"),
+        pytest.param({"test": True}, "Test: True", id="single entry"),
+    ],
+)
+def test_format_data(input_data: dict[str, bool], expected_output: str) -> None:
+    """Test format_data."""
+    assert format_data(input_data) == expected_output

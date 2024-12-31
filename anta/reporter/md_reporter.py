@@ -8,15 +8,15 @@ from __future__ import annotations
 import logging
 import re
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, ClassVar, TextIO
 
 from anta.constants import MD_REPORT_TOC
 from anta.logger import anta_log_exception
 from anta.result_manager.models import AntaTestStatus
+from anta.tools import convert_categories
 
 if TYPE_CHECKING:
     from collections.abc import Generator
-    from io import TextIOWrapper
     from pathlib import Path
 
     from anta.result_manager import ResultManager
@@ -71,7 +71,7 @@ class MDReportBase(ABC):
     to generate and write content to the provided markdown file.
     """
 
-    def __init__(self, mdfile: TextIOWrapper, results: ResultManager) -> None:
+    def __init__(self, mdfile: TextIO, results: ResultManager) -> None:
         """Initialize the MDReportBase with an open markdown file object to write to and a ResultManager instance.
 
         Parameters
@@ -111,8 +111,8 @@ class MDReportBase(ABC):
 
         Example
         -------
-        - `ANTAReport` will become ANTA Report.
-        - `TestResultsSummary` will become Test Results Summary.
+        - `ANTAReport` will become `ANTA Report`.
+        - `TestResultsSummary` will become `Test Results Summary`.
         """
         class_name = self.__class__.__name__
 
@@ -152,7 +152,7 @@ class MDReportBase(ABC):
 
         Example
         -------
-        ## Test Results Summary
+        `## Test Results Summary`
         """
         # Ensure the heading level is within the valid range of 1 to 6
         heading_level = max(1, min(heading_level, 6))
@@ -238,8 +238,8 @@ class SummaryTotalsDeviceUnderTest(MDReportBase):
         """Generate the rows of the summary totals device under test table."""
         for device, stat in self.results.device_stats.items():
             total_tests = stat.tests_success_count + stat.tests_skipped_count + stat.tests_failure_count + stat.tests_error_count
-            categories_skipped = ", ".join(sorted(stat.categories_skipped))
-            categories_failed = ", ".join(sorted(stat.categories_failed))
+            categories_skipped = ", ".join(sorted(convert_categories(list(stat.categories_skipped))))
+            categories_failed = ", ".join(sorted(convert_categories(list(stat.categories_failed))))
             yield (
                 f"| {device} | {total_tests} | {stat.tests_success_count} | {stat.tests_skipped_count} | {stat.tests_failure_count} | {stat.tests_error_count} "
                 f"| {categories_skipped or '-'} | {categories_failed or '-'} |\n"
@@ -286,7 +286,7 @@ class TestResults(MDReportBase):
         """Generate the rows of the all test results table."""
         for result in self.results.get_results(sort_by=["name", "test"]):
             messages = self.safe_markdown(", ".join(result.messages))
-            categories = ", ".join(result.categories)
+            categories = ", ".join(convert_categories(result.categories))
             yield (
                 f"| {result.name or '-'} | {categories or '-'} | {result.test or '-'} "
                 f"| {result.description or '-'} | {self.safe_markdown(result.custom_field) or '-'} | {result.result or '-'} | {messages or '-'} |\n"

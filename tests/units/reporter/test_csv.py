@@ -8,11 +8,13 @@
 import csv
 import pathlib
 from typing import Any, Callable
+from unittest.mock import patch
 
 import pytest
 
 from anta.reporter.csv_reporter import ReportCsv
 from anta.result_manager import ResultManager
+from anta.tools import convert_categories
 
 
 class TestReportCsv:
@@ -25,7 +27,7 @@ class TestReportCsv:
         assert rows[index + 1][2] == result_manager.results[index].result
         assert rows[index + 1][3] == ReportCsv().split_list_to_txt_list(result_manager.results[index].messages)
         assert rows[index + 1][4] == result_manager.results[index].description
-        assert rows[index + 1][5] == ReportCsv().split_list_to_txt_list(result_manager.results[index].categories)
+        assert rows[index + 1][5] == ReportCsv().split_list_to_txt_list(convert_categories(result_manager.results[index].categories))
 
     def test_report_csv_generate(
         self,
@@ -48,8 +50,8 @@ class TestReportCsv:
         # Generate the CSV report
         ReportCsv.generate(result_manager, csv_filename)
 
-        # Read the generated CSV file
-        with pathlib.Path.open(csv_filename, encoding="utf-8") as csvfile:
+        # Read the generated CSV file - newline required on Windows..
+        with pathlib.Path.open(csv_filename, encoding="utf-8", newline="") as csvfile:
             reader = csv.reader(csvfile, delimiter=",")
             rows = list(reader)
 
@@ -81,11 +83,9 @@ class TestReportCsv:
         max_test_entries = 10
         result_manager = result_manager_factory(max_test_entries)
 
-        # Create a temporary CSV file path and make tmp_path read_only
-        tmp_path.chmod(0o400)
         csv_filename = tmp_path / "read_only.csv"
 
-        with pytest.raises(OSError, match="Permission denied"):
+        with patch("pathlib.Path.open", side_effect=OSError("Any OSError")), pytest.raises(OSError, match="Any OSError"):
             # Generate the CSV report
             ReportCsv.generate(result_manager, csv_filename)
 

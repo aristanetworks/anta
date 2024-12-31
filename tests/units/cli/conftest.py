@@ -39,6 +39,7 @@ MOCK_CLI_JSON: dict[str, asynceapi.EapiCommandError | dict[str, Any]] = {
         errmsg="Invalid command",
         not_exec=[],
     ),
+    "show interfaces": {},
 }
 
 MOCK_CLI_TEXT: dict[str, asynceapi.EapiCommandError | str] = {
