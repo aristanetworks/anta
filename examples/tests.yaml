@@ -446,7 +446,7 @@ anta.tests.routing.bgp:
         - peer_address: 172.30.11.1
           vrf: default
   - VerifyBGPPeerSession:
-      # Verifies the session state of BGP IPv4 peers.
+      # Verifies the session state of BGP IPv4 peer(s).
       check_tcp_queues: false
       bgp_peers:
         - peer_address: 10.1.0.1
