@@ -331,7 +331,7 @@ class VerifyBGPSpecificPeers(AntaTest):
 
 
 class VerifyBGPPeerSession(AntaTest):
-    """Verifies the session state of BGP IPv4 peers.
+    """Verifies the session state of BGP IPv4 peer(s).
 
     This test performs the following checks for each specified peer:
 
