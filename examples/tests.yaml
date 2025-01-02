@@ -749,6 +749,11 @@ anta.tests.stp:
       # Verifies there is no STP blocked ports.
   - VerifySTPCounters:
       # Verifies there is no errors in STP BPDU packets.
+  - VerifySTPDisabledVlans:
+      # Verifies the STP disabled VLAN(s).
+      vlans:
+        - 6
+        - 4094
   - VerifySTPForwardingPorts:
       # Verifies that all interfaces are forwarding for a provided list of VLAN(s).
       vlans:
