@@ -70,31 +70,49 @@ def setup_logging(level: LogLevel = Log.INFO, file: Path | None = None) -> None:
         logging.getLogger("httpx").setLevel(logging.WARNING)
 
     # Add RichHandler for stdout if not already present
-    maybe_add_rich_handler = True
-    if root.hasHandlers():
-        maybe_add_rich_handler = all(handler.get_name() != "ANTA_RICH_HANDLER" for handler in root.handlers)
+    _maybe_add_rich_handler(loglevel, root)
 
-    if maybe_add_rich_handler:
-        rich_handler = RichHandler(markup=True, rich_tracebacks=True, tracebacks_show_locals=False)
-        rich_handler.set_name("ANTA_RICH_HANDLER")
-        # Show Python module in stdout at DEBUG level
-        fmt_string = "[grey58]\\[%(name)s][/grey58] %(message)s" if loglevel == logging.DEBUG else "%(message)s"
-        formatter = logging.Formatter(fmt=fmt_string, datefmt="[%X]")
-        rich_handler.setFormatter(formatter)
-        root.addHandler(rich_handler)
-
-    # Add FileHandler if file is provided
-    if file:
+    # Add FileHandler if file is provided and same File Handler is not already present
+    if file and not _get_file_handler(root, file):
         file_handler = logging.FileHandler(file)
         formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
         file_handler.setFormatter(formatter)
         root.addHandler(file_handler)
         # If level is DEBUG and file is provided, do not send DEBUG level to stdout
-        if loglevel == logging.DEBUG:
+        if loglevel == logging.DEBUG and (rich_handler := _get_rich_handler(root)) is not None:
             rich_handler.setLevel(logging.INFO)
 
     if __DEBUG__:
         logger.debug("ANTA Debug Mode enabled")
+
+
+def _get_file_handler(logger_instance: logging.Logger, file: Path) -> logging.FileHandler | None:
+    """Return the FileHandler if present."""
+    return (
+        next((handler for handler in logger_instance.handlers if isinstance(handler, logging.FileHandler) and handler.baseFilename == str(file)), None)
+        if logger_instance.hasHandlers()
+        else None
+    )
+
+
+def _get_rich_handler(logger_instance: logging.Logger) -> logging.Handler | None:
+    """Return the ANTA Rich Handler."""
+    return next((handler for handler in logger_instance.handlers if handler.get_name() == "ANTA_RICH_HANDLER"), None) if logger_instance.hasHandlers() else None
+
+
+def _maybe_add_rich_handler(loglevel: int, logger_instance: logging.Logger) -> None:
+    """Add RichHandler for stdout if not already present."""
+    if _get_rich_handler is not None:
+        # Nothing to do.
+        return
+
+    anta_rich_handler = RichHandler(markup=True, rich_tracebacks=True, tracebacks_show_locals=False)
+    anta_rich_handler.set_name("ANTA_RICH_HANDLER")
+    # Show Python module in stdout at DEBUG level
+    fmt_string = "[grey58]\\[%(name)s][/grey58] %(message)s" if loglevel == logging.DEBUG else "%(message)s"
+    formatter = logging.Formatter(fmt=fmt_string, datefmt="[%X]")
+    anta_rich_handler.setFormatter(formatter)
+    logger_instance.addHandler(anta_rich_handler)
 
 
 def format_td(seconds: float, digits: int = 3) -> str:
