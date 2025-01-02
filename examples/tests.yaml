@@ -366,14 +366,14 @@ anta.tests.ptp:
       # Verifies the PTP interfaces state.
 anta.tests.routing.bgp:
   - VerifyBGPAdvCommunities:
-      # Verifies that advertised communities are standard, extended and large for BGP peers.
+      # Verifies that advertised communities are standard, extended and large for BGP IPv4 peer(s).
       bgp_peers:
         - peer_address: 172.30.11.17
           vrf: default
         - peer_address: 172.30.11.21
           vrf: default
   - VerifyBGPExchangedRoutes:
-      # Verifies the advertised and received routes of BGP peers.
+      # Verifies the advertised and received routes of BGP IPv4 peer(s).
       bgp_peers:
         - peer_address: 172.30.255.5
           vrf: default
@@ -389,7 +389,7 @@ anta.tests.routing.bgp:
           received_routes:
             - 192.0.254.3/32
   - VerifyBGPPeerASNCap:
-      # Verifies the four octet ASN capability of BGP peers.
+      # Verifies the four octet ASN capability of BGP IPv4 peer(s).
       bgp_peers:
         - peer_address: 172.30.11.1
           vrf: default
@@ -419,14 +419,14 @@ anta.tests.routing.bgp:
             - inDropAsloop
             - prefixEvpnDroppedUnsupportedRouteType
   - VerifyBGPPeerMD5Auth:
-      # Verifies the MD5 authentication and state of IPv4 BGP peers in a specified VRF.
+      # Verifies the MD5 authentication and state of IPv4 BGP peer(s) in a specified VRF.
       bgp_peers:
         - peer_address: 172.30.11.1
           vrf: default
         - peer_address: 172.30.11.5
           vrf: default
   - VerifyBGPPeerMPCaps:
-      # Verifies the multiprotocol capabilities of BGP peers.
+      # Verifies the multiprotocol capabilities of BGP IPv4 peer(s).
       bgp_peers:
         - peer_address: 172.30.11.1
           vrf: default
@@ -434,17 +434,29 @@ anta.tests.routing.bgp:
           capabilities:
             - ipv4Unicast
   - VerifyBGPPeerRouteLimit:
-      # Verifies maximum routes and outbound route-maps of BGP IPv4 peer(s).
+      # Verifies maximum routes and warning limit for BGP IPv4 peer(s).
       bgp_peers:
         - peer_address: 172.30.11.1
           vrf: default
           maximum_routes: 12000
           warning_limit: 10000
   - VerifyBGPPeerRouteRefreshCap:
-      # Verifies the route refresh capabilities of a BGP peer in a specified VRF.
+      # Verifies the route refresh capabilities of IPv4 BGP peer(s) in a specified VRF.
       bgp_peers:
         - peer_address: 172.30.11.1
           vrf: default
+  - VerifyBGPPeerSession:
+      # Verifies the session state of BGP IPv4 peer(s).
+      check_tcp_queues: false
+      bgp_peers:
+        - peer_address: 10.1.0.1
+          vrf: default
+        - peer_address: 10.1.0.2
+          vrf: default
+        - peer_address: 10.1.255.2
+          vrf: DEV
+        - peer_address: 10.1.255.4
+          vrf: DEV
   - VerifyBGPPeerUpdateErrors:
       # Verifies BGP update error counters for the provided BGP IPv4 peer(s).
       bgp_peers:
@@ -478,7 +490,7 @@ anta.tests.routing.bgp:
             - 10.1.255.2
             - 10.1.255.4
   - VerifyBGPTimers:
-      # Verifies the timers of BGP peers.
+      # Verifies the timers of BGP IPv4 peer(s).
       bgp_peers:
         - peer_address: 172.30.11.1
           vrf: default
