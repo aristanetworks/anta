@@ -15,6 +15,7 @@ from anta.input_models.routing.bgp import BgpAddressFamily, BgpPeer
 from anta.tests.routing.bgp import (
     VerifyBGPExchangedRoutes,
     VerifyBGPPeerCount,
+    VerifyBGPPeerGroup,
     VerifyBGPPeerMPCaps,
     VerifyBGPPeerRouteLimit,
     VerifyBgpRouteMaps,
@@ -236,3 +237,28 @@ class TestVerifyBGPPeerRouteLimitInput:
         """Test VerifyBGPPeerRouteLimit.Input invalid inputs."""
         with pytest.raises(ValidationError):
             VerifyBGPPeerRouteLimit.Input(bgp_peers=bgp_peers)
+
+
+class TestVerifyBGPPeerGroupInput:
+    """Test anta.tests.routing.bgp.VerifyBGPPeerGroup.Input."""
+
+    @pytest.mark.parametrize(
+        ("bgp_peers"),
+        [
+            pytest.param([{"peer_address": "172.30.255.5", "vrf": "default", "peer_group": "IPv4-UNDERLAY-PEERS"}], id="valid"),
+        ],
+    )
+    def test_valid(self, bgp_peers: list[BgpPeer]) -> None:
+        """Test VerifyBGPPeerGroup.Input valid inputs."""
+        VerifyBGPPeerGroup.Input(bgp_peers=bgp_peers)
+
+    @pytest.mark.parametrize(
+        ("bgp_peers"),
+        [
+            pytest.param([{"peer_address": "172.30.255.5", "vrf": "default"}], id="invalid"),
+        ],
+    )
+    def test_invalid(self, bgp_peers: list[BgpPeer]) -> None:
+        """Test VerifyBGPPeerGroup.Input invalid inputs."""
+        with pytest.raises(ValidationError):
+            VerifyBGPPeerGroup.Input(bgp_peers=bgp_peers)
