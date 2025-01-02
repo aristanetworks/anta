@@ -20,6 +20,7 @@ if TYPE_CHECKING:
     from anta.result_manager.models import TestResult
 
 
+# pylint: disable=too-many-public-methods
 class TestResultManager:
     """Test ResultManager class."""
 
@@ -481,60 +482,79 @@ class TestResultManager:
         assert "Computing statistics for all results" in caplog.text
         assert result_manager._stats_in_sync is True
 
-    def test_sort(self, test_result_factory: Callable[[], TestResult]) -> None:
-        """Test ResultManager.sort method."""
+    def test_sort_by_result(self, test_result_factory: Callable[[], TestResult]) -> None:
+        """Test sorting by result."""
         result_manager = ResultManager()
-
-        # Add specific test results for predictable sorting
         test1 = test_result_factory()
-        test1.name = "Device3"
         test1.result = AntaTestStatus.SUCCESS
-        test1.test = "Test1"
-        test1.categories = ["VXLAN", "networking"]
-
         test2 = test_result_factory()
-        test2.name = "Device1"
         test2.result = AntaTestStatus.FAILURE
-        test2.test = "Test2"
-        test2.categories = ["BGP", "routing"]
-
         test3 = test_result_factory()
-        test3.name = "Device2"
         test3.result = AntaTestStatus.ERROR
-        test3.test = "Test3"
-        test3.categories = ["system", "hardware"]
 
         result_manager.results = [test1, test2, test3]
-
-        # Sort by result and check order
         sorted_manager = result_manager.sort(["result"])
         assert [r.result for r in sorted_manager.results] == ["error", "failure", "success"]
 
-        # Sort by device name
+    def test_sort_by_name(self, test_result_factory: Callable[[], TestResult]) -> None:
+        """Test sorting by name."""
+        result_manager = ResultManager()
+        test1 = test_result_factory()
+        test1.name = "Device3"
+        test2 = test_result_factory()
+        test2.name = "Device1"
+        test3 = test_result_factory()
+        test3.name = "Device2"
+
+        result_manager.results = [test1, test2, test3]
         sorted_manager = result_manager.sort(["name"])
         assert [r.name for r in sorted_manager.results] == ["Device1", "Device2", "Device3"]
 
-        # Sort by categories (which are lists)
+    def test_sort_by_categories(self, test_result_factory: Callable[[], TestResult]) -> None:
+        """Test sorting by categories."""
+        result_manager = ResultManager()
+        test1 = test_result_factory()
+        test1.categories = ["VXLAN", "networking"]
+        test2 = test_result_factory()
+        test2.categories = ["BGP", "routing"]
+        test3 = test_result_factory()
+        test3.categories = ["system", "hardware"]
+
+        result_manager.results = [test1, test2, test3]
         sorted_manager = result_manager.sort(["categories"])
         results = sorted_manager.results
 
-        # Python sorts lists by first element, so order should be:
-        # BGP < VXLAN < system
         assert results[0].categories == ["BGP", "routing"]
         assert results[1].categories == ["VXLAN", "networking"]
         assert results[2].categories == ["system", "hardware"]
 
-        # Test multiple sort fields
+    def test_sort_multiple_fields(self, test_result_factory: Callable[[], TestResult]) -> None:
+        """Test sorting by multiple fields."""
+        result_manager = ResultManager()
+        test1 = test_result_factory()
+        test1.result = AntaTestStatus.ERROR
+        test1.test = "Test3"
+        test2 = test_result_factory()
+        test2.result = AntaTestStatus.ERROR
+        test2.test = "Test1"
+        test3 = test_result_factory()
+        test3.result = AntaTestStatus.FAILURE
+        test3.test = "Test2"
+
+        result_manager.results = [test1, test2, test3]
         sorted_manager = result_manager.sort(["result", "test"])
         results = sorted_manager.results
-        assert results[0].result == "error"
-        assert results[0].test == "Test3"
-        assert results[1].result == "failure"
-        assert results[1].test == "Test2"
-        assert results[2].result == "success"
-        assert results[2].test == "Test1"
 
-        # Test invalid sort field
+        assert results[0].result == "error"
+        assert results[0].test == "Test1"
+        assert results[1].result == "error"
+        assert results[1].test == "Test3"
+        assert results[2].result == "failure"
+        assert results[2].test == "Test2"
+
+    def test_sort_invalid_field(self) -> None:
+        """Test that sort method raises ValueError for invalid sort_by fields."""
+        result_manager = ResultManager()
         with pytest.raises(
             ValueError,
             match=re.escape(
@@ -543,5 +563,7 @@ class TestResultManager:
         ):
             result_manager.sort(["bad_field"])
 
-        # Verify the method is chainable
+    def test_sort_is_chainable(self) -> None:
+        """Test that the sort method is chainable."""
+        result_manager = ResultManager()
         assert isinstance(result_manager.sort(["name"]), ResultManager)
