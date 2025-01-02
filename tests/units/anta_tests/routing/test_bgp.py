@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Tests for anta.tests.routing.bgp.py."""
@@ -3871,15 +3871,16 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {
+            "check_tcp_queues": False,
             "bgp_peers": [
-                {"peer_address": "10.100.0.8", "vrf": "default", "check_tcp_queues": False},
-                {"peer_address": "10.100.0.9", "vrf": "MGMT", "check_tcp_queues": False},
-            ]
+                {"peer_address": "10.100.0.8", "vrf": "default"},
+                {"peer_address": "10.100.0.9", "vrf": "MGMT"},
+            ],
         },
         "expected": {"result": "success"},
     },
     {
-        "name": "failure-success-check-tcp-queues",
+        "name": "success-check-tcp-queues",
         "test": VerifyBGPPeerSession,
         "eos_data": [
             {
@@ -3912,10 +3913,11 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {
+            "check_tcp_queues": True,
             "bgp_peers": [
-                {"peer_address": "10.100.0.8", "vrf": "default", "check_tcp_queues": True},
-                {"peer_address": "10.100.0.9", "vrf": "MGMT", "check_tcp_queues": True},
-            ]
+                {"peer_address": "10.100.0.8", "vrf": "default"},
+                {"peer_address": "10.100.0.9", "vrf": "MGMT"},
+            ],
         },
         "expected": {"result": "success"},
     },

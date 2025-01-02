@@ -447,6 +447,7 @@ anta.tests.routing.bgp:
           vrf: default
   - VerifyBGPPeerSession:
       # Verifies the session state of BGP IPv4 peers.
+      check_tcp_queues: false
       bgp_peers:
         - peer_address: 10.1.0.1
           vrf: default
@@ -454,10 +455,8 @@ anta.tests.routing.bgp:
           vrf: default
         - peer_address: 10.1.255.2
           vrf: DEV
-          check_tcp_queues: false
         - peer_address: 10.1.255.4
           vrf: DEV
-          check_tcp_queues: false
   - VerifyBGPPeerUpdateErrors:
       # Verifies BGP update error counters for the provided BGP IPv4 peer(s).
       bgp_peers:

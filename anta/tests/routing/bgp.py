@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module related to BGP tests."""
@@ -337,7 +337,8 @@ class VerifyBGPPeerSession(AntaTest):
 
       1. Verifies that the peer is found in its VRF in the BGP configuration.
       2. Checks that the BGP session is in the `Established` state.
-      3. Ensures that both input and output TCP message queues are empty. Can be disabled by setting `check_tcp_queues` to `False`.
+      3. Ensures that both input and output TCP message queues are empty.
+      Can be disabled by setting `check_tcp_queues` global flag to `False`.
 
     Expected Results
     ----------------
@@ -356,6 +357,7 @@ class VerifyBGPPeerSession(AntaTest):
     anta.tests.routing:
       bgp:
         - VerifyBGPPeerSession:
+            check_tcp_queues: false
             bgp_peers:
               - peer_address: 10.1.0.1
                 vrf: default
@@ -363,10 +365,8 @@ class VerifyBGPPeerSession(AntaTest):
                 vrf: default
               - peer_address: 10.1.255.2
                 vrf: DEV
-                check_tcp_queues: false
               - peer_address: 10.1.255.4
                 vrf: DEV
-                check_tcp_queues: false
     ```
     """
 
@@ -376,6 +376,8 @@ class VerifyBGPPeerSession(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPPeerSession test."""
 
+        check_tcp_queues: bool = True
+        """Flag to check if the TCP session queues are empty for all BGP peers. Defaults to `True`."""
         bgp_peers: list[BgpPeer]
         """List of BGP IPv4 peers."""
 
@@ -401,7 +403,7 @@ class VerifyBGPPeerSession(AntaTest):
                 continue
 
             # Check the TCP session message queues
-            if peer.check_tcp_queues:
+            if self.inputs.check_tcp_queues:
                 inq = peer_data["peerTcpInfo"]["inputQueueLength"]
                 outq = peer_data["peerTcpInfo"]["outputQueueLength"]
                 if inq != 0 or outq != 0:
