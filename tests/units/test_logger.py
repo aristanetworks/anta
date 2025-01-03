@@ -6,15 +6,12 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING
+from pathlib import Path
 from unittest.mock import patch
 
 import pytest
 
 from anta.logger import Log, LogLevel, _get_file_handler, _get_rich_handler, anta_log_exception, exc_to_str, setup_logging, tb_to_str
-
-if TYPE_CHECKING:
-    from pathlib import Path
 
 
 @pytest.mark.parametrize(
@@ -22,8 +19,8 @@ if TYPE_CHECKING:
     [
         pytest.param(Log.INFO, None, False, id="INFO no file"),
         pytest.param(Log.DEBUG, None, False, id="DEBUG no file"),
-        pytest.param(Log.INFO, "/tmp/file.log", False, id="INFO file"),
-        pytest.param(Log.DEBUG, "/tmp/file.log", False, id="DEBUG file"),
+        pytest.param(Log.INFO, Path("/tmp/file.log"), False, id="INFO file"),
+        pytest.param(Log.DEBUG, Path("/tmp/file.log"), False, id="DEBUG file"),
         pytest.param(Log.INFO, None, True, id="INFO no file __DEBUG__ set"),
         pytest.param(Log.DEBUG, None, True, id="INFO no file __DEBUG__ set"),
     ],
