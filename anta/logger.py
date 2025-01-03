@@ -87,7 +87,14 @@ def setup_logging(level: LogLevel = Log.INFO, file: Path | None = None) -> None:
 def _get_file_handler(logger_instance: logging.Logger, file: Path) -> logging.FileHandler | None:
     """Return the FileHandler if present."""
     return (
-        next((handler for handler in logger_instance.handlers if isinstance(handler, logging.FileHandler) and Path(handler.baseFilename) == file), None)
+        next(
+            (
+                handler
+                for handler in logger_instance.handlers
+                if isinstance(handler, logging.FileHandler) and str(Path(handler.baseFilename).resolve()) == str(file.resolve())
+            ),
+            None,
+        )
         if logger_instance.hasHandlers()
         else None
     )
