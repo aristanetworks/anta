@@ -72,7 +72,7 @@ def setup_logging(level: LogLevel = Log.INFO, file: Path | None = None) -> None:
     # Add RichHandler for stdout if not already present
     _maybe_add_rich_handler(loglevel, root)
 
-    # Add FileHandler if file is provided and same File Handler is not already present
+    # Add FileHandler if file is provided and same FileHandler is not already present
     if file and not _get_file_handler(root, file):
         file_handler = logging.FileHandler(file)
         formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
