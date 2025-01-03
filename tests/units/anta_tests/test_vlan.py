@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from anta.tests.vlan import VerifyVlanInternalPolicy
+from anta.tests.vlan import VerifyDynamicVlanSource, VerifyVlanInternalPolicy
 from tests.units.anta_tests import test
 
 DATA: list[dict[str, Any]] = [
@@ -32,5 +32,61 @@ DATA: list[dict[str, Any]] = [
                 "Expected `4094` as the endVlanId, but found `1006` instead."
             ],
         },
+    },
+    {
+        "name": "success-any-source-match",
+        "test": VerifyDynamicVlanSource,
+        "eos_data": [{"dynamicVlans": {"evpn": {"vlanIds": [1199]}, "mlagsync": {"vlanIds": []}}}],
+        "inputs": {"source": ["evpn", "mlagsync"], "strict": False},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-all-source-match",
+        "test": VerifyDynamicVlanSource,
+        "eos_data": [{"dynamicVlans": {"evpn": {"vlanIds": [1199]}, "mlagsync": {"vlanIds": [1500]}}}],
+        "inputs": {"source": ["evpn", "mlagsync"], "strict": False},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-no-dynamic-vlans",
+        "test": VerifyDynamicVlanSource,
+        "eos_data": [{"dynamicVlans": {}}],
+        "inputs": {"source": ["evpn", "mlagsync"], "strict": False},
+        "expected": {"result": "skipped", "messages": ["Dynamic VLANs are not configured"]},
+    },
+    {
+        "name": "failure-dynamic-vlan-source-invalid",
+        "test": VerifyDynamicVlanSource,
+        "eos_data": [{"dynamicVlans": {"vccbfd": {"vlanIds": [1500]}, "mlagsync": {"vlanIds": [1501]}}}],
+        "inputs": {"source": ["evpn", "mlagsync"], "strict": False},
+        "expected": {"result": "failure", "messages": ["Dynamic VLAN(s) source mismatch - vccbfd, mlagsync are not in the expected sources: evpn, mlagsync."]},
+    },
+    {
+        "name": "failure-any-source-match-additional-source-found",
+        "test": VerifyDynamicVlanSource,
+        "eos_data": [{"dynamicVlans": {"evpn": {"vlanIds": [1199]}, "mlagsync": {"vlanIds": [1501]}, "vccbfd": {"vlanIds": [1500]}}}],
+        "inputs": {"source": ["evpn", "mlagsync"], "strict": False},
+        "expected": {"result": "failure", "messages": ["Dynamic VLAN(s) source mismatch - evpn, mlagsync, vccbfd are not in the expected sources: evpn, mlagsync."]},
+    },
+    {
+        "name": "success-all-source-exact-match",
+        "test": VerifyDynamicVlanSource,
+        "eos_data": [{"dynamicVlans": {"evpn": {"vlanIds": [1199]}, "mlagsync": {"vlanIds": [1502]}}}],
+        "inputs": {"source": ["evpn", "mlagsync"], "strict": True},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-all-source-exact-match-additional-source-found",
+        "test": VerifyDynamicVlanSource,
+        "eos_data": [{"dynamicVlans": {"evpn": {"vlanIds": [1199]}, "mlagsync": {"vlanIds": [1500]}, "vccbfd": {"vlanIds": [1500]}}}],
+        "inputs": {"source": ["evpn", "mlagsync"], "strict": True},
+        "expected": {"result": "failure", "messages": ["Dynamic VLAN(s) source mismatch - Expected: evpn, mlagsync Actual: evpn, mlagsync, vccbfd"]},
+    },
+    {
+        "name": "failure-all-source-exact-match-expected-source-not-found",
+        "test": VerifyDynamicVlanSource,
+        "eos_data": [{"dynamicVlans": {"evpn": {"vlanIds": [1199]}, "mlagsync": {"vlanIds": []}}}],
+        "inputs": {"source": ["evpn", "mlagsync"], "strict": True},
+        "expected": {"result": "failure", "messages": ["Dynamic VLAN(s) source mismatch - Expected: evpn, mlagsync Actual: evpn"]},
     },
 ]

@@ -9,7 +9,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar, Literal
 
-from anta.custom_types import Vlan
+from pydantic import ConfigDict
+
+from anta.custom_types import DynamicVLANSource, Vlan
 from anta.models import AntaCommand, AntaTest
 from anta.tools import get_failed_logs, get_value
 
@@ -68,3 +70,75 @@ class VerifyVlanInternalPolicy(AntaTest):
             self.result.is_failure(failed_log)
         else:
             self.result.is_success()
+
+
+class VerifyDynamicVlanSource(AntaTest):
+    """Verifies dynamic VLAN(s) source.
+
+    This test performs the following checks for specified dynamic VLAN(s):
+
+      1. Ensures that dynamic VLAN(s) are properly configured in the system.
+      2. Confirms that dynamic VLAN(s) are enabled for any/all the designated sources and disabled for all others.
+      3. When strict mode is enabled (`strict: true`):
+        - Dynamic VLAN(s) are enabled for all designated sources.
+    Expected Results
+    ----------------
+    * Success: The test will pass if all of the following conditions are met:
+        - The dynamic VLAN(s) are properly configured in the system.
+        - The dynamic VLAN(s) are enabled for any/all of the designated sources and disabled for all others.
+        - In strict mode, dynamic VLAN(s) are enabled for all designated sources.
+    * Failure: The test will fail if any of the following conditions is met:
+        - The dynamic VLAN(s) are disabled on all designated sources, or active on non designated sources.
+        - In strict mode, dynamic VLAN(s) are disabled on any of the designated sources.
+    * Skipped: The test will Skip if the following conditions is met:
+        - Dynamic VLAN(s) are not configured on the device.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.vlan:
+      - VerifyDynamicVlanSource:
+          source:
+            - evpn
+            - mlagsync
+          strict: False
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["vlan"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show vlan dynamic")]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyDynamicVlanSource test."""
+
+        model_config = ConfigDict(extra="forbid")
+        source: list[DynamicVLANSource]
+        """The dynamic VLAN(s) source list."""
+        strict: bool = False
+        """If True, requires exact match of the provided dynamic VLAN(s) sources, Defaults to `False`"""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyDynamicVlanSource."""
+        self.result.is_success()
+        command_output = self.instance_commands[0].json_output
+        dynamic_vlans = command_output.get("dynamicVlans", {})
+
+        actual_source = [source for source, data in dynamic_vlans.items() if data.get("vlanIds")]
+        # If the dynamic vlans are not configured, skipping the test.
+        if not actual_source:
+            self.result.is_skipped("Dynamic VLANs are not configured")
+            return
+
+        expected_source = self.inputs.source
+        str_expected_source = ", ".join(expected_source)
+        str_actual_source = ", ".join(actual_source)
+
+        # If strict flag is True and dynamic VLAN(s) are disabled on any of the designated sources, test fails.
+        if self.inputs.strict and sorted(actual_source) != (expected_source):
+            self.result.is_failure(f"Dynamic VLAN(s) source mismatch - Expected: {str_expected_source} Actual: {str_actual_source}")
+            return
+
+        # The dynamic VLAN(s) are disabled on all designated sources, or active on non designated sources, test fails.
+        if not set(actual_source).issubset(expected_source):
+            self.result.is_failure(f"Dynamic VLAN(s) source mismatch - {str_actual_source} are not in the expected sources: {str_expected_source}.")

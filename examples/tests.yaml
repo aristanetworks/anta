@@ -836,6 +836,12 @@ anta.tests.system:
       # Verifies the device uptime.
       minimum: 86400
 anta.tests.vlan:
+  - VerifyDynamicVlanSource:
+      # Verifies dynamic VLAN(s) source.
+      source:
+        - evpn
+        - mlagsync
+      strict: False
   - VerifyVlanInternalPolicy:
       # Verifies the VLAN internal allocation policy and the range of VLANs.
       policy: ascending
