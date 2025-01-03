@@ -74,6 +74,7 @@ repos:
           - pytest
           - pytest-codspeed
           - respx
+          - pydantic-settings
 
   - repo: https://github.com/codespell-project/codespell
     rev: v2.3.0
@@ -122,5 +123,6 @@ repos:
         pass_filenames: false
         additional_dependencies:
           - anta[cli]
+          - pydantic-settings
           # TODO: next can go once we have it added to anta properly
           - numpydoc
