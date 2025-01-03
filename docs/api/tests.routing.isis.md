@@ -7,6 +7,8 @@ anta_title: ANTA catalog for IS-IS tests
   ~ that can be found in the LICENSE file.
   -->
 
+# Tests
+
 ::: anta.tests.routing.isis
 
     options:
@@ -20,3 +22,18 @@ anta_title: ANTA catalog for IS-IS tests
         - "!test"
         - "!render"
         - "!^_[^_]"
+
+# Input models
+
+::: anta.input_models.routing.isis
+
+    options:
+      show_root_heading: false
+      show_root_toc_entry: false
+      show_bases: false
+      anta_hide_test_module_description: true
+      merge_init_into_class: false
+      show_labels: true
+      filters:
+        - "!^__init__"
+        - "!^__str__"
