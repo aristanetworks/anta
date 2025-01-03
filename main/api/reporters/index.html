@@ -3174,7 +3174,7 @@ Data structure sent to template is:</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">Headers</span><span class="o">.</span><span class="n">list_of_error_tests</span><span class="p">,</span>
     <span class="p">]</span>
     <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_headers</span><span class="p">(</span><span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">table</span><span class="o">=</span><span class="n">table</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">device</span><span class="p">,</span> <span class="n">stats</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">manager</span><span class="o">.</span><span class="n">device_stats</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+    <span class="k">for</span> <span class="n">device</span><span class="p">,</span> <span class="n">stats</span> <span class="ow">in</span> <span class="n">manager</span><span class="o">.</span><span class="n">device_stats</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">devices</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">device</span> <span class="ow">in</span> <span class="n">devices</span><span class="p">:</span>
             <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
                 <span class="n">device</span><span class="p">,</span>
@@ -3380,7 +3380,7 @@ Test Name | # of success | # of skipped | # of failure | # of errors | List of f
         <span class="bp">self</span><span class="o">.</span><span class="n">Headers</span><span class="o">.</span><span class="n">list_of_error_nodes</span><span class="p">,</span>
     <span class="p">]</span>
     <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_headers</span><span class="p">(</span><span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">table</span><span class="o">=</span><span class="n">table</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">test</span><span class="p">,</span> <span class="n">stats</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">manager</span><span class="o">.</span><span class="n">test_stats</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+    <span class="k">for</span> <span class="n">test</span><span class="p">,</span> <span class="n">stats</span> <span class="ow">in</span> <span class="n">manager</span><span class="o">.</span><span class="n">test_stats</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">tests</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">tests</span><span class="p">:</span>
             <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
                 <span class="n">test</span><span class="p">,</span>
