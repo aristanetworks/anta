@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import csv
 import logging
+import os
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
@@ -111,6 +112,7 @@ class ReportCsv:
                 csvwriter = csv.writer(
                     csvfile,
                     delimiter=",",
+                    lineterminator=os.linesep,
                 )
                 csvwriter.writerow(headers)
                 for entry in results.results:
