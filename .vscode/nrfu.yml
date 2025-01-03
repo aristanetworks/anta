@@ -1,0 +1,43 @@
+---
+anta.tests.configuration:
+  - VerifyZeroTouch: # Verifies ZeroTouch is disabled.
+  - VerifyRunningConfigDiffs:
+
+anta.tests.software:
+  - VerifyEOSVersion:
+      versions:
+        - '4.28.3M-28837868.4283M (engineering build)'
+
+anta.tests.routing.bgp:
+  - VerifyBGPPeersHealth:
+      address_families:
+        - afi: "evpn"
+        - afi: "ipv4"
+          safi: "unicast"
+          vrf: "default"
+
+anta.tests.interfaces:
+  - VerifyInterfaceUtilization:
+  - VerifyLoopbackCount:
+      number: 2
+      filters:
+        tags: ['leaf']
+  - VerifyLoopbackCount:
+      number: 1
+      filters:
+        tags: ['spine']
+
+anta.tests.system:
+  - VerifyReloadCause:
+  - VerifyNTP:
+
+anta.tests.mlag:
+  - VerifyMlagStatus:
+      filters:
+        tags: ['leaf']
+  - VerifyMlagInterfaces:
+      filters:
+        tags: ['leaf']
+  - VerifyMlagConfigSanity:
+      filters:
+        tags: ['leaf']

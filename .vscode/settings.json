@@ -1,14 +1,13 @@
 {
-  "ruff.enable": true,
-  "ruff.configuration": "pyproject.toml",
-  "python.testing.pytestEnabled": true,
-  "python.testing.pytestArgs": [
-    "tests"
-  ],
-  "githubIssues.issueBranchTitle": "issues/${issueNumber}-${issueTitle}",
-  "pylint.importStrategy": "fromEnvironment",
-  "pylint.args": [
-    "--rcfile=pyproject.toml"
-  ],
-
+    "ruff.enable": true,
+    "ruff.configuration": "pyproject.toml",
+    "python.testing.pytestEnabled": true,
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
+    "githubIssues.issueBranchTitle": "issues/${issueNumber}-${issueTitle}",
+    "pylint.importStrategy": "fromEnvironment",
+    "pylint.args": [
+        "--rcfile=pyproject.toml"
+    ],
 }
