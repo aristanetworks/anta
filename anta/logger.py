@@ -9,14 +9,12 @@ import logging
 import traceback
 from datetime import timedelta
 from enum import Enum
-from typing import TYPE_CHECKING, Literal
+from pathlib import Path
+from typing import Literal
 
 from rich.logging import RichHandler
 
 from anta import __DEBUG__
-
-if TYPE_CHECKING:
-    from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -72,7 +70,7 @@ def setup_logging(level: LogLevel = Log.INFO, file: Path | None = None) -> None:
     # Add RichHandler for stdout if not already present
     _maybe_add_rich_handler(loglevel, root)
 
-    # Add FileHandler if file is provided and same FileHandler is not already present
+    # Add FileHandler if file is provided and same File Handler is not already present
     if file and not _get_file_handler(root, file):
         file_handler = logging.FileHandler(file)
         formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
@@ -88,9 +86,12 @@ def setup_logging(level: LogLevel = Log.INFO, file: Path | None = None) -> None:
 
 def _get_file_handler(logger_instance: logging.Logger, file: Path) -> logging.FileHandler | None:
     """Return the FileHandler if present."""
+    # ruff: noqa: T201
     for handler in logger_instance.handlers:
         if isinstance(handler, logging.FileHandler):
-            print(handler.baseFilename)  # noqa: T201
+            print(handler.baseFilename)
+            print(Path(handler.baseFilename))
+        print(file)
 
     return (
         next((handler for handler in logger_instance.handlers if isinstance(handler, logging.FileHandler) and handler.baseFilename == str(file)), None)
