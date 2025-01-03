@@ -73,27 +73,23 @@ class VerifyVlanInternalPolicy(AntaTest):
 
 
 class VerifyDynamicVlanSource(AntaTest):
-    """Verifies dynamic VLAN source.
+    """Verifies dynamic VLAN(s) source.
 
-    This test performs the following checks for each specified dynamic VLAN:
+    This test performs the following checks for specified dynamic VLAN(s):
 
       1. Ensures that dynamic VLAN(s) are properly configured in the system.
-      2. Confirms that dynamic VLAN(s) are active for any of the designated sources.
+      2. Confirms that dynamic VLAN(s) are enabled for any/all the designated sources and disabled for all others.
       3. When strict mode is enabled (`strict: true`):
-        - Dynamic VLAN(s) are activated for all the designated sources.
-      4. Confirms that the dynamic VLAN(s) are disabled for other than designated sources.
-
+        - Dynamic VLAN(s) are enabled for all designated sources.
     Expected Results
     ----------------
     * Success: The test will pass if all of the following conditions are met:
-        - Dynamic VLAN(s) are properly configured in the system.
-        - Dynamic VLAN(s) are active for any of the designated sources.
-        - In strict mode, Dynamic Vlans(s) are active for all the designated sources.
-        - Dynamic VLAN(s) are disabled for other than designated sources.
+        - The dynamic VLAN(s) are properly configured in the system.
+        - The dynamic VLAN(s) are enabled for any/all of the designated sources and disabled for all others.
+        - In strict mode, dynamic VLAN(s) are enabled for all designated sources.
     * Failure: The test will fail if any of the following conditions is met:
-        - Dynamic VLAN(s) are not active within the designated source
-        - Dynamic VLAN(s) are active for other than designated sources.
-        - In strict mode, dynamic VLAN(s) are disabled for any of the designated sources.
+        - The dynamic VLAN(s) are disabled on all designated sources, or active on non designated sources.
+        - In strict mode, dynamic VLAN(s) are disabled on any of the designated sources.
     * Skipped: The test will Skip if the following conditions is met:
         - Dynamic VLAN(s) are not configured on the device.
 
@@ -110,16 +106,16 @@ class VerifyDynamicVlanSource(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["vlan"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show vlan dynamic", revision=1)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show vlan dynamic")]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyDynamicVlanSource test."""
 
         model_config = ConfigDict(extra="forbid")
         source: list[DynamicVLANSource]
-        """The dynamic VLAN source list."""
+        """The dynamic VLAN(s) source list."""
         strict: bool = False
-        """If True, requires exact match of the provided dynamic VLAN sources, Defaults to `False`"""
+        """If True, requires exact match of the provided dynamic VLAN(s) sources, Defaults to `False`"""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -138,11 +134,11 @@ class VerifyDynamicVlanSource(AntaTest):
         str_expected_source = ", ".join(expected_source)
         str_actual_source = ", ".join(actual_source)
 
-        # If strict flag is True and not all designated source have dynamic VLAN(s), test fails.
+        # If strict flag is True and dynamic VLAN(s) are disabled on any of the designated sources, test fails.
         if self.inputs.strict and sorted(actual_source) != (expected_source):
-            self.result.is_failure(f"Dynamic VLAN(s) all source are not in {str_expected_source} Actual: {str_actual_source}")
+            self.result.is_failure(f"Dynamic VLAN(s) source mismatch - Expected: {str_expected_source} Actual: {str_actual_source}")
             return
 
-        # If dynamic VLANs are not active for None of the designated source or additional sources with dynamic VLAN(s) are found. test fails
+        # The dynamic VLAN(s) are disabled on all designated sources, or active on non designated sources, test fails.
         if not set(actual_source).issubset(expected_source):
-            self.result.is_failure(f"Dynamic VLAN(s) source are not in {str_expected_source} Actual: {str_actual_source}")
+            self.result.is_failure(f"Dynamic VLAN(s) source mismatch - {str_actual_source} are not in the expected sources: {str_expected_source}.")

@@ -59,14 +59,14 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyDynamicVlanSource,
         "eos_data": [{"dynamicVlans": {"vccbfd": {"vlanIds": [1500]}, "mlagsync": {"vlanIds": [1501]}}}],
         "inputs": {"source": ["evpn", "mlagsync"], "strict": False},
-        "expected": {"result": "failure", "messages": ["Dynamic VLAN(s) source are not in evpn, mlagsync Actual: vccbfd, mlagsync"]},
+        "expected": {"result": "failure", "messages": ["Dynamic VLAN(s) source mismatch - vccbfd, mlagsync are not in the expected sources: evpn, mlagsync."]},
     },
     {
         "name": "failure-any-source-match-additional-source-found",
         "test": VerifyDynamicVlanSource,
         "eos_data": [{"dynamicVlans": {"evpn": {"vlanIds": [1199]}, "mlagsync": {"vlanIds": [1501]}, "vccbfd": {"vlanIds": [1500]}}}],
         "inputs": {"source": ["evpn", "mlagsync"], "strict": False},
-        "expected": {"result": "failure", "messages": ["Dynamic VLAN(s) source are not in evpn, mlagsync Actual: evpn, mlagsync, vccbfd"]},
+        "expected": {"result": "failure", "messages": ["Dynamic VLAN(s) source mismatch - evpn, mlagsync, vccbfd are not in the expected sources: evpn, mlagsync."]},
     },
     {
         "name": "success-all-source-exact-match",
@@ -80,13 +80,13 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyDynamicVlanSource,
         "eos_data": [{"dynamicVlans": {"evpn": {"vlanIds": [1199]}, "mlagsync": {"vlanIds": [1500]}, "vccbfd": {"vlanIds": [1500]}}}],
         "inputs": {"source": ["evpn", "mlagsync"], "strict": True},
-        "expected": {"result": "failure", "messages": ["Dynamic VLAN(s) all source are not in evpn, mlagsync Actual: evpn, mlagsync, vccbfd"]},
+        "expected": {"result": "failure", "messages": ["Dynamic VLAN(s) source mismatch - Expected: evpn, mlagsync Actual: evpn, mlagsync, vccbfd"]},
     },
     {
         "name": "failure-all-source-exact-match-expected-source-not-found",
         "test": VerifyDynamicVlanSource,
         "eos_data": [{"dynamicVlans": {"evpn": {"vlanIds": [1199]}, "mlagsync": {"vlanIds": []}}}],
         "inputs": {"source": ["evpn", "mlagsync"], "strict": True},
-        "expected": {"result": "failure", "messages": ["Dynamic VLAN(s) all source are not in evpn, mlagsync Actual: evpn"]},
+        "expected": {"result": "failure", "messages": ["Dynamic VLAN(s) source mismatch - Expected: evpn, mlagsync Actual: evpn"]},
     },
 ]
