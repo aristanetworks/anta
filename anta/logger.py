@@ -102,7 +102,7 @@ def _get_rich_handler(logger_instance: logging.Logger) -> logging.Handler | None
 
 def _maybe_add_rich_handler(loglevel: int, logger_instance: logging.Logger) -> None:
     """Add RichHandler for stdout if not already present."""
-    if _get_rich_handler is not None:
+    if _get_rich_handler(logger_instance) is not None:
         # Nothing to do.
         return
 
