@@ -5,12 +5,15 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING
 
 from anta.tests.connectivity import VerifyLLDPNeighbors, VerifyReachability
 from tests.units.anta_tests import test
 
-DATA: list[dict[str, Any]] = [
+if TYPE_CHECKING:
+    from tests.units.anta_tests import AntaUnitTest
+
+DATA: list[AntaUnitTest] = [
     {
         "name": "success-ip",
         "test": VerifyReachability,
@@ -43,7 +46,28 @@ DATA: list[dict[str, Any]] = [
                 ],
             },
         ],
-        "expected": {"result": "success"},
+        "expected": {
+            "result": "success",
+            "atomic_results": [
+                {
+                    "result": "success",
+                    "description": "Destination 10.0.0.1 from 10.0.0.5 in VRF default",
+                    "inputs": {"destination": "10.0.0.1", "source": "10.0.0.5", "vrf": "default", "repeat": 2, "size": 100, "df_bit": False},
+                },
+                {
+                    "description": "Destination 10.0.0.2 from 10.0.0.5 in VRF default",
+                    "inputs": {
+                        "destination": "10.0.0.2",
+                        "df_bit": False,
+                        "repeat": 2,
+                        "size": 100,
+                        "source": "10.0.0.5",
+                        "vrf": "default",
+                    },
+                    "result": "success",
+                },
+            ],
+        },
     },
     {
         "name": "success-interface",
@@ -77,7 +101,96 @@ DATA: list[dict[str, Any]] = [
                 ],
             },
         ],
-        "expected": {"result": "success"},
+        "expected": {
+            "result": "success",
+            "atomic_results": [
+                {
+                    "result": "success",
+                    "description": "Destination 10.0.0.1 from Management0 in VRF default",
+                    "inputs": {"destination": "10.0.0.1", "source": "Management0", "vrf": "default", "repeat": 2, "size": 100, "df_bit": False},
+                },
+                {
+                    "description": "Destination 10.0.0.2 from Management0 in VRF default",
+                    "inputs": {
+                        "destination": "10.0.0.2",
+                        "df_bit": False,
+                        "repeat": 2,
+                        "size": 100,
+                        "source": "Management0",
+                        "vrf": "default",
+                    },
+                    "result": "success",
+                },
+            ],
+        },
+    },
+    {
+        "name": "success-description",
+        "test": VerifyReachability,
+        "inputs": {
+            "hosts": [
+                {"description": "spine1 Ethernet49/1", "destination": "10.0.0.1", "source": "Management0"},
+                {"destination": "10.0.0.2", "source": "Management0"},
+            ]
+        },
+        "eos_data": [
+            {
+                "messages": [
+                    """PING 10.0.0.1 (10.0.0.1) from 10.0.0.5 : 72(100) bytes of data.
+                80 bytes from 10.0.0.1: icmp_seq=1 ttl=64 time=0.247 ms
+                80 bytes from 10.0.0.1: icmp_seq=2 ttl=64 time=0.072 ms
+
+                --- 10.0.0.1 ping statistics ---
+                2 packets transmitted, 2 received, 0% packet loss, time 0ms
+                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms, ipg/ewma 0.370/0.225 ms
+
+                """,
+                ],
+            },
+            {
+                "messages": [
+                    """PING 10.0.0.2 (10.0.0.2) from 10.0.0.5 : 72(100) bytes of data.
+                80 bytes from 10.0.0.2: icmp_seq=1 ttl=64 time=0.247 ms
+                80 bytes from 10.0.0.2: icmp_seq=2 ttl=64 time=0.072 ms
+
+                --- 10.0.0.2 ping statistics ---
+                2 packets transmitted, 2 received, 0% packet loss, time 0ms
+                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms, ipg/ewma 0.370/0.225 ms
+
+                """,
+                ],
+            },
+        ],
+        "expected": {
+            "result": "success",
+            "atomic_results": [
+                {
+                    "result": "success",
+                    "description": "Destination 10.0.0.1 (spine1 Ethernet49/1) from Management0 in VRF default",
+                    "inputs": {
+                        "description": "spine1 Ethernet49/1",
+                        "destination": "10.0.0.1",
+                        "source": "Management0",
+                        "vrf": "default",
+                        "repeat": 2,
+                        "size": 100,
+                        "df_bit": False,
+                    },
+                },
+                {
+                    "description": "Destination 10.0.0.2 from Management0 in VRF default",
+                    "inputs": {
+                        "destination": "10.0.0.2",
+                        "df_bit": False,
+                        "repeat": 2,
+                        "size": 100,
+                        "source": "Management0",
+                        "vrf": "default",
+                    },
+                    "result": "success",
+                },
+            ],
+        },
     },
     {
         "name": "success-repeat",
@@ -97,7 +210,23 @@ DATA: list[dict[str, Any]] = [
                 ],
             },
         ],
-        "expected": {"result": "success"},
+        "expected": {
+            "result": "success",
+            "atomic_results": [
+                {
+                    "description": "Destination 10.0.0.1 from Management0 in VRF default",
+                    "inputs": {
+                        "destination": "10.0.0.1",
+                        "df_bit": False,
+                        "repeat": 1,
+                        "size": 100,
+                        "source": "Management0",
+                        "vrf": "default",
+                    },
+                    "result": "success",
+                },
+            ],
+        },
     },
     {
         "name": "success-df-bit-size",
@@ -119,7 +248,23 @@ DATA: list[dict[str, Any]] = [
                 ],
             },
         ],
-        "expected": {"result": "success"},
+        "expected": {
+            "result": "success",
+            "atomic_results": [
+                {
+                    "description": "Destination 10.0.0.1 from Management0 in VRF default",
+                    "inputs": {
+                        "destination": "10.0.0.1",
+                        "df_bit": True,
+                        "repeat": 5,
+                        "size": 1500,
+                        "source": "Management0",
+                        "vrf": "default",
+                    },
+                    "result": "success",
+                },
+            ],
+        },
     },
     {
         "name": "failure-ip",
@@ -153,7 +298,37 @@ DATA: list[dict[str, Any]] = [
                 ],
             },
         ],
-        "expected": {"result": "failure", "messages": ["Host 10.0.0.11 (src: 10.0.0.5, vrf: default, size: 100B, repeat: 2) - Unreachable"]},
+        "expected": {
+            "result": "failure",
+            "messages": ["Unreachable Destination 10.0.0.11 from 10.0.0.5 in VRF default"],
+            "atomic_results": [
+                {
+                    "result": "failure",
+                    "description": "Destination 10.0.0.11 from 10.0.0.5 in VRF default",
+                    "inputs": {
+                        "destination": "10.0.0.11",
+                        "df_bit": False,
+                        "repeat": 2,
+                        "size": 100,
+                        "source": "10.0.0.5",
+                        "vrf": "default",
+                    },
+                    "messages": ["Unreachable Destination 10.0.0.11 from 10.0.0.5 in VRF default"],
+                },
+                {
+                    "description": "Destination 10.0.0.2 from 10.0.0.5 in VRF default",
+                    "inputs": {
+                        "destination": "10.0.0.2",
+                        "df_bit": False,
+                        "repeat": 2,
+                        "size": 100,
+                        "source": "10.0.0.5",
+                        "vrf": "default",
+                    },
+                    "result": "success",
+                },
+            ],
+        },
     },
     {
         "name": "failure-interface",
@@ -187,7 +362,37 @@ DATA: list[dict[str, Any]] = [
                 ],
             },
         ],
-        "expected": {"result": "failure", "messages": ["Host 10.0.0.11 (src: Management0, vrf: default, size: 100B, repeat: 2) - Unreachable"]},
+        "expected": {
+            "result": "failure",
+            "messages": ["Unreachable Destination 10.0.0.11 from Management0 in VRF default"],
+            "atomic_results": [
+                {
+                    "description": "Destination 10.0.0.11 from Management0 in VRF default",
+                    "inputs": {
+                        "destination": "10.0.0.11",
+                        "df_bit": False,
+                        "repeat": 2,
+                        "size": 100,
+                        "source": "Management0",
+                        "vrf": "default",
+                    },
+                    "messages": ["Unreachable Destination 10.0.0.11 from Management0 in VRF default"],
+                    "result": "failure",
+                },
+                {
+                    "description": "Destination 10.0.0.2 from Management0 in VRF default",
+                    "inputs": {
+                        "destination": "10.0.0.2",
+                        "df_bit": False,
+                        "repeat": 2,
+                        "size": 100,
+                        "source": "Management0",
+                        "vrf": "default",
+                    },
+                    "result": "success",
+                },
+            ],
+        },
     },
     {
         "name": "failure-size",
@@ -209,7 +414,25 @@ DATA: list[dict[str, Any]] = [
                 ],
             },
         ],
-        "expected": {"result": "failure", "messages": ["Host 10.0.0.1 (src: Management0, vrf: default, size: 1501B, repeat: 5, df-bit: enabled) - Unreachable"]},
+        "expected": {
+            "result": "failure",
+            "messages": ["Unreachable Destination 10.0.0.1 from Management0 in VRF default"],
+            "atomic_results": [
+                {
+                    "description": "Destination 10.0.0.1 from Management0 in VRF default",
+                    "inputs": {
+                        "destination": "10.0.0.1",
+                        "df_bit": True,
+                        "repeat": 5,
+                        "size": 1501,
+                        "source": "Management0",
+                        "vrf": "default",
+                    },
+                    "messages": ["Unreachable Destination 10.0.0.1 from Management0 in VRF default"],
+                    "result": "failure",
+                },
+            ],
+        },
     },
     {
         "name": "success",

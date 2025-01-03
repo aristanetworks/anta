@@ -5,17 +5,19 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING
 
 from anta.tests.mlag import VerifyMlagConfigSanity, VerifyMlagDualPrimary, VerifyMlagInterfaces, VerifyMlagPrimaryPriority, VerifyMlagReloadDelay, VerifyMlagStatus
 from tests.units.anta_tests import test
 
-DATA: list[dict[str, Any]] = [
+if TYPE_CHECKING:
+    from tests.units.anta_tests import AntaUnitTest
+
+DATA: list[AntaUnitTest] = [
     {
         "name": "success",
         "test": VerifyMlagStatus,
         "eos_data": [{"state": "active", "negStatus": "connected", "peerLinkStatus": "up", "localIntfStatus": "up"}],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -26,14 +28,12 @@ DATA: list[dict[str, Any]] = [
                 "state": "disabled",
             },
         ],
-        "inputs": None,
         "expected": {"result": "skipped", "messages": ["MLAG is disabled"]},
     },
     {
         "name": "failure",
         "test": VerifyMlagStatus,
         "eos_data": [{"state": "active", "negStatus": "connected", "peerLinkStatus": "down", "localIntfStatus": "up"}],
-        "inputs": None,
         "expected": {
             "result": "failure",
             "messages": ["MLAG status is not OK: {'state': 'active', 'negStatus': 'connected', 'localIntfStatus': 'up', 'peerLinkStatus': 'down'}"],
@@ -48,7 +48,6 @@ DATA: list[dict[str, Any]] = [
                 "mlagPorts": {"Disabled": 0, "Configured": 0, "Inactive": 0, "Active-partial": 0, "Active-full": 1},
             },
         ],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -59,7 +58,6 @@ DATA: list[dict[str, Any]] = [
                 "state": "disabled",
             },
         ],
-        "inputs": None,
         "expected": {"result": "skipped", "messages": ["MLAG is disabled"]},
     },
     {
@@ -71,7 +69,6 @@ DATA: list[dict[str, Any]] = [
                 "mlagPorts": {"Disabled": 0, "Configured": 0, "Inactive": 0, "Active-partial": 1, "Active-full": 1},
             },
         ],
-        "inputs": None,
         "expected": {
             "result": "failure",
             "messages": ["MLAG status is not OK: {'Disabled': 0, 'Configured': 0, 'Inactive': 0, 'Active-partial': 1, 'Active-full': 1}"],
@@ -86,7 +83,6 @@ DATA: list[dict[str, Any]] = [
                 "mlagPorts": {"Disabled": 0, "Configured": 0, "Inactive": 1, "Active-partial": 1, "Active-full": 1},
             },
         ],
-        "inputs": None,
         "expected": {
             "result": "failure",
             "messages": ["MLAG status is not OK: {'Disabled': 0, 'Configured': 0, 'Inactive': 1, 'Active-partial': 1, 'Active-full': 1}"],
@@ -96,7 +92,6 @@ DATA: list[dict[str, Any]] = [
         "name": "success",
         "test": VerifyMlagConfigSanity,
         "eos_data": [{"globalConfiguration": {}, "interfaceConfiguration": {}, "mlagActive": True, "mlagConnected": True}],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -107,7 +102,6 @@ DATA: list[dict[str, Any]] = [
                 "mlagActive": False,
             },
         ],
-        "inputs": None,
         "expected": {"result": "skipped", "messages": ["MLAG is disabled"]},
     },
     {
@@ -121,7 +115,6 @@ DATA: list[dict[str, Any]] = [
                 "mlagConnected": True,
             },
         ],
-        "inputs": None,
         "expected": {
             "result": "failure",
             "messages": [
@@ -143,7 +136,6 @@ DATA: list[dict[str, Any]] = [
                 "mlagConnected": True,
             },
         ],
-        "inputs": None,
         "expected": {
             "result": "failure",
             "messages": [

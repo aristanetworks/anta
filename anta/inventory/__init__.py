@@ -60,7 +60,7 @@ class AntaInventory(dict[str, AntaDevice]):
     def _parse_hosts(
         inventory_input: AntaInventoryInput,
         inventory: AntaInventory,
-        **kwargs: dict[str, Any],
+        **kwargs: Any,  # noqa: ANN401
     ) -> None:
         """Parse the host section of an AntaInventoryInput and add the devices to the inventory.
 
@@ -92,7 +92,7 @@ class AntaInventory(dict[str, AntaDevice]):
     def _parse_networks(
         inventory_input: AntaInventoryInput,
         inventory: AntaInventory,
-        **kwargs: dict[str, Any],
+        **kwargs: Any,  # noqa: ANN401
     ) -> None:
         """Parse the network section of an AntaInventoryInput and add the devices to the inventory.
 
@@ -129,7 +129,7 @@ class AntaInventory(dict[str, AntaDevice]):
     def _parse_ranges(
         inventory_input: AntaInventoryInput,
         inventory: AntaInventory,
-        **kwargs: dict[str, Any],
+        **kwargs: Any,  # noqa: ANN401
     ) -> None:
         """Parse the range section of an AntaInventoryInput and add the devices to the inventory.
 

@@ -90,7 +90,7 @@ class AntaMockEnvironment:  # pylint: disable=too-few-public-methods
             for test_data in module.DATA:
                 test = test_data["test"]
                 result_overwrite = AntaTest.Input.ResultOverwrite(custom_field=test_data["name"])
-                if test_data["inputs"] is None:
+                if "inputs" not in test_data or test_data["inputs"] is None:
                     inputs = test.Input(result_overwrite=result_overwrite)
                 else:
                     inputs = test.Input(**test_data["inputs"], result_overwrite=result_overwrite)

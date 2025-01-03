@@ -27,10 +27,19 @@ logger = logging.getLogger(__name__)
     help="Group result by test or device.",
     required=False,
 )
-def table(ctx: click.Context, group_by: Literal["device", "test"] | None) -> None:
+@click.option(
+    "--expand-atomic",
+    "-x",
+    default=False,
+    show_envvar=True,
+    is_flag=True,
+    show_default=True,
+    help="Flag to indicate if atomic results should be rendered",
+)
+def table(ctx: click.Context, group_by: Literal["device", "test"] | None, expand_atomic: bool) -> None:
     """ANTA command to check network state with table results."""
     run_tests(ctx)
-    print_table(ctx, group_by=group_by)
+    print_table(ctx, expand_atomic, group_by)
     exit_with_code(ctx)
 
 
@@ -53,10 +62,19 @@ def json(ctx: click.Context, output: pathlib.Path | None) -> None:
 
 @click.command()
 @click.pass_context
-def text(ctx: click.Context) -> None:
+@click.option(
+    "--expand-atomic",
+    "-x",
+    default=False,
+    show_envvar=True,
+    is_flag=True,
+    show_default=True,
+    help="Flag to indicate if atomic results should be rendered",
+)
+def text(ctx: click.Context, expand_atomic: bool) -> None:
     """ANTA command to check network state with text results."""
     run_tests(ctx)
-    print_text(ctx)
+    print_text(ctx, expand_atomic)
     exit_with_code(ctx)
 
 

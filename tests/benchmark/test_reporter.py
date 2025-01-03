@@ -24,7 +24,7 @@ DATA_DIR: Path = Path(__file__).parents[1].resolve() / "data"
 def test_table_all(results: ResultManager) -> None:
     """Benchmark ReportTable.report_all()."""
     reporter = ReportTable()
-    reporter.report_all(results)
+    reporter.report(results)
 
 
 @pytest.mark.benchmark

@@ -5,12 +5,15 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING
 
 from anta.tests.field_notices import VerifyFieldNotice44Resolution, VerifyFieldNotice72Resolution
 from tests.units.anta_tests import test
 
-DATA: list[dict[str, Any]] = [
+if TYPE_CHECKING:
+    from tests.units.anta_tests import AntaUnitTest
+
+DATA: list[AntaUnitTest] = [
     {
         "name": "success",
         "test": VerifyFieldNotice44Resolution,
@@ -25,7 +28,6 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -42,7 +44,6 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": None,
         "expected": {
             "result": "failure",
             "messages": ["device is running incorrect version of aboot (4.0.1)"],
@@ -62,7 +63,6 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": None,
         "expected": {
             "result": "failure",
             "messages": ["device is running incorrect version of aboot (4.1.0)"],
@@ -82,7 +82,6 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": None,
         "expected": {
             "result": "failure",
             "messages": ["device is running incorrect version of aboot (6.0.1)"],
@@ -102,7 +101,6 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": None,
         "expected": {
             "result": "failure",
             "messages": ["device is running incorrect version of aboot (6.1.1)"],
@@ -122,7 +120,6 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": None,
         "expected": {
             "result": "skipped",
             "messages": ["device is not impacted by FN044"],
@@ -142,7 +139,6 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": None,
         "expected": {
             "result": "failure",
             "messages": ["Aboot component not found"],
@@ -161,7 +157,6 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": None,
         "expected": {"result": "success", "messages": ["FN72 is mitigated"]},
     },
     {
@@ -177,7 +172,6 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": None,
         "expected": {"result": "success", "messages": ["FN72 is mitigated"]},
     },
     {
@@ -193,7 +187,6 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": None,
         "expected": {"result": "success", "messages": ["FN72 is mitigated"]},
     },
     {
@@ -209,7 +202,6 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": None,
         "expected": {"result": "success", "messages": ["FN72 is mitigated"]},
     },
     {
@@ -225,7 +217,6 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": None,
         "expected": {"result": "skipped", "messages": ["Device not exposed"]},
     },
     {
@@ -241,7 +232,6 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": None,
         "expected": {
             "result": "skipped",
             "messages": ["Platform is not impacted by FN072"],
@@ -260,7 +250,6 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": None,
         "expected": {"result": "skipped", "messages": ["Device not exposed"]},
     },
     {
@@ -276,7 +265,6 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": None,
         "expected": {"result": "skipped", "messages": ["Device not exposed"]},
     },
     {
@@ -292,7 +280,6 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": None,
         "expected": {"result": "skipped", "messages": ["Device not exposed"]},
     },
     {
@@ -308,7 +295,6 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": None,
         "expected": {"result": "skipped", "messages": ["Device not exposed"]},
     },
     {
@@ -324,7 +310,6 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["Device is exposed to FN72"]},
     },
     {
@@ -340,7 +325,6 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["Device is exposed to FN72"]},
     },
     {
@@ -356,7 +340,6 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": None,
         "expected": {
             "result": "failure",
             "messages": ["Error in running test - Component FixedSystemvrm1 not found in 'show version'"],

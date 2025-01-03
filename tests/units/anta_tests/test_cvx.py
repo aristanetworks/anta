@@ -5,17 +5,19 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING
 
 from anta.tests.cvx import VerifyActiveCVXConnections, VerifyCVXClusterStatus, VerifyManagementCVX, VerifyMcsClientMounts, VerifyMcsServerMounts
 from tests.units.anta_tests import test
 
-DATA: list[dict[str, Any]] = [
+if TYPE_CHECKING:
+    from tests.units.anta_tests import AntaUnitTest
+
+DATA: list[AntaUnitTest] = [
     {
         "name": "success",
         "test": VerifyMcsClientMounts,
         "eos_data": [{"mountStates": [{"path": "mcs/v1/toSwitch/28-99-3a-8f-93-7b", "type": "Mcs::DeviceConfigV1", "state": "mountStateMountComplete"}]}],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -29,7 +31,6 @@ DATA: list[dict[str, Any]] = [
                 ]
             },
         ],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -43,7 +44,6 @@ DATA: list[dict[str, Any]] = [
                 ]
             },
         ],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -52,14 +52,12 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [
             {"mountStates": []},
         ],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["MCS Client mount states are not present"]},
     },
     {
         "name": "failure-mountStatePreservedUnmounted",
         "test": VerifyMcsClientMounts,
         "eos_data": [{"mountStates": [{"path": "mcs/v1/toSwitch/28-99-3a-8f-93-7b", "type": "Mcs::DeviceConfigV1", "state": "mountStatePreservedUnmounted"}]}],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["MCS Client mount states are not valid: mountStatePreservedUnmounted"]},
     },
     {
@@ -73,7 +71,6 @@ DATA: list[dict[str, Any]] = [
                 ]
             },
         ],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["MCS Client mount states are not valid: mountStatePreservedUnmounted"]},
     },
     {
@@ -87,7 +84,6 @@ DATA: list[dict[str, Any]] = [
                 ]
             },
         ],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["MCS Client mount states are not valid: mountStatePreservedUnmounted"]},
     },
     {
@@ -96,7 +92,6 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [
             {"mountStates": [{"path": "blah/blah/blah", "type": "blah::blahState", "state": "mountStatePreservedUnmounted"}]},
         ],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["MCS Client mount states are not present"]},
     },
     {
@@ -110,7 +105,6 @@ DATA: list[dict[str, Any]] = [
                 ]
             },
         ],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["MCS Client mount states are not valid: mountStatePreservedUnmounted"]},
     },
     {

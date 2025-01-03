@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING
 
 from anta.tests.logging import (
     VerifyLoggingAccounting,
@@ -19,7 +19,10 @@ from anta.tests.logging import (
 )
 from tests.units.anta_tests import test
 
-DATA: list[dict[str, Any]] = [
+if TYPE_CHECKING:
+    from tests.units.anta_tests import AntaUnitTest
+
+DATA: list[AntaUnitTest] = [
     {
         "name": "success",
         "test": VerifyLoggingPersistent,
@@ -33,7 +36,6 @@ DATA: list[dict[str, Any]] = [
 
             """,
         ],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -49,7 +51,6 @@ DATA: list[dict[str, Any]] = [
 
             """,
         ],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["Persistent logging is disabled"]},
     },
     {
@@ -65,7 +66,6 @@ DATA: list[dict[str, Any]] = [
 
             """,
         ],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["No persistent logs are saved in flash"]},
     },
     {
@@ -166,14 +166,12 @@ DATA: list[dict[str, Any]] = [
             "2023-05-10T13:54:21.463497-05:00 NW-CORE.example.org ConfigAgent: %SYS-6-LOGMSG_INFO: "
             "Message from arista on command-api (10.22.1.107): ANTA VerifyLoggingLogsGeneration validation\n",
         ],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
         "name": "failure",
         "test": VerifyLoggingLogsGeneration,
         "eos_data": ["", "Log Buffer:\n"],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["Logs are not generated"]},
     },
     {
@@ -185,7 +183,6 @@ DATA: list[dict[str, Any]] = [
             "2023-05-10T15:41:44.701810-05:00 NW-CORE.example.org ConfigAgent: %SYS-6-LOGMSG_INFO: "
             "Message from arista on command-api (10.22.1.107): ANTA VerifyLoggingHostname validation\n",
         ],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -197,7 +194,6 @@ DATA: list[dict[str, Any]] = [
             "2023-05-10T13:54:21.463497-05:00 NW-CORE ConfigAgent: %SYS-6-LOGMSG_INFO: "
             "Message from arista on command-api (10.22.1.107): ANTA VerifyLoggingLogsHostname validation\n",
         ],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["Logs are not generated with the device FQDN"]},
     },
     {
@@ -210,7 +206,6 @@ DATA: list[dict[str, Any]] = [
             "2023-05-10T15:42:44.680813-05:00 NW-CORE.example.org ConfigAgent: %SYS-6-LOGMSG_INFO: "
             "Other log\n",
         ],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -223,7 +218,6 @@ DATA: list[dict[str, Any]] = [
             "2023-05-10T15:42:44.680813+05:00 NW-CORE.example.org ConfigAgent: %SYS-6-LOGMSG_INFO: "
             "Other log\n",
         ],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -234,7 +228,6 @@ DATA: list[dict[str, Any]] = [
             "May 10 13:54:22 NE-CORE.example.org ConfigAgent: %SYS-6-LOGMSG_INFO: "
             "Message from arista on command-api (10.22.1.107): ANTA VerifyLoggingTimestamp validation\n",
         ],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["Logs are not generated with the appropriate timestamp format"]},
     },
     {
@@ -244,28 +237,24 @@ DATA: list[dict[str, Any]] = [
             "",
             "May 10 13:54:22 NE-CORE.example.org ConfigAgent: %SYS-6-LOGMSG_INFO: Message from arista on command-api (10.22.1.107): BLAH\n",
         ],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["Logs are not generated with the appropriate timestamp format"]},
     },
     {
         "name": "success",
         "test": VerifyLoggingAccounting,
         "eos_data": ["2023 May 10 15:50:31 arista   command-api 10.22.1.107     stop   service=shell priv-lvl=15 cmd=show aaa accounting logs | tail\n"],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
         "name": "failure",
         "test": VerifyLoggingAccounting,
         "eos_data": ["2023 May 10 15:52:26 arista   vty14       10.22.1.107     stop   service=shell priv-lvl=15 cmd=show bgp summary\n"],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["AAA accounting logs are not generated"]},
     },
     {
         "name": "success",
         "test": VerifyLoggingErrors,
         "eos_data": [""],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -274,7 +263,6 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [
             "Aug  2 19:57:42 DC1-LEAF1A Mlag: %FWK-3-SOCKET_CLOSE_REMOTE: Connection to Mlag (pid:27200) at tbt://192.168.0.1:4432/+n closed by peer (EOF)",
         ],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["Device has reported syslog messages with a severity of ERRORS or higher"]},
     },
 ]

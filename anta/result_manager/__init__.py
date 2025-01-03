@@ -5,13 +5,14 @@
 
 from __future__ import annotations
 
-import json
 import logging
 import warnings
 from collections import defaultdict
 from functools import cached_property
 from itertools import chain
 from typing import Any
+
+from pydantic import TypeAdapter
 
 from anta.result_manager.models import AntaTestStatus, TestResult
 
@@ -108,8 +109,9 @@ class ResultManager:
 
     def reset(self) -> None:
         """Create or reset the attributes of the ResultManager instance."""
-        self._result_entries: list[TestResult] = []
-        self.status: AntaTestStatus = AntaTestStatus.UNSET
+        self._result_entries = []
+        self._result_entries_ta = TypeAdapter(list[TestResult])
+        self.status = AntaTestStatus.UNSET
         self.error_status = False
 
         # Initialize the statistics attributes
@@ -136,12 +138,12 @@ class ResultManager:
     @property
     def dump(self) -> list[dict[str, Any]]:
         """Get a list of dictionary of the results."""
-        return [result.model_dump() for result in self._result_entries]
+        return self._result_entries_ta.dump_python(self._result_entries)
 
     @property
     def json(self) -> str:
         """Get a JSON representation of the results."""
-        return json.dumps(self.dump, indent=4)
+        return self._result_entries_ta.dump_json(self._result_entries, exclude_none=True, indent=4).decode()
 
     @property
     def device_stats(self) -> dict[str, DeviceStats]:
@@ -184,6 +186,11 @@ class ResultManager:
     def results_by_status(self) -> dict[AntaTestStatus, list[TestResult]]:
         """A cached property that returns the results grouped by status."""
         return {status: [result for result in self._result_entries if result.result == status] for status in AntaTestStatus}
+
+    @cached_property
+    def results_by_category(self) -> list[TestResult]:
+        """A cached property that returns the results grouped by status."""
+        return sorted(self._result_entries, key=lambda res: res.categories)
 
     def _update_status(self, test_status: AntaTestStatus) -> None:
         """Update the status of the ResultManager instance based on the test status.
@@ -272,8 +279,9 @@ class ResultManager:
         self._update_status(result.result)
         self._stats_in_sync = False
 
-        # Every time a new result is added, we need to clear the cached property
-        self.__dict__.pop("results_by_status", None)
+        # Every time a new result is added, we need to clear the cached properties
+        for name in ["results_by_status", "results_by_category"]:
+            self.__dict__.pop(name, None)
 
     def get_results(self, status: set[AntaTestStatus] | None = None, sort_by: list[str] | None = None) -> list[TestResult]:
         """Get the results, optionally filtered by status and sorted by TestResult fields.

@@ -5,45 +5,43 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING
 
 from anta.tests.vxlan import VerifyVxlan1ConnSettings, VerifyVxlan1Interface, VerifyVxlanConfigSanity, VerifyVxlanVniBinding, VerifyVxlanVtep
 from tests.units.anta_tests import test
 
-DATA: list[dict[str, Any]] = [
+if TYPE_CHECKING:
+    from tests.units.anta_tests import AntaUnitTest
+
+DATA: list[AntaUnitTest] = [
     {
         "name": "success",
         "test": VerifyVxlan1Interface,
         "eos_data": [{"interfaceDescriptions": {"Vxlan1": {"lineProtocolStatus": "up", "interfaceStatus": "up"}}}],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
         "name": "skipped",
         "test": VerifyVxlan1Interface,
         "eos_data": [{"interfaceDescriptions": {"Loopback0": {"lineProtocolStatus": "up", "interfaceStatus": "up"}}}],
-        "inputs": None,
         "expected": {"result": "skipped", "messages": ["Vxlan1 interface is not configured"]},
     },
     {
         "name": "failure-down-up",
         "test": VerifyVxlan1Interface,
         "eos_data": [{"interfaceDescriptions": {"Vxlan1": {"lineProtocolStatus": "down", "interfaceStatus": "up"}}}],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["Vxlan1 interface is down/up"]},
     },
     {
         "name": "failure-up-down",
         "test": VerifyVxlan1Interface,
         "eos_data": [{"interfaceDescriptions": {"Vxlan1": {"lineProtocolStatus": "up", "interfaceStatus": "down"}}}],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["Vxlan1 interface is up/down"]},
     },
     {
         "name": "failure-down-down",
         "test": VerifyVxlan1Interface,
         "eos_data": [{"interfaceDescriptions": {"Vxlan1": {"lineProtocolStatus": "down", "interfaceStatus": "down"}}}],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["Vxlan1 interface is down/down"]},
     },
     {
@@ -108,7 +106,6 @@ DATA: list[dict[str, Any]] = [
                 "warnings": [],
             },
         ],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -173,7 +170,6 @@ DATA: list[dict[str, Any]] = [
                 "warnings": ["Your configuration contains warnings. This does not mean misconfigurations. But you may wish to re-check your configurations."],
             },
         ],
-        "inputs": None,
         "expected": {
             "result": "failure",
             "messages": [
@@ -191,7 +187,6 @@ DATA: list[dict[str, Any]] = [
         "name": "skipped",
         "test": VerifyVxlanConfigSanity,
         "eos_data": [{"categories": {}}],
-        "inputs": None,
         "expected": {"result": "skipped", "messages": ["VXLAN is not configured"]},
     },
     {

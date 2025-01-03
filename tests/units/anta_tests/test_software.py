@@ -5,12 +5,15 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING
 
 from anta.tests.software import VerifyEOSExtensions, VerifyEOSVersion, VerifyTerminAttrVersion
 from tests.units.anta_tests import test
 
-DATA: list[dict[str, Any]] = [
+if TYPE_CHECKING:
+    from tests.units.anta_tests import AntaUnitTest
+
+DATA: list[AntaUnitTest] = [
     {
         "name": "success",
         "test": VerifyEOSVersion,
@@ -87,7 +90,6 @@ DATA: list[dict[str, Any]] = [
             {"extensions": {}, "extensionStoredDir": "flash:", "warnings": ["No extensions are available"]},
             {"extensions": []},
         ],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -97,7 +99,6 @@ DATA: list[dict[str, Any]] = [
             {"extensions": {}, "extensionStoredDir": "flash:", "warnings": ["No extensions are available"]},
             {"extensions": [""]},
         ],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -107,7 +108,6 @@ DATA: list[dict[str, Any]] = [
             {"extensions": {}, "extensionStoredDir": "flash:", "warnings": ["No extensions are available"]},
             {"extensions": ["dummy"]},
         ],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["Missing EOS extensions: installed [] / configured: ['dummy']"]},
     },
 ]

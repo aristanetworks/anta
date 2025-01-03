@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import pytest
 from pydantic import ValidationError
@@ -29,26 +29,26 @@ from anta.tests.security import (
 )
 from tests.units.anta_tests import test
 
-DATA: list[dict[str, Any]] = [
+if TYPE_CHECKING:
+    from tests.units.anta_tests import AntaUnitTest
+
+DATA: list[AntaUnitTest] = [
     {
         "name": "success",
         "test": VerifySSHStatus,
         "eos_data": ["SSHD status for Default VRF is disabled\nSSH connection limit is 50\nSSH per host connection limit is 20\nFIPS status: disabled\n\n"],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
         "name": "error-missing-ssh-status",
         "test": VerifySSHStatus,
         "eos_data": ["SSH per host connection limit is 20\nFIPS status: disabled\n\n"],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["Could not find SSH status in returned output."]},
     },
     {
         "name": "failure-ssh-enabled",
         "test": VerifySSHStatus,
         "eos_data": ["SSHD status for Default VRF is enabled\nSSH connection limit is 50\nSSH per host connection limit is 20\nFIPS status: disabled\n\n"],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["SSHD status for Default VRF is enabled"]},
     },
     {
@@ -58,7 +58,6 @@ DATA: list[dict[str, Any]] = [
             "User certificate authentication methods: none (neither trusted CA nor SSL profile configured)\n"
             "SSHD status for Default VRF: disabled\nSSH connection limit: 50\nSSH per host connection limit: 20\nFIPS status: disabled\n\n"
         ],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -68,7 +67,6 @@ DATA: list[dict[str, Any]] = [
             "User certificate authentication methods: none (neither trusted CA nor SSL profile configured)\n"
             "SSHD status for Default VRF: enabled\nSSH connection limit: 50\nSSH per host connection limit: 20\nFIPS status: disabled\n\n"
         ],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["SSHD status for Default VRF: enabled"]},
     },
     {
@@ -117,14 +115,12 @@ DATA: list[dict[str, Any]] = [
         "name": "success",
         "test": VerifyTelnetStatus,
         "eos_data": [{"serverState": "disabled", "vrfName": "default", "maxTelnetSessions": 20, "maxTelnetSessionsPerHost": 20}],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
         "name": "failure",
         "test": VerifyTelnetStatus,
         "eos_data": [{"serverState": "enabled", "vrfName": "default", "maxTelnetSessions": 20, "maxTelnetSessionsPerHost": 20}],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["Telnet status for Default VRF is enabled"]},
     },
     {
@@ -141,7 +137,6 @@ DATA: list[dict[str, Any]] = [
                 "tlsProtocol": ["1.2"],
             },
         ],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -158,7 +153,6 @@ DATA: list[dict[str, Any]] = [
                 "tlsProtocol": ["1.2"],
             },
         ],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["eAPI HTTP server is enabled globally"]},
     },
     {
