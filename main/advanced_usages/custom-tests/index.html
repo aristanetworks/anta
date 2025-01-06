@@ -2710,11 +2710,11 @@
 <h3 id="generic-approach">Generic approach<a class="headerlink" href="#generic-approach" title="Permanent link">&para;</a></h3>
 <p>A test is a Python class where a test function is defined and will be run by the framework.</p>
 <p>ANTA provides an abstract class <a href="../../api/models/#anta.models.AntaTest">AntaTest</a>. This class does the heavy lifting and provide the logic to define, collect and test data. The code below is an example of a simple test in ANTA, which is an <a href="../../api/models/#anta.models.AntaTest">AntaTest</a> subclass:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">anta.models</span> <span class="kn">import</span> <span class="n">AntaTest</span><span class="p">,</span> <span class="n">AntaCommand</span>
-<span class="kn">from</span> <span class="nn">anta.decorators</span> <span class="kn">import</span> <span class="n">skip_on_platforms</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">anta.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">AntaTest</span><span class="p">,</span> <span class="n">AntaCommand</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">anta.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">skip_on_platforms</span>
 
 
-<span class="k">class</span> <span class="nc">VerifyTemperature</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">VerifyTemperature</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies if the device temperature is within acceptable limits.</span>
 
 <span class="sd">    Expected Results</span>
@@ -2735,7 +2735,7 @@
 
     <span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS-lab&quot;</span><span class="p">,</span> <span class="s2">&quot;cEOSCloudLab&quot;</span><span class="p">])</span>
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
-    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyTemperature.&quot;&quot;&quot;</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
         <span class="n">temperature_status</span> <span class="o">=</span> <span class="n">command_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;systemStatus&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
@@ -3072,10 +3072,10 @@ Define the mandatory class attributes using <a href="../../api/models/#anta.mode
 <p class="admonition-title">Note</p>
 <p>Caching can be disabled per <code>AntaCommand</code> or <code>AntaTemplate</code> by setting the <code>use_cache</code> argument to <code>False</code>. For more details about how caching is implemented in ANTA, please refer to <a href="../caching/">Caching in ANTA</a>.</p>
 </div>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">anta.models</span> <span class="kn">import</span> <span class="n">AntaTest</span><span class="p">,</span> <span class="n">AntaCommand</span><span class="p">,</span> <span class="n">AntaTemplate</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">anta.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">AntaTest</span><span class="p">,</span> <span class="n">AntaCommand</span><span class="p">,</span> <span class="n">AntaTemplate</span>
 
 
-<span class="k">class</span> <span class="err">&lt;</span><span class="nc">YourTestName</span><span class="o">&gt;</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="err">&lt;</span><span class="nc">YourTestName</span><span class="o">&gt;</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    &lt;a docstring description of your test, the first line is used as description of the test by default&gt;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -3118,7 +3118,7 @@ Define the mandatory class attributes using <a href="../../api/models/#anta.mode
 </div>
 <h4 id="inputs-definition">Inputs definition<a class="headerlink" href="#inputs-definition" title="Permanent link">&para;</a></h4>
 <p>If the user needs to provide inputs for your test, you need to define a <a href="https://docs.pydantic.dev/latest/usage/models/">pydantic model</a> that defines the schema of the test inputs:</p>
-<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="err">&lt;</span><span class="nc">YourTestName</span><span class="o">&gt;</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="err">&lt;</span><span class="nc">YourTestName</span><span class="o">&gt;</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies ...</span>
 
 <span class="sd">    Expected Results</span>
@@ -3135,7 +3135,7 @@ Define the mandatory class attributes using <a href="../../api/models/#anta.mode
 <span class="sd">    ```</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="o">...</span>
-    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Inputs for my awesome test.&quot;&quot;&quot;</span>
         <span class="o">&lt;</span><span class="nb">input</span> <span class="n">field</span> <span class="n">name</span><span class="o">&gt;</span><span class="p">:</span> <span class="o">&lt;</span><span class="nb">input</span> <span class="n">field</span> <span class="nb">type</span><span class="o">&gt;</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;&lt;input field docstring&gt;&quot;&quot;&quot;</span>
@@ -3149,18 +3149,18 @@ You can also leverage <a href="../../api/types/">anta.custom_types</a> that prov
 </div>
 <h4 id="template-rendering">Template rendering<a class="headerlink" href="#template-rendering" title="Permanent link">&para;</a></h4>
 <p>Define the <code>render()</code> method if you have <a href="../../api/models/#anta.models.AntaTemplate">AntaTemplate</a> instances in your <code>commands</code> class attribute:</p>
-<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="err">&lt;</span><span class="nc">YourTestName</span><span class="o">&gt;</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="err">&lt;</span><span class="nc">YourTestName</span><span class="o">&gt;</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
     <span class="o">...</span>
-    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">AntaTemplate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">AntaTemplate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]:</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">&lt;</span><span class="n">template</span> <span class="n">param</span><span class="o">&gt;=</span><span class="n">input_value</span><span class="p">)</span> <span class="k">for</span> <span class="n">input_value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.&lt;</span><span class="n">input_field</span><span class="o">&gt;</span><span class="p">]</span>
 </code></pre></div>
 <p>You can access test inputs and render as many <a href="../../api/models/#anta.models.AntaCommand">AntaCommand</a> as desired.</p>
 <h4 id="test-definition">Test definition<a class="headerlink" href="#test-definition" title="Permanent link">&para;</a></h4>
 <p>Implement the <code>test()</code> method with your test logic:</p>
-<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="err">&lt;</span><span class="nc">YourTestName</span><span class="o">&gt;</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="err">&lt;</span><span class="nc">YourTestName</span><span class="o">&gt;</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
     <span class="o">...</span>
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
-    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">pass</span>
 </code></pre></div>
 <p>The logic usually includes the following different stages:</p>
@@ -3170,10 +3170,10 @@ You can also leverage <a href="../../api/types/">anta.custom_types</a> that prov
 <li>Set the <code>result</code> instance attribute to reflect the test result by either calling <code>self.result.is_success()</code> or <code>self.result.is_failure("&lt;FAILURE REASON&gt;")</code>. Sometimes, setting the test result to <code>skipped</code> using <code>self.result.is_skipped("&lt;SKIPPED REASON&gt;")</code> can make sense (e.g. testing the OSPF neighbor states but no neighbor was found). However, you should not need to catch any exception and set the test result to <code>error</code> since the error handling is done by the framework, see below.</li>
 </ol>
 <p>The example below is based on the <a href="../../api/tests.hardware/#anta.tests.hardware.VerifyTemperature">VerifyTemperature</a> test.</p>
-<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyTemperature</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyTemperature</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
     <span class="o">...</span>
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
-    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># Grab output of the collected command</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
 
@@ -3185,10 +3185,10 @@ You can also leverage <a href="../../api/types/">anta.custom_types</a> that prov
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Device temperature exceeds acceptable limits. Current system status: &#39;</span><span class="si">{</span><span class="n">temperature_status</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
 </code></pre></div>
 <p>As you can see there is no error handling to do in your code. Everything is packaged in the <code>AntaTest.anta_tests</code> decorator and below is a simple example of error captured when trying to access a dictionary with an incorrect key:</p>
-<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyTemperature</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyTemperature</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
     <span class="o">...</span>
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
-    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># Grab output of the collected command</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
 
@@ -3209,13 +3209,13 @@ You can also leverage <a href="../../api/types/">anta.custom_types</a> that prov
 <li><code>anta.decorators.deprecated_test</code>: Use this to log a message of WARNING severity when a test is deprecated.</li>
 <li><code>anta.decorators.skip_on_platforms</code>: Use this to skip tests for functionalities that are not supported on specific platforms.</li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">anta.decorators</span> <span class="kn">import</span> <span class="n">skip_on_platforms</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">anta.decorators</span><span class="w"> </span><span class="kn">import</span> <span class="n">skip_on_platforms</span>
 
-<span class="k">class</span> <span class="nc">VerifyTemperature</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">VerifyTemperature</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
     <span class="o">...</span>
     <span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS-lab&quot;</span><span class="p">])</span>
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
-    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">pass</span>
 </code></pre></div>
 <h3 id="access-your-custom-tests-in-the-test-catalog">Access your custom tests in the test catalog<a class="headerlink" href="#access-your-custom-tests-in-the-test-catalog" title="Permanent link">&para;</a></h3>

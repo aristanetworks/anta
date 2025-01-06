@@ -3756,7 +3756,7 @@
 <span class="normal">945</span>
 <span class="normal">946</span>
 <span class="normal">947</span>
-<span class="normal">948</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyBGPAdvCommunities</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">948</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPAdvCommunities</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies that advertised communities are standard, extended and large for BGP IPv4 peer(s).</span>
 
 <span class="sd">    This test performs the following checks for each specified peer:</span>
@@ -3793,7 +3793,7 @@
     <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;bgp&quot;</span><span class="p">]</span>
     <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show bgp neighbors vrf all&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">3</span><span class="p">)]</span>
 
-    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyBGPAdvCommunities test.&quot;&quot;&quot;</span>
 
         <span class="n">bgp_peers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BgpPeer</span><span class="p">]</span>
@@ -3801,7 +3801,7 @@
         <span class="n">BgpPeer</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">BgpPeer</span><span class="p">]]</span> <span class="o">=</span> <span class="n">BgpPeer</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
-    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyBGPAdvCommunities.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
@@ -4040,7 +4040,7 @@
 <span class="normal">511</span>
 <span class="normal">512</span>
 <span class="normal">513</span>
-<span class="normal">514</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyBGPExchangedRoutes</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">514</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPExchangedRoutes</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the advertised and received routes of BGP IPv4 peer(s).</span>
 
 <span class="sd">    This test performs the following checks for each specified peer:</span>
@@ -4087,7 +4087,7 @@
         <span class="n">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">&quot;show bgp neighbors </span><span class="si">{peer}</span><span class="s2"> routes vrf </span><span class="si">{vrf}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span>
     <span class="p">]</span>
 
-    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyBGPExchangedRoutes test.&quot;&quot;&quot;</span>
 
         <span class="n">bgp_peers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BgpPeer</span><span class="p">]</span>
@@ -4096,7 +4096,7 @@
 
         <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;bgp_peers&quot;</span><span class="p">)</span>
         <span class="nd">@classmethod</span>
-        <span class="k">def</span> <span class="nf">validate_bgp_peers</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">bgp_peers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BgpPeer</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">BgpPeer</span><span class="p">]:</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">validate_bgp_peers</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">bgp_peers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BgpPeer</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">BgpPeer</span><span class="p">]:</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;Validate that &#39;advertised_routes&#39; or &#39;received_routes&#39; field is provided in each BGP peer.&quot;&quot;&quot;</span>
             <span class="k">for</span> <span class="n">peer</span> <span class="ow">in</span> <span class="n">bgp_peers</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">peer</span><span class="o">.</span><span class="n">advertised_routes</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">peer</span><span class="o">.</span><span class="n">received_routes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -4104,12 +4104,12 @@
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">bgp_peers</span>
 
-    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">AntaTemplate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">AntaTemplate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Render the template for each BGP peer in the input list.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">peer</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">bgp_peer</span><span class="o">.</span><span class="n">peer_address</span><span class="p">),</span> <span class="n">vrf</span><span class="o">=</span><span class="n">bgp_peer</span><span class="o">.</span><span class="n">vrf</span><span class="p">)</span> <span class="k">for</span> <span class="n">bgp_peer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">bgp_peers</span><span class="p">]</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
-    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyBGPExchangedRoutes.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
@@ -4320,7 +4320,7 @@
 <span class="normal">674</span>
 <span class="normal">675</span>
 <span class="normal">676</span>
-<span class="normal">677</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyBGPPeerASNCap</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">677</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPPeerASNCap</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the four octet ASN capability of BGP IPv4 peer(s).</span>
 
 <span class="sd">    This test performs the following checks for each specified peer:</span>
@@ -4355,7 +4355,7 @@
     <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;bgp&quot;</span><span class="p">]</span>
     <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show bgp neighbors vrf all&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">3</span><span class="p">)]</span>
 
-    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyBGPPeerASNCap test.&quot;&quot;&quot;</span>
 
         <span class="n">bgp_peers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BgpPeer</span><span class="p">]</span>
@@ -4363,7 +4363,7 @@
         <span class="n">BgpPeer</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">BgpPeer</span><span class="p">]]</span> <span class="o">=</span> <span class="n">BgpPeer</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
-    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyBGPPeerASNCap.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
@@ -4598,7 +4598,7 @@ have successfully negotiated the specified AFI/SAFI</li>
 <span class="normal">129</span>
 <span class="normal">130</span>
 <span class="normal">131</span>
-<span class="normal">132</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyBGPPeerCount</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">132</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPPeerCount</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the count of BGP peers for given address families.</span>
 
 <span class="sd">    This test performs the following checks for each specified address family:</span>
@@ -4643,7 +4643,7 @@ have successfully negotiated the specified AFI/SAFI</li>
     <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;bgp&quot;</span><span class="p">]</span>
     <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show bgp summary vrf all&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
-    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyBGPPeerCount test.&quot;&quot;&quot;</span>
 
         <span class="n">address_families</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BgpAddressFamily</span><span class="p">]</span>
@@ -4652,7 +4652,7 @@ have successfully negotiated the specified AFI/SAFI</li>
 
         <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;address_families&quot;</span><span class="p">)</span>
         <span class="nd">@classmethod</span>
-        <span class="k">def</span> <span class="nf">validate_address_families</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">address_families</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BgpAddressFamily</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">BgpAddressFamily</span><span class="p">]:</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">validate_address_families</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">address_families</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BgpAddressFamily</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">BgpAddressFamily</span><span class="p">]:</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;Validate that &#39;num_peers&#39; field is provided in each address family.&quot;&quot;&quot;</span>
             <span class="k">for</span> <span class="n">af</span> <span class="ow">in</span> <span class="n">address_families</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">af</span><span class="o">.</span><span class="n">num_peers</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -4661,7 +4661,7 @@ have successfully negotiated the specified AFI/SAFI</li>
             <span class="k">return</span> <span class="n">address_families</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
-    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyBGPPeerCount.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
@@ -4880,7 +4880,7 @@ have successfully negotiated the specified AFI/SAFI</li>
 <span class="normal">1099</span>
 <span class="normal">1100</span>
 <span class="normal">1101</span>
-<span class="normal">1102</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyBGPPeerDropStats</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">1102</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPPeerDropStats</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies BGP NLRI drop statistics for the provided BGP IPv4 peer(s).</span>
 
 <span class="sd">    This test performs the following checks for each specified peer:</span>
@@ -4919,7 +4919,7 @@ have successfully negotiated the specified AFI/SAFI</li>
     <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;bgp&quot;</span><span class="p">]</span>
     <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show bgp neighbors vrf all&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">3</span><span class="p">)]</span>
 
-    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyBGPPeerDropStats test.&quot;&quot;&quot;</span>
 
         <span class="n">bgp_peers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BgpPeer</span><span class="p">]</span>
@@ -4927,7 +4927,7 @@ have successfully negotiated the specified AFI/SAFI</li>
         <span class="n">BgpPeer</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">BgpPeer</span><span class="p">]]</span> <span class="o">=</span> <span class="n">BgpPeer</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
-    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyBGPPeerDropStats.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
@@ -5135,7 +5135,7 @@ have successfully negotiated the specified AFI/SAFI</li>
 <span class="normal">811</span>
 <span class="normal">812</span>
 <span class="normal">813</span>
-<span class="normal">814</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyBGPPeerMD5Auth</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">814</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPPeerMD5Auth</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the MD5 authentication and state of IPv4 BGP peer(s) in a specified VRF.</span>
 
 <span class="sd">    This test performs the following checks for each specified peer:</span>
@@ -5172,7 +5172,7 @@ have successfully negotiated the specified AFI/SAFI</li>
     <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;bgp&quot;</span><span class="p">]</span>
     <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show bgp neighbors vrf all&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">3</span><span class="p">)]</span>
 
-    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyBGPPeerMD5Auth test.&quot;&quot;&quot;</span>
 
         <span class="n">bgp_peers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BgpPeer</span><span class="p">]</span>
@@ -5180,7 +5180,7 @@ have successfully negotiated the specified AFI/SAFI</li>
         <span class="n">BgpPeer</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">BgpPeer</span><span class="p">]]</span> <span class="o">=</span> <span class="n">BgpPeer</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
-    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyBGPPeerMD5Auth.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
@@ -5419,7 +5419,7 @@ have successfully negotiated the specified AFI/SAFI</li>
 <span class="normal">606</span>
 <span class="normal">607</span>
 <span class="normal">608</span>
-<span class="normal">609</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyBGPPeerMPCaps</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">609</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPPeerMPCaps</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the multiprotocol capabilities of BGP IPv4 peer(s).</span>
 
 <span class="sd">    This test performs the following checks for each specified peer:</span>
@@ -5462,7 +5462,7 @@ have successfully negotiated the specified AFI/SAFI</li>
     <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;bgp&quot;</span><span class="p">]</span>
     <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show bgp neighbors vrf all&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">3</span><span class="p">)]</span>
 
-    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyBGPPeerMPCaps test.&quot;&quot;&quot;</span>
 
         <span class="n">bgp_peers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BgpPeer</span><span class="p">]</span>
@@ -5471,7 +5471,7 @@ have successfully negotiated the specified AFI/SAFI</li>
 
         <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;bgp_peers&quot;</span><span class="p">)</span>
         <span class="nd">@classmethod</span>
-        <span class="k">def</span> <span class="nf">validate_bgp_peers</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">bgp_peers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">validate_bgp_peers</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">bgp_peers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;Validate that &#39;capabilities&#39; field is provided in each BGP peer.&quot;&quot;&quot;</span>
             <span class="k">for</span> <span class="n">peer</span> <span class="ow">in</span> <span class="n">bgp_peers</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">peer</span><span class="o">.</span><span class="n">capabilities</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -5480,7 +5480,7 @@ have successfully negotiated the specified AFI/SAFI</li>
             <span class="k">return</span> <span class="n">bgp_peers</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
-    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyBGPPeerMPCaps.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
@@ -5699,7 +5699,7 @@ have successfully negotiated the specified AFI/SAFI</li>
 <span class="normal">1332</span>
 <span class="normal">1333</span>
 <span class="normal">1334</span>
-<span class="normal">1335</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyBGPPeerRouteLimit</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">1335</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPPeerRouteLimit</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies maximum routes and warning limit for BGP IPv4 peer(s).</span>
 
 <span class="sd">    This test performs the following checks for each specified peer:</span>
@@ -5733,7 +5733,7 @@ have successfully negotiated the specified AFI/SAFI</li>
     <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;bgp&quot;</span><span class="p">]</span>
     <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show bgp neighbors vrf all&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">3</span><span class="p">)]</span>
 
-    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyBGPPeerRouteLimit test.&quot;&quot;&quot;</span>
 
         <span class="n">bgp_peers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BgpPeer</span><span class="p">]</span>
@@ -5742,7 +5742,7 @@ have successfully negotiated the specified AFI/SAFI</li>
 
         <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;bgp_peers&quot;</span><span class="p">)</span>
         <span class="nd">@classmethod</span>
-        <span class="k">def</span> <span class="nf">validate_bgp_peers</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">bgp_peers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">validate_bgp_peers</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">bgp_peers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;Validate that &#39;maximum_routes&#39; field is provided in each BGP peer.&quot;&quot;&quot;</span>
             <span class="k">for</span> <span class="n">peer</span> <span class="ow">in</span> <span class="n">bgp_peers</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">peer</span><span class="o">.</span><span class="n">maximum_routes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -5751,7 +5751,7 @@ have successfully negotiated the specified AFI/SAFI</li>
             <span class="k">return</span> <span class="n">bgp_peers</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
-    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyBGPPeerRouteLimit.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
@@ -5953,7 +5953,7 @@ have successfully negotiated the specified AFI/SAFI</li>
 <span class="normal">742</span>
 <span class="normal">743</span>
 <span class="normal">744</span>
-<span class="normal">745</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyBGPPeerRouteRefreshCap</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">745</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPPeerRouteRefreshCap</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the route refresh capabilities of IPv4 BGP peer(s) in a specified VRF.</span>
 
 <span class="sd">    This test performs the following checks for each specified peer:</span>
@@ -5988,7 +5988,7 @@ have successfully negotiated the specified AFI/SAFI</li>
     <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;bgp&quot;</span><span class="p">]</span>
     <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show bgp neighbors vrf all&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">3</span><span class="p">)]</span>
 
-    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyBGPPeerRouteRefreshCap test.&quot;&quot;&quot;</span>
 
         <span class="n">bgp_peers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BgpPeer</span><span class="p">]</span>
@@ -5996,7 +5996,7 @@ have successfully negotiated the specified AFI/SAFI</li>
         <span class="n">BgpPeer</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">BgpPeer</span><span class="p">]]</span> <span class="o">=</span> <span class="n">BgpPeer</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
-    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyBGPPeerRouteRefreshCap.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
@@ -6231,7 +6231,7 @@ have successfully negotiated the specified AFI/SAFI</li>
 <span class="normal">407</span>
 <span class="normal">408</span>
 <span class="normal">409</span>
-<span class="normal">410</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyBGPPeerSession</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">410</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPPeerSession</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the session state of BGP IPv4 peer(s).</span>
 
 <span class="sd">    This test performs the following checks for each specified peer:</span>
@@ -6274,7 +6274,7 @@ have successfully negotiated the specified AFI/SAFI</li>
     <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;bgp&quot;</span><span class="p">]</span>
     <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show bgp neighbors vrf all&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">3</span><span class="p">)]</span>
 
-    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyBGPPeerSession test.&quot;&quot;&quot;</span>
 
         <span class="n">check_tcp_queues</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
@@ -6283,7 +6283,7 @@ have successfully negotiated the specified AFI/SAFI</li>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;List of BGP IPv4 peers.&quot;&quot;&quot;</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
-    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyBGPPeerSession.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
@@ -6502,7 +6502,7 @@ have successfully negotiated the specified AFI/SAFI</li>
 <span class="normal">1176</span>
 <span class="normal">1177</span>
 <span class="normal">1178</span>
-<span class="normal">1179</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyBGPPeerUpdateErrors</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">1179</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPPeerUpdateErrors</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies BGP update error counters for the provided BGP IPv4 peer(s).</span>
 
 <span class="sd">    This test performs the following checks for each specified peer:</span>
@@ -6542,7 +6542,7 @@ have successfully negotiated the specified AFI/SAFI</li>
     <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;bgp&quot;</span><span class="p">]</span>
     <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show bgp neighbors vrf all&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">3</span><span class="p">)]</span>
 
-    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyBGPPeerUpdateErrors test.&quot;&quot;&quot;</span>
 
         <span class="n">bgp_peers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BgpPeer</span><span class="p">]</span>
@@ -6550,7 +6550,7 @@ have successfully negotiated the specified AFI/SAFI</li>
         <span class="n">BgpPeer</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">BgpPeer</span><span class="p">]]</span> <span class="o">=</span> <span class="n">BgpPeer</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
-    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyBGPPeerUpdateErrors.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
@@ -6788,7 +6788,7 @@ have successfully negotiated the specified AFI/SAFI</li>
 <span class="normal">221</span>
 <span class="normal">222</span>
 <span class="normal">223</span>
-<span class="normal">224</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyBGPPeersHealth</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">224</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPPeersHealth</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the health of BGP peers for given address families.</span>
 
 <span class="sd">    This test performs the following checks for each specified address family:</span>
@@ -6832,7 +6832,7 @@ have successfully negotiated the specified AFI/SAFI</li>
     <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;bgp&quot;</span><span class="p">]</span>
     <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show bgp neighbors vrf all&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">3</span><span class="p">)]</span>
 
-    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyBGPPeersHealth test.&quot;&quot;&quot;</span>
 
         <span class="n">address_families</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BgpAddressFamily</span><span class="p">]</span>
@@ -6840,7 +6840,7 @@ have successfully negotiated the specified AFI/SAFI</li>
         <span class="n">BgpAfi</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">BgpAfi</span><span class="p">]]</span> <span class="o">=</span> <span class="n">BgpAfi</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
-    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyBGPPeersHealth.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
@@ -7106,7 +7106,7 @@ have successfully negotiated the specified AFI/SAFI</li>
 <span class="normal">327</span>
 <span class="normal">328</span>
 <span class="normal">329</span>
-<span class="normal">330</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyBGPSpecificPeers</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">330</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPSpecificPeers</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the health of specific BGP peer(s) for given address families.</span>
 
 <span class="sd">    This test performs the following checks for each specified address family and peer:</span>
@@ -7153,7 +7153,7 @@ have successfully negotiated the specified AFI/SAFI</li>
     <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;bgp&quot;</span><span class="p">]</span>
     <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show bgp neighbors vrf all&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">3</span><span class="p">)]</span>
 
-    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyBGPSpecificPeers test.&quot;&quot;&quot;</span>
 
         <span class="n">address_families</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BgpAddressFamily</span><span class="p">]</span>
@@ -7162,7 +7162,7 @@ have successfully negotiated the specified AFI/SAFI</li>
 
         <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;address_families&quot;</span><span class="p">)</span>
         <span class="nd">@classmethod</span>
-        <span class="k">def</span> <span class="nf">validate_address_families</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">address_families</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BgpAddressFamily</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">BgpAddressFamily</span><span class="p">]:</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">validate_address_families</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">address_families</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BgpAddressFamily</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">BgpAddressFamily</span><span class="p">]:</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;Validate that &#39;peers&#39; field is provided in each address family.&quot;&quot;&quot;</span>
             <span class="k">for</span> <span class="n">af</span> <span class="ow">in</span> <span class="n">address_families</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">af</span><span class="o">.</span><span class="n">peers</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -7171,7 +7171,7 @@ have successfully negotiated the specified AFI/SAFI</li>
             <span class="k">return</span> <span class="n">address_families</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
-    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyBGPSpecificPeers.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
@@ -7401,7 +7401,7 @@ have successfully negotiated the specified AFI/SAFI</li>
 <span class="normal">1023</span>
 <span class="normal">1024</span>
 <span class="normal">1025</span>
-<span class="normal">1026</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyBGPTimers</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">1026</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPTimers</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the timers of BGP IPv4 peer(s).</span>
 
 <span class="sd">    This test performs the following checks for each specified peer:</span>
@@ -7439,7 +7439,7 @@ have successfully negotiated the specified AFI/SAFI</li>
     <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;bgp&quot;</span><span class="p">]</span>
     <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show bgp neighbors vrf all&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">3</span><span class="p">)]</span>
 
-    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyBGPTimers test.&quot;&quot;&quot;</span>
 
         <span class="n">bgp_peers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BgpPeer</span><span class="p">]</span>
@@ -7448,7 +7448,7 @@ have successfully negotiated the specified AFI/SAFI</li>
 
         <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;bgp_peers&quot;</span><span class="p">)</span>
         <span class="nd">@classmethod</span>
-        <span class="k">def</span> <span class="nf">validate_bgp_peers</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">bgp_peers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">validate_bgp_peers</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">bgp_peers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;Validate that &#39;hold_time&#39; or &#39;keep_alive_time&#39;  field is provided in each BGP peer.&quot;&quot;&quot;</span>
             <span class="k">for</span> <span class="n">peer</span> <span class="ow">in</span> <span class="n">bgp_peers</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">peer</span><span class="o">.</span><span class="n">hold_time</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">peer</span><span class="o">.</span><span class="n">keep_alive_time</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -7457,7 +7457,7 @@ have successfully negotiated the specified AFI/SAFI</li>
             <span class="k">return</span> <span class="n">bgp_peers</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
-    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyBGPTimers.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
@@ -7664,7 +7664,7 @@ have successfully negotiated the specified AFI/SAFI</li>
 <span class="normal">1254</span>
 <span class="normal">1255</span>
 <span class="normal">1256</span>
-<span class="normal">1257</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyBgpRouteMaps</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">1257</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBgpRouteMaps</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies BGP inbound and outbound route-maps of BGP IPv4 peer(s).</span>
 
 <span class="sd">    This test performs the following checks for each specified peer:</span>
@@ -7698,7 +7698,7 @@ have successfully negotiated the specified AFI/SAFI</li>
     <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;bgp&quot;</span><span class="p">]</span>
     <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show bgp neighbors vrf all&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">3</span><span class="p">)]</span>
 
-    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyBgpRouteMaps test.&quot;&quot;&quot;</span>
 
         <span class="n">bgp_peers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BgpPeer</span><span class="p">]</span>
@@ -7707,7 +7707,7 @@ have successfully negotiated the specified AFI/SAFI</li>
 
         <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;bgp_peers&quot;</span><span class="p">)</span>
         <span class="nd">@classmethod</span>
-        <span class="k">def</span> <span class="nf">validate_bgp_peers</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">bgp_peers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">validate_bgp_peers</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">bgp_peers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;Validate that &#39;inbound_route_map&#39; or &#39;outbound_route_map&#39; field is provided in each BGP peer.&quot;&quot;&quot;</span>
             <span class="k">for</span> <span class="n">peer</span> <span class="ow">in</span> <span class="n">bgp_peers</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">peer</span><span class="o">.</span><span class="n">inbound_route_map</span> <span class="ow">or</span> <span class="n">peer</span><span class="o">.</span><span class="n">outbound_route_map</span><span class="p">):</span>
@@ -7716,7 +7716,7 @@ have successfully negotiated the specified AFI/SAFI</li>
             <span class="k">return</span> <span class="n">bgp_peers</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
-    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyBgpRouteMaps.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
@@ -7918,7 +7918,7 @@ have successfully negotiated the specified AFI/SAFI</li>
 <span class="normal">880</span>
 <span class="normal">881</span>
 <span class="normal">882</span>
-<span class="normal">883</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyEVPNType2Route</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">883</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyEVPNType2Route</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the EVPN Type-2 routes for a given IPv4 or MAC address and VNI.</span>
 
 <span class="sd">    This test performs the following checks for each specified VXLAN endpoint:</span>
@@ -7952,19 +7952,19 @@ have successfully negotiated the specified AFI/SAFI</li>
     <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;bgp&quot;</span><span class="p">]</span>
     <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">&quot;show bgp evpn route-type mac-ip </span><span class="si">{address}</span><span class="s2"> vni </span><span class="si">{vni}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">2</span><span class="p">)]</span>
 
-    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyEVPNType2Route test.&quot;&quot;&quot;</span>
 
         <span class="n">vxlan_endpoints</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">VxlanEndpoint</span><span class="p">]</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;List of VXLAN endpoints to verify.&quot;&quot;&quot;</span>
         <span class="n">VxlanEndpoint</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">VxlanEndpoint</span><span class="p">]]</span> <span class="o">=</span> <span class="n">VxlanEndpoint</span>
 
-    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">AntaTemplate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">AntaTemplate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Render the template for each VXLAN endpoint in the input list.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">address</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">endpoint</span><span class="o">.</span><span class="n">address</span><span class="p">),</span> <span class="n">vni</span><span class="o">=</span><span class="n">endpoint</span><span class="o">.</span><span class="n">vni</span><span class="p">)</span> <span class="k">for</span> <span class="n">endpoint</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vxlan_endpoints</span><span class="p">]</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
-    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyEVPNType2Route.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
@@ -8221,7 +8221,7 @@ Can be enabled in the `VerifyBGPPeerCount` tests.
 <span class="normal">90</span>
 <span class="normal">91</span>
 <span class="normal">92</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">validate_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">validate_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate the inputs provided to the BgpAddressFamily class.</span>
 
 <span class="sd">    If `afi` is either `ipv4` or `ipv6`, `safi` must be provided.</span>
@@ -8319,7 +8319,7 @@ Can be enabled in the `VerifyBGPPeerCount` tests.
 <span class="normal">110</span>
 <span class="normal">111</span>
 <span class="normal">112</span>
-<span class="normal">113</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BgpAddressFamily</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="normal">113</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BgpAddressFamily</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Model for a BGP address family.&quot;&quot;&quot;</span>
 
     <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
@@ -8350,7 +8350,7 @@ Can be enabled in the `VerifyBGPPeerCount` tests.
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">validate_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate the inputs provided to the BgpAddressFamily class.</span>
 
 <span class="sd">        If `afi` is either `ipv4` or `ipv6`, `safi` must be provided.</span>
@@ -8370,12 +8370,12 @@ Can be enabled in the `VerifyBGPPeerCount` tests.
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">eos_key</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">eos_key</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;AFI/SAFI EOS key representation.&quot;&quot;&quot;</span>
         <span class="c1"># Pydantic handles the validation of the AFI/SAFI combination, so we can ignore error handling here.</span>
         <span class="k">return</span> <span class="n">AFI_SAFI_EOS_KEY</span><span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">afi</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">safi</span><span class="p">)]</span>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a human-readable string representation of the BgpAddressFamily for reporting.</span>
 
 <span class="sd">        Examples</span>
@@ -8453,7 +8453,7 @@ Can be enabled in the `VerifyBGPPeerCount` tests.
 <span class="normal">195</span>
 <span class="normal">196</span>
 <span class="normal">197</span>
-<span class="normal">198</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BgpNeighbor</span><span class="p">(</span><span class="n">BgpPeer</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+<span class="normal">198</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BgpNeighbor</span><span class="p">(</span><span class="n">BgpPeer</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Alias for the BgpPeer model to maintain backward compatibility.</span>
 
 <span class="sd">    When initialised, it will emit a deprecation warning and call the BgpPeer model.</span>
@@ -8461,7 +8461,7 @@ Can be enabled in the `VerifyBGPPeerCount` tests.
 <span class="sd">    TODO: Remove this class in ANTA v2.0.0.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: ANN401</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: ANN401</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the BgpPeer class, emitting a depreciation warning.&quot;&quot;&quot;</span>
         <span class="n">warn</span><span class="p">(</span>
             <span class="n">message</span><span class="o">=</span><span class="s2">&quot;BgpNeighbor model is deprecated and will be removed in ANTA v2.0.0. Use the BgpPeer model instead.&quot;</span><span class="p">,</span>
@@ -8783,7 +8783,7 @@ Optional field in the `VerifyBGPPeerRouteLimit` test. If not provided, the test 
 <span class="normal">177</span>
 <span class="normal">178</span>
 <span class="normal">179</span>
-<span class="normal">180</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BgpPeer</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="normal">180</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BgpPeer</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Model for a BGP peer.</span>
 
 <span class="sd">    Only IPv4 peers are supported for now.</span>
@@ -8827,7 +8827,7 @@ Optional field in the `VerifyBGPPeerRouteLimit` test. If not provided, the test 
 
 <span class="sd">    Optional field in the `VerifyBGPPeerRouteLimit` test. If not provided, the test will not verify the warning limit.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a human-readable string representation of the BgpPeer for reporting.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Peer: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">peer_address</span><span class="si">}</span><span class="s2"> VRF: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">&quot;</span>
 </code></pre></div></td></tr></table></div>
@@ -8931,7 +8931,7 @@ Optional field in the `VerifyBGPPeerRouteLimit` test. If not provided, the test 
 <span class="normal">208</span>
 <span class="normal">209</span>
 <span class="normal">210</span>
-<span class="normal">211</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VxlanEndpoint</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="normal">211</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VxlanEndpoint</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Model for a VXLAN endpoint.&quot;&quot;&quot;</span>
 
     <span class="n">address</span><span class="p">:</span> <span class="n">IPv4Address</span> <span class="o">|</span> <span class="n">MacAddress</span>
@@ -8939,7 +8939,7 @@ Optional field in the `VerifyBGPPeerRouteLimit` test. If not provided, the test 
     <span class="n">vni</span><span class="p">:</span> <span class="n">Vni</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;VNI of the VXLAN endpoint.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a human-readable string representation of the VxlanEndpoint for reporting.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Address: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="si">}</span><span class="s2"> VNI: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">vni</span><span class="si">}</span><span class="s2">&quot;</span>
 </code></pre></div></td></tr></table></div>

@@ -2698,10 +2698,10 @@ A generic test function is written for all unit tests in <code>tests.units.anta_
 <p>In order for your unit tests to be correctly collected, you need to import the generic test function even if not used in the Python module.</p>
 <p>Test example for <code>anta.tests.system.VerifyUptime</code> AntaTest.</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># Import the generic test function</span>
-<span class="kn">from</span> <span class="nn">tests.units.anta_tests</span> <span class="kn">import</span> <span class="n">test</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tests.units.anta_tests</span><span class="w"> </span><span class="kn">import</span> <span class="n">test</span>
 
 <span class="c1"># Import your AntaTest</span>
-<span class="kn">from</span> <span class="nn">anta.tests.system</span> <span class="kn">import</span> <span class="n">VerifyUptime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">anta.tests.system</span><span class="w"> </span><span class="kn">import</span> <span class="n">VerifyUptime</span>
 
 <span class="c1"># Define test parameters</span>
 <span class="n">DATA</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span>

@@ -2378,7 +2378,7 @@
 <h3 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h3>
 <p>By default, ANTA utilizes <a href="https://github.com/aio-libs/aiocache">aiocache</a>&rsquo;s memory cache backend, also called <a href="https://aiocache.aio-libs.org/en/v0.12.2/caches.html#simplememorycache"><code>SimpleMemoryCache</code></a>. This library aims for simplicity and supports asynchronous operations to go along with Python <code>asyncio</code> used in ANTA.</p>
 <p>The <code>_init_cache()</code> method of the <a href="../../api/device/#anta.device.AntaDevice">AntaDevice</a> abstract class initializes the cache. Child classes can override this method to tweak the cache configuration:</p>
-<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">_init_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_init_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Initialize cache for the device, can be overridden by subclasses to manipulate how it works</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2432,11 +2432,11 @@
 </ol>
 <h4 id="disable-caching-in-a-child-class-of-antadevice">Disable caching in a child class of <code>AntaDevice</code><a class="headerlink" href="#disable-caching-in-a-child-class-of-antadevice" title="Permanent link">&para;</a></h4>
 <p>Since caching is implemented at the <code>AntaDevice</code> abstract class level, all subclasses will inherit that default behavior. As a result, if you need to disable caching in any custom implementation of <code>AntaDevice</code> outside of the ANTA framework, you must initialize <code>AntaDevice</code> with <code>disable_cache</code> set to <code>True</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">AnsibleEOSDevice</span><span class="p">(</span><span class="n">AntaDevice</span><span class="p">):</span>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AnsibleEOSDevice</span><span class="p">(</span><span class="n">AntaDevice</span><span class="p">):</span>
 <span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">  Implementation of an AntaDevice using Ansible HttpApi plugin for EOS.</span>
 <span class="sd">  &quot;&quot;&quot;</span>
-  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">ConnectionBase</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="nb">set</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+  <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">ConnectionBase</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="nb">set</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
       <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">tags</span><span class="p">,</span> <span class="n">disable_cache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </code></pre></div>
 

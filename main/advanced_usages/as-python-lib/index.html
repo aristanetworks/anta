@@ -2455,12 +2455,12 @@ It uses the <a href="https://github.com/jeremyschulman/aio-eapi">aio-eapi</a> eA
 <span class="c1"># that can be found in the LICENSE file.</span>
 <span class="sd">&quot;&quot;&quot;Script that parses an ANTA inventory file, connects to devices and print their status.&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 
-<span class="kn">from</span> <span class="nn">anta.inventory</span> <span class="kn">import</span> <span class="n">AntaInventory</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">anta.inventory</span><span class="w"> </span><span class="kn">import</span> <span class="n">AntaInventory</span>
 
 
-<span class="k">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">inv</span><span class="p">:</span> <span class="n">AntaInventory</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">inv</span><span class="p">:</span> <span class="n">AntaInventory</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Read an AntaInventory and try to connect to every device in the inventory.</span>
 
 <span class="sd">    Print a message for every device connection status</span>
@@ -2497,16 +2497,16 @@ It uses the <a href="https://github.com/jeremyschulman/aio-eapi">aio-eapi</a> eA
 <span class="sd">&quot;&quot;&quot;Script that runs a list of EOS commands on reachable devices.&quot;&quot;&quot;</span>
 
 <span class="c1"># This is needed to run the script for python &lt; 3.10 for typing annotations</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pprint</span><span class="w"> </span><span class="kn">import</span> <span class="n">pprint</span>
 
-<span class="kn">from</span> <span class="nn">anta.inventory</span> <span class="kn">import</span> <span class="n">AntaInventory</span>
-<span class="kn">from</span> <span class="nn">anta.models</span> <span class="kn">import</span> <span class="n">AntaCommand</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">anta.inventory</span><span class="w"> </span><span class="kn">import</span> <span class="n">AntaInventory</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">anta.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">AntaCommand</span>
 
 
-<span class="k">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">inv</span><span class="p">:</span> <span class="n">AntaInventory</span><span class="p">,</span> <span class="n">commands</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]]:</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">inv</span><span class="p">:</span> <span class="n">AntaInventory</span><span class="p">,</span> <span class="n">commands</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Run a list of commands against each valid device in the inventory.</span>
 
 <span class="sd">    Take an AntaInventory and a list of commands as string</span>

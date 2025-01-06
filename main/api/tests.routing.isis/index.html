@@ -3146,7 +3146,7 @@
 <span class="normal">324</span>
 <span class="normal">325</span>
 <span class="normal">326</span>
-<span class="normal">327</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyISISInterfaceMode</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">327</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyISISInterfaceMode</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies ISIS Interfaces are running in correct mode.</span>
 
 <span class="sd">    Expected Results</span>
@@ -3180,13 +3180,13 @@
     <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;isis&quot;</span><span class="p">]</span>
     <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show isis interface brief&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
-    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyISISNeighborCount test.&quot;&quot;&quot;</span>
 
         <span class="n">interfaces</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">InterfaceState</span><span class="p">]</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;list of interfaces with their information.&quot;&quot;&quot;</span>
 
-        <span class="k">class</span> <span class="nc">InterfaceState</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+        <span class="k">class</span><span class="w"> </span><span class="nc">InterfaceState</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyISISNeighborCount test.&quot;&quot;&quot;</span>
 
             <span class="n">name</span><span class="p">:</span> <span class="n">Interface</span>
@@ -3199,7 +3199,7 @@
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;VRF where the interface should be configured&quot;&quot;&quot;</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
-    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyISISInterfaceMode.&quot;&quot;&quot;</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
@@ -3459,7 +3459,7 @@
 <span class="normal">240</span>
 <span class="normal">241</span>
 <span class="normal">242</span>
-<span class="normal">243</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyISISNeighborCount</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">243</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyISISNeighborCount</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies number of IS-IS neighbors per level and per interface.</span>
 
 <span class="sd">    Expected Results</span>
@@ -3490,13 +3490,13 @@
     <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;isis&quot;</span><span class="p">]</span>
     <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show isis interface brief&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
-    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyISISNeighborCount test.&quot;&quot;&quot;</span>
 
         <span class="n">interfaces</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">InterfaceCount</span><span class="p">]</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;list of interfaces with their information.&quot;&quot;&quot;</span>
 
-        <span class="k">class</span> <span class="nc">InterfaceCount</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+        <span class="k">class</span><span class="w"> </span><span class="nc">InterfaceCount</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyISISNeighborCount test.&quot;&quot;&quot;</span>
 
             <span class="n">name</span><span class="p">:</span> <span class="n">Interface</span>
@@ -3507,7 +3507,7 @@
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;Number of IS-IS neighbors.&quot;&quot;&quot;</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
-    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyISISNeighborCount.&quot;&quot;&quot;</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
@@ -3622,7 +3622,7 @@
 <span class="normal">171</span>
 <span class="normal">172</span>
 <span class="normal">173</span>
-<span class="normal">174</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyISISNeighborState</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">174</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyISISNeighborState</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies all IS-IS neighbors are in UP state.</span>
 
 <span class="sd">    Expected Results</span>
@@ -3644,7 +3644,7 @@
     <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show isis neighbors&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
-    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyISISNeighborState.&quot;&quot;&quot;</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
         <span class="k">if</span> <span class="n">_count_isis_neighbor</span><span class="p">(</span><span class="n">command_output</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -3981,7 +3981,7 @@
 <span class="normal">432</span>
 <span class="normal">433</span>
 <span class="normal">434</span>
-<span class="normal">435</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyISISSegmentRoutingAdjacencySegments</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">435</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyISISSegmentRoutingAdjacencySegments</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verify that all expected Adjacency segments are correctly visible for each interface.</span>
 
 <span class="sd">    Expected Results</span>
@@ -4009,12 +4009,12 @@
     <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;isis&quot;</span><span class="p">,</span> <span class="s2">&quot;segment-routing&quot;</span><span class="p">]</span>
     <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show isis segment-routing adjacency-segments&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)]</span>
 
-    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyISISSegmentRoutingAdjacencySegments test.&quot;&quot;&quot;</span>
 
         <span class="n">instances</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">IsisInstance</span><span class="p">]</span>
 
-        <span class="k">class</span> <span class="nc">IsisInstance</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+        <span class="k">class</span><span class="w"> </span><span class="nc">IsisInstance</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;ISIS Instance model definition.&quot;&quot;&quot;</span>
 
             <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
@@ -4024,7 +4024,7 @@
             <span class="n">segments</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Segment</span><span class="p">]</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;List of Adjacency segments configured in this instance.&quot;&quot;&quot;</span>
 
-            <span class="k">class</span> <span class="nc">Segment</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+            <span class="k">class</span><span class="w"> </span><span class="nc">Segment</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">                </span><span class="sd">&quot;&quot;&quot;Segment model definition.&quot;&quot;&quot;</span>
 
                 <span class="n">interface</span><span class="p">:</span> <span class="n">Interface</span>
@@ -4037,7 +4037,7 @@
 <span class="w">                </span><span class="sd">&quot;&quot;&quot;IP address of remote end of segment.&quot;&quot;&quot;</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
-    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyISISSegmentRoutingAdjacencySegments.&quot;&quot;&quot;</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
@@ -4310,7 +4310,7 @@
 <span class="normal">513</span>
 <span class="normal">514</span>
 <span class="normal">515</span>
-<span class="normal">516</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyISISSegmentRoutingDataplane</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">516</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyISISSegmentRoutingDataplane</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verify dataplane of a list of ISIS-SR instances.</span>
 
 <span class="sd">    Expected Results</span>
@@ -4335,12 +4335,12 @@
     <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;isis&quot;</span><span class="p">,</span> <span class="s2">&quot;segment-routing&quot;</span><span class="p">]</span>
     <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show isis segment-routing&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)]</span>
 
-    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyISISSegmentRoutingDataplane test.&quot;&quot;&quot;</span>
 
         <span class="n">instances</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">IsisInstance</span><span class="p">]</span>
 
-        <span class="k">class</span> <span class="nc">IsisInstance</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+        <span class="k">class</span><span class="w"> </span><span class="nc">IsisInstance</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;ISIS Instance model definition.&quot;&quot;&quot;</span>
 
             <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
@@ -4351,7 +4351,7 @@
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;Configured dataplane for the instance.&quot;&quot;&quot;</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
-    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyISISSegmentRoutingDataplane.&quot;&quot;&quot;</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
@@ -4828,7 +4828,7 @@
 <span class="normal">727</span>
 <span class="normal">728</span>
 <span class="normal">729</span>
-<span class="normal">730</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">VerifyISISSegmentRoutingTunnels</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">730</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyISISSegmentRoutingTunnels</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verify ISIS-SR tunnels computed by device.</span>
 
 <span class="sd">    Expected Results</span>
@@ -4862,13 +4862,13 @@
     <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;isis&quot;</span><span class="p">,</span> <span class="s2">&quot;segment-routing&quot;</span><span class="p">]</span>
     <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show isis segment-routing tunnel&quot;</span><span class="p">,</span> <span class="n">ofmt</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)]</span>
 
-    <span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyISISSegmentRoutingTunnels test.&quot;&quot;&quot;</span>
 
         <span class="n">entries</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Entry</span><span class="p">]</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;List of tunnels to check on device.&quot;&quot;&quot;</span>
 
-        <span class="k">class</span> <span class="nc">Entry</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+        <span class="k">class</span><span class="w"> </span><span class="nc">Entry</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;Definition of a tunnel entry.&quot;&quot;&quot;</span>
 
             <span class="n">endpoint</span><span class="p">:</span> <span class="n">IPv4Network</span>
@@ -4876,7 +4876,7 @@
             <span class="n">vias</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Vias</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;Optional list of path to reach endpoint.&quot;&quot;&quot;</span>
 
-            <span class="k">class</span> <span class="nc">Vias</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+            <span class="k">class</span><span class="w"> </span><span class="nc">Vias</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">                </span><span class="sd">&quot;&quot;&quot;Definition of a tunnel path.&quot;&quot;&quot;</span>
 
                 <span class="n">nexthop</span><span class="p">:</span> <span class="n">IPv4Address</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
@@ -4888,14 +4888,14 @@
                 <span class="n">tunnel_id</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;TI-LFA&quot;</span><span class="p">,</span> <span class="s2">&quot;ti-lfa&quot;</span><span class="p">,</span> <span class="s2">&quot;unset&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="w">                </span><span class="sd">&quot;&quot;&quot;Computation method of the tunnel. If None, then it is not tested. Default: None&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_eos_entry_lookup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">search_value</span><span class="p">:</span> <span class="n">IPv4Network</span><span class="p">,</span> <span class="n">entries</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">search_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;endpoint&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_eos_entry_lookup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">search_value</span><span class="p">:</span> <span class="n">IPv4Network</span><span class="p">,</span> <span class="n">entries</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">search_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;endpoint&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">next</span><span class="p">(</span>
             <span class="p">(</span><span class="n">entry_value</span> <span class="k">for</span> <span class="n">entry_id</span><span class="p">,</span> <span class="n">entry_value</span> <span class="ow">in</span> <span class="n">entries</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">entry_value</span><span class="p">[</span><span class="n">search_key</span><span class="p">])</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">search_value</span><span class="p">)),</span>
             <span class="kc">None</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
-    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyISISSegmentRoutingTunnels.</span>
 
 <span class="sd">        This method performs the main test logic for verifying ISIS Segment Routing tunnels.</span>
@@ -4933,7 +4933,7 @@
         <span class="k">if</span> <span class="n">failure_message</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">failure_message</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">_check_tunnel_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">via_input</span><span class="p">:</span> <span class="n">VerifyISISSegmentRoutingTunnels</span><span class="o">.</span><span class="n">Input</span><span class="o">.</span><span class="n">Entry</span><span class="o">.</span><span class="n">Vias</span><span class="p">,</span> <span class="n">eos_entry</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_tunnel_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">via_input</span><span class="p">:</span> <span class="n">VerifyISISSegmentRoutingTunnels</span><span class="o">.</span><span class="n">Input</span><span class="o">.</span><span class="n">Entry</span><span class="o">.</span><span class="n">Vias</span><span class="p">,</span> <span class="n">eos_entry</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if the tunnel type specified in `via_input` matches any of the tunnel types in `eos_entry`.</span>
 
 <span class="sd">        Parameters</span>
@@ -4960,7 +4960,7 @@
             <span class="p">)</span>
         <span class="k">return</span> <span class="kc">True</span>
 
-    <span class="k">def</span> <span class="nf">_check_tunnel_nexthop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">via_input</span><span class="p">:</span> <span class="n">VerifyISISSegmentRoutingTunnels</span><span class="o">.</span><span class="n">Input</span><span class="o">.</span><span class="n">Entry</span><span class="o">.</span><span class="n">Vias</span><span class="p">,</span> <span class="n">eos_entry</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_tunnel_nexthop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">via_input</span><span class="p">:</span> <span class="n">VerifyISISSegmentRoutingTunnels</span><span class="o">.</span><span class="n">Input</span><span class="o">.</span><span class="n">Entry</span><span class="o">.</span><span class="n">Vias</span><span class="p">,</span> <span class="n">eos_entry</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if the tunnel nexthop matches the given input.</span>
 
 <span class="sd">        Parameters</span>
@@ -4987,7 +4987,7 @@
             <span class="p">)</span>
         <span class="k">return</span> <span class="kc">True</span>
 
-    <span class="k">def</span> <span class="nf">_check_tunnel_interface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">via_input</span><span class="p">:</span> <span class="n">VerifyISISSegmentRoutingTunnels</span><span class="o">.</span><span class="n">Input</span><span class="o">.</span><span class="n">Entry</span><span class="o">.</span><span class="n">Vias</span><span class="p">,</span> <span class="n">eos_entry</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_tunnel_interface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">via_input</span><span class="p">:</span> <span class="n">VerifyISISSegmentRoutingTunnels</span><span class="o">.</span><span class="n">Input</span><span class="o">.</span><span class="n">Entry</span><span class="o">.</span><span class="n">Vias</span><span class="p">,</span> <span class="n">eos_entry</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if the tunnel interface exists in the given EOS entry.</span>
 
 <span class="sd">        Parameters</span>
@@ -5014,7 +5014,7 @@
             <span class="p">)</span>
         <span class="k">return</span> <span class="kc">True</span>
 
-    <span class="k">def</span> <span class="nf">_check_tunnel_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">via_input</span><span class="p">:</span> <span class="n">VerifyISISSegmentRoutingTunnels</span><span class="o">.</span><span class="n">Input</span><span class="o">.</span><span class="n">Entry</span><span class="o">.</span><span class="n">Vias</span><span class="p">,</span> <span class="n">eos_entry</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_tunnel_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">via_input</span><span class="p">:</span> <span class="n">VerifyISISSegmentRoutingTunnels</span><span class="o">.</span><span class="n">Input</span><span class="o">.</span><span class="n">Entry</span><span class="o">.</span><span class="n">Vias</span><span class="p">,</span> <span class="n">eos_entry</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if the tunnel ID matches any of the tunnel IDs in the EOS entry&#39;s vias.</span>
 
 <span class="sd">        Parameters</span>
