@@ -499,6 +499,33 @@ anta.tests.routing.bgp:
   - VerifyBGPPeersHealthRibd:
       # Verifies the health of all the BGP IPv4 peer(s).
       check_tcp_queues: True
+  - VerifyBGPRedistributedRoutes:
+      # Verifies BGP redistributed routes protocol and route-map.
+      address_families:
+        - vrf: default
+          redistributed_route_protocol: Connected
+          route_map: RM-CONN-2-BGP
+          afi: "ipv4"
+          safi: "unicast"
+          afi_safi_keys_replaced: True
+        - vrf: default
+          redistributed_route_protocol: Connected
+          route_map: RM-CONN-2-BGP
+          afi: "ipv6"
+          safi: "unicast"
+          afi_safi_keys_replaced: True
+        - vrf: test
+          redistributed_route_protocol: Connected
+          route_map: RM-CONN-2-BGP
+          afi: "ipv4"
+          safi: "multicast"
+          afi_safi_keys_replaced: True
+        - vrf: test
+          redistributed_route_protocol: Connected
+          route_map: RM-CONN-2-BGP
+          afi: "ipv6"
+          safi: "multicast"
+          afi_safi_keys_replaced: True
   - VerifyBGPSpecificPeers:
       # Verifies the health of specific BGP peer(s) for given address families.
       address_families:

@@ -12,7 +12,7 @@ from warnings import warn
 from pydantic import BaseModel, ConfigDict, Field, PositiveInt, model_validator
 from pydantic_extra_types.mac_address import MacAddress
 
-from anta.custom_types import Afi, BgpDropStats, BgpUpdateError, MultiProtocolCaps, Safi, Vni
+from anta.custom_types import Afi, BgpDropStats, BgpUpdateError, MultiProtocolCaps, Redistributed_Protocol, Safi, Vni
 
 if TYPE_CHECKING:
     import sys
@@ -39,6 +39,15 @@ AFI_SAFI_EOS_KEY = {
     ("link-state", None): "linkState",
 }
 """Dictionary mapping AFI/SAFI to EOS key representation."""
+
+replaced_afi_safi_keys = {
+    "ipv4Unicast": "v4u",
+    "ipv4Multicast": "v4m",
+    "ipv6Unicast": "v6u",
+    "ipv6Multicast": "v6m",
+}
+
+"""Dictionary mapping to replace a few keys of AFI/SAFI for EOS key representation in redistributed routes."""
 
 
 class BgpAddressFamily(BaseModel):
@@ -68,7 +77,16 @@ class BgpAddressFamily(BaseModel):
     check_peer_state: bool = False
     """Flag to check if the peers are established with negotiated AFI/SAFI. Defaults to `False`.
 
-    Can be enabled in the `VerifyBGPPeerCount` tests.
+    Can be enabled in the `VerifyBGPPeerCount` tests."""
+    redistributed_route_protocol: Redistributed_Protocol | None = None
+    """Specify redistributed route protocol."""
+    route_map: str | None = None
+    """Specify redistributed route protocol route map."""
+    afi_safi_keys_replaced: bool = False
+    """Flag to check if the AFI_SAFI_EOS_KEYs values are replaced using replaced_afi_safi_keys dictionary. Defaults to `False`.
+
+    Can be enabled in the `VerifyBGPRedistributedRoutes` tests.
+
     """
 
     @model_validator(mode="after")
@@ -94,6 +112,10 @@ class BgpAddressFamily(BaseModel):
     @property
     def eos_key(self) -> str:
         """AFI/SAFI EOS key representation."""
+        if self.afi_safi_keys_replaced:
+            afi_safi_keys = {key: replaced_afi_safi_keys.get(value, value) for key, value in AFI_SAFI_EOS_KEY.items()}
+            return afi_safi_keys[(self.afi, self.safi)]
+
         # Pydantic handles the validation of the AFI/SAFI combination, so we can ignore error handling here.
         return AFI_SAFI_EOS_KEY[(self.afi, self.safi)]
 

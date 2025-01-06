@@ -1544,3 +1544,94 @@ class VerifyBGPPeersHealthRibd(AntaTest):
                 outq = peer["peerTcpInfo"]["outputQueueLength"]
                 if self.inputs.check_tcp_queues and (inq != 0 or outq != 0):
                     self.result.is_failure(f"Peer: {peer['peerAddress']} VRF: {vrf} - Session has non-empty message queues - InQ: {inq}, OutQ: {outq}")
+
+
+class VerifyBGPRedistributedRoutes(AntaTest):
+    """Verifies BGP redistributed routes protocol and route-map.
+
+    This test performs the following checks for each specified route:
+
+      1. Confirms the redistributed route protocol and route map, match the expected value for a route.
+
+    Expected Results
+    ----------------
+    * Success: If all of the following conditions are met:
+        - The redistributed route protocol and route map match the expected value for a route.
+    * Failure: If any of the following occur:
+        - The redistributed route protocol or route map do not match the expected value for a route.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      bgp:
+        - VerifyBGPRedistributedRoutes:
+          address_families:
+            - vrf: default
+              redistributed_route_protocol: Connected
+              route_map: RM-CONN-2-BGP
+              afi: "ipv4"
+              safi: "unicast"
+              afi_safi_keys_replaced: True
+            - vrf: default
+              redistributed_route_protocol: Connected
+              route_map: RM-CONN-2-BGP
+              afi: "ipv6"
+              safi: "unicast"
+              afi_safi_keys_replaced: True
+            - vrf: test
+              redistributed_route_protocol: Connected
+              route_map: RM-CONN-2-BGP
+              afi: "ipv4"
+              safi: "multicast"
+              afi_safi_keys_replaced: True
+            - vrf: test
+              redistributed_route_protocol: Connected
+              route_map: RM-CONN-2-BGP
+              afi: "ipv6"
+              safi: "multicast"
+              afi_safi_keys_replaced: True
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["bgp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp instance vrf all", revision=4)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyBGPRedistributedRoutes test."""
+
+        address_families: list[BgpAddressFamily]
+        """List of BGP address families."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyBGPRedistributedRoutes."""
+        self.result.is_success()
+        cmd_output = self.instance_commands[0].json_output
+
+        # If BGP is not configured on the device, test fails.
+        if cmd_output.get("errors"):
+            self.result.is_failure("BGP is not configured")
+            return
+
+        # If specified VRF, afi safi details not found or redistributed route protocol or route map do not match the expected value, test fails.
+        for address_family in self.inputs.address_families:
+            vrf = address_family.vrf
+            redistributed_route_protocol = address_family.redistributed_route_protocol
+            route_map = address_family.route_map
+            afi_safi_key = address_family.eos_key
+
+            if not (afi_safi_configs := get_value(cmd_output, f"vrfs.{vrf}.afiSafiConfig.{afi_safi_key}")):
+                self.result.is_failure(f"{address_family} - Not found")
+                continue
+
+            redistributed_routes = afi_safi_configs.get("redistributedRoutes")
+            route_data = [route_data for route_data in redistributed_routes if route_data.get("proto") == redistributed_route_protocol]
+            if route_data:
+                if route_data[0].get("routeMap") != route_map:
+                    self.result.is_failure(f"{address_family} - Redistributed route map mismatch - Expected: {route_map} Actual: {route_data[0].get('routeMap')}")
+            else:
+                routes_proto = [route_data["proto"] for route_data in redistributed_routes]
+                self.result.is_failure(
+                    f"{address_family} - Redistributed route protocol mismatch - Expected: {redistributed_route_protocol} Actual: {', '.join(routes_proto)}"
+                )
