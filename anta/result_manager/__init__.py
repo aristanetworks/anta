@@ -58,7 +58,7 @@ class ResultManager:
     test_stats
     """
 
-    _result_entries: list[TestResult]
+    _results: list[TestResult]
     status: AntaTestStatus
     error_status: bool
 
@@ -69,12 +69,12 @@ class ResultManager:
 
     def __init__(self) -> None:
         """Initialize a ResultManager instance."""
+        self.ta = TypeAdapter(list[TestResult])
         self.reset()
 
     def reset(self) -> None:
         """Create or reset the attributes of the ResultManager instance."""
-        self._result_entries = []
-        self._result_entries_ta = TypeAdapter(list[TestResult])
+        self._results = []
         self.status = AntaTestStatus.UNSET
         self.error_status = False
 
@@ -83,12 +83,12 @@ class ResultManager:
 
     def __len__(self) -> int:
         """Implement __len__ method to count number of results."""
-        return len(self._result_entries)
+        return len(self._results)
 
     @property
     def results(self) -> list[TestResult]:
         """Get the list of TestResult."""
-        return self._result_entries
+        return self._results
 
     @results.setter
     def results(self, value: list[TestResult]) -> None:
@@ -102,12 +102,12 @@ class ResultManager:
     @property
     def dump(self) -> list[dict[str, Any]]:
         """Get a list of dictionary of the results."""
-        return self._result_entries_ta.dump_python(self._result_entries)
+        return self.ta.dump_python(self._results)
 
     @property
     def json(self) -> str:
         """Get a JSON representation of the results."""
-        return self._result_entries_ta.dump_json(self._result_entries, exclude_none=True, indent=4).decode()
+        return self.ta.dump_json(self._results, exclude_none=True, indent=4).decode()
 
     @property
     def device_stats(self) -> dict[str, DeviceStats]:
@@ -136,12 +136,12 @@ class ResultManager:
     @cached_property
     def results_by_status(self) -> dict[AntaTestStatus, list[TestResult]]:
         """A cached property that returns the results grouped by status."""
-        return {status: [result for result in self._result_entries if result.result == status] for status in AntaTestStatus}
+        return {status: [result for result in self._results if result.result == status] for status in AntaTestStatus}
 
     @cached_property
     def results_by_category(self) -> list[TestResult]:
         """A cached property that returns the results grouped by status."""
-        return sorted(self._result_entries, key=lambda res: res.categories)
+        return sorted(self._results, key=lambda res: res.categories)
 
     def _update_status(self, test_status: AntaTestStatus) -> None:
         """Update the status of the ResultManager instance based on the test status.
@@ -205,7 +205,7 @@ class ResultManager:
         self._reset_stats()
 
         # Recompute stats for all results
-        for result in self._result_entries:
+        for result in self._results:
             self._update_stats(result)
 
         self._stats_in_sync = True
@@ -226,7 +226,7 @@ class ResultManager:
         result
             TestResult to add to the ResultManager instance.
         """
-        self._result_entries.append(result)
+        self._results.append(result)
         self._update_status(result.result)
         self._stats_in_sync = False
 
@@ -252,7 +252,7 @@ class ResultManager:
             List of results.
         """
         # Return all results if no status is provided, otherwise return results for multiple statuses
-        results = self._result_entries if status is None else list(chain.from_iterable(self.results_by_status.get(status, []) for status in status))
+        results = self._results if status is None else list(chain.from_iterable(self.results_by_status.get(status, []) for status in status))
 
         if sort_by:
             accepted_fields = TestResult.model_fields.keys()
@@ -356,7 +356,7 @@ class ResultManager:
             A filtered `ResultManager`.
         """
         manager = ResultManager()
-        manager.results = [result for result in self._result_entries if result.test in tests]
+        manager.results = [result for result in self._results if result.test in tests]
         return manager
 
     @deprecated("This method is deprecated. This will be removed in ANTA v2.0.0.", category=DeprecationWarning)
@@ -374,7 +374,7 @@ class ResultManager:
             A filtered `ResultManager`.
         """
         manager = ResultManager()
-        manager.results = [result for result in self._result_entries if result.name in devices]
+        manager.results = [result for result in self._results if result.name in devices]
         return manager
 
     @deprecated("This method is deprecated. This will be removed in ANTA v2.0.0.", category=DeprecationWarning)
@@ -386,7 +386,7 @@ class ResultManager:
         set[str]
             Set of test names.
         """
-        return {str(result.test) for result in self._result_entries}
+        return {str(result.test) for result in self._results}
 
     @deprecated("This method is deprecated. This will be removed in ANTA v2.0.0.", category=DeprecationWarning)
     def get_devices(self) -> set[str]:
@@ -397,4 +397,4 @@ class ResultManager:
         set[str]
             Set of device names.
         """
-        return {str(result.name) for result in self._result_entries}
+        return {str(result.name) for result in self._results}
