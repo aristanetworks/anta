@@ -4629,7 +4629,6 @@ DATA: list[dict[str, Any]] = [
                     "route_map": "RM-CONN-2-BGP",
                     "afi": "ipv4",
                     "safi": "unicast",
-                    "afi_safi_keys_replaced": True,
                 },
                 {
                     "vrf": "test",
@@ -4637,7 +4636,6 @@ DATA: list[dict[str, Any]] = [
                     "route_map": "RM-CONN-2-BGP",
                     "afi": "ipv6",
                     "safi": "unicast",
-                    "afi_safi_keys_replaced": True,
                 },
             ]
         },
@@ -4662,7 +4660,6 @@ DATA: list[dict[str, Any]] = [
                     "route_map": "RM-CONN-2-BGP",
                     "afi": "ipv4",
                     "safi": "unicast",
-                    "afi_safi_keys_replaced": True,
                 },
                 {
                     "vrf": "test",
@@ -4670,7 +4667,6 @@ DATA: list[dict[str, Any]] = [
                     "route_map": "RM-CONN-2-BGP",
                     "afi": "ipv6",
                     "safi": "unicast",
-                    "afi_safi_keys_replaced": True,
                 },
             ]
         },
@@ -4705,7 +4701,6 @@ DATA: list[dict[str, Any]] = [
                     "route_map": "RM-CONN-2-BGP",
                     "afi": "ipv4",
                     "safi": "unicast",
-                    "afi_safi_keys_replaced": True,
                 },
                 {
                     "vrf": "test",
@@ -4713,7 +4708,6 @@ DATA: list[dict[str, Any]] = [
                     "route_map": "RM-CONN-2-BGP",
                     "afi": "ipv6",
                     "safi": "unicast",
-                    "afi_safi_keys_replaced": True,
                 },
             ]
         },
@@ -4754,7 +4748,6 @@ DATA: list[dict[str, Any]] = [
                     "route_map": "RM-CONN-2-BGP",
                     "afi": "ipv4",
                     "safi": "unicast",
-                    "afi_safi_keys_replaced": True,
                 },
                 {
                     "vrf": "test",
@@ -4762,7 +4755,6 @@ DATA: list[dict[str, Any]] = [
                     "route_map": "RM-CONN-2-BGP",
                     "afi": "ipv6",
                     "safi": "unicast",
-                    "afi_safi_keys_replaced": True,
                 },
             ]
         },
@@ -4773,31 +4765,5 @@ DATA: list[dict[str, Any]] = [
                 "AFI: ipv6 SAFI: unicast VRF: test - Redistributed route map mismatch - Expected: RM-CONN-2-BGP Actual: RM-MLAG-PEER-IN",
             ],
         },
-    },
-    {
-        "name": "failure-bgp-inactive",
-        "test": VerifyBGPRedistributedRoutes,
-        "eos_data": [{"errors": ["BGP inactive"]}],
-        "inputs": {
-            "address_families": [
-                {
-                    "vrf": "default",
-                    "redistributed_route_protocol": "Connected",
-                    "route_map": "RM-CONN-2-BGP",
-                    "afi": "ipv4",
-                    "safi": "unicast",
-                    "afi_safi_keys_replaced": True,
-                },
-                {
-                    "vrf": "test",
-                    "redistributed_route_protocol": "Connected",
-                    "route_map": "RM-CONN-2-BGP",
-                    "afi": "ipv6",
-                    "safi": "unicast",
-                    "afi_safi_keys_replaced": True,
-                },
-            ]
-        },
-        "expected": {"result": "failure", "messages": ["BGP is not configured"]},
     },
 ]

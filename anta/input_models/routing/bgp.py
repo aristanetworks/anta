@@ -40,14 +40,9 @@ AFI_SAFI_EOS_KEY = {
 }
 """Dictionary mapping AFI/SAFI to EOS key representation."""
 
-replaced_afi_safi_keys = {
-    "ipv4Unicast": "v4u",
-    "ipv4Multicast": "v4m",
-    "ipv6Unicast": "v6u",
-    "ipv6Multicast": "v6m",
-}
+AFI_SAFI_REDISTRIBUTED_ROUTE_KEY = {"ipv4Unicast": "v4u", "ipv4Multicast": "v4m", "ipv6Unicast": "v6u", "ipv6Multicast": "v6m"}
 
-"""Dictionary mapping to replace a few keys of AFI/SAFI for EOS key representation in redistributed routes."""
+"""Dictionary mapping of AFI/SAFI to redistributed routes key representation."""
 
 
 class BgpAddressFamily(BaseModel):
@@ -82,12 +77,6 @@ class BgpAddressFamily(BaseModel):
     """Specify redistributed route protocol."""
     route_map: str | None = None
     """Specify redistributed route protocol route map."""
-    afi_safi_keys_replaced: bool = False
-    """Flag to check if the AFI_SAFI_EOS_KEYs values are replaced using replaced_afi_safi_keys dictionary. Defaults to `False`.
-
-    Can be enabled in the `VerifyBGPRedistributedRoutes` tests.
-
-    """
 
     @model_validator(mode="after")
     def validate_inputs(self) -> Self:
@@ -112,12 +101,14 @@ class BgpAddressFamily(BaseModel):
     @property
     def eos_key(self) -> str:
         """AFI/SAFI EOS key representation."""
-        if self.afi_safi_keys_replaced:
-            afi_safi_keys = {key: replaced_afi_safi_keys.get(value, value) for key, value in AFI_SAFI_EOS_KEY.items()}
-            return afi_safi_keys[(self.afi, self.safi)]
-
         # Pydantic handles the validation of the AFI/SAFI combination, so we can ignore error handling here.
         return AFI_SAFI_EOS_KEY[(self.afi, self.safi)]
+
+    @property
+    def redistributed_route_key(self) -> str:
+        """AFI/SAFI  Redistributed route key representation."""
+        afi_safi_keys = {key: AFI_SAFI_REDISTRIBUTED_ROUTE_KEY.get(value, value) for key, value in AFI_SAFI_EOS_KEY.items()}
+        return afi_safi_keys[(self.afi, self.safi)]
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the BgpAddressFamily for reporting.
