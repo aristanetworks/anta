@@ -1589,8 +1589,9 @@ class VerifyBGPRedistributedRoutes(AntaTest):
               safi: "multicast"
     ```
     """
+
     # Note: For thr proto User on the device, Update the redistributed_route_protocol as EOS SDK.
- 
+
     categories: ClassVar[list[str]] = ["bgp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp instance vrf all", revision=4)]
 
