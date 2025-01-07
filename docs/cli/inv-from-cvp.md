@@ -2,7 +2,7 @@
 anta_title: Create an Inventory from CloudVision
 ---
 <!--
-  ~ Copyright (c) 2023-2024 Arista Networks, Inc.
+  ~ Copyright (c) 2023-2025 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
   ~ that can be found in the LICENSE file.
   -->
@@ -52,8 +52,8 @@ anta_inventory:
     - pod2
 ```
 
-!!! warning
-    The current implementation only considers devices directly attached to a specific container when using the `--cvp-container` option.
+> [!WARNING]
+> The current implementation only considers devices directly attached to a specific container when using the `--cvp-container` option.
 
 ## Creating an inventory from multiple containers
 

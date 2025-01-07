@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module related to the device configuration tests."""
@@ -33,8 +33,6 @@ class VerifyZeroTouch(AntaTest):
     ```
     """
 
-    name = "VerifyZeroTouch"
-    description = "Verifies ZeroTouch is disabled"
     categories: ClassVar[list[str]] = ["configuration"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show zerotouch", revision=1)]
 
@@ -64,8 +62,6 @@ class VerifyRunningConfigDiffs(AntaTest):
     ```
     """
 
-    name = "VerifyRunningConfigDiffs"
-    description = "Verifies there is no difference between the running-config and the startup-config"
     categories: ClassVar[list[str]] = ["configuration"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show running-config diffs", ofmt="text")]
 
@@ -98,13 +94,12 @@ class VerifyRunningConfigLines(AntaTest):
     ```yaml
     anta.tests.configuration:
       - VerifyRunningConfigLines:
-            regex_patterns:
-                - "^enable password.*$"
-                - "bla bla"
+          regex_patterns:
+            - "^enable password.*$"
+            - "bla bla"
     ```
     """
 
-    name = "VerifyRunningConfigLines"
     description = "Search the Running-Config for the given RegEx patterns."
     categories: ClassVar[list[str]] = ["configuration"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show running-config", ofmt="text")]

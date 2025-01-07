@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 # pylint: disable = redefined-outer-name
@@ -22,7 +22,7 @@ from anta.cli.console import console
 from anta.cli.get.utils import inventory_output_options
 from anta.cli.utils import ExitCode, inventory_options
 
-from .utils import create_inventory_from_ansible, create_inventory_from_cvp, get_cv_token
+from .utils import create_inventory_from_ansible, create_inventory_from_cvp, explore_package, get_cv_token
 
 if TYPE_CHECKING:
     from anta.inventory import AntaInventory
@@ -75,7 +75,11 @@ def from_cvp(ctx: click.Context, output: Path, host: str, username: str, passwor
         # Get devices under a container
         logger.info("Getting inventory for container %s from CloudVision instance '%s'", container, host)
         cvp_inventory = clnt.api.get_devices_in_container(container)
-    create_inventory_from_cvp(cvp_inventory, output)
+    try:
+        create_inventory_from_cvp(cvp_inventory, output)
+    except OSError as e:
+        logger.error(str(e))
+        ctx.exit(ExitCode.USAGE_ERROR)
 
 
 @click.command
@@ -101,7 +105,7 @@ def from_ansible(ctx: click.Context, output: Path, ansible_group: str, ansible_i
             output=output,
             ansible_group=ansible_group,
         )
-    except ValueError as e:
+    except (ValueError, OSError) as e:
         logger.error(str(e))
         ctx.exit(ExitCode.USAGE_ERROR)
 
@@ -132,3 +136,25 @@ def tags(inventory: AntaInventory, **kwargs: Any) -> None:
         tags.update(device.tags)
     console.print("Tags found:")
     console.print_json(json.dumps(sorted(tags), indent=2))
+
+
+@click.command
+@click.pass_context
+@click.option("--module", help="Filter tests by module name.", default="anta.tests", show_default=True)
+@click.option("--test", help="Filter by specific test name. If module is specified, searches only within that module.", type=str)
+@click.option("--short", help="Display test names without their inputs.", is_flag=True, default=False)
+@click.option("--count", help="Print only the number of tests found.", is_flag=True, default=False)
+def tests(ctx: click.Context, module: str, test: str | None, *, short: bool, count: bool) -> None:
+    """Show all builtin ANTA tests with an example output retrieved from each test documentation."""
+    try:
+        tests_found = explore_package(module, test_name=test, short=short, count=count)
+        if tests_found == 0:
+            console.print(f"""No test {f"'{test}' " if test else ""}found in '{module}'.""")
+        elif count:
+            if tests_found == 1:
+                console.print(f"There is 1 test available in '{module}'.")
+            else:
+                console.print(f"There are {tests_found} tests available in '{module}'.")
+    except ValueError as e:
+        logger.error(str(e))
+        ctx.exit(ExitCode.USAGE_ERROR)

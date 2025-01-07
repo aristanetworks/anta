@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Tests for anta.cli.nrfu.commands."""
@@ -17,7 +17,7 @@ from anta.cli.utils import ExitCode
 if TYPE_CHECKING:
     from click.testing import CliRunner
 
-DATA_DIR: Path = Path(__file__).parent.parent.parent.parent.resolve() / "data"
+DATA_DIR: Path = Path(__file__).parents[3].resolve() / "data"
 
 
 def test_anta_nrfu_table_help(click_runner: CliRunner) -> None:
@@ -74,6 +74,19 @@ def test_anta_nrfu_text(click_runner: CliRunner) -> None:
     result = click_runner.invoke(anta, ["nrfu", "text"])
     assert result.exit_code == ExitCode.OK
     assert "leaf1 :: VerifyEOSVersion :: SUCCESS" in result.output
+
+
+def test_anta_nrfu_text_multiple_failures(click_runner: CliRunner) -> None:
+    """Test anta nrfu text with multiple failures, catalog is given via env."""
+    result = click_runner.invoke(anta, ["nrfu", "text"], env={"ANTA_CATALOG": str(DATA_DIR / "test_catalog_double_failure.yml")})
+    assert result.exit_code == ExitCode.TESTS_FAILED
+    assert (
+        """spine1 :: VerifyInterfacesSpeed :: FAILURE
+    Interface `Ethernet2` is not found.
+    Interface `Ethernet3` is not found.
+    Interface `Ethernet4` is not found."""
+        in result.output
+    )
 
 
 def test_anta_nrfu_json(click_runner: CliRunner) -> None:

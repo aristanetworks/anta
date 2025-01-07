@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module related to multicast and IGMP tests."""
@@ -35,8 +35,6 @@ class VerifyIGMPSnoopingVlans(AntaTest):
     ```
     """
 
-    name = "VerifyIGMPSnoopingVlans"
-    description = "Verifies the IGMP snooping status for the provided VLANs."
     categories: ClassVar[list[str]] = ["multicast"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip igmp snooping", revision=1)]
 
@@ -78,8 +76,6 @@ class VerifyIGMPSnoopingGlobal(AntaTest):
     ```
     """
 
-    name = "VerifyIGMPSnoopingGlobal"
-    description = "Verifies the IGMP snooping global configuration."
     categories: ClassVar[list[str]] = ["multicast"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip igmp snooping", revision=1)]
 

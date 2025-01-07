@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module related to ASIC profile tests."""
@@ -33,7 +33,6 @@ class VerifyUnifiedForwardingTableMode(AntaTest):
     ```
     """
 
-    name = "VerifyUnifiedForwardingTableMode"
     description = "Verifies the device is using the expected UFT mode."
     categories: ClassVar[list[str]] = ["profiles"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show platform trident forwarding-table partition", revision=1)]
@@ -72,7 +71,6 @@ class VerifyTcamProfile(AntaTest):
     ```
     """
 
-    name = "VerifyTcamProfile"
     description = "Verifies the device TCAM profile."
     categories: ClassVar[list[str]] = ["profiles"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show hardware tcam profile", revision=1)]

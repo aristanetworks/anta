@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module that provides predefined types for AntaTest.Input instances."""
@@ -208,6 +208,39 @@ SnmpPdu = Literal["inGetPdus", "inGetNextPdus", "inSetPdus", "outGetResponsePdus
 SnmpErrorCounter = Literal[
     "inVersionErrs", "inBadCommunityNames", "inBadCommunityUses", "inParseErrs", "outTooBigErrs", "outNoSuchNameErrs", "outBadValueErrs", "outGeneralErrs"
 ]
+<<<<<<< HEAD
 SnmpVersion = Literal["v1", "v2c", "v3"]
 HashingAlgorithms = Literal["MD5", "SHA", "SHA-224", "SHA-256", "SHA-384", "SHA-512"]
 EncryptionAlgorithms = Literal["AES-128", "AES-192", "AES-256", "DES"]
+=======
+
+IPv4RouteType = Literal[
+    "connected",
+    "static",
+    "kernel",
+    "OSPF",
+    "OSPF inter area",
+    "OSPF external type 1",
+    "OSPF external type 2",
+    "OSPF NSSA external type 1",
+    "OSPF NSSA external type2",
+    "Other BGP Routes",
+    "iBGP",
+    "eBGP",
+    "RIP",
+    "IS-IS level 1",
+    "IS-IS level 2",
+    "OSPFv3",
+    "BGP Aggregate",
+    "OSPF Summary",
+    "Nexthop Group Static Route",
+    "VXLAN Control Service",
+    "Martian",
+    "DHCP client installed default route",
+    "Dynamic Policy Route",
+    "VRF Leaked",
+    "gRIBI",
+    "Route Cache Route",
+    "CBF Leaked Route",
+]
+>>>>>>> main

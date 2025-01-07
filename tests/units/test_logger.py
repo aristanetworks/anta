@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Tests for anta.logger."""
@@ -6,11 +6,54 @@
 from __future__ import annotations
 
 import logging
+from pathlib import Path
 from unittest.mock import patch
 
 import pytest
 
-from anta.logger import anta_log_exception, exc_to_str, tb_to_str
+from anta.logger import Log, LogLevel, _get_file_handler, _get_rich_handler, anta_log_exception, exc_to_str, setup_logging, tb_to_str
+
+
+@pytest.mark.parametrize(
+    ("level", "path", "debug_value"),
+    [
+        pytest.param(Log.INFO, None, False, id="INFO no file"),
+        pytest.param(Log.DEBUG, None, False, id="DEBUG no file"),
+        pytest.param(Log.INFO, Path("/tmp/file.log"), False, id="INFO file"),
+        pytest.param(Log.DEBUG, Path("/tmp/file.log"), False, id="DEBUG file"),
+        pytest.param(Log.INFO, None, True, id="INFO no file __DEBUG__ set"),
+        pytest.param(Log.DEBUG, None, True, id="INFO no file __DEBUG__ set"),
+    ],
+)
+def test_setup_logging(level: LogLevel, path: Path | None, debug_value: bool) -> None:
+    """Test setup_logging."""
+    # Clean up any logger on root
+    root = logging.getLogger()
+    if root.hasHandlers():
+        root.handlers = []
+
+    with patch("anta.logger.__DEBUG__", new=debug_value):
+        setup_logging(level, path)
+
+    rich_handler = _get_rich_handler(root)
+    assert rich_handler is not None
+
+    # When __DEBUG__ is True, the log level is overwritten to DEBUG
+    if debug_value:
+        assert root.level == logging.DEBUG
+        if path is not None:
+            assert rich_handler.level == logging.INFO
+
+    if path is not None:
+        assert _get_file_handler(root, path) is not None
+        expected_handlers = 2
+    else:
+        expected_handlers = 1
+    assert len(root.handlers) == expected_handlers
+
+    # Check idempotency
+    setup_logging(level, path)
+    assert len(root.handlers) == expected_handlers
 
 
 @pytest.mark.parametrize(

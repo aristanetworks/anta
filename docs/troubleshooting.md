@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2024 Arista Networks, Inc.
+  ~ Copyright (c) 2024-2025 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
   ~ that can be found in the LICENSE file.
   -->
@@ -33,9 +33,8 @@ To help document the issue in Github, it is important to capture some logs so th
 
 ANTA provides very verbose logs when using the `DEBUG` level.  When using DEBUG log level with a log file, the DEBUG logging level is not sent to stdout, but only to the file.
 
-!!! danger
-
-    On real deployments, do not use DEBUG logging level without setting a log file at the same time.
+> [!CAUTION]
+> On real deployments, do not use DEBUG logging level without setting a log file at the same time.
 
 To save the logs to a file called `anta.log`, use the following flags:
 
@@ -46,11 +45,10 @@ anta -l DEBUG –log-file anta.log <ANTA_COMMAND>
 
 See `anta --help` for more information.  These have to precede the `nrfu` cmd.
 
-!!! tip
-
-    Remember that in ANTA, each level of command has its own options and they can only be set at this level.
-    so the `-l` and `--log-file` MUST be between `anta` and the `ANTA_COMMAND`.
-    similarly, all the `nrfu` options MUST be set between the `nrfu` and the `ANTA_NRFU_SUBCOMMAND` (`json`, `text`, `table` or `tpl-report`).
+> [!TIP]
+> Remember that in ANTA, each level of command has its own options and they can only be set at this level.
+> so the `-l` and `--log-file` MUST be between `anta` and the `ANTA_COMMAND`.
+> similarly, all the `nrfu` options MUST be set between the `nrfu` and the `ANTA_NRFU_SUBCOMMAND` (`json`, `text`, `table` or `tpl-report`).
 
 As an example, for the `nrfu` command, it would look like:
 
@@ -60,9 +58,8 @@ anta -l DEBUG --log-file anta.log nrfu --enable --username username --password a
 
 ### `ANTA_DEBUG` environment variable
 
-!!! warning
-
-     Do not use this if you do not know why. This produces a lot of logs and can create confusion if you do not know what to look for.
+> [!WARNING]
+> Do not use this if you do not know why. This produces a lot of logs and can create confusion if you do not know what to look for.
 
 The environment variable `ANTA_DEBUG=true` enable ANTA Debug Mode.
 

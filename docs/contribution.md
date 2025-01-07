@@ -2,7 +2,7 @@
 anta_title: How to contribute to ANTA
 ---
 <!--
-  ~ Copyright (c) 2023-2024 Arista Networks, Inc.
+  ~ Copyright (c) 2023-2025 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
   ~ that can be found in the LICENSE file.
   -->
@@ -29,7 +29,7 @@ $ pip install -e .[dev,cli]
 $ pip list -e
 Package Version Editable project location
 ------- ------- -------------------------
-anta    1.1.0   /mnt/lab/projects/anta
+anta    1.2.0   /mnt/lab/projects/anta
 ```
 
 Then, [`tox`](https://tox.wiki/) is configured with few environments to run CI locally:
@@ -86,9 +86,9 @@ Success: no issues found in 82 source files
 
 > NOTE: Typing is configured quite strictly, do not hesitate to reach out if you have any questions, struggles, nightmares.
 
-## Unit tests
+## Unit tests with Pytest
 
-To keep high quality code, we require to provide a Pytest for every tests implemented in ANTA.
+To keep high quality code, we require to provide a **Pytest** for every tests implemented in ANTA.
 
 All submodule should have its own pytest section under `tests/units/anta_tests/<submodule-name>.py`.
 

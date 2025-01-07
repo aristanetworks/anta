@@ -1,12 +1,10 @@
 <!--
-  ~ Copyright (c) 2023-2024 Arista Networks, Inc.
+  ~ Copyright (c) 2023-2025 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
   ~ that can be found in the LICENSE file.
   -->
 
-ANTA commands can be used with a `--tags` option. This option **filters the inventory** with the specified tag(s) when running the command.
-
-Tags can also be used to **restrict a specific test** to a set of devices when using `anta nrfu`.
+ANTA uses tags to define test-to-device mappings (tests run on devices with matching tags) and the `--tags` CLI option acts as a filter to execute specific test/device combinations.
 
 ## Defining tags
 
@@ -94,10 +92,11 @@ anta.tests.interfaces:
         tags: ['spine']
 ```
 
-> A tag used to filter a test can also be a device name
-
-!!! tip "Use different input values for a specific test"
-    Leverage tags to define different input values for a specific test. See the `VerifyUptime` example above.
+> [!TIP]
+>
+> - A tag used to filter a test can also be a device name
+>
+> - **Use different input values for a specific test**: Leverage tags to define different input values for a specific test. See the `VerifyUptime` example above.
 
 ## Using tags
 

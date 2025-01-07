@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module related to the EOS various SNMP tests."""
@@ -36,7 +36,6 @@ class VerifySnmpStatus(AntaTest):
     ```
     """
 
-    name = "VerifySnmpStatus"
     description = "Verifies if the SNMP agent is enabled."
     categories: ClassVar[list[str]] = ["snmp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show snmp", revision=1)]
@@ -75,7 +74,6 @@ class VerifySnmpIPv4Acl(AntaTest):
     ```
     """
 
-    name = "VerifySnmpIPv4Acl"
     description = "Verifies if the SNMP agent has IPv4 ACL(s) configured."
     categories: ClassVar[list[str]] = ["snmp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show snmp ipv4 access-list summary", revision=1)]
@@ -124,7 +122,6 @@ class VerifySnmpIPv6Acl(AntaTest):
     ```
     """
 
-    name = "VerifySnmpIPv6Acl"
     description = "Verifies if the SNMP agent has IPv6 ACL(s) configured."
     categories: ClassVar[list[str]] = ["snmp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show snmp ipv6 access-list summary", revision=1)]
@@ -172,8 +169,6 @@ class VerifySnmpLocation(AntaTest):
     ```
     """
 
-    name = "VerifySnmpLocation"
-    description = "Verifies the SNMP location of a device."
     categories: ClassVar[list[str]] = ["snmp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show snmp", revision=1)]
 
@@ -215,8 +210,6 @@ class VerifySnmpContact(AntaTest):
     ```
     """
 
-    name = "VerifySnmpContact"
-    description = "Verifies the SNMP contact of a device."
     categories: ClassVar[list[str]] = ["snmp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show snmp", revision=1)]
 
@@ -263,8 +256,6 @@ class VerifySnmpPDUCounters(AntaTest):
     ```
     """
 
-    name = "VerifySnmpPDUCounters"
-    description = "Verifies the SNMP PDU counters."
     categories: ClassVar[list[str]] = ["snmp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show snmp", revision=1)]
 
@@ -319,8 +310,6 @@ class VerifySnmpErrorCounters(AntaTest):
             - inBadCommunityNames
     """
 
-    name = "VerifySnmpErrorCounters"
-    description = "Verifies the SNMP error counters."
     categories: ClassVar[list[str]] = ["snmp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show snmp", revision=1)]
 
