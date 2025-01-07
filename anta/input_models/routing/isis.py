@@ -13,7 +13,7 @@ class ISISInstances(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
     name: str
-    """The instance name or ID to validated the instance specific isis details."""
+    """The instance name to validated the instance specific isis details."""
     vrf: str = "default"
     """VRF context. Defaults to `default` VRF."""
     graceful_restart: bool = True

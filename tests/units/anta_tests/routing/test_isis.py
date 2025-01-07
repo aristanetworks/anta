@@ -1921,7 +1921,7 @@ DATA: list[dict[str, Any]] = [
         },
     },
     {
-        "name": "failure-graceful-restart--helper-disabled",
+        "name": "failure-graceful-restart-helper-disabled",
         "test": VerifyISISGracefulRestart,
         "eos_data": [
             {

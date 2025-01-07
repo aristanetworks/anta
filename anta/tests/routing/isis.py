@@ -758,33 +758,33 @@ class VerifyISISGracefulRestart(AntaTest):
       isis:
         - VerifyISISGracefulRestart:
             instances:
-              - vrf: default
-                name: '1'
+              - name: '1'
+                vrf: default
                 graceful_restart: True
                 graceful_helper: True
-              - vrf: default
-                name: '2'
+              - name: '2'
+                vrf: default
                 graceful_restart: True
                 graceful_helper: True
-              - vrf: test
-                name: '1'
+              - name: '1'
+                vrf: test
                 graceful_restart: True
                 graceful_helper: True
-              - vrf: test
-                name: '2'
+              - name: '2'
+                vrf: test
                 graceful_restart: True
                 graceful_helper: True
     ```
     """
 
     categories: ClassVar[list[str]] = ["isis"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show isis summary vrf all")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show isis summary vrf all", revision=2)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyISISGracefulRestart test."""
 
         instances: list[ISISInstances]
-        """List of ISIS instance entries."""
+        """List of IS-IS instance entries."""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -793,12 +793,12 @@ class VerifyISISGracefulRestart(AntaTest):
         command_output = self.instance_commands[0].json_output
         isis_details = command_output.get("vrfs")
 
-        # If ISIS is not configured, test fails.
+        # If IS-IS is not configured, test fails.
         if not isis_details:
             self.result.is_failure("ISIS is not configured")
             return
 
-        # If ISIS-instance is not found or GR and GR helpers are not matching with the expected values, test fails.
+        # If IS-IS instance is not found or GR and GR helpers are not matching with the expected values, test fails.
         for instance in self.inputs.instances:
             vrf = instance.vrf
             instance_name = str(instance.name)
