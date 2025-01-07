@@ -17,23 +17,42 @@ from tests.units.test_models import FakeTestWithInput
 TEST_RESULTS: Path = Path(__file__).parent.resolve() / "test_files" / "test_md_report_results.json"
 
 
-@pytest.fixture
-def result_manager_factory(list_result_factory: Callable[[int, int, bool, bool], list[TestResult]]) -> Callable[[int, int, bool, bool], ResultManager]:
-    """Return a ResultManager factory that takes as input a number of tests."""
-    # pylint: disable=redefined-outer-name
+@pytest.fixture(name="result_manager_factory")
+def result_manager_factory_fixture(test_result_factory: Callable[[int, int, bool, bool], TestResult]) -> Callable[[int, int, bool, bool], ResultManager]:
+    """Return a function that creates a ResultManager instance."""
 
-    def _factory(size: int = 0, nb_atomic_results: int = 0, distinct_tests: bool = False, distinct_devices: bool = False) -> ResultManager:
-        """Create a factory for list[TestResult] entry of size entries."""
+    def _create(size: int = 0, nb_atomic_results: int = 0, distinct_tests: bool = False, distinct_devices: bool = False) -> ResultManager:
+        """ResultManager factory.
+
+        Parameters
+        ----------
+        size
+            Size of the ResultManager.
+        nb_atomic_results
+            Number of atomic results for each TestResult instance.
+        distinct_tests
+            Whether or not to use the index in the test name.
+        distinct_devices
+            Whether or not to use the index in the device name.
+        """
         result_manager = ResultManager()
-        result_manager.results = list_result_factory(size, nb_atomic_results, distinct_tests, distinct_devices)
+        result_manager.results = [test_result_factory(i, nb_atomic_results, distinct_tests, distinct_devices) for i in range(size)]
         return result_manager
 
-    return _factory
+    return _create
 
 
-@pytest.fixture
-def result_manager() -> ResultManager:
-    """Return a ResultManager with random tests loaded from a JSON file.
+@pytest.fixture(name="result_manager")
+def result_manager_fixture() -> ResultManager:
+    """Return a ResultManager with 30 random tests loaded from a JSON file.
+
+    Devices: DC1-SPINE1, DC1-LEAF1A
+
+    - Total tests: 30
+    - Success: 7
+    - Skipped: 2
+    - Failure: 19
+    - Error: 2
 
     See `tests/units/result_manager/test_md_report_results.json` for details.
     """
@@ -48,13 +67,24 @@ def result_manager() -> ResultManager:
     return manager
 
 
-@pytest.fixture
-def test_result_factory(device: AntaDevice) -> Callable[[int, int, bool, bool], TestResult]:
-    """Return a anta.result_manager.models.TestResult object."""
-    # pylint: disable=redefined-outer-name
+@pytest.fixture(name="test_result_factory")
+def test_result_factory_fixture(device: AntaDevice) -> Callable[[int, int, bool, bool], TestResult]:
+    """Return a function that creates a TestResult instance."""
 
     def _create(index: int = 0, nb_atomic_results: int = 0, distinct_tests: bool = False, distinct_devices: bool = False) -> TestResult:
-        """Actual Factory."""
+        """TestResult factory.
+
+        Parameters
+        ----------
+        index
+            Index of the TestResult instance, used to create distinct device and test names (if applicable) and a unique input for the test.
+        nb_atomic_results
+            Number of atomic results for each TestResult instance.
+        distinct_tests
+            Whether or not to use the index in the test name.
+        distinct_devices
+            Whether or not to use the index in the device name.
+        """
         test = FakeTestWithInput(device=device, inputs={"string": f"Test instance {index}"})
         res = TestResult(
             name=device.name if not distinct_devices else f"{device.name}{index}",
@@ -69,15 +99,3 @@ def test_result_factory(device: AntaDevice) -> Callable[[int, int, bool, bool], 
         return res
 
     return _create
-
-
-@pytest.fixture
-def list_result_factory(test_result_factory: Callable[[int, int, bool, bool], TestResult]) -> Callable[[int, int, bool, bool], list[TestResult]]:
-    """Return a list[TestResult] with 'size' TestResult instantiated using the test_result_factory fixture."""
-    # pylint: disable=redefined-outer-name
-
-    def _factory(size: int = 0, nb_atomic_results: int = 0, distinct_tests: bool = False, distinct_devices: bool = False) -> list[TestResult]:
-        """Create a factory for list[TestResult] entry of size entries."""
-        return [test_result_factory(i, nb_atomic_results, distinct_tests, distinct_devices) for i in range(size)]
-
-    return _factory

@@ -10,7 +10,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from pydantic import BaseModel, InstanceOf, SerializeAsAny, SkipValidation
+from pydantic import BaseModel, InstanceOf, SerializeAsAny
 
 
 class AntaTestStatus(str, Enum):
@@ -99,18 +99,24 @@ class AtomicTestResult(BaseTestResult):
 
     _parent: TestResult
     description: str
-    inputs: SkipValidation[SerializeAsAny[InstanceOf[BaseModel]] | None] = None
+    inputs: SerializeAsAny[InstanceOf[BaseModel] | None] = None
     result: AntaTestStatus = AntaTestStatus.UNSET
     messages: list[str] = []
 
     def __init__(self, **data: Any) -> None:  # noqa: ANN401
         """Instantiate the parent TestResult private attribute."""
+        if "parent" not in data:
+            msg = "An AtomicTestResult instance must have a parent."
+            raise RuntimeError(msg)
         parent = data.pop("parent")
         super().__init__(**data)
         self._parent = parent
 
     def _set_status(self, status: AntaTestStatus, message: str | None = None) -> None:
         """Set status and insert optional message.
+
+        If the parent TestResult status is UNSET and this AtomicTestResult status is SUCCESS, the parent TestResult status will be set as a SUCCESS.
+        If this AtomicTestResult status is FAILURE or ERROR, the parent TestResult status will be set with the same status.
 
         Parameters
         ----------
@@ -157,7 +163,7 @@ class TestResult(BaseTestResult):
     test: str
     categories: list[str]
     description: str
-    inputs: SkipValidation[SerializeAsAny[InstanceOf[BaseModel]] | None] = None  # A TestResult inputs can be None in case of inputs validation error
+    inputs: SerializeAsAny[InstanceOf[BaseModel]] | None = None  # A TestResult inputs can be None in case of inputs validation error
     custom_field: str | None = None
     result: AntaTestStatus = AntaTestStatus.UNSET
     messages: list[str] = []
