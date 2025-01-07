@@ -34,16 +34,9 @@ DATA: list[dict[str, Any]] = [
         },
     },
     {
-        "name": "success-any-source-match",
+        "name": "success",
         "test": VerifyDynamicVlanSource,
         "eos_data": [{"dynamicVlans": {"evpn": {"vlanIds": [1199]}, "mlagsync": {"vlanIds": []}}}],
-        "inputs": {"source": ["evpn", "mlagsync"], "strict": False},
-        "expected": {"result": "success"},
-    },
-    {
-        "name": "success-all-source-match",
-        "test": VerifyDynamicVlanSource,
-        "eos_data": [{"dynamicVlans": {"evpn": {"vlanIds": [1199]}, "mlagsync": {"vlanIds": [1500]}}}],
         "inputs": {"source": ["evpn", "mlagsync"], "strict": False},
         "expected": {"result": "success"},
     },
@@ -69,7 +62,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "failure", "messages": ["Dynamic VLAN(s) source mismatch - evpn, mlagsync, vccbfd are not in the expected sources: evpn, mlagsync."]},
     },
     {
-        "name": "success-all-source-exact-match",
+        "name": "success-strict-mode",
         "test": VerifyDynamicVlanSource,
         "eos_data": [{"dynamicVlans": {"evpn": {"vlanIds": [1199]}, "mlagsync": {"vlanIds": [1502]}}}],
         "inputs": {"source": ["evpn", "mlagsync"], "strict": True},

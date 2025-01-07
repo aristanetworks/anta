@@ -81,6 +81,7 @@ class VerifyDynamicVlanSource(AntaTest):
       2. Confirms that dynamic VLAN(s) are enabled for any/all the designated sources and disabled for all others.
       3. When strict mode is enabled (`strict: true`):
         - Dynamic VLAN(s) are enabled for all designated sources.
+
     Expected Results
     ----------------
     * Success: The test will pass if all of the following conditions are met:
@@ -106,7 +107,7 @@ class VerifyDynamicVlanSource(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["vlan"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show vlan dynamic")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show vlan dynamic", revision=1)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyDynamicVlanSource test."""
