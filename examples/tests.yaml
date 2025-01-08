@@ -306,6 +306,8 @@ anta.tests.logging:
       vrf: default
   - VerifyLoggingTimestamp:
       # Verifies if logs are generated with the appropriate timestamp.
+  - VerifySyslogLogging:
+      # Verifies if syslog logging is enabled.
 anta.tests.mlag:
   - VerifyMlagConfigSanity:
       # Verifies there are no MLAG config-sanity inconsistencies.

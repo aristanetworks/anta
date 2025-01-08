@@ -59,8 +59,6 @@ class VerifySyslogLogging(AntaTest):
     ```
     """
 
-    name = "VerifySyslogLogging"
-    description = "Verifies if syslog logging is enabled."
     categories: ClassVar[list[str]] = ["logging"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show logging", ofmt="text")]
 
