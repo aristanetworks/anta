@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Tests for anta.tests.services.py."""
@@ -129,7 +129,7 @@ DATA: list[dict[str, Any]] = [
                 arp-inspection                 Enabled                  30
             """
         ],
-        "inputs": {"reasons": [{"reason": "acl", "interval": 300}, {"reason": "bpduguard", "interval": 300}]},
+        "inputs": {"reasons": [{"reason": "acl", "timer_interval": 300}, {"reason": "bpduguard", "timer_interval": 300}]},
         "expected": {"result": "success"},
     },
     {
@@ -144,7 +144,9 @@ DATA: list[dict[str, Any]] = [
                 arp-inspection                 Enabled                  30
             """
         ],
-        "inputs": {"reasons": [{"reason": "acl", "interval": 300}, {"reason": "arp-inspection", "interval": 30}, {"reason": "tapagg", "interval": 30}]},
+        "inputs": {
+            "reasons": [{"reason": "acl", "timer_interval": 300}, {"reason": "arp-inspection", "timer_interval": 30}, {"reason": "tapagg", "timer_interval": 30}]
+        },
         "expected": {
             "result": "failure",
             "messages": ["Reason: tapagg Status: Enabled Interval: 30 - Not found"],
@@ -162,10 +164,10 @@ DATA: list[dict[str, Any]] = [
                 arp-inspection                 Enabled                  30
             """
         ],
-        "inputs": {"reasons": [{"reason": "acl", "interval": 300}, {"reason": "arp-inspection", "interval": 30}]},
+        "inputs": {"reasons": [{"reason": "acl", "timer_interval": 300}, {"reason": "arp-inspection", "timer_interval": 30}]},
         "expected": {
             "result": "failure",
-            "messages": ["Reason: acl Status: Enabled Interval: 300 - Incorrect reason details - Status: Disabled Interval: 300"],
+            "messages": ["Reason: acl Status: Enabled Interval: 300 - Incorrect configuration - Status: Disabled Interval: 300"],
         },
     },
     {
@@ -180,11 +182,11 @@ DATA: list[dict[str, Any]] = [
                 arp-inspection                 Enabled                  30
             """
         ],
-        "inputs": {"reasons": [{"reason": "acl", "interval": 30}, {"reason": "arp-inspection", "interval": 30}]},
+        "inputs": {"reasons": [{"reason": "acl", "timer_interval": 30}, {"reason": "arp-inspection", "timer_interval": 30}]},
         "expected": {
             "result": "failure",
             "messages": [
-                "Reason: acl Status: Enabled Interval: 30 - Incorrect reason details - Status: Enabled Interval: 300",
+                "Reason: acl Status: Enabled Interval: 30 - Incorrect configuration - Status: Enabled Interval: 300",
             ],
         },
     },
@@ -200,12 +202,14 @@ DATA: list[dict[str, Any]] = [
                 arp-inspection                 Enabled                  30
             """
         ],
-        "inputs": {"reasons": [{"reason": "acl", "interval": 30}, {"reason": "arp-inspection", "interval": 300}, {"reason": "tapagg", "interval": 30}]},
+        "inputs": {
+            "reasons": [{"reason": "acl", "timer_interval": 30}, {"reason": "arp-inspection", "timer_interval": 300}, {"reason": "tapagg", "timer_interval": 30}]
+        },
         "expected": {
             "result": "failure",
             "messages": [
-                "Reason: acl Status: Enabled Interval: 30 - Incorrect reason details - Status: Disabled Interval: 300",
-                "Reason: arp-inspection Status: Enabled Interval: 300 - Incorrect reason details - Status: Enabled Interval: 30",
+                "Reason: acl Status: Enabled Interval: 30 - Incorrect configuration - Status: Disabled Interval: 300",
+                "Reason: arp-inspection Status: Enabled Interval: 300 - Incorrect configuration - Status: Enabled Interval: 30",
                 "Reason: tapagg Status: Enabled Interval: 30 - Not found",
             ],
         },

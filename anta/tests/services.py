@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module related to the EOS various services tests."""
@@ -9,7 +9,7 @@ from __future__ import annotations
 # mypy: disable-error-code=attr-defined
 from typing import ClassVar
 
-from anta.input_models.services import DnsServer, ErrDisableReason
+from anta.input_models.services import DnsServer, ErrdisableRecovery
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_dict_superset, get_item
 
@@ -163,24 +163,24 @@ class VerifyDNSServers(AntaTest):
 
 
 class VerifyErrdisableRecovery(AntaTest):
-    """Verifies the errdisable recovery reason.
+    """Verifies the error disable recovery functionality.
 
-    This test performs the following checks for each specified Errdisable reason:
+    This test performs the following checks for each specified error disable reason:
 
-      1. Checking that the errdisable recovery reason exists.
-      2. Verifying that the status of the errdisable recovery reason is set as specified.
-      3. Ensuring the interval value matches the expected input.
+      1. Verifying if the specified error disable reason exists.
+      2. Checking if the recovery timer status matches the expected enabled/disabled state.
+      3. Validating that the timer interval matches the configured value.
 
     Expected Results
     ----------------
     * Success: The test will pass if:
-        - The specified errdisable recovery reason is present in the configuration.
-        - The status of the recovery reason is set as specified.
-        - The configured interval matches the input value.
+        - The specified error disable reason exists.
+        - The recovery timer status matches the expected state.
+        - The timer interval matches the configured value.
     * Failure: The test will fail if:
-        - The errdisable recovery reason is not found in the configuration.
-        - The status of the recovery reason is set to "Disabled" or any unexpected value.
-        - The interval value does not match the expected input.
+        - The specified error disable reason does not exist.
+        - The recovery timer status does not match the expected state.
+        - The timer interval does not match the configured value.
 
     Examples
     --------
@@ -189,10 +189,10 @@ class VerifyErrdisableRecovery(AntaTest):
       - VerifyErrdisableRecovery:
           reasons:
             - reason: acl
-              interval: 30
+              timer_interval: 30
               status: Enabled
             - reason: bpduguard
-              interval: 30
+              timer_interval: 30
               status: Enabled
     ```
     """
@@ -204,9 +204,9 @@ class VerifyErrdisableRecovery(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyErrdisableRecovery test."""
 
-        reasons: list[ErrDisableReason]
+        reasons: list[ErrdisableRecovery]
         """List of errdisable reasons."""
-        ErrDisableReason: ClassVar[type[ErrDisableReason]] = ErrDisableReason
+        ErrDisableReason: ClassVar[type[ErrdisableRecovery]] = ErrdisableRecovery
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -218,10 +218,10 @@ class VerifyErrdisableRecovery(AntaTest):
 
         # Collecting the actual errdisable reasons for faster lookup
         errdisable_reasons = [
-            {"reason": reason, "status": status, "interval": interval}
+            {"reason": reason, "status": status, "timer_interval": timer_interval}
             for line in command_output
             if line.strip()  # Skip empty lines
-            for reason, status, interval in [line.split(None, 2)]  # Unpack split result
+            for reason, status, timer_interval in [line.split(None, 2)]  # Unpack split result
         ]
 
         for error_reason in self.inputs.reasons:
@@ -229,5 +229,10 @@ class VerifyErrdisableRecovery(AntaTest):
                 self.result.is_failure(f"{error_reason} - Not found")
                 continue
 
-            if not all([error_reason.status == (act_status := reason_output["status"]), error_reason.interval == (act_interval := int(reason_output["interval"]))]):
-                self.result.is_failure(f"{error_reason} - Incorrect reason details - Status: {act_status} Interval: {act_interval}")
+            if not all(
+                [
+                    error_reason.status == (act_status := reason_output["status"]),
+                    error_reason.timer_interval == (act_interval := int(reason_output["timer_interval"])),
+                ]
+            ):
+                self.result.is_failure(f"{error_reason} - Incorrect configuration - Status: {act_status} Interval: {act_interval}")

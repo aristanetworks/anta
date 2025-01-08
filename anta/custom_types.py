@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module that provides predefined types for AntaTest.Input instances."""
@@ -151,19 +151,41 @@ EcdsaKeySize = Literal[256, 384, 512]
 MultiProtocolCaps = Annotated[str, BeforeValidator(bgp_multiprotocol_capabilities_abbreviations)]
 BfdInterval = Annotated[int, Field(ge=50, le=60000)]
 BfdMultiplier = Annotated[int, Field(ge=3, le=50)]
-ErrDisableReasons = Literal[
+ErrdisableReason = Literal[
     "acl",
     "arp-inspection",
+    "bgp-session-tracking",
     "bpduguard",
+    "dot1x",
+    "dot1x-coa",
     "dot1x-session-replace",
+    "evpn-sa-mh",
+    "fabric-link-failure",
+    "fabric-link-flap",
     "hitless-reload-down",
+    "lacp-no-portid",
     "lacp-rate-limit",
+    "license-enforce",
     "link-flap",
+    "mlagasu",
+    "mlagdualprimary",
+    "mlagissu",
+    "mlagmaintdown",
     "no-internal-vlan",
+    "out-of-voqs",
     "portchannelguard",
+    "portgroup-disabled",
     "portsec",
+    "speed-misconfigured",
+    "storm-control",
+    "stp-no-portid",
+    "stuck-queue",
     "tapagg",
     "uplink-failure-detection",
+    "xcvr-misconfigured",
+    "xcvr-overheat",
+    "xcvr-power-unsupported",
+    "xcvr-unsupported",
 ]
 ErrDisableInterval = Annotated[int, Field(ge=30, le=86400)]
 Percent = Annotated[float, Field(ge=0.0, le=100.0)]
