@@ -9,6 +9,8 @@ from __future__ import annotations
 # mypy: disable-error-code=attr-defined
 from typing import ClassVar
 
+from pydantic import field_validator
+
 from anta.input_models.services import DnsServer, ErrdisableRecovery
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_dict_superset, get_item
@@ -207,6 +209,16 @@ class VerifyErrdisableRecovery(AntaTest):
         reasons: list[ErrdisableRecovery]
         """List of errdisable reasons."""
         ErrDisableReason: ClassVar[type[ErrdisableRecovery]] = ErrdisableRecovery
+
+        @field_validator("reasons")
+        @classmethod
+        def validate_errdisablerecovery(cls, reasons: list[ErrdisableRecovery]) -> list[ErrdisableRecovery]:
+            """Validate that 'timer_interval' field is provided in each Errdisable Reason."""
+            for reason in reasons:
+                if not reason.timer_interval:
+                    msg = f"{reason}; 'timer_interval' field missing in the input"
+                    raise ValueError(msg)
+            return reasons
 
     @AntaTest.anta_test
     def test(self) -> None:

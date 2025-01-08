@@ -43,7 +43,7 @@ class ErrdisableRecovery(BaseModel):
     status: Literal["Enabled", "Disabled"] = "Enabled"
     """Operational status of the reason. Defaults to 'Enabled'."""
     timer_interval: int = Field(ge=30, le=86400)
-    """Timer interval of the reason in seconds."""
+    """Timer interval of the reason in seconds. Required field in the `VerifyErrdisableRecovery` test."""
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the ErrdisableRecovery for reporting.
