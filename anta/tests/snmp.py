@@ -350,7 +350,7 @@ class VerifySnmpErrorCounters(AntaTest):
 class VerifySnmpUser(AntaTest):
     """Verifies the SNMP user configurations for specified version(s).
 
-    This test performs the following checks for each specified address family:
+    This test performs the following checks for each specified user:
 
       1. Verifies that the valid user name and group name.
       2. Ensures that the SNMP v3 security model, the user authentication and privacy settings aligning with version-specific requirements.
