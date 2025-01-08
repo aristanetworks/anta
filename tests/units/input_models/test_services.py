@@ -1,7 +1,7 @@
 # Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""Tests for anta.input_models.interfaces.py."""
+"""Tests for anta.input_models.services.py."""
 
 # pylint: disable=C0302
 from __future__ import annotations
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from anta.input_models.services import ErrdisableRecovery
 
 
-class TestVerifyBgpRouteMapsInput:
+class TestVerifyErrdisableRecoveryInput:
     """Test anta.tests.services.VerifyErrdisableRecovery.Input."""
 
     @pytest.mark.parametrize(

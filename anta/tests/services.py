@@ -215,7 +215,7 @@ class VerifyErrdisableRecovery(AntaTest):
         def validate_errdisablerecovery(cls, reasons: list[ErrdisableRecovery]) -> list[ErrdisableRecovery]:
             """Validate that 'timer_interval' field is provided in each Errdisable Reason."""
             for reason in reasons:
-                if not reason.timer_interval:
+                if reason.timer_interval is None:
                     msg = f"{reason}; 'timer_interval' field missing in the input"
                     raise ValueError(msg)
             return reasons
