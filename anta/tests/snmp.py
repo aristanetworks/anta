@@ -393,6 +393,9 @@ class VerifySnmpUser(AntaTest):
         def validate_snmp_user(cls, snmp_users: list[T]) -> list[T]:
             """Validate that 'authentication_type' or 'encryption' field is provided in each SNMP user."""
             for user in snmp_users:
+                if user.group_name is None or user.security_model is None:
+                    msg = f"{user} 'group_name' or 'security_model' field missing in the input"
+                    raise ValueError(msg)
                 if user.security_model == "v3" and not (user.authentication_type or user.encryption):
                     msg = f"{user}; At least one of 'authentication_type' or 'encryption' must be provided."
                     raise ValueError(msg)
