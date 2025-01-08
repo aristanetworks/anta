@@ -32,8 +32,9 @@ class BFDPeer(BaseModel):
     protocols: list[BfdProtocol] | None = None
     """List of protocols to be verified. Required field in the `VerifyBFDPeersRegProtocols` test."""
     detection_time: int | None = None
-    """Detection time of BFD peer in milliseconds. The period of time without receiving BFD packets
-    after which the session is determined to have failed."""
+    """Detection time of BFD peer in milliseconds. Defines how long to wait without receiving BFD packets before declaring the peer session as down.
+
+    Optional field in the `VerifyBFDPeersIntervals` test."""
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the BFDPeer for reporting."""

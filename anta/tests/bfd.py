@@ -98,16 +98,19 @@ class VerifyBFDPeersIntervals(AntaTest):
 
       1. Confirms that the specified VRF is configured.
       2. Verifies that the peer exists in the BFD configuration.
-      3. Confirms that BFD peer is correctly configured with the `Transmit interval, Receive interval, Detection time and Multiplier`.
+      3. Confirms that BFD peer is correctly configured with the `Transmit interval, Receive interval and Multiplier`.
+      4. Verifies that BFD peer is correctly configured with the `Detection time`, if provided.
 
     Expected Results
     ----------------
     * Success: If all of the following conditions are met:
         - All specified peers are found in the BFD configuration within the specified VRF.
-        - All BFD peers are correctly configured with the `Transmit interval, Receive interval, Detection time and Multiplier`.
+        - All BFD peers are correctly configured with the `Transmit interval, Receive interval and Multiplier`.
+        - If provided, the `Detection time` is correctly configured.
     * Failure: If any of the following occur:
         - A specified peer is not found in the BFD configuration within the specified VRF.
-        - Any BFD peer not correctly configured with the `Transmit interval, Receive interval, Detection time and Multiplier`.
+        - Any BFD peer not correctly configured with the `Transmit interval, Receive interval and Multiplier`.
+        - Any BFD peer is not correctly configured with `Detection time`, if provided.
 
     Examples
     --------
@@ -120,7 +123,6 @@ class VerifyBFDPeersIntervals(AntaTest):
               tx_interval: 1200
               rx_interval: 1200
               multiplier: 3
-              detection_time: 3600
             - peer_address: 192.0.255.7
               vrf: default
               tx_interval: 1200
@@ -181,7 +183,7 @@ class VerifyBFDPeersIntervals(AntaTest):
             if detect_multiplier != multiplier:
                 self.result.is_failure(f"{bfd_peer} - Incorrect Multiplier - Expected: {multiplier} Actual: {detect_multiplier}")
 
-            if op_detection_time != detect_time:
+            if detect_time and op_detection_time != detect_time:
                 self.result.is_failure(f"{bfd_peer} - Incorrect Detection Time - Expected: {detect_time} Actual: {op_detection_time}")
 
 
