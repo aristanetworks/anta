@@ -222,12 +222,13 @@ DATA: AntaUnitTestDataDict = {
             "result": AntaTestStatus.FAILURE,
             "messages": ["Unreachable Host 10.0.0.11 (src: 10.0.0.5, vrf: default, size: 100B, repeat: 2)"],
             # This test has implemented atomic results.
-            # Expected atomic results must be specified or the test will fail.
+            # Expected atomic results must be specified or the test will fail. Order matters.
+            # The atomic results must be defined in the same order.
             "atomic_results": [
                 {
                     # Expected atomic result description
-                    "description": "Host 10.0.0.11 in VRF default",
-                    # If the atomic result is tied to a subset of the test inputs, it needs to be expected here.
+                    "description": "Destination 10.0.0.11 from 10.0.0.5 in VRF default",
+                    # If the atomic result is tied to a subset of the test inputs, it needs to be added here otherwise the test will fail.
                     "inputs": {
                         "destination": "10.0.0.11",
                         "df_bit": False,
@@ -240,6 +241,7 @@ DATA: AntaUnitTestDataDict = {
                     "result": AntaTestStatus.FAILURE,
                     # If the atomic result returns messages, it needs to be expected otherwise test will fail.
                     # The expected message can be a substring of the actual message.
+                    # The messages must be defined in the same order.
                     "messages": ["Unreachable Destination 10.0.0.11 from 10.0.0.5 in VRF default"],
                 },
                 {
