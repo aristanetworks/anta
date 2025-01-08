@@ -8,9 +8,9 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, ClassVar, TypeVar
 
-from pydantic import Field
+from pydantic import Field, field_validator
 
 from anta.input_models.bfd import BFDPeer
 from anta.models import AntaCommand, AntaTest
@@ -18,6 +18,9 @@ from anta.tools import get_value
 
 if TYPE_CHECKING:
     from anta.models import AntaTemplate
+
+# Using a TypeVar for the BFDPeer model since mypy thinks it's a ClassVar and not a valid type when used in field validators
+T = TypeVar("T", bound=BFDPeer)
 
 
 class VerifyBFDSpecificPeers(AntaTest):
@@ -138,6 +141,22 @@ class VerifyBFDPeersIntervals(AntaTest):
         """List of IPv4 BFD"""
         BFDPeer: ClassVar[type[BFDPeer]] = BFDPeer
         """To maintain backward compatibility"""
+
+        @field_validator("bfd_peers")
+        @classmethod
+        def validate_snmp_user(cls, bfd_peers: list[T]) -> list[T]:
+            """Validate that 'tx_interval', 'rx_interval' or 'multiplier' field is provided in each BFD peer."""
+            for peer in bfd_peers:
+                if peer.tx_interval is None:
+                    msg = f"{peer}; 'tx_interval' field missing in the input"
+                    raise ValueError(msg)
+                if peer.rx_interval is None:
+                    msg = f"{peer}; 'rx_interval' field missing in the input"
+                    raise ValueError(msg)
+                if peer.multiplier is None:
+                    msg = f"{peer}; 'multiplier' field missing in the input"
+                    raise ValueError(msg)
+            return bfd_peers
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -298,6 +317,16 @@ class VerifyBFDPeersRegProtocols(AntaTest):
         """List of IPv4 BFD"""
         BFDPeer: ClassVar[type[BFDPeer]] = BFDPeer
         """To maintain backward compatibility"""
+
+        @field_validator("bfd_peers")
+        @classmethod
+        def validate_snmp_user(cls, bfd_peers: list[T]) -> list[T]:
+            """Validate that 'protocols' field is provided in each BFD peer."""
+            for peer in bfd_peers:
+                if peer.protocols is None:
+                    msg = f"{peer}; 'protocols' field missing in the input"
+                    raise ValueError(msg)
+            return bfd_peers
 
     @AntaTest.anta_test
     def test(self) -> None:
