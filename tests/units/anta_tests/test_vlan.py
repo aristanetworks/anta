@@ -52,7 +52,7 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyDynamicVlanSource,
         "eos_data": [{"dynamicVlans": {"vccbfd": {"vlanIds": [1500]}, "mlagsync": {"vlanIds": [1501]}}}],
         "inputs": {"sources": ["evpn", "mlagsync"], "strict": False},
-        "expected": {"result": "failure", "messages": ["Dynamic VLAN(s) sources mismatch - Expected: evpn not in the Actual: vccbfd, mlagsync."]},
+        "expected": {"result": "failure", "messages": ["Dynamic VLAN(s) sources mismatch - Expected: evpn, mlagsync Actual: vccbfd, mlagsync"]},
     },
     {
         "name": "success-strict-mode",
