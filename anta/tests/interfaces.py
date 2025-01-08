@@ -8,7 +8,7 @@
 from __future__ import annotations
 
 import re
-from ipaddress import IPv4Network
+from ipaddress import IPv4Interface
 from typing import Any, ClassVar
 
 from pydantic import BaseModel, Field
@@ -629,9 +629,9 @@ class VerifyInterfaceIPv4(AntaTest):
       - VerifyInterfaceIPv4:
           interfaces:
             - name: Ethernet2
-              primary_ip: 172.30.11.0/31
+              primary_ip: 172.30.11.1/31
               secondary_ips:
-                - 10.10.10.0/31
+                - 10.10.10.1/31
                 - 10.10.10.10/31
     ```
     """
@@ -651,9 +651,9 @@ class VerifyInterfaceIPv4(AntaTest):
 
             name: Interface
             """Name of the interface."""
-            primary_ip: IPv4Network
+            primary_ip: IPv4Interface
             """Primary IPv4 address in CIDR notation."""
-            secondary_ips: list[IPv4Network] | None = None
+            secondary_ips: list[IPv4Interface] | None = None
             """Optional list of secondary IPv4 addresses in CIDR notation."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:

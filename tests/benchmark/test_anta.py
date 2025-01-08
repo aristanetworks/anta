@@ -5,6 +5,7 @@
 
 import asyncio
 import logging
+from collections import defaultdict
 from unittest.mock import patch
 
 import pytest
@@ -22,45 +23,61 @@ from .utils import collect, collect_commands
 logger = logging.getLogger(__name__)
 
 
-def test_anta_dry_run(benchmark: BenchmarkFixture, event_loop: asyncio.AbstractEventLoop, catalog: AntaCatalog, inventory: AntaInventory) -> None:
+def test_anta_dry_run(
+    benchmark: BenchmarkFixture,
+    event_loop: asyncio.AbstractEventLoop,
+    catalog: AntaCatalog,
+    inventory: AntaInventory,
+    request: pytest.FixtureRequest,
+    session_results: defaultdict[str, ResultManager],
+) -> None:
     """Benchmark ANTA in Dry-Run Mode."""
     # Disable logging during ANTA execution to avoid having these function time in benchmarks
     logging.disable()
 
-    def _() -> ResultManager:
-        manager = ResultManager()
-        catalog.clear_indexes()
-        event_loop.run_until_complete(main(manager, inventory, catalog, dry_run=True))
-        return manager
+    results = session_results[request.node.callspec.id]
 
-    manager = benchmark(_)
+    @benchmark
+    def _() -> None:
+        results.reset()
+        catalog.clear_indexes()
+        event_loop.run_until_complete(main(results, inventory, catalog, dry_run=True))
 
     logging.disable(logging.NOTSET)
-    if len(manager.results) != len(inventory) * len(catalog.tests):
-        pytest.fail(f"Expected {len(inventory) * len(catalog.tests)} tests but got {len(manager.results)}", pytrace=False)
-    bench_info = "\n--- ANTA NRFU Dry-Run Benchmark Information ---\n" f"Test count: {len(manager.results)}\n" "-----------------------------------------------"
+
+    if len(results.results) != len(inventory) * len(catalog.tests):
+        pytest.fail(f"Expected {len(inventory) * len(catalog.tests)} tests but got {len(results.results)}", pytrace=False)
+    bench_info = "\n--- ANTA NRFU Dry-Run Benchmark Information ---\n" f"Test count: {len(results.results)}\n" "-----------------------------------------------"
     logger.info(bench_info)
 
 
 @patch("anta.models.AntaTest.collect", collect)
 @patch("anta.device.AntaDevice.collect_commands", collect_commands)
+@pytest.mark.dependency(name="anta_benchmark", scope="package")
 @respx.mock  # Mock eAPI responses
-def test_anta(benchmark: BenchmarkFixture, event_loop: asyncio.AbstractEventLoop, catalog: AntaCatalog, inventory: AntaInventory) -> None:
+def test_anta(
+    benchmark: BenchmarkFixture,
+    event_loop: asyncio.AbstractEventLoop,
+    catalog: AntaCatalog,
+    inventory: AntaInventory,
+    request: pytest.FixtureRequest,
+    session_results: defaultdict[str, ResultManager],
+) -> None:
     """Benchmark ANTA."""
     # Disable logging during ANTA execution to avoid having these function time in benchmarks
     logging.disable()
 
-    def _() -> ResultManager:
-        manager = ResultManager()
-        catalog.clear_indexes()
-        event_loop.run_until_complete(main(manager, inventory, catalog))
-        return manager
+    results = session_results[request.node.callspec.id]
 
-    manager = benchmark(_)
+    @benchmark
+    def _() -> None:
+        results.reset()
+        catalog.clear_indexes()
+        event_loop.run_until_complete(main(results, inventory, catalog))
 
     logging.disable(logging.NOTSET)
 
-    if len(catalog.tests) * len(inventory) != len(manager.results):
+    if len(catalog.tests) * len(inventory) != len(results.results):
         # This could mean duplicates exist.
         # TODO: consider removing this code and refactor unit test data as a dictionary with tuple keys instead of a list
         seen = set()
@@ -74,17 +91,17 @@ def test_anta(benchmark: BenchmarkFixture, event_loop: asyncio.AbstractEventLoop
             for test in dupes:
                 msg = f"Found duplicate in test catalog: {test}"
                 logger.error(msg)
-        pytest.fail(f"Expected {len(catalog.tests) * len(inventory)} tests but got {len(manager.results)}", pytrace=False)
+        pytest.fail(f"Expected {len(catalog.tests) * len(inventory)} tests but got {len(results.results)}", pytrace=False)
     bench_info = (
         "\n--- ANTA NRFU Benchmark Information ---\n"
-        f"Test results: {len(manager.results)}\n"
-        f"Success: {manager.get_total_results({AntaTestStatus.SUCCESS})}\n"
-        f"Failure: {manager.get_total_results({AntaTestStatus.FAILURE})}\n"
-        f"Skipped: {manager.get_total_results({AntaTestStatus.SKIPPED})}\n"
-        f"Error: {manager.get_total_results({AntaTestStatus.ERROR})}\n"
-        f"Unset: {manager.get_total_results({AntaTestStatus.UNSET})}\n"
+        f"Test results: {len(results.results)}\n"
+        f"Success: {results.get_total_results({AntaTestStatus.SUCCESS})}\n"
+        f"Failure: {results.get_total_results({AntaTestStatus.FAILURE})}\n"
+        f"Skipped: {results.get_total_results({AntaTestStatus.SKIPPED})}\n"
+        f"Error: {results.get_total_results({AntaTestStatus.ERROR})}\n"
+        f"Unset: {results.get_total_results({AntaTestStatus.UNSET})}\n"
         "---------------------------------------"
     )
     logger.info(bench_info)
-    assert manager.get_total_results({AntaTestStatus.ERROR}) == 0
-    assert manager.get_total_results({AntaTestStatus.UNSET}) == 0
+    assert results.get_total_results({AntaTestStatus.ERROR}) == 0
+    assert results.get_total_results({AntaTestStatus.UNSET}) == 0

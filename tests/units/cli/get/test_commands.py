@@ -114,6 +114,27 @@ def test_from_cvp(
     assert result.exit_code == ExitCode.OK
 
 
+def test_from_cvp_os_error(tmp_path: Path, click_runner: CliRunner, caplog: pytest.LogCaptureFixture) -> None:
+    """Test from_cvp when an OSError occurs."""
+    output: Path = tmp_path / "output.yml"
+    cli_args = ["get", "from-cvp", "--output", str(output), "--host", "42.42.42.42", "--username", "anta", "--password", "anta"]
+
+    with (
+        patch("anta.cli.get.commands.get_cv_token", autospec=True, side_effect=None),
+        patch("cvprac.cvp_client.CvpClient.connect", autospec=True, side_effect=None) as mocked_cvp_connect,
+        patch("cvprac.cvp_client.CvpApi.get_inventory", autospec=True, return_value=[]) as mocked_get_inventory,
+        patch("cvprac.cvp_client.CvpApi.get_devices_in_container", autospec=True, return_value=[]),
+        patch("anta.cli.get.utils.Path.open", side_effect=OSError("Permission denied")),
+    ):
+        result = click_runner.invoke(anta, cli_args)
+
+    mocked_cvp_connect.assert_called_once()
+    mocked_get_inventory.assert_called_once()
+    assert not output.exists()
+    assert "Could not write inventory to path" in caplog.text
+    assert result.exit_code == ExitCode.USAGE_ERROR
+
+
 @pytest.mark.parametrize(
     ("ansible_inventory", "ansible_group", "expected_exit", "expected_log"),
     [

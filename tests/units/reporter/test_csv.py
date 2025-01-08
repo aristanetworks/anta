@@ -8,6 +8,7 @@
 import csv
 import pathlib
 from typing import Any, Callable
+from unittest.mock import patch
 
 import pytest
 
@@ -49,8 +50,8 @@ class TestReportCsv:
         # Generate the CSV report
         ReportCsv.generate(result_manager, csv_filename)
 
-        # Read the generated CSV file
-        with pathlib.Path.open(csv_filename, encoding="utf-8") as csvfile:
+        # Read the generated CSV file - newline required on Windows..
+        with pathlib.Path.open(csv_filename, encoding="utf-8", newline="") as csvfile:
             reader = csv.reader(csvfile, delimiter=",")
             rows = list(reader)
 
@@ -82,11 +83,9 @@ class TestReportCsv:
         max_test_entries = 10
         result_manager = result_manager_factory(max_test_entries)
 
-        # Create a temporary CSV file path and make tmp_path read_only
-        tmp_path.chmod(0o400)
         csv_filename = tmp_path / "read_only.csv"
 
-        with pytest.raises(OSError, match="Permission denied"):
+        with patch("pathlib.Path.open", side_effect=OSError("Any OSError")), pytest.raises(OSError, match="Any OSError"):
             # Generate the CSV report
             ReportCsv.generate(result_manager, csv_filename)
 

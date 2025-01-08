@@ -188,5 +188,5 @@ class TestReportJinja:
 
     def test_fail__init__file_not_found(self) -> None:
         """Test __init__ failure if file is not found."""
-        with pytest.raises(FileNotFoundError, match="template file is not found: /gnu/terry/pratchett"):
+        with pytest.raises(FileNotFoundError, match=r"template file is not found: [/|\\]gnu[/|\\]terry[/|\\]pratchett"):
             ReportJinja(Path("/gnu/terry/pratchett"))

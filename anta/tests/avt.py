@@ -7,12 +7,10 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from ipaddress import IPv4Address
 from typing import ClassVar
 
-from pydantic import BaseModel
-
 from anta.decorators import skip_on_platforms
+from anta.input_models.avt import AVTPath
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_value
 
@@ -71,14 +69,22 @@ class VerifyAVTPathHealth(AntaTest):
 
 
 class VerifyAVTSpecificPath(AntaTest):
-    """Verifies the status and type of an Adaptive Virtual Topology (AVT) path for a specified VRF.
+    """Verifies the Adaptive Virtual Topology (AVT) path.
+
+    This test performs the following checks for each specified LLDP neighbor:
+
+      1. Confirming that the AVT paths are associated with the specified VRF.
+      2. Verifying that each AVT path is active and valid.
+      3. Ensuring that the AVT path matches the specified type (direct/multihop) if provided.
 
     Expected Results
     ----------------
-    * Success: The test will pass if all AVT paths for the specified VRF are active, valid, and match the specified type (direct/multihop) if provided.
-               If multiple paths are configured, the test will pass only if all the paths are valid and active.
-    * Failure: The test will fail if no AVT paths are configured for the specified VRF, or if any configured path is not active, valid,
-               or does not match the specified type.
+    * Success: The test will pass if all of the following conditions are met:
+        - All AVT paths for the specified VRF are active, valid, and match the specified path type (direct/multihop), if provided.
+        - If multiple paths are configured, the test will pass only if all paths meet these criteria.
+    * Failure: The test will fail if any of the following conditions are met:
+        - No AVT paths are configured for the specified VRF.
+        - Any configured path is inactive, invalid, or does not match the specified type.
 
     Examples
     --------
@@ -94,35 +100,16 @@ class VerifyAVTSpecificPath(AntaTest):
     ```
     """
 
-    description = "Verifies the status and type of an AVT path for a specified VRF."
     categories: ClassVar[list[str]] = ["avt"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
-        AntaTemplate(template="show adaptive-virtual-topology path vrf {vrf} avt {avt_name} destination {destination}")
-    ]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show adaptive-virtual-topology path", revision=1)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyAVTSpecificPath test."""
 
-        avt_paths: list[AVTPaths]
+        avt_paths: list[AVTPath]
         """List of AVT paths to verify."""
-
-        class AVTPaths(BaseModel):
-            """Model for the details of AVT paths."""
-
-            vrf: str = "default"
-            """The VRF for the AVT path. Defaults to 'default' if not provided."""
-            avt_name: str
-            """Name of the adaptive virtual topology."""
-            destination: IPv4Address
-            """The IPv4 address of the AVT peer."""
-            next_hop: IPv4Address
-            """The IPv4 address of the next hop for the AVT peer."""
-            path_type: str | None = None
-            """The type of the AVT path. If not provided, both 'direct' and 'multihop' paths are considered."""
-
-    def render(self, template: AntaTemplate) -> list[AntaCommand]:
-        """Render the template for each input AVT path/peer."""
-        return [template.render(vrf=path.vrf, avt_name=path.avt_name, destination=path.destination) for path in self.inputs.avt_paths]
+        AVTPaths: ClassVar[type[AVTPath]] = AVTPath
+        """To maintain backward compatibility."""
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
@@ -131,59 +118,39 @@ class VerifyAVTSpecificPath(AntaTest):
         # Assume the test is successful until a failure is detected
         self.result.is_success()
 
-        # Process each command in the instance
-        for command, input_avt in zip(self.instance_commands, self.inputs.avt_paths):
-            # Extract the command output and parameters
-            vrf = command.params.vrf
-            avt_name = command.params.avt_name
-            peer = str(command.params.destination)
+        command_output = self.instance_commands[0].json_output
+        for avt_path in self.inputs.avt_paths:
+            if (path_output := get_value(command_output, f"vrfs.{avt_path.vrf}.avts.{avt_path.avt_name}.avtPaths")) is None:
+                self.result.is_failure(f"{avt_path} - No AVT path configured")
+                return
 
-            command_output = command.json_output.get("vrfs", {})
-
-            # If no AVT is configured, mark the test as failed and skip to the next command
-            if not command_output:
-                self.result.is_failure(f"AVT configuration for peer '{peer}' under topology '{avt_name}' in VRF '{vrf}' is not found.")
-                continue
-
-            # Extract the AVT paths
-            avt_paths = get_value(command_output, f"{vrf}.avts.{avt_name}.avtPaths")
-            next_hop, input_path_type = str(input_avt.next_hop), input_avt.path_type
-
-            nexthop_path_found = path_type_found = False
+            path_found = path_type_found = False
 
             # Check each AVT path
-            for path, path_data in avt_paths.items():
-                # If the path does not match the expected next hop, skip to the next path
-                if path_data.get("nexthopAddr") != next_hop:
-                    continue
-
-                nexthop_path_found = True
+            for path, path_data in path_output.items():
+                dest = path_data.get("destination")
+                nexthop = path_data.get("nexthopAddr")
                 path_type = "direct" if get_value(path_data, "flags.directPath") else "multihop"
 
-                # If the path type does not match the expected path type, skip to the next path
-                if input_path_type and path_type != input_path_type:
-                    continue
+                if not avt_path.path_type:
+                    path_found = all([dest == str(avt_path.destination), nexthop == str(avt_path.next_hop)])
 
-                path_type_found = True
-                valid = get_value(path_data, "flags.valid")
-                active = get_value(path_data, "flags.active")
+                else:
+                    path_type_found = all([dest == str(avt_path.destination), nexthop == str(avt_path.next_hop), path_type == avt_path.path_type])
+                    if path_type_found:
+                        path_found = True
+                        # Check the path status and type against the expected values
+                        valid = get_value(path_data, "flags.valid")
+                        active = get_value(path_data, "flags.active")
+                        if not all([valid, active]):
+                            self.result.is_failure(f"{avt_path} - Incorrect path {path} - Valid: {valid}, Active: {active}")
 
-                # Check the path status and type against the expected values
-                if not all([valid, active]):
-                    failure_reasons = []
-                    if not get_value(path_data, "flags.active"):
-                        failure_reasons.append("inactive")
-                    if not get_value(path_data, "flags.valid"):
-                        failure_reasons.append("invalid")
-                    # Construct the failure message prefix
-                    failed_log = f"AVT path '{path}' for topology '{avt_name}' in VRF '{vrf}'"
-                    self.result.is_failure(f"{failed_log} is {', '.join(failure_reasons)}.")
-
-            # If no matching next hop or path type was found, mark the test as failed
-            if not nexthop_path_found or not path_type_found:
-                self.result.is_failure(
-                    f"No '{input_path_type}' path found with next-hop address '{next_hop}' for AVT peer '{peer}' under topology '{avt_name}' in VRF '{vrf}'."
-                )
+            # If no matching path found, mark the test as failed
+            if not path_found:
+                if avt_path.path_type and not path_type_found:
+                    self.result.is_failure(f"{avt_path} Path Type: {avt_path.path_type} - Path not found")
+                else:
+                    self.result.is_failure(f"{avt_path} - Path not found")
 
 
 class VerifyAVTRole(AntaTest):

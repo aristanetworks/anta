@@ -7,7 +7,10 @@ anta_title: ANTA catalog for Adaptive Virtual Topology (AVT) tests
   ~ that can be found in the LICENSE file.
   -->
 
+# Tests
+
 ::: anta.tests.avt
+
     options:
       show_root_heading: false
       show_root_toc_entry: false
@@ -18,3 +21,18 @@ anta_title: ANTA catalog for Adaptive Virtual Topology (AVT) tests
       filters:
         - "!test"
         - "!render"
+
+# Input models
+
+::: anta.input_models.avt
+
+    options:
+      show_root_heading: false
+      show_root_toc_entry: false
+      show_bases: false
+      anta_hide_test_module_description: true
+      merge_init_into_class: false
+      show_labels: true
+      filters:
+        - "!^__init__"
+        - "!^__str__"
