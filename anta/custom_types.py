@@ -208,12 +208,6 @@ SnmpPdu = Literal["inGetPdus", "inGetNextPdus", "inSetPdus", "outGetResponsePdus
 SnmpErrorCounter = Literal[
     "inVersionErrs", "inBadCommunityNames", "inBadCommunityUses", "inParseErrs", "outTooBigErrs", "outNoSuchNameErrs", "outBadValueErrs", "outGeneralErrs"
 ]
-<<<<<<< HEAD
-SnmpVersion = Literal["v1", "v2c", "v3"]
-HashingAlgorithms = Literal["MD5", "SHA", "SHA-224", "SHA-256", "SHA-384", "SHA-512"]
-EncryptionAlgorithms = Literal["AES-128", "AES-192", "AES-256", "DES"]
-=======
-
 IPv4RouteType = Literal[
     "connected",
     "static",
@@ -243,4 +237,6 @@ IPv4RouteType = Literal[
     "Route Cache Route",
     "CBF Leaked Route",
 ]
->>>>>>> main
+SnmpVersion = Literal["v1", "v2c", "v3"]
+HashingAlgorithms = Literal["MD5", "SHA", "SHA-224", "SHA-256", "SHA-384", "SHA-512"]
+EncryptionAlgorithms = Literal["AES-128", "AES-192", "AES-256", "DES"]
