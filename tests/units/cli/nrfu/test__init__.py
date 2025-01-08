@@ -5,13 +5,17 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from anta.cli import anta
 from anta.cli.utils import ExitCode
 
 if TYPE_CHECKING:
+    import pytest
     from click.testing import CliRunner
+
+DATA_DIR: Path = Path(__file__).parents[3].resolve() / "data"
 
 # TODO: write unit tests for ignore-status and ignore-error
 
@@ -123,3 +127,19 @@ def test_hide(click_runner: CliRunner) -> None:
     """Test the `--hide` option of the `anta nrfu` command."""
     result = click_runner.invoke(anta, ["nrfu", "--hide", "success", "text"])
     assert "SUCCESS" not in result.output
+
+
+def test_invalid_inventory(caplog: pytest.LogCaptureFixture, click_runner: CliRunner) -> None:
+    """Test invalid inventory."""
+    result = click_runner.invoke(anta, ["nrfu", "--inventory", str(DATA_DIR / "invalid_inventory.yml")])
+    assert "CRITICAL" in caplog.text
+    assert "Failed to parse the inventory" in caplog.text
+    assert result.exit_code == ExitCode.USAGE_ERROR
+
+
+def test_invalid_catalog(caplog: pytest.LogCaptureFixture, click_runner: CliRunner) -> None:
+    """Test invalid catalog."""
+    result = click_runner.invoke(anta, ["nrfu", "--catalog", str(DATA_DIR / "test_catalog_not_a_list.yml")])
+    assert "CRITICAL" in caplog.text
+    assert "Failed to parse the catalog" in caplog.text
+    assert result.exit_code == ExitCode.USAGE_ERROR
