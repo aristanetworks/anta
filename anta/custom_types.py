@@ -238,4 +238,4 @@ IPv4RouteType = Literal[
     "Route Cache Route",
     "CBF Leaked Route",
 ]
-DynamicVLANSource = Literal["dmf", "dot1x", "dynvtep", "evpn", "mlag", "mlagsync", "mvpn", "swfwd", "vccbfd"]
+DynamicVlanSource = Literal["dmf", "dot1x", "dynvtep", "evpn", "mlag", "mlagsync", "mvpn", "swfwd", "vccbfd"]

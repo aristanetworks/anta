@@ -837,8 +837,8 @@ anta.tests.system:
       minimum: 86400
 anta.tests.vlan:
   - VerifyDynamicVlanSource:
-      # Verifies dynamic VLAN(s) source.
-      source:
+      # Verifies dynamic VLAN(s) sources.
+      sources:
         - evpn
         - mlagsync
       strict: False
