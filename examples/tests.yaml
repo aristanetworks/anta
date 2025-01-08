@@ -87,6 +87,7 @@ anta.tests.bfd:
           tx_interval: 1200
           rx_interval: 1200
           multiplier: 3
+          detection_time: 3600
   - VerifyBFDPeersRegProtocols:
       # Verifies the registered routing protocol of IPv4 BFD peer sessions.
       bfd_peers:
@@ -366,14 +367,14 @@ anta.tests.ptp:
       # Verifies the PTP interfaces state.
 anta.tests.routing.bgp:
   - VerifyBGPAdvCommunities:
-      # Verifies the advertised communities of a BGP peer.
+      # Verifies that advertised communities are standard, extended and large for BGP IPv4 peer(s).
       bgp_peers:
         - peer_address: 172.30.11.17
           vrf: default
         - peer_address: 172.30.11.21
           vrf: default
   - VerifyBGPExchangedRoutes:
-      # Verifies the advertised and received routes of BGP peers.
+      # Verifies the advertised and received routes of BGP IPv4 peer(s).
       bgp_peers:
         - peer_address: 172.30.255.5
           vrf: default
@@ -389,7 +390,7 @@ anta.tests.routing.bgp:
           received_routes:
             - 192.0.254.3/32
   - VerifyBGPPeerASNCap:
-      # Verifies the four octet asn capabilities of a BGP peer.
+      # Verifies the four octet ASN capability of BGP IPv4 peer(s).
       bgp_peers:
         - peer_address: 172.30.11.1
           vrf: default
@@ -419,14 +420,14 @@ anta.tests.routing.bgp:
             - inDropAsloop
             - prefixEvpnDroppedUnsupportedRouteType
   - VerifyBGPPeerMD5Auth:
-      # Verifies the MD5 authentication and state of a BGP peer.
+      # Verifies the MD5 authentication and state of IPv4 BGP peer(s) in a specified VRF.
       bgp_peers:
         - peer_address: 172.30.11.1
           vrf: default
         - peer_address: 172.30.11.5
           vrf: default
   - VerifyBGPPeerMPCaps:
-      # Verifies the multiprotocol capabilities of a BGP peer.
+      # Verifies the multiprotocol capabilities of BGP IPv4 peer(s).
       bgp_peers:
         - peer_address: 172.30.11.1
           vrf: default
@@ -434,23 +435,35 @@ anta.tests.routing.bgp:
           capabilities:
             - ipv4Unicast
   - VerifyBGPPeerRouteLimit:
-      # Verifies the maximum routes and optionally verifies the maximum routes warning limit for the provided BGP IPv4 peer(s).
+      # Verifies maximum routes and warning limit for BGP IPv4 peer(s).
       bgp_peers:
         - peer_address: 172.30.11.1
           vrf: default
           maximum_routes: 12000
           warning_limit: 10000
   - VerifyBGPPeerRouteRefreshCap:
-      # Verifies the route refresh capabilities of a BGP peer.
+      # Verifies the route refresh capabilities of IPv4 BGP peer(s) in a specified VRF.
       bgp_peers:
         - peer_address: 172.30.11.1
           vrf: default
+  - VerifyBGPPeerSession:
+      # Verifies the session state of BGP IPv4 peer(s).
+      check_tcp_queues: false
+      bgp_peers:
+        - peer_address: 10.1.0.1
+          vrf: default
+        - peer_address: 10.1.0.2
+          vrf: default
+        - peer_address: 10.1.255.2
+          vrf: DEV
+        - peer_address: 10.1.255.4
+          vrf: DEV
   - VerifyBGPPeerUpdateErrors:
       # Verifies BGP update error counters for the provided BGP IPv4 peer(s).
       bgp_peers:
         - peer_address: 172.30.11.1
           vrf: default
-          update_error_filter:
+          update_errors:
             - inUpdErrWithdraw
   - VerifyBGPPeersHealth:
       # Verifies the health of BGP peers for given address families.
@@ -478,7 +491,7 @@ anta.tests.routing.bgp:
             - 10.1.255.2
             - 10.1.255.4
   - VerifyBGPTimers:
-      # Verifies the timers of a BGP peer.
+      # Verifies the timers of BGP IPv4 peer(s).
       bgp_peers:
         - peer_address: 172.30.11.1
           vrf: default
@@ -749,6 +762,11 @@ anta.tests.stp:
       # Verifies there is no STP blocked ports.
   - VerifySTPCounters:
       # Verifies there is no errors in STP BPDU packets.
+  - VerifySTPDisabledVlans:
+      # Verifies the STP disabled VLAN(s).
+      vlans:
+        - 6
+        - 4094
   - VerifySTPForwardingPorts:
       # Verifies that all interfaces are forwarding for a provided list of VLAN(s).
       vlans:

@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """CSV Report management for ANTA."""
@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import csv
 import logging
+import os
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
@@ -111,6 +112,7 @@ class ReportCsv:
                 csvwriter = csv.writer(
                     csvfile,
                     delimiter=",",
+                    lineterminator=os.linesep,
                 )
                 csvwriter.writerow(headers)
                 for entry in results.results:
