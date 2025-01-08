@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Report management for ANTA."""
@@ -105,7 +105,7 @@ class ReportTable:
     def report_all(self, manager: ResultManager, title: str = "All tests results") -> Table:
         """Create a table report with all tests for one or all devices.
 
-        Create table with full output: Host / Test / Status / Message
+        Create table with full output: Device | Test Name | Test Status | Message(s) | Test description | Test category
 
         Parameters
         ----------
@@ -141,7 +141,8 @@ class ReportTable:
     ) -> Table:
         """Create a table report with result aggregated per test.
 
-        Create table with full output: Test | Number of success | Number of failure | Number of error | List of nodes in error or failure
+        Create table with full output:
+        Test Name | # of success | # of skipped | # of failure | # of errors | List of failed or error nodes
 
         Parameters
         ----------
@@ -167,7 +168,7 @@ class ReportTable:
             self.Headers.list_of_error_nodes,
         ]
         table = self._build_headers(headers=headers, table=table)
-        for test, stats in sorted(manager.test_stats.items()):
+        for test, stats in manager.test_stats.items():
             if tests is None or test in tests:
                 table.add_row(
                     test,
@@ -187,7 +188,7 @@ class ReportTable:
     ) -> Table:
         """Create a table report with result aggregated per device.
 
-        Create table with full output: Host | Number of success | Number of failure | Number of error | List of nodes in error or failure
+        Create table with full output: Device | # of success | # of skipped | # of failure | # of errors | List of failed or error test cases
 
         Parameters
         ----------
@@ -213,7 +214,7 @@ class ReportTable:
             self.Headers.list_of_error_tests,
         ]
         table = self._build_headers(headers=headers, table=table)
-        for device, stats in sorted(manager.device_stats.items()):
+        for device, stats in manager.device_stats.items():
             if devices is None or device in devices:
                 table.add_row(
                     device,

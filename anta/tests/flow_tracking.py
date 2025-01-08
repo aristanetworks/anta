@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module related to the flow tracking tests."""
@@ -17,8 +17,7 @@ from anta.tools import get_failed_logs
 
 
 def validate_record_export(record_export: dict[str, str], tracker_info: dict[str, str]) -> str:
-    """
-    Validate the record export configuration against the tracker info.
+    """Validate the record export configuration against the tracker info.
 
     Parameters
     ----------
@@ -41,8 +40,7 @@ def validate_record_export(record_export: dict[str, str], tracker_info: dict[str
 
 
 def validate_exporters(exporters: list[dict[str, str]], tracker_info: dict[str, str]) -> str:
-    """
-    Validate the exporter configurations against the tracker info.
+    """Validate the exporter configurations against the tracker info.
 
     Parameters
     ----------
@@ -74,8 +72,7 @@ def validate_exporters(exporters: list[dict[str, str]], tracker_info: dict[str, 
 
 
 class VerifyHardwareFlowTrackerStatus(AntaTest):
-    """
-    Verifies if hardware flow tracking is running and an input tracker is active.
+    """Verifies if hardware flow tracking is running and an input tracker is active.
 
     This test optionally verifies the tracker interval/timeout and exporter configuration.
 
@@ -89,7 +86,7 @@ class VerifyHardwareFlowTrackerStatus(AntaTest):
     --------
     ```yaml
     anta.tests.flow_tracking:
-      - VerifyFlowTrackingHardware:
+      - VerifyHardwareFlowTrackerStatus:
           trackers:
             - name: FLOW-TRACKER
               record_export:
@@ -102,7 +99,6 @@ class VerifyHardwareFlowTrackerStatus(AntaTest):
     ```
     """
 
-    name = "VerifyHardwareFlowTrackerStatus"
     description = (
         "Verifies if hardware flow tracking is running and an input tracker is active. Optionally verifies the tracker interval/timeout and exporter configuration."
     )

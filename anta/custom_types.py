@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module that provides predefined types for AntaTest.Input instances."""
@@ -204,3 +204,37 @@ BgpDropStats = Literal[
 ]
 BgpUpdateError = Literal["inUpdErrWithdraw", "inUpdErrIgnore", "inUpdErrDisableAfiSafi", "disabledAfiSafi", "lastUpdErrTime"]
 BfdProtocol = Literal["bgp", "isis", "lag", "ospf", "ospfv3", "pim", "route-input", "static-bfd", "static-route", "vrrp", "vxlan"]
+SnmpPdu = Literal["inGetPdus", "inGetNextPdus", "inSetPdus", "outGetResponsePdus", "outTrapPdus"]
+SnmpErrorCounter = Literal[
+    "inVersionErrs", "inBadCommunityNames", "inBadCommunityUses", "inParseErrs", "outTooBigErrs", "outNoSuchNameErrs", "outBadValueErrs", "outGeneralErrs"
+]
+
+IPv4RouteType = Literal[
+    "connected",
+    "static",
+    "kernel",
+    "OSPF",
+    "OSPF inter area",
+    "OSPF external type 1",
+    "OSPF external type 2",
+    "OSPF NSSA external type 1",
+    "OSPF NSSA external type2",
+    "Other BGP Routes",
+    "iBGP",
+    "eBGP",
+    "RIP",
+    "IS-IS level 1",
+    "IS-IS level 2",
+    "OSPFv3",
+    "BGP Aggregate",
+    "OSPF Summary",
+    "Nexthop Group Static Route",
+    "VXLAN Control Service",
+    "Martian",
+    "DHCP client installed default route",
+    "Dynamic Policy Route",
+    "VRF Leaked",
+    "gRIBI",
+    "Route Cache Route",
+    "CBF Leaked Route",
+]

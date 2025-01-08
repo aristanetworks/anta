@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2023-2024 Arista Networks, Inc.
+  ~ Copyright (c) 2023-2025 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
   ~ that can be found in the LICENSE file.
   -->
@@ -47,8 +47,8 @@ The inventory file must start with the `anta_inventory` key then define one or m
 
 A full description of the inventory model is available in [API documentation](api/inventory.models.input.md)
 
-!!! info
-    Caching can be disabled per device, network or range by setting the `disable_cache` key to `True` in the inventory file. For more details about how caching is implemented in ANTA, please refer to [Caching in ANTA](advanced_usages/caching.md).
+> [!INFO]
+> Caching can be disabled per device, network or range by setting the `disable_cache` key to `True` in the inventory file. For more details about how caching is implemented in ANTA, please refer to [Caching in ANTA](advanced_usages/caching.md).
 
 ### Example
 
@@ -199,8 +199,8 @@ anta.tests.system:
         tags: ['leaf']
 ```
 
-!!! info
-    When using the CLI, you can filter the NRFU execution using tags. Refer to [this section](cli/tag-management.md) of the CLI documentation.
+> [!INFO]
+> When using the CLI, you can filter the NRFU execution using tags. Refer to [this section](cli/tag-management.md) of the CLI documentation.
 
 ### Tests available in ANTA
 
@@ -277,8 +277,10 @@ custom.tests.system:
     type: ['cEOS-LAB']
 ```
 
-!!! tip "How to create custom tests"
-    To create your custom tests, you should refer to this [documentation](advanced_usages/custom-tests.md)
+> [!TIP]
+> **How to create custom tests**
+>
+> To create your custom tests, you should refer to this [documentation](advanced_usages/custom-tests.md)
 
 ### Customize test description and categories
 
@@ -314,34 +316,8 @@ Once you run `anta nrfu table`, you will see following output:
 The following script reads all the files in `intended/test_catalogs/` with names `<device_name>-catalog.yml` and merge them together inside one big catalog `anta-catalog.yml` using the new `AntaCatalog.merge_catalogs()` class method.
 
 ```python
-#!/usr/bin/env python
-from anta.catalog import AntaCatalog
-
-from pathlib import Path
-from anta.models import AntaTest
-
-
-CATALOG_SUFFIX = "-catalog.yml"
-CATALOG_DIR = "intended/test_catalogs/"
-
-if __name__ == "__main__":
-    catalogs = []
-    for file in Path(CATALOG_DIR).glob("*" + CATALOG_SUFFIX):
-        device = str(file).removesuffix(CATALOG_SUFFIX).removeprefix(CATALOG_DIR)
-        print(f"Loading test catalog for device {device}")
-        catalog = AntaCatalog.parse(file)
-        # Add the device name as a tag to all tests in the catalog
-        for test in catalog.tests:
-            test.inputs.filters = AntaTest.Input.Filters(tags={device})
-        catalogs.append(catalog)
-
-    # Merge all catalogs
-    merged_catalog = AntaCatalog.merge_catalogs(catalogs)
-
-    # Save the merged catalog to a file
-    with open(Path('anta-catalog.yml'), "w") as f:
-        f.write(merged_catalog.dump().yaml())
+--8<-- "merge_catalogs.py"
 ```
 
-!!! warning
-    The `AntaCatalog.merge()` method is deprecated and will be removed in ANTA v2.0. Please use the `AntaCatalog.merge_catalogs()` class method instead.
+> [!WARNING]
+> The `AntaCatalog.merge()` method is deprecated and will be removed in ANTA v2.0. Please use the `AntaCatalog.merge_catalogs()` class method instead.

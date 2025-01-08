@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Test functions related to various STUN settings."""
@@ -7,32 +7,36 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from ipaddress import IPv4Address
 from typing import ClassVar
 
-from pydantic import BaseModel
-
-from anta.custom_types import Port
+from anta.decorators import deprecated_test_class
+from anta.input_models.stun import StunClientTranslation
 from anta.models import AntaCommand, AntaTemplate, AntaTest
-from anta.tools import get_failed_logs, get_value
+from anta.tools import get_value
 
 
-class VerifyStunClient(AntaTest):
-    """
-    Verifies the configuration of the STUN client, specifically the IPv4 source address and port.
+class VerifyStunClientTranslation(AntaTest):
+    """Verifies the translation for a source address on a STUN client.
 
-    Optionally, it can also verify the public address and port.
+    This test performs the following checks for each specified address family:
+
+      1. Validates that there is a translation for the source address on the STUN client.
+      2. If public IP and port details are provided, validates their correctness against the configuration.
 
     Expected Results
     ----------------
-    * Success: The test will pass if the STUN client is correctly configured with the specified IPv4 source address/port and public address/port.
-    * Failure: The test will fail if the STUN client is not configured or if the IPv4 source address, public address, or port details are incorrect.
+    * Success: If all of the following conditions are met:
+        - The test will pass if the source address translation is present.
+        - If public IP and port details are provided, they must also match the translation information.
+    * Failure: If any of the following occur:
+        - There is no translation for the source address on the STUN client.
+        - The public IP or port details, if specified, are incorrect.
 
     Examples
     --------
     ```yaml
     anta.tests.stun:
-      - VerifyStunClient:
+      - VerifyStunClientTranslation:
           stun_clients:
             - source_address: 172.18.3.2
               public_address: 172.18.3.21
@@ -45,27 +49,15 @@ class VerifyStunClient(AntaTest):
     ```
     """
 
-    name = "VerifyStunClient"
-    description = "Verifies the STUN client is configured with the specified IPv4 source address and port. Validate the public IP and port if provided."
     categories: ClassVar[list[str]] = ["stun"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show stun client translations {source_address} {source_port}")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show stun client translations {source_address} {source_port}", revision=1)]
 
     class Input(AntaTest.Input):
-        """Input model for the VerifyStunClient test."""
+        """Input model for the VerifyStunClientTranslation test."""
 
-        stun_clients: list[ClientAddress]
-
-        class ClientAddress(BaseModel):
-            """Source and public address/port details of STUN client."""
-
-            source_address: IPv4Address
-            """IPv4 source address of STUN client."""
-            source_port: Port = 4500
-            """Source port number for STUN client."""
-            public_address: IPv4Address | None = None
-            """Optional IPv4 public address of STUN client."""
-            public_port: Port | None = None
-            """Optional public port number for STUN client."""
+        stun_clients: list[StunClientTranslation]
+        """List of STUN clients."""
+        StunClientTranslation: ClassVar[type[StunClientTranslation]] = StunClientTranslation
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each STUN translation."""
@@ -73,53 +65,61 @@ class VerifyStunClient(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """Main test function for VerifyStunClient."""
+        """Main test function for VerifyStunClientTranslation."""
         self.result.is_success()
 
         # Iterate over each command output and corresponding client input
         for command, client_input in zip(self.instance_commands, self.inputs.stun_clients):
             bindings = command.json_output["bindings"]
-            source_address = str(command.params.source_address)
-            source_port = command.params.source_port
+            input_public_address = client_input.public_address
+            input_public_port = client_input.public_port
 
             # If no bindings are found for the STUN client, mark the test as a failure and continue with the next client
             if not bindings:
-                self.result.is_failure(f"STUN client transaction for source `{source_address}:{source_port}` is not found.")
+                self.result.is_failure(f"{client_input} - STUN client translation not found.")
                 continue
-
-            # Extract the public address and port from the client input
-            public_address = client_input.public_address
-            public_port = client_input.public_port
 
             # Extract the transaction ID from the bindings
             transaction_id = next(iter(bindings.keys()))
 
-            # Prepare the actual and expected STUN data for comparison
-            actual_stun_data = {
-                "source ip": get_value(bindings, f"{transaction_id}.sourceAddress.ip"),
-                "source port": get_value(bindings, f"{transaction_id}.sourceAddress.port"),
-            }
-            expected_stun_data = {"source ip": source_address, "source port": source_port}
+            # Verifying the public address if provided
+            if input_public_address and str(input_public_address) != (actual_public_address := get_value(bindings, f"{transaction_id}.publicAddress.ip")):
+                self.result.is_failure(f"{client_input} - Incorrect public-facing address - Expected: {input_public_address} Actual: {actual_public_address}")
 
-            # If public address is provided, add it to the actual and expected STUN data
-            if public_address is not None:
-                actual_stun_data["public ip"] = get_value(bindings, f"{transaction_id}.publicAddress.ip")
-                expected_stun_data["public ip"] = str(public_address)
+            # Verifying the public port if provided
+            if input_public_port and input_public_port != (actual_public_port := get_value(bindings, f"{transaction_id}.publicAddress.port")):
+                self.result.is_failure(f"{client_input} - Incorrect public-facing port - Expected: {input_public_port} Actual: {actual_public_port}")
 
-            # If public port is provided, add it to the actual and expected STUN data
-            if public_port is not None:
-                actual_stun_data["public port"] = get_value(bindings, f"{transaction_id}.publicAddress.port")
-                expected_stun_data["public port"] = public_port
 
-            # If the actual STUN data does not match the expected STUN data, mark the test as failure
-            if actual_stun_data != expected_stun_data:
-                failed_log = get_failed_logs(expected_stun_data, actual_stun_data)
-                self.result.is_failure(f"For STUN source `{source_address}:{source_port}`:{failed_log}")
+@deprecated_test_class(new_tests=["VerifyStunClientTranslation"], removal_in_version="v2.0.0")
+class VerifyStunClient(VerifyStunClientTranslation):
+    """(Deprecated) Verifies the translation for a source address on a STUN client.
+
+    Alias for the VerifyStunClientTranslation test to maintain backward compatibility.
+    When initialized, it will emit a deprecation warning and call the VerifyStunClientTranslation test.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.stun:
+      - VerifyStunClient:
+          stun_clients:
+            - source_address: 172.18.3.2
+              public_address: 172.18.3.21
+              source_port: 4500
+              public_port: 6006
+    ```
+    """
+
+    # TODO: Remove this class in ANTA v2.0.0.
+
+    # required to redefine name an description to overwrite parent class.
+    name = "VerifyStunClient"
+    description = "(Deprecated) Verifies the translation for a source address on a STUN client."
 
 
 class VerifyStunServer(AntaTest):
-    """
-    Verifies the STUN server status is enabled and running.
+    """Verifies the STUN server status is enabled and running.
 
     Expected Results
     ----------------
@@ -134,8 +134,6 @@ class VerifyStunServer(AntaTest):
     ```
     """
 
-    name = "VerifyStunServer"
-    description = "Verifies the STUN server status is enabled and running."
     categories: ClassVar[list[str]] = ["stun"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show stun server status", revision=1)]
 

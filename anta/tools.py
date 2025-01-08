@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Common functions used in ANTA tests."""
@@ -94,8 +94,7 @@ def get_dict_superset(
     *,
     required: bool = False,
 ) -> Any:
-    """
-    Get the first dictionary from a list of dictionaries that is a superset of the input dict.
+    """Get the first dictionary from a list of dictionaries that is a superset of the input dict.
 
     Returns the supplied default value or None if there is no match and "required" is False.
 
@@ -378,7 +377,7 @@ def safe_command(command: str) -> str:
 def convert_categories(categories: list[str]) -> list[str]:
     """Convert categories for reports.
 
-    if the category is part of the defined acronym, transform it to upper case
+    If the category is part of the defined acronym, transform it to upper case
     otherwise capitalize the first letter.
 
     Parameters
@@ -395,3 +394,24 @@ def convert_categories(categories: list[str]) -> list[str]:
         return [" ".join(word.upper() if word.lower() in ACRONYM_CATEGORIES else word.title() for word in category.split()) for category in categories]
     msg = f"Wrong input type '{type(categories)}' for convert_categories."
     raise TypeError(msg)
+
+
+def format_data(data: dict[str, bool]) -> str:
+    """Format a data dictionary for logging purposes.
+
+    Parameters
+    ----------
+    data
+        A dictionary containing the data to format.
+
+    Returns
+    -------
+    str
+        The formatted data.
+
+    Example
+    -------
+    >>> format_data({"advertised": True, "received": True, "enabled": True})
+    "Advertised: True, Received: True, Enabled: True"
+    """
+    return ", ".join(f"{k.capitalize()}: {v}" for k, v in data.items())

@@ -2,7 +2,7 @@
 anta_title: ANTA debug commands
 ---
 <!--
-  ~ Copyright (c) 2023-2024 Arista Networks, Inc.
+  ~ Copyright (c) 2023-2025 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
   ~ that can be found in the LICENSE file.
   -->
@@ -15,7 +15,7 @@ The ANTA CLI includes a set of debugging tools, making it easier to build and te
 These tools are especially helpful in building the tests, as they give a visual access to the output received from the eAPI. They also facilitate the extraction of output content for use in unit tests, as described in our [contribution guide](../contribution.md).
 
 !!! warning
-    The `debug` tools require a device from your inventory. Thus, you MUST use a valid [ANTA Inventory](../usage-inventory-catalog.md#device-inventory).
+    The `debug` tools require a device from your inventory. Thus, you must use a valid [ANTA Inventory](../usage-inventory-catalog.md#device-inventory).
 
 ## Executing an EOS command
 
@@ -61,6 +61,7 @@ Options:
   --help                    Show this message and exit.
 ```
 
+> [!TIP]
 > `username`, `password`, `enable-password`, `enable`, `timeout` and `insecure` values are the same for all devices
 
 ### Example
@@ -160,10 +161,10 @@ Run templated command 'show vlan {vlan_id}' with {'vlan_id': '10'} on DC1-LEAF1A
 }
 ```
 
-!!! warning
-    If multiple arguments of the same key are provided, only the last argument value will be kept in the template parameters.
-
 ### Example of multiple arguments
+
+> [!WARNING]
+> If multiple arguments of the same key are provided, only the last argument value will be kept in the template parameters.
 
 ```bash
 anta -log DEBUG debug run-template --template "ping {dst} source {src}" dst "8.8.8.8" src Loopback0 --device DC1-SPINE1    
