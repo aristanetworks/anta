@@ -23,9 +23,9 @@ class TestVerifySnmpUserInput:
     @pytest.mark.parametrize(
         ("snmp_users"),
         [
-            pytest.param([{"username": "test", "group_name": "abc", "security_model": "v1", "authentication_type": None, "encryption": None}], id="valid-v1"),
-            pytest.param([{"username": "test", "group_name": "abc", "security_model": "v2c", "authentication_type": None, "encryption": None}], id="valid-v2c"),
-            pytest.param([{"username": "test", "group_name": "abc", "security_model": "v3", "authentication_type": "SHA", "encryption": "AES-128"}], id="valid-v3"),
+            pytest.param([{"username": "test", "group_name": "abc", "version": "v1", "auth_type": None, "priv_type": None}], id="valid-v1"),
+            pytest.param([{"username": "test", "group_name": "abc", "version": "v2c", "auth_type": None, "priv_type": None}], id="valid-v2c"),
+            pytest.param([{"username": "test", "group_name": "abc", "version": "v3", "auth_type": "SHA", "priv_type": "AES-128"}], id="valid-v3"),
         ],
     )
     def test_valid(self, snmp_users: list[SnmpUser]) -> None:
@@ -35,9 +35,9 @@ class TestVerifySnmpUserInput:
     @pytest.mark.parametrize(
         ("snmp_users"),
         [
-            pytest.param([{"username": "test", "group_name": None, "security_model": "v1", "authentication_type": None, "encryption": None}], id="invalid-group"),
-            pytest.param([{"username": "test", "group_name": "abc", "security_model": None, "authentication_type": None, "encryption": None}], id="invalid-version"),
-            pytest.param([{"username": "test", "group_name": "abc", "security_model": "v3", "authentication_type": None, "encryption": None}], id="invalid-v3"),
+            pytest.param([{"username": "test", "group_name": None, "version": "v1", "auth_type": None, "priv_type": None}], id="invalid-group"),
+            pytest.param([{"username": "test", "group_name": "abc", "version": None, "auth_type": None, "priv_type": None}], id="invalid-version"),
+            pytest.param([{"username": "test", "group_name": "abc", "version": "v3", "auth_type": None, "priv_type": None}], id="invalid-v3"),
         ],
     )
     def test_invalid(self, snmp_users: list[SnmpUser]) -> None:

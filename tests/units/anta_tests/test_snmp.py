@@ -354,10 +354,10 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "snmp_users": [
-                {"username": "Test1", "group_name": "TestGroup1", "security_model": "v1"},
-                {"username": "Test2", "group_name": "TestGroup2", "security_model": "v2c"},
-                {"username": "Test3", "group_name": "TestGroup3", "security_model": "v3", "authentication_type": "SHA-384", "encryption": "AES-128"},
-                {"username": "Test4", "group_name": "TestGroup3", "security_model": "v3", "authentication_type": "SHA-512", "encryption": "AES-192"},
+                {"username": "Test1", "group_name": "TestGroup1", "version": "v1"},
+                {"username": "Test2", "group_name": "TestGroup2", "version": "v2c"},
+                {"username": "Test3", "group_name": "TestGroup3", "version": "v3", "auth_type": "SHA-384", "priv_type": "AES-128"},
+                {"username": "Test4", "group_name": "TestGroup3", "version": "v3", "auth_type": "SHA-512", "priv_type": "AES-192"},
             ]
         },
         "expected": {"result": "success"},
@@ -381,18 +381,18 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "snmp_users": [
-                {"username": "Test1", "group_name": "TestGroup1", "security_model": "v1"},
-                {"username": "Test2", "group_name": "TestGroup2", "security_model": "v2c"},
-                {"username": "Test3", "group_name": "TestGroup3", "security_model": "v3", "authentication_type": "SHA-384", "encryption": "AES-128"},
-                {"username": "Test4", "group_name": "TestGroup3", "security_model": "v3", "authentication_type": "SHA-512", "encryption": "AES-192"},
+                {"username": "Test1", "group_name": "TestGroup1", "version": "v1"},
+                {"username": "Test2", "group_name": "TestGroup2", "version": "v2c"},
+                {"username": "Test3", "group_name": "TestGroup3", "version": "v3", "auth_type": "SHA-384", "priv_type": "AES-128"},
+                {"username": "Test4", "group_name": "TestGroup3", "version": "v3", "auth_type": "SHA-512", "priv_type": "AES-192"},
             ]
         },
         "expected": {
             "result": "failure",
             "messages": [
-                "User: Test1 Version: v1 - Not found",
-                "User: Test2 Version: v2c - Not found",
-                "User: Test4 Version: v3 - Not found",
+                "User: Test1 Group: TestGroup1 Version: v1 - Not found",
+                "User: Test2 Group: TestGroup2 Version: v2c - Not found",
+                "User: Test4 Group: TestGroup3 Version: v3 - Not found",
             ],
         },
     },
@@ -422,15 +422,15 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "snmp_users": [
-                {"username": "Test1", "group_name": "TestGroup1", "security_model": "v1"},
-                {"username": "Test2", "group_name": "TestGroup2", "security_model": "v2c"},
+                {"username": "Test1", "group_name": "TestGroup1", "version": "v1"},
+                {"username": "Test2", "group_name": "TestGroup2", "version": "v2c"},
             ]
         },
         "expected": {
             "result": "failure",
             "messages": [
-                "User: Test1 Version: v1 - Incorrect user group - Expected: TestGroup1 Actual: TestGroup2",
-                "User: Test2 Version: v2c - Incorrect user group - Expected: TestGroup2 Actual: TestGroup1",
+                "User: Test1 Group: TestGroup1 Version: v1 - Incorrect user group - Actual: TestGroup2",
+                "User: Test2 Group: TestGroup2 Version: v2c - Incorrect user group - Actual: TestGroup1",
             ],
         },
     },
@@ -468,19 +468,19 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "snmp_users": [
-                {"username": "Test1", "group_name": "TestGroup1", "security_model": "v1"},
-                {"username": "Test2", "group_name": "TestGroup2", "security_model": "v2c"},
-                {"username": "Test3", "group_name": "TestGroup3", "security_model": "v3", "authentication_type": "SHA-384", "encryption": "AES-128"},
-                {"username": "Test4", "group_name": "TestGroup4", "security_model": "v3", "authentication_type": "SHA-512", "encryption": "AES-192"},
+                {"username": "Test1", "group_name": "TestGroup1", "version": "v1"},
+                {"username": "Test2", "group_name": "TestGroup2", "version": "v2c"},
+                {"username": "Test3", "group_name": "TestGroup3", "version": "v3", "auth_type": "SHA-384", "priv_type": "AES-128"},
+                {"username": "Test4", "group_name": "TestGroup4", "version": "v3", "auth_type": "SHA-512", "priv_type": "AES-192"},
             ]
         },
         "expected": {
             "result": "failure",
             "messages": [
-                "User: Test3 Version: v3 - Incorrect authentication type - Expected: SHA-384 Actual: SHA-512",
-                "User: Test3 Version: v3 - Incorrect privacy type - Expected: AES-128 Actual: AES-192",
-                "User: Test4 Version: v3 - Incorrect authentication type - Expected: SHA-512 Actual: SHA-384",
-                "User: Test4 Version: v3 - Incorrect privacy type - Expected: AES-192 Actual: AES-128",
+                "User: Test3 Group: TestGroup3 Version: v3 - Incorrect authentication type - Expected: SHA-384 Actual: SHA-512",
+                "User: Test3 Group: TestGroup3 Version: v3 - Incorrect privacy type - Expected: AES-128 Actual: AES-192",
+                "User: Test4 Group: TestGroup4 Version: v3 - Incorrect authentication type - Expected: SHA-512 Actual: SHA-384",
+                "User: Test4 Group: TestGroup4 Version: v3 - Incorrect privacy type - Expected: AES-192 Actual: AES-128",
             ],
         },
     },

@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict
 
-from anta.custom_types import EncryptionAlgorithms, HashingAlgorithms, SnmpVersion
+from anta.custom_types import HashingAlgorithm, SnmpEncryptionAlgorithm, SnmpVersion
 
 
 class SnmpUser(BaseModel):
@@ -18,18 +18,25 @@ class SnmpUser(BaseModel):
     """SNMP user name."""
     group_name: str | None = None
     """SNMP group for the user. Required field in the `VerifySnmpUser` test."""
-    security_model: SnmpVersion | None = None
+    version: SnmpVersion | None = None
     """SNMP protocol version. Required field in the `VerifySnmpUser` test."""
-    authentication_type: HashingAlgorithms | None = None
-    """User authentication settings. Can be provided in the `VerifySnmpUser` test."""
-    encryption: EncryptionAlgorithms | None = None
-    """User privacy settings. Can be provided in the `VerifySnmpUser` test."""
+    auth_type: HashingAlgorithm | None = None
+    """User authentication algorithm. Can be provided in the `VerifySnmpUser` test."""
+    priv_type: SnmpEncryptionAlgorithm | None = None
+    """User privacy algorithm. Can be provided in the `VerifySnmpUser` test."""
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the SnmpUser for reporting.
 
         Examples
         --------
-        User: Test Group: Test_Group Version: v2c
+        - User: Test
+        - User: Test Group: Test_Group
+        - User: Test Group: Test_Group Version: v2c
         """
-        return f"User: {self.username} Version: {self.security_model}"
+        base_string = f"User: {self.username}"
+        if self.group_name:
+            base_string += f" Group: {self.group_name}"
+        if self.version:
+            base_string += f" Version: {self.version}"
+        return base_string

@@ -748,9 +748,9 @@ anta.tests.snmp:
       snmp_users:
         - username: test
           group_name: test_group
-          security_model: v3
-          authentication_type: MD5
-          encryption: AES-128
+          version: v3
+          auth_type: MD5
+          priv_type: AES-128
 anta.tests.software:
   - VerifyEOSExtensions:
       # Verifies that all EOS extensions installed on the device are enabled for boot persistence.
