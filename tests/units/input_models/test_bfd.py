@@ -35,7 +35,7 @@ class TestVerifyBFDPeersIntervalsInput:
         [
             pytest.param([{"peer_address": "10.0.0.1", "vrf": "default", "tx_interval": 1200}], id="invalid-tx-interval"),
             pytest.param([{"peer_address": "10.0.0.1", "vrf": "default", "rx_interval": 1200}], id="invalid-rx-interval"),
-            pytest.param([{"peer_address": "10.0.0.1", "vrf": "default", "multiplier": 3}], id="invalid-multiplier"),
+            pytest.param([{"peer_address": "10.0.0.1", "vrf": "default", "tx_interval": 1200, "rx_interval": 1200}], id="invalid-multiplier"),
         ],
     )
     def test_invalid(self, bfd_peers: list[BFDPeer]) -> None:
