@@ -28,9 +28,9 @@ class SNMPHost(BaseModel):
     udp_port: Port | int = 162
     """UDP port for SNMP. If not provided then defaults to 162."""
     community_string: str | None = None
-    """Optional SNMP community string for authentication,required only for version is v2 or vc2. Can be provided in the `VerifySNMPNotificationHost` test."""
+    """Optional SNMP community string for authentication,required for SNMP version is v1 or v2c. Can be provided in the `VerifySNMPNotificationHost` test."""
     user: str | None = None
-    """Optional SNMP user for authentication, required only for the version v3. Can be provided in the `VerifySNMPNotificationHost` test."""
+    """Optional SNMP user for authentication, required for SNMP version v3. Can be provided in the `VerifySNMPNotificationHost` test."""
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the Host for reporting.

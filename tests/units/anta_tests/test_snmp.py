@@ -337,7 +337,7 @@ DATA: list[dict[str, Any]] = [
                     {
                         "hostname": "192.168.1.101",
                         "port": 162,
-                        "vrf": "",
+                        "vrf": "MGMT",
                         "notificationType": "trap",
                         "protocolVersion": "v2c",
                         "v1v2cParams": {"communityString": "public"},
@@ -348,7 +348,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {
             "notification_hosts": [
                 {"hostname": "192.168.1.100", "vrf": "default", "notification_type": "trap", "version": "v3", "udp_port": 162, "user": "public"},
-                {"hostname": "192.168.1.101", "vrf": "default", "notification_type": "trap", "version": "v2c", "udp_port": 162, "community_string": "public"},
+                {"hostname": "192.168.1.101", "vrf": "MGMT", "notification_type": "trap", "version": "v2c", "udp_port": 162, "community_string": "public"},
             ]
         },
         "expected": {"result": "success"},
@@ -388,7 +388,7 @@ DATA: list[dict[str, Any]] = [
                 {"hostname": "192.168.1.101", "vrf": "default", "notification_type": "trap", "version": "v2c", "udp_port": 162, "community_string": "public"},
             ]
         },
-        "expected": {"result": "failure", "messages": ["Host: 192.168.1.101 VRF: default - Not configured"]},
+        "expected": {"result": "failure", "messages": ["Host: 192.168.1.101 VRF: default Version: v2c - Not configured"]},
     },
     {
         "name": "failure-incorrect-notification-type",
@@ -469,7 +469,7 @@ DATA: list[dict[str, Any]] = [
         },
     },
     {
-        "name": "failure-incorrect-community-string-version-v1-vc2",
+        "name": "failure-incorrect-community-string-version-v1-v2c",
         "test": VerifySNMPNotificationHost,
         "eos_data": [
             {
@@ -487,7 +487,7 @@ DATA: list[dict[str, Any]] = [
                         "port": 162,
                         "vrf": "",
                         "notificationType": "trap",
-                        "protocolVersion": "vc2",
+                        "protocolVersion": "v2c",
                         "v1v2cParams": {"communityString": "private"},
                     },
                 ]
@@ -530,5 +530,41 @@ DATA: list[dict[str, Any]] = [
             ]
         },
         "expected": {"result": "failure", "messages": ["Host: 192.168.1.100 VRF: default Version: v3 - Incorrect user - Expected: public Actual: private"]},
+    },
+    {
+        "name": "failure-incorrect-vrf",
+        "test": VerifySNMPNotificationHost,
+        "eos_data": [
+            {
+                "hosts": [
+                    {
+                        "hostname": "192.168.1.100",
+                        "port": 162,
+                        "vrf": "MGMT",
+                        "notificationType": "trap",
+                        "protocolVersion": "v3",
+                        "v3Params": {"user": "public", "securityLevel": "authNoPriv"},
+                    },
+                    {
+                        "hostname": "192.168.1.101",
+                        "port": 162,
+                        "vrf": "test",
+                        "notificationType": "trap",
+                        "protocolVersion": "v2c",
+                        "v1v2cParams": {"communityString": "public"},
+                    },
+                ]
+            }
+        ],
+        "inputs": {
+            "notification_hosts": [
+                {"hostname": "192.168.1.100", "vrf": "default", "notification_type": "trap", "version": "v3", "udp_port": 162, "user": "public"},
+                {"hostname": "192.168.1.101", "vrf": "MGMT", "notification_type": "trap", "version": "v2c", "udp_port": 162, "community_string": "public"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": ["Host: 192.168.1.100 VRF: default - Incorrect VRF - Actual: MGMT", "Host: 192.168.1.101 VRF: MGMT - Incorrect VRF - Actual: test"],
+        },
     },
 ]

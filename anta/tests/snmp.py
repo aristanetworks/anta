@@ -352,21 +352,21 @@ class VerifySNMPNotificationHost(AntaTest):
      1. Verifies that the SNMP host and hostname is configured on the device.
      2. Verifies that the notification type matches the expected value.
      3. Ensures that UDP port provided matches the expected value.
-     4. Ensures that the a valid community string is properly set for SNMP version v1/vc2 and it should match the expected value.
-     5. Ensures that the a valid the user field properly set for  SNMP version v3 and it should match the expected value.
+     4. Ensures that the a valid community string is properly set for SNMP version v1/v2c and it should matches the expected value.
+     5. Ensures that the a valid user field is properly set for SNMP version v3 and it should matches the expected value.
 
     Expected Results
     ----------------
     * Success: The test will pass if all of the following conditions are met:
         - The SNMP host and hostname is configured on the device.
         - The notification type and UDP port matches the expected value.
-        - The valid community string is properly set for SNMP version v1/vc2 and it should matches the expected value.
+        - The valid community string is properly set for SNMP version v1/v2c and it should matches the expected value.
         - The valid user field is included for SNMP v3 and it should matches the expected value.
 
     * Failure: The test will fail if any of the following conditions is met:
         - The SNMP host or hostname is not configured on the device.
         - The notification type or UDP port do not matches the expected value.
-        - The community string is for SNMP version v1/vc2 is not matches the expected value.
+        - The community string is for SNMP version v1/v2c is not matches the expected value.
         - The user field for SNMP version v3 is not matches the expected value.
 
     Examples
@@ -421,6 +421,7 @@ class VerifySNMPNotificationHost(AntaTest):
             return
 
         for host in self.inputs.notification_hosts:
+            vrf = host.vrf
             hostname = str(host.hostname)
             notification_type = host.notification_type
             version = host.version
@@ -433,6 +434,10 @@ class VerifySNMPNotificationHost(AntaTest):
             if not host_details:
                 self.result.is_failure(f"{host} Version: {version} - Not configured")
                 continue
+            actual_vrf = "default" if (vrf_name := host_details.get("vrf")) == "" else vrf_name
+
+            if actual_vrf != vrf:
+                self.result.is_failure(f"{host} - Incorrect VRF - Actual: {actual_vrf}")
 
             # If actual notification type do not matches the expected value, test fails.
             if notification_type != (actual_notification_type := get_value(host_details, "notificationType", "Not Found")):
