@@ -148,17 +148,18 @@ class VerifyBFDPeersIntervals(AntaTest):
 
         @field_validator("bfd_peers")
         @classmethod
-        def validate_snmp_user(cls, bfd_peers: list[T]) -> list[T]:
-            """Validate that 'tx_interval', 'rx_interval' or 'multiplier' field is provided in each BFD peer."""
+        def validate_bfd_peers(cls, bfd_peers: list[T]) -> list[T]:
+            """Validate that 'tx_interval', 'rx_interval' and 'multiplier' fields are provided in each BFD peer."""
             for peer in bfd_peers:
+                missing_fileds = []
                 if peer.tx_interval is None:
-                    msg = f"{peer}; 'tx_interval' field missing in the input"
-                    raise ValueError(msg)
+                    missing_fileds.append("tx_interval")
                 if peer.rx_interval is None:
-                    msg = f"{peer}; 'rx_interval' field missing in the input"
-                    raise ValueError(msg)
+                    missing_fileds.append("rx_interval")
                 if peer.multiplier is None:
-                    msg = f"{peer}; 'multiplier' field missing in the input"
+                    missing_fileds.append("multiplier")
+                if missing_fileds:
+                    msg = f"{peer}; {', '.join(missing_fileds)} field(s) are missing in the input."
                     raise ValueError(msg)
             return bfd_peers
 
@@ -329,7 +330,7 @@ class VerifyBFDPeersRegProtocols(AntaTest):
 
         @field_validator("bfd_peers")
         @classmethod
-        def validate_snmp_user(cls, bfd_peers: list[T]) -> list[T]:
+        def validate_bfd_peers(cls, bfd_peers: list[T]) -> list[T]:
             """Validate that 'protocols' field is provided in each BFD peer."""
             for peer in bfd_peers:
                 if peer.protocols is None:
