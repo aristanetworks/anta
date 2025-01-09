@@ -736,6 +736,13 @@ anta.tests.snmp:
   - VerifySnmpLocation:
       # Verifies the SNMP location of a device.
       location: New York
+  - VerifySnmpLogging:
+      # Verifies SNMP logging and SNMP manager(host) details.
+      hosts:
+        - hostname: 192.168.1.100
+          vrf: default
+        - hostname: 192.168.1.103
+          vrf: MGMT
   - VerifySnmpPDUCounters:
       # Verifies the SNMP PDU counters.
       pdus:

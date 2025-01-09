@@ -7,12 +7,10 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from ipaddress import IPv4Address
 from typing import TYPE_CHECKING, ClassVar, get_args
 
-from pydantic import BaseModel
-
-from anta.custom_types import Hostname, PositiveInteger, SnmpErrorCounter, SnmpPdu
+from anta.custom_types import PositiveInteger, SnmpErrorCounter, SnmpPdu
+from anta.input_models.snmp import SNMPHost
 from anta.models import AntaCommand, AntaTest
 from anta.tools import get_value
 
@@ -345,12 +343,24 @@ class VerifySnmpErrorCounters(AntaTest):
 
 
 class VerifySnmpLogging(AntaTest):
-    """Verifies whether the SNMP logging is enabled and SNMP manager(host) details in a specified VRF.
+    """Verifies SNMP logging and SNMP manager(host) details.
+
+    This test performs the following checks for each specified host:
+
+     1. Verifies that the SNMP logging is enabled on the device.
+     2. Verifies SNMP host matches the expected value.
+     3. Ensures that VRF provided matches the expected value.
 
     Expected Results
     ----------------
-    * Success: The test will pass if the SNMP logging is enabled and manager(host) details is in the specified VRF.
-    * Failure: The test will fail if the SNMP logging is disabled or the SNMP manager details are not correct.
+    * Success: The test will pass if all of the following conditions are met:
+        - The SNMP logging is enabled on the device.
+        - The SNMP host matches the expected value.
+        - The VRF provided matches the expected value.
+    * Failure: The test will fail if any of the following conditions is met:
+        - The SNMP logging is disabled on the device.
+        - The SNMP host do not matches the expected value.
+        - The VRF provided do not matches the expected value.
 
     Examples
     --------
@@ -365,8 +375,6 @@ class VerifySnmpLogging(AntaTest):
     ```
     """
 
-    name = "VerifySnmpLogging"
-    description = "Verifies whether the SNMP logging is enabled and SNMP manager(host) in a specified VRF"
     categories: ClassVar[list[str]] = ["snmp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show snmp", revision=1)]
 
@@ -376,41 +384,30 @@ class VerifySnmpLogging(AntaTest):
         hosts: list[SNMPHost]
         """List of SNMP hosts."""
 
-        class SNMPHost(BaseModel):
-            """Model for a SNMP Host."""
-
-            hostname: IPv4Address | Hostname
-            """IPv4 address or hostname of the SNMP notification host."""
-            vrf: str = "default"
-            """Optional VRF for SNMP Hosts. If not provided, it defaults to `default`."""
-
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifySnmpLogging."""
-        failures: str = ""
+        self.result.is_success()
 
-        logging_output = self.instance_commands[0].json_output.get("logging", {})
-        if not logging_output.get("loggingEnabled"):
-            self.result.is_failure("SNMP logging is disabled.")
+        command_output = self.instance_commands[0].json_output.get("logging", {})
+        # If SNMP logging is disabled, test fails.
+        if not command_output.get("loggingEnabled"):
+            self.result.is_failure("SNMP logging is disabled")
             return
 
-        host_details = logging_output.get("hosts")
+        host_details = command_output.get("hosts")
 
         for host in self.inputs.hosts:
             hostname = str(host.hostname)
             vrf = host.vrf
+            actual_snmp_host = host_details.get(hostname, {})
+            actual_vrf = "default" if (vrf_name := actual_snmp_host.get("vrf")) == "" else vrf_name
 
-            # Verify SNMP host details.
-            snmp_host = host_details.get(hostname, {})
-            actual_vrf = "default" if (vrf_name := snmp_host.get("vrf")) == "" else vrf_name
-            if not snmp_host:
-                failures += f"SNMP host '{hostname }' is not configured.\n"
+            # If SNMP host is not configured on the system, test fails.
+            if not actual_snmp_host:
+                self.result.is_failure(f"{host} - Not configured")
                 continue
-            if actual_vrf != vrf:
-                failures += f"For SNMP host '{hostname }', expected '{vrf}' as vrf but found '{actual_vrf}' instead.\n"
 
-        # Check if there are any failures.
-        if not failures:
-            self.result.is_success()
-        else:
-            self.result.is_failure(failures)
+            # If VRF is not matches the expected value, test fails.
+            if actual_vrf != vrf:
+                self.result.is_failure(f"{host} - Incorrect VRF - Actual: {actual_vrf}")
