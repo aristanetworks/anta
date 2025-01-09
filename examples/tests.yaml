@@ -711,10 +711,10 @@ anta.tests.services:
       # Verifies the error disable recovery functionality.
       reasons:
         - reason: acl
-          timer_interval: 30
+          interval: 30
           status: Enabled
         - reason: bpduguard
-          timer_interval: 30
+          interval: 30
           status: Enabled
   - VerifyHostname:
       # Verifies the hostname of a device.

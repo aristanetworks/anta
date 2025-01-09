@@ -9,7 +9,7 @@ from __future__ import annotations
 # mypy: disable-error-code=attr-defined
 from typing import ClassVar
 
-from anta.input_models.services import DnsServer, ErrdisableRecovery
+from anta.input_models.services import DnsServer, ErrDisableReason, ErrdisableRecovery
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_dict_superset, get_item
 
@@ -189,10 +189,10 @@ class VerifyErrdisableRecovery(AntaTest):
       - VerifyErrdisableRecovery:
           reasons:
             - reason: acl
-              timer_interval: 30
+              interval: 30
               status: Enabled
             - reason: bpduguard
-              timer_interval: 30
+              interval: 30
               status: Enabled
     ```
     """
@@ -206,7 +206,7 @@ class VerifyErrdisableRecovery(AntaTest):
 
         reasons: list[ErrdisableRecovery]
         """List of errdisable reasons."""
-        ErrDisableReason: ClassVar[type[ErrdisableRecovery]] = ErrdisableRecovery
+        ErrDisableReason: ClassVar[type[ErrdisableRecovery]] = ErrDisableReason
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -218,10 +218,10 @@ class VerifyErrdisableRecovery(AntaTest):
 
         # Collecting the actual errdisable reasons for faster lookup
         errdisable_reasons = [
-            {"reason": reason, "status": status, "timer_interval": timer_interval}
+            {"reason": reason, "status": status, "interval": interval}
             for line in command_output
             if line.strip()  # Skip empty lines
-            for reason, status, timer_interval in [line.split(None, 2)]  # Unpack split result
+            for reason, status, interval in [line.split(None, 2)]  # Unpack split result
         ]
 
         for error_reason in self.inputs.reasons:
@@ -232,7 +232,7 @@ class VerifyErrdisableRecovery(AntaTest):
             if not all(
                 [
                     error_reason.status == (act_status := reason_output["status"]),
-                    error_reason.timer_interval == (act_interval := int(reason_output["timer_interval"])),
+                    error_reason.interval == (act_interval := int(reason_output["interval"])),
                 ]
             ):
                 self.result.is_failure(f"{error_reason} - Incorrect configuration - Status: {act_status} Interval: {act_interval}")

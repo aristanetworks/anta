@@ -6,7 +6,8 @@
 from __future__ import annotations
 
 from ipaddress import IPv4Address, IPv6Address
-from typing import Literal
+from typing import Any, Literal
+from warnings import warn
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -42,8 +43,8 @@ class ErrdisableRecovery(BaseModel):
     """Name of the error disable reason."""
     status: Literal["Enabled", "Disabled"] = "Enabled"
     """Operational status of the reason. Defaults to 'Enabled'."""
-    timer_interval: int = Field(ge=30, le=86400)
-    """Timer interval of the reason in seconds. Required field in the `VerifyErrdisableRecovery` test."""
+    interval: int = Field(ge=30, le=86400)
+    """Timer interval of the reason in seconds."""
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the ErrdisableRecovery for reporting.
@@ -52,4 +53,22 @@ class ErrdisableRecovery(BaseModel):
         --------
         Reason: acl Status: Enabled Interval: 300
         """
-        return f"Reason: {self.reason} Status: {self.status} Interval: {self.timer_interval}"
+        return f"Reason: {self.reason} Status: {self.status} Interval: {self.interval}"
+
+
+class ErrDisableReason(ErrdisableRecovery):  # pragma: no cover
+    """Alias for the ErrdisableRecovery model to maintain backward compatibility.
+
+    When initialised, it will emit a deprecation warning and call the ErrdisableRecovery model.
+
+    TODO: Remove this class in ANTA v2.0.0.
+    """
+
+    def __init__(self, **data: Any) -> None:  # noqa: ANN401
+        """Initialize the ErrdisableRecovery class, emitting a depreciation warning."""
+        warn(
+            message="ErrDisableReason model is deprecated and will be removed in ANTA v2.0.0. Use the ErrdisableRecovery model instead.",
+            category=DeprecationWarning,
+            stacklevel=2,
+        )
+        super().__init__(**data)
