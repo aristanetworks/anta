@@ -129,7 +129,7 @@ DATA: list[dict[str, Any]] = [
                 arp-inspection                 Enabled                  30
             """
         ],
-        "inputs": {"reasons": [{"reason": "acl", "timer_interval": 300}, {"reason": "bpduguard", "timer_interval": 300}]},
+        "inputs": {"reasons": [{"reason": "acl", "interval": 300}, {"reason": "bpduguard", "interval": 300}]},
         "expected": {"result": "success"},
     },
     {
@@ -144,9 +144,7 @@ DATA: list[dict[str, Any]] = [
                 arp-inspection                 Enabled                  30
             """
         ],
-        "inputs": {
-            "reasons": [{"reason": "acl", "timer_interval": 300}, {"reason": "arp-inspection", "timer_interval": 30}, {"reason": "tapagg", "timer_interval": 30}]
-        },
+        "inputs": {"reasons": [{"reason": "acl", "interval": 300}, {"reason": "arp-inspection", "interval": 30}, {"reason": "tapagg", "interval": 30}]},
         "expected": {
             "result": "failure",
             "messages": ["Reason: tapagg Status: Enabled Interval: 30 - Not found"],
@@ -164,7 +162,7 @@ DATA: list[dict[str, Any]] = [
                 arp-inspection                 Enabled                  30
             """
         ],
-        "inputs": {"reasons": [{"reason": "acl", "timer_interval": 300}, {"reason": "arp-inspection", "timer_interval": 30}]},
+        "inputs": {"reasons": [{"reason": "acl", "interval": 300}, {"reason": "arp-inspection", "interval": 30}]},
         "expected": {
             "result": "failure",
             "messages": ["Reason: acl Status: Enabled Interval: 300 - Incorrect configuration - Status: Disabled Interval: 300"],
@@ -182,7 +180,7 @@ DATA: list[dict[str, Any]] = [
                 arp-inspection                 Enabled                  30
             """
         ],
-        "inputs": {"reasons": [{"reason": "acl", "timer_interval": 30}, {"reason": "arp-inspection", "timer_interval": 30}]},
+        "inputs": {"reasons": [{"reason": "acl", "interval": 30}, {"reason": "arp-inspection", "interval": 30}]},
         "expected": {
             "result": "failure",
             "messages": [
@@ -202,9 +200,7 @@ DATA: list[dict[str, Any]] = [
                 arp-inspection                 Enabled                  30
             """
         ],
-        "inputs": {
-            "reasons": [{"reason": "acl", "timer_interval": 30}, {"reason": "arp-inspection", "timer_interval": 300}, {"reason": "tapagg", "timer_interval": 30}]
-        },
+        "inputs": {"reasons": [{"reason": "acl", "interval": 30}, {"reason": "arp-inspection", "interval": 300}, {"reason": "tapagg", "interval": 30}]},
         "expected": {
             "result": "failure",
             "messages": [
