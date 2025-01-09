@@ -447,9 +447,7 @@ class VerifySNMPNotificationHost(AntaTest):
 
             # If SNMP protocol version is v1 or v2c and actual community string do not matches the expected value, test fails.
             if version in ["v1", "v2c"] and community_string != (actual_community_string := get_value(host_details, "v1v2cParams.communityString", "Not Found")):
-                self.result.is_failure(
-                    f"{host} Version: {version} - Incorrect community string - Expected: {community_string} Actual: {actual_community_string}"
-                )
+                self.result.is_failure(f"{host} Version: {version} - Incorrect community string - Expected: {community_string} Actual: {actual_community_string}")
 
             # If SNMP protocol version is v3 and actual user do not matches the expected value, test fails.
             elif version == "v3" and user != (actual_user := get_value(host_details, "v3Params.user", "Not Found")):
