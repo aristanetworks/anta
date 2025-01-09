@@ -720,6 +720,16 @@ anta.tests.services:
       # Verifies the hostname of a device.
       hostname: s1-spine1
 anta.tests.snmp:
+  - VerifySNMPNotificationHost:
+      # Verifies the SNMP notification host (SNMP manager) configurations.
+      notification_hosts:
+        - hostname: 192.168.1.100
+          vrf: default
+          notification_type: trap
+          version: v1
+          udp_port: 162
+          community_string: public
+          user: public
   - VerifySnmpContact:
       # Verifies the SNMP contact of a device.
       contact: Jon@example.com

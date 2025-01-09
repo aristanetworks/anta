@@ -7,14 +7,14 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from ipaddress import IPv4Address
-from typing import TYPE_CHECKING, ClassVar, Literal, get_args
+from typing import TYPE_CHECKING, ClassVar, get_args
 
-from pydantic import BaseModel, model_validator
+from pydantic import field_validator
 
-from anta.custom_types import Port, PositiveInteger, SnmpErrorCounter, SnmpPdu, SnmpVersion
+from anta.custom_types import PositiveInteger, SnmpErrorCounter, SnmpPdu
+from anta.input_models.snmp import SNMPHost
 from anta.models import AntaCommand, AntaTest
-from anta.tools import get_failed_logs, get_item, get_value
+from anta.tools import get_value
 
 if TYPE_CHECKING:
     from anta.models import AntaTemplate
@@ -347,14 +347,27 @@ class VerifySnmpErrorCounters(AntaTest):
 class VerifySNMPNotificationHost(AntaTest):
     """Verifies the SNMP notification host (SNMP manager) configurations.
 
-    - Verifies that the valid notification type and VRF name.
-    - Ensures that UDP port provided matches the expected value.
-    - Ensures that the community_string is properly set for SNMP v1/v2 and for SNMP v3, the user field is included, aligning with version-specific requirements.
+    This test performs the following checks for each specified host:
+
+     1. Verifies that the SNMP host and hostname is configured on the device.
+     2. Verifies that the notification type matches the expected value.
+     3. Ensures that UDP port provided matches the expected value.
+     4. Ensures that the a valid community string is properly set for SNMP version v1/vc2 and it should match the expected value.
+     5. Ensures that the a valid the user field properly set for  SNMP version v3 and it should match the expected value.
 
     Expected Results
     ----------------
-    * Success: The test will pass if the provided SNMP notification host and all specified parameters are correctly configured.
-    * Failure: The test will fail if the provided SNMP notification host is not configured or specified parameters are not correctly configured.
+    * Success: The test will pass if all of the following conditions are met:
+        - The SNMP host and hostname is configured on the device.
+        - The notification type and UDP port matches the expected value.
+        - The valid community string is properly set for SNMP version v1/vc2 and it should matches the expected value.
+        - The valid user field is included for SNMP v3 and it should matches the expected value.
+
+    * Failure: The test will fail if any of the following conditions is met:
+        - The SNMP host or hostname is not configured on the device.
+        - The notification type or UDP port do not matches the expected value.
+        - The community string is for SNMP version v1/vc2 is not matches the expected value.
+        - The user field for SNMP version v3 is not matches the expected value.
 
     Examples
     --------
@@ -372,8 +385,6 @@ class VerifySNMPNotificationHost(AntaTest):
     ```
     """
 
-    name = "VerifySNMPNotificationHost"
-    description = "Verifies the SNMP notification host (SNMP manager) configurations."
     categories: ClassVar[list[str]] = ["snmp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show snmp notification host", revision=1)]
 
@@ -383,88 +394,58 @@ class VerifySNMPNotificationHost(AntaTest):
         notification_hosts: list[SNMPHost]
         """List of SNMP hosts."""
 
-        class SNMPHost(BaseModel):
-            """Model for a SNMP Host."""
-
-            hostname: IPv4Address
-            """IPv4 address of the SNMP notification host."""
-            vrf: str = "default"
-            """Optional VRF for SNMP Hosts. If not provided, it defaults to `default`."""
-            notification_type: Literal["trap", "inform"]
-            """Type of SNMP notification (trap or inform)."""
-            version: SnmpVersion
-            """SNMP protocol version."""
-            udp_port: Port | int = 162
-            """UDP port for SNMP. If not provided then defaults to 162."""
-            community_string: str | None = None
-            """Optional SNMP community string for authentication."""
-            user: str | None = None
-            """Optional SNMP user for authentication."""
-
-            @model_validator(mode="after")
-            def validate_inputs(self: BaseModel) -> BaseModel:
-                """Validate the inputs provided to the SNMPHost class.
-
-                If SNMP version is either v1 or v2c, community string must be provided.
-
-                If SNMP version is v3, user must be provided.
-                """
-                if self.version in ["v1", "v2c"] and self.community_string is None:
-                    msg = "Community string must be provided when SNMP Protocol version is either v1 or v2c."
+        @field_validator("notification_hosts")
+        @classmethod
+        def validate_notification_hosts(cls, notification_hosts: list[SNMPHost]) -> list[SNMPHost]:
+            """Validate that all required fields are provided in each SNMP Notification Host."""
+            for host in notification_hosts:
+                if host.version is None:
+                    msg = f"{host}; 'version' field missing in the input"
                     raise ValueError(msg)
-                if self.version == "v3" and self.user is None:
-                    msg = "User must be provided when SNMP Protocol version is v3."
+                if host.version in ["v1", "v2c"] and host.community_string is None:
+                    msg = f"{host} Version: {host.version}; 'community_string' field missing in the input"
                     raise ValueError(msg)
-                return self
+                if host.version == "v3" and host.user is None:
+                    msg = f"{host} Version: {host.version}; 'user' field missing in the input"
+                    raise ValueError(msg)
+            return notification_hosts
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifySNMPNotificationHost."""
         self.result.is_success()
-        failures: str = ""
 
-        # Verify SNMP host details.
+        # If SNMP host is not configured, test fails.
         if not (snmp_hosts := get_value(self.instance_commands[0].json_output, "hosts")):
             self.result.is_failure("No SNMP host is configured.")
             return
 
         for host in self.inputs.notification_hosts:
             hostname = str(host.hostname)
-            vrf = host.vrf
-            version = host.version
             notification_type = host.notification_type
+            version = host.version
             udp_port = host.udp_port
             community_string = host.community_string
             user = host.user
 
-            # Verify SNMP host details.
-            if not (host_details := get_item(snmp_hosts, "hostname", hostname)):
-                failures += f"SNMP host '{hostname}' is not configured.\n"
+            host_details = next((host for host in snmp_hosts if (host.get("hostname") == hostname and host.get("protocolVersion") == version)), None)
+            # If expected SNMP hostname is not configured with the specified protocol version, test fails.
+            if not host_details:
+                self.result.is_failure(f"{host} Version: {version} - Not configured")
                 continue
 
-            # Update expected host details.
-            expected_host_details = {"vrf": vrf, "notification type": notification_type, "udp port": udp_port}
+            # If actual notification type do not matches the expected value, test fails.
+            if notification_type != (actual_notification_type := get_value(host_details, "notificationType", "Not Found")):
+                self.result.is_failure(f"{host} - Incorrect notification type - Expected: {notification_type} Actual: {actual_notification_type}")
 
-            # Update actual host details.
-            actual_host_details = {"notification type": host_details.get("notificationType", "Not Found"), "udp port": host_details.get("port", "Not Found")}
+            # If actual udp port do not matches the expected value, test fails.
+            if udp_port != (actual_udp_port := get_value(host_details, "port", "Not Found")):
+                self.result.is_failure(f"{host} - Incorrect UDP port - Expected: {udp_port} Actual: {actual_udp_port}")
 
-            # Verify SNMP protocol version.
-            if version in ["v1", "v2c"]:
-                expected_host_details["community_string"] = community_string
-                actual_host_details["community_string"] = host_details.get("v1v2cParams", {}).get("communityString", "Not Found")
+            # If SNMP protocol version is v1 or v2c and actual community string do not matches the expected value, test fails.
+            if version in ["v1", "v2c"] and community_string != (actual_community_string := get_value(host_details, "v1v2cParams.communityString", "Not Found")):
+                self.result.is_failure(f"{host} Version: {version} - Incorrect community string - Expected: {community_string} Actual: {actual_community_string}")
 
-            if version == "v3":
-                expected_host_details["user"] = user
-                actual_host_details["user"] = host_details.get("v3Params", {}).get("user", "Not Found")
-
-            # Verify the VRF for SNMP Hosts. If vrf is default then command output consists empty string.
-            actual_host_details["vrf"] = "default" if (vrf_name := host_details.get("vrf", "Not Found")) == "" else vrf_name
-
-            # Collecting failures logs if any.
-            failure_logs = get_failed_logs(expected_host_details, actual_host_details)
-            if failure_logs:
-                failures += f"For SNMP host {hostname}:{failure_logs}\n"
-
-        # Check if there are any failures.
-        if failures:
-            self.result.is_failure(failures)
+            # If SNMP protocol version is v3 and actual user do not matches the expected value, test fails.
+            if version == "v3" and user != (actual_user := get_value(host_details, "v3Params.user", "Not Found")):
+                self.result.is_failure(f"{host} Version: {version} - Incorrect user - Expected: {user} Actual: {actual_user}")
