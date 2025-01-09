@@ -1,11 +1,11 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Test anta.reporter.md_reporter.py."""
 
 from __future__ import annotations
 
-from io import BytesIO, TextIOWrapper
+from io import StringIO
 from pathlib import Path
 
 import pytest
@@ -22,7 +22,7 @@ def test_md_report_generate(tmp_path: Path, result_manager: ResultManager) -> No
     expected_report = "test_md_report.md"
 
     # Generate the Markdown report
-    MDReportGenerator.generate(result_manager, md_filename)
+    MDReportGenerator.generate(result_manager.sort(sort_by=["name", "categories", "test"]), md_filename)
     assert md_filename.exists()
 
     # Load the existing Markdown report to compare with the generated one
@@ -46,7 +46,7 @@ def test_md_report_base() -> None:
 
     results = ResultManager()
 
-    with TextIOWrapper(BytesIO(b"1 2 3")) as mock_file:
+    with StringIO() as mock_file:
         report = FakeMDReportBase(mock_file, results)
         assert report.generate_heading_name() == "Fake MD Report Base"
 

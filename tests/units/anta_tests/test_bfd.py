@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Tests for anta.tests.bfd.py."""
@@ -27,6 +27,7 @@ DATA: list[dict[str, Any]] = [
                                             "operTxInterval": 1200000,
                                             "operRxInterval": 1200000,
                                             "detectMult": 3,
+                                            "detectTime": 3600000,
                                         }
                                     }
                                 }
@@ -42,6 +43,7 @@ DATA: list[dict[str, Any]] = [
                                             "operTxInterval": 1200000,
                                             "operRxInterval": 1200000,
                                             "detectMult": 3,
+                                            "detectTime": 3600000,
                                         }
                                     }
                                 }
@@ -55,6 +57,55 @@ DATA: list[dict[str, Any]] = [
             "bfd_peers": [
                 {"peer_address": "192.0.255.7", "vrf": "default", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3},
                 {"peer_address": "192.0.255.70", "vrf": "MGMT", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3},
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-detection-time",
+        "test": VerifyBFDPeersIntervals,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "ipv4Neighbors": {
+                            "192.0.255.7": {
+                                "peerStats": {
+                                    "": {
+                                        "peerStatsDetail": {
+                                            "operTxInterval": 1200000,
+                                            "operRxInterval": 1200000,
+                                            "detectMult": 3,
+                                            "detectTime": 3600000,
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "MGMT": {
+                        "ipv4Neighbors": {
+                            "192.0.255.70": {
+                                "peerStats": {
+                                    "": {
+                                        "peerStatsDetail": {
+                                            "operTxInterval": 1200000,
+                                            "operRxInterval": 1200000,
+                                            "detectMult": 3,
+                                            "detectTime": 3600000,
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bfd_peers": [
+                {"peer_address": "192.0.255.7", "vrf": "default", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3, "detection_time": 3600},
+                {"peer_address": "192.0.255.70", "vrf": "MGMT", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3, "detection_time": 3600},
             ]
         },
         "expected": {"result": "success"},
@@ -74,6 +125,7 @@ DATA: list[dict[str, Any]] = [
                                             "operTxInterval": 1200000,
                                             "operRxInterval": 1200000,
                                             "detectMult": 3,
+                                            "detectTime": 3600000,
                                         }
                                     }
                                 }
@@ -89,6 +141,7 @@ DATA: list[dict[str, Any]] = [
                                             "operTxInterval": 1200000,
                                             "operRxInterval": 1200000,
                                             "detectMult": 3,
+                                            "detectTime": 3600000,
                                         }
                                     }
                                 }
@@ -100,8 +153,8 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "bfd_peers": [
-                {"peer_address": "192.0.255.7", "vrf": "CS", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3},
-                {"peer_address": "192.0.255.70", "vrf": "MGMT", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3},
+                {"peer_address": "192.0.255.7", "vrf": "CS", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3, "detection_time": 3600},
+                {"peer_address": "192.0.255.70", "vrf": "MGMT", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3, "detection_time": 3600},
             ]
         },
         "expected": {
@@ -127,6 +180,7 @@ DATA: list[dict[str, Any]] = [
                                             "operTxInterval": 1300000,
                                             "operRxInterval": 1200000,
                                             "detectMult": 4,
+                                            "detectTime": 4000000,
                                         }
                                     }
                                 }
@@ -142,6 +196,7 @@ DATA: list[dict[str, Any]] = [
                                             "operTxInterval": 120000,
                                             "operRxInterval": 120000,
                                             "detectMult": 5,
+                                            "detectTime": 4000000,
                                         }
                                     }
                                 }
@@ -165,6 +220,66 @@ DATA: list[dict[str, Any]] = [
                 "Peer: 192.0.255.70 VRF: MGMT - Incorrect Transmit interval - Expected: 1200 Actual: 120",
                 "Peer: 192.0.255.70 VRF: MGMT - Incorrect Receive interval - Expected: 1200 Actual: 120",
                 "Peer: 192.0.255.70 VRF: MGMT - Incorrect Multiplier - Expected: 3 Actual: 5",
+            ],
+        },
+    },
+    {
+        "name": "failure-incorrect-timers-with-detection-time",
+        "test": VerifyBFDPeersIntervals,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "ipv4Neighbors": {
+                            "192.0.255.7": {
+                                "peerStats": {
+                                    "": {
+                                        "peerStatsDetail": {
+                                            "operTxInterval": 1300000,
+                                            "operRxInterval": 1200000,
+                                            "detectMult": 4,
+                                            "detectTime": 4000000,
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "MGMT": {
+                        "ipv4Neighbors": {
+                            "192.0.255.70": {
+                                "peerStats": {
+                                    "": {
+                                        "peerStatsDetail": {
+                                            "operTxInterval": 120000,
+                                            "operRxInterval": 120000,
+                                            "detectMult": 5,
+                                            "detectTime": 4000000,
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bfd_peers": [
+                {"peer_address": "192.0.255.7", "vrf": "default", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3, "detection_time": 3600},
+                {"peer_address": "192.0.255.70", "vrf": "MGMT", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3, "detection_time": 3600},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Peer: 192.0.255.7 VRF: default - Incorrect Transmit interval - Expected: 1200 Actual: 1300",
+                "Peer: 192.0.255.7 VRF: default - Incorrect Multiplier - Expected: 3 Actual: 4",
+                "Peer: 192.0.255.7 VRF: default - Incorrect Detection Time - Expected: 3600 Actual: 4000",
+                "Peer: 192.0.255.70 VRF: MGMT - Incorrect Transmit interval - Expected: 1200 Actual: 120",
+                "Peer: 192.0.255.70 VRF: MGMT - Incorrect Receive interval - Expected: 1200 Actual: 120",
+                "Peer: 192.0.255.70 VRF: MGMT - Incorrect Multiplier - Expected: 3 Actual: 5",
+                "Peer: 192.0.255.70 VRF: MGMT - Incorrect Detection Time - Expected: 3600 Actual: 4000",
             ],
         },
     },
