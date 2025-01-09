@@ -394,10 +394,10 @@ class VerifySnmpUser(AntaTest):
             """Validate that 'authentication_type' or 'priv_type' field is provided in each SNMP user."""
             for user in snmp_users:
                 if user.group_name is None or user.version is None:
-                    msg = f"{user} 'group_name' or 'version' field missing in the input"
+                    msg = f"{user}; 'group_name' or 'version' field missing in the input"
                     raise ValueError(msg)
                 if user.version == "v3" and not (user.auth_type or user.priv_type):
-                    msg = f"{user}; At least one of 'auth_type' or 'priv_type' must be provided."
+                    msg = f"{user}; 'auth_type' or 'priv_type' field is required with 'version: v3'"
                     raise ValueError(msg)
             return snmp_users
 
