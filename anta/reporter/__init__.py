@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Report management for ANTA."""
@@ -168,7 +168,7 @@ class ReportTable:
             self.Headers.list_of_error_nodes,
         ]
         table = self._build_headers(headers=headers, table=table)
-        for test, stats in sorted(manager.test_stats.items()):
+        for test, stats in manager.test_stats.items():
             if tests is None or test in tests:
                 table.add_row(
                     test,
@@ -214,7 +214,7 @@ class ReportTable:
             self.Headers.list_of_error_tests,
         ]
         table = self._build_headers(headers=headers, table=table)
-        for device, stats in sorted(manager.device_stats.items()):
+        for device, stats in manager.device_stats.items():
             if devices is None or device in devices:
                 table.add_row(
                     device,

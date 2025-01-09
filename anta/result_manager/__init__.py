@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Result Manager module for ANTA."""
@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import json
 import logging
+import warnings
 from collections import defaultdict
 from functools import cached_property
 from itertools import chain
@@ -143,28 +144,41 @@ class ResultManager:
         return json.dumps(self.dump, indent=4)
 
     @property
-    def device_stats(self) -> defaultdict[str, DeviceStats]:
+    def device_stats(self) -> dict[str, DeviceStats]:
         """Get the device statistics."""
         self._ensure_stats_in_sync()
-        return self._device_stats
+        return dict(sorted(self._device_stats.items()))
 
     @property
-    def category_stats(self) -> defaultdict[str, CategoryStats]:
+    def category_stats(self) -> dict[str, CategoryStats]:
         """Get the category statistics."""
         self._ensure_stats_in_sync()
-        return self._category_stats
+        return dict(sorted(self._category_stats.items()))
 
     @property
-    def test_stats(self) -> defaultdict[str, TestStats]:
+    def test_stats(self) -> dict[str, TestStats]:
         """Get the test statistics."""
         self._ensure_stats_in_sync()
-        return self._test_stats
+        return dict(sorted(self._test_stats.items()))
 
     @property
     def sorted_category_stats(self) -> dict[str, CategoryStats]:
-        """A property that returns the category_stats dictionary sorted by key name."""
+        """A property that returns the category_stats dictionary sorted by key name.
+
+        Deprecated
+        ----------
+            This property is deprecated and will be removed in ANTA v2.0.0.
+            Use `category_stats` instead as it is now sorted by default.
+
+        TODO: Remove this property in ANTA v2.0.0.
+        """
+        warnings.warn(
+            "sorted_category_stats is deprecated and will be removed in ANTA v2.0.0. Use category_stats instead as it is now sorted by default.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         self._ensure_stats_in_sync()
-        return dict(sorted(self.category_stats.items()))
+        return self.category_stats
 
     @cached_property
     def results_by_status(self) -> dict[AntaTestStatus, list[TestResult]]:
@@ -315,6 +329,21 @@ class ResultManager:
     def get_status(self, *, ignore_error: bool = False) -> str:
         """Return the current status including error_status if ignore_error is False."""
         return "error" if self.error_status and not ignore_error else self.status
+
+    def sort(self, sort_by: list[str]) -> ResultManager:
+        """Sort the ResultManager results based on TestResult fields.
+
+        Parameters
+        ----------
+        sort_by
+            List of TestResult fields to sort the results.
+        """
+        accepted_fields = TestResult.model_fields.keys()
+        if not set(sort_by).issubset(set(accepted_fields)):
+            msg = f"Invalid sort_by fields: {sort_by}. Accepted fields are: {list(accepted_fields)}"
+            raise ValueError(msg)
+        self._result_entries.sort(key=lambda result: [getattr(result, field) for field in sort_by])
+        return self
 
     def filter(self, hide: set[AntaTestStatus]) -> ResultManager:
         """Get a filtered ResultManager based on test status.
