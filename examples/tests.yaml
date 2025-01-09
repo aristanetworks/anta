@@ -87,6 +87,7 @@ anta.tests.bfd:
           tx_interval: 1200
           rx_interval: 1200
           multiplier: 3
+          detection_time: 3600
   - VerifyBFDPeersRegProtocols:
       # Verifies the registered routing protocol of IPv4 BFD peer sessions.
       bfd_peers:
