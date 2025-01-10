@@ -1394,11 +1394,11 @@ class VerifyBGPPeerSessionRibd(AntaTest):
         output = self.instance_commands[0].json_output
 
         for peer in self.inputs.bgp_peers:
-            peer_ip = str(peer.peer_address)
-            peer_list = get_value(output, f"vrfs.{peer.vrf}.peerList", default=[])
+            peer_address = str(peer.peer_address)
+            peers = get_value(output, f"vrfs.{peer.vrf}.peerList", default=[])
 
             # Check if the peer is found
-            if (peer_data := get_item(peer_list, "peerAddress", peer_ip)) is None:
+            if (peer_data := get_item(peers, "peerAddress", peer_address)) is None:
                 self.result.is_failure(f"{peer} - Not found")
                 continue
 
@@ -1409,10 +1409,10 @@ class VerifyBGPPeerSessionRibd(AntaTest):
 
             # Check the TCP session message queues
             if self.inputs.check_tcp_queues:
-                inq = peer_data["peerTcpInfo"]["inputQueueLength"]
-                outq = peer_data["peerTcpInfo"]["outputQueueLength"]
-                if inq != 0 or outq != 0:
-                    self.result.is_failure(f"{peer} - Session has non-empty message queues - InQ: {inq}, OutQ: {outq}")
+                inq_stat = peer_data["peerTcpInfo"]["inputQueueLength"]
+                outq_stat = peer_data["peerTcpInfo"]["outputQueueLength"]
+                if inq_stat != 0 or outq_stat != 0:
+                    self.result.is_failure(f"{peer} - Session has non-empty message queues - InQ: {inq_stat}, OutQ: {outq_stat}")
 
 
 class VerifyBGPPeersHealthRibd(AntaTest):
@@ -1471,8 +1471,7 @@ class VerifyBGPPeersHealthRibd(AntaTest):
                     continue
 
                 # Check the TCP session message queues
-                if self.inputs.check_tcp_queues:
-                    inq = peer["peerTcpInfo"]["inputQueueLength"]
-                    outq = peer["peerTcpInfo"]["outputQueueLength"]
-                    if inq != 0 or outq != 0:
-                        self.result.is_failure(f"Peer: {peer['peerAddress']} VRF: {vrf} - Session has non-empty message queues - InQ: {inq}, OutQ: {outq}")
+                inq = peer["peerTcpInfo"]["inputQueueLength"]
+                outq = peer["peerTcpInfo"]["outputQueueLength"]
+                if self.inputs.check_tcp_queues and (inq != 0 or outq != 0):
+                    self.result.is_failure(f"Peer: {peer['peerAddress']} VRF: {vrf} - Session has non-empty message queues - InQ: {inq}, OutQ: {outq}")
