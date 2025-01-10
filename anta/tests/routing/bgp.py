@@ -1333,3 +1333,146 @@ class VerifyBGPPeerRouteLimit(AntaTest):
             # Verify warning limit if provided. By default, EOS does not have a warning limit and `totalRoutesWarnLimit` is not present in the output.
             if warning_limit is not None and (actual_warning_limit := peer_data.get("totalRoutesWarnLimit", 0)) != warning_limit:
                 self.result.is_failure(f"{peer} - Maximum routes warning limit mismatch - Expected: {warning_limit}, Actual: {actual_warning_limit}")
+
+
+class VerifyBGPPeerSessionRibd(AntaTest):
+    """Verifies the session state of BGP IPv4 peer(s) in RIBd(Routing Information Base daemon) mode.
+
+    This test performs the following checks for each specified peer:
+
+      1. Verifies that the peer is found in its VRF in the BGP configuration.
+      2. Checks that the BGP session is in the `Established` state.
+      3. Ensures that both input and output TCP message queues are empty.
+      Can be disabled by setting `check_tcp_queues` global flag to `False`.
+
+    Expected Results
+    ----------------
+    * Success: If all of the following conditions are met:
+        - All specified peers are found in the BGP configuration.
+        - All peers sessions state are `Established`.
+        - All peers have empty TCP message queues if `check_tcp_queues` is `True` (default).
+    * Failure: If any of the following occur:
+        - A specified peer is not found in the BGP configuration.
+        - A peer's session state is not `Established`.
+        - A peer has non-empty TCP message queues (input or output) when `check_tcp_queues` is `True`.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      bgp:
+        - VerifyBGPPeerSessionRibd:
+            check_tcp_queues: false
+            bgp_peers:
+              - peer_address: 10.1.0.1
+                vrf: default
+              - peer_address: 10.1.0.2
+                vrf: default
+              - peer_address: 10.1.255.2
+                vrf: DEV
+              - peer_address: 10.1.255.4
+                vrf: DEV
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["bgp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip bgp neighbors vrf all", revision=2)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyBGPPeerSessionRibd test."""
+
+        check_tcp_queues: bool = True
+        """Flag to check if the TCP session queues are empty for all BGP peers. Defaults to `True`."""
+        bgp_peers: list[BgpPeer]
+        """List of BGP IPv4 peers."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyBGPPeerSessionRibd."""
+        self.result.is_success()
+
+        output = self.instance_commands[0].json_output
+
+        for peer in self.inputs.bgp_peers:
+            peer_ip = str(peer.peer_address)
+            peer_list = get_value(output, f"vrfs.{peer.vrf}.peerList", default=[])
+
+            # Check if the peer is found
+            if (peer_data := get_item(peer_list, "peerAddress", peer_ip)) is None:
+                self.result.is_failure(f"{peer} - Not found")
+                continue
+
+            # Check if the BGP session is established
+            if peer_data["state"] != "Established":
+                self.result.is_failure(f"{peer} - Session state is not established - State: {peer_data['state']}")
+                continue
+
+            # Check the TCP session message queues
+            if self.inputs.check_tcp_queues:
+                inq = peer_data["peerTcpInfo"]["inputQueueLength"]
+                outq = peer_data["peerTcpInfo"]["outputQueueLength"]
+                if inq != 0 or outq != 0:
+                    self.result.is_failure(f"{peer} - Session has non-empty message queues - InQ: {inq}, OutQ: {outq}")
+
+
+class VerifyBGPPeersHealthRibd(AntaTest):
+    """Verifies the health of all the BGP IPv4 peer(s) in RIBd(Routing Information Base daemon) mode.
+
+    This test performs the following checks for all BGP IPv4 peers:
+
+      1. Verifies that the BGP session is in the `Established` state.
+      2. Checks that both input and output TCP message queues are empty.
+      Can be disabled by setting `check_tcp_queues` global flag to `False`.
+
+    Expected Results
+    ----------------
+    * Success: If all checks pass for all BGP IPv4 peers.
+    * Failure: If any of the following occur:
+        - Any BGP session is not in the `Established` state.
+        - Any TCP message queue (input or output) is not empty when `check_tcp_queues` is `True` (default).
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      bgp:
+        - VerifyBGPPeersHealthRibd:
+            check_tcp_queues: True
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["bgp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip bgp neighbors vrf all", revision=2)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyBGPPeersHealthRibd test."""
+
+        check_tcp_queues: bool = True
+        """Flag to check if the TCP session queues are empty for all BGP peers. Defaults to `True`."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyBGPPeersHealthRibd."""
+        self.result.is_success()
+
+        output = self.instance_commands[0].json_output
+
+        for vrf, vrf_data in output["vrfs"].items():
+            peer_list = vrf_data.get("peerList", [])
+
+            if not peer_list:
+                self.result.is_failure(f"BGP is not configured in `{vrf}` VRF")
+                continue
+
+            for peer in peer_list:
+                # Check if the BGP session is established
+                if peer["state"] != "Established":
+                    self.result.is_failure(f"Peer: {peer['peerAddress']} VRF: {vrf} - Session state is not established - State: {peer['state']}")
+                    continue
+
+                # Check the TCP session message queues
+                if self.inputs.check_tcp_queues:
+                    inq = peer["peerTcpInfo"]["inputQueueLength"]
+                    outq = peer["peerTcpInfo"]["outputQueueLength"]
+                    if inq != 0 or outq != 0:
+                        self.result.is_failure(f"Peer: {peer['peerAddress']} VRF: {vrf} - Session has non-empty message queues - InQ: {inq}, OutQ: {outq}")

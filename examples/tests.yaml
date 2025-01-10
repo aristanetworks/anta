@@ -458,6 +458,18 @@ anta.tests.routing.bgp:
           vrf: DEV
         - peer_address: 10.1.255.4
           vrf: DEV
+  - VerifyBGPPeerSessionRibd:
+      # Verifies the session state of BGP IPv4 peer(s) in RIBd(Routing Information Base daemon) mode.
+      check_tcp_queues: false
+      bgp_peers:
+        - peer_address: 10.1.0.1
+          vrf: default
+        - peer_address: 10.1.0.2
+          vrf: default
+        - peer_address: 10.1.255.2
+          vrf: DEV
+        - peer_address: 10.1.255.4
+          vrf: DEV
   - VerifyBGPPeerUpdateErrors:
       # Verifies BGP update error counters for the provided BGP IPv4 peer(s).
       bgp_peers:
@@ -476,6 +488,9 @@ anta.tests.routing.bgp:
           safi: "unicast"
           vrf: "DEV"
           check_tcp_queues: false
+  - VerifyBGPPeersHealthRibd:
+      # Verifies the health of all the BGP IPv4 peer(s) in RIBd(Routing Information Base daemon) mode.
+      check_tcp_queues: True
   - VerifyBGPSpecificPeers:
       # Verifies the health of specific BGP peer(s) for given address families.
       address_families:
