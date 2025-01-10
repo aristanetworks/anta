@@ -428,6 +428,9 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.In
   "C901",     # TODO: test function is too complex, needs a refactor
   "PLR0912"   # Too many branches (15/12) (too-many-branches), needs a refactor
 ]
+"anta/tests/logging.py" = [
+  "A005",  # TODO: Module `logging` shadows a Python standard-library module
+]
 "anta/decorators.py" = [
   "ANN401",  # Ok to use Any type hint in our decorators
 ]
