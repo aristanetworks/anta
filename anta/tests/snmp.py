@@ -428,6 +428,7 @@ class VerifySNMPNotificationHost(AntaTest):
             udp_port = host.udp_port
             community_string = host.community_string
             user = host.user
+            default_value = "Not Found"
 
             host_details = next(
                 (host for host in snmp_hosts if (host.get("hostname") == hostname and host.get("protocolVersion") == version and host.get("vrf") == vrf)), None
@@ -438,17 +439,20 @@ class VerifySNMPNotificationHost(AntaTest):
                 continue
 
             # If actual notification type do not matches the expected value, test fails.
-            if notification_type != (actual_notification_type := get_value(host_details, "notificationType", "Not Found")):
+            if notification_type != (actual_notification_type := get_value(host_details, "notificationType", default_value)):
                 self.result.is_failure(f"{host} - Incorrect notification type - Expected: {notification_type} Actual: {actual_notification_type}")
 
             # If actual udp port do not matches the expected value, test fails.
-            if udp_port != (actual_udp_port := get_value(host_details, "port", "Not Found")):
+            if udp_port != (actual_udp_port := get_value(host_details, "port", default_value)):
                 self.result.is_failure(f"{host} - Incorrect UDP port - Expected: {udp_port} Actual: {actual_udp_port}")
 
+            user_found = user != (actual_user := get_value(host_details, "v3Params.user", default_value))
+            version_user_check = (version == "v3", user_found)
+
             # If SNMP protocol version is v1 or v2c and actual community string do not matches the expected value, test fails.
-            if version in ["v1", "v2c"] and community_string != (actual_community_string := get_value(host_details, "v1v2cParams.communityString", "Not Found")):
+            if version in ["v1", "v2c"] and community_string != (actual_community_string := get_value(host_details, "v1v2cParams.communityString", default_value)):
                 self.result.is_failure(f"{host} Version: {version} - Incorrect community string - Expected: {community_string} Actual: {actual_community_string}")
 
             # If SNMP protocol version is v3 and actual user do not matches the expected value, test fails.
-            elif version == "v3" and user != (actual_user := get_value(host_details, "v3Params.user", "Not Found")):
+            elif all(version_user_check):
                 self.result.is_failure(f"{host} Version: {version} - Incorrect user - Expected: {user} Actual: {actual_user}")
