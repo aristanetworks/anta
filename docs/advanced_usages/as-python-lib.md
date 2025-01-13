@@ -1,13 +1,13 @@
 <!--
-  ~ Copyright (c) 2023-2024 Arista Networks, Inc.
+  ~ Copyright (c) 2023-2025 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
   ~ that can be found in the LICENSE file.
   -->
 
 ANTA is a Python library that can be used in user applications. This section describes how you can leverage ANTA Python modules to help you create your own NRFU solution.
 
-!!! tip
-    If you are unfamiliar with asyncio, refer to the Python documentation relevant to your Python version - https://docs.python.org/3/library/asyncio.html
+> [!TIP]
+> If you are unfamiliar with asyncio, refer to the Python documentation relevant to your Python version - https://docs.python.org/3/library/asyncio.html
 
 ## [AntaDevice](../api/device.md#anta.device.AntaDevice) Abstract Class
 
@@ -47,8 +47,10 @@ The [AntaInventory](../api/inventory.md#anta.inventory.AntaInventory) class is a
 --8<-- "parse_anta_inventory_file.py"
 ```
 
-!!! note "How to create your inventory file"
-    Please visit this [dedicated section](../usage-inventory-catalog.md) for how to use inventory and catalog files.
+> [!NOTE]
+> **How to create your inventory file**
+>
+> Please visit this [dedicated section](../usage-inventory-catalog.md) for how to use inventory and catalog files.
 
 ### Run EOS commands
 

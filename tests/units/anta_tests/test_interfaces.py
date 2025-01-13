@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Test inputs for anta.tests.interfaces."""
@@ -1969,8 +1969,8 @@ DATA: list[dict[str, Any]] = [
                 "interfaces": {
                     "Ethernet2": {
                         "interfaceAddress": {
-                            "primaryIp": {"address": "172.30.11.0", "maskLen": 31},
-                            "secondaryIpsOrderedList": [{"address": "10.10.10.0", "maskLen": 31}, {"address": "10.10.10.10", "maskLen": 31}],
+                            "primaryIp": {"address": "172.30.11.1", "maskLen": 31},
+                            "secondaryIpsOrderedList": [{"address": "10.10.10.1", "maskLen": 31}, {"address": "10.10.10.10", "maskLen": 31}],
                         }
                     }
                 }
@@ -1988,7 +1988,7 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "interfaces": [
-                {"name": "Ethernet2", "primary_ip": "172.30.11.0/31", "secondary_ips": ["10.10.10.0/31", "10.10.10.10/31"]},
+                {"name": "Ethernet2", "primary_ip": "172.30.11.1/31", "secondary_ips": ["10.10.10.1/31", "10.10.10.10/31"]},
                 {"name": "Ethernet12", "primary_ip": "172.30.11.10/31", "secondary_ips": ["10.10.10.10/31", "10.10.10.20/31"]},
             ]
         },

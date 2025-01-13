@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Data for testing anta.tests.cvx."""
@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from anta.tests.cvx import VerifyCVXClusterStatus, VerifyManagementCVX, VerifyMcsClientMounts
+from anta.tests.cvx import VerifyActiveCVXConnections, VerifyCVXClusterStatus, VerifyManagementCVX, VerifyMcsClientMounts, VerifyMcsServerMounts
 from tests.units.anta_tests import test
 
 DATA: list[dict[str, Any]] = [
@@ -152,6 +152,219 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [{}],
         "inputs": {"enabled": False},
         "expected": {"result": "failure", "messages": ["Management CVX status is not valid: None"]},
+    },
+    {
+        "name": "success",
+        "test": VerifyMcsServerMounts,
+        "eos_data": [
+            {
+                "connections": [
+                    {
+                        "hostname": "media-leaf-1",
+                        "mounts": [
+                            {
+                                "service": "Mcs",
+                                "mountStates": [
+                                    {
+                                        "pathStates": [
+                                            {"path": "mcs/v1/apiCfgRedStatus", "type": "Mcs::ApiConfigRedundancyStatus", "state": "mountStateMountComplete"},
+                                            {"path": "mcs/v1/activeflows", "type": "Mcs::ActiveFlows", "state": "mountStateMountComplete"},
+                                            {"path": "mcs/switch/status", "type": "Mcs::Client::Status", "state": "mountStateMountComplete"},
+                                        ]
+                                    }
+                                ],
+                            }
+                        ],
+                    }
+                ]
+            }
+        ],
+        "inputs": {"connections_count": 1},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-no-mounts",
+        "test": VerifyMcsServerMounts,
+        "eos_data": [{"connections": [{"hostname": "media-leaf-1", "mounts": []}]}],
+        "inputs": {"connections_count": 1},
+        "expected": {
+            "result": "failure",
+            "messages": ["No mount status for media-leaf-1", "Incorrect CVX successful connections count. Expected: 1, Actual : 0"],
+        },
+    },
+    {
+        "name": "failure-unexpected-number-paths",
+        "test": VerifyMcsServerMounts,
+        "eos_data": [
+            {
+                "connections": [
+                    {
+                        "hostname": "media-leaf-1",
+                        "mounts": [
+                            {
+                                "service": "Mcs",
+                                "mountStates": [
+                                    {
+                                        "pathStates": [
+                                            {"path": "mcs/v1/apiCfgRedStatus", "type": "Mcs::ApiStatus", "state": "mountStateMountComplete"},
+                                            {"path": "mcs/v1/activeflows", "type": "Mcs::ActiveFlows", "state": "mountStateMountComplete"},
+                                        ]
+                                    }
+                                ],
+                            }
+                        ],
+                    }
+                ]
+            }
+        ],
+        "inputs": {"connections_count": 1},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Incorrect number of mount path states for media-leaf-1 - Expected: 3, Actual: 2",
+                "Unexpected MCS path type for media-leaf-1: 'Mcs::ApiStatus'.",
+            ],
+        },
+    },
+    {
+        "name": "failure-unexpected-path-type",
+        "test": VerifyMcsServerMounts,
+        "eos_data": [
+            {
+                "connections": [
+                    {
+                        "hostname": "media-leaf-1",
+                        "mounts": [
+                            {
+                                "service": "Mcs",
+                                "mountStates": [
+                                    {
+                                        "pathStates": [
+                                            {"path": "mcs/v1/apiCfgRedStatus", "type": "Mcs::ApiStatus", "state": "mountStateMountComplete"},
+                                            {"path": "mcs/v1/activeflows", "type": "Mcs::ActiveFlows", "state": "mountStateMountComplete"},
+                                            {"path": "mcs/switch/status", "type": "Mcs::Client::Status", "state": "mountStateMountComplete"},
+                                        ]
+                                    }
+                                ],
+                            }
+                        ],
+                    }
+                ]
+            }
+        ],
+        "inputs": {"connections_count": 1},
+        "expected": {"result": "failure", "messages": ["Unexpected MCS path type for media-leaf-1: 'Mcs::ApiStatus'"]},
+    },
+    {
+        "name": "failure-invalid-mount-state",
+        "test": VerifyMcsServerMounts,
+        "eos_data": [
+            {
+                "connections": [
+                    {
+                        "hostname": "media-leaf-1",
+                        "mounts": [
+                            {
+                                "service": "Mcs",
+                                "mountStates": [
+                                    {
+                                        "pathStates": [
+                                            {"path": "mcs/v1/apiCfgRedStatus", "type": "Mcs::ApiConfigRedundancyStatus", "state": "mountStateMountFailed"},
+                                            {"path": "mcs/v1/activeflows", "type": "Mcs::ActiveFlows", "state": "mountStateMountComplete"},
+                                            {"path": "mcs/switch/status", "type": "Mcs::Client::Status", "state": "mountStateMountComplete"},
+                                        ]
+                                    }
+                                ],
+                            }
+                        ],
+                    }
+                ]
+            }
+        ],
+        "inputs": {"connections_count": 1},
+        "expected": {
+            "result": "failure",
+            "messages": ["MCS server mount state for path 'Mcs::ApiConfigRedundancyStatus' is not valid is for media-leaf-1: 'mountStateMountFailed'"],
+        },
+    },
+    {
+        "name": "failure-no-mcs-mount",
+        "test": VerifyMcsServerMounts,
+        "eos_data": [
+            {
+                "connections": [
+                    {
+                        "hostname": "media-leaf-1",
+                        "mounts": [
+                            {
+                                "service": "blah-blah",
+                                "mountStates": [{"pathStates": [{"path": "blah-blah-path", "type": "blah-blah-type", "state": "blah-blah-state"}]}],
+                            }
+                        ],
+                    }
+                ]
+            }
+        ],
+        "inputs": {"connections_count": 1},
+        "expected": {"result": "failure", "messages": ["MCS mount state not detected", "Incorrect CVX successful connections count. Expected: 1, Actual : 0"]},
+    },
+    {
+        "name": "failure-connections",
+        "test": VerifyMcsServerMounts,
+        "eos_data": [{}],
+        "inputs": {"connections_count": 1},
+        "expected": {"result": "failure", "messages": ["CVX connections are not available."]},
+    },
+    {
+        "name": "success",
+        "test": VerifyActiveCVXConnections,
+        "eos_data": [
+            {
+                "connections": [
+                    {
+                        "switchId": "fc:bd:67:c3:16:55",
+                        "hostname": "lyv563",
+                        "oobConnectionActive": True,
+                    },
+                    {
+                        "switchId": "00:1c:73:3c:e3:9e",
+                        "hostname": "tg264",
+                        "oobConnectionActive": True,
+                    },
+                ]
+            }
+        ],
+        "inputs": {"connections_count": 2},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure",
+        "test": VerifyActiveCVXConnections,
+        "eos_data": [
+            {
+                "connections": [
+                    {
+                        "switchId": "fc:bd:67:c3:16:55",
+                        "hostname": "lyv563",
+                        "oobConnectionActive": False,
+                    },
+                    {
+                        "switchId": "00:1c:73:3c:e3:9e",
+                        "hostname": "tg264",
+                        "oobConnectionActive": True,
+                    },
+                ]
+            }
+        ],
+        "inputs": {"connections_count": 2},
+        "expected": {"result": "failure", "messages": ["CVX active connections count. Expected: 2, Actual : 1"]},
+    },
+    {
+        "name": "failure-no-connections",
+        "test": VerifyActiveCVXConnections,
+        "eos_data": [{}],
+        "inputs": {"connections_count": 2},
+        "expected": {"result": "failure", "messages": ["CVX connections are not available"]},
     },
     {
         "name": "success-all",

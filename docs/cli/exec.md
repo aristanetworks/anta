@@ -2,7 +2,7 @@
 anta_title: Executing Commands on Devices
 ---
 <!--
-  ~ Copyright (c) 2023-2024 Arista Networks, Inc.
+  ~ Copyright (c) 2023-2025 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
   ~ that can be found in the LICENSE file.
   -->
@@ -64,6 +64,7 @@ Options:
   --help                  Show this message and exit.
 ```
 
+> [!TIP]
 > `username`, `password`, `enable-password`, `enable`, `timeout` and `insecure` values are the same for all devices
 
 ### Example
@@ -242,6 +243,7 @@ Options:
   --help                  Show this message and exit.
 ```
 
+> [!TIP]
 > `username`, `password`, `enable-password`, `enable`, `timeout` and `insecure` values are the same for all devices
 
 When executed, this command fetches tech-support files and downloads them locally into a device-specific subfolder within the designated folder. You can specify the output folder with the `--output` option.
@@ -250,15 +252,17 @@ ANTA uses SCP to download files from devices and will not trust unknown SSH host
 
 The configuration `aaa authorization exec default` must be present on devices to be able to use SCP.
 
-!!! warning Deprecation
-    ANTA can automatically configure `aaa authorization exec default local` using the `anta exec collect-tech-support --configure` option but this option is deprecated and will be removed in ANTA 2.0.0.
+> [!CAUTION]
+> **Deprecation**
+>
+> ANTA can automatically configure `aaa authorization exec default local` using the `anta exec collect-tech-support --configure` option but this option is deprecated and will be removed in ANTA 2.0.0.
 
 If you require specific AAA configuration for `aaa authorization exec default`, like `aaa authorization exec default none` or `aaa authorization exec default group tacacs+`, you will need to configure it manually.
 
 The `--latest` option allows retrieval of a specific number of the most recent tech-support files.
 
-!!! warning
-    By default **all** the tech-support files present on the devices are retrieved.
+> [!WARNING]
+> By default **all** the tech-support files present on the devices are retrieved.
 
 ### Example
 
