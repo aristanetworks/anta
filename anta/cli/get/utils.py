@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Utils functions to use with anta.cli.get.commands module."""
@@ -122,11 +122,28 @@ def get_cv_token(cvp_ip: str, cvp_username: str, cvp_password: str, *, verify_ce
 
 
 def write_inventory_to_file(hosts: list[AntaInventoryHost], output: Path) -> None:
-    """Write a file inventory from pydantic models."""
+    """Write a file inventory from pydantic models.
+
+    Parameters
+    ----------
+    hosts:
+        the list of AntaInventoryHost to write to an inventory file
+    output:
+        the Path where the inventory should be written.
+
+    Raises
+    ------
+    OSError
+        When anything goes wrong while writing the file.
+    """
     i = AntaInventoryInput(hosts=hosts)
-    with output.open(mode="w", encoding="UTF-8") as out_fd:
-        out_fd.write(yaml.dump({AntaInventory.INVENTORY_ROOT_KEY: yaml.safe_load(i.yaml())}))
-    logger.info("ANTA inventory file has been created: '%s'", output)
+    try:
+        with output.open(mode="w", encoding="UTF-8") as out_fd:
+            out_fd.write(yaml.dump({AntaInventory.INVENTORY_ROOT_KEY: yaml.safe_load(i.yaml())}))
+        logger.info("ANTA inventory file has been created: '%s'", output)
+    except OSError as exc:
+        msg = f"Could not write inventory to path '{output}'."
+        raise OSError(msg) from exc
 
 
 def create_inventory_from_cvp(inv: list[dict[str, Any]], output: Path) -> None:
