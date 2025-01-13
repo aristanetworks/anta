@@ -349,22 +349,22 @@ class VerifyAPISSLCertificate(AntaTest):
     This test performs the following checks for each certificate:
 
       1. Validates that the certificate is not expired and meets the configured expiry threshold.
-      2. Validates that the certificate's common name matches the expected subject name.
+      2. Validates that the certificate Common Name matches the expected one.
       3. Ensures the certificate uses the specified encryption algorithm.
-      4. Verifies the certificate's key size aligns with the encryption algorithm's requirements.
+      4. Verifies the certificate key matches the expected key size.
 
     Expected Results
     ----------------
     * Success: If all of the following occur:
         - The certificate's expiry date exceeds the configured threshold.
-        - The certificate's common name matches the input configuration.
+        - The certificate's Common Name matches the input configuration.
         - The encryption algorithm used by the certificate is as expected.
-        - The key size of the certificate complies with security standards and aligns with the specified algorithm
+        - The key size of the certificate matches the input configuration.
     * Failure: If any of the following occur:
         - The certificate is expired or set to expire within the defined threshold.
         - The certificate's common name does not match the expected input.
         - The encryption algorithm is incorrect.
-        - The key size does not meet security standards.
+        - The key size does not match the expected input.
 
     Examples
     --------
@@ -538,7 +538,7 @@ class VerifyIPv4ACL(AntaTest):
     Expected Results
     ----------------
     * Success: If all of the following occur:
-        - The IPv4 ACL is properly configured.
+        - Any IPv4 ACL entry is not configured.
         - The sequency entries are correctly configured.
     * Failure: If any of the following occur:
         - The IPv4 ACL is not configured.

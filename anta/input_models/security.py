@@ -62,7 +62,7 @@ class APISSLCertificate(BaseModel):
     expiry_threshold: int
     """The expiry threshold of the certificate in days."""
     common_name: str
-    """The common subject name of the certificate."""
+    """The Common Name of the certificate."""
     encryption_algorithm: EncryptionAlgorithm
     """The encryption algorithm used by the certificate."""
     key_size: RsaKeySize | EcdsaKeySize
