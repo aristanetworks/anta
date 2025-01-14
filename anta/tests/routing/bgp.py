@@ -1336,7 +1336,9 @@ class VerifyBGPPeerRouteLimit(AntaTest):
 
 
 class VerifyBGPPeerSessionRibd(AntaTest):
-    """Verifies the session state of BGP IPv4 peer(s) in RIBd(Routing Information Base daemon) mode.
+    """Verifies the session state of BGP IPv4 peer(s).
+
+    Compatible with EOS operating in `ribd` routing protocol model.
 
     This test performs the following checks for each specified peer:
 
@@ -1416,7 +1418,9 @@ class VerifyBGPPeerSessionRibd(AntaTest):
 
 
 class VerifyBGPPeersHealthRibd(AntaTest):
-    """Verifies the health of all the BGP IPv4 peer(s) in RIBd(Routing Information Base daemon) mode.
+    """Verifies the health of all the BGP IPv4 peer(s).
+
+    Compatible with EOS operating in `ribd` routing protocol model.
 
     This test performs the following checks for all BGP IPv4 peers:
 
@@ -1459,10 +1463,6 @@ class VerifyBGPPeersHealthRibd(AntaTest):
 
         for vrf, vrf_data in output["vrfs"].items():
             peer_list = vrf_data.get("peerList", [])
-
-            if not peer_list:
-                self.result.is_failure(f"BGP is not configured in `{vrf}` VRF")
-                continue
 
             for peer in peer_list:
                 # Check if the BGP session is established

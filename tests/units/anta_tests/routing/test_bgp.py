@@ -4338,22 +4338,6 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
-        "name": "failure-bgp-not-configured",
-        "test": VerifyBGPPeersHealthRibd,
-        "eos_data": [
-            {
-                "vrfs": {
-                    "default": {},
-                    "MGMT": {},
-                },
-            },
-        ],
-        "inputs": {
-            "check_tcp_queues": True,
-        },
-        "expected": {"result": "failure", "messages": ["BGP is not configured in `default` VRF", "BGP is not configured in `MGMT` VRF"]},
-    },
-    {
         "name": "failure-not-established",
         "test": VerifyBGPPeersHealthRibd,
         "eos_data": [

@@ -461,7 +461,7 @@ anta.tests.routing.bgp:
         - peer_address: 10.1.255.4
           vrf: DEV
   - VerifyBGPPeerSessionRibd:
-      # Verifies the session state of BGP IPv4 peer(s) in RIBd(Routing Information Base daemon) mode.
+      # Verifies the session state of BGP IPv4 peer(s).
       check_tcp_queues: false
       bgp_peers:
         - peer_address: 10.1.0.1
@@ -491,7 +491,7 @@ anta.tests.routing.bgp:
           vrf: "DEV"
           check_tcp_queues: false
   - VerifyBGPPeersHealthRibd:
-      # Verifies the health of all the BGP IPv4 peer(s) in RIBd(Routing Information Base daemon) mode.
+      # Verifies the health of all the BGP IPv4 peer(s).
       check_tcp_queues: True
   - VerifyBGPSpecificPeers:
       # Verifies the health of specific BGP peer(s) for given address families.
