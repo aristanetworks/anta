@@ -240,3 +240,4 @@ IPv4RouteType = Literal[
 SnmpVersion = Literal["v1", "v2c", "v3"]
 SnmpHashingAlgorithm = Literal["MD5", "SHA", "SHA-224", "SHA-256", "SHA-384", "SHA-512"]
 SnmpEncryptionAlgorithm = Literal["AES-128", "AES-192", "AES-256", "DES"]
+DynamicVlanSource = Literal["dmf", "dot1x", "dynvtep", "evpn", "mlag", "mlagsync", "mvpn", "swfwd", "vccbfd"]
