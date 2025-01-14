@@ -10,10 +10,10 @@ from typing import Any
 from anta.tests.snmp import (
     VerifySnmpContact,
     VerifySnmpErrorCounters,
+    VerifySnmpHostLogging,
     VerifySnmpIPv4Acl,
     VerifySnmpIPv6Acl,
     VerifySnmpLocation,
-    VerifySnmpLogging,
     VerifySnmpPDUCounters,
     VerifySnmpStatus,
 )
@@ -322,7 +322,7 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "success",
-        "test": VerifySnmpLogging,
+        "test": VerifySnmpHostLogging,
         "eos_data": [
             {
                 "logging": {
@@ -346,14 +346,14 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "failure-logging-disabled",
-        "test": VerifySnmpLogging,
+        "test": VerifySnmpHostLogging,
         "eos_data": [{"logging": {"loggingEnabled": False}}],
         "inputs": {"hosts": [{"hostname": "192.168.1.100", "vrf": "default"}, {"hostname": "192.168.1.101", "vrf": "MGMT"}]},
         "expected": {"result": "failure", "messages": ["SNMP logging is disabled"]},
     },
     {
         "name": "failure-mismatch-vrf",
-        "test": VerifySnmpLogging,
+        "test": VerifySnmpHostLogging,
         "eos_data": [{"logging": {"loggingEnabled": True, "hosts": {"192.168.1.100": {"port": 162, "vrf": "MGMT"}, "192.168.1.101": {"port": 162, "vrf": "Test"}}}}],
         "inputs": {"hosts": [{"hostname": "192.168.1.100", "vrf": "default"}, {"hostname": "192.168.1.101", "vrf": "MGMT"}]},
         "expected": {
@@ -363,7 +363,7 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "failure-host-not-configured",
-        "test": VerifySnmpLogging,
+        "test": VerifySnmpHostLogging,
         "eos_data": [{"logging": {"loggingEnabled": True, "hosts": {"192.168.1.100": {"port": 162, "vrf": "MGMT"}, "192.168.1.103": {"port": 162, "vrf": "Test"}}}}],
         "inputs": {"hosts": [{"hostname": "192.168.1.101", "vrf": "default"}, {"hostname": "192.168.1.102", "vrf": "MGMT"}]},
         "expected": {

@@ -12,17 +12,17 @@ from pydantic import BaseModel, ConfigDict
 from anta.custom_types import Hostname
 
 
-class SNMPHost(BaseModel):
-    """Model for a SNMP Host."""
+class SnmpHost(BaseModel):
+    """Model for a SNMP host."""
 
     model_config = ConfigDict(extra="forbid")
     hostname: IPv4Address | Hostname
     """IPv4 address of the SNMP notification host."""
     vrf: str = "default"
-    """Optional VRF for SNMP Hosts. If not provided, it defaults to `default`."""
+    """Optional VRF for SNMP hosts. If not provided, it defaults to `default`."""
 
     def __str__(self) -> str:
-        """Return a human-readable string representation of the Host for reporting.
+        """Return a human-readable string representation of the SnmpHost for reporting.
 
         Examples
         --------

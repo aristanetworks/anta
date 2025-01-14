@@ -10,7 +10,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, ClassVar, get_args
 
 from anta.custom_types import PositiveInteger, SnmpErrorCounter, SnmpPdu
-from anta.input_models.snmp import SNMPHost
+from anta.input_models.snmp import SnmpHost
 from anta.models import AntaCommand, AntaTest
 from anta.tools import get_value
 
@@ -342,31 +342,31 @@ class VerifySnmpErrorCounters(AntaTest):
             self.result.is_failure(f"The following SNMP error counters are not found or have non-zero error counters:\n{error_counters_not_ok}")
 
 
-class VerifySnmpLogging(AntaTest):
+class VerifySnmpHostLogging(AntaTest):
     """Verifies SNMP logging and SNMP manager(host) details.
 
-    This test performs the following checks for each specified host:
+    This test performs the following checks:
 
-     1. Verifies that the SNMP logging is enabled on the device.
-     2. Verifies SNMP host matches the expected value.
-     3. Ensures that VRF provided matches the expected value.
+     1. SNMP logging is enabled globally.
+     2. For each specified SNMP host:
+         - Host exists in configuration.
+         - Host's VRF assignment matches expected value.
 
     Expected Results
     ----------------
     * Success: The test will pass if all of the following conditions are met:
-        - The SNMP logging is enabled on the device.
-        - The SNMP host matches the expected value.
-        - The VRF provided matches the expected value.
+        - SNMP logging is enabled on the device.
+        - All specified hosts are configured with correct VRF assignments.
     * Failure: The test will fail if any of the following conditions is met:
-        - The SNMP logging is disabled on the device.
-        - The SNMP host do not matches the expected value.
-        - The VRF provided do not matches the expected value.
+        - SNMP logging is disabled on the device.
+        - SNMP host not found in configuration.
+        - Host's VRF assignment doesn't match expected value.
 
     Examples
     --------
     ```yaml
     anta.tests.snmp:
-      - VerifySnmpLogging:
+      - VerifySnmpHostLogging:
           hosts:
             - hostname: 192.168.1.100
               vrf: default
@@ -379,14 +379,14 @@ class VerifySnmpLogging(AntaTest):
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show snmp", revision=1)]
 
     class Input(AntaTest.Input):
-        """Input model for the VerifySnmpLogging test."""
+        """Input model for the VerifySnmpHostLogging test."""
 
-        hosts: list[SNMPHost]
+        hosts: list[SnmpHost]
         """List of SNMP hosts."""
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """Main test function for VerifySnmpLogging."""
+        """Main test function for VerifySnmpHostLogging."""
         self.result.is_success()
 
         command_output = self.instance_commands[0].json_output.get("logging", {})
@@ -403,7 +403,7 @@ class VerifySnmpLogging(AntaTest):
             actual_snmp_host = host_details.get(hostname, {})
             actual_vrf = "default" if (vrf_name := actual_snmp_host.get("vrf")) == "" else vrf_name
 
-            # If SNMP host is not configured on the system, test fails.
+            # If SNMP host is not configured on the device, test fails.
             if not actual_snmp_host:
                 self.result.is_failure(f"{host} - Not configured")
                 continue
