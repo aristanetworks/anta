@@ -231,7 +231,7 @@ The template `./custom_template.j2` is a simple Jinja2 template:
 {% endfor %}
 ```
 
-The Jinja2 template has access to all `TestResult` elements and their values, as described in this [documentation](../api/result_manager.md#anta.result_manager.models.TestResult).
+The Jinja2 template has access to all `TestResult` elements and their values, as described in this [documentation](../api/result.md#anta.result_manager.models.TestResult).
 
 You can also save the report result to a file using the `--output` option:
 

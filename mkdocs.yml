@@ -222,11 +222,13 @@ nav:
     - Class Diagram: api/class-diagram.md
     - Device: api/device.md
     - Inventory: api/inventory.md
-    - Test Catalog: api/catalog.md
+    - Catalog: api/catalog.md
+    - Commands: api/commands.md
     - Tests:
-      - Classes: api/models.md
+      - Overview:  api/tests.md
+      - AntaTest: api/anta_test.md
       - Input Types:  api/types.md
-    - Result Manager: api/result_manager.md
+    - Result Manager: api/result.md
     - Reporters:
       - Table: api/reporter/table.md
       - Markdown: api/reporter/markdown.md
