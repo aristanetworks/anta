@@ -1551,20 +1551,19 @@ class VerifyBGPRedistributedRoutes(AntaTest):
 
     This test performs the following checks for each specified route:
 
-      1. Ensures that the expected afi-safi is configured on the device.
+      1. Ensures that the expected address-family is configured on the device.
       2. Confirms that the redistributed route protocol and route map match the expected values for a route.
 
-    Note: The 'User' field in the redistributed route protocol has been updated to 'EOS SDK'.
+    Note: For "User" redistributed_route_protocol field, checking that it's "EOS SDK" versus User.
 
     Expected Results
     ----------------
     * Success: If all of the following conditions are met:
-        - The expected afi-safi is configured on the device.
+        - The expected address-family is configured on the device.
         - The redistributed route protocol and route map align with the expected values for the route.
     * Failure: If any of the following occur:
-        - The expected afi-safi is not configured on device.
+        - The expected address-family is not configured on device.
         - The redistributed route protocol or route map does not match the expected value for a route.
-
 
     Examples
     --------
@@ -1610,11 +1609,8 @@ class VerifyBGPRedistributedRoutes(AntaTest):
         def validate_address_families(cls, address_families: list[BgpAddressFamily]) -> list[BgpAddressFamily]:
             """Validate that all required fields are provided in each address family."""
             for address_family in address_families:
-                if address_family.afi not in ["ipv4", "ipv6"]:
-                    msg = f"{address_family}; redistributed route protocol is not supported for address family `{address_family.afi}`"
-                    raise ValueError(msg)
-                if address_family.safi not in ["unicast", "multicast"]:
-                    msg = f"{address_family}; redistributed route protocol is not supported for subsequent address family `{address_family.safi}`"
+                if address_family.afi not in ["ipv4", "ipv6"] or address_family.safi not in ["unicast", "multicast"]:
+                    msg = f"{address_family}; redistributed route protocol is not supported for address family `{address_family.eos_key}`"
                     raise ValueError(msg)
                 if address_family.redistributed_route_protocol is None:
                     msg = f"{address_family}; 'redistributed_route_protocol' field missing in the input"
@@ -1622,7 +1618,6 @@ class VerifyBGPRedistributedRoutes(AntaTest):
                 if address_family.route_map is None:
                     msg = f"{address_family}; 'route_map' field missing in the input"
                     raise ValueError(msg)
-
             return address_families
 
     @AntaTest.anta_test
@@ -1643,10 +1638,10 @@ class VerifyBGPRedistributedRoutes(AntaTest):
                 continue
 
             if not (route := get_item(afi_safi_configs.get("redistributedRoutes"), "proto", redistributed_route_protocol)):
-                self.result.is_failure(f"{address_family} Protocol: {redistributed_route_protocol} - Not Found")
+                self.result.is_failure(f"{address_family} Protocol: {address_family.redistributed_route_protocol} - Not Found")
                 continue
 
-            if (actual_route_map := route.get("routeMap", "Not Found")) != route_map:
+            if (act_route_map := route.get("routeMap", "Not Found")) != route_map:
                 self.result.is_failure(
-                    f"{address_family} Protocol: {redistributed_route_protocol} - Route map mismatch - Expected: {route_map} Actual: {actual_route_map}"
+                    f"{address_family} Protocol: {address_family.redistributed_route_protocol} - Route map mismatch - Expected: {route_map} Actual: {act_route_map}"
                 )

@@ -4715,7 +4715,7 @@ DATA: list[dict[str, Any]] = [
             "result": "failure",
             "messages": [
                 "AFI: ipv4 SAFI: multicast VRF: default Protocol: Connected - Not Found",
-                "AFI: ipv6 SAFI: multicast VRF: test Protocol: EOS SDK - Not Found",
+                "AFI: ipv6 SAFI: multicast VRF: test Protocol: User - Not Found",
             ],
         },
     },

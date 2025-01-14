@@ -272,12 +272,15 @@ class TestVerifyBGPRedistributedRoutes:
         ("address_families"),
         [
             pytest.param(
-                [{"afi": "ipv4", "safi": "unicast", "vrf": "default", "redistributed_route_protocol": "Connected", "route_map": "RM-CONN-2-BGP"}], id="valid"
+                [{"afi": "ipv4", "safi": "unicast", "vrf": "default", "redistributed_route_protocol": "Connected", "route_map": "RM-CONN-2-BGP"}], id="ipv4-valid"
+            ),
+            pytest.param(
+                [{"afi": "ipv6", "safi": "multicast", "vrf": "default", "redistributed_route_protocol": "Connected", "route_map": "RM-CONN-2-BGP"}], id="ipv6-valid"
             ),
         ],
     )
     def test_valid(self, address_families: list[BgpAddressFamily]) -> None:
-        """Test VerifyBGPPeerRouteLimit.Input valid inputs."""
+        """Test VerifyBGPRedistributedRoutes.Input valid inputs."""
         VerifyBGPRedistributedRoutes.Input(address_families=address_families)
 
     @pytest.mark.parametrize(
@@ -288,7 +291,7 @@ class TestVerifyBGPRedistributedRoutes:
                 id="invalid-redistributed-route-protocol",
             ),
             pytest.param(
-                [{"afi": "ipv4", "safi": "unicast", "vrf": "default", "redistributed_route_protocol": "Connected", "route_map": None}],
+                [{"afi": "ipv6", "safi": "multicast", "vrf": "default", "redistributed_route_protocol": "Connected", "route_map": None}],
                 id="invalid-route-map",
             ),
             pytest.param(
@@ -296,12 +299,12 @@ class TestVerifyBGPRedistributedRoutes:
                 id="invalid-afi-for-redistributed-route",
             ),
             pytest.param(
-                [{"afi": "ipv4", "safi": "sr-te", "vrf": "default", "redistributed_route_protocol": "Connected", "route_map": "RM-CONN-2-BGP"}],
+                [{"afi": "ipv6", "safi": "sr-te", "vrf": "default", "redistributed_route_protocol": "Connected", "route_map": "RM-CONN-2-BGP"}],
                 id="invalid-safi-for-redistributed-route",
             ),
         ],
     )
     def test_invalid(self, address_families: list[BgpAddressFamily]) -> None:
-        """Test VerifyBGPPeerRouteLimit.Input invalid inputs."""
+        """Test VerifyBGPRedistributedRoutes.Input invalid inputs."""
         with pytest.raises(ValidationError):
             VerifyBGPRedistributedRoutes.Input(address_families=address_families)
