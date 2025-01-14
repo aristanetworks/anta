@@ -16,6 +16,7 @@ from anta.tests.snmp import (
     VerifySnmpLocation,
     VerifySnmpPDUCounters,
     VerifySnmpStatus,
+    VerifySnmpUser,
 )
 from tests.units.anta_tests import test
 
@@ -369,6 +370,170 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": ["Host: 192.168.1.101 VRF: default - Not configured", "Host: 192.168.1.102 VRF: MGMT - Not configured"],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifySnmpUser,
+        "eos_data": [
+            {
+                "usersByVersion": {
+                    "v1": {
+                        "users": {
+                            "Test1": {
+                                "groupName": "TestGroup1",
+                            },
+                        }
+                    },
+                    "v2c": {
+                        "users": {
+                            "Test2": {
+                                "groupName": "TestGroup2",
+                            },
+                        }
+                    },
+                    "v3": {
+                        "users": {
+                            "Test3": {
+                                "groupName": "TestGroup3",
+                                "v3Params": {"authType": "SHA-384", "privType": "AES-128"},
+                            },
+                            "Test4": {"groupName": "TestGroup3", "v3Params": {"authType": "SHA-512", "privType": "AES-192"}},
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "snmp_users": [
+                {"username": "Test1", "group_name": "TestGroup1", "version": "v1"},
+                {"username": "Test2", "group_name": "TestGroup2", "version": "v2c"},
+                {"username": "Test3", "group_name": "TestGroup3", "version": "v3", "auth_type": "SHA-384", "priv_type": "AES-128"},
+                {"username": "Test4", "group_name": "TestGroup3", "version": "v3", "auth_type": "SHA-512", "priv_type": "AES-192"},
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-not-configured",
+        "test": VerifySnmpUser,
+        "eos_data": [
+            {
+                "usersByVersion": {
+                    "v3": {
+                        "users": {
+                            "Test3": {
+                                "groupName": "TestGroup3",
+                                "v3Params": {"authType": "SHA-384", "privType": "AES-128"},
+                            },
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "snmp_users": [
+                {"username": "Test1", "group_name": "TestGroup1", "version": "v1"},
+                {"username": "Test2", "group_name": "TestGroup2", "version": "v2c"},
+                {"username": "Test3", "group_name": "TestGroup3", "version": "v3", "auth_type": "SHA-384", "priv_type": "AES-128"},
+                {"username": "Test4", "group_name": "TestGroup3", "version": "v3", "auth_type": "SHA-512", "priv_type": "AES-192"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "User: Test1 Group: TestGroup1 Version: v1 - Not found",
+                "User: Test2 Group: TestGroup2 Version: v2c - Not found",
+                "User: Test4 Group: TestGroup3 Version: v3 - Not found",
+            ],
+        },
+    },
+    {
+        "name": "failure-incorrect-group",
+        "test": VerifySnmpUser,
+        "eos_data": [
+            {
+                "usersByVersion": {
+                    "v1": {
+                        "users": {
+                            "Test1": {
+                                "groupName": "TestGroup2",
+                            },
+                        }
+                    },
+                    "v2c": {
+                        "users": {
+                            "Test2": {
+                                "groupName": "TestGroup1",
+                            },
+                        }
+                    },
+                    "v3": {},
+                }
+            }
+        ],
+        "inputs": {
+            "snmp_users": [
+                {"username": "Test1", "group_name": "TestGroup1", "version": "v1"},
+                {"username": "Test2", "group_name": "TestGroup2", "version": "v2c"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "User: Test1 Group: TestGroup1 Version: v1 - Incorrect user group - Actual: TestGroup2",
+                "User: Test2 Group: TestGroup2 Version: v2c - Incorrect user group - Actual: TestGroup1",
+            ],
+        },
+    },
+    {
+        "name": "failure-incorrect-auth-encryption",
+        "test": VerifySnmpUser,
+        "eos_data": [
+            {
+                "usersByVersion": {
+                    "v1": {
+                        "users": {
+                            "Test1": {
+                                "groupName": "TestGroup1",
+                            },
+                        }
+                    },
+                    "v2c": {
+                        "users": {
+                            "Test2": {
+                                "groupName": "TestGroup2",
+                            },
+                        }
+                    },
+                    "v3": {
+                        "users": {
+                            "Test3": {
+                                "groupName": "TestGroup3",
+                                "v3Params": {"authType": "SHA-512", "privType": "AES-192"},
+                            },
+                            "Test4": {"groupName": "TestGroup4", "v3Params": {"authType": "SHA-384", "privType": "AES-128"}},
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "snmp_users": [
+                {"username": "Test1", "group_name": "TestGroup1", "version": "v1"},
+                {"username": "Test2", "group_name": "TestGroup2", "version": "v2c"},
+                {"username": "Test3", "group_name": "TestGroup3", "version": "v3", "auth_type": "SHA-384", "priv_type": "AES-128"},
+                {"username": "Test4", "group_name": "TestGroup4", "version": "v3", "auth_type": "SHA-512", "priv_type": "AES-192"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "User: Test3 Group: TestGroup3 Version: v3 - Incorrect authentication type - Expected: SHA-384 Actual: SHA-512",
+                "User: Test3 Group: TestGroup3 Version: v3 - Incorrect privacy type - Expected: AES-128 Actual: AES-192",
+                "User: Test4 Group: TestGroup4 Version: v3 - Incorrect authentication type - Expected: SHA-512 Actual: SHA-384",
+                "User: Test4 Group: TestGroup4 Version: v3 - Incorrect privacy type - Expected: AES-192 Actual: AES-128",
+            ],
         },
     },
 ]

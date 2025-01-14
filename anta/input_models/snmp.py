@@ -9,7 +9,7 @@ from ipaddress import IPv4Address
 
 from pydantic import BaseModel, ConfigDict
 
-from anta.custom_types import Hostname
+from anta.custom_types import Hostname, SnmpEncryptionAlgorithm, SnmpHashingAlgorithm, SnmpVersion
 
 
 class SnmpHost(BaseModel):
@@ -29,3 +29,28 @@ class SnmpHost(BaseModel):
          - Host: 192.168.1.100  VRF: default
         """
         return f"Host: {self.hostname} VRF: {self.vrf}"
+
+
+class SnmpUser(BaseModel):
+    """Model for a SNMP User."""
+
+    model_config = ConfigDict(extra="forbid")
+    username: str
+    """SNMP user name."""
+    group_name: str
+    """SNMP group for the user."""
+    version: SnmpVersion
+    """SNMP protocol version."""
+    auth_type: SnmpHashingAlgorithm | None = None
+    """User authentication algorithm. Can be provided in the `VerifySnmpUser` test."""
+    priv_type: SnmpEncryptionAlgorithm | None = None
+    """User privacy algorithm. Can be provided in the `VerifySnmpUser` test."""
+
+    def __str__(self) -> str:
+        """Return a human-readable string representation of the SnmpUser for reporting.
+
+        Examples
+        --------
+        - User: Test Group: Test_Group Version: v2c
+        """
+        return f"User: {self.username} Group: {self.group_name} Version: {self.version}"
