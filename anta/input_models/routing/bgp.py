@@ -12,7 +12,7 @@ from warnings import warn
 from pydantic import BaseModel, ConfigDict, Field, PositiveInt, model_validator
 from pydantic_extra_types.mac_address import MacAddress
 
-from anta.custom_types import Afi, BgpDropStats, BgpUpdateError, MultiProtocolCaps, Redistributed_Protocol, Safi, Vni
+from anta.custom_types import Afi, BgpDropStats, BgpUpdateError, MultiProtocolCaps, RedistributedProtocol, Safi, Vni
 
 if TYPE_CHECKING:
     import sys
@@ -73,10 +73,10 @@ class BgpAddressFamily(BaseModel):
     """Flag to check if the peers are established with negotiated AFI/SAFI. Defaults to `False`.
 
     Can be enabled in the `VerifyBGPPeerCount` tests."""
-    redistributed_route_protocol: Redistributed_Protocol | None = None
-    """Specify redistributed route protocol."""
+    redistributed_route_protocol: RedistributedProtocol | None = None
+    """Specify redistributed route protocol. Required field in the `VerifyBGPRedistributedRoutes` test."""
     route_map: str | None = None
-    """Specify redistributed route protocol route map."""
+    """Specify redistributed route protocol route map. Required field in the `VerifyBGPRedistributedRoutes` test."""
 
     @model_validator(mode="after")
     def validate_inputs(self) -> Self:
@@ -107,8 +107,7 @@ class BgpAddressFamily(BaseModel):
     @property
     def redistributed_route_key(self) -> str:
         """AFI/SAFI  Redistributed route key representation."""
-        afi_safi_keys = {key: AFI_SAFI_REDISTRIBUTED_ROUTE_KEY.get(value, value) for key, value in AFI_SAFI_EOS_KEY.items()}
-        return afi_safi_keys[(self.afi, self.safi)]
+        return AFI_SAFI_REDISTRIBUTED_ROUTE_KEY[self.eos_key]
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the BgpAddressFamily for reporting.

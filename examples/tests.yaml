@@ -502,26 +502,26 @@ anta.tests.routing.bgp:
   - VerifyBGPRedistributedRoutes:
       # Verifies BGP redistributed routes protocol and route-map.
       address_families:
-        - vrf: default
-          redistributed_route_protocol: Connected
-          route_map: RM-CONN-2-BGP
-          afi: "ipv4"
+        - afi: "ipv4"
           safi: "unicast"
-        - vrf: default
+          vrf: default
           redistributed_route_protocol: Connected
           route_map: RM-CONN-2-BGP
-          afi: "ipv6"
+        - afi: "ipv6"
           safi: "unicast"
-        - vrf: test
+          vrf: default
           redistributed_route_protocol: Connected
           route_map: RM-CONN-2-BGP
-          afi: "ipv4"
+        - afi: "ipv4"
           safi: "multicast"
-        - vrf: test
+          vrf: default
           redistributed_route_protocol: Connected
           route_map: RM-CONN-2-BGP
-          afi: "ipv6"
+        - afi: "ipv6"
           safi: "multicast"
+          vrf: default
+          redistributed_route_protocol: Connected
+          route_map: RM-CONN-2-BGP
   - VerifyBGPSpecificPeers:
       # Verifies the health of specific BGP peer(s) for given address families.
       address_families:

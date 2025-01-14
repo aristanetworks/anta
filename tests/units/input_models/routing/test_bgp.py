@@ -18,6 +18,7 @@ from anta.tests.routing.bgp import (
     VerifyBGPPeerGroup,
     VerifyBGPPeerMPCaps,
     VerifyBGPPeerRouteLimit,
+    VerifyBGPRedistributedRoutes,
     VerifyBgpRouteMaps,
     VerifyBGPSpecificPeers,
     VerifyBGPTimers,
@@ -262,3 +263,45 @@ class TestVerifyBGPPeerGroupInput:
         """Test VerifyBGPPeerGroup.Input invalid inputs."""
         with pytest.raises(ValidationError):
             VerifyBGPPeerGroup.Input(bgp_peers=bgp_peers)
+
+
+class TestVerifyBGPRedistributedRoutes:
+    """Test anta.tests.routing.bgp.VerifyBGPRedistributedRoutes.Input."""
+
+    @pytest.mark.parametrize(
+        ("address_families"),
+        [
+            pytest.param(
+                [{"afi": "ipv4", "safi": "unicast", "vrf": "default", "redistributed_route_protocol": "Connected", "route_map": "RM-CONN-2-BGP"}], id="valid"
+            ),
+        ],
+    )
+    def test_valid(self, address_families: list[BgpAddressFamily]) -> None:
+        """Test VerifyBGPPeerRouteLimit.Input valid inputs."""
+        VerifyBGPRedistributedRoutes.Input(address_families=address_families)
+
+    @pytest.mark.parametrize(
+        ("address_families"),
+        [
+            pytest.param(
+                [{"afi": "ipv4", "safi": "unicast", "vrf": "default", "redistributed_route_protocol": None, "route_map": "RM-CONN-2-BGP"}],
+                id="invalid-redistributed-route-protocol",
+            ),
+            pytest.param(
+                [{"afi": "ipv4", "safi": "unicast", "vrf": "default", "redistributed_route_protocol": "Connected", "route_map": None}],
+                id="invalid-route-map",
+            ),
+            pytest.param(
+                [{"afi": "evpn", "safi": "unicast", "vrf": "default", "redistributed_route_protocol": "Connected", "route_map": "RM-CONN-2-BGP"}],
+                id="invalid-afi-for-redistributed-route",
+            ),
+            pytest.param(
+                [{"afi": "ipv4", "safi": "sr-te", "vrf": "default", "redistributed_route_protocol": "Connected", "route_map": "RM-CONN-2-BGP"}],
+                id="invalid-safi-for-redistributed-route",
+            ),
+        ],
+    )
+    def test_invalid(self, address_families: list[BgpAddressFamily]) -> None:
+        """Test VerifyBGPPeerRouteLimit.Input invalid inputs."""
+        with pytest.raises(ValidationError):
+            VerifyBGPRedistributedRoutes.Input(address_families=address_families)

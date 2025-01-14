@@ -1551,14 +1551,20 @@ class VerifyBGPRedistributedRoutes(AntaTest):
 
     This test performs the following checks for each specified route:
 
-      1. Confirms the redistributed route protocol and route map, match the expected value for a route.
+      1. Ensures that the expected afi-safi is configured on the device.
+      2. Confirms that the redistributed route protocol and route map match the expected values for a route.
+
+    Note: The 'User' field in the redistributed route protocol has been updated to 'EOS SDK'.
 
     Expected Results
     ----------------
     * Success: If all of the following conditions are met:
-        - The redistributed route protocol and route map match the expected value for a route.
+        - The expected afi-safi is configured on the device.
+        - The redistributed route protocol and route map align with the expected values for the route.
     * Failure: If any of the following occur:
-        - The redistributed route protocol or route map do not match the expected value for a route.
+        - The expected afi-safi is not configured on device.
+        - The redistributed route protocol or route map does not match the expected value for a route.
+
 
     Examples
     --------
@@ -1567,30 +1573,28 @@ class VerifyBGPRedistributedRoutes(AntaTest):
       bgp:
         - VerifyBGPRedistributedRoutes:
           address_families:
-            - vrf: default
-              redistributed_route_protocol: Connected
-              route_map: RM-CONN-2-BGP
-              afi: "ipv4"
+            - afi: "ipv4"
               safi: "unicast"
-            - vrf: default
+              vrf: default
               redistributed_route_protocol: Connected
               route_map: RM-CONN-2-BGP
-              afi: "ipv6"
+            - afi: "ipv6"
               safi: "unicast"
-            - vrf: test
+              vrf: default
               redistributed_route_protocol: Connected
               route_map: RM-CONN-2-BGP
-              afi: "ipv4"
+            - afi: "ipv4"
               safi: "multicast"
-            - vrf: test
+              vrf: default
               redistributed_route_protocol: Connected
               route_map: RM-CONN-2-BGP
-              afi: "ipv6"
+            - afi: "ipv6"
               safi: "multicast"
+              vrf: default
+              redistributed_route_protocol: Connected
+              route_map: RM-CONN-2-BGP
     ```
     """
-
-    # Note: For thr proto User on the device, Update the redistributed_route_protocol as EOS SDK.
 
     categories: ClassVar[list[str]] = ["bgp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp instance vrf all", revision=4)]
@@ -1601,16 +1605,36 @@ class VerifyBGPRedistributedRoutes(AntaTest):
         address_families: list[BgpAddressFamily]
         """List of BGP address families."""
 
+        @field_validator("address_families")
+        @classmethod
+        def validate_address_families(cls, address_families: list[BgpAddressFamily]) -> list[BgpAddressFamily]:
+            """Validate that all required fields are provided in each address family."""
+            for address_family in address_families:
+                if address_family.afi not in ["ipv4", "ipv6"]:
+                    msg = f"{address_family}; redistributed route protocol is not supported for address family `{address_family.afi}`"
+                    raise ValueError(msg)
+                if address_family.safi not in ["unicast", "multicast"]:
+                    msg = f"{address_family}; redistributed route protocol is not supported for subsequent address family `{address_family.safi}`"
+                    raise ValueError(msg)
+                if address_family.redistributed_route_protocol is None:
+                    msg = f"{address_family}; 'redistributed_route_protocol' field missing in the input"
+                    raise ValueError(msg)
+                if address_family.route_map is None:
+                    msg = f"{address_family}; 'route_map' field missing in the input"
+                    raise ValueError(msg)
+
+            return address_families
+
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyBGPRedistributedRoutes."""
         self.result.is_success()
         cmd_output = self.instance_commands[0].json_output
 
-        # If specified VRF, afi safi details not found or redistributed route protocol or route map do not match the expected value, test fails.
+        # If the specified VRF, AFI-SAFI details are not found, or if the redistributed route protocol or route map do not match the expected values, the test fails.
         for address_family in self.inputs.address_families:
             vrf = address_family.vrf
-            redistributed_route_protocol = address_family.redistributed_route_protocol
+            redistributed_route_protocol = "EOS SDK" if address_family.redistributed_route_protocol == "User" else address_family.redistributed_route_protocol
             route_map = address_family.route_map
             afi_safi_key = address_family.redistributed_route_key
 
@@ -1618,13 +1642,11 @@ class VerifyBGPRedistributedRoutes(AntaTest):
                 self.result.is_failure(f"{address_family} - Not found")
                 continue
 
-            redistributed_routes = afi_safi_configs.get("redistributedRoutes")
-            route_data = [route_data for route_data in redistributed_routes if route_data.get("proto") == redistributed_route_protocol]
-            if route_data:
-                if route_data[0].get("routeMap") != route_map:
-                    self.result.is_failure(f"{address_family} - Redistributed route map mismatch - Expected: {route_map} Actual: {route_data[0].get('routeMap')}")
-            else:
-                routes_proto = [route_data["proto"] for route_data in redistributed_routes]
+            if not (route := get_item(afi_safi_configs.get("redistributedRoutes"), "proto", redistributed_route_protocol)):
+                self.result.is_failure(f"{address_family} Protocol: {redistributed_route_protocol} - Not Found")
+                continue
+
+            if (actual_route_map := route.get("routeMap", "Not Found")) != route_map:
                 self.result.is_failure(
-                    f"{address_family} - Redistributed route protocol mismatch - Expected: {redistributed_route_protocol} Actual: {', '.join(routes_proto)}"
+                    f"{address_family} Protocol: {redistributed_route_protocol} - Route map mismatch - Expected: {route_map} Actual: {actual_route_map}"
                 )

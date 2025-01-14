@@ -4648,7 +4648,7 @@ DATA: list[dict[str, Any]] = [
             {
                 "vrfs": {
                     "default": {"afiSafiConfig": {"v4u": {}}},
-                    "test": {"afiSafiConfig": {"v6u": {"redistributedRoutes": [{"proto": "Connected", "routeMap": "RM-CONN-2-BGP"}]}}},
+                    "test": {"afiSafiConfig": {"v6m": {"redistributedRoutes": [{"proto": "Connected", "routeMap": "RM-CONN-2-BGP"}]}}},
                 }
             }
         ],
@@ -4666,7 +4666,7 @@ DATA: list[dict[str, Any]] = [
                     "redistributed_route_protocol": "Connected",
                     "route_map": "RM-CONN-2-BGP",
                     "afi": "ipv6",
-                    "safi": "unicast",
+                    "safi": "multicast",
                 },
             ]
         },
@@ -4680,12 +4680,12 @@ DATA: list[dict[str, Any]] = [
                 "vrfs": {
                     "default": {
                         "afiSafiConfig": {
-                            "v4u": {"redistributedRoutes": [{"proto": "RIP", "routeMap": "RM-CONN-2-BGP"}, {"proto": "IS-IS", "routeMap": "RM-MLAG-PEER-IN"}]}
+                            "v4m": {"redistributedRoutes": [{"proto": "RIP", "routeMap": "RM-CONN-2-BGP"}, {"proto": "IS-IS", "routeMap": "RM-MLAG-PEER-IN"}]}
                         }
                     },
                     "test": {
                         "afiSafiConfig": {
-                            "v6u": {
+                            "v6m": {
                                 "redistributedRoutes": [{"proto": "Static", "routeMap": "RM-CONN-2-BGP"}],
                             }
                         }
@@ -4700,22 +4700,22 @@ DATA: list[dict[str, Any]] = [
                     "redistributed_route_protocol": "Connected",
                     "route_map": "RM-CONN-2-BGP",
                     "afi": "ipv4",
-                    "safi": "unicast",
+                    "safi": "multicast",
                 },
                 {
                     "vrf": "test",
-                    "redistributed_route_protocol": "Connected",
+                    "redistributed_route_protocol": "User",
                     "route_map": "RM-CONN-2-BGP",
                     "afi": "ipv6",
-                    "safi": "unicast",
+                    "safi": "multicast",
                 },
             ]
         },
         "expected": {
             "result": "failure",
             "messages": [
-                "AFI: ipv4 SAFI: unicast VRF: default - Redistributed route protocol mismatch - Expected: Connected Actual: RIP, IS-IS",
-                "AFI: ipv6 SAFI: unicast VRF: test - Redistributed route protocol mismatch - Expected: Connected Actual: Static",
+                "AFI: ipv4 SAFI: multicast VRF: default Protocol: Connected - Not Found",
+                "AFI: ipv6 SAFI: multicast VRF: test Protocol: EOS SDK - Not Found",
             ],
         },
     },
@@ -4727,7 +4727,7 @@ DATA: list[dict[str, Any]] = [
                 "vrfs": {
                     "default": {
                         "afiSafiConfig": {
-                            "v4u": {"redistributedRoutes": [{"proto": "Connected", "routeMap": "RM-CONN-10-BGP"}, {"proto": "IS-IS", "routeMap": "RM-MLAG-PEER-IN"}]}
+                            "v4m": {"redistributedRoutes": [{"proto": "Connected", "routeMap": "RM-CONN-10-BGP"}, {"proto": "IS-IS", "routeMap": "RM-MLAG-PEER-IN"}]}
                         }
                     },
                     "test": {
@@ -4747,7 +4747,7 @@ DATA: list[dict[str, Any]] = [
                     "redistributed_route_protocol": "Connected",
                     "route_map": "RM-CONN-2-BGP",
                     "afi": "ipv4",
-                    "safi": "unicast",
+                    "safi": "multicast",
                 },
                 {
                     "vrf": "test",
@@ -4761,8 +4761,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "AFI: ipv4 SAFI: unicast VRF: default - Redistributed route map mismatch - Expected: RM-CONN-2-BGP Actual: RM-CONN-10-BGP",
-                "AFI: ipv6 SAFI: unicast VRF: test - Redistributed route map mismatch - Expected: RM-CONN-2-BGP Actual: RM-MLAG-PEER-IN",
+                "AFI: ipv4 SAFI: multicast VRF: default Protocol: Connected - Route map mismatch - Expected: RM-CONN-2-BGP Actual: RM-CONN-10-BGP",
+                "AFI: ipv6 SAFI: unicast VRF: test Protocol: Connected - Route map mismatch - Expected: RM-CONN-2-BGP Actual: RM-MLAG-PEER-IN",
             ],
         },
     },
