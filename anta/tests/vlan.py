@@ -132,10 +132,10 @@ class VerifyDynamicVlanSource(AntaTest):
         str_actual_sources = ", ".join(actual_sources)
         # If strict flag True, and dynamic VLAN(s) are disabled on any of the designated sources or enabled non designated sources, test fails.
         if self.inputs.strict and sorted(actual_sources) != sorted(expected_sources):
-            self.result.is_failure(f"Dynamic VLAN(s) sources mismatch - Expected: {str_expected_sources} Actual: {str_actual_sources}")
+            self.result.is_failure(f"Dynamic VLAN allocations expected to be sources `{str_expected_sources}` only, however actual it is `{str_actual_sources}`")
             return
 
         # If dynamic VLAN(s) are disabled on any of the designated sources, test fails.
         absent_sources = set(expected_sources).difference(set(actual_sources))
         if absent_sources:
-            self.result.is_failure(f"Dynamic VLAN(s) allocations expected sources {str_expected_sources}, however actual allocated to {str_actual_sources}")
+            self.result.is_failure(f"Dynamic VLAN(s) sources mismatch - Expected: `{str_expected_sources}` Actual: `{str_actual_sources}`")
