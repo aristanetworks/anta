@@ -348,22 +348,25 @@ class VerifySnmpErrorCounters(AntaTest):
 
 
 class VerifySnmpUser(AntaTest):
-    """Verifies the SNMP user configurations for specified version(s).
+    """Verifies the SNMP user configurations.
 
     This test performs the following checks for each specified user:
 
-      1. Verifies that the user name and group name are valid.
-      2. Ensures that the SNMP v3 security model, user authentication, and privacy settings align with version-specific requirements.
+      1. User exists in SNMP configuration.
+      2. Group assignment is correct.
+      3. For SNMPv3 users only:
+          - Authentication type matches (if specified)
+          - Privacy type matches (if specified)
 
     Expected Results
     ----------------
     * Success: If all of the following conditions are met:
-        - All specified users are found in the SNMP configuration with valid user groups.
-        - The SNMP v3 security model, user authentication and privacy settings match the required settings.
+        - All users exist with correct group assignments.
+        - SNMPv3 authentication and privacy types match specified values.
     * Failure: If any of the following occur:
-        - A specified user is not found in the SNMP configuration.
-        - A user's group is incorrect.
-        - For SNMP v3 security model, the user authentication and privacy settings do not matches the required settings.
+        - User not found in SNMP configuration.
+        - Incorrect group assignment.
+        - For SNMPv3: Mismatched authentication or privacy types.
 
     Examples
     --------
@@ -390,14 +393,11 @@ class VerifySnmpUser(AntaTest):
 
         @field_validator("snmp_users")
         @classmethod
-        def validate_snmp_user(cls, snmp_users: list[T]) -> list[T]:
-            """Validate that 'authentication_type' or 'priv_type' field is provided in each SNMP user."""
+        def validate_snmp_users(cls, snmp_users: list[T]) -> list[T]:
+            """Validate that 'auth_type' or 'priv_type' field is provided in each SNMPv3 user."""
             for user in snmp_users:
-                if user.group_name is None or user.version is None:
-                    msg = f"{user}; 'group_name' or 'version' field missing in the input"
-                    raise ValueError(msg)
                 if user.version == "v3" and not (user.auth_type or user.priv_type):
-                    msg = f"{user}; 'auth_type' or 'priv_type' field is required with 'version: v3'"
+                    msg = f"{user} 'auth_type' or 'priv_type' field is required with 'version: v3'"
                     raise ValueError(msg)
             return snmp_users
 
@@ -407,23 +407,17 @@ class VerifySnmpUser(AntaTest):
         self.result.is_success()
 
         for user in self.inputs.snmp_users:
-            username = user.username
-            group_name = user.group_name
-            version = user.version
-            auth_type = user.auth_type
-            priv_type = user.priv_type
-
             # Verify SNMP user details.
-            if not (user_details := get_value(self.instance_commands[0].json_output, f"usersByVersion.{version}.users.{username}")):
+            if not (user_details := get_value(self.instance_commands[0].json_output, f"usersByVersion.{user.version}.users.{user.username}")):
                 self.result.is_failure(f"{user} - Not found")
                 continue
 
-            if group_name != (act_group := user_details.get("groupName", "Not Found")):
+            if user.group_name != (act_group := user_details.get("groupName", "Not Found")):
                 self.result.is_failure(f"{user} - Incorrect user group - Actual: {act_group}")
 
-            if version == "v3":
-                if auth_type and (act_auth_type := get_value(user_details, "v3Params.authType", "Not Found")) != auth_type:
-                    self.result.is_failure(f"{user} - Incorrect authentication type - Expected: {auth_type} Actual: {act_auth_type}")
+            if user.version == "v3":
+                if user.auth_type and (act_auth_type := get_value(user_details, "v3Params.authType", "Not Found")) != user.auth_type:
+                    self.result.is_failure(f"{user} - Incorrect authentication type - Expected: {user.auth_type} Actual: {act_auth_type}")
 
-                if priv_type and (act_encryption := get_value(user_details, "v3Params.privType", "Not Found")) != priv_type:
-                    self.result.is_failure(f"{user} - Incorrect privacy type - Expected: {priv_type} Actual: {act_encryption}")
+                if user.priv_type and (act_encryption := get_value(user_details, "v3Params.privType", "Not Found")) != user.priv_type:
+                    self.result.is_failure(f"{user} - Incorrect privacy type - Expected: {user.priv_type} Actual: {act_encryption}")

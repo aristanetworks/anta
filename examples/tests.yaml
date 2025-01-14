@@ -747,7 +747,7 @@ anta.tests.snmp:
       # Verifies if the SNMP agent is enabled.
       vrf: default
   - VerifySnmpUser:
-      # Verifies the SNMP user configurations for specified version(s).
+      # Verifies the SNMP user configurations.
       snmp_users:
         - username: test
           group_name: test_group

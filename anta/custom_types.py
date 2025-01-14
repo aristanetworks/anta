@@ -238,5 +238,5 @@ IPv4RouteType = Literal[
     "CBF Leaked Route",
 ]
 SnmpVersion = Literal["v1", "v2c", "v3"]
-HashingAlgorithm = Literal["MD5", "SHA", "SHA-224", "SHA-256", "SHA-384", "SHA-512"]
+SnmpHashingAlgorithm = Literal["MD5", "SHA", "SHA-224", "SHA-256", "SHA-384", "SHA-512"]
 SnmpEncryptionAlgorithm = Literal["AES-128", "AES-192", "AES-256", "DES"]
