@@ -41,11 +41,11 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
-        "name": "failure-no-dynamic-vlans",
+        "name": "failure-no-dynamic-vlan-sources",
         "test": VerifyDynamicVlanSource,
         "eos_data": [{"dynamicVlans": {}}],
         "inputs": {"sources": ["evpn", "mlagsync"], "strict": False},
-        "expected": {"result": "failure", "messages": ["Dynamic VLANs sources evpn, mlagsync not found in the configuration"]},
+        "expected": {"result": "failure", "messages": ["Dynamic VLAN source(s) not found in configuration: evpn, mlagsync"]},
     },
     {
         "name": "failure-dynamic-vlan-sources-mismatch",
@@ -54,7 +54,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"sources": ["evpn", "mlagsync"], "strict": False},
         "expected": {
             "result": "failure",
-            "messages": ["Dynamic VLAN(s) sources mismatch - Expected: `evpn, mlagsync` Actual: `vccbfd, mlagsync`"],
+            "messages": ["Dynamic VLAN source(s) not found in configuration: evpn"],
         },
     },
     {
@@ -71,7 +71,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"sources": ["evpn", "mlagsync"], "strict": True},
         "expected": {
             "result": "failure",
-            "messages": ["Dynamic VLAN allocations expected to be sources `evpn, mlagsync` only, however actual it is `evpn, mlagsync, vccbfd`"],
+            "messages": ["Strict mode enabled: Unexpected sources have VLANs allocated: vccbfd"],
         },
     },
     {
@@ -79,6 +79,6 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyDynamicVlanSource,
         "eos_data": [{"dynamicVlans": {"evpn": {"vlanIds": [1199]}, "mlagsync": {"vlanIds": []}}}],
         "inputs": {"sources": ["evpn", "mlagsync"], "strict": True},
-        "expected": {"result": "failure", "messages": ["Dynamic VLAN allocations expected to be sources `evpn, mlagsync` only, however actual it is `evpn`"]},
+        "expected": {"result": "failure", "messages": ["Dynamic VLAN source(s) exist but have no VLANs allocated: mlagsync"]},
     },
 ]

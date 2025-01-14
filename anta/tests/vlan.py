@@ -111,7 +111,7 @@ class VerifyDynamicVlanSource(AntaTest):
         sources: list[DynamicVlanSource]
         """The dynamic VLAN source list."""
         strict: bool = False
-        """If True, dynamic VLAN(s) should be enabled only on designated sources, Defaults to `False`."""
+        """If True, only specified sources are allowed to have VLANs allocated. Default is False."""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -120,22 +120,25 @@ class VerifyDynamicVlanSource(AntaTest):
         command_output = self.instance_commands[0].json_output
         dynamic_vlans = command_output.get("dynamicVlans", {})
 
-        actual_sources = [source for source, data in dynamic_vlans.items() if data.get("vlanIds")]
-        expected_sources = self.inputs.sources
-        str_expected_sources = ", ".join(expected_sources)
+        # Get all configured sources and sources with VLANs allocated
+        configured_sources = set(dynamic_vlans.keys())
+        sources_with_vlans = {source for source, data in dynamic_vlans.items() if data.get("vlanIds")}
+        expected_sources = set(self.inputs.sources)
 
-        # If the dynamic vlans are not configured, skipping the test.
-        if not actual_sources:
-            self.result.is_failure(f"Dynamic VLANs sources {str_expected_sources} not found in the configuration")
+        # Check if all specified sources exist in configuration
+        missing_sources = expected_sources - configured_sources
+        if missing_sources:
+            self.result.is_failure(f"Dynamic VLAN source(s) not found in configuration: {', '.join(sorted(missing_sources))}")
             return
 
-        str_actual_sources = ", ".join(actual_sources)
-        # If strict flag True, and dynamic VLAN(s) are disabled on any of the designated sources or enabled non designated sources, test fails.
-        if self.inputs.strict and sorted(actual_sources) != sorted(expected_sources):
-            self.result.is_failure(f"Dynamic VLAN allocations expected to be sources `{str_expected_sources}` only, however actual it is `{str_actual_sources}`")
+        # Check if configured sources have VLANs allocated
+        sources_without_vlans = expected_sources - sources_with_vlans
+        if sources_without_vlans:
+            self.result.is_failure(f"Dynamic VLAN source(s) exist but have no VLANs allocated: {', '.join(sorted(sources_without_vlans))}")
             return
 
-        # If dynamic VLAN(s) are disabled on any of the designated sources, test fails.
-        absent_sources = set(expected_sources).difference(set(actual_sources))
-        if absent_sources:
-            self.result.is_failure(f"Dynamic VLAN(s) sources mismatch - Expected: `{str_expected_sources}` Actual: `{str_actual_sources}`")
+        # In strict mode, verify no other sources have VLANs allocated
+        if self.inputs.strict:
+            unexpected_sources = sources_with_vlans - expected_sources
+            if unexpected_sources:
+                self.result.is_failure(f"Strict mode enabled: Unexpected sources have VLANs allocated: {', '.join(sorted(unexpected_sources))}")
