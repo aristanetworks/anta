@@ -159,7 +159,7 @@ class VerifyBFDPeersIntervals(AntaTest):
                 if peer.multiplier is None:
                     missing_fileds.append("multiplier")
                 if missing_fileds:
-                    msg = f"{peer}; {', '.join(missing_fileds)} field(s) are missing in the input."
+                    msg = f"{peer} {', '.join(missing_fileds)} field(s) are missing in the input."
                     raise ValueError(msg)
             return bfd_peers
 
@@ -334,7 +334,7 @@ class VerifyBFDPeersRegProtocols(AntaTest):
             """Validate that 'protocols' field is provided in each BFD peer."""
             for peer in bfd_peers:
                 if peer.protocols is None:
-                    msg = f"{peer}; 'protocols' field missing in the input"
+                    msg = f"{peer} 'protocols' field missing in the input."
                     raise ValueError(msg)
             return bfd_peers
 
