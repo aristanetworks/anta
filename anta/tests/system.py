@@ -224,7 +224,7 @@ class VerifyMemoryUtilization(AntaTest):
         if memory_usage > MEMORY_THRESHOLD:
             self.result.is_success()
         else:
-            self.result.is_failure(f"Device has reported a high memory usage: {(1 - memory_usage)*100:.2f}%")
+            self.result.is_failure(f"Device has reported a high memory usage: {(1 - memory_usage) * 100:.2f}%")
 
 
 class VerifyFileSystemUtilization(AntaTest):
