@@ -421,6 +421,12 @@ anta.tests.routing.bgp:
           drop_stats:
             - inDropAsloop
             - prefixEvpnDroppedUnsupportedRouteType
+  - VerifyBGPPeerGroup:
+      # Verifies BGP peer group of BGP IPv4 peer(s).
+      bgp_peers:
+        - peer_address: 172.30.11.1
+          vrf: default
+          peer_group: IPv4-UNDERLAY-PEERS
   - VerifyBGPPeerMD5Auth:
       # Verifies the MD5 authentication and state of IPv4 BGP peer(s) in a specified VRF.
       bgp_peers:
@@ -460,6 +466,18 @@ anta.tests.routing.bgp:
           vrf: DEV
         - peer_address: 10.1.255.4
           vrf: DEV
+  - VerifyBGPPeerSessionRibd:
+      # Verifies the session state of BGP IPv4 peer(s).
+      check_tcp_queues: false
+      bgp_peers:
+        - peer_address: 10.1.0.1
+          vrf: default
+        - peer_address: 10.1.0.2
+          vrf: default
+        - peer_address: 10.1.255.2
+          vrf: DEV
+        - peer_address: 10.1.255.4
+          vrf: DEV
   - VerifyBGPPeerUpdateErrors:
       # Verifies BGP update error counters for the provided BGP IPv4 peer(s).
       bgp_peers:
@@ -478,6 +496,9 @@ anta.tests.routing.bgp:
           safi: "unicast"
           vrf: "DEV"
           check_tcp_queues: false
+  - VerifyBGPPeersHealthRibd:
+      # Verifies the health of all the BGP IPv4 peer(s).
+      check_tcp_queues: True
   - VerifyBGPSpecificPeers:
       # Verifies the health of specific BGP peer(s) for given address families.
       address_families:
@@ -710,12 +731,14 @@ anta.tests.services:
           vrf: MGMT
           priority: 0
   - VerifyErrdisableRecovery:
-      # Verifies the errdisable recovery reason, status, and interval.
+      # Verifies the error disable recovery functionality.
       reasons:
         - reason: acl
           interval: 30
+          status: Enabled
         - reason: bpduguard
           interval: 30
+          status: Enabled
   - VerifyHostname:
       # Verifies the hostname of a device.
       hostname: s1-spine1

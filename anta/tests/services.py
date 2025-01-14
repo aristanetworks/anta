@@ -9,12 +9,9 @@ from __future__ import annotations
 # mypy: disable-error-code=attr-defined
 from typing import ClassVar
 
-from pydantic import BaseModel
-
-from anta.custom_types import ErrDisableInterval, ErrDisableReasons
-from anta.input_models.services import DnsServer
+from anta.input_models.services import DnsServer, ErrDisableReason, ErrdisableRecovery
 from anta.models import AntaCommand, AntaTemplate, AntaTest
-from anta.tools import get_dict_superset, get_failed_logs
+from anta.tools import get_dict_superset, get_item
 
 
 class VerifyHostname(AntaTest):
@@ -166,12 +163,24 @@ class VerifyDNSServers(AntaTest):
 
 
 class VerifyErrdisableRecovery(AntaTest):
-    """Verifies the errdisable recovery reason, status, and interval.
+    """Verifies the error disable recovery functionality.
+
+    This test performs the following checks for each specified error disable reason:
+
+      1. Verifying if the specified error disable reason exists.
+      2. Checking if the recovery timer status matches the expected enabled/disabled state.
+      3. Validating that the timer interval matches the configured value.
 
     Expected Results
     ----------------
-    * Success: The test will pass if the errdisable recovery reason status is enabled and the interval matches the input.
-    * Failure: The test will fail if the errdisable recovery reason is not found, the status is not enabled, or the interval does not match the input.
+    * Success: The test will pass if:
+        - The specified error disable reason exists.
+        - The recovery timer status matches the expected state.
+        - The timer interval matches the configured value.
+    * Failure: The test will fail if:
+        - The specified error disable reason does not exist.
+        - The recovery timer status does not match the expected state.
+        - The timer interval does not match the configured value.
 
     Examples
     --------
@@ -181,8 +190,10 @@ class VerifyErrdisableRecovery(AntaTest):
           reasons:
             - reason: acl
               interval: 30
+              status: Enabled
             - reason: bpduguard
               interval: 30
+              status: Enabled
     ```
     """
 
@@ -193,44 +204,35 @@ class VerifyErrdisableRecovery(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyErrdisableRecovery test."""
 
-        reasons: list[ErrDisableReason]
+        reasons: list[ErrdisableRecovery]
         """List of errdisable reasons."""
-
-        class ErrDisableReason(BaseModel):
-            """Model for an errdisable reason."""
-
-            reason: ErrDisableReasons
-            """Type or name of the errdisable reason."""
-            interval: ErrDisableInterval
-            """Interval of the reason in seconds."""
+        ErrDisableReason: ClassVar[type[ErrdisableRecovery]] = ErrDisableReason
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyErrdisableRecovery."""
-        command_output = self.instance_commands[0].text_output
         self.result.is_success()
+
+        # Skip header and last empty line
+        command_output = self.instance_commands[0].text_output.split("\n")[2:-1]
+
+        # Collecting the actual errdisable reasons for faster lookup
+        errdisable_reasons = [
+            {"reason": reason, "status": status, "interval": interval}
+            for line in command_output
+            if line.strip()  # Skip empty lines
+            for reason, status, interval in [line.split(None, 2)]  # Unpack split result
+        ]
+
         for error_reason in self.inputs.reasons:
-            input_reason = error_reason.reason
-            input_interval = error_reason.interval
-            reason_found = False
+            if not (reason_output := get_item(errdisable_reasons, "reason", error_reason.reason)):
+                self.result.is_failure(f"{error_reason} - Not found")
+                continue
 
-            # Skip header and last empty line
-            lines = command_output.split("\n")[2:-1]
-            for line in lines:
-                # Skip empty lines
-                if not line.strip():
-                    continue
-                # Split by first two whitespaces
-                reason, status, interval = line.split(None, 2)
-                if reason != input_reason:
-                    continue
-                reason_found = True
-                actual_reason_data = {"interval": interval, "status": status}
-                expected_reason_data = {"interval": str(input_interval), "status": "Enabled"}
-                if actual_reason_data != expected_reason_data:
-                    failed_log = get_failed_logs(expected_reason_data, actual_reason_data)
-                    self.result.is_failure(f"`{input_reason}`:{failed_log}\n")
-                break
-
-            if not reason_found:
-                self.result.is_failure(f"`{input_reason}`: Not found.\n")
+            if not all(
+                [
+                    error_reason.status == (act_status := reason_output["status"]),
+                    error_reason.interval == (act_interval := int(reason_output["interval"])),
+                ]
+            ):
+                self.result.is_failure(f"{error_reason} - Incorrect configuration - Status: {act_status} Interval: {act_interval}")
