@@ -728,7 +728,7 @@ anta.tests.snmp:
       error_counters:
         - inVersionErrs
   - VerifySnmpHostLogging:
-      # Verifies SNMP logging and SNMP manager(host) details.
+      # Verifies SNMP logging configurations.
       hosts:
         - hostname: 192.168.1.100
           vrf: default

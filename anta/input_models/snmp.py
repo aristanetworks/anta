@@ -17,7 +17,7 @@ class SnmpHost(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
     hostname: IPv4Address | Hostname
-    """IPv4 address of the SNMP notification host."""
+    """IPv4 address or hostname of the SNMP notification host."""
     vrf: str = "default"
     """Optional VRF for SNMP hosts. If not provided, it defaults to `default`."""
 

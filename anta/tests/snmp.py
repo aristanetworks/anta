@@ -345,7 +345,7 @@ class VerifySnmpErrorCounters(AntaTest):
 
 
 class VerifySnmpHostLogging(AntaTest):
-    """Verifies SNMP logging and SNMP manager(host) details.
+    """Verifies SNMP logging configurations.
 
     This test performs the following checks:
 
@@ -397,13 +397,12 @@ class VerifySnmpHostLogging(AntaTest):
             self.result.is_failure("SNMP logging is disabled")
             return
 
-        host_details = command_output.get("hosts")
+        host_details = command_output.get("hosts", {})
 
         for host in self.inputs.hosts:
             hostname = str(host.hostname)
             vrf = host.vrf
             actual_snmp_host = host_details.get(hostname, {})
-            actual_vrf = "default" if (vrf_name := actual_snmp_host.get("vrf")) == "" else vrf_name
 
             # If SNMP host is not configured on the device, test fails.
             if not actual_snmp_host:
@@ -411,6 +410,7 @@ class VerifySnmpHostLogging(AntaTest):
                 continue
 
             # If VRF is not matches the expected value, test fails.
+            actual_vrf = "default" if (vrf_name := actual_snmp_host.get("vrf")) == "" else vrf_name
             if actual_vrf != vrf:
                 self.result.is_failure(f"{host} - Incorrect VRF - Actual: {actual_vrf}")
 
