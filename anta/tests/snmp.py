@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING, ClassVar, get_args
 from pydantic import field_validator
 
 from anta.custom_types import PositiveInteger, SnmpErrorCounter, SnmpPdu
-from anta.input_models.snmp import SNMPHost
+from anta.input_models.snmp import SnmpHost
 from anta.models import AntaCommand, AntaTest
 from anta.tools import get_value
 
@@ -344,7 +344,7 @@ class VerifySnmpErrorCounters(AntaTest):
             self.result.is_failure(f"The following SNMP error counters are not found or have non-zero error counters:\n{error_counters_not_ok}")
 
 
-class VerifySNMPNotificationHost(AntaTest):
+class VerifySnmpNotificationHost(AntaTest):
     """Verifies the SNMP notification host(s) (SNMP manager) configurations.
 
     This test performs the following checks for each specified host:
@@ -353,29 +353,29 @@ class VerifySNMPNotificationHost(AntaTest):
      2. Verifies that the notification type ("trap" or "inform") matches the expected value.
      3. Ensures that UDP port provided matches the expected value.
      4. Ensures the following depending on SNMP version:
-        - For SNMP version v1/v2c a valid community string is set and matches the expected value.
-        - For SNMP version v3 a valid user field is set and matches the expected value.
+        - For SNMP version v1/v2c, a valid community string is set and matches the expected value.
+        - For SNMP version v3, a valid user field is set and matches the expected value.
 
     Expected Results
     ----------------
     * Success: The test will pass if all of the following conditions are met:
         - The SNMP host(s) is configured on the device.
         - The notification type ("trap" or "inform") and UDP port match the expected value.
-        - Either
-            - The community string is set for SNMP version v1/v2c and it matches the expected value.
-            - The user field is set for SNMP v3 and it matches the expected value.
+        - Ensures the following depending on SNMP version:
+            - For SNMP version v1/v2c, a community string is set and it matches the expected value.
+            - For SNMP version v3, a valid user field is set and matches the expected value.
     * Failure: The test will fail if any of the following conditions is met:
         - The SNMP host(s) is not configured on the device.
         - The notification type ("trap" or "inform") or UDP port do not matches the expected value.
-        - Either
-            - The community string for SNMP version v1/v2c is not matches the expected value.
-            - The user field for SNMP version v3 is not matches the expected value.
+        - Ensures the following depending on SNMP version:
+            - For SNMP version v1/v2c, a community string is not matches the expected value.
+            - For SNMP version v3, an user field is not matches the expected value.
 
     Examples
     --------
     ```yaml
     anta.tests.snmp:
-      - VerifySNMPNotificationHost:
+      - VerifySnmpNotificationHost:
           notification_hosts:
             - hostname: 192.168.1.100
               vrf: default
@@ -391,14 +391,14 @@ class VerifySNMPNotificationHost(AntaTest):
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show snmp notification host", revision=1)]
 
     class Input(AntaTest.Input):
-        """Input model for the VerifySNMPNotificationHost test."""
+        """Input model for the VerifySnmpNotificationHost test."""
 
-        notification_hosts: list[SNMPHost]
+        notification_hosts: list[SnmpHost]
         """List of SNMP host(s)."""
 
         @field_validator("notification_hosts")
         @classmethod
-        def validate_notification_hosts(cls, notification_hosts: list[SNMPHost]) -> list[SNMPHost]:
+        def validate_notification_hosts(cls, notification_hosts: list[SnmpHost]) -> list[SnmpHost]:
             """Validate that all required fields are provided in each SNMP Notification Host."""
             for host in notification_hosts:
                 if host.version is None:
@@ -414,7 +414,7 @@ class VerifySNMPNotificationHost(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """Main test function for VerifySNMPNotificationHost."""
+        """Main test function for VerifySnmpNotificationHost."""
         self.result.is_success()
 
         # If SNMP is not configured, test fails.

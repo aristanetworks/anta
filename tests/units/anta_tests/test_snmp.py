@@ -13,7 +13,7 @@ from anta.tests.snmp import (
     VerifySnmpIPv4Acl,
     VerifySnmpIPv6Acl,
     VerifySnmpLocation,
-    VerifySNMPNotificationHost,
+    VerifySnmpNotificationHost,
     VerifySnmpPDUCounters,
     VerifySnmpStatus,
 )
@@ -322,7 +322,7 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "success",
-        "test": VerifySNMPNotificationHost,
+        "test": VerifySnmpNotificationHost,
         "eos_data": [
             {
                 "hosts": [
@@ -355,7 +355,7 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "failure-not-configured",
-        "test": VerifySNMPNotificationHost,
+        "test": VerifySnmpNotificationHost,
         "eos_data": [{"hosts": []}],
         "inputs": {
             "notification_hosts": [
@@ -367,7 +367,7 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "failure-details-host-not-found",
-        "test": VerifySNMPNotificationHost,
+        "test": VerifySnmpNotificationHost,
         "eos_data": [
             {
                 "hosts": [
@@ -392,7 +392,7 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "failure-incorrect-notification-type",
-        "test": VerifySNMPNotificationHost,
+        "test": VerifySnmpNotificationHost,
         "eos_data": [
             {
                 "hosts": [
@@ -431,7 +431,7 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "failure-incorrect-udp-port",
-        "test": VerifySNMPNotificationHost,
+        "test": VerifySnmpNotificationHost,
         "eos_data": [
             {
                 "hosts": [
@@ -470,7 +470,7 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "failure-incorrect-community-string-version-v1-v2c",
-        "test": VerifySNMPNotificationHost,
+        "test": VerifySnmpNotificationHost,
         "eos_data": [
             {
                 "hosts": [
@@ -509,7 +509,7 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "failure-incorrect-user-for-version-v3",
-        "test": VerifySNMPNotificationHost,
+        "test": VerifySnmpNotificationHost,
         "eos_data": [
             {
                 "hosts": [

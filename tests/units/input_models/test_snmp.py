@@ -11,14 +11,14 @@ from typing import TYPE_CHECKING
 import pytest
 from pydantic import ValidationError
 
-from anta.tests.snmp import VerifySNMPNotificationHost
+from anta.tests.snmp import VerifySnmpNotificationHost
 
 if TYPE_CHECKING:
-    from anta.input_models.snmp import SNMPHost
+    from anta.input_models.snmp import SnmpHost
 
 
-class TestSNMPHost:
-    """Test anta.input_models.snmp.SNMPHost."""
+class TestSnmpHost:
+    """Test anta.input_models.snmp.SnmpHost."""
 
     @pytest.mark.parametrize(
         ("notification_hosts"),
@@ -67,9 +67,9 @@ class TestSNMPHost:
             ),
         ],
     )
-    def test_valid(self, notification_hosts: list[SNMPHost]) -> None:
-        """Test VerifySNMPNotificationHost.Input valid inputs."""
-        VerifySNMPNotificationHost.Input(notification_hosts=notification_hosts)
+    def test_valid(self, notification_hosts: list[SnmpHost]) -> None:
+        """Test VerifySnmpNotificationHost.Input valid inputs."""
+        VerifySnmpNotificationHost.Input(notification_hosts=notification_hosts)
 
     @pytest.mark.parametrize(
         ("notification_hosts"),
@@ -132,7 +132,7 @@ class TestSNMPHost:
             ),
         ],
     )
-    def test_invalid(self, notification_hosts: list[SNMPHost]) -> None:
-        """Test VerifySNMPNotificationHost.Input invalid inputs."""
+    def test_invalid(self, notification_hosts: list[SnmpHost]) -> None:
+        """Test VerifySnmpNotificationHost.Input invalid inputs."""
         with pytest.raises(ValidationError):
-            VerifySNMPNotificationHost.Input(notification_hosts=notification_hosts)
+            VerifySnmpNotificationHost.Input(notification_hosts=notification_hosts)
