@@ -11,7 +11,7 @@ from warnings import warn
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from anta.custom_types import ErrdisableReason
+from anta.custom_types import ErrDisableReasons
 
 
 class DnsServer(BaseModel):
@@ -39,7 +39,7 @@ class ErrdisableRecovery(BaseModel):
     """Model for the error disable recovery functionality."""
 
     model_config = ConfigDict(extra="forbid")
-    reason: ErrdisableReason
+    reason: ErrDisableReasons
     """Name of the error disable reason."""
     status: Literal["Enabled", "Disabled"] = "Enabled"
     """Operational status of the reason. Defaults to 'Enabled'."""

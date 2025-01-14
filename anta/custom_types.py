@@ -151,7 +151,7 @@ EcdsaKeySize = Literal[256, 384, 512]
 MultiProtocolCaps = Annotated[str, BeforeValidator(bgp_multiprotocol_capabilities_abbreviations)]
 BfdInterval = Annotated[int, Field(ge=50, le=60000)]
 BfdMultiplier = Annotated[int, Field(ge=3, le=50)]
-ErrdisableReason = Literal[
+ErrDisableReasons = Literal[
     "acl",
     "arp-inspection",
     "bgp-session-tracking",
