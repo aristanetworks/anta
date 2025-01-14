@@ -2739,27 +2739,7 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/bfd.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">190</span>
-<span class="normal">191</span>
-<span class="normal">192</span>
-<span class="normal">193</span>
-<span class="normal">194</span>
-<span class="normal">195</span>
-<span class="normal">196</span>
-<span class="normal">197</span>
-<span class="normal">198</span>
-<span class="normal">199</span>
-<span class="normal">200</span>
-<span class="normal">201</span>
-<span class="normal">202</span>
-<span class="normal">203</span>
-<span class="normal">204</span>
-<span class="normal">205</span>
-<span class="normal">206</span>
-<span class="normal">207</span>
-<span class="normal">208</span>
-<span class="normal">209</span>
-<span class="normal">210</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">210</span>
 <span class="normal">211</span>
 <span class="normal">212</span>
 <span class="normal">213</span>
@@ -2815,7 +2795,27 @@
 <span class="normal">263</span>
 <span class="normal">264</span>
 <span class="normal">265</span>
-<span class="normal">266</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBFDPeersHealth</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBFDPeersHealth</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the health of IPv4 BFD peers across all VRFs.</span>
 
 <span class="sd">    This test performs the following checks for BFD peers across all VRFs:</span>
@@ -3028,10 +3028,7 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/bfd.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 94</span>
-<span class="normal"> 95</span>
-<span class="normal"> 96</span>
-<span class="normal"> 97</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 97</span>
 <span class="normal"> 98</span>
 <span class="normal"> 99</span>
 <span class="normal">100</span>
@@ -3121,7 +3118,27 @@
 <span class="normal">184</span>
 <span class="normal">185</span>
 <span class="normal">186</span>
-<span class="normal">187</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBFDPeersIntervals</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBFDPeersIntervals</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the timers of IPv4 BFD peer sessions.</span>
 
 <span class="sd">    This test performs the following checks for each specified peer:</span>
@@ -3172,6 +3189,23 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;List of IPv4 BFD&quot;&quot;&quot;</span>
         <span class="n">BFDPeer</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">BFDPeer</span><span class="p">]]</span> <span class="o">=</span> <span class="n">BFDPeer</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;To maintain backward compatibility&quot;&quot;&quot;</span>
+
+        <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;bfd_peers&quot;</span><span class="p">)</span>
+        <span class="nd">@classmethod</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">validate_bfd_peers</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">bfd_peers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Validate that &#39;tx_interval&#39;, &#39;rx_interval&#39; and &#39;multiplier&#39; fields are provided in each BFD peer.&quot;&quot;&quot;</span>
+            <span class="k">for</span> <span class="n">peer</span> <span class="ow">in</span> <span class="n">bfd_peers</span><span class="p">:</span>
+                <span class="n">missing_fileds</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">if</span> <span class="n">peer</span><span class="o">.</span><span class="n">tx_interval</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">missing_fileds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;tx_interval&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">peer</span><span class="o">.</span><span class="n">rx_interval</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">missing_fileds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;rx_interval&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">peer</span><span class="o">.</span><span class="n">multiplier</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">missing_fileds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;multiplier&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">missing_fileds</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">peer</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">missing_fileds</span><span class="p">)</span><span class="si">}</span><span class="s2"> field(s) are missing in the input.&quot;</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">bfd_peers</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -3341,27 +3375,7 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/bfd.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">269</span>
-<span class="normal">270</span>
-<span class="normal">271</span>
-<span class="normal">272</span>
-<span class="normal">273</span>
-<span class="normal">274</span>
-<span class="normal">275</span>
-<span class="normal">276</span>
-<span class="normal">277</span>
-<span class="normal">278</span>
-<span class="normal">279</span>
-<span class="normal">280</span>
-<span class="normal">281</span>
-<span class="normal">282</span>
-<span class="normal">283</span>
-<span class="normal">284</span>
-<span class="normal">285</span>
-<span class="normal">286</span>
-<span class="normal">287</span>
-<span class="normal">288</span>
-<span class="normal">289</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">289</span>
 <span class="normal">290</span>
 <span class="normal">291</span>
 <span class="normal">292</span>
@@ -3408,7 +3422,37 @@
 <span class="normal">333</span>
 <span class="normal">334</span>
 <span class="normal">335</span>
-<span class="normal">336</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBFDPeersRegProtocols</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span>
+<span class="normal">341</span>
+<span class="normal">342</span>
+<span class="normal">343</span>
+<span class="normal">344</span>
+<span class="normal">345</span>
+<span class="normal">346</span>
+<span class="normal">347</span>
+<span class="normal">348</span>
+<span class="normal">349</span>
+<span class="normal">350</span>
+<span class="normal">351</span>
+<span class="normal">352</span>
+<span class="normal">353</span>
+<span class="normal">354</span>
+<span class="normal">355</span>
+<span class="normal">356</span>
+<span class="normal">357</span>
+<span class="normal">358</span>
+<span class="normal">359</span>
+<span class="normal">360</span>
+<span class="normal">361</span>
+<span class="normal">362</span>
+<span class="normal">363</span>
+<span class="normal">364</span>
+<span class="normal">365</span>
+<span class="normal">366</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBFDPeersRegProtocols</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the registered routing protocol of IPv4 BFD peer sessions.</span>
 
 <span class="sd">    This test performs the following checks for each specified peer:</span>
@@ -3449,6 +3493,16 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;List of IPv4 BFD&quot;&quot;&quot;</span>
         <span class="n">BFDPeer</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">BFDPeer</span><span class="p">]]</span> <span class="o">=</span> <span class="n">BFDPeer</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;To maintain backward compatibility&quot;&quot;&quot;</span>
+
+        <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;bfd_peers&quot;</span><span class="p">)</span>
+        <span class="nd">@classmethod</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">validate_bfd_peers</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">bfd_peers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Validate that &#39;protocols&#39; field is provided in each BFD peer.&quot;&quot;&quot;</span>
+            <span class="k">for</span> <span class="n">peer</span> <span class="ow">in</span> <span class="n">bfd_peers</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">peer</span><span class="o">.</span><span class="n">protocols</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">peer</span><span class="si">}</span><span class="s2"> &#39;protocols&#39; field missing in the input.&quot;</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">bfd_peers</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -3606,10 +3660,7 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/bfd.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">26</span>
 <span class="normal">27</span>
 <span class="normal">28</span>
 <span class="normal">29</span>
@@ -3674,7 +3725,10 @@
 <span class="normal">88</span>
 <span class="normal">89</span>
 <span class="normal">90</span>
-<span class="normal">91</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBFDSpecificPeers</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">91</span>
+<span class="normal">92</span>
+<span class="normal">93</span>
+<span class="normal">94</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBFDSpecificPeers</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the state of IPv4 BFD peer sessions.</span>
 
 <span class="sd">    This test performs the following checks for each specified peer:</span>
