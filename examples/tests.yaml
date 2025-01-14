@@ -727,6 +727,13 @@ anta.tests.snmp:
       # Verifies the SNMP error counters.
       error_counters:
         - inVersionErrs
+  - VerifySnmpHostLogging:
+      # Verifies SNMP logging configurations.
+      hosts:
+        - hostname: 192.168.1.100
+          vrf: default
+        - hostname: 192.168.1.103
+          vrf: MGMT
   - VerifySnmpIPv4Acl:
       # Verifies if the SNMP agent has IPv4 ACL(s) configured.
       number: 3
@@ -746,6 +753,14 @@ anta.tests.snmp:
   - VerifySnmpStatus:
       # Verifies if the SNMP agent is enabled.
       vrf: default
+  - VerifySnmpUser:
+      # Verifies the SNMP user configurations.
+      snmp_users:
+        - username: test
+          group_name: test_group
+          version: v3
+          auth_type: MD5
+          priv_type: AES-128
 anta.tests.software:
   - VerifyEOSExtensions:
       # Verifies that all EOS extensions installed on the device are enabled for boot persistence.
@@ -839,6 +854,12 @@ anta.tests.system:
       # Verifies the device uptime.
       minimum: 86400
 anta.tests.vlan:
+  - VerifyDynamicVlanSource:
+      # Verifies dynamic VLAN allocation for specified VLAN sources.
+      sources:
+        - evpn
+        - mlagsync
+      strict: False
   - VerifyVlanInternalPolicy:
       # Verifies the VLAN internal allocation policy and the range of VLANs.
       policy: ascending
