@@ -154,7 +154,7 @@ class ReportTable:
         def add_result(result: TestResult) -> None:
             add_line(result)
             for index, atomic_res in enumerate(result.atomic_results):
-                add_line(atomic_res, f"{index+1}/{len(result.atomic_results)}")
+                add_line(atomic_res, f"{index + 1}/{len(result.atomic_results)}")
 
         for result in manager.results_by_category:
             add_result(result)

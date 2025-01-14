@@ -77,9 +77,9 @@ def test(device: AntaDevice, data: tuple[tuple[type[AntaTest], str], AntaUnitTes
     )
     if "messages" in test_data["expected"]:
         # We expect messages in test result
-        assert len(test_instance.result.messages) == len(
-            data["expected"]["messages"]
-        ), f"Expected {len(data['expected']['messages'])} messages, got {len(test_instance.result.messages)}"
+        assert len(test_instance.result.messages) == len(data["expected"]["messages"]), (
+            f"Expected {len(data['expected']['messages'])} messages, got {len(test_instance.result.messages)}"
+        )
         # Test will pass if the expected message is included in the test result message
         for message, expected in zip(test_instance.result.messages, test_data["expected"]["messages"]):  # NOTE: zip(strict=True) has been added in Python 3.10
             assert expected in message
@@ -88,9 +88,9 @@ def test(device: AntaDevice, data: tuple[tuple[type[AntaTest], str], AntaUnitTes
         assert test_instance.result.messages == [], "There are untested messages"
 
     if "atomic_results" in data["expected"]:
-        assert len(test_instance.result.atomic_results) == len(
-            data["expected"]["atomic_results"]
-        ), f"Expected {len(data['expected']['atomic_results'])} atomic results, got {len(test_instance.result.atomic_results)}"
+        assert len(test_instance.result.atomic_results) == len(data["expected"]["atomic_results"]), (
+            f"Expected {len(data['expected']['atomic_results'])} atomic results, got {len(test_instance.result.atomic_results)}"
+        )
         for atomic_result_model, expected_atomic_result in zip(test_instance.result.atomic_results, data["expected"]["atomic_results"]):
             atomic_result = atomic_result_model.model_dump(mode="json", exclude_none=True)
             if len(atomic_result["messages"]):
