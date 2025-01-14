@@ -186,38 +186,38 @@ nav:
     - ANTA as a Python Library: advanced_usages/as-python-lib.md
   - Tests Documentation:
     - Overview: api/tests.md
-    - AAA: api/tests.aaa.md
-    - Adaptive Virtual Topology: api/tests.avt.md
-    - BFD: api/tests.bfd.md
-    - Configuration: api/tests.configuration.md
-    - Connectivity: api/tests.connectivity.md
-    - CVX: api/tests.cvx.md
-    - Field Notices: api/tests.field_notices.md
-    - Flow Tracking: api/tests.flow_tracking.md
-    - GreenT: api/tests.greent.md
-    - Hardware: api/tests.hardware.md
-    - Interfaces: api/tests.interfaces.md
-    - LANZ: api/tests.lanz.md
-    - Logging: api/tests.logging.md
-    - MLAG: api/tests.mlag.md
-    - Multicast: api/tests.multicast.md
-    - Profiles: api/tests.profiles.md
-    - PTP: api/tests.ptp.md
-    - Router Path Selection: api/tests.path_selection.md
+    - AAA: api/tests/aaa.md
+    - Adaptive Virtual Topology: api/tests/avt.md
+    - BFD: api/tests/bfd.md
+    - Configuration: api/tests/configuration.md
+    - Connectivity: api/tests/connectivity.md
+    - CVX: api/tests/cvx.md
+    - Field Notices: api/tests/field_notices.md
+    - Flow Tracking: api/tests/flow_tracking.md
+    - GreenT: api/tests/greent.md
+    - Hardware: api/tests/hardware.md
+    - Interfaces: api/tests/interfaces.md
+    - LANZ: api/tests/lanz.md
+    - Logging: api/tests/logging.md
+    - MLAG: api/tests/mlag.md
+    - Multicast: api/tests/multicast.md
+    - Profiles: api/tests/profiles.md
+    - PTP: api/tests/ptp.md
+    - Router Path Selection: api/tests/path_selection.md
     - Routing:
-      - Generic: api/tests.routing.generic.md
-      - BGP: api/tests.routing.bgp.md
-      - OSPF: api/tests.routing.ospf.md
-      - ISIS: api/tests.routing.isis.md
-    - Security: api/tests.security.md
-    - Services: api/tests.services.md
-    - SNMP: api/tests.snmp.md
-    - STP: api/tests.stp.md
-    - STUN: api/tests.stun.md
-    - Software: api/tests.software.md
-    - System: api/tests.system.md
-    - VXLAN: api/tests.vxlan.md
-    - VLAN: api/tests.vlan.md
+      - Generic: api/tests/routing.generic.md
+      - BGP: api/tests/routing.bgp.md
+      - OSPF: api/tests/routing.ospf.md
+      - ISIS: api/tests/routing.isis.md
+    - Security: api/tests/security.md
+    - Services: api/tests/services.md
+    - SNMP: api/tests/snmp.md
+    - STP: api/tests/stp.md
+    - STUN: api/tests/stun.md
+    - Software: api/tests/software.md
+    - System: api/tests/system.md
+    - VXLAN: api/tests/vxlan.md
+    - VLAN: api/tests/vlan.md
   - API Documentation:
     - Class Diagram: api/class-diagram.md
     - Device: api/device.md
