@@ -7,7 +7,7 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar, TypeVar, get_args
+from typing import TYPE_CHECKING, ClassVar, get_args
 
 from pydantic import field_validator
 
@@ -18,9 +18,6 @@ from anta.tools import get_value
 
 if TYPE_CHECKING:
     from anta.models import AntaTemplate
-
-# Using a TypeVar for the SnmpUser model since mypy thinks it's a ClassVar and not a valid type when used in field validators
-T = TypeVar("T", bound=SnmpUser)
 
 
 class VerifySnmpStatus(AntaTest):
@@ -393,7 +390,7 @@ class VerifySnmpUser(AntaTest):
 
         @field_validator("snmp_users")
         @classmethod
-        def validate_snmp_users(cls, snmp_users: list[T]) -> list[T]:
+        def validate_snmp_users(cls, snmp_users: list[SnmpUser]) -> list[SnmpUser]:
             """Validate that 'auth_type' or 'priv_type' field is provided in each SNMPv3 user."""
             for user in snmp_users:
                 if user.version == "v3" and not (user.auth_type or user.priv_type):
