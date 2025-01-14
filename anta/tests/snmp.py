@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING, ClassVar, get_args
 from pydantic import field_validator
 
 from anta.custom_types import PositiveInteger, SnmpErrorCounter, SnmpPdu
-from anta.input_models.snmp import SnmpUser
+from anta.input_models.snmp import SnmpHost, SnmpUser
 from anta.models import AntaCommand, AntaTest
 from anta.tools import get_value
 
@@ -342,6 +342,77 @@ class VerifySnmpErrorCounters(AntaTest):
             self.result.is_success()
         else:
             self.result.is_failure(f"The following SNMP error counters are not found or have non-zero error counters:\n{error_counters_not_ok}")
+
+
+class VerifySnmpHostLogging(AntaTest):
+    """Verifies SNMP logging configurations.
+
+    This test performs the following checks:
+
+     1. SNMP logging is enabled globally.
+     2. For each specified SNMP host:
+         - Host exists in configuration.
+         - Host's VRF assignment matches expected value.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if all of the following conditions are met:
+        - SNMP logging is enabled on the device.
+        - All specified hosts are configured with correct VRF assignments.
+    * Failure: The test will fail if any of the following conditions is met:
+        - SNMP logging is disabled on the device.
+        - SNMP host not found in configuration.
+        - Host's VRF assignment doesn't match expected value.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.snmp:
+      - VerifySnmpHostLogging:
+          hosts:
+            - hostname: 192.168.1.100
+              vrf: default
+            - hostname: 192.168.1.103
+              vrf: MGMT
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["snmp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show snmp", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifySnmpHostLogging test."""
+
+        hosts: list[SnmpHost]
+        """List of SNMP hosts."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifySnmpHostLogging."""
+        self.result.is_success()
+
+        command_output = self.instance_commands[0].json_output.get("logging", {})
+        # If SNMP logging is disabled, test fails.
+        if not command_output.get("loggingEnabled"):
+            self.result.is_failure("SNMP logging is disabled")
+            return
+
+        host_details = command_output.get("hosts", {})
+
+        for host in self.inputs.hosts:
+            hostname = str(host.hostname)
+            vrf = host.vrf
+            actual_snmp_host = host_details.get(hostname, {})
+
+            # If SNMP host is not configured on the device, test fails.
+            if not actual_snmp_host:
+                self.result.is_failure(f"{host} - Not configured")
+                continue
+
+            # If VRF is not matches the expected value, test fails.
+            actual_vrf = "default" if (vrf_name := actual_snmp_host.get("vrf")) == "" else vrf_name
+            if actual_vrf != vrf:
+                self.result.is_failure(f"{host} - Incorrect VRF - Actual: {actual_vrf}")
 
 
 class VerifySnmpUser(AntaTest):

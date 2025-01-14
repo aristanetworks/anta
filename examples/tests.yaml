@@ -727,6 +727,13 @@ anta.tests.snmp:
       # Verifies the SNMP error counters.
       error_counters:
         - inVersionErrs
+  - VerifySnmpHostLogging:
+      # Verifies SNMP logging configurations.
+      hosts:
+        - hostname: 192.168.1.100
+          vrf: default
+        - hostname: 192.168.1.103
+          vrf: MGMT
   - VerifySnmpIPv4Acl:
       # Verifies if the SNMP agent has IPv4 ACL(s) configured.
       number: 3

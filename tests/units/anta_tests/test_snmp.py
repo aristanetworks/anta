@@ -10,6 +10,7 @@ from typing import Any
 from anta.tests.snmp import (
     VerifySnmpContact,
     VerifySnmpErrorCounters,
+    VerifySnmpHostLogging,
     VerifySnmpIPv4Acl,
     VerifySnmpIPv6Acl,
     VerifySnmpLocation,
@@ -318,6 +319,57 @@ DATA: list[dict[str, Any]] = [
             "messages": [
                 "The following SNMP error counters are not found or have non-zero error counters:\n{'inVersionErrs': 1, 'inParseErrs': 2, 'outBadValueErrs': 2}"
             ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifySnmpHostLogging,
+        "eos_data": [
+            {
+                "logging": {
+                    "loggingEnabled": True,
+                    "hosts": {
+                        "192.168.1.100": {"port": 162, "vrf": ""},
+                        "192.168.1.101": {"port": 162, "vrf": "MGMT"},
+                        "snmp-server-01": {"port": 162, "vrf": "default"},
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "hosts": [
+                {"hostname": "192.168.1.100", "vrf": "default"},
+                {"hostname": "192.168.1.101", "vrf": "MGMT"},
+                {"hostname": "snmp-server-01", "vrf": "default"},
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-logging-disabled",
+        "test": VerifySnmpHostLogging,
+        "eos_data": [{"logging": {"loggingEnabled": False}}],
+        "inputs": {"hosts": [{"hostname": "192.168.1.100", "vrf": "default"}, {"hostname": "192.168.1.101", "vrf": "MGMT"}]},
+        "expected": {"result": "failure", "messages": ["SNMP logging is disabled"]},
+    },
+    {
+        "name": "failure-mismatch-vrf",
+        "test": VerifySnmpHostLogging,
+        "eos_data": [{"logging": {"loggingEnabled": True, "hosts": {"192.168.1.100": {"port": 162, "vrf": "MGMT"}, "192.168.1.101": {"port": 162, "vrf": "Test"}}}}],
+        "inputs": {"hosts": [{"hostname": "192.168.1.100", "vrf": "default"}, {"hostname": "192.168.1.101", "vrf": "MGMT"}]},
+        "expected": {
+            "result": "failure",
+            "messages": ["Host: 192.168.1.100 VRF: default - Incorrect VRF - Actual: MGMT", "Host: 192.168.1.101 VRF: MGMT - Incorrect VRF - Actual: Test"],
+        },
+    },
+    {
+        "name": "failure-host-not-configured",
+        "test": VerifySnmpHostLogging,
+        "eos_data": [{"logging": {"loggingEnabled": True, "hosts": {"192.168.1.100": {"port": 162, "vrf": "MGMT"}, "192.168.1.103": {"port": 162, "vrf": "Test"}}}}],
+        "inputs": {"hosts": [{"hostname": "192.168.1.101", "vrf": "default"}, {"hostname": "192.168.1.102", "vrf": "MGMT"}]},
+        "expected": {
+            "result": "failure",
+            "messages": ["Host: 192.168.1.101 VRF: default - Not configured", "Host: 192.168.1.102 VRF: MGMT - Not configured"],
         },
     },
     {
