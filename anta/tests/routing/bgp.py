@@ -1372,7 +1372,7 @@ class VerifyBGPPeerGroup(AntaTest):
         """Input model for the VerifyBGPPeerGroup test."""
 
         bgp_peers: list[BgpPeer]
-        """List of BGP peers."""
+        """List of BGP IPv4 peers."""
 
         @field_validator("bgp_peers")
         @classmethod
