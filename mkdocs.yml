@@ -227,10 +227,11 @@ nav:
       - Classes: api/models.md
       - Input Types:  api/types.md
     - Result Manager: api/result_manager.md
-    - Reporter:
-      - CSV reporter: api/csv_reporter.md
-      - Markdown reporter: api/md_reporter.md
-      - Other reporters: api/reporters.md
+    - Reporters:
+      - Table: api/reporter/table.md
+      - Markdown: api/reporter/markdown.md
+      - CSV: api/reporter/csv.md
+      - Jinja: api/reporter/jinja.md
     - Runner: api/runner.md
   - Troubleshooting ANTA: troubleshooting.md
   - Contributions: contribution.md
