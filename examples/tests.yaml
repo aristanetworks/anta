@@ -721,7 +721,7 @@ anta.tests.services:
       hostname: s1-spine1
 anta.tests.snmp:
   - VerifySNMPNotificationHost:
-      # Verifies the SNMP notification host (SNMP manager) configurations.
+      # Verifies the SNMP notification host(s) (SNMP manager) configurations.
       notification_hosts:
         - hostname: 192.168.1.100
           vrf: default

@@ -18,13 +18,13 @@ class SNMPHost(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
     hostname: IPv4Address | Hostname
-    """IPv4 address of the SNMP notification host."""
+    """IPv4 address or Hostname of the SNMP notification host."""
     vrf: str = "default"
     """Optional VRF for SNMP Hosts. If not provided, it defaults to `default`."""
     notification_type: Literal["trap", "inform"] = "trap"
     """Type of SNMP notification (trap or inform), it defaults to trap."""
     version: SnmpVersion | None = None
-    """SNMP protocol version.Required field in the `VerifySNMPNotificationHost` test."""
+    """SNMP protocol version. Required field in the `VerifySNMPNotificationHost` test."""
     udp_port: Port | int = 162
     """UDP port for SNMP. If not provided then defaults to 162."""
     community_string: str | None = None
