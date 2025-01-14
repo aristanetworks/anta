@@ -162,15 +162,13 @@ class ResultManager:
         return dict(sorted(self._test_stats.items()))
 
     @property
-    def sorted_category_stats(self) -> dict[str, CategoryStats]:
+    def sorted_category_stats(self) -> dict[str, CategoryStats]:  # TODO: Remove this property in ANTA v2.0.0.
         """A property that returns the category_stats dictionary sorted by key name.
 
         Deprecated
         ----------
             This property is deprecated and will be removed in ANTA v2.0.0.
             Use `category_stats` instead as it is now sorted by default.
-
-        TODO: Remove this property in ANTA v2.0.0.
         """
         warnings.warn(
             "sorted_category_stats is deprecated and will be removed in ANTA v2.0.0. Use category_stats instead as it is now sorted by default.",

@@ -219,17 +219,14 @@ nav:
     - VXLAN: api/tests.vxlan.md
     - VLAN: api/tests.vlan.md
   - API Documentation:
+    - Class Diagram: api/class-diagram.md
     - Device: api/device.md
-    - Inventory:
-      - Inventory module: api/inventory.md
-      - Inventory models: api/inventory.models.input.md
+    - Inventory: api/inventory.md
     - Test Catalog: api/catalog.md
-    - Test:
-      - Test models: api/models.md
+    - Tests:
+      - Classes: api/models.md
       - Input Types:  api/types.md
-    - Result Manager:
-      - Result Manager module: api/result_manager.md
-      - Result Manager models: api/result_manager_models.md
+    - Result Manager: api/result_manager.md
     - Reporter:
       - CSV reporter: api/csv_reporter.md
       - Markdown reporter: api/md_reporter.md

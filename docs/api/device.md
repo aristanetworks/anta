@@ -4,18 +4,10 @@
   ~ that can be found in the LICENSE file.
   -->
 
-# AntaDevice base class
-
-![AntaDevice UML model](../imgs/uml/anta.device.AntaDevice.jpeg)
-
 ## ::: anta.device.AntaDevice
 
     options:
       filters: ["!^_[^_]", "!__(eq|rich_repr)__", "_collect"]
-
-# Async EOS device class
-
-![AsyncEOSDevice UML model](../imgs/uml/anta.device.AsyncEOSDevice.jpeg)
 
 <!-- _collect must be last to be kept -->
 

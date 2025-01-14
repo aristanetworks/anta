@@ -4,11 +4,12 @@
   ~ that can be found in the LICENSE file.
   -->
 
-# Result Manager definition
-
-![ResultManager UML model](../imgs/uml/anta.result_manager.ResultManager.jpeg)
-
 ## ::: anta.result_manager.ResultManager
 
-      options:
-        filters: ["!^_[^_]", "!^__len__"]
+    options:
+      filters: ["!^_[^_]", "!^__len__"]
+
+## ::: anta.result_manager.models.TestResult
+
+    options:
+        filters: ["!^_[^_]", "!__str__"]
