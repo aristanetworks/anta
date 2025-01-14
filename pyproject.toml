@@ -142,7 +142,7 @@ plugins = [
   ]
 # Comment below for better type checking
 #follow_imports = "skip"
-# Make it false if we implement stubs using stubgen from mypy for aio-eapi, aiocache and cvprac
+# Make it false if we implement stubs using stubgen from mypy for aio-eapi, cvprac
 # and configure mypy_path to generated stubs e.g.: mypy_path = "./out"
 ignore_missing_imports = true
 warn_redundant_casts = true

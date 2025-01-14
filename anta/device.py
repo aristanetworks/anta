@@ -104,7 +104,7 @@ class AntaDevice(ABC):
     tags : set[str]
         Tags for this device.
     cache : AntaCache | None
-        In-memory cache from aiocache library for this device (None if cache is disabled).
+        In-memory cache for this device (None if cache is disabled).
     cache_locks : dict
         Dictionary mapping keys to asyncio locks to guarantee exclusive access to the cache if not disabled.
         Deprecated, will be removed in ANTA v2.0.0, use self.cache.locks instead.
