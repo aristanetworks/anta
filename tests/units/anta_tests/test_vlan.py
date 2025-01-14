@@ -41,18 +41,21 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
-        "name": "skip-no-dynamic-vlans",
+        "name": "failure-no-dynamic-vlans",
         "test": VerifyDynamicVlanSource,
         "eos_data": [{"dynamicVlans": {}}],
         "inputs": {"sources": ["evpn", "mlagsync"], "strict": False},
-        "expected": {"result": "skipped", "messages": ["Dynamic VLANs are not configured"]},
+        "expected": {"result": "failure", "messages": ["Dynamic VLANs sources evpn, mlagsync not found in the configuration"]},
     },
     {
         "name": "failure-dynamic-vlan-sources-mismatch",
         "test": VerifyDynamicVlanSource,
         "eos_data": [{"dynamicVlans": {"vccbfd": {"vlanIds": [1500]}, "mlagsync": {"vlanIds": [1501]}}}],
         "inputs": {"sources": ["evpn", "mlagsync"], "strict": False},
-        "expected": {"result": "failure", "messages": ["Dynamic VLAN(s) sources mismatch - Expected: evpn, mlagsync Actual: vccbfd, mlagsync"]},
+        "expected": {
+            "result": "failure",
+            "messages": ["Dynamic VLAN(s) allocations expected sources evpn, mlagsync, however actual allocated to vccbfd, mlagsync"],
+        },
     },
     {
         "name": "success-strict-mode",
