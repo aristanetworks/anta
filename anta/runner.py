@@ -115,7 +115,7 @@ async def setup_inventory(inventory: AntaInventory, tags: set[str] | None, devic
 
     # If there are no devices in the inventory after filtering, exit
     if not selected_inventory.devices:
-        msg = f'No reachable device {f"matching the tags {tags} " if tags else ""}was found.{f" Selected devices: {devices} " if devices is not None else ""}'
+        msg = f"No reachable device {f'matching the tags {tags} ' if tags else ''}was found.{f' Selected devices: {devices} ' if devices is not None else ''}"
         logger.warning(msg)
         return None
 
@@ -170,8 +170,7 @@ def prepare_tests(
 
     if total_test_count == 0:
         msg = (
-            f"There are no tests{f' matching the tags {tags} ' if tags else ' '}to run in the current "
-            "test catalog and device inventory, please verify your inputs."
+            f"There are no tests{f' matching the tags {tags} ' if tags else ' '}to run in the current test catalog and device inventory, please verify your inputs."
         )
         logger.warning(msg)
         return None
