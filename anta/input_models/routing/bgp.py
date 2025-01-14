@@ -143,7 +143,7 @@ class BgpPeer(BaseModel):
     vrf: str = "default"
     """Optional VRF for the BGP peer. Defaults to `default`."""
     peer_group: str | None = None
-    """The name of the peer group, BGP neighbor is associated with. Required field in the `VerifyBGPPeerGroup` test."""
+    """Peer group of the BGP peer. Required field in the `VerifyBGPPeerGroup` test."""
     advertised_routes: list[IPv4Network] | None = None
     """List of advertised routes in CIDR format. Required field in the `VerifyBGPExchangedRoutes` test."""
     received_routes: list[IPv4Network] | None = None

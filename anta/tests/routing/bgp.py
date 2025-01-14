@@ -1226,7 +1226,7 @@ class VerifyBgpRouteMaps(AntaTest):
             """Validate that 'inbound_route_map' or 'outbound_route_map' field is provided in each BGP peer."""
             for peer in bgp_peers:
                 if not (peer.inbound_route_map or peer.outbound_route_map):
-                    msg = f"{peer}; At least one of 'inbound_route_map' or 'outbound_route_map' must be provided."
+                    msg = f"{peer} 'inbound_route_map' or 'outbound_route_map' field missing in the input"
                     raise ValueError(msg)
             return bgp_peers
 
@@ -1304,7 +1304,7 @@ class VerifyBGPPeerRouteLimit(AntaTest):
             """Validate that 'maximum_routes' field is provided in each BGP peer."""
             for peer in bgp_peers:
                 if peer.maximum_routes is None:
-                    msg = f"{peer}; 'maximum_routes' field missing in the input"
+                    msg = f"{peer} 'maximum_routes' field missing in the input"
                     raise ValueError(msg)
             return bgp_peers
 
@@ -1336,13 +1336,12 @@ class VerifyBGPPeerRouteLimit(AntaTest):
 
 
 class VerifyBGPPeerGroup(AntaTest):
-    """Verifies BGP peer group of the IPv4 peer(s).
+    """Verifies BGP peer group of BGP IPv4 peer(s).
 
     This test performs the following checks for each specified peer:
 
-      1. Confirms that the specified VRF is configured.
-      2. Verifies that the peer exists in the BGP configuration.
-      3. Confirms the peer group is correctly assigned to the specified BGP peer.
+      1. Verifies that the peer is found in its VRF in the BGP configuration.
+      2. Confirms the peer group is correctly assigned to the specified BGP peer.
 
     Expected Results
     ----------------
@@ -1373,15 +1372,15 @@ class VerifyBGPPeerGroup(AntaTest):
         """Input model for the VerifyBGPPeerGroup test."""
 
         bgp_peers: list[BgpPeer]
-        """List of BGP peers"""
+        """List of BGP peers."""
 
         @field_validator("bgp_peers")
         @classmethod
-        def validate_bgp_peers(cls, bgp_peers: list[T]) -> list[T]:
-            """Validate that 'peer_group' field is provided in each bgp peers."""
+        def validate_bgp_peers(cls, bgp_peers: list[BgpPeer]) -> list[BgpPeer]:
+            """Validate that 'peer_group' field is provided in each BGP peer."""
             for peer in bgp_peers:
                 if peer.peer_group is None:
-                    msg = f"{peer}; 'peer_group' field missing in the input"
+                    msg = f"{peer} 'peer_group' field missing in the input"
                     raise ValueError(msg)
             return bgp_peers
 

@@ -422,7 +422,7 @@ anta.tests.routing.bgp:
             - inDropAsloop
             - prefixEvpnDroppedUnsupportedRouteType
   - VerifyBGPPeerGroup:
-      # Verifies BGP peer group of the IPv4 peer(s).
+      # Verifies BGP peer group of BGP IPv4 peer(s).
       bgp_peers:
         - peer_address: 172.30.11.1
           vrf: default
