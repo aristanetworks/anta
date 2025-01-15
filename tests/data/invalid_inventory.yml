@@ -1,0 +1,5 @@
+---
+anta_inventory:
+  - host: 172.20.20.101
+    name: DC1-SPINE1
+    tags: ["SPINE", "DC1"]

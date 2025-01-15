@@ -47,7 +47,7 @@ def test_anta_dry_run(
 
     if len(results.results) != len(inventory) * len(catalog.tests):
         pytest.fail(f"Expected {len(inventory) * len(catalog.tests)} tests but got {len(results.results)}", pytrace=False)
-    bench_info = "\n--- ANTA NRFU Dry-Run Benchmark Information ---\n" f"Test count: {len(results.results)}\n" "-----------------------------------------------"
+    bench_info = f"\n--- ANTA NRFU Dry-Run Benchmark Information ---\nTest count: {len(results.results)}\n-----------------------------------------------"
     logger.info(bench_info)
 
 
