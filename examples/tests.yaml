@@ -391,6 +391,13 @@ anta.tests.routing.bgp:
             - 192.0.254.5/32
           received_routes:
             - 192.0.254.3/32
+  - VerifyBGPNlriAcceptance:
+      # Verifies that all received NLRI are accepted for all AFI/SAFI configured for BGP IPv4 peer(s).
+      bgp_peers:
+        - peer_address: 10.100.0.128
+          vrf: default
+          capabilities:
+            - ipv4Unicast
   - VerifyBGPPeerASNCap:
       # Verifies the four octet ASN capability of BGP IPv4 peer(s).
       bgp_peers:
