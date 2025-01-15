@@ -92,7 +92,7 @@ class VerifyHardwareFlowTrackerStatus(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["flow tracking"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show flow tracking hardware", revision=2)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show flow tracking hardware", revision=1)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyHardwareFlowTrackerStatus test."""
