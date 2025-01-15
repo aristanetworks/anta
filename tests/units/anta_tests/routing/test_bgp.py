@@ -28,7 +28,7 @@ from anta.tests.routing.bgp import (
     VerifyBGPPeersHealthRibd,
     VerifyBGPPeerUpdateErrors,
     VerifyBgpRouteMaps,
-    VerifyBGPRouteOrigin,
+    VerifyBGPRoutePaths,
     VerifyBGPSpecificPeers,
     VerifyBGPTimers,
     VerifyEVPNType2Route,
@@ -4612,7 +4612,7 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "success",
-        "test": VerifyBGPRouteOrigin,
+        "test": VerifyBGPRoutePaths,
         "eos_data": [
             {
                 "vrfs": {
@@ -4677,7 +4677,7 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "failure-origin-not-correct",
-        "test": VerifyBGPRouteOrigin,
+        "test": VerifyBGPRoutePaths,
         "eos_data": [
             {
                 "vrfs": {
@@ -4741,16 +4741,16 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Prefix: 10.100.0.128/31 VRF: default Nexthop: 10.100.0.10 - Origin mismatch - Expected: Incomplete Actual: Igp",
-                "Prefix: 10.100.0.128/31 VRF: default Nexthop: 10.100.4.5 - Origin mismatch - Expected: Igp Actual: Incomplete",
-                "Prefix: 10.100.0.130/31 VRF: MGMT Nexthop: 10.100.0.8 - Origin mismatch - Expected: Incomplete Actual: Igp",
-                "Prefix: 10.100.0.130/31 VRF: MGMT Nexthop: 10.100.0.10 - Origin mismatch - Expected: Incomplete Actual: Igp",
+                "Prefix: 10.100.0.128/31 VRF: default Next-hop: 10.100.0.10 Origin: Incomplete - Origin mismatch - Actual: Igp",
+                "Prefix: 10.100.0.128/31 VRF: default Next-hop: 10.100.4.5 Origin: Igp - Origin mismatch - Actual: Incomplete",
+                "Prefix: 10.100.0.130/31 VRF: MGMT Next-hop: 10.100.0.8 Origin: Incomplete - Origin mismatch - Actual: Igp",
+                "Prefix: 10.100.0.130/31 VRF: MGMT Next-hop: 10.100.0.10 Origin: Incomplete - Origin mismatch - Actual: Igp",
             ],
         },
     },
     {
         "name": "failure-path-not-found",
-        "test": VerifyBGPRouteOrigin,
+        "test": VerifyBGPRoutePaths,
         "eos_data": [
             {
                 "vrfs": {
@@ -4802,16 +4802,16 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Prefix: 10.100.0.128/31 VRF: default Nexthop: 10.100.0.10 - path not found",
-                "Prefix: 10.100.0.128/31 VRF: default Nexthop: 10.100.4.5 - path not found",
-                "Prefix: 10.100.0.130/31 VRF: MGMT Nexthop: 10.100.0.8 - path not found",
-                "Prefix: 10.100.0.130/31 VRF: MGMT Nexthop: 10.100.0.10 - path not found",
+                "Prefix: 10.100.0.128/31 VRF: default Next-hop: 10.100.0.10 Origin: Incomplete - path not found",
+                "Prefix: 10.100.0.128/31 VRF: default Next-hop: 10.100.4.5 Origin: Igp - path not found",
+                "Prefix: 10.100.0.130/31 VRF: MGMT Next-hop: 10.100.0.8 Origin: Incomplete - path not found",
+                "Prefix: 10.100.0.130/31 VRF: MGMT Next-hop: 10.100.0.10 Origin: Incomplete - path not found",
             ],
         },
     },
     {
-        "name": "failure-route-not-found",
-        "test": VerifyBGPRouteOrigin,
+        "name": "failure-prefix-not-found",
+        "test": VerifyBGPRoutePaths,
         "eos_data": [
             {"vrfs": {"default": {"bgpRouteEntries": {}}, "MGMT": {"bgpRouteEntries": {}}}},
         ],
@@ -4831,7 +4831,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Prefix: 10.100.0.128/31 VRF: default - routes not found", "Prefix: 10.100.0.130/31 VRF: MGMT - routes not found"],
+            "messages": ["Prefix: 10.100.0.128/31 VRF: default - prefix not found", "Prefix: 10.100.0.130/31 VRF: MGMT - prefix not found"],
         },
     },
 ]

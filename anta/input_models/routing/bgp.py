@@ -224,7 +224,7 @@ class BgpRoute(BaseModel):
     """The IPv4 network address."""
     vrf: str = "default"
     """Optional VRF for the BGP peer. Defaults to `default`."""
-    paths: list[RoutePath] | None = None
+    paths: list[BgpRoutePath] | None = None
     """A list of paths for the BGP route. Required field in the `VerifyBGPRouteOrigin` test."""
 
     def __str__(self) -> str:
@@ -237,24 +237,20 @@ class BgpRoute(BaseModel):
         return f"Prefix: {self.prefix} VRF: {self.vrf}"
 
 
-class RoutePath(BaseModel):
+class BgpRoutePath(BaseModel):
     """Model representing a BGP route path."""
 
     model_config = ConfigDict(extra="forbid")
     nexthop: IPv4Address
     """The next-hop IPv4 address for the path."""
     origin: Literal["Igp", "Egp", "Incomplete"]
-    """The origin type of the BGP route path:
-        - 'Igp': Indicates the route originated from an interior gateway protocol (IGP).
-        - 'Egp': Indicates the route originated from an exterior gateway protocol (EGP).
-        - 'Incomplete': Indicates the origin is unknown or learned by other means.
-    """
+    """The BGP origin attribute of the route."""
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the RoutePath for reporting.
 
         Examples
         --------
-        - Nexthop: 192.168.66.101 Origin: Igp
+        - Next-hop: 192.168.66.101 Origin: Igp
         """
-        return f"Nexthop: {self.nexthop}"
+        return f"Next-hop: {self.nexthop} Origin: {self.origin}"

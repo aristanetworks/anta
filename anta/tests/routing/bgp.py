@@ -1546,31 +1546,29 @@ class VerifyBGPPeersHealthRibd(AntaTest):
                     self.result.is_failure(f"Peer: {peer['peerAddress']} VRF: {vrf} - Session has non-empty message queues - InQ: {inq}, OutQ: {outq}")
 
 
-class VerifyBGPRouteOrigin(AntaTest):
-    """Verifies BGP route origin.
+class VerifyBGPRoutePaths(AntaTest):
+    """Verifies BGP IPv4 route paths.
 
-    This test performs the following checks for each specified bgp route entry:
-      1. Checks whether the specified BGP route entry exists.
-      2. Confirms that each path for the route entry exists and corresponds to the next-hop address.
-      3. Verifies that the origin type of the BGP route matches the expected type.
+    This test performs the following checks for each specified BGP route entry:
+      1. Verifies the specified BGP route exists in the routing table.
+      2. For each expected paths:
+          - Verifies a path with matching next-hop exists.
+          - Verifies the path's origin attribute matches the expected value.
 
     Expected Results
     ----------------
-    * Success: The test will pass if:
-        - The BGP route entries exist for specified prefixes.
-        - Every path exists and corresponds to the specified next-hop address.
-        - The origin type of the BGP route matches the expected type.
+    * Success: The test will pass if all specified routes exist with paths matching the expected next-hops and origin attributes.
     * Failure: The test will fail if:
-        - The BGP route entries does not exist for specified prefixes.
-        - Any Path does not exists and corresponds to the specified next-hop address.
-        - The origin type does not match the configured value.
+        - A specified BGP route is not found.
+        - A path with specified next-hop is not found.
+        - A path's origin attribute doesn't match the expected value.
 
     Examples
     --------
     ```yaml
     anta.tests.routing:
       bgp:
-        - VerifyBGPRouteOrigin:
+        - VerifyBGPRoutePaths:
             route_entries:
                 - prefix: 10.100.0.128/31
                   vrf: default
@@ -1583,34 +1581,32 @@ class VerifyBGPRouteOrigin(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["bgp"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip bgp detail vrf all", revision=3)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip bgp vrf all", revision=3)]
 
     class Input(AntaTest.Input):
-        """Input model for the VerifyBGPRouteOrigin test."""
+        """Input model for the VerifyBGPRoutePaths test."""
 
         route_entries: list[BgpRoute]
-        """List of BGP route(s)"""
+        """List of BGP IPv4 route(s)."""
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """Main test function for VerifyBGPRouteOrigin."""
+        """Main test function for VerifyBGPRoutePaths."""
         self.result.is_success()
 
         for route in self.inputs.route_entries:
-            # Verify if a BGP routes are present with the provided vrf
-            if not (
-                bgp_routes := get_value(self.instance_commands[0].json_output, f"vrfs..{route.vrf}..bgpRouteEntries..{route.prefix}..bgpRoutePaths", separator="..")
-            ):
-                self.result.is_failure(f"{route} - routes not found")
+            # Verify if the prefix exists in BGP table
+            if not (bgp_routes := get_value(self.instance_commands[0].json_output, f"vrfs..{route.vrf}..bgpRouteEntries..{route.prefix}", separator="..")):
+                self.result.is_failure(f"{route} - prefix not found")
                 continue
 
             # Iterating over each path.
             for path in route.paths:
                 nexthop = str(path.nexthop)
                 origin = path.origin
-                if not (route_path := get_item(bgp_routes, "nextHop", nexthop)):
+                if not (route_path := get_item(bgp_routes["bgpRoutePaths"], "nextHop", nexthop)):
                     self.result.is_failure(f"{route} {path} - path not found")
                     continue
 
-                if (actual_origin := route_path.get("routeType", {}).get("origin", "Not Found")) != origin:
-                    self.result.is_failure(f"{route} {path} - Origin mismatch - Expected: {origin} Actual: {actual_origin}")
+                if (actual_origin := get_value(route_path, "routeType.origin")) != origin:
+                    self.result.is_failure(f"{route} {path} - Origin mismatch - Actual: {actual_origin}")
