@@ -1449,6 +1449,40 @@
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#anta.tests.routing.bgp.VerifyBGPNlriAcceptance" class="md-nav__link">
+      <span class="md-ellipsis">
+        VerifyBGPNlriAcceptance
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="VerifyBGPNlriAcceptance">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.routing.bgp.VerifyBGPNlriAcceptance-attributes" class="md-nav__link">
+      <span class="md-ellipsis">
+        Inputs
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#anta.tests.routing.bgp.VerifyBGPPeerASNCap" class="md-nav__link">
       <span class="md-ellipsis">
         VerifyBGPPeerASNCap
@@ -3054,6 +3088,40 @@
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#anta.tests.routing.bgp.VerifyBGPNlriAcceptance" class="md-nav__link">
+      <span class="md-ellipsis">
+        VerifyBGPNlriAcceptance
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="VerifyBGPNlriAcceptance">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.routing.bgp.VerifyBGPNlriAcceptance-attributes" class="md-nav__link">
+      <span class="md-ellipsis">
+        Inputs
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#anta.tests.routing.bgp.VerifyBGPPeerASNCap" class="md-nav__link">
       <span class="md-ellipsis">
         VerifyBGPPeerASNCap
@@ -4351,6 +4419,259 @@
                     <span class="n">is_valid</span> <span class="o">=</span> <span class="n">route_paths</span><span class="p">[</span><span class="s2">&quot;valid&quot;</span><span class="p">]</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="n">is_active</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">is_valid</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">peer</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">route_type</span><span class="si">}</span><span class="s2"> route: </span><span class="si">{</span><span class="n">route</span><span class="si">}</span><span class="s2"> - Valid: </span><span class="si">{</span><span class="n">is_valid</span><span class="si">}</span><span class="s2">, Active: </span><span class="si">{</span><span class="n">is_active</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+  </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="anta.tests.routing.bgp.VerifyBGPNlriAcceptance" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">VerifyBGPNlriAcceptance</span>
+
+
+<a href="#anta.tests.routing.bgp.VerifyBGPNlriAcceptance" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+  
+        <p>Verifies that all received NLRI are accepted for all AFI/SAFI configured for BGP IPv4 peer(s).</p>
+<p>This test performs the following checks for each specified peer:</p>
+<ol>
+<li>Verifies that the peer is found in its VRF in the BGP configuration.</li>
+<li>Verifies that all received NLRI were accepted by comparing <code>nlrisReceived</code> with <code>nlrisAccepted</code>.</li>
+</ol>
+
+
+<details class="expected-results" open>
+  <summary>Expected Results</summary>
+  <ul>
+<li>Success: If <code>nlrisReceived</code> equals <code>nlrisAccepted</code>, indicating all NLRI were accepted.</li>
+<li>Failure: If any of the following occur:<ul>
+<li>The specified VRF is not configured.</li>
+<li><code>nlrisReceived</code> does not equal <code>nlrisAccepted</code>, indicating some NLRI were rejected or filtered.</li>
+</ul>
+</li>
+</ul>
+</details>
+
+
+<details class="example" open>
+  <summary>Examples</summary>
+        <div class="highlight"><pre><span></span><code><span class="nt">anta.tests.routing</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">bgp</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyBGPNlriAcceptance</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">bgp_peers</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">peer_address</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.100.0.128</span>
+<span class="w">            </span><span class="nt">vrf</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
+<span class="w">            </span><span class="nt">capabilities</span><span class="p">:</span>
+<span class="w">              </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ipv4Unicast</span>
+</code></pre></div>
+</details>
+
+
+
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+<h3 id="anta.tests.routing.bgp.VerifyBGPNlriAcceptance-attributes">Inputs<a href="#anta.tests.routing.bgp.VerifyBGPNlriAcceptance-attributes" class="headerlink" title="Permanent link">&para;</a></h3>  
+
+  <div class="doc doc-children">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Description</th>
+              <th>Default</th>
+            </tr>
+          </thead>
+          <tbody>
+              <tr>
+                <td><code>bgp_peers</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="anta.input_models.routing.bgp.BgpPeer" href="#anta.input_models.routing.bgp.BgpPeer">BgpPeer</a>]</code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    List of BGP IPv4 peers.
+                  </div>
+                </td>
+                <td>
+                    <em>-</em>
+                </td>
+              </tr>
+          </tbody>
+        </table>
+  </div>
+
+
+
+
+
+  </div>
+  <details class="quote">
+  <summary>Source code in <code>anta/tests/routing/bgp.py</code></summary>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1549</span>
+<span class="normal">1550</span>
+<span class="normal">1551</span>
+<span class="normal">1552</span>
+<span class="normal">1553</span>
+<span class="normal">1554</span>
+<span class="normal">1555</span>
+<span class="normal">1556</span>
+<span class="normal">1557</span>
+<span class="normal">1558</span>
+<span class="normal">1559</span>
+<span class="normal">1560</span>
+<span class="normal">1561</span>
+<span class="normal">1562</span>
+<span class="normal">1563</span>
+<span class="normal">1564</span>
+<span class="normal">1565</span>
+<span class="normal">1566</span>
+<span class="normal">1567</span>
+<span class="normal">1568</span>
+<span class="normal">1569</span>
+<span class="normal">1570</span>
+<span class="normal">1571</span>
+<span class="normal">1572</span>
+<span class="normal">1573</span>
+<span class="normal">1574</span>
+<span class="normal">1575</span>
+<span class="normal">1576</span>
+<span class="normal">1577</span>
+<span class="normal">1578</span>
+<span class="normal">1579</span>
+<span class="normal">1580</span>
+<span class="normal">1581</span>
+<span class="normal">1582</span>
+<span class="normal">1583</span>
+<span class="normal">1584</span>
+<span class="normal">1585</span>
+<span class="normal">1586</span>
+<span class="normal">1587</span>
+<span class="normal">1588</span>
+<span class="normal">1589</span>
+<span class="normal">1590</span>
+<span class="normal">1591</span>
+<span class="normal">1592</span>
+<span class="normal">1593</span>
+<span class="normal">1594</span>
+<span class="normal">1595</span>
+<span class="normal">1596</span>
+<span class="normal">1597</span>
+<span class="normal">1598</span>
+<span class="normal">1599</span>
+<span class="normal">1600</span>
+<span class="normal">1601</span>
+<span class="normal">1602</span>
+<span class="normal">1603</span>
+<span class="normal">1604</span>
+<span class="normal">1605</span>
+<span class="normal">1606</span>
+<span class="normal">1607</span>
+<span class="normal">1608</span>
+<span class="normal">1609</span>
+<span class="normal">1610</span>
+<span class="normal">1611</span>
+<span class="normal">1612</span>
+<span class="normal">1613</span>
+<span class="normal">1614</span>
+<span class="normal">1615</span>
+<span class="normal">1616</span>
+<span class="normal">1617</span>
+<span class="normal">1618</span>
+<span class="normal">1619</span>
+<span class="normal">1620</span>
+<span class="normal">1621</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPNlriAcceptance</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies that all received NLRI are accepted for all AFI/SAFI configured for BGP IPv4 peer(s).</span>
+
+<span class="sd">    This test performs the following checks for each specified peer:</span>
+
+<span class="sd">      1. Verifies that the peer is found in its VRF in the BGP configuration.</span>
+<span class="sd">      2. Verifies that all received NLRI were accepted by comparing `nlrisReceived` with `nlrisAccepted`.</span>
+
+<span class="sd">    Expected Results</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    * Success: If `nlrisReceived` equals `nlrisAccepted`, indicating all NLRI were accepted.</span>
+<span class="sd">    * Failure: If any of the following occur:</span>
+<span class="sd">        - The specified VRF is not configured.</span>
+<span class="sd">        - `nlrisReceived` does not equal `nlrisAccepted`, indicating some NLRI were rejected or filtered.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    ```yaml</span>
+<span class="sd">    anta.tests.routing:</span>
+<span class="sd">      bgp:</span>
+<span class="sd">        - VerifyBGPNlriAcceptance:</span>
+<span class="sd">            bgp_peers:</span>
+<span class="sd">              - peer_address: 10.100.0.128</span>
+<span class="sd">                vrf: default</span>
+<span class="sd">                capabilities:</span>
+<span class="sd">                  - ipv4Unicast</span>
+<span class="sd">    ```</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;bgp&quot;</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show bgp summary vrf all&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+
+    <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyBGPNlriAcceptance test.&quot;&quot;&quot;</span>
+
+        <span class="n">bgp_peers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BgpPeer</span><span class="p">]</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of BGP IPv4 peers.&quot;&quot;&quot;</span>
+
+        <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;bgp_peers&quot;</span><span class="p">)</span>
+        <span class="nd">@classmethod</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">validate_bgp_peers</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">bgp_peers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Validate that &#39;capabilities&#39; field is provided in each BGP peer.&quot;&quot;&quot;</span>
+            <span class="k">for</span> <span class="n">peer</span> <span class="ow">in</span> <span class="n">bgp_peers</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">peer</span><span class="o">.</span><span class="n">capabilities</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">peer</span><span class="si">}</span><span class="s2"> &#39;capabilities&#39; field missing in the input&quot;</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">bgp_peers</span>
+
+    <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyBGPNlriAcceptance.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
+
+        <span class="k">for</span> <span class="n">peer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">bgp_peers</span><span class="p">:</span>
+            <span class="c1"># Check if the peer is found</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">peer_data</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;vrfs..</span><span class="si">{</span><span class="n">peer</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">..peers..</span><span class="si">{</span><span class="n">peer</span><span class="o">.</span><span class="n">peer_address</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;..&quot;</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">peer</span><span class="si">}</span><span class="s2"> - Not found&quot;</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># Fetching the multiprotocol capabilities</span>
+            <span class="k">for</span> <span class="n">capability</span> <span class="ow">in</span> <span class="n">peer</span><span class="o">.</span><span class="n">capabilities</span><span class="p">:</span>
+                <span class="c1"># Check if the capability is found</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">capability_status</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">peer_data</span><span class="p">,</span> <span class="n">capability</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">peer</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">capability</span><span class="si">}</span><span class="s2"> not found&quot;</span><span class="p">)</span>
+                    <span class="k">continue</span>
+
+                <span class="k">if</span> <span class="n">capability_status</span><span class="p">[</span><span class="s2">&quot;afiSafiState&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;negotiated&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">peer</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">capability</span><span class="si">}</span><span class="s2"> not negotiated&quot;</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="p">(</span><span class="n">received</span> <span class="o">:=</span> <span class="n">capability_status</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;nlrisReceived&quot;</span><span class="p">))</span> <span class="o">!=</span> <span class="p">(</span><span class="n">accepted</span> <span class="o">:=</span> <span class="n">capability_status</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;nlrisAccepted&quot;</span><span class="p">)):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">peer</span><span class="si">}</span><span class="s2"> AFI/SAFI: </span><span class="si">{</span><span class="n">capability</span><span class="si">}</span><span class="s2"> - some NLRI were filtered or rejected - Accepted: </span><span class="si">{</span><span class="n">accepted</span><span class="si">}</span><span class="s2"> Received: </span><span class="si">{</span><span class="n">received</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -9567,7 +9888,7 @@ Can be enabled in the `VerifyBGPPeerCount` tests.
                 </td>
                 <td>
                   <div class="doc-md-description">
-                    List of BGP multiprotocol capabilities. Required field in the `VerifyBGPPeerMPCaps` test.
+                    List of BGP multiprotocol capabilities. Required field in the `VerifyBGPPeerMPCaps`, `VerifyBGPNlriAcceptance` tests.
                   </div>
                 </td>
                 <td>
@@ -9786,7 +10107,7 @@ Optional field in the `VerifyBGPPeerRouteLimit` test. If not provided, the test 
     <span class="n">received_routes</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">IPv4Network</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;List of received routes in CIDR format. Required field in the `VerifyBGPExchangedRoutes` test.&quot;&quot;&quot;</span>
     <span class="n">capabilities</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">MultiProtocolCaps</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;List of BGP multiprotocol capabilities. Required field in the `VerifyBGPPeerMPCaps` test.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;List of BGP multiprotocol capabilities. Required field in the `VerifyBGPPeerMPCaps`, `VerifyBGPNlriAcceptance` tests.&quot;&quot;&quot;</span>
     <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;If True, requires exact match of the provided BGP multiprotocol capabilities.</span>
 
