@@ -98,4 +98,6 @@ venv.bak/
 /site
 
 # VScode settings
-.vscode
+.vscode/
+!.vscode/settings.json
+!.vscode/launch.json

@@ -106,7 +106,7 @@ Homepage = "https://anta.arista.com"
 Contributing = "https://anta.arista.com/main/contribution/"
 
 [project.scripts]
-anta = "anta.cli:cli"
+anta = "anta.cli.__main__:cli"
 
 [tool.setuptools.packages.find]
 include = ["anta*", "asynceapi*"]

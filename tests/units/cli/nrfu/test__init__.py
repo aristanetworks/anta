@@ -8,7 +8,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from anta.cli import anta
+from anta.cli._main import anta
 from anta.cli.utils import ExitCode
 
 if TYPE_CHECKING:
