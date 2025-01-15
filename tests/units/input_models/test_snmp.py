@@ -11,10 +11,10 @@ from typing import TYPE_CHECKING
 import pytest
 from pydantic import ValidationError
 
-from anta.tests.snmp import VerifySnmpUser, VerifySnmpNotificationHost
+from anta.tests.snmp import VerifySnmpNotificationHost, VerifySnmpUser
 
 if TYPE_CHECKING:
-    from anta.input_models.snmp import SnmpUser, SnmpHost
+    from anta.input_models.snmp import SnmpHost, SnmpUser
 
 
 class TestVerifySnmpUserInput:
@@ -42,6 +42,7 @@ class TestVerifySnmpUserInput:
         """Test VerifySnmpUser.Input invalid inputs."""
         with pytest.raises(ValidationError):
             VerifySnmpUser.Input(snmp_users=snmp_users)
+
 
 class TestSnmpHost:
     """Test anta.input_models.snmp.SnmpHost."""
@@ -162,4 +163,3 @@ class TestSnmpHost:
         """Test VerifySnmpNotificationHost.Input invalid inputs."""
         with pytest.raises(ValidationError):
             VerifySnmpNotificationHost.Input(notification_hosts=notification_hosts)
-

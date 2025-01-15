@@ -32,7 +32,6 @@ class SnmpHost(BaseModel):
     user: str | None = None
     """Optional SNMP user for authentication, required for SNMP version v3. Can be provided in the `VerifySnmpNotificationHost` test."""
 
-
     def __str__(self) -> str:
         """Return a human-readable string representation of the SnmpHost for reporting.
 
