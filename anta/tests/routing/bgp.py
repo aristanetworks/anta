@@ -1546,39 +1546,32 @@ class VerifyBGPPeersHealthRibd(AntaTest):
                     self.result.is_failure(f"Peer: {peer['peerAddress']} VRF: {vrf} - Session has non-empty message queues - InQ: {inq}, OutQ: {outq}")
 
 
-class VerifyBGPPeerPrefixes(AntaTest):
-    """Verifies the consistency of IPv4 prefixes in a BGP session.
+class VerifyBGPNlriAcceptance(AntaTest):
+    """Verifies that all received NLRI are accepted for all AFI/SAFI configured for BGP IPv4 peer(s).
 
-    This test performs the following checks for each specified address family:
+    This test performs the following checks for each specified peer:
 
-      1. Confirms that the specified VRF is configured.
-      2. Confirms all received prefixes were accepted.
+      1. Verifies that the peer is found in its VRF in the BGP configuration.
+      2. Verifies that all received NLRI were accepted by comparing `nlrisReceived` with `nlrisAccepted`.
 
     Expected Results
     ----------------
-    * Success: If the `PfxRcd` equals `PfxAcc`, indicating that all received prefixes were accepted.
+    * Success: If `nlrisReceived` equals `nlrisAccepted`, indicating all NLRI were accepted.
     * Failure: If any of the following occur:
         - The specified VRF is not configured.
-        - The `PfxRcd` is not equal to `PfxAcc`, indicating that some prefix(s) were rejected/filtered out or peers are not configured.
+        - `nlrisReceived` does not equal `nlrisAccepted`, indicating some NLRI were rejected or filtered.
 
     Examples
     --------
     ```yaml
     anta.tests.routing:
       bgp:
-        - VerifyBGPPeerPrefixes:
-            address_families:
-              - afi: ipv4
-                safi: unicast
-                peers:
-                  - 10.100.0.8
-                  - 10.100.0.10
-              - afi: ipv4
-                safi: multicast
-              - afi: evpn
-              - afi: vpn-ipv4
-              - afi: ipv4
-                safi: labeled-unicast
+        - VerifyBGPNlriAcceptance:
+            bgp_peers:
+              - peer_address: 10.100.0.128
+                vrf: default
+                capabilities:
+                  - ipv4Unicast
     ```
     """
 
@@ -1586,43 +1579,43 @@ class VerifyBGPPeerPrefixes(AntaTest):
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp summary vrf all", revision=1)]
 
     class Input(AntaTest.Input):
-        """Input model for the VerifyBGPPeerPrefixes test."""
+        """Input model for the VerifyBGPNlriAcceptance test."""
 
-        address_families: list[BgpAddressFamily]
-        """List of BGP address."""
+        bgp_peers: list[BgpPeer]
+        """List of BGP IPv4 peers."""
+
+        @field_validator("bgp_peers")
+        @classmethod
+        def validate_bgp_peers(cls, bgp_peers: list[T]) -> list[T]:
+            """Validate that 'capabilities' field is provided in each BGP peer."""
+            for peer in bgp_peers:
+                if peer.capabilities is None:
+                    msg = f"{peer} 'capabilities' field missing in the input"
+                    raise ValueError(msg)
+            return bgp_peers
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """Main test function for VerifyBGPPeerPrefixes."""
+        """Main test function for VerifyBGPNlriAcceptance."""
         self.result.is_success()
 
         output = self.instance_commands[0].json_output
-        for address_family in self.inputs.address_families:
-            # Check if the VRF is configured
-            vrf_output = get_value(output, f"vrfs.{address_family.vrf}")
-            if vrf_output is None:
-                self.result.is_failure(f"{address_family} - VRF not configured")
+
+        for peer in self.inputs.bgp_peers:
+            # Check if the peer is found
+            if not (peer_data := get_value(output, f"vrfs..{peer.vrf}..peers..{peer.peer_address}", separator="..")):
+                self.result.is_failure(f"{peer} - Not found")
                 continue
 
-            peers_data = vrf_output.get("peers", {})
-            eos_key = address_family.eos_key
-
-            # Determine peers to check, all peers if not explicitly provided.
-            peers_to_check = (
-                {peer: details[eos_key] for peer, details in peers_data.items() if eos_key in details}
-                if not address_family.peers
-                else {peer: get_value(peers_data, f"{peer}..{eos_key}", separator="..") for peer in address_family.peers}
-            )
-
-            if not peers_to_check:
-                self.result.is_failure(f"{address_family} - None of the peers are negotiated")
-                continue
-
-            # Verify peer details
-            for peer, peer_detail in peers_to_check.items():
-                if not peer_detail:
-                    self.result.is_failure(f"{address_family} Peer: {peer} - Not negotiated")
+            # Fetching the multiprotocol capabilities
+            for capability in peer.capabilities:
+                # Check if the capability is found
+                if (capability_status := get_value(peer_data, capability)) is None:
+                    self.result.is_failure(f"{peer} - {capability} not found")
                     continue
 
-                if (received := peer_detail.get("nlrisReceived")) != (accepted := peer_detail.get("nlrisAccepted")):
-                    self.result.is_failure(f"{address_family} Peer: {peer} - prefixes are not consistent - Accepted: {accepted} Received: {received}")
+                if capability_status["afiSafiState"] != "negotiated":
+                    self.result.is_failure(f"{peer} - {capability} not negotiated")
+
+                if (received := capability_status.get("nlrisReceived")) != (accepted := capability_status.get("nlrisAccepted")):
+                    self.result.is_failure(f"{peer} Capability: {capability} - some NLRI were filtered or rejected - Accepted: {accepted} Received: {received}")
