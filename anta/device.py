@@ -240,14 +240,14 @@ class AntaDevice(ABC):
         """
         if self.cache is not None and command.use_cache:
             async with self.cache.locks[command.uid]:
-                cached_output = await self.cache.get(command.uid)  # pylint: disable=no-member
+                cached_output = await self.cache.get(command.uid)
 
                 if cached_output is not None:
                     logger.debug("Cache hit for %s on %s", command.command, self.name)
                     command.output = cached_output
                 else:
                     await self._collect(command=command, collection_id=collection_id)
-                    await self.cache.set(command.uid, command.output)  # pylint: disable=no-member
+                    await self.cache.set(command.uid, command.output)
         else:
             await self._collect(command=command, collection_id=collection_id)
 
