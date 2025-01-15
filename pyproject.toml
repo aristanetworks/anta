@@ -99,6 +99,9 @@ doc = [
   "black>=24.10.0",
   "mkdocs-github-admonitions-plugin>=0.0.3"
 ]
+netbox = [
+  "pynetbox>=7.4.1"
+]
 
 [project.urls]
 Homepage = "https://anta.arista.com"
