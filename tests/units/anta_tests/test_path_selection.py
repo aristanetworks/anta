@@ -224,8 +224,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 10.255.0.1 PathGroup: internet Source: 100.64.3.2 Destination: 100.64.1.2 - DPS paths not found",
-                "Peer: 10.255.0.2 PathGroup: mpls Source: 172.18.13.2 Destination: 172.18.15.2 - DPS paths not found",
+                "Peer: 10.255.0.1, PathGroup: internet, Source: 100.64.3.2, Destination: 100.64.1.2 - No DPS path found for this peer and path group",
+                "Peer: 10.255.0.2, PathGroup: mpls, Source: 172.18.13.2, Destination: 172.18.15.2 - No DPS path found for this peer and path group.",
             ],
         },
     },
@@ -234,14 +234,14 @@ DATA: list[dict[str, Any]] = [
         "test": VerifySpecificPath,
         "eos_data": [{"dpsPeers": {}}],
         "inputs": {"paths": [{"peer": "10.255.0.1", "path_group": "internet", "source_address": "100.64.3.2", "destination_address": "100.64.1.2"}]},
-        "expected": {"result": "failure", "messages": ["Router path not configured"]},
+        "expected": {"result": "failure", "messages": ["Router path-selection not configured"]},
     },
     {
         "name": "failure-no-specific-peer-configured",
         "test": VerifySpecificPath,
         "eos_data": [{"dpsPeers": {"10.255.0.2": {}}}],
         "inputs": {"paths": [{"peer": "10.255.0.1", "path_group": "internet", "source_address": "172.18.3.2", "destination_address": "172.18.5.2"}]},
-        "expected": {"result": "failure", "messages": ["Peer: 10.255.0.1 PathGroup: internet Source: 172.18.3.2 Destination: 172.18.5.2 - Peer not found"]},
+        "expected": {"result": "failure", "messages": ["Peer: 10.255.0.1, PathGroup: internet, Source: 172.18.3.2, Destination: 172.18.5.2 - Peer not found"]},
     },
     {
         "name": "failure-not-established",
@@ -287,9 +287,9 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 10.255.0.1 PathGroup: internet Source: 172.18.3.2 Destination: 172.18.5.2 - State is not in ipsecEstablished, routeResolved -"
+                "Peer: 10.255.0.1, PathGroup: internet, Source: 172.18.3.2, Destination: 172.18.5.2 - State is not in ipsecEstablished, routeResolved."
                 " Actual: ipsecPending",
-                "Peer: 10.255.0.2 PathGroup: mpls Source: 172.18.13.2 Destination: 172.18.15.2 - State is not in ipsecEstablished, routeResolved -"
+                "Peer: 10.255.0.2, PathGroup: mpls, Source: 172.18.13.2, Destination: 172.18.15.2 - State is not in ipsecEstablished, routeResolved."
                 " Actual: ipsecPending",
             ],
         },
@@ -335,8 +335,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 10.255.0.1 PathGroup: internet Source: 172.18.3.2 Destination: 172.18.5.2 - Telemetry state inactive",
-                "Peer: 10.255.0.2 PathGroup: mpls Source: 172.18.13.2 Destination: 172.18.15.2 - Telemetry state inactive",
+                "Peer: 10.255.0.1, PathGroup: internet, Source: 172.18.3.2, Destination: 172.18.5.2 - Telemetry state inactive for this path",
+                "Peer: 10.255.0.2, PathGroup: mpls, Source: 172.18.13.2, Destination: 172.18.15.2 - Telemetry state inactive for this path",
             ],
         },
     },
@@ -376,8 +376,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 10.255.0.1 PathGroup: internet Source: 172.18.3.2 Destination: 172.18.5.2 - Path not found",
-                "Peer: 10.255.0.2 PathGroup: mpls Source: 172.18.13.2 Destination: 172.18.15.2 - Path not found",
+                "Peer: 10.255.0.1, PathGroup: internet, Source: 172.18.3.2, Destination: 172.18.5.2 - No path matching the source and destination found",
+                "Peer: 10.255.0.2, PathGroup: mpls, Source: 172.18.13.2, Destination: 172.18.15.2 - No path matching the source and destination found",
             ],
         },
     },
