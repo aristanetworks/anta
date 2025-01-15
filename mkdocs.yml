@@ -79,6 +79,7 @@ watch:
   - anta
 
 plugins:
+  - gh-admonitions
   - mkdocstrings:
       default_handler: python
       custom_templates: docs/templates

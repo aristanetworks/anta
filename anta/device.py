@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """ANTA Device Abstraction Module."""
@@ -255,7 +255,7 @@ class AsyncEOSDevice(AntaDevice):
 
     """
 
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         host: str,
         username: str,
@@ -372,7 +372,7 @@ class AsyncEOSDevice(AntaDevice):
         """
         return (self._session.host, self._session.port)
 
-    async def _collect(self, command: AntaCommand, *, collection_id: str | None = None) -> None:  # noqa: C901  function is too complex - because of many required except blocks
+    async def _collect(self, command: AntaCommand, *, collection_id: str | None = None) -> None:
         """Collect device command output from EOS using aio-eapi.
 
         Supports outformat `json` and `text` as output structure.
@@ -409,15 +409,7 @@ class AsyncEOSDevice(AntaDevice):
             command.output = response[-1]
         except asynceapi.EapiCommandError as e:
             # This block catches exceptions related to EOS issuing an error.
-            command.errors = e.errors
-            if command.requires_privileges:
-                logger.error(
-                    "Command '%s' requires privileged mode on %s. Verify user permissions and if the `enable` option is required.", command.command, self.name
-                )
-            if command.supported:
-                logger.error("Command '%s' failed on %s: %s", command.command, self.name, e.errors[0] if len(e.errors) == 1 else e.errors)
-            else:
-                logger.debug("Command '%s' is not supported on '%s' (%s)", command.command, self.name, self.hw_model)
+            self._log_eapi_command_error(command, e)
         except TimeoutException as e:
             # This block catches Timeout exceptions.
             command.errors = [exc_to_str(e)]
@@ -445,6 +437,18 @@ class AsyncEOSDevice(AntaDevice):
             command.errors = [exc_to_str(e)]
             anta_log_exception(e, f"An error occurred while issuing an eAPI request to {self.name}", logger)
         logger.debug("%s: %s", self.name, command)
+
+    def _log_eapi_command_error(self, command: AntaCommand, e: asynceapi.EapiCommandError) -> None:
+        """Appropriately log the eapi command error."""
+        command.errors = e.errors
+        if command.requires_privileges:
+            logger.error("Command '%s' requires privileged mode on %s. Verify user permissions and if the `enable` option is required.", command.command, self.name)
+        if not command.supported:
+            logger.debug("Command '%s' is not supported on '%s' (%s)", command.command, self.name, self.hw_model)
+        elif command.returned_known_eos_error:
+            logger.debug("Command '%s' returned a known error '%s': %s", command.command, self.name, command.errors)
+        else:
+            logger.error("Command '%s' failed on %s: %s", command.command, self.name, e.errors[0] if len(e.errors) == 1 else e.errors)
 
     async def refresh(self) -> None:
         """Update attributes of an AsyncEOSDevice instance.

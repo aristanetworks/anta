@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module related to the EOS various logging tests.
@@ -41,6 +41,35 @@ def _get_logging_states(logger: logging.Logger, command_output: str) -> str:
     log_states = command_output.partition("\n\nExternal configuration:")[0]
     logger.debug("Device logging states:\n%s", log_states)
     return log_states
+
+
+class VerifySyslogLogging(AntaTest):
+    """Verifies if syslog logging is enabled.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if syslog logging is enabled.
+    * Failure: The test will fail if syslog logging is disabled.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.logging:
+      - VerifySyslogLogging:
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["logging"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show logging", ofmt="text")]
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifySyslogLogging."""
+        self.result.is_success()
+        log_output = self.instance_commands[0].text_output
+
+        if "Syslog logging: enabled" not in _get_logging_states(self.logger, log_output):
+            self.result.is_failure("Syslog logging is disabled.")
 
 
 class VerifyLoggingPersistent(AntaTest):

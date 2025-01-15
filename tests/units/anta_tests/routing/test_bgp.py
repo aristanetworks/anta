@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Tests for anta.tests.routing.bgp.py."""
@@ -17,11 +17,15 @@ from anta.tests.routing.bgp import (
     VerifyBGPPeerASNCap,
     VerifyBGPPeerCount,
     VerifyBGPPeerDropStats,
+    VerifyBGPPeerGroup,
     VerifyBGPPeerMD5Auth,
     VerifyBGPPeerMPCaps,
     VerifyBGPPeerRouteLimit,
     VerifyBGPPeerRouteRefreshCap,
+    VerifyBGPPeerSession,
+    VerifyBGPPeerSessionRibd,
     VerifyBGPPeersHealth,
+    VerifyBGPPeersHealthRibd,
     VerifyBGPPeerUpdateErrors,
     VerifyBgpRouteMaps,
     VerifyBGPSpecificPeers,
@@ -1168,234 +1172,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Following BGP peers are not found or routes are not exchanged properly:\n"
-                "{'bgp_peers': {'172.30.11.11': {'default': 'Not configured'}, '172.30.11.12': {'default': 'Not configured'}}}"
-            ],
-        },
-    },
-    {
-        "name": "failure-no-peer",
-        "test": VerifyBGPExchangedRoutes,
-        "eos_data": [
-            {"vrfs": {}},
-            {
-                "vrfs": {
-                    "default": {
-                        "bgpRouteEntries": {
-                            "192.0.254.3/32": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": True,
-                                        },
-                                    }
-                                ]
-                            },
-                            "192.0.254.5/32": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": True,
-                                        },
-                                    }
-                                ]
-                            },
-                        },
-                    }
-                }
-            },
-            {"vrfs": {}},
-            {
-                "vrfs": {
-                    "default": {
-                        "bgpRouteEntries": {
-                            "192.0.254.3/32": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": True,
-                                        },
-                                    }
-                                ],
-                            },
-                            "192.0.255.4/32": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": True,
-                                        },
-                                    }
-                                ],
-                            },
-                        },
-                    }
-                }
-            },
-        ],
-        "inputs": {
-            "bgp_peers": [
-                {
-                    "peer_address": "172.30.11.11",
-                    "vrf": "MGMT",
-                    "advertised_routes": ["192.0.254.3/32"],
-                    "received_routes": ["192.0.255.3/32"],
-                },
-                {
-                    "peer_address": "172.30.11.5",
-                    "vrf": "default",
-                    "advertised_routes": ["192.0.254.3/32", "192.0.254.5/32"],
-                    "received_routes": ["192.0.254.3/32", "192.0.255.4/32"],
-                },
-            ]
-        },
-        "expected": {
-            "result": "failure",
-            "messages": ["Following BGP peers are not found or routes are not exchanged properly:\n{'bgp_peers': {'172.30.11.11': {'MGMT': 'Not configured'}}}"],
-        },
-    },
-    {
-        "name": "failure-missing-routes",
-        "test": VerifyBGPExchangedRoutes,
-        "eos_data": [
-            {
-                "vrfs": {
-                    "default": {
-                        "bgpRouteEntries": {
-                            "192.0.254.3/32": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": True,
-                                        },
-                                    }
-                                ]
-                            },
-                            "192.0.254.5/32": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": True,
-                                        },
-                                    }
-                                ]
-                            },
-                        },
-                    }
-                }
-            },
-            {
-                "vrfs": {
-                    "default": {
-                        "bgpRouteEntries": {
-                            "192.0.254.3/32": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": True,
-                                        },
-                                    }
-                                ]
-                            },
-                            "192.0.254.5/32": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": True,
-                                        },
-                                    }
-                                ]
-                            },
-                        },
-                    }
-                }
-            },
-            {
-                "vrfs": {
-                    "default": {
-                        "bgpRouteEntries": {
-                            "192.0.254.3/32": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": True,
-                                        },
-                                    }
-                                ],
-                            },
-                            "192.0.255.4/32": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": True,
-                                        },
-                                    }
-                                ],
-                            },
-                        },
-                    }
-                }
-            },
-            {
-                "vrfs": {
-                    "default": {
-                        "bgpRouteEntries": {
-                            "192.0.254.3/32": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": True,
-                                        },
-                                    }
-                                ],
-                            },
-                            "192.0.255.4/32": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": True,
-                                        },
-                                    }
-                                ],
-                            },
-                        },
-                    }
-                }
-            },
-        ],
-        "inputs": {
-            "bgp_peers": [
-                {
-                    "peer_address": "172.30.11.1",
-                    "vrf": "default",
-                    "advertised_routes": ["192.0.254.3/32", "192.0.254.51/32"],
-                    "received_routes": ["192.0.254.31/32", "192.0.255.4/32"],
-                },
-                {
-                    "peer_address": "172.30.11.5",
-                    "vrf": "default",
-                    "advertised_routes": ["192.0.254.31/32", "192.0.254.5/32"],
-                    "received_routes": ["192.0.254.3/32", "192.0.255.41/32"],
-                },
-            ]
-        },
-        "expected": {
-            "result": "failure",
-            "messages": [
-                "Following BGP peers are not found or routes are not exchanged properly:\n{'bgp_peers': "
-                "{'172.30.11.1': {'default': {'advertised_routes': {'192.0.254.51/32': 'Not found'}, 'received_routes': {'192.0.254.31/32': 'Not found'}}}, "
-                "'172.30.11.5': {'default': {'advertised_routes': {'192.0.254.31/32': 'Not found'}, 'received_routes': {'192.0.255.41/32': 'Not found'}}}}}"
+                "Peer: 172.30.11.11 VRF: default Advertised route: 192.0.254.3/32 - Not found",
+                "Peer: 172.30.11.11 VRF: default Received route: 192.0.255.3/32 - Not found",
+                "Peer: 172.30.11.12 VRF: default Advertised route: 192.0.254.31/32 - Not found",
+                "Peer: 172.30.11.12 VRF: default Received route: 192.0.255.31/32 - Not found",
             ],
         },
     },
@@ -1535,11 +1315,14 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Following BGP peers are not found or routes are not exchanged properly:\n{'bgp_peers': "
-                "{'172.30.11.1': {'default': {'advertised_routes': {'192.0.254.3/32': {'valid': True, 'active': False}, '192.0.254.51/32': 'Not found'}, "
-                "'received_routes': {'192.0.254.31/32': 'Not found', '192.0.255.4/32': {'valid': False, 'active': False}}}}, "
-                "'172.30.11.5': {'default': {'advertised_routes': {'192.0.254.31/32': 'Not found', '192.0.254.5/32': {'valid': True, 'active': False}}, "
-                "'received_routes': {'192.0.254.3/32': {'valid': False, 'active': True}, '192.0.255.41/32': 'Not found'}}}}}"
+                "Peer: 172.30.11.1 VRF: default Advertised route: 192.0.254.3/32 - Valid: False, Active: True",
+                "Peer: 172.30.11.1 VRF: default Advertised route: 192.0.254.51/32 - Not found",
+                "Peer: 172.30.11.1 VRF: default Received route: 192.0.254.31/32 - Not found",
+                "Peer: 172.30.11.1 VRF: default Received route: 192.0.255.4/32 - Valid: False, Active: False",
+                "Peer: 172.30.11.5 VRF: default Advertised route: 192.0.254.31/32 - Not found",
+                "Peer: 172.30.11.5 VRF: default Advertised route: 192.0.254.5/32 - Valid: False, Active: True",
+                "Peer: 172.30.11.5 VRF: default Received route: 192.0.254.3/32 - Valid: True, Active: False",
+                "Peer: 172.30.11.5 VRF: default Received route: 192.0.255.41/32 - Not found",
             ],
         },
     },
@@ -1611,52 +1394,6 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
-        "name": "failure-no-vrf",
-        "test": VerifyBGPPeerMPCaps,
-        "eos_data": [
-            {
-                "vrfs": {
-                    "default": {
-                        "peerList": [
-                            {
-                                "peerAddress": "172.30.11.1",
-                                "neighborCapabilities": {
-                                    "multiprotocolCaps": {
-                                        "ipv4Unicast": {
-                                            "advertised": True,
-                                            "received": True,
-                                            "enabled": True,
-                                        },
-                                        "ipv4MplsVpn": {
-                                            "advertised": True,
-                                            "received": True,
-                                            "enabled": True,
-                                        },
-                                    }
-                                },
-                            }
-                        ]
-                    }
-                }
-            }
-        ],
-        "inputs": {
-            "bgp_peers": [
-                {
-                    "peer_address": "172.30.11.1",
-                    "vrf": "MGMT",
-                    "capabilities": ["ipv4 Unicast", "ipv4mplslabels"],
-                }
-            ]
-        },
-        "expected": {
-            "result": "failure",
-            "messages": [
-                "Following BGP peer multiprotocol capabilities are not found or not ok:\n{'bgp_peers': {'172.30.11.1': {'MGMT': {'status': 'Not configured'}}}}"
-            ],
-        },
-    },
-    {
         "name": "failure-no-peer",
         "test": VerifyBGPPeerMPCaps,
         "eos_data": [
@@ -1714,8 +1451,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Following BGP peer multiprotocol capabilities are not found or not ok:\n"
-                "{'bgp_peers': {'172.30.11.10': {'default': {'status': 'Not configured'}}, '172.30.11.1': {'MGMT': {'status': 'Not configured'}}}}"
+                "Peer: 172.30.11.10 VRF: default - Not found",
+                "Peer: 172.30.11.1 VRF: MGMT - Not found",
             ],
         },
     },
@@ -1755,9 +1492,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": [
-                "Following BGP peer multiprotocol capabilities are not found or not ok:\n{'bgp_peers': {'172.30.11.1': {'default': {'l2VpnEvpn': 'not found'}}}}"
-            ],
+            "messages": ["Peer: 172.30.11.1 VRF: default - l2VpnEvpn not found"],
         },
     },
     {
@@ -1850,13 +1585,15 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Following BGP peer multiprotocol capabilities are not found or not ok:\n"
-                "{'bgp_peers': {'172.30.11.1': {'default': {'ipv4Unicast': {'advertised': False, 'received': False, 'enabled': False}, "
-                "'ipv4MplsVpn': {'advertised': False, 'received': True, 'enabled': False}, 'l2VpnEvpn': 'not found'}}, "
-                "'172.30.11.10': {'MGMT': {'ipv4Unicast': 'not found', 'ipv4MplsVpn': {'advertised': False, 'received': False, 'enabled': True}, "
-                "'l2VpnEvpn': {'advertised': True, 'received': False, 'enabled': False}}}, "
-                "'172.30.11.11': {'MGMT': {'ipv4Unicast': {'advertised': False, 'received': False, 'enabled': False}, "
-                "'ipv4MplsVpn': {'advertised': False, 'received': False, 'enabled': False}, 'l2VpnEvpn': 'not found'}}}}"
+                "Peer: 172.30.11.1 VRF: default - ipv4Unicast not negotiated - Advertised: False, Received: False, Enabled: False",
+                "Peer: 172.30.11.1 VRF: default - ipv4MplsVpn not negotiated - Advertised: False, Received: True, Enabled: False",
+                "Peer: 172.30.11.1 VRF: default - l2VpnEvpn not found",
+                "Peer: 172.30.11.10 VRF: MGMT - ipv4Unicast not found",
+                "Peer: 172.30.11.10 VRF: MGMT - ipv4MplsVpn not negotiated - Advertised: False, Received: False, Enabled: True",
+                "Peer: 172.30.11.10 VRF: MGMT - l2VpnEvpn not negotiated - Advertised: True, Received: False, Enabled: False",
+                "Peer: 172.30.11.11 VRF: MGMT - ipv4Unicast not negotiated - Advertised: False, Received: False, Enabled: False",
+                "Peer: 172.30.11.11 VRF: MGMT - ipv4MplsVpn not negotiated - Advertised: False, Received: False, Enabled: False",
+                "Peer: 172.30.11.11 VRF: MGMT - l2VpnEvpn not found",
             ],
         },
     },
@@ -1999,10 +1736,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Following BGP peer multiprotocol capabilities are not found or not ok:\n{'bgp_peers': {'172.30.11.1': "
-                "{'default': {'status': 'Expected only `ipv4Unicast` capabilities should be listed but found `ipv4Unicast, ipv4MplsLabels` instead.'}},"
-                " '172.30.11.10': {'MGMT': {'status': 'Expected only `ipv4MplsVpn, l2VpnEvpn` capabilities should be listed but found `ipv4Unicast, "
-                "ipv4MplsVpn` instead.'}}}}"
+                "Peer: 172.30.11.1 VRF: default - Mismatch - Expected: ipv4Unicast Actual: ipv4Unicast, ipv4MplsLabels",
+                "Peer: 172.30.11.10 VRF: MGMT - Mismatch - Expected: ipv4MplsVpn, l2VpnEvpn Actual: ipv4Unicast, ipv4MplsVpn",
             ],
         },
     },
@@ -2058,63 +1793,6 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
-        "name": "failure-no-vrf",
-        "test": VerifyBGPPeerASNCap,
-        "eos_data": [
-            {
-                "vrfs": {
-                    "default": {
-                        "peerList": [
-                            {
-                                "peerAddress": "172.30.11.1",
-                                "neighborCapabilities": {
-                                    "fourOctetAsnCap": {
-                                        "advertised": True,
-                                        "received": True,
-                                        "enabled": True,
-                                    },
-                                },
-                            }
-                        ]
-                    }
-                },
-                "MGMT": {
-                    "peerList": [
-                        {
-                            "peerAddress": "172.30.11.10",
-                            "neighborCapabilities": {
-                                "fourOctetAsnCap": {
-                                    "advertised": True,
-                                    "received": True,
-                                    "enabled": True,
-                                },
-                            },
-                        }
-                    ]
-                },
-            }
-        ],
-        "inputs": {
-            "bgp_peers": [
-                {
-                    "peer_address": "172.30.11.1",
-                    "vrf": "MGMT",
-                },
-                {
-                    "peer_address": "172.30.11.10",
-                    "vrf": "default",
-                },
-            ]
-        },
-        "expected": {
-            "result": "failure",
-            "messages": [
-                "Following BGP peer four octet asn capabilities are not found or not ok:\n"
-                "{'bgp_peers': {'172.30.11.1': {'MGMT': {'status': 'Not configured'}}, '172.30.11.10': {'default': {'status': 'Not configured'}}}}"
-            ],
-        },
-    },
-    {
         "name": "failure-no-peer",
         "test": VerifyBGPPeerASNCap,
         "eos_data": [
@@ -2149,9 +1827,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": [
-                "Following BGP peer four octet asn capabilities are not found or not ok:\n{'bgp_peers': {'172.30.11.10': {'default': {'status': 'Not configured'}}}}"
-            ],
+            "messages": ["Peer: 172.30.11.10 VRF: default - Not found"],
         },
     },
     {
@@ -2204,8 +1880,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Following BGP peer four octet asn capabilities are not found or not ok:\n"
-                "{'bgp_peers': {'172.30.11.1': {'default': {'fourOctetAsnCap': 'not found'}}, '172.30.11.10': {'MGMT': {'fourOctetAsnCap': 'not found'}}}}"
+                "Peer: 172.30.11.1 VRF: default - 4-octet ASN capability not found",
+                "Peer: 172.30.11.10 VRF: MGMT - 4-octet ASN capability not found",
             ],
         },
     },
@@ -2255,9 +1931,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Following BGP peer four octet asn capabilities are not found or not ok:\n"
-                "{'bgp_peers': {'172.30.11.1': {'default': {'fourOctetAsnCap': {'advertised': False, 'received': False, 'enabled': False}}}, "
-                "'172.30.11.10': {'MGMT': {'fourOctetAsnCap': {'advertised': True, 'received': False, 'enabled': True}}}}}"
+                "Peer: 172.30.11.1 VRF: default - 4-octet ASN capability not negotiated - Advertised: False, Received: False, Enabled: False",
+                "Peer: 172.30.11.10 VRF: MGMT - 4-octet ASN capability not negotiated - Advertised: True, Received: False, Enabled: True",
             ],
         },
     },
@@ -2311,25 +1986,6 @@ DATA: list[dict[str, Any]] = [
             ]
         },
         "expected": {"result": "success"},
-    },
-    {
-        "name": "failure-no-vrf",
-        "test": VerifyBGPPeerRouteRefreshCap,
-        "eos_data": [{"vrfs": {}}],
-        "inputs": {
-            "bgp_peers": [
-                {
-                    "peer_address": "172.30.11.1",
-                    "vrf": "MGMT",
-                }
-            ]
-        },
-        "expected": {
-            "result": "failure",
-            "messages": [
-                "Following BGP peer route refresh capabilities are not found or not ok:\n{'bgp_peers': {'172.30.11.1': {'MGMT': {'status': 'Not configured'}}}}"
-            ],
-        },
     },
     {
         "name": "failure-no-peer",
@@ -2387,8 +2043,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Following BGP peer route refresh capabilities are not found or not ok:\n"
-                "{'bgp_peers': {'172.30.11.12': {'default': {'status': 'Not configured'}}, '172.30.11.1': {'CS': {'status': 'Not configured'}}}}"
+                "Peer: 172.30.11.12 VRF: default - Not found",
+                "Peer: 172.30.11.1 VRF: CS - Not found",
             ],
         },
     },
@@ -2442,8 +2098,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Following BGP peer route refresh capabilities are not found or not ok:\n"
-                "{'bgp_peers': {'172.30.11.1': {'default': {'routeRefreshCap': 'not found'}}, '172.30.11.11': {'CS': {'routeRefreshCap': 'not found'}}}}"
+                "Peer: 172.30.11.1 VRF: default - Route refresh capability not found",
+                "Peer: 172.30.11.11 VRF: CS - Route refresh capability not found",
             ],
         },
     },
@@ -2493,8 +2149,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Following BGP peer route refresh capabilities are not found or not ok:\n"
-                "{'bgp_peers': {'172.30.11.1': {'default': {'routeRefreshCap': {'advertised': False, 'received': False, 'enabled': False}}}}}"
+                "Peer: 172.30.11.1 VRF: default - Route refresh capability not negotiated - Advertised: False, Received: False, Enabled: False",
             ],
         },
     },
@@ -2540,40 +2195,6 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
-        "name": "failure-no-vrf",
-        "test": VerifyBGPPeerMD5Auth,
-        "eos_data": [
-            {
-                "vrfs": {
-                    "default": {
-                        "peerList": [
-                            {
-                                "peerAddress": "172.30.11.10",
-                                "state": "Established",
-                                "md5AuthEnabled": True,
-                            }
-                        ]
-                    },
-                }
-            }
-        ],
-        "inputs": {
-            "bgp_peers": [
-                {
-                    "peer_address": "172.30.11.1",
-                    "vrf": "MGMT",
-                }
-            ]
-        },
-        "expected": {
-            "result": "failure",
-            "messages": [
-                "Following BGP peers are not configured, not established or MD5 authentication is not enabled:\n"
-                "{'bgp_peers': {'172.30.11.1': {'MGMT': {'status': 'Not configured'}}}}"
-            ],
-        },
-    },
-    {
         "name": "failure-no-peer",
         "test": VerifyBGPPeerMD5Auth,
         "eos_data": [
@@ -2607,16 +2228,16 @@ DATA: list[dict[str, Any]] = [
                     "vrf": "default",
                 },
                 {
-                    "peer_address": "172.30.11.11",
-                    "vrf": "default",
+                    "peer_address": "172.30.11.12",
+                    "vrf": "CS",
                 },
             ]
         },
         "expected": {
             "result": "failure",
             "messages": [
-                "Following BGP peers are not configured, not established or MD5 authentication is not enabled:\n"
-                "{'bgp_peers': {'172.30.11.10': {'default': {'status': 'Not configured'}}, '172.30.11.11': {'default': {'status': 'Not configured'}}}}"
+                "Peer: 172.30.11.10 VRF: default - Not found",
+                "Peer: 172.30.11.12 VRF: CS - Not found",
             ],
         },
     },
@@ -2640,7 +2261,7 @@ DATA: list[dict[str, Any]] = [
                             {
                                 "peerAddress": "172.30.11.10",
                                 "state": "Idle",
-                                "md5AuthEnabled": False,
+                                "md5AuthEnabled": True,
                             }
                         ]
                     },
@@ -2662,9 +2283,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Following BGP peers are not configured, not established or MD5 authentication is not enabled:\n"
-                "{'bgp_peers': {'172.30.11.1': {'default': {'state': 'Idle', 'md5_auth_enabled': True}}, "
-                "'172.30.11.10': {'MGMT': {'state': 'Idle', 'md5_auth_enabled': False}}}}"
+                "Peer: 172.30.11.1 VRF: default - Session state is not established - State: Idle",
+                "Peer: 172.30.11.10 VRF: MGMT - Session state is not established - State: Idle",
             ],
         },
     },
@@ -2714,9 +2334,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Following BGP peers are not configured, not established or MD5 authentication is not enabled:\n"
-                "{'bgp_peers': {'172.30.11.1': {'default': {'state': 'Established', 'md5_auth_enabled': None}}, "
-                "'172.30.11.11': {'MGMT': {'state': 'Established', 'md5_auth_enabled': False}}}}"
+                "Peer: 172.30.11.1 VRF: default - Session does not have MD5 authentication enabled",
+                "Peer: 172.30.11.11 VRF: MGMT - Session does not have MD5 authentication enabled",
             ],
         },
     },
@@ -2815,8 +2434,8 @@ DATA: list[dict[str, Any]] = [
                         "evpnRoutePaths": [
                             {
                                 "routeType": {
-                                    "active": True,
-                                    "valid": True,
+                                    "active": False,
+                                    "valid": False,
                                 },
                             },
                         ]
@@ -2963,7 +2582,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"vxlan_endpoints": [{"address": "192.168.20.102", "vni": 10020}]},
         "expected": {
             "result": "failure",
-            "messages": ["The following VXLAN endpoint do not have any EVPN Type-2 route: [('192.168.20.102', 10020)]"],
+            "messages": ["Address: 192.168.20.102 VNI: 10020 - No EVPN Type-2 route"],
         },
     },
     {
@@ -2991,103 +2610,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"vxlan_endpoints": [{"address": "192.168.20.102", "vni": 10020}]},
         "expected": {
             "result": "failure",
-            "messages": [
-                "The following EVPN Type-2 routes do not have at least one valid and active path: ['RD: 10.1.0.5:500 mac-ip 10020 aac1.ab4e.bec2 192.168.20.102']"
-            ],
-        },
-    },
-    {
-        "name": "failure-multiple-routes-not-active",
-        "test": VerifyEVPNType2Route,
-        "eos_data": [
-            {
-                "vrf": "default",
-                "routerId": "10.1.0.3",
-                "asn": 65120,
-                "evpnRoutes": {
-                    "RD: 10.1.0.5:500 mac-ip 10020 aac1.ab4e.bec2 192.168.20.102": {
-                        "evpnRoutePaths": [
-                            {
-                                "routeType": {
-                                    "active": False,
-                                    "valid": True,
-                                },
-                            },
-                        ]
-                    },
-                    "RD: 10.1.0.6:500 mac-ip 10020 aac1.ab4e.bec2 192.168.20.102": {
-                        "evpnRoutePaths": [
-                            {
-                                "routeType": {
-                                    "active": False,
-                                    "valid": False,
-                                },
-                            },
-                        ]
-                    },
-                },
-            },
-        ],
-        "inputs": {"vxlan_endpoints": [{"address": "192.168.20.102", "vni": 10020}]},
-        "expected": {
-            "result": "failure",
-            "messages": [
-                "The following EVPN Type-2 routes do not have at least one valid and active path: "
-                "['RD: 10.1.0.5:500 mac-ip 10020 aac1.ab4e.bec2 192.168.20.102', "
-                "'RD: 10.1.0.6:500 mac-ip 10020 aac1.ab4e.bec2 192.168.20.102']"
-            ],
-        },
-    },
-    {
-        "name": "failure-multiple-routes-multiple-paths-not-active",
-        "test": VerifyEVPNType2Route,
-        "eos_data": [
-            {
-                "vrf": "default",
-                "routerId": "10.1.0.3",
-                "asn": 65120,
-                "evpnRoutes": {
-                    "RD: 10.1.0.5:500 mac-ip 10020 aac1.ab4e.bec2 192.168.20.102": {
-                        "evpnRoutePaths": [
-                            {
-                                "routeType": {
-                                    "active": True,
-                                    "valid": True,
-                                },
-                            },
-                            {
-                                "routeType": {
-                                    "active": False,
-                                    "valid": True,
-                                },
-                            },
-                        ]
-                    },
-                    "RD: 10.1.0.6:500 mac-ip 10020 aac1.ab4e.bec2 192.168.20.102": {
-                        "evpnRoutePaths": [
-                            {
-                                "routeType": {
-                                    "active": False,
-                                    "valid": False,
-                                },
-                            },
-                            {
-                                "routeType": {
-                                    "active": False,
-                                    "valid": False,
-                                },
-                            },
-                        ]
-                    },
-                },
-            },
-        ],
-        "inputs": {"vxlan_endpoints": [{"address": "192.168.20.102", "vni": 10020}]},
-        "expected": {
-            "result": "failure",
-            "messages": [
-                "The following EVPN Type-2 routes do not have at least one valid and active path: ['RD: 10.1.0.6:500 mac-ip 10020 aac1.ab4e.bec2 192.168.20.102']"
-            ],
+            "messages": ["Address: 192.168.20.102 VNI: 10020 - No valid and active path"],
         },
     },
     {
@@ -3137,67 +2660,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": [
-                "The following EVPN Type-2 routes do not have at least one valid and active path: "
-                "['RD: 10.1.0.5:500 mac-ip 10020 aac1.ab4e.bec2 192.168.20.102', "
-                "'RD: 10.1.0.5:500 mac-ip 10010 aac1.ab5d.b41e']"
-            ],
-        },
-    },
-    {
-        "name": "failure-multiple-endpoints-one-no-routes",
-        "test": VerifyEVPNType2Route,
-        "eos_data": [
-            {"vrf": "default", "routerId": "10.1.0.3", "asn": 65120, "evpnRoutes": {}},
-            {
-                "vrf": "default",
-                "routerId": "10.1.0.3",
-                "asn": 65120,
-                "evpnRoutes": {
-                    "RD: 10.1.0.5:500 mac-ip 10010 aac1.ab5d.b41e 192.168.10.101": {
-                        "evpnRoutePaths": [
-                            {
-                                "routeType": {
-                                    "active": False,
-                                    "valid": False,
-                                },
-                            },
-                        ]
-                    },
-                },
-            },
-        ],
-        "inputs": {
-            "vxlan_endpoints": [
-                {"address": "aac1.ab4e.bec2", "vni": 10020},
-                {"address": "192.168.10.101", "vni": 10010},
-            ]
-        },
-        "expected": {
-            "result": "failure",
-            "messages": [
-                "The following VXLAN endpoint do not have any EVPN Type-2 route: [('aa:c1:ab:4e:be:c2', 10020)]",
-                "The following EVPN Type-2 routes do not have at least one valid and active path: "
-                "['RD: 10.1.0.5:500 mac-ip 10010 aac1.ab5d.b41e 192.168.10.101']",
-            ],
-        },
-    },
-    {
-        "name": "failure-multiple-endpoints-no-routes",
-        "test": VerifyEVPNType2Route,
-        "eos_data": [
-            {"vrf": "default", "routerId": "10.1.0.3", "asn": 65120, "evpnRoutes": {}},
-            {"vrf": "default", "routerId": "10.1.0.3", "asn": 65120, "evpnRoutes": {}},
-        ],
-        "inputs": {
-            "vxlan_endpoints": [
-                {"address": "aac1.ab4e.bec2", "vni": 10020},
-                {"address": "192.168.10.101", "vni": 10010},
-            ]
-        },
-        "expected": {
-            "result": "failure",
-            "messages": ["The following VXLAN endpoint do not have any EVPN Type-2 route: [('aa:c1:ab:4e:be:c2', 10020), ('192.168.10.101', 10010)]"],
+            "messages": ["Address: 192.168.20.102 VNI: 10020 - No valid and active path", "Address: aa:c1:ab:5d:b4:1e VNI: 10010 - No valid and active path"],
         },
     },
     {
@@ -3247,43 +2710,6 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
-        "name": "failure-no-vrf",
-        "test": VerifyBGPAdvCommunities,
-        "eos_data": [
-            {
-                "vrfs": {
-                    "default": {
-                        "peerList": [
-                            {
-                                "peerAddress": "172.30.11.1",
-                                "advertisedCommunities": {
-                                    "standard": True,
-                                    "extended": True,
-                                    "large": True,
-                                },
-                            }
-                        ]
-                    },
-                }
-            }
-        ],
-        "inputs": {
-            "bgp_peers": [
-                {
-                    "peer_address": "172.30.11.17",
-                    "vrf": "MGMT",
-                }
-            ]
-        },
-        "expected": {
-            "result": "failure",
-            "messages": [
-                "Following BGP peers are not configured or advertised communities are not standard, extended, and large:\n"
-                "{'bgp_peers': {'172.30.11.17': {'MGMT': {'status': 'Not configured'}}}}"
-            ],
-        },
-    },
-    {
         "name": "failure-no-peer",
         "test": VerifyBGPAdvCommunities,
         "eos_data": [
@@ -3331,8 +2757,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Following BGP peers are not configured or advertised communities are not standard, extended, and large:\n"
-                "{'bgp_peers': {'172.30.11.10': {'default': {'status': 'Not configured'}}, '172.30.11.12': {'MGMT': {'status': 'Not configured'}}}}"
+                "Peer: 172.30.11.10 VRF: default - Not found",
+                "Peer: 172.30.11.12 VRF: MGMT - Not found",
             ],
         },
     },
@@ -3384,9 +2810,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Following BGP peers are not configured or advertised communities are not standard, extended, and large:\n"
-                "{'bgp_peers': {'172.30.11.1': {'default': {'advertised_communities': {'standard': False, 'extended': False, 'large': False}}}, "
-                "'172.30.11.10': {'CS': {'advertised_communities': {'standard': True, 'extended': True, 'large': False}}}}}"
+                "Peer: 172.30.11.1 VRF: default - Standard: False, Extended: False, Large: False",
+                "Peer: 172.30.11.10 VRF: CS - Standard: True, Extended: True, Large: False",
             ],
         },
     },
@@ -3441,15 +2866,7 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {
-                        "peerList": [
-                            {
-                                "peerAddress": "172.30.11.1",
-                                "holdTime": 180,
-                                "keepaliveTime": 60,
-                            }
-                        ]
-                    },
+                    "default": {"peerList": []},
                     "MGMT": {"peerList": []},
                 }
             }
@@ -3464,7 +2881,7 @@ DATA: list[dict[str, Any]] = [
                 },
                 {
                     "peer_address": "172.30.11.11",
-                    "vrf": "MGMT",
+                    "vrf": "default",
                     "hold_time": 180,
                     "keep_alive_time": 60,
                 },
@@ -3473,8 +2890,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Following BGP peers are not configured or hold and keep-alive timers are not correct:\n"
-                "{'172.30.11.1': {'MGMT': 'Not configured'}, '172.30.11.11': {'MGMT': 'Not configured'}}"
+                "Peer: 172.30.11.1 VRF: MGMT - Not found",
+                "Peer: 172.30.11.11 VRF: default - Not found",
             ],
         },
     },
@@ -3524,9 +2941,9 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Following BGP peers are not configured or hold and keep-alive timers are not correct:\n"
-                "{'172.30.11.1': {'default': {'hold_time': 160, 'keep_alive_time': 60}}, "
-                "'172.30.11.11': {'MGMT': {'hold_time': 120, 'keep_alive_time': 40}}}"
+                "Peer: 172.30.11.1 VRF: default - Hold time mismatch - Expected: 180, Actual: 160",
+                "Peer: 172.30.11.11 VRF: MGMT - Hold time mismatch - Expected: 180, Actual: 120",
+                "Peer: 172.30.11.11 VRF: MGMT - Keepalive time mismatch - Expected: 60, Actual: 40",
             ],
         },
     },
@@ -3554,10 +2971,6 @@ DATA: list[dict[str, Any]] = [
                             }
                         ]
                     },
-                },
-            },
-            {
-                "vrfs": {
                     "MGMT": {
                         "peerList": [
                             {
@@ -3594,10 +3007,7 @@ DATA: list[dict[str, Any]] = [
     {
         "name": "failure-not-found",
         "test": VerifyBGPPeerDropStats,
-        "eos_data": [
-            {"vrfs": {}},
-            {"vrfs": {}},
-        ],
+        "eos_data": [{"vrfs": {}}],
         "inputs": {
             "bgp_peers": [
                 {
@@ -3611,8 +3021,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "The following BGP peers are not configured or have non-zero NLRI drop statistics counters:\n"
-                "{'10.100.0.8': {'default': 'Not configured'}, '10.100.0.9': {'MGMT': 'Not configured'}}"
+                "Peer: 10.100.0.8 VRF: default - Not found",
+                "Peer: 10.100.0.9 VRF: MGMT - Not found",
             ],
         },
     },
@@ -3640,10 +3050,6 @@ DATA: list[dict[str, Any]] = [
                             }
                         ]
                     },
-                },
-            },
-            {
-                "vrfs": {
                     "MGMT": {
                         "peerList": [
                             {
@@ -3678,9 +3084,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "The following BGP peers are not configured or have non-zero NLRI drop statistics counters:\n"
-                "{'10.100.0.8': {'default': {'prefixDroppedMartianV4': 1, 'prefixDroppedMaxRouteLimitViolatedV4': 1}}, "
-                "'10.100.0.9': {'MGMT': {'inDropOrigId': 1, 'inDropNhLocal': 1}}}"
+                "Peer: 10.100.0.8 VRF: default - Non-zero NLRI drop statistics counter - prefixDroppedMartianV4: 1",
+                "Peer: 10.100.0.8 VRF: default - Non-zero NLRI drop statistics counter - prefixDroppedMaxRouteLimitViolatedV4: 1",
+                "Peer: 10.100.0.9 VRF: MGMT - Non-zero NLRI drop statistics counter - inDropOrigId: 1",
+                "Peer: 10.100.0.9 VRF: MGMT - Non-zero NLRI drop statistics counter - inDropNhLocal: 1",
             ],
         },
     },
@@ -3708,10 +3115,6 @@ DATA: list[dict[str, Any]] = [
                             }
                         ]
                     },
-                },
-            },
-            {
-                "vrfs": {
                     "MGMT": {
                         "peerList": [
                             {
@@ -3765,10 +3168,6 @@ DATA: list[dict[str, Any]] = [
                             }
                         ]
                     },
-                },
-            },
-            {
-                "vrfs": {
                     "MGMT": {
                         "peerList": [
                             {
@@ -3799,49 +3198,14 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "The following BGP peers are not configured or have non-zero NLRI drop statistics counters:\n"
-                "{'10.100.0.8': {'default': {'inDropAsloop': 3, 'inDropOrigId': 1, 'inDropNhLocal': 1, "
-                "'prefixDroppedMartianV4': 1, 'prefixDroppedMaxRouteLimitViolatedV4': 1}}, "
-                "'10.100.0.9': {'MGMT': {'inDropAsloop': 2, 'inDropOrigId': 1, 'inDropNhLocal': 1}}}"
-            ],
-        },
-    },
-    {
-        "name": "failure-drop-stat-not-found",
-        "test": VerifyBGPPeerDropStats,
-        "eos_data": [
-            {
-                "vrfs": {
-                    "default": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.8",
-                                "dropStats": {
-                                    "inDropAsloop": 3,
-                                    "inDropClusterIdLoop": 0,
-                                    "inDropMalformedMpbgp": 0,
-                                    "inDropOrigId": 1,
-                                    "inDropNhLocal": 1,
-                                    "inDropNhAfV6": 0,
-                                    "prefixDroppedMaxRouteLimitViolatedV4": 1,
-                                    "prefixDroppedMartianV6": 0,
-                                },
-                            }
-                        ]
-                    },
-                },
-            },
-        ],
-        "inputs": {
-            "bgp_peers": [
-                {"peer_address": "10.100.0.8", "vrf": "default", "drop_stats": ["inDropAsloop", "inDropOrigId", "inDropNhLocal", "prefixDroppedMartianV4"]}
-            ]
-        },
-        "expected": {
-            "result": "failure",
-            "messages": [
-                "The following BGP peers are not configured or have non-zero NLRI drop statistics counters:\n"
-                "{'10.100.0.8': {'default': {'inDropAsloop': 3, 'inDropOrigId': 1, 'inDropNhLocal': 1, 'prefixDroppedMartianV4': 'Not Found'}}}"
+                "Peer: 10.100.0.8 VRF: default - Non-zero NLRI drop statistics counter - inDropAsloop: 3",
+                "Peer: 10.100.0.8 VRF: default - Non-zero NLRI drop statistics counter - inDropOrigId: 1",
+                "Peer: 10.100.0.8 VRF: default - Non-zero NLRI drop statistics counter - inDropNhLocal: 1",
+                "Peer: 10.100.0.8 VRF: default - Non-zero NLRI drop statistics counter - prefixDroppedMartianV4: 1",
+                "Peer: 10.100.0.8 VRF: default - Non-zero NLRI drop statistics counter - prefixDroppedMaxRouteLimitViolatedV4: 1",
+                "Peer: 10.100.0.9 VRF: MGMT - Non-zero NLRI drop statistics counter - inDropAsloop: 2",
+                "Peer: 10.100.0.9 VRF: MGMT - Non-zero NLRI drop statistics counter - inDropOrigId: 1",
+                "Peer: 10.100.0.9 VRF: MGMT - Non-zero NLRI drop statistics counter - inDropNhLocal: 1",
             ],
         },
     },
@@ -3865,10 +3229,6 @@ DATA: list[dict[str, Any]] = [
                             }
                         ]
                     },
-                },
-            },
-            {
-                "vrfs": {
                     "MGMT": {
                         "peerList": [
                             {
@@ -3899,7 +3259,6 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyBGPPeerUpdateErrors,
         "eos_data": [
             {"vrfs": {}},
-            {"vrfs": {}},
         ],
         "inputs": {
             "bgp_peers": [
@@ -3910,8 +3269,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "The following BGP peers are not configured or have non-zero update error counters:\n"
-                "{'10.100.0.8': {'default': 'Not configured'}, '10.100.0.9': {'MGMT': 'Not configured'}}"
+                "Peer: 10.100.0.8 VRF: default - Not found",
+                "Peer: 10.100.0.9 VRF: MGMT - Not found",
             ],
         },
     },
@@ -3935,10 +3294,6 @@ DATA: list[dict[str, Any]] = [
                             }
                         ]
                     },
-                },
-            },
-            {
-                "vrfs": {
                     "MGMT": {
                         "peerList": [
                             {
@@ -3965,9 +3320,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "The following BGP peers are not configured or have non-zero update error counters:\n"
-                "{'10.100.0.8': {'default': {'disabledAfiSafi': 'ipv4Unicast'}}, "
-                "'10.100.0.9': {'MGMT': {'inUpdErrWithdraw': 1}}}"
+                "Peer: 10.100.0.8 VRF: default - Non-zero update error counter - disabledAfiSafi: ipv4Unicast",
+                "Peer: 10.100.0.9 VRF: MGMT - Non-zero update error counter - inUpdErrWithdraw: 1",
             ],
         },
     },
@@ -3991,10 +3345,6 @@ DATA: list[dict[str, Any]] = [
                             }
                         ]
                     },
-                },
-            },
-            {
-                "vrfs": {
                     "MGMT": {
                         "peerList": [
                             {
@@ -4040,10 +3390,6 @@ DATA: list[dict[str, Any]] = [
                             }
                         ]
                     },
-                },
-            },
-            {
-                "vrfs": {
                     "MGMT": {
                         "peerList": [
                             {
@@ -4074,9 +3420,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "The following BGP peers are not configured or have non-zero update error counters:\n"
-                "{'10.100.0.8': {'default': {'inUpdErrWithdraw': 1, 'disabledAfiSafi': 'ipv4Unicast'}}, "
-                "'10.100.0.9': {'MGMT': {'inUpdErrWithdraw': 1, 'inUpdErrDisableAfiSafi': 1}}}"
+                "Peer: 10.100.0.8 VRF: default - Non-zero update error counter - inUpdErrWithdraw: 1",
+                "Peer: 10.100.0.8 VRF: default - Non-zero update error counter - disabledAfiSafi: ipv4Unicast",
+                "Peer: 10.100.0.9 VRF: MGMT - Non-zero update error counter - inUpdErrWithdraw: 1",
+                "Peer: 10.100.0.9 VRF: MGMT - Non-zero update error counter - inUpdErrDisableAfiSafi: 1",
             ],
         },
     },
@@ -4099,10 +3446,6 @@ DATA: list[dict[str, Any]] = [
                             }
                         ]
                     },
-                },
-            },
-            {
-                "vrfs": {
                     "MGMT": {
                         "peerList": [
                             {
@@ -4132,9 +3475,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "The following BGP peers are not configured or have non-zero update error counters:\n"
-                "{'10.100.0.8': {'default': {'inUpdErrWithdraw': 'Not Found', 'disabledAfiSafi': 'ipv4Unicast'}}, "
-                "'10.100.0.9': {'MGMT': {'inUpdErrWithdraw': 1, 'inUpdErrDisableAfiSafi': 'Not Found'}}}"
+                "Peer: 10.100.0.8 VRF: default - Non-zero update error counter - inUpdErrWithdraw: Not Found",
+                "Peer: 10.100.0.8 VRF: default - Non-zero update error counter - disabledAfiSafi: ipv4Unicast",
+                "Peer: 10.100.0.9 VRF: MGMT - Non-zero update error counter - inUpdErrWithdraw: 1",
+                "Peer: 10.100.0.9 VRF: MGMT - Non-zero update error counter - inUpdErrDisableAfiSafi: Not Found",
             ],
         },
     },
@@ -4153,10 +3497,6 @@ DATA: list[dict[str, Any]] = [
                             }
                         ]
                     },
-                },
-            },
-            {
-                "vrfs": {
                     "MGMT": {
                         "peerList": [
                             {
@@ -4192,10 +3532,6 @@ DATA: list[dict[str, Any]] = [
                             }
                         ]
                     },
-                },
-            },
-            {
-                "vrfs": {
                     "MGMT": {
                         "peerList": [
                             {
@@ -4217,9 +3553,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "The following BGP peers are not configured or has an incorrect or missing route map in either the inbound or outbound direction:\n"
-                "{'10.100.0.8': {'default': {'Inbound route-map': 'RM-MLAG-PEER', 'Outbound route-map': 'RM-MLAG-PEER'}}, "
-                "'10.100.0.10': {'MGMT': {'Inbound route-map': 'RM-MLAG-PEER', 'Outbound route-map': 'RM-MLAG-PEER'}}}"
+                "Peer: 10.100.0.8 VRF: default - Inbound route-map mismatch - Expected: RM-MLAG-PEER-IN, Actual: RM-MLAG-PEER",
+                "Peer: 10.100.0.8 VRF: default - Outbound route-map mismatch - Expected: RM-MLAG-PEER-OUT, Actual: RM-MLAG-PEER",
+                "Peer: 10.100.0.10 VRF: MGMT - Inbound route-map mismatch - Expected: RM-MLAG-PEER-IN, Actual: RM-MLAG-PEER",
+                "Peer: 10.100.0.10 VRF: MGMT - Outbound route-map mismatch - Expected: RM-MLAG-PEER-OUT, Actual: RM-MLAG-PEER",
             ],
         },
     },
@@ -4238,10 +3575,6 @@ DATA: list[dict[str, Any]] = [
                             }
                         ]
                     },
-                },
-            },
-            {
-                "vrfs": {
                     "MGMT": {
                         "peerList": [
                             {
@@ -4263,8 +3596,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "The following BGP peers are not configured or has an incorrect or missing route map in either the inbound or outbound direction:\n"
-                "{'10.100.0.8': {'default': {'Inbound route-map': 'RM-MLAG-PEER'}}, '10.100.0.10': {'MGMT': {'Inbound route-map': 'RM-MLAG-PEER'}}}"
+                "Peer: 10.100.0.8 VRF: default - Inbound route-map mismatch - Expected: RM-MLAG-PEER-IN, Actual: RM-MLAG-PEER",
+                "Peer: 10.100.0.10 VRF: MGMT - Inbound route-map mismatch - Expected: RM-MLAG-PEER-IN, Actual: RM-MLAG-PEER",
             ],
         },
     },
@@ -4281,10 +3614,6 @@ DATA: list[dict[str, Any]] = [
                             }
                         ]
                     },
-                },
-            },
-            {
-                "vrfs": {
                     "MGMT": {
                         "peerList": [
                             {
@@ -4304,9 +3633,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "The following BGP peers are not configured or has an incorrect or missing route map in either the inbound or outbound direction:\n"
-                "{'10.100.0.8': {'default': {'Inbound route-map': 'Not Configured', 'Outbound route-map': 'Not Configured'}}, "
-                "'10.100.0.10': {'MGMT': {'Inbound route-map': 'Not Configured', 'Outbound route-map': 'Not Configured'}}}"
+                "Peer: 10.100.0.8 VRF: default - Inbound route-map mismatch - Expected: RM-MLAG-PEER-IN, Actual: Not Configured",
+                "Peer: 10.100.0.8 VRF: default - Outbound route-map mismatch - Expected: RM-MLAG-PEER-OUT, Actual: Not Configured",
+                "Peer: 10.100.0.10 VRF: MGMT - Inbound route-map mismatch - Expected: RM-MLAG-PEER-IN, Actual: Not Configured",
+                "Peer: 10.100.0.10 VRF: MGMT - Outbound route-map mismatch - Expected: RM-MLAG-PEER-OUT, Actual: Not Configured",
             ],
         },
     },
@@ -4317,10 +3647,6 @@ DATA: list[dict[str, Any]] = [
             {
                 "vrfs": {
                     "default": {"peerList": []},
-                },
-            },
-            {
-                "vrfs": {
                     "MGMT": {"peerList": []},
                 },
             },
@@ -4334,8 +3660,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "The following BGP peers are not configured or has an incorrect or missing route map in either the inbound or outbound direction:\n"
-                "{'10.100.0.8': {'default': 'Not configured'}, '10.100.0.10': {'MGMT': 'Not configured'}}"
+                "Peer: 10.100.0.8 VRF: default - Not found",
+                "Peer: 10.100.0.10 VRF: MGMT - Not found",
             ],
         },
     },
@@ -4354,10 +3680,6 @@ DATA: list[dict[str, Any]] = [
                             }
                         ]
                     },
-                },
-            },
-            {
-                "vrfs": {
                     "MGMT": {
                         "peerList": [
                             {
@@ -4379,16 +3701,45 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
+        "name": "success-no-warning-limit",
+        "test": VerifyBGPPeerRouteLimit,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "maxTotalRoutes": 12000,
+                            }
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.9",
+                                "maxTotalRoutes": 10000,
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default", "maximum_routes": 12000, "warning_limit": 0},
+                {"peer_address": "10.100.0.9", "vrf": "MGMT", "maximum_routes": 10000},
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
         "name": "failure-peer-not-found",
         "test": VerifyBGPPeerRouteLimit,
         "eos_data": [
             {
                 "vrfs": {
                     "default": {},
-                },
-            },
-            {
-                "vrfs": {
                     "MGMT": {},
                 },
             },
@@ -4402,8 +3753,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "The following BGP peer(s) are not configured or maximum routes and maximum routes warning limit is not correct:\n"
-                "{'10.100.0.8': {'default': 'Not configured'}, '10.100.0.9': {'MGMT': 'Not configured'}}"
+                "Peer: 10.100.0.8 VRF: default - Not found",
+                "Peer: 10.100.0.9 VRF: MGMT - Not found",
             ],
         },
     },
@@ -4422,10 +3773,6 @@ DATA: list[dict[str, Any]] = [
                             }
                         ]
                     },
-                },
-            },
-            {
-                "vrfs": {
                     "MGMT": {
                         "peerList": [
                             {
@@ -4447,9 +3794,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "The following BGP peer(s) are not configured or maximum routes and maximum routes warning limit is not correct:\n"
-                "{'10.100.0.8': {'default': {'Maximum total routes': 13000, 'Warning limit': 11000}}, "
-                "'10.100.0.9': {'MGMT': {'Maximum total routes': 11000, 'Warning limit': 10000}}}"
+                "Peer: 10.100.0.8 VRF: default - Maximum routes mismatch - Expected: 12000, Actual: 13000",
+                "Peer: 10.100.0.8 VRF: default - Maximum routes warning limit mismatch - Expected: 10000, Actual: 11000",
+                "Peer: 10.100.0.9 VRF: MGMT - Maximum routes mismatch - Expected: 10000, Actual: 11000",
+                "Peer: 10.100.0.9 VRF: MGMT - Maximum routes warning limit mismatch - Expected: 9000, Actual: 10000",
             ],
         },
     },
@@ -4467,14 +3815,11 @@ DATA: list[dict[str, Any]] = [
                             }
                         ]
                     },
-                },
-            },
-            {
-                "vrfs": {
                     "MGMT": {
                         "peerList": [
                             {
                                 "peerAddress": "10.100.0.9",
+                                "maxTotalRoutes": 10000,
                             }
                         ]
                     },
@@ -4490,9 +3835,777 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "The following BGP peer(s) are not configured or maximum routes and maximum routes warning limit is not correct:\n"
-                "{'10.100.0.8': {'default': {'Warning limit': 'Not Found'}}, "
-                "'10.100.0.9': {'MGMT': {'Maximum total routes': 'Not Found', 'Warning limit': 'Not Found'}}}"
+                "Peer: 10.100.0.8 VRF: default - Maximum routes warning limit mismatch - Expected: 10000, Actual: 0",
+                "Peer: 10.100.0.9 VRF: MGMT - Maximum routes warning limit mismatch - Expected: 9000, Actual: 0",
+            ],
+        },
+    },
+    {
+        "name": "success-no-check-tcp-queues",
+        "test": VerifyBGPPeerSession,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "state": "Established",
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 10,
+                                    "inputQueueLength": 5,
+                                },
+                            }
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.9",
+                                "state": "Established",
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 10,
+                                    "inputQueueLength": 5,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "check_tcp_queues": False,
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default"},
+                {"peer_address": "10.100.0.9", "vrf": "MGMT"},
+            ],
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-check-tcp-queues",
+        "test": VerifyBGPPeerSession,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "state": "Established",
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 0,
+                                    "inputQueueLength": 0,
+                                },
+                            }
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.9",
+                                "state": "Established",
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 0,
+                                    "inputQueueLength": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "check_tcp_queues": True,
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default"},
+                {"peer_address": "10.100.0.9", "vrf": "MGMT"},
+            ],
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-peer-not-found",
+        "test": VerifyBGPPeerSession,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "state": "Established",
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 0,
+                                    "inputQueueLength": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default"},
+                {"peer_address": "10.100.0.9", "vrf": "MGMT"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Peer: 10.100.0.9 VRF: MGMT - Not found",
+            ],
+        },
+    },
+    {
+        "name": "failure-not-established",
+        "test": VerifyBGPPeerSession,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "state": "Active",
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 0,
+                                    "inputQueueLength": 0,
+                                },
+                            }
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.9",
+                                "state": "Active",
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 0,
+                                    "inputQueueLength": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default"},
+                {"peer_address": "10.100.0.9", "vrf": "MGMT"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Peer: 10.100.0.8 VRF: default - Session state is not established - State: Active",
+                "Peer: 10.100.0.9 VRF: MGMT - Session state is not established - State: Active",
+            ],
+        },
+    },
+    {
+        "name": "failure-check-tcp-queues",
+        "test": VerifyBGPPeerSession,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "state": "Established",
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 10,
+                                    "inputQueueLength": 5,
+                                },
+                            }
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.9",
+                                "state": "Established",
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 0,
+                                    "inputQueueLength": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default"},
+                {"peer_address": "10.100.0.9", "vrf": "MGMT"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Peer: 10.100.0.8 VRF: default - Session has non-empty message queues - InQ: 5, OutQ: 10",
+            ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifyBGPPeerGroup,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "peerGroupName": "IPv4-UNDERLAY-PEERS",
+                            },
+                            {
+                                "peerAddress": "10.100.4.5",
+                                "peerGroupName": "MLAG-IPv4-UNDERLAY-PEER",
+                            },
+                            {
+                                "peerAddress": "10.100.1.1",
+                                "peerGroupName": "EVPN-OVERLAY-PEERS",
+                            },
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.10",
+                                "peerGroupName": "IPv4-UNDERLAY-PEERS",
+                            },
+                            {
+                                "peerAddress": "10.100.1.2",
+                                "peerGroupName": "EVPN-OVERLAY-PEERS",
+                            },
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default", "peer_group": "IPv4-UNDERLAY-PEERS"},
+                {"peer_address": "10.100.0.10", "vrf": "MGMT", "peer_group": "IPv4-UNDERLAY-PEERS"},
+                {"peer_address": "10.100.1.1", "vrf": "default", "peer_group": "EVPN-OVERLAY-PEERS"},
+                {"peer_address": "10.100.1.2", "vrf": "MGMT", "peer_group": "EVPN-OVERLAY-PEERS"},
+                {"peer_address": "10.100.4.5", "vrf": "default", "peer_group": "MLAG-IPv4-UNDERLAY-PEER"},
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-incorrect-peer-group",
+        "test": VerifyBGPPeerGroup,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "peerGroupName": "UNDERLAY-PEERS",
+                            },
+                            {
+                                "peerAddress": "10.100.1.1",
+                                "peerGroupName": "OVERLAY-PEERS",
+                            },
+                            {
+                                "peerAddress": "10.100.4.5",
+                                "peerGroupName": "UNDERLAY-PEER",
+                            },
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.10",
+                                "peerGroupName": "UNDERLAY-PEERS",
+                            },
+                            {
+                                "peerAddress": "10.100.1.2",
+                                "peerGroupName": "OVERLAY-PEERS",
+                            },
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default", "peer_group": "IPv4-UNDERLAY-PEERS"},
+                {"peer_address": "10.100.0.10", "vrf": "MGMT", "peer_group": "IPv4-UNDERLAY-PEERS"},
+                {"peer_address": "10.100.1.1", "vrf": "default", "peer_group": "EVPN-OVERLAY-PEERS"},
+                {"peer_address": "10.100.1.2", "vrf": "MGMT", "peer_group": "EVPN-OVERLAY-PEERS"},
+                {"peer_address": "10.100.4.5", "vrf": "default", "peer_group": "MLAG-IPv4-UNDERLAY-PEER"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Peer: 10.100.0.8 VRF: default - Incorrect peer group configured - Expected: IPv4-UNDERLAY-PEERS Actual: UNDERLAY-PEERS",
+                "Peer: 10.100.0.10 VRF: MGMT - Incorrect peer group configured - Expected: IPv4-UNDERLAY-PEERS Actual: UNDERLAY-PEERS",
+                "Peer: 10.100.1.1 VRF: default - Incorrect peer group configured - Expected: EVPN-OVERLAY-PEERS Actual: OVERLAY-PEERS",
+                "Peer: 10.100.1.2 VRF: MGMT - Incorrect peer group configured - Expected: EVPN-OVERLAY-PEERS Actual: OVERLAY-PEERS",
+                "Peer: 10.100.4.5 VRF: default - Incorrect peer group configured - Expected: MLAG-IPv4-UNDERLAY-PEER Actual: UNDERLAY-PEER",
+            ],
+        },
+    },
+    {
+        "name": "failure-peers-not-found",
+        "test": VerifyBGPPeerGroup,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {"peerList": []},
+                    "MGMT": {"peerList": []},
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default", "peer_group": "IPv4-UNDERLAY-PEERS"},
+                {"peer_address": "10.100.0.10", "vrf": "MGMT", "peer_group": "IPv4-UNDERLAY-PEERS"},
+                {"peer_address": "10.100.1.1", "vrf": "default", "peer_group": "EVPN-OVERLAY-PEERS"},
+                {"peer_address": "10.100.1.2", "vrf": "MGMT", "peer_group": "EVPN-OVERLAY-PEERS"},
+                {"peer_address": "10.100.4.5", "vrf": "default", "peer_group": "MLAG-IPv4-UNDERLAY-PEER"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Peer: 10.100.0.8 VRF: default - Not found",
+                "Peer: 10.100.0.10 VRF: MGMT - Not found",
+                "Peer: 10.100.1.1 VRF: default - Not found",
+                "Peer: 10.100.1.2 VRF: MGMT - Not found",
+                "Peer: 10.100.4.5 VRF: default - Not found",
+            ],
+        },
+    },
+    {
+        "name": "failure-peer-group-not-found",
+        "test": VerifyBGPPeerGroup,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                            },
+                            {
+                                "peerAddress": "10.100.1.1",
+                            },
+                            {
+                                "peerAddress": "10.100.4.5",
+                            },
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.10",
+                            },
+                            {
+                                "peerAddress": "10.100.1.2",
+                            },
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default", "peer_group": "IPv4-UNDERLAY-PEERS"},
+                {"peer_address": "10.100.0.10", "vrf": "MGMT", "peer_group": "IPv4-UNDERLAY-PEERS"},
+                {"peer_address": "10.100.1.1", "vrf": "default", "peer_group": "EVPN-OVERLAY-PEERS"},
+                {"peer_address": "10.100.1.2", "vrf": "MGMT", "peer_group": "EVPN-OVERLAY-PEERS"},
+                {"peer_address": "10.100.4.5", "vrf": "default", "peer_group": "MLAG-IPv4-UNDERLAY-PEER"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Peer: 10.100.0.8 VRF: default - Incorrect peer group configured - Expected: IPv4-UNDERLAY-PEERS Actual: Not Found",
+                "Peer: 10.100.0.10 VRF: MGMT - Incorrect peer group configured - Expected: IPv4-UNDERLAY-PEERS Actual: Not Found",
+                "Peer: 10.100.1.1 VRF: default - Incorrect peer group configured - Expected: EVPN-OVERLAY-PEERS Actual: Not Found",
+                "Peer: 10.100.1.2 VRF: MGMT - Incorrect peer group configured - Expected: EVPN-OVERLAY-PEERS Actual: Not Found",
+                "Peer: 10.100.4.5 VRF: default - Incorrect peer group configured - Expected: MLAG-IPv4-UNDERLAY-PEER Actual: Not Found",
+            ],
+        },
+    },
+    {
+        "name": "success-no-check-tcp-queues",
+        "test": VerifyBGPPeerSessionRibd,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "state": "Established",
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 10,
+                                    "inputQueueLength": 5,
+                                },
+                            }
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.9",
+                                "state": "Established",
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 10,
+                                    "inputQueueLength": 5,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "check_tcp_queues": False,
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default"},
+                {"peer_address": "10.100.0.9", "vrf": "MGMT"},
+            ],
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-check-tcp-queues",
+        "test": VerifyBGPPeerSessionRibd,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "state": "Established",
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 0,
+                                    "inputQueueLength": 0,
+                                },
+                            }
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.9",
+                                "state": "Established",
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 0,
+                                    "inputQueueLength": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "check_tcp_queues": True,
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default"},
+                {"peer_address": "10.100.0.9", "vrf": "MGMT"},
+            ],
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-peer-not-found",
+        "test": VerifyBGPPeerSessionRibd,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "state": "Established",
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 0,
+                                    "inputQueueLength": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default"},
+                {"peer_address": "10.100.0.9", "vrf": "MGMT"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Peer: 10.100.0.9 VRF: MGMT - Not found",
+            ],
+        },
+    },
+    {
+        "name": "failure-not-established",
+        "test": VerifyBGPPeerSessionRibd,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "state": "Active",
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 0,
+                                    "inputQueueLength": 0,
+                                },
+                            }
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.9",
+                                "state": "Active",
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 0,
+                                    "inputQueueLength": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default"},
+                {"peer_address": "10.100.0.9", "vrf": "MGMT"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Peer: 10.100.0.8 VRF: default - Session state is not established - State: Active",
+                "Peer: 10.100.0.9 VRF: MGMT - Session state is not established - State: Active",
+            ],
+        },
+    },
+    {
+        "name": "failure-check-tcp-queues",
+        "test": VerifyBGPPeerSessionRibd,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "state": "Established",
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 10,
+                                    "inputQueueLength": 5,
+                                },
+                            }
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.9",
+                                "state": "Established",
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 0,
+                                    "inputQueueLength": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default"},
+                {"peer_address": "10.100.0.9", "vrf": "MGMT"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Peer: 10.100.0.8 VRF: default - Session has non-empty message queues - InQ: 5, OutQ: 10",
+            ],
+        },
+    },
+    {
+        "name": "success-no-check-tcp-queues",
+        "test": VerifyBGPPeersHealthRibd,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "state": "Established",
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 10,
+                                    "inputQueueLength": 5,
+                                },
+                            }
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.9",
+                                "state": "Established",
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 10,
+                                    "inputQueueLength": 5,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "check_tcp_queues": False,
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-check-tcp-queues",
+        "test": VerifyBGPPeersHealthRibd,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "state": "Established",
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 0,
+                                    "inputQueueLength": 0,
+                                },
+                            }
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.9",
+                                "state": "Established",
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 0,
+                                    "inputQueueLength": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "check_tcp_queues": True,
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-not-established",
+        "test": VerifyBGPPeersHealthRibd,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "state": "Active",
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 0,
+                                    "inputQueueLength": 0,
+                                },
+                            }
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.9",
+                                "state": "Active",
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 0,
+                                    "inputQueueLength": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Peer: 10.100.0.8 VRF: default - Session state is not established - State: Active",
+                "Peer: 10.100.0.9 VRF: MGMT - Session state is not established - State: Active",
+            ],
+        },
+    },
+    {
+        "name": "failure-check-tcp-queues",
+        "test": VerifyBGPPeersHealthRibd,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "state": "Established",
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 10,
+                                    "inputQueueLength": 5,
+                                },
+                            }
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.9",
+                                "state": "Established",
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 0,
+                                    "inputQueueLength": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Peer: 10.100.0.8 VRF: default - Session has non-empty message queues - InQ: 5, OutQ: 10",
             ],
         },
     },

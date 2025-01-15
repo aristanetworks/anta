@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module related to system-level features and protocols tests."""
@@ -224,7 +224,7 @@ class VerifyMemoryUtilization(AntaTest):
         if memory_usage > MEMORY_THRESHOLD:
             self.result.is_success()
         else:
-            self.result.is_failure(f"Device has reported a high memory usage: {(1 - memory_usage)*100:.2f}%")
+            self.result.is_failure(f"Device has reported a high memory usage: {(1 - memory_usage) * 100:.2f}%")
 
 
 class VerifyFileSystemUtilization(AntaTest):
