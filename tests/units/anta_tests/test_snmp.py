@@ -14,6 +14,7 @@ from anta.tests.snmp import (
     VerifySnmpIPv4Acl,
     VerifySnmpIPv6Acl,
     VerifySnmpLocation,
+    VerifySnmpNotificationHost,
     VerifySnmpPDUCounters,
     VerifySnmpStatus,
     VerifySnmpUser,
@@ -535,5 +536,216 @@ DATA: list[dict[str, Any]] = [
                 "User: Test4 Group: TestGroup4 Version: v3 - Incorrect privacy type - Expected: AES-192 Actual: AES-128",
             ],
         },
+    },
+    {
+        "name": "success",
+        "test": VerifySnmpNotificationHost,
+        "eos_data": [
+            {
+                "hosts": [
+                    {
+                        "hostname": "192.168.1.100",
+                        "port": 162,
+                        "vrf": "",
+                        "notificationType": "trap",
+                        "protocolVersion": "v3",
+                        "v3Params": {"user": "public", "securityLevel": "authNoPriv"},
+                    },
+                    {
+                        "hostname": "192.168.1.101",
+                        "port": 162,
+                        "vrf": "MGMT",
+                        "notificationType": "trap",
+                        "protocolVersion": "v2c",
+                        "v1v2cParams": {"communityString": "public"},
+                    },
+                ]
+            }
+        ],
+        "inputs": {
+            "notification_hosts": [
+                {"hostname": "192.168.1.100", "vrf": "default", "notification_type": "trap", "version": "v3", "udp_port": 162, "user": "public"},
+                {"hostname": "192.168.1.101", "vrf": "MGMT", "notification_type": "trap", "version": "v2c", "udp_port": 162, "community_string": "public"},
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-not-configured",
+        "test": VerifySnmpNotificationHost,
+        "eos_data": [{"hosts": []}],
+        "inputs": {
+            "notification_hosts": [
+                {"hostname": "192.168.1.100", "vrf": "default", "notification_type": "trap", "version": "v3", "udp_port": 162, "user": "public"},
+                {"hostname": "192.168.1.101", "vrf": "default", "notification_type": "trap", "version": "v2c", "udp_port": 162, "community_string": "public"},
+            ]
+        },
+        "expected": {"result": "failure", "messages": ["No SNMP host is configured."]},
+    },
+    {
+        "name": "failure-details-host-not-found",
+        "test": VerifySnmpNotificationHost,
+        "eos_data": [
+            {
+                "hosts": [
+                    {
+                        "hostname": "192.168.1.100",
+                        "port": 162,
+                        "vrf": "",
+                        "notificationType": "trap",
+                        "protocolVersion": "v3",
+                        "v3Params": {"user": "public", "securityLevel": "authNoPriv"},
+                    },
+                ]
+            }
+        ],
+        "inputs": {
+            "notification_hosts": [
+                {"hostname": "192.168.1.100", "vrf": "default", "notification_type": "trap", "version": "v3", "udp_port": 162, "user": "public"},
+                {"hostname": "192.168.1.101", "vrf": "default", "notification_type": "trap", "version": "v2c", "udp_port": 162, "community_string": "public"},
+            ]
+        },
+        "expected": {"result": "failure", "messages": ["Host: 192.168.1.101 VRF: default Version: v2c - Not configured"]},
+    },
+    {
+        "name": "failure-incorrect-notification-type",
+        "test": VerifySnmpNotificationHost,
+        "eos_data": [
+            {
+                "hosts": [
+                    {
+                        "hostname": "192.168.1.100",
+                        "port": 162,
+                        "vrf": "",
+                        "notificationType": "trap",
+                        "protocolVersion": "v3",
+                        "v3Params": {"user": "public", "securityLevel": "authNoPriv"},
+                    },
+                    {
+                        "hostname": "192.168.1.101",
+                        "port": 162,
+                        "vrf": "",
+                        "notificationType": "inform",
+                        "protocolVersion": "v2c",
+                        "v1v2cParams": {"communityString": "public"},
+                    },
+                ]
+            }
+        ],
+        "inputs": {
+            "notification_hosts": [
+                {"hostname": "192.168.1.100", "vrf": "default", "notification_type": "inform", "version": "v3", "udp_port": 162, "user": "public"},
+                {"hostname": "192.168.1.101", "vrf": "default", "notification_type": "trap", "version": "v2c", "udp_port": 162, "community_string": "public"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Host: 192.168.1.100 VRF: default - Incorrect notification type - Expected: inform Actual: trap",
+                "Host: 192.168.1.101 VRF: default - Incorrect notification type - Expected: trap Actual: inform",
+            ],
+        },
+    },
+    {
+        "name": "failure-incorrect-udp-port",
+        "test": VerifySnmpNotificationHost,
+        "eos_data": [
+            {
+                "hosts": [
+                    {
+                        "hostname": "192.168.1.100",
+                        "port": 163,
+                        "vrf": "",
+                        "notificationType": "trap",
+                        "protocolVersion": "v3",
+                        "v3Params": {"user": "public", "securityLevel": "authNoPriv"},
+                    },
+                    {
+                        "hostname": "192.168.1.101",
+                        "port": 164,
+                        "vrf": "",
+                        "notificationType": "trap",
+                        "protocolVersion": "v2c",
+                        "v1v2cParams": {"communityString": "public"},
+                    },
+                ]
+            }
+        ],
+        "inputs": {
+            "notification_hosts": [
+                {"hostname": "192.168.1.100", "vrf": "default", "notification_type": "trap", "version": "v3", "udp_port": 162, "user": "public"},
+                {"hostname": "192.168.1.101", "vrf": "default", "notification_type": "trap", "version": "v2c", "udp_port": 162, "community_string": "public"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Host: 192.168.1.100 VRF: default - Incorrect UDP port - Expected: 162 Actual: 163",
+                "Host: 192.168.1.101 VRF: default - Incorrect UDP port - Expected: 162 Actual: 164",
+            ],
+        },
+    },
+    {
+        "name": "failure-incorrect-community-string-version-v1-v2c",
+        "test": VerifySnmpNotificationHost,
+        "eos_data": [
+            {
+                "hosts": [
+                    {
+                        "hostname": "192.168.1.100",
+                        "port": 162,
+                        "vrf": "",
+                        "notificationType": "trap",
+                        "protocolVersion": "v1",
+                        "v1v2cParams": {"communityString": "private"},
+                    },
+                    {
+                        "hostname": "192.168.1.101",
+                        "port": 162,
+                        "vrf": "",
+                        "notificationType": "trap",
+                        "protocolVersion": "v2c",
+                        "v1v2cParams": {"communityString": "private"},
+                    },
+                ]
+            }
+        ],
+        "inputs": {
+            "notification_hosts": [
+                {"hostname": "192.168.1.100", "vrf": "default", "notification_type": "trap", "version": "v1", "udp_port": 162, "community_string": "public"},
+                {"hostname": "192.168.1.101", "vrf": "default", "notification_type": "trap", "version": "v2c", "udp_port": 162, "community_string": "public"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Host: 192.168.1.100 VRF: default Version: v1 - Incorrect community string - Expected: public Actual: private",
+                "Host: 192.168.1.101 VRF: default Version: v2c - Incorrect community string - Expected: public Actual: private",
+            ],
+        },
+    },
+    {
+        "name": "failure-incorrect-user-for-version-v3",
+        "test": VerifySnmpNotificationHost,
+        "eos_data": [
+            {
+                "hosts": [
+                    {
+                        "hostname": "192.168.1.100",
+                        "port": 162,
+                        "vrf": "",
+                        "notificationType": "trap",
+                        "protocolVersion": "v3",
+                        "v3Params": {"user": "private", "securityLevel": "authNoPriv"},
+                    }
+                ]
+            }
+        ],
+        "inputs": {
+            "notification_hosts": [
+                {"hostname": "192.168.1.100", "vrf": "default", "notification_type": "trap", "version": "v3", "udp_port": 162, "user": "public"},
+            ]
+        },
+        "expected": {"result": "failure", "messages": ["Host: 192.168.1.100 VRF: default Version: v3 - Incorrect user - Expected: public Actual: private"]},
     },
 ]
