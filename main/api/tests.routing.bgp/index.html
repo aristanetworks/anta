@@ -1925,6 +1925,40 @@
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#anta.tests.routing.bgp.VerifyBGPRoutePaths" class="md-nav__link">
+      <span class="md-ellipsis">
+        VerifyBGPRoutePaths
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="VerifyBGPRoutePaths">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.routing.bgp.VerifyBGPRoutePaths-attributes" class="md-nav__link">
+      <span class="md-ellipsis">
+        Inputs
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#anta.tests.routing.bgp.VerifyBGPSpecificPeers" class="md-nav__link">
       <span class="md-ellipsis">
         VerifyBGPSpecificPeers
@@ -2130,6 +2164,34 @@
     <a href="#anta.input_models.routing.bgp.BgpPeer" class="md-nav__link">
       <span class="md-ellipsis">
         BgpPeer
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.input_models.routing.bgp.BgpRoute" class="md-nav__link">
+      <span class="md-ellipsis">
+        BgpRoute
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.input_models.routing.bgp.BgpRoutePath" class="md-nav__link">
+      <span class="md-ellipsis">
+        BgpRoutePath
       </span>
     </a>
 
@@ -3564,6 +3626,40 @@
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#anta.tests.routing.bgp.VerifyBGPRoutePaths" class="md-nav__link">
+      <span class="md-ellipsis">
+        VerifyBGPRoutePaths
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="VerifyBGPRoutePaths">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.routing.bgp.VerifyBGPRoutePaths-attributes" class="md-nav__link">
+      <span class="md-ellipsis">
+        Inputs
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#anta.tests.routing.bgp.VerifyBGPSpecificPeers" class="md-nav__link">
       <span class="md-ellipsis">
         VerifyBGPSpecificPeers
@@ -3769,6 +3865,34 @@
     <a href="#anta.input_models.routing.bgp.BgpPeer" class="md-nav__link">
       <span class="md-ellipsis">
         BgpPeer
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.input_models.routing.bgp.BgpRoute" class="md-nav__link">
+      <span class="md-ellipsis">
+        BgpRoute
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.input_models.routing.bgp.BgpRoutePath" class="md-nav__link">
+      <span class="md-ellipsis">
+        BgpRoutePath
       </span>
     </a>
 
@@ -8178,6 +8302,245 @@ have successfully negotiated the specified AFI/SAFI</li>
 
 
 
+<h2 id="anta.tests.routing.bgp.VerifyBGPRoutePaths" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">VerifyBGPRoutePaths</span>
+
+
+<a href="#anta.tests.routing.bgp.VerifyBGPRoutePaths" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+  
+        <p>Verifies BGP IPv4 route paths.</p>
+<p>This test performs the following checks for each specified BGP route entry:
+  1. Verifies the specified BGP route exists in the routing table.
+  2. For each expected paths:
+      - Verifies a path with matching next-hop exists.
+      - Verifies the path&rsquo;s origin attribute matches the expected value.</p>
+
+
+<details class="expected-results" open>
+  <summary>Expected Results</summary>
+  <ul>
+<li>Success: The test will pass if all specified routes exist with paths matching the expected next-hops and origin attributes.</li>
+<li>Failure: The test will fail if:<ul>
+<li>A specified BGP route is not found.</li>
+<li>A path with specified next-hop is not found.</li>
+<li>A path&rsquo;s origin attribute doesn&rsquo;t match the expected value.</li>
+</ul>
+</li>
+</ul>
+</details>
+
+
+<details class="example" open>
+  <summary>Examples</summary>
+        <div class="highlight"><pre><span></span><code><span class="nt">anta.tests.routing</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">bgp</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyBGPRoutePaths</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">route_entries</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.100.0.128/31</span>
+<span class="w">              </span><span class="nt">vrf</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
+<span class="w">              </span><span class="nt">paths</span><span class="p">:</span>
+<span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">nexthop</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.100.0.10</span>
+<span class="w">                  </span><span class="nt">origin</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Igp</span>
+<span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">nexthop</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.100.4.5</span>
+<span class="w">                  </span><span class="nt">origin</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Incomplete</span>
+</code></pre></div>
+</details>
+
+
+
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+<h3 id="anta.tests.routing.bgp.VerifyBGPRoutePaths-attributes">Inputs<a href="#anta.tests.routing.bgp.VerifyBGPRoutePaths-attributes" class="headerlink" title="Permanent link">&para;</a></h3>  
+
+  <div class="doc doc-children">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Description</th>
+              <th>Default</th>
+            </tr>
+          </thead>
+          <tbody>
+              <tr>
+                <td><code>route_entries</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="anta.input_models.routing.bgp.BgpRoute" href="#anta.input_models.routing.bgp.BgpRoute">BgpRoute</a>]</code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    List of BGP IPv4 route(s).
+                  </div>
+                </td>
+                <td>
+                    <em>-</em>
+                </td>
+              </tr>
+          </tbody>
+        </table>
+  </div>
+
+
+
+
+
+  </div>
+  <details class="quote">
+  <summary>Source code in <code>anta/tests/routing/bgp.py</code></summary>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1624</span>
+<span class="normal">1625</span>
+<span class="normal">1626</span>
+<span class="normal">1627</span>
+<span class="normal">1628</span>
+<span class="normal">1629</span>
+<span class="normal">1630</span>
+<span class="normal">1631</span>
+<span class="normal">1632</span>
+<span class="normal">1633</span>
+<span class="normal">1634</span>
+<span class="normal">1635</span>
+<span class="normal">1636</span>
+<span class="normal">1637</span>
+<span class="normal">1638</span>
+<span class="normal">1639</span>
+<span class="normal">1640</span>
+<span class="normal">1641</span>
+<span class="normal">1642</span>
+<span class="normal">1643</span>
+<span class="normal">1644</span>
+<span class="normal">1645</span>
+<span class="normal">1646</span>
+<span class="normal">1647</span>
+<span class="normal">1648</span>
+<span class="normal">1649</span>
+<span class="normal">1650</span>
+<span class="normal">1651</span>
+<span class="normal">1652</span>
+<span class="normal">1653</span>
+<span class="normal">1654</span>
+<span class="normal">1655</span>
+<span class="normal">1656</span>
+<span class="normal">1657</span>
+<span class="normal">1658</span>
+<span class="normal">1659</span>
+<span class="normal">1660</span>
+<span class="normal">1661</span>
+<span class="normal">1662</span>
+<span class="normal">1663</span>
+<span class="normal">1664</span>
+<span class="normal">1665</span>
+<span class="normal">1666</span>
+<span class="normal">1667</span>
+<span class="normal">1668</span>
+<span class="normal">1669</span>
+<span class="normal">1670</span>
+<span class="normal">1671</span>
+<span class="normal">1672</span>
+<span class="normal">1673</span>
+<span class="normal">1674</span>
+<span class="normal">1675</span>
+<span class="normal">1676</span>
+<span class="normal">1677</span>
+<span class="normal">1678</span>
+<span class="normal">1679</span>
+<span class="normal">1680</span>
+<span class="normal">1681</span>
+<span class="normal">1682</span>
+<span class="normal">1683</span>
+<span class="normal">1684</span>
+<span class="normal">1685</span>
+<span class="normal">1686</span>
+<span class="normal">1687</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPRoutePaths</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies BGP IPv4 route paths.</span>
+
+<span class="sd">    This test performs the following checks for each specified BGP route entry:</span>
+<span class="sd">      1. Verifies the specified BGP route exists in the routing table.</span>
+<span class="sd">      2. For each expected paths:</span>
+<span class="sd">          - Verifies a path with matching next-hop exists.</span>
+<span class="sd">          - Verifies the path&#39;s origin attribute matches the expected value.</span>
+
+<span class="sd">    Expected Results</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    * Success: The test will pass if all specified routes exist with paths matching the expected next-hops and origin attributes.</span>
+<span class="sd">    * Failure: The test will fail if:</span>
+<span class="sd">        - A specified BGP route is not found.</span>
+<span class="sd">        - A path with specified next-hop is not found.</span>
+<span class="sd">        - A path&#39;s origin attribute doesn&#39;t match the expected value.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    ```yaml</span>
+<span class="sd">    anta.tests.routing:</span>
+<span class="sd">      bgp:</span>
+<span class="sd">        - VerifyBGPRoutePaths:</span>
+<span class="sd">            route_entries:</span>
+<span class="sd">                - prefix: 10.100.0.128/31</span>
+<span class="sd">                  vrf: default</span>
+<span class="sd">                  paths:</span>
+<span class="sd">                    - nexthop: 10.100.0.10</span>
+<span class="sd">                      origin: Igp</span>
+<span class="sd">                    - nexthop: 10.100.4.5</span>
+<span class="sd">                      origin: Incomplete</span>
+<span class="sd">    ```</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;bgp&quot;</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show ip bgp vrf all&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">3</span><span class="p">)]</span>
+
+    <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyBGPRoutePaths test.&quot;&quot;&quot;</span>
+
+        <span class="n">route_entries</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BgpRoute</span><span class="p">]</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of BGP IPv4 route(s).&quot;&quot;&quot;</span>
+
+    <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyBGPRoutePaths.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">route</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">route_entries</span><span class="p">:</span>
+            <span class="c1"># Verify if the prefix exists in BGP table</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">bgp_routes</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;vrfs..</span><span class="si">{</span><span class="n">route</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">..bgpRouteEntries..</span><span class="si">{</span><span class="n">route</span><span class="o">.</span><span class="n">prefix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;..&quot;</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">route</span><span class="si">}</span><span class="s2"> - prefix not found&quot;</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># Iterating over each path.</span>
+            <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">route</span><span class="o">.</span><span class="n">paths</span><span class="p">:</span>
+                <span class="n">nexthop</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">nexthop</span><span class="p">)</span>
+                <span class="n">origin</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">origin</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">route_path</span> <span class="o">:=</span> <span class="n">get_item</span><span class="p">(</span><span class="n">bgp_routes</span><span class="p">[</span><span class="s2">&quot;bgpRoutePaths&quot;</span><span class="p">],</span> <span class="s2">&quot;nextHop&quot;</span><span class="p">,</span> <span class="n">nexthop</span><span class="p">)):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">route</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> - path not found&quot;</span><span class="p">)</span>
+                    <span class="k">continue</span>
+
+                <span class="k">if</span> <span class="p">(</span><span class="n">actual_origin</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">route_path</span><span class="p">,</span> <span class="s2">&quot;routeType.origin&quot;</span><span class="p">))</span> <span class="o">!=</span> <span class="n">origin</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">route</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> - Origin mismatch - Actual: </span><span class="si">{</span><span class="n">actual_origin</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+  </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
 <h2 id="anta.tests.routing.bgp.VerifyBGPSpecificPeers" class="doc doc-heading">
             <span class="doc doc-object-name doc-class-name">VerifyBGPSpecificPeers</span>
 
@@ -10138,6 +10501,279 @@ Optional field in the `VerifyBGPPeerRouteLimit` test. If not provided, the test 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a human-readable string representation of the BgpPeer for reporting.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Peer: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">peer_address</span><span class="si">}</span><span class="s2"> VRF: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">&quot;</span>
+</code></pre></div></td></tr></table></div>
+  </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="anta.input_models.routing.bgp.BgpRoute" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">BgpRoute</span>
+
+
+<a href="#anta.input_models.routing.bgp.BgpRoute" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+  
+        <p>Model representing BGP routes.</p>
+<p>Only IPv4 prefixes are supported for now.</p>
+
+
+
+
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+  
+
+  <div class="doc doc-children">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Description</th>
+              <th>Default</th>
+            </tr>
+          </thead>
+          <tbody>
+              <tr>
+                <td><code>prefix</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" title="ipaddress.IPv4Network" href="https://docs.python.org/3/library/ipaddress.html#ipaddress.IPv4Network">IPv4Network</a></code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    The IPv4 network address.
+                  </div>
+                </td>
+                <td>
+                    <em>-</em>
+                </td>
+              </tr>
+              <tr>
+                <td><code>vrf</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    Optional VRF for the BGP peer. Defaults to `default`.
+                  </div>
+                </td>
+                <td>
+                      <code>&#39;default&#39;</code>
+                </td>
+              </tr>
+              <tr>
+                <td><code>paths</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="anta.input_models.routing.bgp.BgpRoutePath" href="#anta.input_models.routing.bgp.BgpRoutePath">BgpRoutePath</a>] | None</code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    A list of paths for the BGP route. Required field in the `VerifyBGPRouteOrigin` test.
+                  </div>
+                </td>
+                <td>
+                      <code>None</code>
+                </td>
+              </tr>
+          </tbody>
+        </table>
+  </div>
+
+
+
+
+
+
+  </div>
+  <details class="quote">
+  <summary>Source code in <code>anta/input_models/routing/bgp.py</code></summary>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BgpRoute</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Model representing BGP routes.</span>
+
+<span class="sd">    Only IPv4 prefixes are supported for now.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+    <span class="n">prefix</span><span class="p">:</span> <span class="n">IPv4Network</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The IPv4 network address.&quot;&quot;&quot;</span>
+    <span class="n">vrf</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Optional VRF for the BGP peer. Defaults to `default`.&quot;&quot;&quot;</span>
+    <span class="n">paths</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BgpRoutePath</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A list of paths for the BGP route. Required field in the `VerifyBGPRouteOrigin` test.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a human-readable string representation of the BgpRoute for reporting.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        - Prefix: 192.168.66.100/24 VRF: default</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Prefix: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prefix</span><span class="si">}</span><span class="s2"> VRF: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">&quot;</span>
+</code></pre></div></td></tr></table></div>
+  </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="anta.input_models.routing.bgp.BgpRoutePath" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">BgpRoutePath</span>
+
+
+<a href="#anta.input_models.routing.bgp.BgpRoutePath" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+  
+        <p>Model representing a BGP route path.</p>
+
+
+
+
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+  
+
+  <div class="doc doc-children">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Description</th>
+              <th>Default</th>
+            </tr>
+          </thead>
+          <tbody>
+              <tr>
+                <td><code>nexthop</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" title="ipaddress.IPv4Address" href="https://docs.python.org/3/library/ipaddress.html#ipaddress.IPv4Address">IPv4Address</a></code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    The next-hop IPv4 address for the path.
+                  </div>
+                </td>
+                <td>
+                    <em>-</em>
+                </td>
+              </tr>
+              <tr>
+                <td><code>origin</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" title="typing.Literal" href="https://docs.python.org/3/library/typing.html#typing.Literal">Literal</a>[&#39;Igp&#39;, &#39;Egp&#39;, &#39;Incomplete&#39;]</code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    The BGP origin attribute of the route.
+                  </div>
+                </td>
+                <td>
+                    <em>-</em>
+                </td>
+              </tr>
+          </tbody>
+        </table>
+  </div>
+
+
+
+
+
+
+  </div>
+  <details class="quote">
+  <summary>Source code in <code>anta/input_models/routing/bgp.py</code></summary>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BgpRoutePath</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Model representing a BGP route path.&quot;&quot;&quot;</span>
+
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+    <span class="n">nexthop</span><span class="p">:</span> <span class="n">IPv4Address</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The next-hop IPv4 address for the path.&quot;&quot;&quot;</span>
+    <span class="n">origin</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;Igp&quot;</span><span class="p">,</span> <span class="s2">&quot;Egp&quot;</span><span class="p">,</span> <span class="s2">&quot;Incomplete&quot;</span><span class="p">]</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The BGP origin attribute of the route.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a human-readable string representation of the RoutePath for reporting.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        - Next-hop: 192.168.66.101 Origin: Igp</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Next-hop: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nexthop</span><span class="si">}</span><span class="s2"> Origin: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">origin</span><span class="si">}</span><span class="s2">&quot;</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
