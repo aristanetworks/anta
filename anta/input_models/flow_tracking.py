@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module containing input models for flow tracking tests."""
@@ -44,10 +44,10 @@ class RecordExport(BaseModel):
 
         Examples
         --------
-        InActive Timeout: 60000 Active Interval: 300000
+        Inactive Timeout: 60000, Active Interval: 300000
 
         """
-        return f"InActive Timeout: {self.on_inactive_timeout} Active Interval: {self.on_interval}"
+        return f"Inactive Timeout: {self.on_inactive_timeout}, Active Interval: {self.on_interval}"
 
 
 class Exporter(BaseModel):

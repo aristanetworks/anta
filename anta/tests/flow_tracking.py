@@ -28,48 +28,51 @@ def validate_exporters(exporters: list[dict[str, str]], tracker_info: dict[str, 
     Returns
     -------
     list
-        Failure message if any exporter configuration does not match.
+        List of failure messages for any exporter configuration that does not match.
     """
-    failed_log = []
+    failure_messages = []
     for exporter in exporters:
         exporter_name = exporter.name
         actual_exporter_info = tracker_info["exporters"].get(exporter_name)
         if not actual_exporter_info:
-            failed_log.append(f"Exporter: {exporter_name} - Not configured")
+            failure_messages.append(f"Exporter: {exporter_name} - Not configured")
             continue
         local_interface = actual_exporter_info["localIntf"]
         template_interval = actual_exporter_info["templateInterval"]
 
         if local_interface != exporter.local_interface:
-            failed_log.append(f"Exporter: {exporter_name} - Incorrect local interface - Expected: {exporter.local_interface} Actual: {local_interface}")
+            failure_messages.append(f"Exporter: {exporter_name} - Incorrect local interface - Expected: {exporter.local_interface}, Actual: {local_interface}")
 
         if template_interval != exporter.template_interval:
-            failed_log.append(f"Exporter: {exporter_name} - Incorrect template interval - Expected: {exporter.template_interval} Actual: {template_interval}")
-    return failed_log
+            failure_messages.append(f"Exporter: {exporter_name} - Incorrect template interval - Expected: {exporter.template_interval}, Actual: {template_interval}")
+    return failure_messages
 
 
 class VerifyHardwareFlowTrackerStatus(AntaTest):
-    """Verifies the hardware flow tracking.
+    """Verifies the hardware flow tracking configuration.
 
     This test performs the following checks:
 
       1. Confirms that hardware flow tracking is running.
-      2. Confirms that the specified input tracker is active.
-      3. Optionally, checks the tracker interval/timeout configuration.
-      4. Optionally, verifies the tracker exporter configuration
+      2. For each specified flow tracker:
+        - Confirms that the specified input tracker is active.
+        - Optionally, checks the tracker interval/timeout configuration.
+        - Optionally, verifies the tracker exporter configuration
 
     Expected Results
     ----------------
     * Success: The test will pass if all of the following conditions are met:
-        - All Hardware flow tracking is running.
-        - The specified input tracker is active.
-        - The tracker interval/timeout matches the expected values, if provided.
-        - The exporter configuration matches the expected values, if provided.
+        - Hardware flow tracking is running.
+        - For each specified flow tracker:
+            - The flow tracker is active.
+            - The tracker interval/timeout matches the expected values, if provided.
+            - The exporter configuration matches the expected values, if provided.
     * Failure: The test will fail if any of the following conditions are met:
         - Hardware flow tracking is not running.
-        - The specified input tracker is not active.
-        - The tracker interval/timeout does not match the expected values, if provided.
-        - The exporter configuration does not match the expected values, if provided.
+        - For each specified flow tracker:
+            - The flow tracker is not active.
+            - The tracker interval/timeout does not match the expected values, if provided.
+            - The exporter configuration does not match the expected values, if provided.
 
     Examples
     --------
@@ -128,11 +131,11 @@ class VerifyHardwareFlowTrackerStatus(AntaTest):
                 act_interval = tracker_info.get("activeInterval")
                 if not all([inactive_interval == act_inactive, on_interval == act_interval]):
                     self.result.is_failure(
-                        f"{tracker} {tracker.record_export} - Incorrect durations - InActive Timeout: {act_inactive} OnActive Interval: {act_interval}"
+                        f"{tracker}, {tracker.record_export} - Incorrect durations - Inactive Timeout: {act_inactive}, OnActive Interval: {act_interval}"
                     )
 
             # Check the input hardware tracker exporters configuration
             if tracker.exporters:
-                failed_log = validate_exporters(tracker.exporters, tracker_info)
-                for log in failed_log:
-                    self.result.is_failure(f"{tracker} {log}")
+                failure_messages = validate_exporters(tracker.exporters, tracker_info)
+                for message in failure_messages:
+                    self.result.is_failure(f"{tracker}, {message}")
