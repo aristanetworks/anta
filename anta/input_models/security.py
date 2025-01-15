@@ -99,6 +99,7 @@ class APISSLCertificate(BaseModel):
 class ACL(BaseModel):
     """Model for an Access Control List (ACL)."""
 
+    model_config = ConfigDict(extra="forbid")
     name: str
     """Name of the ACL."""
     entries: list[ACLEntry]
@@ -117,20 +118,11 @@ class ACL(BaseModel):
 class ACLEntry(BaseModel):
     """Model for an Access Control List (ACL) entry."""
 
+    model_config = ConfigDict(extra="forbid")
     sequence: int = Field(ge=1, le=4294967295)
-    """The unique sequence number of the ACL entry, used to define the order of processing. Must be between 1 and 4294967295."""
+    """Sequence number of the ACL entry, used to define the order of processing. Must be between 1 and 4294967295."""
     action: str
-    """The action to be applied to matching traffic.
-
-    Attributes:
-        - action (str): Specifies whether the traffic should be permitted or denied. For example, 'permit' allows the traffic to pass, while 'deny' blocks it.
-        - protocol (str): Defines the protocol for the rule, such as 'icmp', 'icmpv6' or 'ipv6'. This specifies the type of traffic the rule applies to.
-        - source_address (str): The source address for the rule. 'any' means it matches any source address.
-        - destination_address (str): The destination address for the rule. 'any' means it matches any destination address.
-        - security context(Optional[str]): A keyword used to specify additional conditions for the rule
-
-    This ACL entry specifies the action to be applied to traffic that matches the defined conditions (e.g., 'permit ipv6 any any' allows any IPv6 traffic).
-    """
+    """Action of the ACL entry. Example: `deny ip any any`."""
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the ACLEntry for reporting.
