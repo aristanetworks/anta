@@ -16,6 +16,8 @@ from tests.units.test_models import FakeTestWithInput
 
 TEST_RESULTS: Path = Path(__file__).parent.resolve() / "test_files" / "test_md_report_results.json"
 
+FAKE_TEST = FakeTestWithInput
+
 
 @pytest.fixture(name="result_manager_factory")
 def result_manager_factory_fixture(test_result_factory: Callable[[int, int, bool, bool], TestResult]) -> Callable[[int, int, bool, bool], ResultManager]:
@@ -85,7 +87,7 @@ def test_result_factory_fixture(device: AntaDevice) -> Callable[[int, int, bool,
         distinct_devices
             Whether or not to use the index in the device name.
         """
-        test = FakeTestWithInput(device=device, inputs={"string": f"Test instance {index}"})
+        test = FAKE_TEST(device=device, inputs={"string": f"Test instance {index}"})
         res = TestResult(
             name=device.name if not distinct_devices else f"{device.name}{index}",
             test=test.name if not distinct_tests else f"{test.name}{index}",

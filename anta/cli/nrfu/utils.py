@@ -82,7 +82,7 @@ def print_settings(
     console.print()
 
 
-def print_table(ctx: click.Context, expand_atomic: bool, group_by: Literal["device", "test"] | None) -> None:
+def print_table(ctx: click.Context, *, expand_atomic: bool, group_by: Literal["device", "test"] | None) -> None:
     """Print result in a table."""
     reporter = ReportTable()
     console.print()
@@ -116,7 +116,7 @@ def print_json(ctx: click.Context, output: pathlib.Path | None = None) -> None:
             ctx.exit(ExitCode.USAGE_ERROR)
 
 
-def print_text(ctx: click.Context, expand_atomic: bool) -> None:
+def print_text(ctx: click.Context, *, expand_atomic: bool) -> None:
     """Print results as simple text."""
     console.print()
     for result in _get_result_manager(ctx).results:

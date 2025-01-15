@@ -171,7 +171,8 @@ class TestResult(BaseTestResult):
 
     def __str__(self) -> str:
         """Return a human readable string of this TestResult."""
-        return f"Test '{self.test}' (on '{self.name}'): Result '{self.result}'\nMessages: {self.messages}"
+        results = f"{self.result} [{','.join([str(r.result) for r in self.atomic_results])}]" if self.atomic_results else str(self.result)
+        return f"Test {self.test} (on {self.name}): {results}{f'\nMessages:\n{"\n".join(self.messages)}' if self.messages else ''}"
 
     def add(self, description: str | None = None, inputs: BaseModel | None = None) -> AtomicTestResult:
         """Create and add a new AtomicTestResult to this TestResult instance.

@@ -36,10 +36,10 @@ logger = logging.getLogger(__name__)
     show_default=True,
     help="Flag to indicate if atomic results should be rendered",
 )
-def table(ctx: click.Context, group_by: Literal["device", "test"] | None, expand_atomic: bool) -> None:
+def table(ctx: click.Context, *, group_by: Literal["device", "test"] | None, expand_atomic: bool) -> None:
     """ANTA command to check network state with table results."""
     run_tests(ctx)
-    print_table(ctx, expand_atomic, group_by)
+    print_table(ctx, expand_atomic=expand_atomic, group_by=group_by)
     exit_with_code(ctx)
 
 
@@ -74,10 +74,10 @@ def json(ctx: click.Context, output: pathlib.Path | None) -> None:
     show_default=True,
     help="Flag to indicate if atomic results should be rendered",
 )
-def text(ctx: click.Context, expand_atomic: bool) -> None:
+def text(ctx: click.Context, *, expand_atomic: bool) -> None:
     """ANTA command to check network state with text results."""
     run_tests(ctx)
-    print_text(ctx, expand_atomic)
+    print_text(ctx, expand_atomic=expand_atomic)
     exit_with_code(ctx)
 
 
