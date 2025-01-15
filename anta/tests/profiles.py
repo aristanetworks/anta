@@ -51,7 +51,7 @@ class VerifyUnifiedForwardingTableMode(AntaTest):
         if command_output["uftMode"] == str(self.inputs.mode):
             self.result.is_success()
         else:
-            self.result.is_failure(f"Device is not running correct UFT mode (expected: {self.inputs.mode} / running: {command_output['uftMode']})")
+            self.result.is_failure(f"Not running the correct UFT mode - Expected: {self.inputs.mode}, Actual: {command_output['uftMode']}")
 
 
 class VerifyTcamProfile(AntaTest):

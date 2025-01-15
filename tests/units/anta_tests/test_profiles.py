@@ -23,7 +23,7 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyUnifiedForwardingTableMode,
         "eos_data": [{"uftMode": "2", "urpfEnabled": False, "chipModel": "bcm56870", "l2TableSize": 163840, "l3TableSize": 147456, "lpmTableSize": 32768}],
         "inputs": {"mode": 3},
-        "expected": {"result": "failure", "messages": ["Device is not running correct UFT mode (expected: 3 / running: 2)"]},
+        "expected": {"result": "failure", "messages": ["Not running the correct UFT mode - Expected: 3, Actual: 2"]},
     },
     {
         "name": "success",
