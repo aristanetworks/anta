@@ -9,8 +9,9 @@ from typing import TYPE_CHECKING, Callable
 
 import pytest
 
-from anta.result_manager.models import AntaTestStatus
+from anta.result_manager.models import AntaTestStatus, AtomicTestResult
 from tests.units.conftest import DEVICE_NAME
+from tests.units.result_manager.conftest import FAKE_TEST
 
 if TYPE_CHECKING:
     from _pytest.mark.structures import ParameterSet
@@ -18,52 +19,93 @@ if TYPE_CHECKING:
     # Import as Result to avoid pytest collection
     from anta.result_manager.models import TestResult as Result
 
-TEST_RESULT_SET_STATUS: list[ParameterSet] = [
-    pytest.param(AntaTestStatus.SUCCESS, "test success message", id="set_success"),
-    pytest.param(AntaTestStatus.ERROR, "test error message", id="set_error"),
-    pytest.param(AntaTestStatus.FAILURE, "test failure message", id="set_failure"),
-    pytest.param(AntaTestStatus.SKIPPED, "test skipped message", id="set_skipped"),
-    pytest.param(AntaTestStatus.UNSET, "test unset message", id="set_unset"),
+TEST_RESULTS: list[ParameterSet] = [
+    pytest.param(AntaTestStatus.SUCCESS, [], f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): success\nMessages:\nsuccess message", id="success"),
+    pytest.param(
+        AntaTestStatus.SUCCESS,
+        [AntaTestStatus.SUCCESS, AntaTestStatus.SUCCESS],
+        f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): success [success,success]\nMessages:\natomic success message\natomic success message",
+        id="success-atomic",
+    ),
+    pytest.param(AntaTestStatus.FAILURE, [], f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): failure\nMessages:\nfailure message", id="failure"),
+    pytest.param(
+        AntaTestStatus.FAILURE,
+        [AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE],
+        f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): failure [success,failure]\nMessages:\natomic success message\natomic failure message",
+        id="failure-atomic",
+    ),
+    pytest.param(AntaTestStatus.SKIPPED, [], f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): skipped\nMessages:\nskipped message", id="skipped"),
+    pytest.param(
+        AntaTestStatus.UNSET,
+        [AntaTestStatus.SKIPPED, AntaTestStatus.SKIPPED],
+        f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): unset [skipped,skipped]\nMessages:\natomic skipped message\natomic skipped message",
+        id="skipped-atomic",
+    ),
+    pytest.param(
+        AntaTestStatus.SUCCESS,
+        [AntaTestStatus.SKIPPED, AntaTestStatus.SUCCESS],
+        f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): success [skipped,success]\nMessages:\natomic skipped message\natomic success message",
+        id="skipped-success-atomic",
+    ),
+    pytest.param(AntaTestStatus.FAILURE, [], f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): failure\nMessages:\nfailure message", id="failure"),
+    pytest.param(
+        AntaTestStatus.FAILURE,
+        [AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE],
+        f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): failure [success,failure]\nMessages:\natomic success message\natomic failure message",
+        id="failure-atomic",
+    ),
+    pytest.param(AntaTestStatus.ERROR, [], f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): error\nMessages:\nerror message", id="error"),
+    pytest.param(
+        AntaTestStatus.ERROR,
+        [AntaTestStatus.SUCCESS, AntaTestStatus.ERROR],
+        f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): error [success,error]\nMessages:\natomic success message\natomic error message",
+        id="error-atomic",
+    ),
 ]
 
 
-class TestTestResultModels:
-    """Test components of anta.result_manager.models."""
+def _set_result(result: Result | AtomicTestResult, status: AntaTestStatus) -> None:
+    message = f"atomic {status} message" if isinstance(result, AtomicTestResult) else f"{status} message"
+    if status == AntaTestStatus.SUCCESS:
+        result.is_success(message)
+    if status == AntaTestStatus.FAILURE:
+        result.is_failure(message)
+    if status == AntaTestStatus.ERROR:
+        result.is_error(message)
+    if status == AntaTestStatus.SKIPPED:
+        result.is_skipped(message)
 
-    @pytest.mark.parametrize(("target", "message"), TEST_RESULT_SET_STATUS)
-    def test__is_status_foo(self, test_result_factory: Callable[[int], Result], target: AntaTestStatus, message: str) -> None:
+
+class TestTestResult:
+    """Test TestResult."""
+
+    @pytest.mark.parametrize(("status", "atomic", "expected"), TEST_RESULTS)
+    def test_is_status_foo(self, test_result_factory: Callable[[int], Result], status: AntaTestStatus, atomic: list[AntaTestStatus], expected: str) -> None:
         """Test TestResult.is_foo methods."""
-        testresult = test_result_factory(1)
-        assert testresult.result == AntaTestStatus.UNSET
-        assert len(testresult.messages) == 0
-        if target == AntaTestStatus.SUCCESS:
-            testresult.is_success(message)
-            assert testresult.result == "success"
-            assert message in testresult.messages
-        if target == AntaTestStatus.FAILURE:
-            testresult.is_failure(message)
-            assert testresult.result == "failure"
-            assert message in testresult.messages
-        if target == AntaTestStatus.ERROR:
-            testresult.is_error(message)
-            assert testresult.result == "error"
-            assert message in testresult.messages
-        if target == AntaTestStatus.SKIPPED:
-            testresult.is_skipped(message)
-            assert testresult.result == "skipped"
-            assert message in testresult.messages
-        if target == AntaTestStatus.UNSET:
-            # no helper for unset, testing _set_status
-            testresult._set_status(AntaTestStatus.UNSET, message)
-            assert testresult.result == "unset"
-            assert message in testresult.messages
+        result = test_result_factory(1)
+        assert result.result == AntaTestStatus.UNSET
+        assert len(result.messages) == 0
+        if atomic:
+            for i, s in enumerate(atomic):
+                a_result = result.add(f"Atomic Result {i}")
+                _set_result(a_result, s)
+        else:
+            _set_result(result, status)
+        assert result.result == status
+        if atomic:
+            assert len(result.messages) == len(atomic)
+        else:
+            assert len(result.messages) == 1
 
-    @pytest.mark.parametrize(("target", "message"), TEST_RESULT_SET_STATUS)
-    def test____str__(self, test_result_factory: Callable[[int], Result], target: AntaTestStatus, message: str) -> None:
-        """Test TestResult.__str__."""
-        testresult = test_result_factory(1)
-        assert testresult.result == AntaTestStatus.UNSET
-        assert len(testresult.messages) == 0
-        testresult._set_status(target, message)
-        assert testresult.result == target
-        assert str(testresult) == f"Test 'VerifyTest1' (on '{DEVICE_NAME}'): Result '{target}'\nMessages: {[message]}"
+    @pytest.mark.parametrize(("status", "atomic", "expected"), TEST_RESULTS)
+    def test____str__(self, test_result_factory: Callable[[int], Result], status: AntaTestStatus, atomic: list[AntaTestStatus], expected: str) -> None:
+        """Test TestResult.__str__()."""
+        result = test_result_factory(1)
+        assert str(result) == f"Test {FAKE_TEST.name} (on {DEVICE_NAME}): {AntaTestStatus.UNSET}"
+        if atomic:
+            for i, s in enumerate(atomic):
+                a_result = result.add(f"Atomic Result {i}")
+                _set_result(a_result, s)
+        else:
+            _set_result(result, status)
+        assert str(result) == expected

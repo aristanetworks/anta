@@ -390,6 +390,7 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.In
 "tests/*" = [
   "S101",    # Complains about asserts in units and libs.
   "SLF001",  # Lots of private member accessed for test purposes
+  "FBT002",  # Sometimes we need to define boolean kwargs in fixtures
 ]
 "tests/units/*" = [
   "ARG002",  # Sometimes we need to declare unused arguments when a parameter is not used but declared in @pytest.mark.parametrize
@@ -416,7 +417,6 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.In
 ]
 "anta/cli/*" = [
   "PLR0913",  # CLI has many arguments defined in functions
-  "ANN401",   # TODO: Check if we can update the Any type hints in the CLI
 ]
 "anta/tests/field_notices.py" = [
   "PLR2004",  # Magic value used in comparison, consider replacing 2131 with a constant variable - Field notice IDs are magic values
@@ -469,6 +469,7 @@ disable = [ # Any rule listed here can be disabled: https://github.com/astral-sh
     "reimported",
     "wrong-import-order",
     "wrong-import-position",
+    "too-many-public-methods",
     "unnecessary-lambda",
     "abstract-class-instantiated", # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-instantiation-of-abstract-classes-abstract
     "unexpected-keyword-arg", # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-arguments-in-calls-call-arg and other rules

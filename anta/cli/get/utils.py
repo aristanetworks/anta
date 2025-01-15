@@ -59,11 +59,11 @@ def inventory_output_options(f: Callable[..., Any]) -> Callable[..., Any]:
     @functools.wraps(f)
     def wrapper(
         ctx: click.Context,
-        *args: tuple[Any],
+        *args: Any,  # noqa: ANN401
         output: Path,
         overwrite: bool,
-        **kwargs: dict[str, Any],
-    ) -> Any:
+        **kwargs: Any,  # noqa: ANN401
+    ) -> Callable[..., Any]:
         # Boolean to check if the file is empty
         output_is_not_empty = output.exists() and output.stat().st_size != 0
         # Check overwrite when file is not empty

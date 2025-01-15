@@ -18,7 +18,7 @@ from pydantic import BaseModel, ConfigDict, ValidationError, create_model
 from anta.constants import KNOWN_EOS_ERRORS, UNSUPPORTED_PLATFORM_ERRORS
 from anta.custom_types import REGEXP_EOS_BLACKLIST_CMDS, Revision
 from anta.logger import anta_log_exception, exc_to_str
-from anta.result_manager.models import AntaTestStatus, TestResult
+from anta.result_manager.models import TestResult
 
 if TYPE_CHECKING:
     from collections.abc import Coroutine
@@ -448,15 +448,16 @@ class AntaTest(ABC):
         self.device: AntaDevice = device
         self.inputs: AntaTest.Input
         self.instance_commands: list[AntaCommand] = []
-        self.result: TestResult = TestResult(
-            name=device.name,
-            test=self.name,
-            categories=self.categories,
-            description=self.description,
-        )
+        self.result: TestResult = TestResult(name=device.name, test=self.name, categories=self.categories, description=self.description)
         self._init_inputs(inputs)
-        if self.result.result == AntaTestStatus.UNSET:
+        if hasattr(self, "inputs"):
             self._init_commands(eos_data)
+            if res_ow := self.inputs.result_overwrite:
+                if res_ow.categories:
+                    self.result.categories = res_ow.categories
+                if res_ow.description:
+                    self.result.description = res_ow.description
+                self.result.custom_field = res_ow.custom_field
 
     def _init_inputs(self, inputs: dict[str, Any] | AntaTest.Input | None) -> None:
         """Instantiate the `inputs` instance attribute with an `AntaTest.Input` instance to validate test inputs using the model.
@@ -477,12 +478,7 @@ class AntaTest(ABC):
             self.logger.error(message)
             self.result.is_error(message=message)
             return
-        if res_ow := self.inputs.result_overwrite:
-            if res_ow.categories:
-                self.result.categories = res_ow.categories
-            if res_ow.description:
-                self.result.description = res_ow.description
-            self.result.custom_field = res_ow.custom_field
+        self.result.inputs = self.inputs
 
     def _init_commands(self, eos_data: list[dict[Any, Any] | str] | None) -> None:
         """Instantiate the `instance_commands` instance attribute from the `commands` class attribute.
@@ -615,7 +611,7 @@ class AntaTest(ABC):
         async def wrapper(
             self: AntaTest,
             eos_data: list[dict[Any, Any] | str] | None = None,
-            **kwargs: dict[str, Any],
+            **kwargs: Any,  # noqa: ANN401
         ) -> TestResult:
             """Inner function for the anta_test decorator.
 

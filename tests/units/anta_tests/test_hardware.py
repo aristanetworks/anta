@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING
 
 from anta.tests.hardware import (
     VerifyAdverseDrops,
@@ -18,7 +18,10 @@ from anta.tests.hardware import (
 )
 from tests.units.anta_tests import test
 
-DATA: list[dict[str, Any]] = [
+if TYPE_CHECKING:
+    from tests.units.anta_tests import AntaUnitTest
+
+DATA: list[AntaUnitTest] = [
     {
         "name": "success",
         "test": VerifyTransceiversManufacturers,
@@ -60,7 +63,6 @@ DATA: list[dict[str, Any]] = [
                 "recoveryModeOnOverheat": "recoveryModeNA",
             },
         ],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -76,7 +78,6 @@ DATA: list[dict[str, Any]] = [
                 "recoveryModeOnOverheat": "recoveryModeNA",
             },
         ],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["Device temperature exceeds acceptable limits. Current system status: 'temperatureKO'"]},
     },
     {
@@ -106,7 +107,6 @@ DATA: list[dict[str, Any]] = [
                 "cardSlots": [],
             },
         ],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -136,7 +136,6 @@ DATA: list[dict[str, Any]] = [
                 "cardSlots": [],
             },
         ],
-        "inputs": None,
         "expected": {
             "result": "failure",
             "messages": [
@@ -173,7 +172,6 @@ DATA: list[dict[str, Any]] = [
                 "cardSlots": [],
             },
         ],
-        "inputs": None,
         "expected": {
             "result": "failure",
             "messages": [
@@ -203,7 +201,6 @@ DATA: list[dict[str, Any]] = [
                 "systemStatus": "coolingOk",
             },
         ],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -226,7 +223,6 @@ DATA: list[dict[str, Any]] = [
                 "systemStatus": "coolingKo",
             },
         ],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["Device system cooling is not OK: 'coolingKo'"]},
     },
     {
@@ -906,14 +902,12 @@ DATA: list[dict[str, Any]] = [
         "name": "success",
         "test": VerifyAdverseDrops,
         "eos_data": [{"totalAdverseDrops": 0}],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
         "name": "failure",
         "test": VerifyAdverseDrops,
         "eos_data": [{"totalAdverseDrops": 10}],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["Device totalAdverseDrops counter is: '10'"]},
     },
 ]

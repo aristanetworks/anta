@@ -5,12 +5,15 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING
 
 from anta.tests.ptp import VerifyPtpGMStatus, VerifyPtpLockStatus, VerifyPtpModeStatus, VerifyPtpOffset, VerifyPtpPortModeStatus
 from tests.units.anta_tests import test
 
-DATA: list[dict[str, Any]] = [
+if TYPE_CHECKING:
+    from tests.units.anta_tests import AntaUnitTest
+
+DATA: list[AntaUnitTest] = [
     {
         "name": "success",
         "test": VerifyPtpModeStatus,
@@ -31,21 +34,18 @@ DATA: list[dict[str, Any]] = [
                 "ptpIntfSummaries": {},
             }
         ],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
         "name": "failure",
         "test": VerifyPtpModeStatus,
         "eos_data": [{"ptpMode": "ptpDisabled", "ptpIntfSummaries": {}}],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["The device is not configured as a PTP Boundary Clock: 'ptpDisabled'"]},
     },
     {
         "name": "skipped",
         "test": VerifyPtpModeStatus,
         "eos_data": [{"ptpIntfSummaries": {}}],
-        "inputs": None,
         "expected": {"result": "skipped", "messages": ["PTP is not configured"]},
     },
     {
@@ -133,7 +133,6 @@ DATA: list[dict[str, Any]] = [
                 },
             }
         ],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -157,14 +156,12 @@ DATA: list[dict[str, Any]] = [
                 },
             }
         ],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["The device lock is more than 60s old: 157s"]},
     },
     {
         "name": "skipped",
         "test": VerifyPtpLockStatus,
         "eos_data": [{"ptpIntfSummaries": {}}],
-        "inputs": None,
         "expected": {
             "result": "skipped",
             "messages": [
@@ -201,7 +198,6 @@ DATA: list[dict[str, Any]] = [
                 ],
             }
         ],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -233,7 +229,6 @@ DATA: list[dict[str, Any]] = [
                 ],
             }
         ],
-        "inputs": None,
         "expected": {
             "result": "failure",
             "messages": [("The device timing offset from master is greater than +/- 1000ns: {'Ethernet27/1': [1200, -1300]}")],
@@ -248,7 +243,6 @@ DATA: list[dict[str, Any]] = [
                 "ptpMonitorData": [],
             },
         ],
-        "inputs": None,
         "expected": {"result": "skipped", "messages": ["PTP is not configured"]},
     },
     {
@@ -291,14 +285,12 @@ DATA: list[dict[str, Any]] = [
                 },
             }
         ],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
         "name": "failure-no-interfaces",
         "test": VerifyPtpPortModeStatus,
         "eos_data": [{"ptpIntfSummaries": {}}],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["No interfaces are PTP enabled"]},
     },
     {
@@ -334,7 +326,6 @@ DATA: list[dict[str, Any]] = [
                 },
             }
         ],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["The following interface(s) are not in a valid PTP state: '['Ethernet53', 'Ethernet1']'"]},
     },
 ]

@@ -6,7 +6,7 @@
 # pylint: disable=C0302
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 import pytest
 
@@ -37,6 +37,9 @@ from anta.tests.routing.bgp import (
 )
 from tests.units.anta_tests import test
 
+if TYPE_CHECKING:
+    from tests.units.anta_tests import AntaUnitTest
+
 
 @pytest.mark.parametrize(
     ("input_dict", "expected"),
@@ -54,7 +57,7 @@ def test_check_bgp_neighbor_capability(input_dict: dict[str, bool], expected: bo
     assert _check_bgp_neighbor_capability(input_dict) == expected
 
 
-DATA: list[dict[str, Any]] = [
+DATA: list[AntaUnitTest] = [
     {
         "name": "success",
         "test": VerifyBGPPeerCount,

@@ -7,7 +7,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import pytest
 
@@ -22,7 +22,10 @@ from anta.tests.routing.isis import (
 )
 from tests.units.anta_tests import test
 
-DATA: list[dict[str, Any]] = [
+if TYPE_CHECKING:
+    from tests.units.anta_tests import AntaUnitTest
+
+DATA: list[AntaUnitTest] = [
     {
         "name": "success only default vrf",
         "test": VerifyISISNeighborState,
@@ -64,7 +67,6 @@ DATA: list[dict[str, Any]] = [
                 }
             },
         ],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -116,7 +118,6 @@ DATA: list[dict[str, Any]] = [
                 }
             },
         ],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -160,7 +161,6 @@ DATA: list[dict[str, Any]] = [
                 }
             },
         ],
-        "inputs": None,
         "expected": {
             "result": "failure",
             "messages": ["Some neighbors are not in the correct state (UP): [{'vrf': 'default', 'instance': 'CORE-ISIS', 'neighbor': 's1-p01', 'state': 'down'}]."],
@@ -172,7 +172,6 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [
             {"vrfs": {"default": {"isisInstances": {"CORE-ISIS": {"neighbors": {}}}}}},
         ],
-        "inputs": None,
         "expected": {
             "result": "skipped",
             "messages": ["No IS-IS neighbor detected"],

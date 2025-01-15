@@ -6,12 +6,15 @@
 # pylint: disable=C0302
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING
 
 from anta.tests.bfd import VerifyBFDPeersHealth, VerifyBFDPeersIntervals, VerifyBFDPeersRegProtocols, VerifyBFDSpecificPeers
 from tests.units.anta_tests import test
 
-DATA: list[dict[str, Any]] = [
+if TYPE_CHECKING:
+    from tests.units.anta_tests import AntaUnitTest
+
+DATA: list[AntaUnitTest] = [
     {
         "name": "success",
         "test": VerifyBFDPeersIntervals,
@@ -468,7 +471,6 @@ DATA: list[dict[str, Any]] = [
                 "utcTime": 1703658481.8778424,
             },
         ],
-        "inputs": None,
         "expected": {
             "result": "failure",
             "messages": ["No IPv4 BFD peers are configured for any VRF."],

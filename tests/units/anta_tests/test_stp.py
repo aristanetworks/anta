@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING
 
 from anta.tests.stp import (
     VerifySTPBlockedPorts,
@@ -18,7 +18,10 @@ from anta.tests.stp import (
 )
 from tests.units.anta_tests import test
 
-DATA: list[dict[str, Any]] = [
+if TYPE_CHECKING:
+    from tests.units.anta_tests import AntaUnitTest
+
+DATA: list[AntaUnitTest] = [
     {
         "name": "success",
         "test": VerifySTPMode,
@@ -66,21 +69,18 @@ DATA: list[dict[str, Any]] = [
         "name": "success",
         "test": VerifySTPBlockedPorts,
         "eos_data": [{"spanningTreeInstances": {}}],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
         "name": "failure",
         "test": VerifySTPBlockedPorts,
         "eos_data": [{"spanningTreeInstances": {"MST0": {"spanningTreeBlockedPorts": ["Ethernet10"]}, "MST10": {"spanningTreeBlockedPorts": ["Ethernet10"]}}}],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["The following ports are blocked by STP: {'MST0': ['Ethernet10'], 'MST10': ['Ethernet10']}"]},
     },
     {
         "name": "success",
         "test": VerifySTPCounters,
         "eos_data": [{"interfaces": {"Ethernet10": {"bpduSent": 99, "bpduReceived": 0, "bpduTaggedError": 0, "bpduOtherError": 0, "bpduRateLimitCount": 0}}}],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -94,7 +94,6 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["The following interfaces have STP BPDU packet errors: ['Ethernet10', 'Ethernet11']"]},
     },
     {

@@ -18,6 +18,8 @@ class Host(BaseModel):
     """Model for a remote host to ping."""
 
     model_config = ConfigDict(extra="forbid")
+    description: str | None = None
+    """Description of the remote destination."""
     destination: IPv4Address
     """IPv4 address to ping."""
     source: IPv4Address | Interface
@@ -32,15 +34,8 @@ class Host(BaseModel):
     """Enable do not fragment bit in IP header. Defaults to False."""
 
     def __str__(self) -> str:
-        """Return a human-readable string representation of the Host for reporting.
-
-        Examples
-        --------
-        Host 10.1.1.1 (src: 10.2.2.2, vrf: mgmt, size: 100B, repeat: 2)
-
-        """
-        df_status = ", df-bit: enabled" if self.df_bit else ""
-        return f"Host {self.destination} (src: {self.source}, vrf: {self.vrf}, size: {self.size}B, repeat: {self.repeat}{df_status})"
+        """Return a human-readable string representation of the Host for reporting."""
+        return f"Destination {self.destination}{f' ({self.description})' if self.description is not None else ''} from {self.source} in VRF {self.vrf}"
 
 
 class LLDPNeighbor(BaseModel):

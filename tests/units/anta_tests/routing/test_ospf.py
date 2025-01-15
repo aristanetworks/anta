@@ -5,12 +5,15 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING
 
 from anta.tests.routing.ospf import VerifyOSPFMaxLSA, VerifyOSPFNeighborCount, VerifyOSPFNeighborState
 from tests.units.anta_tests import test
 
-DATA: list[dict[str, Any]] = [
+if TYPE_CHECKING:
+    from tests.units.anta_tests import AntaUnitTest
+
+DATA: list[AntaUnitTest] = [
     {
         "name": "success",
         "test": VerifyOSPFNeighborState,
@@ -63,7 +66,6 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -118,7 +120,6 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": None,
         "expected": {
             "result": "failure",
             "messages": [
@@ -135,7 +136,6 @@ DATA: list[dict[str, Any]] = [
                 "vrfs": {},
             },
         ],
-        "inputs": None,
         "expected": {"result": "skipped", "messages": ["no OSPF neighbor found"]},
     },
     {
@@ -341,7 +341,6 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -391,7 +390,6 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": None,
         "expected": {
             "result": "failure",
             "messages": ["OSPF Instances ['1', '10'] crossed the maximum LSA threshold."],
@@ -405,7 +403,6 @@ DATA: list[dict[str, Any]] = [
                 "vrfs": {},
             },
         ],
-        "inputs": None,
         "expected": {"result": "skipped", "messages": ["No OSPF instance found."]},
     },
 ]

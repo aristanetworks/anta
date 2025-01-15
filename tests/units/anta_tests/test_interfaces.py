@@ -6,7 +6,7 @@
 # pylint: disable=C0302
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING
 
 from anta.tests.interfaces import (
     VerifyIllegalLACP,
@@ -29,7 +29,10 @@ from anta.tests.interfaces import (
 )
 from tests.units.anta_tests import test
 
-DATA: list[dict[str, Any]] = [
+if TYPE_CHECKING:
+    from tests.units.anta_tests import AntaUnitTest
+
+DATA: list[AntaUnitTest] = [
     {
         "name": "success",
         "test": VerifyInterfaceUtilization,
@@ -812,7 +815,6 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -826,7 +828,6 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": None,
         "expected": {
             "result": "failure",
             "messages": [
@@ -847,7 +848,6 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": None,
         "expected": {
             "result": "failure",
             "messages": [
@@ -867,7 +867,6 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": None,
         "expected": {
             "result": "failure",
             "messages": [
@@ -889,7 +888,6 @@ DATA: list[dict[str, Any]] = [
                 "outDiscardsTotal": 0,
             },
         ],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -905,7 +903,6 @@ DATA: list[dict[str, Any]] = [
                 "outDiscardsTotal": 0,
             },
         ],
-        "inputs": None,
         "expected": {
             "result": "failure",
             "messages": [
@@ -929,7 +926,6 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -947,7 +943,6 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["The following interfaces are in error disabled state: ['Management1', 'Ethernet8']"]},
     },
     {
@@ -1240,7 +1235,6 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -1259,7 +1253,6 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["The following interfaces have none 0 storm-control drop counters {'Ethernet1': {'broadcast': 666}}"]},
     },
     {
@@ -1282,7 +1275,6 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -1305,7 +1297,6 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["The following port-channels have inactive port(s): ['Port-Channel42']"]},
     },
     {
@@ -1332,7 +1323,6 @@ DATA: list[dict[str, Any]] = [
                 "orphanPorts": {},
             },
         ],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -1359,7 +1349,6 @@ DATA: list[dict[str, Any]] = [
                 "orphanPorts": {},
             },
         ],
-        "inputs": None,
         "expected": {
             "result": "failure",
             "messages": ["The following port-channels have received illegal LACP packets on the following ports: [{'Port-Channel42': 'Ethernet8'}]"],
@@ -1466,7 +1455,6 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -1486,7 +1474,6 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["The following SVIs are not up: ['Vlan42']"]},
     },
     {

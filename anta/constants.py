@@ -43,6 +43,7 @@ KNOWN_EOS_ERRORS = [
     r".* does not support IP",
     r"IS-IS (.*) is disabled because: .*",
     r"No source interface .*",
+    r"There seem to be no power supplies connected.",
 ]
 """List of known EOS errors that should set a test status to 'failure' with the error message."""
 

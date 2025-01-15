@@ -20,20 +20,16 @@ if TYPE_CHECKING:
     from anta.result_manager.models import TestResult
 
 
-# pylint: disable=too-many-public-methods
 class TestResultManager:
     """Test ResultManager class."""
 
-    # not testing __init__ as nothing is going on there
+    # TODO: test __init__() and reset()
 
-    def test__len__(self, list_result_factory: Callable[[int], list[TestResult]]) -> None:
+    def test__len__(self, result_manager_factory: Callable[[int], ResultManager]) -> None:
         """Test __len__."""
-        list_result = list_result_factory(3)
-        result_manager = ResultManager()
-        assert len(result_manager) == 0
         for i in range(3):
-            result_manager.add(list_result[i])
-            assert len(result_manager) == i + 1
+            result_manager = result_manager_factory(i)
+            assert len(result_manager) == i
 
     def test_results_getter(self, result_manager_factory: Callable[[int], ResultManager]) -> None:
         """Test ResultManager.results property getter."""
@@ -44,19 +40,19 @@ class TestResultManager:
         for e in res:
             assert isinstance(e, models.TestResult)
 
-    def test_results_setter(self, list_result_factory: Callable[[int], list[TestResult]], result_manager_factory: Callable[[int], ResultManager]) -> None:
+    def test_results_setter(self, test_result_factory: Callable[..., TestResult], result_manager_factory: Callable[[int], ResultManager]) -> None:
         """Test ResultManager.results property setter."""
         result_manager = result_manager_factory(3)
         assert len(result_manager) == 3
-        tests = list_result_factory(5)
+        tests = [test_result_factory(i) for i in range(5)]
         result_manager.results = tests
         assert len(result_manager) == 5
 
-    def test_json(self, list_result_factory: Callable[[int], list[TestResult]]) -> None:
+    def test_json(self, test_result_factory: Callable[..., TestResult]) -> None:
         """Test ResultManager.json property."""
         result_manager = ResultManager()
 
-        success_list = list_result_factory(3)
+        success_list = [test_result_factory(i) for i in range(3)]
         for test in success_list:
             test.result = AntaTestStatus.SUCCESS
         result_manager.results = success_list
@@ -74,10 +70,10 @@ class TestResultManager:
             assert test.get("custom_field") is None
             assert test.get("result") == "success"
 
-    def test_sorted_category_stats(self, list_result_factory: Callable[[int], list[TestResult]]) -> None:
+    def test_sorted_category_stats(self, test_result_factory: Callable[..., TestResult]) -> None:
         """Test ResultManager.sorted_category_stats."""
         result_manager = ResultManager()
-        results = list_result_factory(4)
+        results = [test_result_factory(i) for i in range(4)]
 
         # Modify the categories to have a mix of different acronym categories
         results[0].categories = ["ospf"]
@@ -149,7 +145,7 @@ class TestResultManager:
     )
     def test_add(
         self,
-        test_result_factory: Callable[[], TestResult],
+        test_result_factory: Callable[..., TestResult],
         starting_status: str,
         test_status: str,
         expected_status: str,
@@ -171,7 +167,7 @@ class TestResultManager:
                 assert result_manager.status == expected_status
             assert len(result_manager) == 1
 
-    def test_add_clear_cache(self, result_manager: ResultManager, test_result_factory: Callable[[], TestResult]) -> None:
+    def test_add_clear_cache(self, result_manager: ResultManager, test_result_factory: Callable[..., TestResult]) -> None:
         """Test ResultManager.add and make sure the cache is reset after adding a new test."""
         # Check the cache is empty
         assert "results_by_status" not in result_manager.__dict__
@@ -234,9 +230,7 @@ class TestResultManager:
         # Check all results with bad sort_by
         with pytest.raises(
             ValueError,
-            match=re.escape(
-                "Invalid sort_by fields: ['bad_field']. Accepted fields are: ['name', 'test', 'categories', 'description', 'result', 'messages', 'custom_field']",
-            ),
+            match=re.escape("Invalid sort_by fields: ['bad_field']."),
         ):
             all_results = result_manager.get_results(sort_by=["bad_field"])
 
@@ -278,11 +272,11 @@ class TestResultManager:
 
         assert result_manager.get_status(ignore_error=ignore_error) == expected_status
 
-    def test_filter(self, test_result_factory: Callable[[], TestResult], list_result_factory: Callable[[int], list[TestResult]]) -> None:
+    def test_filter(self, test_result_factory: Callable[..., TestResult]) -> None:
         """Test ResultManager.filter."""
         result_manager = ResultManager()
 
-        success_list = list_result_factory(3)
+        success_list = [test_result_factory(i) for i in range(3)]
         for test in success_list:
             test.result = AntaTestStatus.SUCCESS
         result_manager.results = success_list
@@ -307,7 +301,7 @@ class TestResultManager:
         assert len(result_manager.filter({AntaTestStatus.FAILURE, AntaTestStatus.ERROR, AntaTestStatus.SKIPPED})) == 3
         assert len(result_manager.filter({AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE, AntaTestStatus.ERROR, AntaTestStatus.SKIPPED})) == 0
 
-    def test_get_by_tests(self, test_result_factory: Callable[[], TestResult], result_manager_factory: Callable[[int], ResultManager]) -> None:
+    def test_get_by_tests(self, test_result_factory: Callable[..., TestResult], result_manager_factory: Callable[[int], ResultManager]) -> None:
         """Test ResultManager.get_by_tests."""
         result_manager = result_manager_factory(3)
 
@@ -329,7 +323,7 @@ class TestResultManager:
         assert len(rm) == 3
         assert len(rm.filter_by_tests({"Test1"})) == 1
 
-    def test_get_by_devices(self, test_result_factory: Callable[[], TestResult], result_manager_factory: Callable[[int], ResultManager]) -> None:
+    def test_get_by_devices(self, test_result_factory: Callable[..., TestResult], result_manager_factory: Callable[[int], ResultManager]) -> None:
         """Test ResultManager.get_by_devices."""
         result_manager = result_manager_factory(3)
 
@@ -351,11 +345,11 @@ class TestResultManager:
         assert len(rm) == 3
         assert len(rm.filter_by_devices({"Device1"})) == 1
 
-    def test_get_tests(self, test_result_factory: Callable[[], TestResult], list_result_factory: Callable[[int], list[TestResult]]) -> None:
+    def test_get_tests(self, test_result_factory: Callable[..., TestResult]) -> None:
         """Test ResultManager.get_tests."""
         result_manager = ResultManager()
 
-        tests = list_result_factory(3)
+        tests = [test_result_factory(i) for i in range(3)]
         for test in tests:
             test.test = "Test1"
         result_manager.results = tests
@@ -367,11 +361,11 @@ class TestResultManager:
         assert len(result_manager.get_tests()) == 2
         assert all(t in result_manager.get_tests() for t in ["Test1", "Test2"])
 
-    def test_get_devices(self, test_result_factory: Callable[[], TestResult], list_result_factory: Callable[[int], list[TestResult]]) -> None:
+    def test_get_devices(self, test_result_factory: Callable[..., TestResult]) -> None:
         """Test ResultManager.get_tests."""
         result_manager = ResultManager()
 
-        tests = list_result_factory(3)
+        tests = [test_result_factory(i) for i in range(3)]
         for test in tests:
             test.name = "Device1"
         result_manager.results = tests
@@ -383,7 +377,7 @@ class TestResultManager:
         assert len(result_manager.get_devices()) == 2
         assert all(t in result_manager.get_devices() for t in ["Device1", "Device2"])
 
-    def test_stats_computation_methods(self, test_result_factory: Callable[[], TestResult], caplog: pytest.LogCaptureFixture) -> None:
+    def test_stats_computation_methods(self, test_result_factory: Callable[..., TestResult], caplog: pytest.LogCaptureFixture) -> None:
         """Test ResultManager internal stats computation methods."""
         result_manager = ResultManager()
 
@@ -433,7 +427,7 @@ class TestResultManager:
         assert result_manager._test_stats["test1"].devices_success_count == 1
         assert result_manager._test_stats["test2"].devices_failure_count == 1
 
-    def test_stats_property_computation(self, test_result_factory: Callable[[], TestResult], caplog: pytest.LogCaptureFixture) -> None:
+    def test_stats_property_computation(self, test_result_factory: Callable[..., TestResult], caplog: pytest.LogCaptureFixture) -> None:
         """Test that stats are computed only once when accessed via properties."""
         result_manager = ResultManager()
 
@@ -482,7 +476,7 @@ class TestResultManager:
         assert "Computing statistics for all results" in caplog.text
         assert result_manager._stats_in_sync is True
 
-    def test_sort_by_result(self, test_result_factory: Callable[[], TestResult]) -> None:
+    def test_sort_by_result(self, test_result_factory: Callable[..., TestResult]) -> None:
         """Test sorting by result."""
         result_manager = ResultManager()
         test1 = test_result_factory()
@@ -496,7 +490,7 @@ class TestResultManager:
         sorted_manager = result_manager.sort(["result"])
         assert [r.result for r in sorted_manager.results] == ["error", "failure", "success"]
 
-    def test_sort_by_name(self, test_result_factory: Callable[[], TestResult]) -> None:
+    def test_sort_by_name(self, test_result_factory: Callable[..., TestResult]) -> None:
         """Test sorting by name."""
         result_manager = ResultManager()
         test1 = test_result_factory()
@@ -510,7 +504,7 @@ class TestResultManager:
         sorted_manager = result_manager.sort(["name"])
         assert [r.name for r in sorted_manager.results] == ["Device1", "Device2", "Device3"]
 
-    def test_sort_by_categories(self, test_result_factory: Callable[[], TestResult]) -> None:
+    def test_sort_by_categories(self, test_result_factory: Callable[..., TestResult]) -> None:
         """Test sorting by categories."""
         result_manager = ResultManager()
         test1 = test_result_factory()
@@ -528,7 +522,7 @@ class TestResultManager:
         assert results[1].categories == ["VXLAN", "networking"]
         assert results[2].categories == ["system", "hardware"]
 
-    def test_sort_multiple_fields(self, test_result_factory: Callable[[], TestResult]) -> None:
+    def test_sort_multiple_fields(self, test_result_factory: Callable[..., TestResult]) -> None:
         """Test sorting by multiple fields."""
         result_manager = ResultManager()
         test1 = test_result_factory()
@@ -558,7 +552,7 @@ class TestResultManager:
         with pytest.raises(
             ValueError,
             match=re.escape(
-                "Invalid sort_by fields: ['bad_field']. Accepted fields are: ['name', 'test', 'categories', 'description', 'result', 'messages', 'custom_field']",
+                "Invalid sort_by fields: ['bad_field'].",
             ),
         ):
             result_manager.sort(["bad_field"])

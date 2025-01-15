@@ -5,24 +5,25 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING
 
 from anta.tests.greent import VerifyGreenT, VerifyGreenTCounters
 from tests.units.anta_tests import test
 
-DATA: list[dict[str, Any]] = [
+if TYPE_CHECKING:
+    from tests.units.anta_tests import AntaUnitTest
+
+DATA: list[AntaUnitTest] = [
     {
         "name": "success",
         "test": VerifyGreenTCounters,
         "eos_data": [{"sampleRcvd": 0, "sampleDiscarded": 0, "multiDstSampleRcvd": 0, "grePktSent": 1, "sampleSent": 0}],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
         "name": "failure",
         "test": VerifyGreenTCounters,
         "eos_data": [{"sampleRcvd": 0, "sampleDiscarded": 0, "multiDstSampleRcvd": 0, "grePktSent": 0, "sampleSent": 0}],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["GreenT counters are not incremented"]},
     },
     {
@@ -36,7 +37,6 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -49,7 +49,6 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["No GreenT policy is created"]},
     },
 ]

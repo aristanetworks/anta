@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING
 
 from anta.tests.system import (
     VerifyAgentLogs,
@@ -20,7 +20,10 @@ from anta.tests.system import (
 )
 from tests.units.anta_tests import test
 
-DATA: list[dict[str, Any]] = [
+if TYPE_CHECKING:
+    from tests.units.anta_tests import AntaUnitTest
+
+DATA: list[AntaUnitTest] = [
     {
         "name": "success",
         "test": VerifyUptime,
@@ -39,7 +42,6 @@ DATA: list[dict[str, Any]] = [
         "name": "success-no-reload",
         "test": VerifyReloadCause,
         "eos_data": [{"kernelCrashData": [], "resetCauses": [], "full": False}],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -58,7 +60,6 @@ DATA: list[dict[str, Any]] = [
                 "full": False,
             },
         ],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -73,42 +74,36 @@ DATA: list[dict[str, Any]] = [
                 "full": False,
             },
         ],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["Reload cause is: 'Reload after crash.'"]},
     },
     {
         "name": "success-without-minidump",
         "test": VerifyCoredump,
         "eos_data": [{"mode": "compressedDeferred", "coreFiles": []}],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
         "name": "success-with-minidump",
         "test": VerifyCoredump,
         "eos_data": [{"mode": "compressedDeferred", "coreFiles": ["minidump"]}],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
         "name": "failure-without-minidump",
         "test": VerifyCoredump,
         "eos_data": [{"mode": "compressedDeferred", "coreFiles": ["core.2344.1584483862.Mlag.gz", "core.23101.1584483867.Mlag.gz"]}],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["Core dump(s) have been found: ['core.2344.1584483862.Mlag.gz', 'core.23101.1584483867.Mlag.gz']"]},
     },
     {
         "name": "failure-with-minidump",
         "test": VerifyCoredump,
         "eos_data": [{"mode": "compressedDeferred", "coreFiles": ["minidump", "core.2344.1584483862.Mlag.gz", "core.23101.1584483867.Mlag.gz"]}],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["Core dump(s) have been found: ['core.2344.1584483862.Mlag.gz', 'core.23101.1584483867.Mlag.gz']"]},
     },
     {
         "name": "success",
         "test": VerifyAgentLogs,
         "eos_data": [""],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -127,7 +122,6 @@ EntityManager::doBackoff waiting for remote sysdb version ....ok
 EntityManager::doBackoff waiting for remote sysdb version ...................ok
 """,
         ],
-        "inputs": None,
         "expected": {
             "result": "failure",
             "messages": [
@@ -162,7 +156,6 @@ EntityManager::doBackoff waiting for remote sysdb version ...................ok
                 },
             },
         ],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -189,7 +182,6 @@ EntityManager::doBackoff waiting for remote sysdb version ...................ok
                 },
             },
         ],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["Device has reported a high CPU utilization: 75.2%"]},
     },
     {
@@ -205,7 +197,6 @@ EntityManager::doBackoff waiting for remote sysdb version ...................ok
                 "version": "4.27.3F",
             },
         ],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -221,7 +212,6 @@ EntityManager::doBackoff waiting for remote sysdb version ...................ok
                 "version": "4.27.3F",
             },
         ],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["Device has reported a high memory usage: 95.56%"]},
     },
     {
@@ -235,7 +225,6 @@ none            294M   78M  217M  27% /.overlay
 /dev/loop0      461M  461M     0 100% /rootfs-i386
 """,
         ],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -249,7 +238,6 @@ none            294M   78M  217M  84% /.overlay
 /dev/loop0      461M  461M     0 100% /rootfs-i386
 """,
         ],
-        "inputs": None,
         "expected": {
             "result": "failure",
             "messages": [
@@ -266,7 +254,6 @@ none            294M   78M  217M  84% /.overlay
 poll interval unknown
 """,
         ],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -277,7 +264,6 @@ poll interval unknown
 poll interval unknown
 """,
         ],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["The device is not synchronized with the configured NTP server(s): 'unsynchronised'"]},
     },
     {

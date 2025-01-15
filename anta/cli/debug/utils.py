@@ -42,13 +42,11 @@ def debug_options(f: Callable[..., Any]) -> Callable[..., Any]:
     @functools.wraps(f)
     def wrapper(
         ctx: click.Context,
-        *args: tuple[Any],
+        *args: Any,  # noqa: ANN401
         inventory: AntaInventory,
         device: str,
-        **kwargs: Any,
-    ) -> Any:
-        # TODO: @gmuloc - tags come from context https://github.com/aristanetworks/anta/issues/584
-        # ruff: noqa: ARG001
+        **kwargs: Any,  # noqa: ANN401
+    ) -> Callable[..., Any]:
         if (d := inventory.get(device)) is None:
             logger.error("Device '%s' does not exist in Inventory", device)
             ctx.exit(ExitCode.USAGE_ERROR)

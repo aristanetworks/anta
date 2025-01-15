@@ -5,38 +5,37 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING
 
 from anta.tests.configuration import VerifyRunningConfigDiffs, VerifyRunningConfigLines, VerifyZeroTouch
 from tests.units.anta_tests import test
 
-DATA: list[dict[str, Any]] = [
+if TYPE_CHECKING:
+    from tests.units.anta_tests import AntaUnitTest
+
+DATA: list[AntaUnitTest] = [
     {
         "name": "success",
         "test": VerifyZeroTouch,
         "eos_data": [{"mode": "disabled"}],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
         "name": "failure",
         "test": VerifyZeroTouch,
         "eos_data": [{"mode": "enabled"}],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["ZTP is NOT disabled"]},
     },
     {
         "name": "success",
         "test": VerifyRunningConfigDiffs,
         "eos_data": [""],
-        "inputs": None,
         "expected": {"result": "success"},
     },
     {
         "name": "failure",
         "test": VerifyRunningConfigDiffs,
         "eos_data": ["blah blah"],
-        "inputs": None,
         "expected": {"result": "failure", "messages": ["blah blah"]},
     },
     {
