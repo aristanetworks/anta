@@ -10,6 +10,7 @@ anta_title: ANTA catalog for SNMP tests
 # Tests
 
 ::: anta.tests.snmp
+
     options:
       show_root_heading: false
       show_root_toc_entry: false

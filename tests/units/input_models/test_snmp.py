@@ -11,11 +11,37 @@ from typing import TYPE_CHECKING
 import pytest
 from pydantic import ValidationError
 
-from anta.tests.snmp import VerifySnmpNotificationHost
+from anta.tests.snmp import VerifySnmpUser, VerifySnmpNotificationHost
 
 if TYPE_CHECKING:
-    from anta.input_models.snmp import SnmpHost
+    from anta.input_models.snmp import SnmpUser, SnmpHost
 
+
+class TestVerifySnmpUserInput:
+    """Test anta.tests.snmp.VerifySnmpUser.Input."""
+
+    @pytest.mark.parametrize(
+        ("snmp_users"),
+        [
+            pytest.param([{"username": "test", "group_name": "abc", "version": "v1", "auth_type": None, "priv_type": None}], id="valid-v1"),
+            pytest.param([{"username": "test", "group_name": "abc", "version": "v2c", "auth_type": None, "priv_type": None}], id="valid-v2c"),
+            pytest.param([{"username": "test", "group_name": "abc", "version": "v3", "auth_type": "SHA", "priv_type": "AES-128"}], id="valid-v3"),
+        ],
+    )
+    def test_valid(self, snmp_users: list[SnmpUser]) -> None:
+        """Test VerifySnmpUser.Input valid inputs."""
+        VerifySnmpUser.Input(snmp_users=snmp_users)
+
+    @pytest.mark.parametrize(
+        ("snmp_users"),
+        [
+            pytest.param([{"username": "test", "group_name": "abc", "version": "v3", "auth_type": None, "priv_type": None}], id="invalid-v3"),
+        ],
+    )
+    def test_invalid(self, snmp_users: list[SnmpUser]) -> None:
+        """Test VerifySnmpUser.Input invalid inputs."""
+        with pytest.raises(ValidationError):
+            VerifySnmpUser.Input(snmp_users=snmp_users)
 
 class TestSnmpHost:
     """Test anta.input_models.snmp.SnmpHost."""
@@ -136,3 +162,4 @@ class TestSnmpHost:
         """Test VerifySnmpNotificationHost.Input invalid inputs."""
         with pytest.raises(ValidationError):
             VerifySnmpNotificationHost.Input(notification_hosts=notification_hosts)
+
