@@ -597,7 +597,7 @@ anta.tests.routing.isis:
           vrf: default
           # level is set to 2 by default
   - VerifyISISNeighborCount:
-      # Verifies number of IS-IS neighbors per level and per interface.
+      # Verifies the number of IS-IS neighbors.
       interfaces:
         - name: Ethernet1
           level: 1
@@ -611,7 +611,7 @@ anta.tests.routing.isis:
   - VerifyISISNeighborState:
       # Verifies all IS-IS neighbors are in UP state.
   - VerifyISISSegmentRoutingAdjacencySegments:
-      # Verify that all expected Adjacency segments are correctly visible for each interface.
+      # Verifies the ISIS SR Adjacency Segments.
       instances:
         - name: CORE-ISIS
           vrf: default
@@ -620,7 +620,7 @@ anta.tests.routing.isis:
               address: 10.0.1.3
               sid_origin: dynamic
   - VerifyISISSegmentRoutingDataplane:
-      # Verify dataplane of a list of ISIS-SR instances.
+      # Verifies the Dataplane of ISIS-SR Instances.
       instances:
         - name: CORE-ISIS
           vrf: default
