@@ -45,3 +45,10 @@ KNOWN_EOS_ERRORS = [
     r"No source interface .*",
 ]
 """List of known EOS errors that should set a test status to 'failure' with the error message."""
+
+UNSUPPORTED_PLATFORM_ERRORS = [
+    "Invalid input (at token 2: 'trident')",
+]
+"""Error messages when using `show platform <family> <command>` on unsupported ASIC families.
+Will set the test status to 'skipped' with the unsupported command. More errors can be added
+for different platforms if tests require it."""
