@@ -663,7 +663,7 @@ anta.tests.security:
       number: 3
       vrf: default
   - VerifyAPISSLCertificate:
-      # Verifies the eAPI SSL certificate expiry, common subject name, encryption algorithm and key size.
+      # Verifies the eAPI SSL certificate.
       certificates:
         - certificate_name: ARISTA_SIGNING_CA.crt
           expiry_threshold: 30
@@ -692,7 +692,7 @@ anta.tests.security:
   - VerifyIPSecConnHealth:
       # Verifies all IPv4 security connections.
   - VerifyIPv4ACL:
-      # Verifies the configuration of IPv4 ACLs.
+      # Verifies the IPv4 ACLs.
       ipv4_access_lists:
         - name: default-control-plane-acl
           entries:
