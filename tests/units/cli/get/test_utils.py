@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Tests for anta.cli.get.utils."""
@@ -7,14 +7,15 @@ from __future__ import annotations
 
 from contextlib import AbstractContextManager, nullcontext
 from pathlib import Path
-from typing import Any
+from typing import Any, ClassVar
 from unittest.mock import MagicMock, patch
 
 import pytest
 import requests
 
-from anta.cli.get.utils import create_inventory_from_ansible, create_inventory_from_cvp, get_cv_token
+from anta.cli.get.utils import create_inventory_from_ansible, create_inventory_from_cvp, extract_examples, find_tests_examples, get_cv_token, print_test
 from anta.inventory import AntaInventory
+from anta.models import AntaCommand, AntaTemplate, AntaTest
 
 DATA_DIR: Path = Path(__file__).parents[3].resolve() / "data"
 
@@ -160,3 +161,91 @@ def test_create_inventory_from_ansible(
         assert not target_file.exists()
         if expected_log:
             assert expected_log in caplog.text
+
+
+class MissingExampleTest(AntaTest):
+    """ANTA test that always succeed but has no Examples section."""
+
+    categories: ClassVar[list[str]] = []
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = []
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Test function."""
+        self.result.is_success()
+
+
+class EmptyExampleTest(AntaTest):
+    """ANTA test that always succeed but has an empty Examples section.
+
+    Examples
+    --------
+    """
+
+    # For the test purpose we want am empty section as custom tests could not be using ruff.
+    # ruff: noqa:  D414
+
+    categories: ClassVar[list[str]] = []
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = []
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Test function."""
+        self.result.is_success()
+
+
+class TypoExampleTest(AntaTest):
+    """ANTA test that always succeed but has a Typo in the test name in the example.
+
+    Notice capital P in TyPo below.
+
+    Examples
+    --------
+    ```yaml
+    tests.units.cli.get.test_utils:
+      - TyPoExampleTest:
+    ```
+    """
+
+    # For the test purpose we want am empty section as custom tests could not be using ruff.
+    # ruff: noqa:  D414
+
+    categories: ClassVar[list[str]] = []
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = []
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Test function."""
+        self.result.is_success()
+
+
+def test_find_tests_examples() -> None:
+    """Test find_tests_examples.
+
+    Only testing the failure scenarii not tested through test_commands.
+    TODO: expand
+    """
+    with pytest.raises(ValueError, match="Error when importing"):
+        find_tests_examples("blah", "UnusedTestName")
+
+
+def test_print_test() -> None:
+    """Test print_test."""
+    with pytest.raises(ValueError, match="Could not find the name of the test"):
+        print_test(TypoExampleTest)
+    with pytest.raises(LookupError, match="is missing an Example"):
+        print_test(MissingExampleTest)
+    with pytest.raises(LookupError, match="is missing an Example"):
+        print_test(EmptyExampleTest)
+
+
+def test_extract_examples() -> None:
+    """Test extract_examples.
+
+    Only testing the case where the 'Examples' is missing as everything else
+    is covered already in test_commands.py.
+    """
+    assert MissingExampleTest.__doc__ is not None
+    assert EmptyExampleTest.__doc__ is not None
+    assert extract_examples(MissingExampleTest.__doc__) is None
+    assert extract_examples(EmptyExampleTest.__doc__) is None

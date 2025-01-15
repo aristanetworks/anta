@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module related to LANZ tests."""
@@ -30,7 +30,6 @@ class VerifyLANZ(AntaTest):
     ```
     """
 
-    name = "VerifyLANZ"
     description = "Verifies if LANZ is enabled."
     categories: ClassVar[list[str]] = ["lanz"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show queue-monitor length status", revision=1)]

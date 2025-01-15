@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Tests for anta.tests.services.py."""
@@ -59,29 +59,21 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyDNSServers,
         "eos_data": [
             {
-                "nameServerConfigs": [{"ipAddr": "10.14.0.1", "vrf": "default", "priority": 0}, {"ipAddr": "10.14.0.11", "vrf": "MGMT", "priority": 1}],
+                "nameServerConfigs": [
+                    {"ipAddr": "10.14.0.1", "vrf": "default", "priority": 0},
+                    {"ipAddr": "10.14.0.11", "vrf": "MGMT", "priority": 1},
+                    {"ipAddr": "fd12:3456:789a::1", "vrf": "default", "priority": 0},
+                ],
             }
         ],
         "inputs": {
-            "dns_servers": [{"server_address": "10.14.0.1", "vrf": "default", "priority": 0}, {"server_address": "10.14.0.11", "vrf": "MGMT", "priority": 1}]
+            "dns_servers": [
+                {"server_address": "10.14.0.1", "vrf": "default", "priority": 0},
+                {"server_address": "10.14.0.11", "vrf": "MGMT", "priority": 1},
+                {"server_address": "fd12:3456:789a::1", "vrf": "default", "priority": 0},
+            ]
         },
         "expected": {"result": "success"},
-    },
-    {
-        "name": "failure-dns-missing",
-        "test": VerifyDNSServers,
-        "eos_data": [
-            {
-                "nameServerConfigs": [{"ipAddr": "10.14.0.1", "vrf": "default", "priority": 0}, {"ipAddr": "10.14.0.11", "vrf": "MGMT", "priority": 1}],
-            }
-        ],
-        "inputs": {
-            "dns_servers": [{"server_address": "10.14.0.10", "vrf": "default", "priority": 0}, {"server_address": "10.14.0.21", "vrf": "MGMT", "priority": 1}]
-        },
-        "expected": {
-            "result": "failure",
-            "messages": ["DNS server `10.14.0.10` is not configured with any VRF.", "DNS server `10.14.0.21` is not configured with any VRF."],
-        },
     },
     {
         "name": "failure-no-dns-found",
@@ -96,7 +88,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["DNS server `10.14.0.10` is not configured with any VRF.", "DNS server `10.14.0.21` is not configured with any VRF."],
+            "messages": ["Server 10.14.0.10 (VRF: default, Priority: 0) - Not configured", "Server 10.14.0.21 (VRF: MGMT, Priority: 1) - Not configured"],
         },
     },
     {
@@ -117,9 +109,9 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "For DNS server `10.14.0.1`, the expected priority is `0`, but `1` was found instead.",
-                "DNS server `10.14.0.11` is not configured with VRF `default`.",
-                "DNS server `10.14.0.110` is not configured with any VRF.",
+                "Server 10.14.0.1 (VRF: CS, Priority: 0) - Incorrect priority - Priority: 1",
+                "Server 10.14.0.11 (VRF: default, Priority: 0) - Not configured",
+                "Server 10.14.0.110 (VRF: MGMT, Priority: 0) - Not configured",
             ],
         },
     },
@@ -155,7 +147,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"reasons": [{"reason": "acl", "interval": 300}, {"reason": "arp-inspection", "interval": 30}, {"reason": "tapagg", "interval": 30}]},
         "expected": {
             "result": "failure",
-            "messages": ["`tapagg`: Not found."],
+            "messages": ["Reason: tapagg Status: Enabled Interval: 30 - Not found"],
         },
     },
     {
@@ -173,7 +165,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"reasons": [{"reason": "acl", "interval": 300}, {"reason": "arp-inspection", "interval": 30}]},
         "expected": {
             "result": "failure",
-            "messages": ["`acl`:\nExpected `Enabled` as the status, but found `Disabled` instead."],
+            "messages": ["Reason: acl Status: Enabled Interval: 300 - Incorrect configuration - Status: Disabled Interval: 300"],
         },
     },
     {
@@ -191,7 +183,9 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"reasons": [{"reason": "acl", "interval": 30}, {"reason": "arp-inspection", "interval": 30}]},
         "expected": {
             "result": "failure",
-            "messages": ["`acl`:\nExpected `30` as the interval, but found `300` instead."],
+            "messages": [
+                "Reason: acl Status: Enabled Interval: 30 - Incorrect configuration - Status: Enabled Interval: 300",
+            ],
         },
     },
     {
@@ -210,9 +204,9 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "`acl`:\nExpected `30` as the interval, but found `300` instead.\nExpected `Enabled` as the status, but found `Disabled` instead.",
-                "`arp-inspection`:\nExpected `300` as the interval, but found `30` instead.",
-                "`tapagg`: Not found.",
+                "Reason: acl Status: Enabled Interval: 30 - Incorrect configuration - Status: Disabled Interval: 300",
+                "Reason: arp-inspection Status: Enabled Interval: 300 - Incorrect configuration - Status: Enabled Interval: 30",
+                "Reason: tapagg Status: Enabled Interval: 30 - Not found",
             ],
         },
     },

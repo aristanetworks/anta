@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Tests for `anta.custom_types`.
@@ -192,8 +192,7 @@ def test_regexp_eos_blacklist_cmds(test_string: str, expected: bool) -> None:
     """Test REGEXP_EOS_BLACKLIST_CMDS."""
 
     def matches_any_regex(string: str, regex_list: list[str]) -> bool:
-        """
-        Check if a string matches at least one regular expression in a list.
+        """Check if a string matches at least one regular expression in a list.
 
         :param string: The string to check.
         :param regex_list: A list of regular expressions.

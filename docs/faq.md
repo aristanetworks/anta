@@ -3,7 +3,7 @@ toc_depth: 3
 anta_title: Frequently Asked Questions (FAQ)
 ---
 <!--
-  ~ Copyright (c) 2023-2024 Arista Networks, Inc.
+  ~ Copyright (c) 2023-2025 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
   ~ that can be found in the LICENSE file.
   -->
@@ -110,6 +110,17 @@ anta_title: Frequently Asked Questions (FAQ)
         pip install -U pyopenssl>22.0
         ```
 
+## Caveat running on non-POSIX platforms (e.g. Windows)
+
+???+ faq "Caveat running on non-POSIX platforms (e.g. Windows)"
+
+    While ANTA should in general work on non-POSIX platforms (e.g. Windows),
+    there are some known limitations:
+
+    - On non-Posix platforms, ANTA is not able to check and/or adjust the system limit of file descriptors.
+
+    ANTA test suite is being run in the CI on a Windows runner.
+
 ## `__NSCFConstantString initialize` error on OSX
 
 ???+ faq "`__NSCFConstantString initialize` error on OSX"
@@ -123,6 +134,40 @@ anta_title: Frequently Asked Questions (FAQ)
         ```bash
         export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
         ```
+
+## EOS AAA configuration for an ANTA-only user
+
+???+ faq "EOS AAA configuration for an ANTA-only user"
+
+    Here is a starting guide to configure an ANTA-only user to run ANTA tests on a device.
+
+    !!! warning
+
+        This example is not using TACACS / RADIUS but only local AAA
+
+    1. Configure the following role.
+
+        ```bash
+        role anta-users
+           10 permit command show
+           20 deny command .*
+        ```
+
+        You can then add other commands if they are required for your test catalog (`ping` for example) and then tighten down the show commands to only those required for your tests.
+
+    2. Configure the following authorization (You may need to adapt depending on your AAA setup).
+
+        ```bash
+        aaa authorization commands all default local
+        ```
+
+    3. Configure a user for the role.
+
+        ```bash
+        user anta role anta-users secret <secret>
+        ```
+
+    4. You can then use the credentials `anta` / `<secret>` to run ANTA against the device and adjust the role as required.
 
 # Still facing issues?
 

@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module related to the device interfaces tests."""
@@ -8,17 +8,18 @@
 from __future__ import annotations
 
 import re
-from ipaddress import IPv4Network
-from typing import Any, ClassVar, Literal
+from ipaddress import IPv4Interface
+from typing import Any, ClassVar
 
 from pydantic import BaseModel, Field
 from pydantic_extra_types.mac_address import MacAddress
 
 from anta import GITHUB_SUGGESTION
-from anta.custom_types import EthernetInterface, Interface, Percent, PortChannelInterface, PositiveInteger
+from anta.custom_types import EthernetInterface, Interface, Percent, PositiveInteger
 from anta.decorators import skip_on_platforms
+from anta.input_models.interfaces import InterfaceState
 from anta.models import AntaCommand, AntaTemplate, AntaTest
-from anta.tools import custom_division, get_failed_logs, get_item, get_value
+from anta.tools import custom_division, format_data, get_failed_logs, get_item, get_value
 
 BPS_GBPS_CONVERSIONS = 1000000000
 
@@ -44,8 +45,6 @@ class VerifyInterfaceUtilization(AntaTest):
     ```
     """
 
-    name = "VerifyInterfaceUtilization"
-    description = "Verifies that the utilization of interfaces is below a certain threshold."
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
         AntaCommand(command="show interfaces counters rates", revision=1),
@@ -105,8 +104,6 @@ class VerifyInterfaceErrors(AntaTest):
     ```
     """
 
-    name = "VerifyInterfaceErrors"
-    description = "Verifies there are no interface error counters."
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces counters errors", revision=1)]
 
@@ -140,8 +137,6 @@ class VerifyInterfaceDiscards(AntaTest):
     ```
     """
 
-    name = "VerifyInterfaceDiscards"
-    description = "Verifies there are no interface discard counters."
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces counters discards", revision=1)]
 
@@ -174,8 +169,6 @@ class VerifyInterfaceErrDisabled(AntaTest):
     ```
     """
 
-    name = "VerifyInterfaceErrDisabled"
-    description = "Verifies there are no interfaces in the errdisabled state."
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces status", revision=1)]
 
@@ -191,16 +184,20 @@ class VerifyInterfaceErrDisabled(AntaTest):
 
 
 class VerifyInterfacesStatus(AntaTest):
-    """Verifies if the provided list of interfaces are all in the expected state.
+    """Verifies the operational states of specified interfaces to ensure they match expected configurations.
 
-    - If line protocol status is provided, prioritize checking against both status and line protocol status
-    - If line protocol status is not provided and interface status is "up", expect both status and line protocol to be "up"
-    - If interface status is not "up", check only the interface status without considering line protocol status
+    This test performs the following checks for each specified interface:
+
+      1. If `line_protocol_status` is defined, both `status` and `line_protocol_status` are verified for the specified interface.
+      2. If `line_protocol_status` is not provided but the `status` is "up", it is assumed that both the status and line protocol should be "up".
+      3. If the interface `status` is not "up", only the interface's status is validated, with no line protocol check performed.
 
     Expected Results
     ----------------
-    * Success: The test will pass if the provided interfaces are all in the expected state.
-    * Failure: The test will fail if any interface is not in the expected state.
+    * Success: If the interface status and line protocol status matches the expected operational state for all specified interfaces.
+    * Failure: If any of the following occur:
+        - The specified interface is not configured.
+        - The specified interface status and line protocol status does not match the expected operational state for any interface.
 
     Examples
     --------
@@ -219,8 +216,6 @@ class VerifyInterfacesStatus(AntaTest):
     ```
     """
 
-    name = "VerifyInterfacesStatus"
-    description = "Verifies the status of the provided interfaces."
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces description", revision=1)]
 
@@ -229,30 +224,17 @@ class VerifyInterfacesStatus(AntaTest):
 
         interfaces: list[InterfaceState]
         """List of interfaces with their expected state."""
-
-        class InterfaceState(BaseModel):
-            """Model for an interface state."""
-
-            name: Interface
-            """Interface to validate."""
-            status: Literal["up", "down", "adminDown"]
-            """Expected status of the interface."""
-            line_protocol_status: Literal["up", "down", "testing", "unknown", "dormant", "notPresent", "lowerLayerDown"] | None = None
-            """Expected line protocol status of the interface."""
+        InterfaceState: ClassVar[type[InterfaceState]] = InterfaceState
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyInterfacesStatus."""
-        command_output = self.instance_commands[0].json_output
-
         self.result.is_success()
 
-        intf_not_configured = []
-        intf_wrong_state = []
-
+        command_output = self.instance_commands[0].json_output
         for interface in self.inputs.interfaces:
             if (intf_status := get_value(command_output["interfaceDescriptions"], interface.name, separator="..")) is None:
-                intf_not_configured.append(interface.name)
+                self.result.is_failure(f"{interface.name} - Not configured")
                 continue
 
             status = "up" if intf_status["interfaceStatus"] in {"up", "connected"} else intf_status["interfaceStatus"]
@@ -261,18 +243,15 @@ class VerifyInterfacesStatus(AntaTest):
             # If line protocol status is provided, prioritize checking against both status and line protocol status
             if interface.line_protocol_status:
                 if interface.status != status or interface.line_protocol_status != proto:
-                    intf_wrong_state.append(f"{interface.name} is {status}/{proto}")
+                    actual_state = f"Expected: {interface.status}/{interface.line_protocol_status}, Actual: {status}/{proto}"
+                    self.result.is_failure(f"{interface.name} - {actual_state}")
 
             # If line protocol status is not provided and interface status is "up", expect both status and proto to be "up"
             # If interface status is not "up", check only the interface status without considering line protocol status
-            elif (interface.status == "up" and (status != "up" or proto != "up")) or (interface.status != status):
-                intf_wrong_state.append(f"{interface.name} is {status}/{proto}")
-
-        if intf_not_configured:
-            self.result.is_failure(f"The following interface(s) are not configured: {intf_not_configured}")
-
-        if intf_wrong_state:
-            self.result.is_failure(f"The following interface(s) are not in the expected state: {intf_wrong_state}")
+            elif interface.status == "up" and (status != "up" or proto != "up"):
+                self.result.is_failure(f"{interface.name} - Expected: up/up, Actual: {status}/{proto}")
+            elif interface.status != status:
+                self.result.is_failure(f"{interface.name} - Expected: {interface.status}, Actual: {status}")
 
 
 class VerifyStormControlDrops(AntaTest):
@@ -291,8 +270,6 @@ class VerifyStormControlDrops(AntaTest):
     ```
     """
 
-    name = "VerifyStormControlDrops"
-    description = "Verifies there are no interface storm-control drop counters."
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show storm-control", revision=1)]
 
@@ -329,8 +306,6 @@ class VerifyPortChannels(AntaTest):
     ```
     """
 
-    name = "VerifyPortChannels"
-    description = "Verifies there are no inactive ports in all port channels."
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show port-channel", revision=1)]
 
@@ -364,8 +339,6 @@ class VerifyIllegalLACP(AntaTest):
     ```
     """
 
-    name = "VerifyIllegalLACP"
-    description = "Verifies there are no illegal LACP packets in all port channels."
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show lacp counters all-ports", revision=1)]
 
@@ -401,7 +374,6 @@ class VerifyLoopbackCount(AntaTest):
     ```
     """
 
-    name = "VerifyLoopbackCount"
     description = "Verifies the number of loopback interfaces and their status."
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip interface brief", revision=1)]
@@ -450,8 +422,6 @@ class VerifySVI(AntaTest):
     ```
     """
 
-    name = "VerifySVI"
-    description = "Verifies the status of all SVIs."
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip interface brief", revision=1)]
 
@@ -495,7 +465,6 @@ class VerifyL3MTU(AntaTest):
     ```
     """
 
-    name = "VerifyL3MTU"
     description = "Verifies the global L3 MTU of all L3 interfaces."
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces", revision=1)]
@@ -553,7 +522,6 @@ class VerifyIPProxyARP(AntaTest):
     ```
     """
 
-    name = "VerifyIPProxyARP"
     description = "Verifies if Proxy ARP is enabled."
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show ip interface {intf}", revision=2)]
@@ -607,7 +575,6 @@ class VerifyL2MTU(AntaTest):
     ```
     """
 
-    name = "VerifyL2MTU"
     description = "Verifies the global L2 MTU of all L2 interfaces."
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces", revision=1)]
@@ -662,14 +629,13 @@ class VerifyInterfaceIPv4(AntaTest):
       - VerifyInterfaceIPv4:
           interfaces:
             - name: Ethernet2
-              primary_ip: 172.30.11.0/31
+              primary_ip: 172.30.11.1/31
               secondary_ips:
-                - 10.10.10.0/31
+                - 10.10.10.1/31
                 - 10.10.10.10/31
     ```
     """
 
-    name = "VerifyInterfaceIPv4"
     description = "Verifies the interface IPv4 addresses."
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show ip interface {interface}", revision=2)]
@@ -685,9 +651,9 @@ class VerifyInterfaceIPv4(AntaTest):
 
             name: Interface
             """Name of the interface."""
-            primary_ip: IPv4Network
+            primary_ip: IPv4Interface
             """Primary IPv4 address in CIDR notation."""
-            secondary_ips: list[IPv4Network] | None = None
+            secondary_ips: list[IPv4Interface] | None = None
             """Optional list of secondary IPv4 addresses in CIDR notation."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
@@ -765,8 +731,6 @@ class VerifyIpVirtualRouterMac(AntaTest):
     ```
     """
 
-    name = "VerifyIpVirtualRouterMac"
-    description = "Verifies the IP virtual router MAC address."
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip virtual-router", revision=2)]
 
@@ -818,8 +782,6 @@ class VerifyInterfacesSpeed(AntaTest):
     ```
     """
 
-    name = "VerifyInterfacesSpeed"
-    description = "Verifies the speed, lanes, auto-negotiation status, and mode as full duplex for interfaces."
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces")]
 
@@ -886,17 +848,27 @@ class VerifyInterfacesSpeed(AntaTest):
 
 
 class VerifyLACPInterfacesStatus(AntaTest):
-    """Verifies the Link Aggregation Control Protocol (LACP) status of the provided interfaces.
+    """Verifies the Link Aggregation Control Protocol (LACP) status of the interface.
 
-    - Verifies that the interface is a member of the LACP port channel.
-    - Ensures that the synchronization is established.
-    - Ensures the interfaces are in the correct state for collecting and distributing traffic.
-    - Validates that LACP settings, such as timeouts, are correctly configured. (i.e The long timeout mode, also known as "slow" mode, is the default setting.)
+    This test performs the following checks for each specified interface:
+
+      1. Verifies that the interface is a member of the LACP port channel.
+      2. Verifies LACP port states and operational status:
+        - Activity: Active LACP mode (initiates)
+        - Timeout: Short (Fast Mode), Long (Slow Mode - default)
+        - Aggregation: Port aggregable
+        - Synchronization: Port in sync with partner
+        - Collecting: Incoming frames aggregating
+        - Distributing: Outgoing frames aggregating
 
     Expected Results
     ----------------
-    * Success: The test will pass if the provided interfaces are bundled in port channel and all specified parameters are correct.
-    * Failure: The test will fail if any interface is not bundled in port channel or any of specified parameter is not correct.
+    * Success: Interface is bundled and all LACP states match expected values for both actor and partner
+    * Failure: If any of the following occur:
+        - Interface or port channel is not configured.
+        - Interface is not bundled in port channel.
+        - Actor or partner port LACP states don't match expected configuration.
+        - LACP rate (timeout) mismatch when fast mode is configured.
 
     Examples
     --------
@@ -909,28 +881,15 @@ class VerifyLACPInterfacesStatus(AntaTest):
     ```
     """
 
-    name = "VerifyLACPInterfacesStatus"
-    description = "Verifies the Link Aggregation Control Protocol(LACP) status of the provided interfaces."
     categories: ClassVar[list[str]] = ["interfaces"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show lacp interface {interface}", revision=1)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show lacp interface", revision=1)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyLACPInterfacesStatus test."""
 
-        interfaces: list[LACPInterface]
-        """List of LACP member interface."""
-
-        class LACPInterface(BaseModel):
-            """Model for an LACP member interface."""
-
-            name: EthernetInterface
-            """Ethernet interface to validate."""
-            portchannel: PortChannelInterface
-            """Port Channel in which the interface is bundled."""
-
-    def render(self, template: AntaTemplate) -> list[AntaCommand]:
-        """Render the template for each interface in the input list."""
-        return [template.render(interface=interface.name) for interface in self.inputs.interfaces]
+        interfaces: list[InterfaceState]
+        """List of interfaces with their expected state."""
+        InterfaceState: ClassVar[type[InterfaceState]] = InterfaceState
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -940,21 +899,17 @@ class VerifyLACPInterfacesStatus(AntaTest):
         # Member port verification parameters.
         member_port_details = ["activity", "aggregation", "synchronization", "collecting", "distributing", "timeout"]
 
-        # Iterating over command output for different interfaces
-        for command, input_entry in zip(self.instance_commands, self.inputs.interfaces):
-            interface = input_entry.name
-            portchannel = input_entry.portchannel
-
+        command_output = self.instance_commands[0].json_output
+        for interface in self.inputs.interfaces:
             # Verify if a PortChannel is configured with the provided interface
-            if not (interface_details := get_value(command.json_output, f"portChannels.{portchannel}.interfaces.{interface}")):
-                self.result.is_failure(f"Interface '{interface}' is not configured to be a member of LACP '{portchannel}'.")
+            if not (interface_details := get_value(command_output, f"portChannels..{interface.portchannel}..interfaces..{interface.name}", separator="..")):
+                self.result.is_failure(f"{interface} - Not configured")
                 continue
 
             # Verify the interface is bundled in port channel.
             actor_port_status = interface_details.get("actorPortStatus")
             if actor_port_status != "bundled":
-                message = f"For Interface {interface}:\nExpected `bundled` as the local port status, but found `{actor_port_status}` instead.\n"
-                self.result.is_failure(message)
+                self.result.is_failure(f"{interface} - Not bundled - Port Status: {actor_port_status}")
                 continue
 
             # Collecting actor and partner port details
@@ -969,21 +924,12 @@ class VerifyLACPInterfacesStatus(AntaTest):
 
             # Forming expected interface details
             expected_details = {param: param != "timeout" for param in member_port_details}
-            expected_interface_output = {"actor_port_details": expected_details, "partner_port_details": expected_details}
+            # Updating the short LACP timeout, if expected.
+            if interface.lacp_rate_fast:
+                expected_details["timeout"] = True
 
-            # Forming failure message
-            if actual_interface_output != expected_interface_output:
-                message = f"For Interface {interface}:\n"
-                actor_port_failed_log = get_failed_logs(
-                    expected_interface_output.get("actor_port_details", {}), actual_interface_output.get("actor_port_details", {})
-                )
-                partner_port_failed_log = get_failed_logs(
-                    expected_interface_output.get("partner_port_details", {}), actual_interface_output.get("partner_port_details", {})
-                )
+            if (act_port_details := actual_interface_output["actor_port_details"]) != expected_details:
+                self.result.is_failure(f"{interface} - Actor port details mismatch - {format_data(act_port_details)}")
 
-                if actor_port_failed_log:
-                    message += f"Actor port details:{actor_port_failed_log}\n"
-                if partner_port_failed_log:
-                    message += f"Partner port details:{partner_port_failed_log}\n"
-
-                self.result.is_failure(message)
+            if (part_port_details := actual_interface_output["partner_port_details"]) != expected_details:
+                self.result.is_failure(f"{interface} - Partner port details mismatch - {format_data(part_port_details)}")

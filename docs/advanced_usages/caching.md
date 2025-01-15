@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2023-2024 Arista Networks, Inc.
+  ~ Copyright (c) 2023-2025 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
   ~ that can be found in the LICENSE file.
   -->
@@ -8,20 +8,7 @@ ANTA is a streamlined Python framework designed for efficient interaction with n
 
 ## Configuration
 
-By default, ANTA utilizes [aiocache](https://github.com/aio-libs/aiocache)'s memory cache backend, also called [`SimpleMemoryCache`](https://aiocache.aio-libs.org/en/v0.12.2/caches.html#simplememorycache). This library aims for simplicity and supports asynchronous operations to go along with Python `asyncio` used in ANTA.
-
 The `_init_cache()` method of the [AntaDevice](../api/device.md#anta.device.AntaDevice) abstract class initializes the cache. Child classes can override this method to tweak the cache configuration:
-
-```python
-def _init_cache(self) -> None:
-    """
-    Initialize cache for the device, can be overridden by subclasses to manipulate how it works
-    """
-    self.cache = Cache(cache_class=Cache.MEMORY, ttl=60, namespace=self.name, plugins=[HitMissRatioPlugin()])
-    self.cache_locks = defaultdict(asyncio.Lock)
-```
-
-The cache is also configured with `aiocache`'s [`HitMissRatioPlugin`](https://aiocache.aio-libs.org/en/v0.12.2/plugins.html#hitmissratioplugin) plugin to calculate the ratio of hits the cache has and give useful statistics for logging purposes in ANTA.
 
 ## Cache key design
 
@@ -31,7 +18,7 @@ The cache is initialized per `AntaDevice` and uses the following cache key desig
 
 The `uid` is an attribute of [AntaCommand](../api/models.md#anta.models.AntaCommand), which is a unique identifier generated from the command, version, revision and output format.
 
-Each UID has its own asyncio lock. This design allows coroutines that need to access the cache for different UIDs to do so concurrently. The locks are managed by the `self.cache_locks` dictionary.
+Each UID has its own asyncio lock. This design allows coroutines that need to access the cache for different UIDs to do so concurrently. The locks are managed by the `AntaCache.locks` dictionary.
 
 ## Mechanisms
 
@@ -45,35 +32,35 @@ There might be scenarios where caching is not wanted. You can disable caching in
 
 1. Caching can be disabled globally, for **ALL** commands on **ALL** devices, using the `--disable-cache` global flag when invoking anta at the [CLI](../cli/overview.md#invoking-anta-cli):
 
-    ```bash
-    anta --disable-cache --username arista --password arista nrfu table
-    ```
+   ```bash
+   anta --disable-cache --username arista --password arista nrfu table
+   ```
 
 2. Caching can be disabled per device, network or range by setting the `disable_cache` key to `True` when defining the ANTA [Inventory](../usage-inventory-catalog.md#device-inventory) file:
 
-    ```yaml
-    anta_inventory:
-      hosts:
-      - host: 172.20.20.101
-        name: DC1-SPINE1
-        tags: ["SPINE", "DC1"]
-        disable_cache: True  # Set this key to True
-      - host: 172.20.20.102
-        name: DC1-SPINE2
-        tags: ["SPINE", "DC1"]
-        disable_cache: False # Optional since it's the default
+   ```yaml
+   anta_inventory:
+     hosts:
+       - host: 172.20.20.101
+         name: DC1-SPINE1
+         tags: ["SPINE", "DC1"]
+         disable_cache: True # Set this key to True
+       - host: 172.20.20.102
+         name: DC1-SPINE2
+         tags: ["SPINE", "DC1"]
+         disable_cache: False # Optional since it's the default
 
-      networks:
-      - network: "172.21.21.0/24"
-        disable_cache: True
+     networks:
+       - network: "172.21.21.0/24"
+         disable_cache: True
 
-      ranges:
-      - start: 172.22.22.10
-        end: 172.22.22.19
-        disable_cache: True
-    ```
+     ranges:
+       - start: 172.22.22.10
+         end: 172.22.22.19
+         disable_cache: True
+   ```
 
-    This approach effectively disables caching for **ALL** commands sent to devices targeted by the `disable_cache` key.
+   This approach effectively disables caching for **ALL** commands sent to devices targeted by the `disable_cache` key.
 
 3. For tests developers, caching can be disabled for a specific [`AntaCommand`](../api/models.md#anta.models.AntaCommand) or [`AntaTemplate`](../api/models.md#anta.models.AntaTemplate) by setting the `use_cache` attribute to `False`. That means the command output will always be collected on the device and therefore, never use caching.
 

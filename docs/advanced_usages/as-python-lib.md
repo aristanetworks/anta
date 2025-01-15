@@ -1,13 +1,13 @@
 <!--
-  ~ Copyright (c) 2023-2024 Arista Networks, Inc.
+  ~ Copyright (c) 2023-2025 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
   ~ that can be found in the LICENSE file.
   -->
 
 ANTA is a Python library that can be used in user applications. This section describes how you can leverage ANTA Python modules to help you create your own NRFU solution.
 
-!!! tip
-    If you are unfamiliar with asyncio, refer to the Python documentation relevant to your Python version - https://docs.python.org/3/library/asyncio.html
+> [!TIP]
+> If you are unfamiliar with asyncio, refer to the Python documentation relevant to your Python version - https://docs.python.org/3/library/asyncio.html
 
 ## [AntaDevice](../api/device.md#anta.device.AntaDevice) Abstract Class
 
@@ -24,7 +24,7 @@ The [copy()](../api/device.md#anta.device.AntaDevice.copy) coroutine is used to 
 The [AsyncEOSDevice](../api/device.md#anta.device.AsyncEOSDevice) class is an implementation of [AntaDevice](../api/device.md#anta.device.AntaDevice) for Arista EOS.
 It uses the [aio-eapi](https://github.com/jeremyschulman/aio-eapi) eAPI client and the [AsyncSSH](https://github.com/ronf/asyncssh) library.
 
-- The [_collect()](../api/device.md#anta.device.AsyncEOSDevice._collect) coroutine collects [AntaCommand](../api/models.md#anta.models.AntaCommand) outputs using eAPI.
+- The [\_collect()](../api/device.md#anta.device.AsyncEOSDevice._collect) coroutine collects [AntaCommand](../api/models.md#anta.models.AntaCommand) outputs using eAPI.
 - The [refresh()](../api/device.md#anta.device.AsyncEOSDevice.refresh) coroutine tries to open a TCP connection on the eAPI port and update the `is_online` attribute accordingly. If the TCP connection succeeds, it sends a `show version` command to gather the hardware model of the device and updates the `established` and `hw_model` attributes.
 - The [copy()](../api/device.md#anta.device.AsyncEOSDevice.copy) coroutine copies files to and from the device using the SCP protocol.
 
@@ -47,8 +47,10 @@ The [AntaInventory](../api/inventory.md#anta.inventory.AntaInventory) class is a
 --8<-- "parse_anta_inventory_file.py"
 ```
 
-!!! note "How to create your inventory file"
-    Please visit this [dedicated section](../usage-inventory-catalog.md) for how to use inventory and catalog files.
+> [!NOTE]
+> **How to create your inventory file**
+>
+> Please visit this [dedicated section](../usage-inventory-catalog.md) for how to use inventory and catalog files.
 
 ### Run EOS commands
 

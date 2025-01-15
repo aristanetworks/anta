@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module related to the EOS various services tests."""
@@ -7,14 +7,11 @@ from __future__ import annotations
 
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
-from ipaddress import IPv4Address, IPv6Address
 from typing import ClassVar
 
-from pydantic import BaseModel, Field
-
-from anta.custom_types import ErrDisableInterval, ErrDisableReasons
+from anta.input_models.services import DnsServer, ErrDisableReason, ErrdisableRecovery
 from anta.models import AntaCommand, AntaTemplate, AntaTest
-from anta.tools import get_dict_superset, get_failed_logs, get_item
+from anta.tools import get_dict_superset, get_item
 
 
 class VerifyHostname(AntaTest):
@@ -34,8 +31,6 @@ class VerifyHostname(AntaTest):
     ```
     """
 
-    name = "VerifyHostname"
-    description = "Verifies the hostname of a device."
     categories: ClassVar[list[str]] = ["services"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show hostname", revision=1)]
 
@@ -77,7 +72,6 @@ class VerifyDNSLookup(AntaTest):
     ```
     """
 
-    name = "VerifyDNSLookup"
     description = "Verifies the DNS name to IP address resolution."
     categories: ClassVar[list[str]] = ["services"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="bash timeout 10 nslookup {domain}", revision=1)]
@@ -109,10 +103,17 @@ class VerifyDNSLookup(AntaTest):
 class VerifyDNSServers(AntaTest):
     """Verifies if the DNS (Domain Name Service) servers are correctly configured.
 
+    This test performs the following checks for each specified DNS Server:
+
+      1. Confirming correctly registered with a valid IPv4 or IPv6 address with the designated VRF.
+      2. Ensuring an appropriate priority level.
+
     Expected Results
     ----------------
     * Success: The test will pass if the DNS server specified in the input is configured with the correct VRF and priority.
-    * Failure: The test will fail if the DNS server is not configured or if the VRF and priority of the DNS server do not match the input.
+    * Failure: The test will fail if any of the following conditions are met:
+        - The provided DNS server is not configured.
+        - The provided DNS server with designated VRF and priority does not match the expected information.
 
     Examples
     --------
@@ -129,8 +130,6 @@ class VerifyDNSServers(AntaTest):
     ```
     """
 
-    name = "VerifyDNSServers"
-    description = "Verifies if the DNS servers are correctly configured."
     categories: ClassVar[list[str]] = ["services"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip name-server", revision=1)]
 
@@ -139,47 +138,49 @@ class VerifyDNSServers(AntaTest):
 
         dns_servers: list[DnsServer]
         """List of DNS servers to verify."""
-
-        class DnsServer(BaseModel):
-            """Model for a DNS server."""
-
-            server_address: IPv4Address | IPv6Address
-            """The IPv4/IPv6 address of the DNS server."""
-            vrf: str = "default"
-            """The VRF for the DNS server. Defaults to 'default' if not provided."""
-            priority: int = Field(ge=0, le=4)
-            """The priority of the DNS server from 0 to 4, lower is first."""
+        DnsServer: ClassVar[type[DnsServer]] = DnsServer
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyDNSServers."""
-        command_output = self.instance_commands[0].json_output["nameServerConfigs"]
         self.result.is_success()
+
+        command_output = self.instance_commands[0].json_output["nameServerConfigs"]
         for server in self.inputs.dns_servers:
             address = str(server.server_address)
             vrf = server.vrf
             priority = server.priority
             input_dict = {"ipAddr": address, "vrf": vrf}
 
-            if get_item(command_output, "ipAddr", address) is None:
-                self.result.is_failure(f"DNS server `{address}` is not configured with any VRF.")
-                continue
-
+            # Check if the DNS server is configured with specified VRF.
             if (output := get_dict_superset(command_output, input_dict)) is None:
-                self.result.is_failure(f"DNS server `{address}` is not configured with VRF `{vrf}`.")
+                self.result.is_failure(f"{server} - Not configured")
                 continue
 
+            # Check if the DNS server priority matches with expected.
             if output["priority"] != priority:
-                self.result.is_failure(f"For DNS server `{address}`, the expected priority is `{priority}`, but `{output['priority']}` was found instead.")
+                self.result.is_failure(f"{server} - Incorrect priority - Priority: {output['priority']}")
 
 
 class VerifyErrdisableRecovery(AntaTest):
-    """Verifies the errdisable recovery reason, status, and interval.
+    """Verifies the error disable recovery functionality.
+
+    This test performs the following checks for each specified error disable reason:
+
+      1. Verifying if the specified error disable reason exists.
+      2. Checking if the recovery timer status matches the expected enabled/disabled state.
+      3. Validating that the timer interval matches the configured value.
 
     Expected Results
     ----------------
-    * Success: The test will pass if the errdisable recovery reason status is enabled and the interval matches the input.
-    * Failure: The test will fail if the errdisable recovery reason is not found, the status is not enabled, or the interval does not match the input.
+    * Success: The test will pass if:
+        - The specified error disable reason exists.
+        - The recovery timer status matches the expected state.
+        - The timer interval matches the configured value.
+    * Failure: The test will fail if:
+        - The specified error disable reason does not exist.
+        - The recovery timer status does not match the expected state.
+        - The timer interval does not match the configured value.
 
     Examples
     --------
@@ -189,13 +190,13 @@ class VerifyErrdisableRecovery(AntaTest):
           reasons:
             - reason: acl
               interval: 30
+              status: Enabled
             - reason: bpduguard
               interval: 30
+              status: Enabled
     ```
     """
 
-    name = "VerifyErrdisableRecovery"
-    description = "Verifies the errdisable recovery reason, status, and interval."
     categories: ClassVar[list[str]] = ["services"]
     # NOTE: Only `text` output format is supported for this command
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show errdisable recovery", ofmt="text")]
@@ -203,44 +204,35 @@ class VerifyErrdisableRecovery(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyErrdisableRecovery test."""
 
-        reasons: list[ErrDisableReason]
+        reasons: list[ErrdisableRecovery]
         """List of errdisable reasons."""
-
-        class ErrDisableReason(BaseModel):
-            """Model for an errdisable reason."""
-
-            reason: ErrDisableReasons
-            """Type or name of the errdisable reason."""
-            interval: ErrDisableInterval
-            """Interval of the reason in seconds."""
+        ErrDisableReason: ClassVar[type[ErrdisableRecovery]] = ErrDisableReason
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyErrdisableRecovery."""
-        command_output = self.instance_commands[0].text_output
         self.result.is_success()
+
+        # Skip header and last empty line
+        command_output = self.instance_commands[0].text_output.split("\n")[2:-1]
+
+        # Collecting the actual errdisable reasons for faster lookup
+        errdisable_reasons = [
+            {"reason": reason, "status": status, "interval": interval}
+            for line in command_output
+            if line.strip()  # Skip empty lines
+            for reason, status, interval in [line.split(None, 2)]  # Unpack split result
+        ]
+
         for error_reason in self.inputs.reasons:
-            input_reason = error_reason.reason
-            input_interval = error_reason.interval
-            reason_found = False
+            if not (reason_output := get_item(errdisable_reasons, "reason", error_reason.reason)):
+                self.result.is_failure(f"{error_reason} - Not found")
+                continue
 
-            # Skip header and last empty line
-            lines = command_output.split("\n")[2:-1]
-            for line in lines:
-                # Skip empty lines
-                if not line.strip():
-                    continue
-                # Split by first two whitespaces
-                reason, status, interval = line.split(None, 2)
-                if reason != input_reason:
-                    continue
-                reason_found = True
-                actual_reason_data = {"interval": interval, "status": status}
-                expected_reason_data = {"interval": str(input_interval), "status": "Enabled"}
-                if actual_reason_data != expected_reason_data:
-                    failed_log = get_failed_logs(expected_reason_data, actual_reason_data)
-                    self.result.is_failure(f"`{input_reason}`:{failed_log}\n")
-                break
-
-            if not reason_found:
-                self.result.is_failure(f"`{input_reason}`: Not found.\n")
+            if not all(
+                [
+                    error_reason.status == (act_status := reason_output["status"]),
+                    error_reason.interval == (act_interval := int(reason_output["interval"])),
+                ]
+            ):
+                self.result.is_failure(f"{error_reason} - Incorrect configuration - Status: {act_status} Interval: {act_interval}")

@@ -2,7 +2,7 @@
 anta_title: Execute Network Readiness For Use (NRFU) Testing
 ---
 <!--
-  ~ Copyright (c) 2023-2024 Arista Networks, Inc.
+  ~ Copyright (c) 2023-2025 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
   ~ that can be found in the LICENSE file.
   -->
@@ -26,21 +26,12 @@ ANTA provides a set of commands for performing NRFU tests on devices. These comm
 
 All commands under the `anta nrfu` namespace require a catalog yaml file specified with the `--catalog` option and a device inventory file specified with the `--inventory` option.
 
-!!! info
-    Issuing the command `anta nrfu` will run `anta nrfu table` without any option.
+> [!TIP]
+> Issuing the command `anta nrfu` will run `anta nrfu table` without any option.
 
 ### Tag management
 
-The `--tags` option can be used to target specific devices in your inventory and run only tests configured with this specific tags from your catalog. Expected behaviour is provided below:
-
-| Command | Description |
-| ------- | ----------- |
-| No `--tags` option | Run all tests on all devices according to the `tag` definitions in your inventory and test catalog.<br/> Tests without tags are executed on all devices. |
-| `--tags leaf` | Run all tests marked with the `leaf` tag on all devices configured with the `leaf` tag.<br/> All other tests are ignored. |
-| `--tags leaf,spine` | Run all tests marked with the `leaf` tag on all devices configured with the `leaf` tag.<br/>Run all tests marked with the `spine` tag on all devices configured with the `spine` tag.<br/> All other tests are ignored. |
-
-!!! info
-    [More examples](tag-management.md) available on this dedicated page.
+The `--tags` option can be used to target specific devices in your inventory and run only tests configured with this specific tags from your catalog. Refer to the [dedicated page](tag-management.md) for more information.
 
 ### Device and test filtering
 

@@ -1,12 +1,10 @@
 <!--
-  ~ Copyright (c) 2023-2024 Arista Networks, Inc.
+  ~ Copyright (c) 2023-2025 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
   ~ that can be found in the LICENSE file.
   -->
 
-ANTA commands can be used with a `--tags` option. This option **filters the inventory** with the specified tag(s) when running the command.
-
-Tags can also be used to **restrict a specific test** to a set of devices when using `anta nrfu`.
+ANTA uses tags to define test-to-device mappings (tests run on devices with matching tags) and the `--tags` CLI option acts as a filter to execute specific test/device combinations.
 
 ## Defining tags
 
@@ -66,15 +64,14 @@ Tags can be defined in the test catalog to restrict tests to tagged devices:
 anta.tests.system:
   - VerifyUptime:
       minimum: 10
-      filters:
-        tags: ['spine']
+      filters: tags: ["spine"]
   - VerifyUptime:
       minimum: 9
       filters:
-        tags: ['leaf']
+        tags: ["leaf"]
   - VerifyReloadCause:
       filters:
-        tags: ['spine', 'leaf']
+        tags: ["spine", "leaf"]
   - VerifyCoredump:
   - VerifyAgentLogs:
   - VerifyCPUUtilization:
@@ -85,19 +82,20 @@ anta.tests.system:
 anta.tests.mlag:
   - VerifyMlagStatus:
       filters:
-        tags: ['leaf']
+        tags: ["leaf"]
 
 anta.tests.interfaces:
   - VerifyL3MTU:
       mtu: 1500
       filters:
-        tags: ['spine']
+        tags: ["spine"]
 ```
 
-> A tag used to filter a test can also be a device name
-
-!!! tip "Use different input values for a specific test"
-    Leverage tags to define different input values for a specific test. See the `VerifyUptime` example above.
+> [!TIP]
+>
+> - A tag used to filter a test can also be a device name
+>
+> - **Use different input values for a specific test**: Leverage tags to define different input values for a specific test. See the `VerifyUptime` example above.
 
 ## Using tags
 
@@ -244,25 +242,10 @@ To get the list of all configured tags in the inventory, run the following comma
 $ anta get tags
 Tags found:
 [
-  "BL",
-  "DC1",
-  "DC1-BL1",
-  "DC1-BL2",
-  "DC1-LEAF1A",
-  "DC1-LEAF1B",
-  "DC1-SPINE1",
-  "DC1-SPINE2",
-  "DC2",
-  "DC2-BL1",
-  "DC2-BL2",
-  "DC2-LEAF1A",
-  "DC2-LEAF1B",
-  "DC2-SPINE1",
-  "DC2-SPINE2",
-  "LEAF",
-  "SPINE"
+  "leaf",
+  "leaf1",
+  "leaf2",
+  "spine",
+  "spine1"
 ]
 ```
-
-!!! note
-    ANTA automatically injects the device name as device tag.
