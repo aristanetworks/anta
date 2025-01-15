@@ -9,7 +9,7 @@ import asyncio
 import logging
 from abc import ABC, abstractmethod
 from collections import OrderedDict, defaultdict
-from time import monotonic
+from time import time
 from typing import TYPE_CHECKING, Any, Literal
 
 import asyncssh
@@ -36,15 +36,15 @@ CLIENT_KEYS = asyncssh.public_key.load_default_keypairs()
 class AntaCache:
     """Class to be used as cache.
 
-    Example
-    -------
+     Example
+     -------
 
-    ```python
-    # Create cache
-    cache = AntaCache("device1")
-    with cache.locks[key]:
-        command_output = cache.get(key)
-    ```
+     ```python
+     # Create cache
+     cache = AntaCache("device1")
+     with cache.locks[key]:
+         command_output = cache.get(key)
+     ```
     """
 
     def __init__(self, device: str, max_size: int = 128, ttl: int = 60) -> None:
@@ -64,12 +64,12 @@ class AntaCache:
         self.stats["hits"] = 0
         self.stats["total"] = 0
 
-    async def get(self, key: str) -> Any:  # noqa: ANN401
+    async def get(self, key: Any) -> Any:  # noqa: ANN401
         """Return the cached entry for key."""
         self.stats["total"] += 1
         if key in self.cache:
             timestamp, value = self.cache[key]
-            if monotonic() - timestamp < self.ttl:
+            if time() - timestamp < self.ttl:
                 # checking the value is still valid
                 self.cache.move_to_end(key)
                 self.stats["hits"] += 1
@@ -79,9 +79,9 @@ class AntaCache:
             del self.locks[key]
         return None
 
-    async def set(self, key: str, value: Any) -> bool:  # noqa: ANN401
+    async def set(self, key: Any, value: Any) -> bool:  # noqa: ANN401
         """Set the cached entry for key to value."""
-        timestamp = monotonic()
+        timestamp = time()
         if len(self.cache) > self.max_size:
             self.cache.popitem(last=False)
         self.cache[key] = timestamp, value
@@ -239,15 +239,15 @@ class AntaDevice(ABC):
             An identifier used to build the eAPI request ID.
         """
         if self.cache is not None and command.use_cache:
-            async with self.cache.locks[command.uid]:
-                cached_output = await self.cache.get(command.uid)  # pylint: disable=no-member
+            async with self.cache.locks
+            cached_output = await self.cache.get(command.uid)  # pylint: disable=no-member
 
-                if cached_output is not None:
-                    logger.debug("Cache hit for %s on %s", command.command, self.name)
-                    command.output = cached_output
-                else:
-                    await self._collect(command=command, collection_id=collection_id)
-                    await self.cache.set(command.uid, command.output)  # pylint: disable=no-member
+            if cached_output is not None:
+                logger.debug("Cache hit for %s on %s", command.command, self.name)
+                command.output = cached_output
+            else:
+                await self._collect(command=command, collection_id=collection_id)
+                await self.cache.set(command.uid, command.output)  # pylint: disable=no-member
         else:
             await self._collect(command=command, collection_id=collection_id)
 
