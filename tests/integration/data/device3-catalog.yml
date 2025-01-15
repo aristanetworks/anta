@@ -2,4 +2,4 @@
 anta.tests.software:
   - VerifyEOSVersion:
       versions:
-        - 4.31.1F
+        - 4.31.3F
