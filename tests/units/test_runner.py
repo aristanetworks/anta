@@ -67,7 +67,7 @@ async def test_no_selected_device(caplog: pytest.LogCaptureFixture, inventory: A
     caplog.set_level(logging.WARNING)
     manager = ResultManager()
     await main(manager, inventory, FAKE_CATALOG, tags=tags, devices=devices)
-    msg = f'No reachable device {f"matching the tags {tags} " if tags else ""}was found.{f" Selected devices: {devices} " if devices is not None else ""}'
+    msg = f"No reachable device {f'matching the tags {tags} ' if tags else ''}was found.{f' Selected devices: {devices} ' if devices is not None else ''}"
     assert msg in caplog.messages
 
 
