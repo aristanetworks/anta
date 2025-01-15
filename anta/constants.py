@@ -47,8 +47,9 @@ KNOWN_EOS_ERRORS = [
 """List of known EOS errors that should set a test status to 'failure' with the error message."""
 
 UNSUPPORTED_PLATFORM_ERRORS = [
+    "not supported on this hardware platform",
     "Invalid input (at token 2: 'trident')",
 ]
-"""Error messages when using `show platform <family> <command>` on unsupported ASIC families.
-Will set the test status to 'skipped' with the unsupported command. More errors can be added
-for different platforms if tests require it."""
+"""Error messages indicating platform or hardware unsupported commands.
+Will set the test status to 'skipped'. Includes both general hardware
+platform errors and specific ASIC family limitations."""

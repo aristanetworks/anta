@@ -258,10 +258,7 @@ class AntaCommand(BaseModel):
 
             raise RuntimeError(msg)
 
-        return all(
-            "not supported on this hardware platform" not in e and not any(platform_error in e for platform_error in UNSUPPORTED_PLATFORM_ERRORS)
-            for e in self.errors
-        )
+        return all(not any(error in e for error in UNSUPPORTED_PLATFORM_ERRORS) for e in self.errors)
 
     @property
     def returned_known_eos_error(self) -> bool:
