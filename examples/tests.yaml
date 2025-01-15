@@ -391,6 +391,13 @@ anta.tests.routing.bgp:
             - 192.0.254.5/32
           received_routes:
             - 192.0.254.3/32
+  - VerifyBGPNlriAcceptance:
+      # Verifies that all received NLRI are accepted for all AFI/SAFI configured for BGP IPv4 peer(s).
+      bgp_peers:
+        - peer_address: 10.100.0.128
+          vrf: default
+          capabilities:
+            - ipv4Unicast
   - VerifyBGPPeerASNCap:
       # Verifies the four octet ASN capability of BGP IPv4 peer(s).
       bgp_peers:
@@ -499,6 +506,16 @@ anta.tests.routing.bgp:
   - VerifyBGPPeersHealthRibd:
       # Verifies the health of all the BGP IPv4 peer(s).
       check_tcp_queues: True
+  - VerifyBGPRoutePaths:
+      # Verifies BGP IPv4 route paths.
+      route_entries:
+          - prefix: 10.100.0.128/31
+            vrf: default
+            paths:
+              - nexthop: 10.100.0.10
+                origin: Igp
+              - nexthop: 10.100.4.5
+                origin: Incomplete
   - VerifyBGPSpecificPeers:
       # Verifies the health of specific BGP peer(s) for given address families.
       address_families:
@@ -646,7 +663,7 @@ anta.tests.security:
       number: 3
       vrf: default
   - VerifyAPISSLCertificate:
-      # Verifies the eAPI SSL certificate expiry, common subject name, encryption algorithm and key size.
+      # Verifies the eAPI SSL certificate.
       certificates:
         - certificate_name: ARISTA_SIGNING_CA.crt
           expiry_threshold: 30
@@ -675,7 +692,7 @@ anta.tests.security:
   - VerifyIPSecConnHealth:
       # Verifies all IPv4 security connections.
   - VerifyIPv4ACL:
-      # Verifies the configuration of IPv4 ACLs.
+      # Verifies the IPv4 ACLs.
       ipv4_access_lists:
         - name: default-control-plane-acl
           entries:
