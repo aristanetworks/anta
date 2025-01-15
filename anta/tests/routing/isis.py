@@ -13,6 +13,7 @@ from typing import Any, ClassVar, Literal
 from pydantic import BaseModel
 
 from anta.custom_types import Interface
+from anta.input_models.routing.isis import ISISInstances
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_value
 
@@ -728,3 +729,89 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
                 for eos_via in eos_entry["vias"]
             )
         return True
+
+
+class VerifyISISGracefulRestart(AntaTest):
+    """Verifies the graceful restart and helper mechanism.
+
+    This test performs the following checks:
+
+     1. Verifies that the ISIS is configured.
+     2. Verifies that the specified ISIS instance is found on the device.
+     4. Verifies that the expected and actual IS-IS graceful restart and graceful helper values are matched.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if all of the following conditions are met:
+        - The ISIS is configured on the device.
+        - The specified ISIS instance is exist on the device.
+        - Expected and actual IS-IS graceful restart and graceful helper values are matched.
+    * Failure: The test will fail if any of the following conditions is met:
+        - The ISIS is not configured on the device.
+        - The Specified ISIS instance do not exist on the device.
+        - Expected and actual IS-IS graceful restart and graceful helper values are not matched.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      isis:
+        - VerifyISISGracefulRestart:
+            instances:
+              - name: '1'
+                vrf: default
+                graceful_restart: True
+                graceful_helper: True
+              - name: '2'
+                vrf: default
+                graceful_restart: True
+                graceful_helper: True
+              - name: '1'
+                vrf: test
+                graceful_restart: True
+                graceful_helper: True
+              - name: '2'
+                vrf: test
+                graceful_restart: True
+                graceful_helper: True
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["isis"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show isis summary vrf all", revision=2)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyISISGracefulRestart test."""
+
+        instances: list[ISISInstances]
+        """List of IS-IS instance entries."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyISISGracefulRestart."""
+        self.result.is_success()
+        command_output = self.instance_commands[0].json_output
+        isis_details = command_output.get("vrfs")
+
+        # If IS-IS is not configured, test fails.
+        if not isis_details:
+            self.result.is_failure("ISIS is not configured")
+            return
+
+        # If IS-IS instance is not found or GR and GR helpers are not matching with the expected values, test fails.
+        for instance in self.inputs.instances:
+            vrf = instance.vrf
+            instance_name = str(instance.name)
+            graceful_restart = instance.graceful_restart
+            graceful_helper = instance.graceful_helper
+
+            if (instance_details := get_value(isis_details, f"{vrf}.isisInstances.{instance_name}")) is None:
+                self.result.is_failure(f"{instance} - Not found")
+                continue
+
+            if instance_details.get("gracefulRestart") != graceful_restart:
+                self.result.is_failure(f"{instance} - Graceful Restart disabled")
+
+            actual_gr_helper = instance_details.get("gracefulRestartHelper")
+            if actual_gr_helper != graceful_helper:
+                self.result.is_failure(f"{instance} - Graceful Restart Helper disabled")
