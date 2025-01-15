@@ -167,14 +167,14 @@ DATA: list[dict[str, Any]] = [
             "2023-05-10T13:54:21.463497-05:00 NW-CORE.example.org ConfigAgent: %SYS-6-LOGMSG_INFO: "
             "Message from arista on command-api (10.22.1.107): ANTA VerifyLoggingLogsGeneration validation\n",
         ],
-        "inputs": None,
+        "inputs": {"severity_level": "informational"},
         "expected": {"result": "success"},
     },
     {
         "name": "failure",
         "test": VerifyLoggingLogsGeneration,
         "eos_data": ["", "Log Buffer:\n"],
-        "inputs": None,
+        "inputs": {"severity_level": "notifications"},
         "expected": {"result": "failure", "messages": ["Logs are not generated"]},
     },
     {
@@ -186,7 +186,7 @@ DATA: list[dict[str, Any]] = [
             "2023-05-10T15:41:44.701810-05:00 NW-CORE.example.org ConfigAgent: %SYS-6-LOGMSG_INFO: "
             "Message from arista on command-api (10.22.1.107): ANTA VerifyLoggingHostname validation\n",
         ],
-        "inputs": None,
+        "inputs": {"severity_level": "informational"},
         "expected": {"result": "success"},
     },
     {
@@ -195,10 +195,10 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [
             {"hostname": "NW-CORE", "fqdn": "NW-CORE.example.org"},
             "",
-            "2023-05-10T13:54:21.463497-05:00 NW-CORE ConfigAgent: %SYS-6-LOGMSG_INFO: "
+            "2023-05-10T13:54:21.463497-05:00 NW-CORE ConfigAgent: %SYS-6-LOGMSG_NOTICE: "
             "Message from arista on command-api (10.22.1.107): ANTA VerifyLoggingLogsHostname validation\n",
         ],
-        "inputs": None,
+        "inputs": {"severity_level": "notifications"},
         "expected": {"result": "failure", "messages": ["Logs are not generated with the device FQDN"]},
     },
     {
@@ -211,7 +211,7 @@ DATA: list[dict[str, Any]] = [
             "2023-05-10T15:42:44.680813-05:00 NW-CORE.example.org ConfigAgent: %SYS-6-LOGMSG_INFO: "
             "Other log\n",
         ],
-        "inputs": None,
+        "inputs": {"severity_level": "informational"},
         "expected": {"result": "success"},
     },
     {
@@ -224,7 +224,7 @@ DATA: list[dict[str, Any]] = [
             "2023-05-10T15:42:44.680813+05:00 NW-CORE.example.org ConfigAgent: %SYS-6-LOGMSG_INFO: "
             "Other log\n",
         ],
-        "inputs": None,
+        "inputs": {"severity_level": "informational"},
         "expected": {"result": "success"},
     },
     {
@@ -232,10 +232,10 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyLoggingTimestamp,
         "eos_data": [
             "",
-            "May 10 13:54:22 NE-CORE.example.org ConfigAgent: %SYS-6-LOGMSG_INFO: "
+            "May 10 13:54:22 NE-CORE.example.org ConfigAgent: %SYS-6-LOGMSG_ALERT: "
             "Message from arista on command-api (10.22.1.107): ANTA VerifyLoggingTimestamp validation\n",
         ],
-        "inputs": None,
+        "inputs": {"severity_level": "alerts"},
         "expected": {"result": "failure", "messages": ["Logs are not generated with the appropriate timestamp format"]},
     },
     {
@@ -243,9 +243,9 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyLoggingTimestamp,
         "eos_data": [
             "",
-            "May 10 13:54:22 NE-CORE.example.org ConfigAgent: %SYS-6-LOGMSG_INFO: Message from arista on command-api (10.22.1.107): BLAH\n",
+            "May 10 13:54:22 NE-CORE.example.org ConfigAgent: %SYS-6-LOGMSG_NOTICE: Message from arista on command-api (10.22.1.107): BLAH\n",
         ],
-        "inputs": None,
+        "inputs": {"severity_level": "notifications"},
         "expected": {"result": "failure", "messages": ["Logs are not generated with the appropriate timestamp format"]},
     },
     {
