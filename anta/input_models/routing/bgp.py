@@ -149,7 +149,7 @@ class BgpPeer(BaseModel):
     received_routes: list[IPv4Network] | None = None
     """List of received routes in CIDR format. Required field in the `VerifyBGPExchangedRoutes` test."""
     capabilities: list[MultiProtocolCaps] | None = None
-    """List of BGP multiprotocol capabilities. Required field in the `VerifyBGPPeerMPCaps` test."""
+    """List of BGP multiprotocol capabilities. Required field in the `VerifyBGPPeerMPCaps`, `VerifyBGPNlriAcceptance` tests."""
     strict: bool = False
     """If True, requires exact match of the provided BGP multiprotocol capabilities.
 

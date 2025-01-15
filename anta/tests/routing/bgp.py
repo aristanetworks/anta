@@ -1544,3 +1544,78 @@ class VerifyBGPPeersHealthRibd(AntaTest):
                 outq = peer["peerTcpInfo"]["outputQueueLength"]
                 if self.inputs.check_tcp_queues and (inq != 0 or outq != 0):
                     self.result.is_failure(f"Peer: {peer['peerAddress']} VRF: {vrf} - Session has non-empty message queues - InQ: {inq}, OutQ: {outq}")
+
+
+class VerifyBGPNlriAcceptance(AntaTest):
+    """Verifies that all received NLRI are accepted for all AFI/SAFI configured for BGP IPv4 peer(s).
+
+    This test performs the following checks for each specified peer:
+
+      1. Verifies that the peer is found in its VRF in the BGP configuration.
+      2. Verifies that all received NLRI were accepted by comparing `nlrisReceived` with `nlrisAccepted`.
+
+    Expected Results
+    ----------------
+    * Success: If `nlrisReceived` equals `nlrisAccepted`, indicating all NLRI were accepted.
+    * Failure: If any of the following occur:
+        - The specified VRF is not configured.
+        - `nlrisReceived` does not equal `nlrisAccepted`, indicating some NLRI were rejected or filtered.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      bgp:
+        - VerifyBGPNlriAcceptance:
+            bgp_peers:
+              - peer_address: 10.100.0.128
+                vrf: default
+                capabilities:
+                  - ipv4Unicast
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["bgp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp summary vrf all", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyBGPNlriAcceptance test."""
+
+        bgp_peers: list[BgpPeer]
+        """List of BGP IPv4 peers."""
+
+        @field_validator("bgp_peers")
+        @classmethod
+        def validate_bgp_peers(cls, bgp_peers: list[T]) -> list[T]:
+            """Validate that 'capabilities' field is provided in each BGP peer."""
+            for peer in bgp_peers:
+                if peer.capabilities is None:
+                    msg = f"{peer} 'capabilities' field missing in the input"
+                    raise ValueError(msg)
+            return bgp_peers
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyBGPNlriAcceptance."""
+        self.result.is_success()
+
+        output = self.instance_commands[0].json_output
+
+        for peer in self.inputs.bgp_peers:
+            # Check if the peer is found
+            if not (peer_data := get_value(output, f"vrfs..{peer.vrf}..peers..{peer.peer_address}", separator="..")):
+                self.result.is_failure(f"{peer} - Not found")
+                continue
+
+            # Fetching the multiprotocol capabilities
+            for capability in peer.capabilities:
+                # Check if the capability is found
+                if (capability_status := get_value(peer_data, capability)) is None:
+                    self.result.is_failure(f"{peer} - {capability} not found")
+                    continue
+
+                if capability_status["afiSafiState"] != "negotiated":
+                    self.result.is_failure(f"{peer} - {capability} not negotiated")
+
+                if (received := capability_status.get("nlrisReceived")) != (accepted := capability_status.get("nlrisAccepted")):
+                    self.result.is_failure(f"{peer} AFI/SAFI: {capability} - some NLRI were filtered or rejected - Accepted: {accepted} Received: {received}")
