@@ -323,6 +323,8 @@ class AntaCatalog:
                 msg = "A test in the catalog must be an AntaTestDefinition instance"
                 raise TypeError(msg)
         self._tests = value
+        # Tests were modified so indexes need to be rebuilt.
+        self._init_indexes()
 
     @staticmethod
     def parse(filename: str | Path, file_format: Literal["yaml", "json"] = "yaml") -> AntaCatalog:
