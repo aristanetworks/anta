@@ -1618,4 +1618,4 @@ class VerifyBGPNlriAcceptance(AntaTest):
                     self.result.is_failure(f"{peer} - {capability} not negotiated")
 
                 if (received := capability_status.get("nlrisReceived")) != (accepted := capability_status.get("nlrisAccepted")):
-                    self.result.is_failure(f"{peer} Capability: {capability} - some NLRI were filtered or rejected - Accepted: {accepted} Received: {received}")
+                    self.result.is_failure(f"{peer} AFI/SAFI: {capability} - some NLRI were filtered or rejected - Accepted: {accepted} Received: {received}")

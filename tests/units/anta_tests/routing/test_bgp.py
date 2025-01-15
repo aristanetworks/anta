@@ -4868,10 +4868,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 10.100.0.8 VRF: default Capability: ipv4Unicast - some NLRI were filtered or rejected - Accepted: 16 Received: 17",
-                "Peer: 10.100.0.8 VRF: default Capability: l2VpnEvpn - some NLRI were filtered or rejected - Accepted: 56 Received: 58",
-                "Peer: 10.100.4.5 VRF: MGMT Capability: ipv4Unicast - some NLRI were filtered or rejected - Accepted: 14 Received: 15",
-                "Peer: 10.100.4.5 VRF: MGMT Capability: l2VpnEvpn - some NLRI were filtered or rejected - Accepted: 56 Received: 59",
+                "Peer: 10.100.0.8 VRF: default AFI/SAFI: ipv4Unicast - some NLRI were filtered or rejected - Accepted: 16 Received: 17",
+                "Peer: 10.100.0.8 VRF: default AFI/SAFI: l2VpnEvpn - some NLRI were filtered or rejected - Accepted: 56 Received: 58",
+                "Peer: 10.100.4.5 VRF: MGMT AFI/SAFI: ipv4Unicast - some NLRI were filtered or rejected - Accepted: 14 Received: 15",
+                "Peer: 10.100.4.5 VRF: MGMT AFI/SAFI: l2VpnEvpn - some NLRI were filtered or rejected - Accepted: 56 Received: 59",
             ],
         },
     },
