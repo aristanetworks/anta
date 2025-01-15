@@ -1,3 +1,6 @@
+---
+anta_title: ANTA Inventory API
+---
 <!--
   ~ Copyright (c) 2023-2025 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
@@ -10,3 +13,11 @@
         filters: ["!^_[^_]", "!__str__"]
 
 ### ::: anta.inventory.exceptions
+
+### ::: anta.inventory.models.AntaInventoryInput
+
+### ::: anta.inventory.models.AntaInventoryHost
+
+### ::: anta.inventory.models.AntaInventoryNetwork
+
+### ::: anta.inventory.models.AntaInventoryRange

@@ -16,7 +16,7 @@ The cache is initialized per `AntaDevice` and uses the following cache key desig
 
 `<device_name>:<uid>`
 
-The `uid` is an attribute of [AntaCommand](../api/models.md#anta.models.AntaCommand), which is a unique identifier generated from the command, version, revision and output format.
+The `uid` is an attribute of [AntaCommand](../api/commands.md#anta.models.AntaCommand), which is a unique identifier generated from the command, version, revision and output format.
 
 Each UID has its own asyncio lock. This design allows coroutines that need to access the cache for different UIDs to do so concurrently. The locks are managed by the `AntaCache.locks` dictionary.
 
@@ -62,7 +62,7 @@ There might be scenarios where caching is not wanted. You can disable caching in
 
    This approach effectively disables caching for **ALL** commands sent to devices targeted by the `disable_cache` key.
 
-3. For tests developers, caching can be disabled for a specific [`AntaCommand`](../api/models.md#anta.models.AntaCommand) or [`AntaTemplate`](../api/models.md#anta.models.AntaTemplate) by setting the `use_cache` attribute to `False`. That means the command output will always be collected on the device and therefore, never use caching.
+3. For tests developers, caching can be disabled for a specific [`AntaCommand`](../api/commands.md#anta.models.AntaCommand) or [`AntaTemplate`](../api/commands.md#anta.models.AntaTemplate) by setting the `use_cache` attribute to `False`. That means the command output will always be collected on the device and therefore, never use caching.
 
 ### Disable caching in a child class of `AntaDevice`
 

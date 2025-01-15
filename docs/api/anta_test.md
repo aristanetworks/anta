@@ -1,5 +1,5 @@
 ---
-anta_title: ANTA Input Types
+anta_title: ANTA Test API
 ---
 <!--
   ~ Copyright (c) 2023-2025 Arista Networks, Inc.
@@ -7,8 +7,7 @@ anta_title: ANTA Input Types
   ~ that can be found in the LICENSE file.
   -->
 
-### ::: anta.custom_types
+## ::: anta.models.AntaTest
 
     options:
-      show_if_no_docstring: true
-      show_root_full_path: true
+        filters: ["!^_[^_]", "!__init_subclass__", "!update_progress"]

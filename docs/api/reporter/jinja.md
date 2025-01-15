@@ -1,5 +1,5 @@
 ---
-anta_title: ANTA Input Types
+anta_title: Jinja Reporter
 ---
 <!--
   ~ Copyright (c) 2023-2025 Arista Networks, Inc.
@@ -7,8 +7,4 @@ anta_title: ANTA Input Types
   ~ that can be found in the LICENSE file.
   -->
 
-### ::: anta.custom_types
-
-    options:
-      show_if_no_docstring: true
-      show_root_full_path: true
+::: anta.reporter.ReportJinja
