@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Catalog related functions."""
@@ -182,7 +182,7 @@ class AntaCatalogFile(RootModel[dict[ImportString[Any], list[AntaTestDefinition]
             except Exception as e:
                 # A test module is potentially user-defined code.
                 # We need to catch everything if we want to have meaningful logs
-                module_str = f"{module_name[1:] if module_name.startswith('.') else module_name}{f' from package {package}' if package else ''}"
+                module_str = f"{module_name.removeprefix('.')}{f' from package {package}' if package else ''}"
                 message = f"Module named {module_str} cannot be imported. Verify that the module exists and there is no Python syntax issues."
                 anta_log_exception(e, message, logger)
                 raise ValueError(message) from e
@@ -223,16 +223,14 @@ class AntaCatalogFile(RootModel[dict[ImportString[Any], list[AntaTestDefinition]
                         raise ValueError(msg)  # noqa: TRY004 pydantic catches ValueError or AssertionError, no TypeError
                     if len(test_definition) != 1:
                         msg = (
-                            f"Syntax error when parsing: {test_definition}\n"
-                            "It must be a dictionary with a single entry. Check the indentation in the test catalog."
+                            f"Syntax error when parsing: {test_definition}\nIt must be a dictionary with a single entry. Check the indentation in the test catalog."
                         )
                         raise ValueError(msg)
                     for test_name, test_inputs in test_definition.copy().items():
                         test: type[AntaTest] | None = getattr(module, test_name, None)
                         if test is None:
                             msg = (
-                                f"{test_name} is not defined in Python module {module.__name__}"
-                                f"{f' (from {module.__file__})' if module.__file__ is not None else ''}"
+                                f"{test_name} is not defined in Python module {module.__name__}{f' (from {module.__file__})' if module.__file__ is not None else ''}"
                             )
                             raise ValueError(msg)
                         test_definitions.append(AntaTestDefinition(test=test, inputs=test_inputs))

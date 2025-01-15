@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Data for testing anta.tests.logging."""
@@ -16,6 +16,7 @@ from anta.tests.logging import (
     VerifyLoggingPersistent,
     VerifyLoggingSourceIntf,
     VerifyLoggingTimestamp,
+    VerifySyslogLogging,
 )
 from tests.units.anta_tests import test
 
@@ -276,5 +277,46 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["Device has reported syslog messages with a severity of ERRORS or higher"]},
+    },
+    {
+        "name": "success",
+        "test": VerifySyslogLogging,
+        "eos_data": [
+            """Syslog logging: enabled
+            Buffer logging: level debugging
+
+            External configuration:
+                active:
+                inactive:
+
+            Facility                   Severity            Effective Severity
+            --------------------       -------------       ------------------
+            aaa                        debugging           debugging
+            accounting                 debugging           debugging""",
+        ],
+        "inputs": None,
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure",
+        "test": VerifySyslogLogging,
+        "eos_data": [
+            """Syslog logging: disabled
+            Buffer logging: level debugging
+            Console logging: level errors
+            Persistent logging: disabled
+            Monitor logging: level errors
+
+            External configuration:
+                active:
+                inactive:
+
+            Facility                   Severity            Effective Severity
+            --------------------       -------------       ------------------
+            aaa                        debugging           debugging
+            accounting                 debugging           debugging""",
+        ],
+        "inputs": None,
+        "expected": {"result": "failure", "messages": ["Syslog logging is disabled."]},
     },
 ]

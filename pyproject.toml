@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "anta"
-version = "v1.1.0"
+version = "v1.2.0"
 readme = "docs/README.md"
 authors = [{ name = "Arista Networks ANTA maintainers", email = "anta-dev@arista.com" }]
 maintainers = [
@@ -19,17 +19,16 @@ maintainers = [
 description = "Arista Network Test Automation (ANTA) Framework"
 license = { file = "LICENSE" }
 dependencies = [
-  "aiocache>=0.12.2",
   "asyncssh>=2.16",
   "cvprac>=1.3.1",
   "eval-type-backport>=0.1.3",  # Support newer typing features in older Python versions (required until Python 3.9 support is removed)
+  "httpx>=0.27.0",
   "Jinja2>=3.1.2",
   "pydantic>=2.7",
   "pydantic-extra-types>=2.3.0",
   "PyYAML>=6.0",
   "requests>=2.31.0",
-  "rich>=13.5.2,<14",
-  "httpx>=0.27.0"
+  "rich>=13.5.2,<14"
 ]
 keywords = ["test", "anta", "Arista", "network", "automation", "networking", "devops", "netdevops"]
 classifiers = [
@@ -70,13 +69,12 @@ dev = [
   "pytest-cov>=4.1.0",
   "pytest-dependency",
   "pytest-codspeed>=2.2.0",
-  "respx",
   "pytest-html>=3.2.0",
   "pytest-httpx>=0.30.0",
   "pytest-metadata>=3.0.0",
   "pytest>=7.4.0",
-  "respx>=0.21.1",
-  "ruff>=0.5.4,<0.8.0",
+  "respx>=0.22.0",
+  "ruff>=0.5.4,<0.10.0",
   "tox>=4.10.0,<5.0.0",
   "types-PyYAML",
   "types-pyOpenSSL",
@@ -98,7 +96,8 @@ doc = [
   "mkdocs-material>=9.5.34",
   "mkdocstrings[python]>=0.26.0",
   "mkdocstrings-python>=1.11.0",
-  "black>=24.10.0"
+  "black>=24.10.0",
+  "mkdocs-github-admonitions-plugin>=0.0.3"
 ]
 
 [project.urls]
@@ -109,18 +108,18 @@ Contributing = "https://anta.arista.com/main/contribution/"
 [project.scripts]
 anta = "anta.cli:cli"
 
-################################
-# Tools
-################################
 [tool.setuptools.packages.find]
 include = ["anta*", "asynceapi*"]
 namespaces = false
+
+[tool.setuptools.package-data]
+"anta" = ["py.typed"]
 
 ################################
 # Version
 ################################
 [tool.bumpver]
-current_version = "1.1.0"
+current_version = "1.2.0"
 version_pattern = "MAJOR.MINOR.PATCH"
 commit_message  = "bump: Version {old_version} -> {new_version}"
 commit = true
@@ -143,7 +142,7 @@ plugins = [
   ]
 # Comment below for better type checking
 #follow_imports = "skip"
-# Make it false if we implement stubs using stubgen from mypy for aio-eapi, aiocache and cvprac
+# Make it false if we implement stubs using stubgen from mypy for asynceapi, cvprac
 # and configure mypy_path to generated stubs e.g.: mypy_path = "./out"
 ignore_missing_imports = true
 warn_redundant_casts = true
@@ -259,6 +258,9 @@ extras =
 # tox -e <env> -- path/to/my/test::test
 commands =
    pytest {posargs}
+# To test on non-POSIX system
+# https://github.com/tox-dev/tox/issues/1455
+passenv = USERNAME
 
 [testenv:lint]
 description = Check the code style
@@ -339,9 +341,9 @@ select = ["ALL",
     # By enabling a convention for docstrings, ruff automatically ignore some rules that need to be
     # added back if we want them.
     # https://docs.astral.sh/ruff/faq/#does-ruff-support-numpy-or-google-style-docstrings
+    "D212",
     "D415",
     "D417",
-    "D212",
 ]
 ignore = [
   "COM812",  # Ignoring conflicting rules that may cause conflicts when used with the formatter
@@ -367,6 +369,7 @@ convention = "numpy"
 # we have not removed pylint completely, these settings should be kept in sync with our pylintrc file.
 # https://github.com/astral-sh/ruff/issues/970
 max-branches = 13
+max-args = 10
 
 [tool.ruff.lint.mccabe]
 # Unlike Flake8, default to a complexity level of 10.
@@ -376,6 +379,7 @@ max-complexity = 10
 "ignore-names" = [
   "RICH_COLOR_PALETTE"
 ]
+
 
 [tool.ruff.lint.flake8-type-checking]
 # These classes require that type annotations be available at runtime
@@ -390,7 +394,6 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.In
 "tests/units/*" = [
   "ARG002",  # Sometimes we need to declare unused arguments when a parameter is not used but declared in @pytest.mark.parametrize
   "FBT001",  # Boolean-typed positional argument in function definition
-  "PLR0913", # Too many arguments to function call
   "PLR2004", # Magic value used in comparison, consider replacing {value} with a constant variable
   "S105",    # Passwords are indeed hardcoded in tests
   "S106",    # Passwords are indeed hardcoded in tests
@@ -412,7 +415,7 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.In
   "T201",  # Allow print statements
 ]
 "anta/cli/*" = [
-  "PLR0913",  # Allow more than 5 input arguments in CLI functions
+  "PLR0913",  # CLI has many arguments defined in functions
   "ANN401",   # TODO: Check if we can update the Any type hints in the CLI
 ]
 "anta/tests/field_notices.py" = [
@@ -424,18 +427,14 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.In
   "C901",     # TODO: test function is too complex, needs a refactor
   "PLR0912"   # Too many branches (15/12) (too-many-branches), needs a refactor
 ]
+"anta/tests/logging.py" = [
+  "A005",  # TODO: Module `logging` shadows a Python standard-library module
+]
 "anta/decorators.py" = [
   "ANN401",  # Ok to use Any type hint in our decorators
 ]
 "anta/tools.py" = [
   "ANN401",   # Ok to use Any type hint in our custom get functions
-  "PLR0913",  # Ok to have more than 5 arguments in our custom get functions
-]
-"anta/device.py" = [
-  "PLR0913",     # Ok to have more than 5 arguments in the AntaDevice classes
-]
-"anta/inventory/__init__.py" = [
-  "PLR0913",     # Ok to have more than 5 arguments in the AntaInventory class
 ]
 "examples/*.py" = [  # These are example scripts and linked in snippets
   "S105",   # Possible hardcoded password
@@ -470,9 +469,11 @@ disable = [ # Any rule listed here can be disabled: https://github.com/astral-sh
     "reimported",
     "wrong-import-order",
     "wrong-import-position",
+    "unnecessary-lambda",
     "abstract-class-instantiated", # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-instantiation-of-abstract-classes-abstract
     "unexpected-keyword-arg", # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-arguments-in-calls-call-arg and other rules
-    "no-value-for-parameter" # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-arguments-in-calls-call-arg
+    "no-value-for-parameter", # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-arguments-in-calls-call-arg
+    "import-outside-toplevel"
 ]
 max-statements=61
 max-returns=8

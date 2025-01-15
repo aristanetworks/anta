@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module related to VXLAN tests."""
@@ -23,8 +23,8 @@ if TYPE_CHECKING:
 class VerifyVxlan1Interface(AntaTest):
     """Verifies if the Vxlan1 interface is configured and 'up/up'.
 
-    Warning
-    -------
+    Warnings
+    --------
     The name of this test has been updated from 'VerifyVxlan' for better representation.
 
     Expected Results

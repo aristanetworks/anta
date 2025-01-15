@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Test inputs for anta.tests.system."""
@@ -413,9 +413,9 @@ poll interval unknown
         "expected": {
             "result": "failure",
             "messages": [
-                "1.1.1.1 (Preferred: True, Stratum: 1) - Bad association; Condition: candidate, Stratum: 2",
-                "2.2.2.2 (Preferred: False, Stratum: 2) - Bad association; Condition: sys.peer, Stratum: 2",
-                "3.3.3.3 (Preferred: False, Stratum: 2) - Bad association; Condition: sys.peer, Stratum: 3",
+                "1.1.1.1 (Preferred: True, Stratum: 1) - Bad association - Condition: candidate, Stratum: 2",
+                "2.2.2.2 (Preferred: False, Stratum: 2) - Bad association - Condition: sys.peer, Stratum: 2",
+                "3.3.3.3 (Preferred: False, Stratum: 2) - Bad association - Condition: sys.peer, Stratum: 3",
             ],
         },
     },
@@ -490,7 +490,7 @@ poll interval unknown
         "expected": {
             "result": "failure",
             "messages": [
-                "1.1.1.1 (Preferred: True, Stratum: 1) - Bad association; Condition: candidate, Stratum: 1",
+                "1.1.1.1 (Preferred: True, Stratum: 1) - Bad association - Condition: candidate, Stratum: 1",
                 "2.2.2.2 (Preferred: False, Stratum: 1) - Not configured",
                 "3.3.3.3 (Preferred: False, Stratum: 1) - Not configured",
             ],

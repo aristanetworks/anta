@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Tests for anta.tests.stp.py."""
@@ -7,7 +7,15 @@ from __future__ import annotations
 
 from typing import Any
 
-from anta.tests.stp import VerifySTPBlockedPorts, VerifySTPCounters, VerifySTPForwardingPorts, VerifySTPMode, VerifySTPRootPriority, VerifyStpTopologyChanges
+from anta.tests.stp import (
+    VerifySTPBlockedPorts,
+    VerifySTPCounters,
+    VerifySTPDisabledVlans,
+    VerifySTPForwardingPorts,
+    VerifySTPMode,
+    VerifySTPRootPriority,
+    VerifyStpTopologyChanges,
+)
 from tests.units.anta_tests import test
 
 DATA: list[dict[str, Any]] = [
@@ -485,5 +493,49 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {"threshold": 10},
         "expected": {"result": "failure", "messages": ["STP is not configured."]},
+    },
+    {
+        "name": "success",
+        "test": VerifySTPDisabledVlans,
+        "eos_data": [{"spanningTreeVlanInstances": {"1": {"spanningTreeVlanInstance": {"protocol": "mstp", "bridge": {"priority": 32768}}}, "6": {}, "4094": {}}}],
+        "inputs": {"vlans": ["6", "4094"]},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-stp-not-configured",
+        "test": VerifySTPDisabledVlans,
+        "eos_data": [{"spanningTreeVlanInstances": {}}],
+        "inputs": {"vlans": ["6", "4094"]},
+        "expected": {"result": "failure", "messages": ["STP is not configured"]},
+    },
+    {
+        "name": "failure-vlans-not-found",
+        "test": VerifySTPDisabledVlans,
+        "eos_data": [
+            {
+                "spanningTreeVlanInstances": {
+                    "1": {"spanningTreeVlanInstance": {"protocol": "mstp", "bridge": {}}},
+                    "6": {"spanningTreeVlanInstance": {"protocol": "mstp", "bridge": {}}},
+                    "4094": {"spanningTreeVlanInstance": {"protocol": "mstp", "bridge": {}}},
+                }
+            }
+        ],
+        "inputs": {"vlans": ["16", "4093"]},
+        "expected": {"result": "failure", "messages": ["VLAN: 16 - Not configured", "VLAN: 4093 - Not configured"]},
+    },
+    {
+        "name": "failure-vlans-enabled",
+        "test": VerifySTPDisabledVlans,
+        "eos_data": [
+            {
+                "spanningTreeVlanInstances": {
+                    "1": {"spanningTreeVlanInstance": {"protocol": "mstp", "bridge": {}}},
+                    "6": {"spanningTreeVlanInstance": {"protocol": "mstp", "bridge": {}}},
+                    "4094": {"spanningTreeVlanInstance": {"protocol": "mstp", "bridge": {}}},
+                }
+            }
+        ],
+        "inputs": {"vlans": ["6", "4094"]},
+        "expected": {"result": "failure", "messages": ["VLAN: 6 - STP is enabled", "VLAN: 4094 - STP is enabled"]},
     },
 ]

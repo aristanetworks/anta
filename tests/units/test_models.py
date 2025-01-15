@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """test anta.models.py."""
@@ -55,6 +55,23 @@ class FakeTestWithUnsupportedCommand(AntaTest):
         AntaCommand(
             command="show hardware counter drop",
             errors=["Unavailable command (not supported on this hardware platform) (at token 2: 'counter')"],
+        )
+    ]
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Test function."""
+        self.result.is_success()
+
+
+class FakeTestWithKnownEOSError(AntaTest):
+    """ANTA test triggering a known EOS Error that should translate to failure of the test."""
+
+    categories: ClassVar[list[str]] = []
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
+        AntaCommand(
+            command="show bgp evpn route-type mac-ip aa:c1:ab:de:50:ad vni 10010",
+            errors=["BGP inactive"],
         )
     ]
 
@@ -484,6 +501,18 @@ ANTATEST_DATA: list[dict[str, Any]] = [
             },
         },
     },
+    {
+        "name": "known EOS error command",
+        "test": FakeTestWithKnownEOSError,
+        "inputs": None,
+        "expected": {
+            "__init__": {"result": "unset"},
+            "test": {
+                "result": "failure",
+                "messages": ["BGP inactive"],
+            },
+        },
+    },
 ]
 
 BLACKLIST_COMMANDS_PARAMS = ["reload", "reload --force", "write", "wr mem"]
@@ -613,7 +642,7 @@ class TestAntaTest:
         assert test.result.custom_field == "a custom field"
 
 
-class TestAntaComamnd:
+class TestAntaCommand:
     """Test for anta.models.AntaCommand."""
 
     # ruff: noqa: B018
@@ -672,6 +701,32 @@ class TestAntaComamnd:
         )
         assert command.requires_privileges is False
         command = AntaCommand(command="show aaa methods accounting")
-        with pytest.raises(RuntimeError) as exec_info:
+        with pytest.raises(
+            RuntimeError, match="Command 'show aaa methods accounting' has not been collected and has not returned an error. Call AntaDevice.collect()."
+        ):
             command.requires_privileges
-        assert exec_info.value.args[0] == "Command 'show aaa methods accounting' has not been collected and has not returned an error. Call AntaDevice.collect()."
+
+    @pytest.mark.parametrize(
+        ("command_str", "error", "is_known"),
+        [
+            ("show ip interface Ethernet1", "Ethernet1 does not support IP", True),
+            ("ping vrf MGMT 1.1.1.1 source Management0 size 100 df-bit repeat 2", "VRF 'MGMT' is not active", True),
+            ("ping vrf MGMT 1.1.1.1 source Management1 size 100 df-bit repeat 2", "No source interface Management1", True),
+            ("show bgp evpn route-type mac-ip aa:c1:ab:de:50:ad vni 10010", "BGP inactive", True),
+            ("show isis BLAH  neighbors", "IS-IS (BLAH) is disabled because: IS-IS Network Entity Title (NET) configuration is not present", True),
+            ("show ip interface Ethernet1", None, False),
+        ],
+    )
+    def test_returned_known_eos_error(self, command_str: str, error: str | None, is_known: bool) -> None:
+        """Test the returned_known_eos_error property."""
+        # Adding fake output when no error is present to mimic that the command has been collected
+        command = AntaCommand(command=command_str, errors=[error] if error else [], output=None if error else "{}")
+        assert command.returned_known_eos_error is is_known
+
+    def test_returned_known_eos_error_failure(self) -> None:
+        """Test the returned_known_eos_error property unset."""
+        command = AntaCommand(command="show ip interface Ethernet1")
+        with pytest.raises(
+            RuntimeError, match="Command 'show ip interface Ethernet1' has not been collected and has not returned an error. Call AntaDevice.collect()."
+        ):
+            command.returned_known_eos_error

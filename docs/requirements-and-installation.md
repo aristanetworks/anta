@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2023-2024 Arista Networks, Inc.
+  ~ Copyright (c) 2023-2025 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
   ~ that can be found in the LICENSE file.
   -->
@@ -25,9 +25,8 @@ The ANTA package and the cli require some packages that are not part of the Pyth
 pip install anta
 ```
 
-!!! Warning
-
-    * This command alone **will not** install the ANTA CLI requirements.
+> [!WARNING]
+> This command alone **will not** install the ANTA CLI requirements.
 
 ### Install ANTA CLI as an application with `pipx`
 
@@ -37,9 +36,8 @@ pip install anta
 pipx install anta[cli]
 ```
 
-!!! Info
-
-    Please take the time to read through the installation instructions of `pipx` before getting started.
+> [!INFO]
+> Please take the time to read through the installation instructions of `pipx` before getting started.
 
 ### Install CLI from Pypi server
 
@@ -80,13 +78,13 @@ which anta
 /home/tom/.pyenv/shims/anta
 ```
 
-!!! warning
-    Before running the `anta --version` command, please be aware that some users have reported issues related to the `urllib3` package. If you encounter an error at this step, please refer to our [FAQ](faq.md) page for guidance on resolving it.
+> [!WARNING]
+> Before running the `anta --version` command, please be aware that some users have reported issues related to the `urllib3` package. If you encounter an error at this step, please refer to our [FAQ](faq.md) page for guidance on resolving it.
 
 ```bash
 # Check ANTA version
 anta --version
-anta, version v1.1.0
+anta, version v1.2.0
 ```
 
 ## EOS Requirements

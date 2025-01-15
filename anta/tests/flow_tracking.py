@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module related to the flow tracking tests."""
@@ -86,7 +86,7 @@ class VerifyHardwareFlowTrackerStatus(AntaTest):
     --------
     ```yaml
     anta.tests.flow_tracking:
-      - VerifyFlowTrackingHardware:
+      - VerifyHardwareFlowTrackerStatus:
           trackers:
             - name: FLOW-TRACKER
               record_export:
