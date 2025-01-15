@@ -342,7 +342,7 @@ anta.tests.path_selection:
   - VerifyPathsHealth:
       # Verifies the path and telemetry state of all paths under router path-selection.
   - VerifySpecificPath:
-      # Verifies the path and telemetry state of a specific path for an IPv4 peer under router path-selection.
+      # Verifies the DPS path and telemetry state of an IPv4 peer.
       paths:
         - peer: 10.255.0.1
           path_group: internet

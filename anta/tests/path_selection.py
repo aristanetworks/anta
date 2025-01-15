@@ -7,12 +7,10 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from ipaddress import IPv4Address
 from typing import ClassVar
 
-from pydantic import BaseModel
-
 from anta.decorators import skip_on_platforms
+from anta.input_models.path_selection import DpsPath
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_value
 
@@ -70,16 +68,23 @@ class VerifyPathsHealth(AntaTest):
 
 
 class VerifySpecificPath(AntaTest):
-    """Verifies the path and telemetry state of a specific path for an IPv4 peer under router path-selection.
+    """Verifies the DPS path and telemetry state of an IPv4 peer.
 
-    The expected states are 'IPsec established', 'Resolved' for path and 'active' for telemetry.
+    This test performs the following checks:
+
+      1. Verifies that the specified peer is configured.
+      2. Verifies that the specified path group is found.
+      3. For each specified DPS path:
+         - Verifies that the expected source and destination address matches the expected.
+         - Verifies that the state is `ipsecEstablished` or `routeResolved`.
+         - Verifies that the telemetry state is `active`.
 
     Expected Results
     ----------------
-    * Success: The test will pass if the path state under router path-selection is either 'IPsec established' or 'Resolved'
+    * Success: The test will pass if the path state under router path selection is either 'IPsecEstablished' or 'Resolved'
                and telemetry state as 'active'.
-    * Failure: The test will fail if router path-selection is not configured or if the path state is not 'IPsec established' or 'Resolved',
-               or if the telemetry state is 'inactive'.
+    * Failure: The test will fail if router path selection is not configured, the path state is not 'IPsec established' or 'Resolved',
+               or the telemetry state is 'inactive'.
 
     Examples
     --------
@@ -95,36 +100,14 @@ class VerifySpecificPath(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["path-selection"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
-        AntaTemplate(template="show path-selection paths peer {peer} path-group {group} source {source} destination {destination}", revision=1)
-    ]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show path-selection paths", revision=1)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifySpecificPath test."""
 
-        paths: list[RouterPath]
+        paths: list[DpsPath]
         """List of router paths to verify."""
-
-        class RouterPath(BaseModel):
-            """Detail of a router path."""
-
-            peer: IPv4Address
-            """Static peer IPv4 address."""
-
-            path_group: str
-            """Router path group name."""
-
-            source_address: IPv4Address
-            """Source IPv4 address of path."""
-
-            destination_address: IPv4Address
-            """Destination IPv4 address of path."""
-
-    def render(self, template: AntaTemplate) -> list[AntaCommand]:
-        """Render the template for each router path."""
-        return [
-            template.render(peer=path.peer, group=path.path_group, source=path.source_address, destination=path.destination_address) for path in self.inputs.paths
-        ]
+        DpsPath: ClassVar[type[DpsPath]] = DpsPath
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
@@ -132,28 +115,42 @@ class VerifySpecificPath(AntaTest):
         """Main test function for VerifySpecificPath."""
         self.result.is_success()
 
-        # Check the state of each path
-        for command in self.instance_commands:
-            peer = command.params.peer
-            path_group = command.params.group
-            source = command.params.source
-            destination = command.params.destination
-            command_output = command.json_output.get("dpsPeers", [])
+        command_output = self.instance_commands[0].json_output
 
+        # If the dpsPeers details are not found in the command output, the test fails.
+        if not (dps_peers_details := get_value(command_output, "dpsPeers")):
+            self.result.is_failure("Router path-selection not configured")
+            return
+
+        # Iterating on each DPS peer mentioned in the inputs.
+        for dps_path in self.inputs.paths:
+            peer = str(dps_path.peer)
+            peer_details = dps_peers_details.get(peer, {})
             # If the peer is not configured for the path group, the test fails
-            if not command_output:
-                self.result.is_failure(f"Path `peer: {peer} source: {source} destination: {destination}` is not configured for path-group `{path_group}`.")
+            if not peer_details:
+                self.result.is_failure(f"{dps_path} - Peer not found")
                 continue
 
-            # Extract the state of the path
-            path_output = get_value(command_output, f"{peer}..dpsGroups..{path_group}..dpsPaths", separator="..")
-            path_state = next(iter(path_output.values())).get("state")
-            session = get_value(next(iter(path_output.values())), "dpsSessions.0.active")
+            path_group = dps_path.path_group
+            source = str(dps_path.source_address)
+            destination = str(dps_path.destination_address)
+            path_group_details = get_value(peer_details, f"dpsGroups..{path_group}..dpsPaths", separator="..")
+            # If the expected path group is not found for the peer, the test fails.
+            if not path_group_details:
+                self.result.is_failure(f"{dps_path} - No DPS path found for this peer and path group.")
+                continue
+
+            path_data = next((path for path in path_group_details.values() if (path.get("source") == source and path.get("destination") == destination)), None)
+            # If the expected and actual source and destination address of the path group are not matched, test fails.
+            if not path_data:
+                self.result.is_failure(f"{dps_path} - No path matching the source and destination found")
+                continue
+
+            path_state = path_data.get("state")
+            session = get_value(path_data, "dpsSessions.0.active")
 
             # If the state of the path is not 'ipsecEstablished' or 'routeResolved', or the telemetry state is 'inactive', the test fails
             if path_state not in ["ipsecEstablished", "routeResolved"]:
-                self.result.is_failure(f"Path state for `peer: {peer} source: {source} destination: {destination}` in path-group {path_group} is `{path_state}`.")
+                self.result.is_failure(f"{dps_path} - State is not in ipsecEstablished, routeResolved. Actual: {path_state}")
             elif not session:
-                self.result.is_failure(
-                    f"Telemetry state for path `peer: {peer} source: {source} destination: {destination}` in path-group {path_group} is `inactive`."
-                )
+                self.result.is_failure(f"{dps_path} - Telemetry state inactive for this path")
