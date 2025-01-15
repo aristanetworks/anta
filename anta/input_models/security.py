@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 from ipaddress import IPv4Address
-from typing import TYPE_CHECKING, Any, get_args
+from typing import TYPE_CHECKING, Any, ClassVar, get_args
 from warnings import warn
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -96,25 +96,6 @@ class APISSLCertificate(BaseModel):
         return self
 
 
-class ACL(BaseModel):
-    """Model for an Access Control List (ACL)."""
-
-    model_config = ConfigDict(extra="forbid")
-    name: str
-    """Name of the ACL."""
-    entries: list[ACLEntry]
-    """List of the ACL entries."""
-
-    def __str__(self) -> str:
-        """Return a human-readable string representation of the ACL for reporting.
-
-        Examples
-        --------
-        - ACL name: Test
-        """
-        return f"ACL name: {self.name}"
-
-
 class ACLEntry(BaseModel):
     """Model for an Access Control List (ACL) entry."""
 
@@ -134,6 +115,45 @@ class ACLEntry(BaseModel):
         return f"Sequence: {self.sequence}"
 
 
+class ACL(BaseModel):
+    """Model for an Access Control List (ACL)."""
+
+    model_config = ConfigDict(extra="forbid")
+    name: str
+    """Name of the ACL."""
+    entries: list[ACLEntry]
+    """List of the ACL entries."""
+    IPv4ACLEntry: ClassVar[type[ACLEntry]] = ACLEntry
+    """To maintain backward compatibility."""
+
+    def __str__(self) -> str:
+        """Return a human-readable string representation of the ACL for reporting.
+
+        Examples
+        --------
+        - ACL name: Test
+        """
+        return f"ACL name: {self.name}"
+
+
+class IPv4ACL(ACL):  # pragma: no cover
+    """Alias for the ACL model to maintain backward compatibility.
+
+    When initialized, it will emit a deprecation warning and call the ACL model.
+
+    TODO: Remove this class in ANTA v2.0.0.
+    """
+
+    def __init__(self, **data: Any) -> None:  # noqa: ANN401
+        """Initialize the IPv4ACL class, emitting a deprecation warning."""
+        warn(
+            message="IPv4ACL model is deprecated and will be removed in ANTA v2.0.0. Use the ACL model instead.",
+            category=DeprecationWarning,
+            stacklevel=2,
+        )
+        super().__init__(**data)
+
+
 class IPSecPeers(IPSecPeer):  # pragma: no cover
     """Alias for the IPSecPeers model to maintain backward compatibility.
 
@@ -143,7 +163,7 @@ class IPSecPeers(IPSecPeer):  # pragma: no cover
     """
 
     def __init__(self, **data: Any) -> None:  # noqa: ANN401
-        """Initialize the IPSecPeer class, emitting a deprecation warning."""
+        """Initialize the IPSecPeers class, emitting a deprecation warning."""
         warn(
             message="IPSecPeers model is deprecated and will be removed in ANTA v2.0.0. Use the IPSecPeer model instead.",
             category=DeprecationWarning,
