@@ -22,18 +22,13 @@ DATA: list[dict[str, Any]] = [
                         "inactiveTimeout": 60000,
                         "activeInterval": 300000,
                         "exporters": {"CV-TELEMETRY": {"localIntf": "Loopback0", "templateInterval": 3600000}},
-                    }
-                },
-                "running": True,
-            },
-            {
-                "trackers": {
+                    },
                     "HARDWARE-TRACKER": {
                         "active": True,
                         "inactiveTimeout": 60000,
                         "activeInterval": 300000,
                         "exporters": {"CV-TELEMETRY": {"localIntf": "Loopback0", "templateInterval": 3600000}},
-                    }
+                    },
                 },
                 "running": True,
             },
@@ -52,18 +47,13 @@ DATA: list[dict[str, Any]] = [
                         "inactiveTimeout": 60000,
                         "activeInterval": 300000,
                         "exporters": {"CV-TELEMETRY": {"localIntf": "Loopback0", "templateInterval": 3600000}},
-                    }
-                },
-                "running": True,
-            },
-            {
-                "trackers": {
+                    },
                     "HARDWARE-TRACKER": {
                         "active": True,
                         "inactiveTimeout": 60000,
                         "activeInterval": 300000,
                         "exporters": {"CVP-TELEMETRY": {"localIntf": "Loopback10", "templateInterval": 3600000}},
-                    }
+                    },
                 },
                 "running": True,
             },
@@ -113,7 +103,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"trackers": [{"name": "FLOW-Sample"}]},
         "expected": {
             "result": "failure",
-            "messages": ["Hardware flow tracker `FLOW-Sample` is not configured."],
+            "messages": ["Flow Tracker: FLOW-Sample - Not found"],
         },
     },
     {
@@ -127,18 +117,13 @@ DATA: list[dict[str, Any]] = [
                         "inactiveTimeout": 60000,
                         "activeInterval": 300000,
                         "exporters": {"CV-TELEMETRY": {"localIntf": "Loopback0", "templateInterval": 3600000}},
-                    }
-                },
-                "running": True,
-            },
-            {
-                "trackers": {
+                    },
                     "HARDWARE-TRACKER": {
                         "active": False,
                         "inactiveTimeout": 60000,
                         "activeInterval": 300000,
                         "exporters": {"CVP-TELEMETRY": {"localIntf": "Loopback10", "templateInterval": 3600000}},
-                    }
+                    },
                 },
                 "running": True,
             },
@@ -159,7 +144,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Hardware flow tracker `FLOW-TRACKER` is not active.", "Hardware flow tracker `HARDWARE-TRACKER` is not active."],
+            "messages": ["Flow Tracker: FLOW-TRACKER - Disabled", "Flow Tracker: HARDWARE-TRACKER - Disabled"],
         },
     },
     {
@@ -173,18 +158,13 @@ DATA: list[dict[str, Any]] = [
                         "inactiveTimeout": 60000,
                         "activeInterval": 300000,
                         "exporters": {"CV-TELEMETRY": {"localIntf": "Loopback0", "templateInterval": 3600000}},
-                    }
-                },
-                "running": True,
-            },
-            {
-                "trackers": {
+                    },
                     "HARDWARE-TRACKER": {
                         "active": True,
                         "inactiveTimeout": 6000,
                         "activeInterval": 30000,
                         "exporters": {"CVP-TELEMETRY": {"localIntf": "Loopback10", "templateInterval": 3600000}},
-                    }
+                    },
                 },
                 "running": True,
             },
@@ -204,10 +184,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "FLOW-TRACKER: \n"
-                "Expected `6000` as the inactive timeout, but found `60000` instead.\nExpected `30000` as the interval, but found `300000` instead.\n",
-                "HARDWARE-TRACKER: \n"
-                "Expected `60000` as the inactive timeout, but found `6000` instead.\nExpected `300000` as the interval, but found `30000` instead.\n",
+                "Flow Tracker: FLOW-TRACKER, Inactive Timeout: 6000, Active Interval: 30000 - Incorrect durations - "
+                "Inactive Timeout: 60000, OnActive Interval: 300000",
+                "Flow Tracker: HARDWARE-TRACKER, Inactive Timeout: 60000, Active Interval: 300000 - Incorrect durations - "
+                "Inactive Timeout: 6000, OnActive Interval: 30000",
             ],
         },
     },
@@ -225,12 +205,7 @@ DATA: list[dict[str, Any]] = [
                             "CV-TELEMETRY": {"localIntf": "Loopback0", "templateInterval": 3600000},
                             "CVP-FLOW": {"localIntf": "Loopback0", "templateInterval": 3600000},
                         },
-                    }
-                },
-                "running": True,
-            },
-            {
-                "trackers": {
+                    },
                     "HARDWARE-TRACKER": {
                         "active": True,
                         "inactiveTimeout": 6000,
@@ -239,7 +214,7 @@ DATA: list[dict[str, Any]] = [
                             "CVP-TELEMETRY": {"localIntf": "Loopback10", "templateInterval": 3600000},
                             "Hardware-flow": {"localIntf": "Loopback10", "templateInterval": 3600000},
                         },
-                    }
+                    },
                 },
                 "running": True,
             },
@@ -265,15 +240,11 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "FLOW-TRACKER: \n"
-                "Exporter `CVP-FLOW`: \n"
-                "Expected `Loopback10` as the local interface, but found `Loopback0` instead.\n"
-                "Expected `3500000` as the template interval, but found `3600000` instead.\n",
-                "HARDWARE-TRACKER: \n"
-                "Exporter `Hardware-flow`: \n"
-                "Expected `Loopback99` as the local interface, but found `Loopback10` instead.\n"
-                "Expected `3000000` as the template interval, but found `3600000` instead.\n"
-                "Exporter `Reverse-flow` is not configured.\n",
+                "Flow Tracker: FLOW-TRACKER, Exporter: CVP-FLOW - Incorrect local interface - Expected: Loopback10, Actual: Loopback0",
+                "Flow Tracker: FLOW-TRACKER, Exporter: CVP-FLOW - Incorrect template interval - Expected: 3500000, Actual: 3600000",
+                "Flow Tracker: HARDWARE-TRACKER, Exporter: Hardware-flow - Incorrect local interface - Expected: Loopback99, Actual: Loopback10",
+                "Flow Tracker: HARDWARE-TRACKER, Exporter: Hardware-flow - Incorrect template interval - Expected: 3000000, Actual: 3600000",
+                "Flow Tracker: HARDWARE-TRACKER, Exporter: Reverse-flow - Not configured",
             ],
         },
     },
@@ -288,34 +259,19 @@ DATA: list[dict[str, Any]] = [
                         "inactiveTimeout": 60000,
                         "activeInterval": 300000,
                         "exporters": {"CVP-TELEMETRY": {"localIntf": "Loopback10", "templateInterval": 3600000}},
-                    }
-                },
-                "running": True,
-            },
-            {
-                "trackers": {
+                    },
                     "FLOW-TRIGGER": {
                         "active": False,
                         "inactiveTimeout": 60000,
                         "activeInterval": 300000,
                         "exporters": {"CV-TELEMETRY": {"localIntf": "Loopback0", "templateInterval": 3600000}},
-                    }
-                },
-                "running": True,
-            },
-            {
-                "trackers": {
+                    },
                     "HARDWARE-FLOW": {
                         "active": True,
                         "inactiveTimeout": 6000,
                         "activeInterval": 30000,
                         "exporters": {"CVP-TELEMETRY": {"localIntf": "Loopback10", "templateInterval": 3600000}},
-                    }
-                },
-                "running": True,
-            },
-            {
-                "trackers": {
+                    },
                     "FLOW-TRACKER2": {
                         "active": True,
                         "inactiveTimeout": 60000,
@@ -324,12 +280,7 @@ DATA: list[dict[str, Any]] = [
                             "CV-TELEMETRY": {"localIntf": "Loopback0", "templateInterval": 3600000},
                             "CVP-FLOW": {"localIntf": "Loopback0", "templateInterval": 3600000},
                         },
-                    }
-                },
-                "running": True,
-            },
-            {
-                "trackers": {
+                    },
                     "HARDWARE-TRACKER2": {
                         "active": True,
                         "inactiveTimeout": 6000,
@@ -338,7 +289,7 @@ DATA: list[dict[str, Any]] = [
                             "CVP-TELEMETRY": {"localIntf": "Loopback10", "templateInterval": 3600000},
                             "Hardware-flow": {"localIntf": "Loopback10", "templateInterval": 3600000},
                         },
-                    }
+                    },
                 },
                 "running": True,
             },
@@ -374,17 +325,15 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Hardware flow tracker `FLOW-Sample` is not configured.",
-                "Hardware flow tracker `FLOW-TRIGGER` is not active.",
-                "HARDWARE-FLOW: \n"
-                "Expected `60000` as the inactive timeout, but found `6000` instead.\nExpected `300000` as the interval, but found `30000` instead.\n",
-                "FLOW-TRACKER2: \nExporter `CVP-FLOW`: \n"
-                "Expected `Loopback10` as the local interface, but found `Loopback0` instead.\n"
-                "Expected `3500000` as the template interval, but found `3600000` instead.\n",
-                "HARDWARE-TRACKER2: \nExporter `Hardware-flow`: \n"
-                "Expected `Loopback99` as the local interface, but found `Loopback10` instead.\n"
-                "Expected `3000000` as the template interval, but found `3600000` instead.\n"
-                "Exporter `Reverse-flow` is not configured.\n",
+                "Flow Tracker: FLOW-Sample - Not found",
+                "Flow Tracker: FLOW-TRIGGER - Disabled",
+                "Flow Tracker: HARDWARE-FLOW, Inactive Timeout: 60000, Active Interval: 300000 - Incorrect durations - "
+                "Inactive Timeout: 6000, OnActive Interval: 30000",
+                "Flow Tracker: FLOW-TRACKER2, Exporter: CVP-FLOW - Incorrect local interface - Expected: Loopback10, Actual: Loopback0",
+                "Flow Tracker: FLOW-TRACKER2, Exporter: CVP-FLOW - Incorrect template interval - Expected: 3500000, Actual: 3600000",
+                "Flow Tracker: HARDWARE-TRACKER2, Exporter: Hardware-flow - Incorrect local interface - Expected: Loopback99, Actual: Loopback10",
+                "Flow Tracker: HARDWARE-TRACKER2, Exporter: Hardware-flow - Incorrect template interval - Expected: 3000000, Actual: 3600000",
+                "Flow Tracker: HARDWARE-TRACKER2, Exporter: Reverse-flow - Not configured",
             ],
         },
     },

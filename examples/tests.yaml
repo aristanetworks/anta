@@ -162,7 +162,7 @@ anta.tests.field_notices:
       # Verifies if the device is exposed to FN0072, and if the issue has been mitigated.
 anta.tests.flow_tracking:
   - VerifyHardwareFlowTrackerStatus:
-      # Verifies if hardware flow tracking is running and an input tracker is active. Optionally verifies the tracker interval/timeout and exporter configuration.
+      # Verifies the hardware flow tracking configuration.
       trackers:
         - name: FLOW-TRACKER
           record_export:
