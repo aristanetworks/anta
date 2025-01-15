@@ -142,6 +142,8 @@ class BgpPeer(BaseModel):
     """IPv4 address of the BGP peer."""
     vrf: str = "default"
     """Optional VRF for the BGP peer. Defaults to `default`."""
+    peer_group: str | None = None
+    """Peer group of the BGP peer. Required field in the `VerifyBGPPeerGroup` test."""
     advertised_routes: list[IPv4Network] | None = None
     """List of advertised routes in CIDR format. Required field in the `VerifyBGPExchangedRoutes` test."""
     received_routes: list[IPv4Network] | None = None
