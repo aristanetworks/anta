@@ -27,6 +27,7 @@ from anta.tests.routing.bgp import (
     VerifyBGPPeersHealth,
     VerifyBGPPeersHealthRibd,
     VerifyBGPPeerUpdateErrors,
+    VerifyBGPRedistributedRoutes,
     VerifyBgpRouteMaps,
     VerifyBGPSpecificPeers,
     VerifyBGPTimers,
@@ -4606,6 +4607,162 @@ DATA: list[dict[str, Any]] = [
             "result": "failure",
             "messages": [
                 "Peer: 10.100.0.8 VRF: default - Session has non-empty message queues - InQ: 5, OutQ: 10",
+            ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifyBGPRedistributedRoutes,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {"afiSafiConfig": {"v4u": {"redistributedRoutes": [{"proto": "Connected", "routeMap": "RM-CONN-2-BGP"}]}}},
+                    "test": {"afiSafiConfig": {"v6u": {"redistributedRoutes": [{"proto": "Connected", "routeMap": "RM-CONN-2-BGP"}]}}},
+                }
+            }
+        ],
+        "inputs": {
+            "address_families": [
+                {
+                    "vrf": "default",
+                    "redistributed_route_protocol": "Connected",
+                    "route_map": "RM-CONN-2-BGP",
+                    "afi": "ipv4",
+                    "safi": "unicast",
+                },
+                {
+                    "vrf": "test",
+                    "redistributed_route_protocol": "Connected",
+                    "route_map": "RM-CONN-2-BGP",
+                    "afi": "ipv6",
+                    "safi": "unicast",
+                },
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-afi-safi-config-not-found",
+        "test": VerifyBGPRedistributedRoutes,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {"afiSafiConfig": {"v4u": {}}},
+                    "test": {"afiSafiConfig": {"v6m": {"redistributedRoutes": [{"proto": "Connected", "routeMap": "RM-CONN-2-BGP"}]}}},
+                }
+            }
+        ],
+        "inputs": {
+            "address_families": [
+                {
+                    "vrf": "default",
+                    "redistributed_route_protocol": "Connected",
+                    "route_map": "RM-CONN-2-BGP",
+                    "afi": "ipv4",
+                    "safi": "unicast",
+                },
+                {
+                    "vrf": "test",
+                    "redistributed_route_protocol": "Connected",
+                    "route_map": "RM-CONN-2-BGP",
+                    "afi": "ipv6",
+                    "safi": "multicast",
+                },
+            ]
+        },
+        "expected": {"result": "failure", "messages": ["AFI: ipv4 SAFI: unicast VRF: default - Not found"]},
+    },
+    {
+        "name": "failure-expected-proto-not-found",
+        "test": VerifyBGPRedistributedRoutes,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "afiSafiConfig": {
+                            "v4m": {"redistributedRoutes": [{"proto": "RIP", "routeMap": "RM-CONN-2-BGP"}, {"proto": "IS-IS", "routeMap": "RM-MLAG-PEER-IN"}]}
+                        }
+                    },
+                    "test": {
+                        "afiSafiConfig": {
+                            "v6m": {
+                                "redistributedRoutes": [{"proto": "Static", "routeMap": "RM-CONN-2-BGP"}],
+                            }
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "address_families": [
+                {
+                    "vrf": "default",
+                    "redistributed_route_protocol": "Connected",
+                    "route_map": "RM-CONN-2-BGP",
+                    "afi": "ipv4",
+                    "safi": "multicast",
+                },
+                {
+                    "vrf": "test",
+                    "redistributed_route_protocol": "User",
+                    "route_map": "RM-CONN-2-BGP",
+                    "afi": "ipv6",
+                    "safi": "multicast",
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "AFI: ipv4 SAFI: multicast VRF: default Protocol: Connected - Not Found",
+                "AFI: ipv6 SAFI: multicast VRF: test Protocol: User - Not Found",
+            ],
+        },
+    },
+    {
+        "name": "failure-route-map-not-found",
+        "test": VerifyBGPRedistributedRoutes,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "afiSafiConfig": {
+                            "v4m": {"redistributedRoutes": [{"proto": "Connected", "routeMap": "RM-CONN-10-BGP"}, {"proto": "IS-IS", "routeMap": "RM-MLAG-PEER-IN"}]}
+                        }
+                    },
+                    "test": {
+                        "afiSafiConfig": {
+                            "v6u": {
+                                "redistributedRoutes": [{"proto": "Connected", "routeMap": "RM-MLAG-PEER-IN"}],
+                            }
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "address_families": [
+                {
+                    "vrf": "default",
+                    "redistributed_route_protocol": "Connected",
+                    "route_map": "RM-CONN-2-BGP",
+                    "afi": "ipv4",
+                    "safi": "multicast",
+                },
+                {
+                    "vrf": "test",
+                    "redistributed_route_protocol": "Connected",
+                    "route_map": "RM-CONN-2-BGP",
+                    "afi": "ipv6",
+                    "safi": "unicast",
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "AFI: ipv4 SAFI: multicast VRF: default Protocol: Connected - Route map mismatch - Expected: RM-CONN-2-BGP Actual: RM-CONN-10-BGP",
+                "AFI: ipv6 SAFI: unicast VRF: test Protocol: Connected - Route map mismatch - Expected: RM-CONN-2-BGP Actual: RM-MLAG-PEER-IN",
             ],
         },
     },
