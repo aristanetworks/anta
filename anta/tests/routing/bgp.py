@@ -11,7 +11,7 @@ from typing import ClassVar, TypeVar
 
 from pydantic import field_validator
 
-from anta.input_models.routing.bgp import BgpAddressFamily, BgpAfi, BgpNeighbor, BgpPeer, VxlanEndpoint
+from anta.input_models.routing.bgp import BgpAddressFamily, BgpAfi, BgpNeighbor, BgpPeer, BgpRoute, VxlanEndpoint
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import format_data, get_item, get_value
 
@@ -1619,3 +1619,69 @@ class VerifyBGPNlriAcceptance(AntaTest):
 
                 if (received := capability_status.get("nlrisReceived")) != (accepted := capability_status.get("nlrisAccepted")):
                     self.result.is_failure(f"{peer} AFI/SAFI: {capability} - some NLRI were filtered or rejected - Accepted: {accepted} Received: {received}")
+
+
+class VerifyBGPRoutePaths(AntaTest):
+    """Verifies BGP IPv4 route paths.
+
+    This test performs the following checks for each specified BGP route entry:
+      1. Verifies the specified BGP route exists in the routing table.
+      2. For each expected paths:
+          - Verifies a path with matching next-hop exists.
+          - Verifies the path's origin attribute matches the expected value.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if all specified routes exist with paths matching the expected next-hops and origin attributes.
+    * Failure: The test will fail if:
+        - A specified BGP route is not found.
+        - A path with specified next-hop is not found.
+        - A path's origin attribute doesn't match the expected value.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      bgp:
+        - VerifyBGPRoutePaths:
+            route_entries:
+                - prefix: 10.100.0.128/31
+                  vrf: default
+                  paths:
+                    - nexthop: 10.100.0.10
+                      origin: Igp
+                    - nexthop: 10.100.4.5
+                      origin: Incomplete
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["bgp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip bgp vrf all", revision=3)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyBGPRoutePaths test."""
+
+        route_entries: list[BgpRoute]
+        """List of BGP IPv4 route(s)."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyBGPRoutePaths."""
+        self.result.is_success()
+
+        for route in self.inputs.route_entries:
+            # Verify if the prefix exists in BGP table
+            if not (bgp_routes := get_value(self.instance_commands[0].json_output, f"vrfs..{route.vrf}..bgpRouteEntries..{route.prefix}", separator="..")):
+                self.result.is_failure(f"{route} - prefix not found")
+                continue
+
+            # Iterating over each path.
+            for path in route.paths:
+                nexthop = str(path.nexthop)
+                origin = path.origin
+                if not (route_path := get_item(bgp_routes["bgpRoutePaths"], "nextHop", nexthop)):
+                    self.result.is_failure(f"{route} {path} - path not found")
+                    continue
+
+                if (actual_origin := get_value(route_path, "routeType.origin")) != origin:
+                    self.result.is_failure(f"{route} {path} - Origin mismatch - Actual: {actual_origin}")

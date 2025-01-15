@@ -506,6 +506,16 @@ anta.tests.routing.bgp:
   - VerifyBGPPeersHealthRibd:
       # Verifies the health of all the BGP IPv4 peer(s).
       check_tcp_queues: True
+  - VerifyBGPRoutePaths:
+      # Verifies BGP IPv4 route paths.
+      route_entries:
+          - prefix: 10.100.0.128/31
+            vrf: default
+            paths:
+              - nexthop: 10.100.0.10
+                origin: Igp
+              - nexthop: 10.100.4.5
+                origin: Incomplete
   - VerifyBGPSpecificPeers:
       # Verifies the health of specific BGP peer(s) for given address families.
       address_families:

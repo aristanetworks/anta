@@ -29,6 +29,7 @@ from anta.tests.routing.bgp import (
     VerifyBGPPeersHealthRibd,
     VerifyBGPPeerUpdateErrors,
     VerifyBgpRouteMaps,
+    VerifyBGPRoutePaths,
     VerifyBGPSpecificPeers,
     VerifyBGPTimers,
     VerifyEVPNType2Route,
@@ -4873,6 +4874,230 @@ DATA: list[dict[str, Any]] = [
                 "Peer: 10.100.4.5 VRF: MGMT AFI/SAFI: ipv4Unicast - some NLRI were filtered or rejected - Accepted: 14 Received: 15",
                 "Peer: 10.100.4.5 VRF: MGMT AFI/SAFI: l2VpnEvpn - some NLRI were filtered or rejected - Accepted: 56 Received: 59",
             ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifyBGPRoutePaths,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "bgpRouteEntries": {
+                            "10.100.0.128/31": {
+                                "bgpRoutePaths": [
+                                    {
+                                        "nextHop": "10.100.0.10",
+                                        "routeType": {
+                                            "origin": "Igp",
+                                        },
+                                    },
+                                    {
+                                        "nextHop": "10.100.4.5",
+                                        "routeType": {
+                                            "origin": "Incomplete",
+                                        },
+                                    },
+                                ],
+                            }
+                        }
+                    },
+                    "MGMT": {
+                        "bgpRouteEntries": {
+                            "10.100.0.130/31": {
+                                "bgpRoutePaths": [
+                                    {
+                                        "nextHop": "10.100.0.8",
+                                        "routeType": {
+                                            "origin": "Igp",
+                                        },
+                                    },
+                                    {
+                                        "nextHop": "10.100.0.10",
+                                        "routeType": {
+                                            "origin": "Igp",
+                                        },
+                                    },
+                                ],
+                            }
+                        }
+                    },
+                }
+            },
+        ],
+        "inputs": {
+            "route_entries": [
+                {
+                    "prefix": "10.100.0.128/31",
+                    "vrf": "default",
+                    "paths": [{"nexthop": "10.100.0.10", "origin": "Igp"}, {"nexthop": "10.100.4.5", "origin": "Incomplete"}],
+                },
+                {
+                    "prefix": "10.100.0.130/31",
+                    "vrf": "MGMT",
+                    "paths": [{"nexthop": "10.100.0.8", "origin": "Igp"}, {"nexthop": "10.100.0.10", "origin": "Igp"}],
+                },
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-origin-not-correct",
+        "test": VerifyBGPRoutePaths,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "bgpRouteEntries": {
+                            "10.100.0.128/31": {
+                                "bgpRoutePaths": [
+                                    {
+                                        "nextHop": "10.100.0.10",
+                                        "routeType": {
+                                            "origin": "Igp",
+                                        },
+                                    },
+                                    {
+                                        "nextHop": "10.100.4.5",
+                                        "routeType": {
+                                            "origin": "Incomplete",
+                                        },
+                                    },
+                                ],
+                            }
+                        }
+                    },
+                    "MGMT": {
+                        "bgpRouteEntries": {
+                            "10.100.0.130/31": {
+                                "bgpRoutePaths": [
+                                    {
+                                        "nextHop": "10.100.0.8",
+                                        "routeType": {
+                                            "origin": "Igp",
+                                        },
+                                    },
+                                    {
+                                        "nextHop": "10.100.0.10",
+                                        "routeType": {
+                                            "origin": "Igp",
+                                        },
+                                    },
+                                ],
+                            }
+                        }
+                    },
+                }
+            },
+        ],
+        "inputs": {
+            "route_entries": [
+                {
+                    "prefix": "10.100.0.128/31",
+                    "vrf": "default",
+                    "paths": [{"nexthop": "10.100.0.10", "origin": "Incomplete"}, {"nexthop": "10.100.4.5", "origin": "Igp"}],
+                },
+                {
+                    "prefix": "10.100.0.130/31",
+                    "vrf": "MGMT",
+                    "paths": [{"nexthop": "10.100.0.8", "origin": "Incomplete"}, {"nexthop": "10.100.0.10", "origin": "Incomplete"}],
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Prefix: 10.100.0.128/31 VRF: default Next-hop: 10.100.0.10 Origin: Incomplete - Origin mismatch - Actual: Igp",
+                "Prefix: 10.100.0.128/31 VRF: default Next-hop: 10.100.4.5 Origin: Igp - Origin mismatch - Actual: Incomplete",
+                "Prefix: 10.100.0.130/31 VRF: MGMT Next-hop: 10.100.0.8 Origin: Incomplete - Origin mismatch - Actual: Igp",
+                "Prefix: 10.100.0.130/31 VRF: MGMT Next-hop: 10.100.0.10 Origin: Incomplete - Origin mismatch - Actual: Igp",
+            ],
+        },
+    },
+    {
+        "name": "failure-path-not-found",
+        "test": VerifyBGPRoutePaths,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "bgpRouteEntries": {
+                            "10.100.0.128/31": {
+                                "bgpRoutePaths": [
+                                    {
+                                        "nextHop": "10.100.0.15",
+                                        "routeType": {
+                                            "origin": "Igp",
+                                        },
+                                    },
+                                ],
+                            }
+                        }
+                    },
+                    "MGMT": {
+                        "bgpRouteEntries": {
+                            "10.100.0.130/31": {
+                                "bgpRoutePaths": [
+                                    {
+                                        "nextHop": "10.100.0.15",
+                                        "routeType": {
+                                            "origin": "Igp",
+                                        },
+                                    },
+                                ],
+                            }
+                        }
+                    },
+                }
+            },
+        ],
+        "inputs": {
+            "route_entries": [
+                {
+                    "prefix": "10.100.0.128/31",
+                    "vrf": "default",
+                    "paths": [{"nexthop": "10.100.0.10", "origin": "Incomplete"}, {"nexthop": "10.100.4.5", "origin": "Igp"}],
+                },
+                {
+                    "prefix": "10.100.0.130/31",
+                    "vrf": "MGMT",
+                    "paths": [{"nexthop": "10.100.0.8", "origin": "Incomplete"}, {"nexthop": "10.100.0.10", "origin": "Incomplete"}],
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Prefix: 10.100.0.128/31 VRF: default Next-hop: 10.100.0.10 Origin: Incomplete - path not found",
+                "Prefix: 10.100.0.128/31 VRF: default Next-hop: 10.100.4.5 Origin: Igp - path not found",
+                "Prefix: 10.100.0.130/31 VRF: MGMT Next-hop: 10.100.0.8 Origin: Incomplete - path not found",
+                "Prefix: 10.100.0.130/31 VRF: MGMT Next-hop: 10.100.0.10 Origin: Incomplete - path not found",
+            ],
+        },
+    },
+    {
+        "name": "failure-prefix-not-found",
+        "test": VerifyBGPRoutePaths,
+        "eos_data": [
+            {"vrfs": {"default": {"bgpRouteEntries": {}}, "MGMT": {"bgpRouteEntries": {}}}},
+        ],
+        "inputs": {
+            "route_entries": [
+                {
+                    "prefix": "10.100.0.128/31",
+                    "vrf": "default",
+                    "paths": [{"nexthop": "10.100.0.10", "origin": "Incomplete"}, {"nexthop": "10.100.4.5", "origin": "Igp"}],
+                },
+                {
+                    "prefix": "10.100.0.130/31",
+                    "vrf": "MGMT",
+                    "paths": [{"nexthop": "10.100.0.8", "origin": "Incomplete"}, {"nexthop": "10.100.0.10", "origin": "Incomplete"}],
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": ["Prefix: 10.100.0.128/31 VRF: default - prefix not found", "Prefix: 10.100.0.130/31 VRF: MGMT - prefix not found"],
         },
     },
 ]
