@@ -98,15 +98,20 @@ plugins:
             inherited_members: false
             merge_init_into_class: true
             separate_signature: true
+            show_signature_annotations: true
+            signature_crossrefs: true
             show_root_heading: true
             show_root_full_path: false
-            show_signature_annotations: true
             # sadly symbols are for insiders only
             # https://mkdocstrings.github.io/python/usage/configuration/headings/#show_symbol_type_toc
             # show_symbol_type_heading: true
             # show_symbol_type_toc: true
             # default filters here
-            filters: ["!^_[^_]"]
+            filters: ["!^_"]
+            extensions:
+              - griffe_warnings_deprecated:
+                  kind: danger
+                  title: Deprecated
 
   - search:
       lang: en
@@ -229,7 +234,7 @@ nav:
       - Overview:  api/tests.md
       - AntaTest: api/anta_test.md
       - Input Types:  api/types.md
-    - Result Manager: api/result.md
+    - Result: api/result.md
     - Reporters:
       - Table: api/reporter/table.md
       - Markdown: api/reporter/markdown.md

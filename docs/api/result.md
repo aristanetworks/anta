@@ -7,12 +7,7 @@ anta_title: ANTA Result API
   ~ that can be found in the LICENSE file.
   -->
 
-## ::: anta.result_manager.ResultManager
-
+::: anta.result_manager.ResultManager
     options:
-      filters: ["!^_[^_]", "!^__len__"]
-
-## ::: anta.result_manager.models.TestResult
-
-    options:
-        filters: ["!^_[^_]", "!__str__"]
+      extensions: [griffe_warnings_deprecated]
+::: anta.result_manager.models.TestResult
