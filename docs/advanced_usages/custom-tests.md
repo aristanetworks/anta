@@ -13,7 +13,7 @@ ANTA is not only a Python library with a CLI and a collection of built-in tests,
 
 A test is a Python class where a test function is defined and will be run by the framework.
 
-ANTA provides an abstract class [AntaTest](../api/anta_test.md#anta.models.AntaTest). This class does the heavy lifting and provide the logic to define, collect and test data. The code below is an example of a simple test in ANTA, which is an [AntaTest](../api/anta_test.md#anta.models.AntaTest) subclass:
+ANTA provides an abstract class [AntaTest](../api/tests/anta_test.md#anta.models.AntaTest). This class does the heavy lifting and provide the logic to define, collect and test data. The code below is an example of a simple test in ANTA, which is an [AntaTest](../api/tests/anta_test.md#anta.models.AntaTest) subclass:
 
 ````python
 from anta.models import AntaTest, AntaCommand
@@ -51,11 +51,11 @@ class VerifyTemperature(AntaTest):
             self.result.is_failure(f"Device temperature exceeds acceptable limits. Current system status: '{temperature_status}'")
 ````
 
-[AntaTest](../api/anta_test.md#anta.models.AntaTest) also provide more advanced capabilities like [AntaCommand](../api/commands.md#anta.models.AntaCommand) templating using the [AntaTemplate](../api/commands.md#anta.models.AntaTemplate) class or test inputs definition and validation using [AntaTest.Input](../api/anta_test.md#anta.models.AntaTest.Input) [pydantic](https://docs.pydantic.dev/latest/) model. This will be discussed in the sections below.
+[AntaTest](../api/tests/anta_test.md#anta.models.AntaTest) also provide more advanced capabilities like [AntaCommand](../api/commands.md#anta.models.AntaCommand) templating using the [AntaTemplate](../api/commands.md#anta.models.AntaTemplate) class or test inputs definition and validation using [AntaTest.Input](../api/tests/anta_test.md#anta.models.AntaTest.Input) [pydantic](https://docs.pydantic.dev/latest/) model. This will be discussed in the sections below.
 
 ## AntaTest structure
 
-Full AntaTest API documentation is available in the [API documentation section](../api/anta_test.md#anta.models.AntaTest)
+Full AntaTest API documentation is available in the [API documentation section](../api/tests/anta_test.md#anta.models.AntaTest)
 
 ### Class Attributes
 
@@ -86,7 +86,7 @@ Full AntaTest API documentation is available in the [API documentation section](
 >
 > - **Logger object**
 >
->     ANTA already provides comprehensive logging at every steps of a test execution. The [AntaTest](../api/anta_test.md#anta.models.AntaTest) class also provides a `logger` attribute that is a Python logger specific to the test instance. See [Python documentation](https://docs.python.org/3/library/logging.html) for more information.
+>     ANTA already provides comprehensive logging at every steps of a test execution. The [AntaTest](../api/tests/anta_test.md#anta.models.AntaTest) class also provides a `logger` attribute that is a Python logger specific to the test instance. See [Python documentation](https://docs.python.org/3/library/logging.html) for more information.
 >
 > - **AntaDevice object**
 >
@@ -94,13 +94,13 @@ Full AntaTest API documentation is available in the [API documentation section](
 
 ### Test Inputs
 
-[AntaTest.Input](../api/anta_test.md#anta.models.AntaTest.Input) is a [pydantic model](https://docs.pydantic.dev/latest/usage/models/) that allow test developers to define their test inputs. [pydantic](https://docs.pydantic.dev/latest/) provides out of the box [error handling](https://docs.pydantic.dev/latest/usage/models/#error-handling) for test input validation based on the type hints defined by the test developer.
+[AntaTest.Input](../api/tests/anta_test.md#anta.models.AntaTest.Input) is a [pydantic model](https://docs.pydantic.dev/latest/usage/models/) that allow test developers to define their test inputs. [pydantic](https://docs.pydantic.dev/latest/) provides out of the box [error handling](https://docs.pydantic.dev/latest/usage/models/#error-handling) for test input validation based on the type hints defined by the test developer.
 
-The base definition of [AntaTest.Input](../api/anta_test.md#anta.models.AntaTest.Input) provides common test inputs for all [AntaTest](../api/anta_test.md#anta.models.AntaTest) instances:
+The base definition of [AntaTest.Input](../api/tests/anta_test.md#anta.models.AntaTest.Input) provides common test inputs for all [AntaTest](../api/tests/anta_test.md#anta.models.AntaTest) instances:
 
 #### Input model
 
-Full `Input` model documentation is available in [API documentation section](../api/anta_test.md#anta.models.AntaTest.Input)
+Full `Input` model documentation is available in [API documentation section](../api/tests/anta_test.md#anta.models.AntaTest.Input)
 
 ::: anta.models.AntaTest.Input
     options:
@@ -118,7 +118,7 @@ Full `Input` model documentation is available in [API documentation section](../
 
 #### ResultOverwrite model
 
-Full `ResultOverwrite` model documentation is available in [API documentation section](../api/anta_test.md#anta.models.AntaTest.Input.ResultOverwrite)
+Full `ResultOverwrite` model documentation is available in [API documentation section](../api/tests/anta_test.md#anta.models.AntaTest.Input.ResultOverwrite)
 
 ::: anta.models.AntaTest.Input.ResultOverwrite
     options:
@@ -138,30 +138,30 @@ Full `ResultOverwrite` model documentation is available in [API documentation se
 
 ### Methods
 
-- [test(self) -> None](../api/anta_test.md#anta.models.AntaTest.test): This is an abstract method that **must** be implemented. It contains the test logic that can access the collected command outputs using the `instance_commands` instance attribute, access the test inputs using the `inputs` instance attribute and **must** set the `result` instance attribute accordingly. It must be implemented using the `AntaTest.anta_test` decorator that provides logging and will collect commands before executing the `test()` method.
-- [render(self, template: AntaTemplate) -> list[AntaCommand]](../api/anta_test.md#anta.models.AntaTest.render): This method only needs to be implemented if [AntaTemplate](../api/commands.md#anta.models.AntaTemplate) instances are present in the `commands` class attribute. It will be called for every [AntaTemplate](../api/commands.md#anta.models.AntaTemplate) occurrence and **must** return a list of [AntaCommand](../api/commands.md#anta.models.AntaCommand) using the [AntaTemplate.render()](../api/commands.md#anta.models.AntaTemplate.render) method. It can access test inputs using the `inputs` instance attribute.
+- [test(self) -> None](../api/tests/anta_test.md#anta.models.AntaTest.test): This is an abstract method that **must** be implemented. It contains the test logic that can access the collected command outputs using the `instance_commands` instance attribute, access the test inputs using the `inputs` instance attribute and **must** set the `result` instance attribute accordingly. It must be implemented using the `AntaTest.anta_test` decorator that provides logging and will collect commands before executing the `test()` method.
+- [render(self, template: AntaTemplate) -> list[AntaCommand]](../api/tests/anta_test.md#anta.models.AntaTest.render): This method only needs to be implemented if [AntaTemplate](../api/commands.md#anta.models.AntaTemplate) instances are present in the `commands` class attribute. It will be called for every [AntaTemplate](../api/commands.md#anta.models.AntaTemplate) occurrence and **must** return a list of [AntaCommand](../api/commands.md#anta.models.AntaCommand) using the [AntaTemplate.render()](../api/commands.md#anta.models.AntaTemplate.render) method. It can access test inputs using the `inputs` instance attribute.
 
 ## Test execution
 
 Below is a high level description of the test execution flow in ANTA:
 
-1. ANTA will parse the test catalog to get the list of [AntaTest](../api/anta_test.md#anta.models.AntaTest) subclasses to instantiate and their associated input values. We consider a single [AntaTest](../api/anta_test.md#anta.models.AntaTest) subclass in the following steps.
+1. ANTA will parse the test catalog to get the list of [AntaTest](../api/tests/anta_test.md#anta.models.AntaTest) subclasses to instantiate and their associated input values. We consider a single [AntaTest](../api/tests/anta_test.md#anta.models.AntaTest) subclass in the following steps.
 
-2. ANTA will instantiate the [AntaTest](../api/anta_test.md#anta.models.AntaTest) subclass and a single device will be provided to the test instance. The `Input` model defined in the class will also be instantiated at this moment. If any [ValidationError](https://docs.pydantic.dev/latest/errors/errors/) is raised, the test execution will be stopped.
+2. ANTA will instantiate the [AntaTest](../api/tests/anta_test.md#anta.models.AntaTest) subclass and a single device will be provided to the test instance. The `Input` model defined in the class will also be instantiated at this moment. If any [ValidationError](https://docs.pydantic.dev/latest/errors/errors/) is raised, the test execution will be stopped.
 
-3. If there is any [AntaTemplate](../api/commands.md#anta.models.AntaTemplate) instance in the `commands` class attribute, [render()](../api/anta_test.md#anta.models.AntaTest.render) will be called for every occurrence. At this moment, the `instance_commands` attribute has been initialized. If any rendering error occurs, the test execution will be stopped.
+3. If there is any [AntaTemplate](../api/commands.md#anta.models.AntaTemplate) instance in the `commands` class attribute, [render()](../api/tests/anta_test.md#anta.models.AntaTest.render) will be called for every occurrence. At this moment, the `instance_commands` attribute has been initialized. If any rendering error occurs, the test execution will be stopped.
 
 4. The `AntaTest.anta_test` decorator will collect the commands from the device and update the `instance_commands` attribute with the outputs. If any collection error occurs, the test execution will be stopped.
 
-5. The [test()](../api/anta_test.md#anta.models.AntaTest.test) method is executed.
+5. The [test()](../api/tests/anta_test.md#anta.models.AntaTest.test) method is executed.
 
 ## Writing an AntaTest subclass
 
-In this section, we will go into all the details of writing an [AntaTest](../api/anta_test.md#anta.models.AntaTest) subclass.
+In this section, we will go into all the details of writing an [AntaTest](../api/tests/anta_test.md#anta.models.AntaTest) subclass.
 
 ### Class definition
 
-Import [anta.models.AntaTest](../api/anta_test.md#anta.models.AntaTest) and define your own class.
+Import [anta.models.AntaTest](../api/tests/anta_test.md#anta.models.AntaTest) and define your own class.
 Define the mandatory class attributes using [anta.models.AntaCommand](../api/commands.md#anta.models.AntaCommand), [anta.models.AntaTemplate](../api/commands.md#anta.models.AntaTemplate) or both.
 
 > [!NOTE]
@@ -244,7 +244,7 @@ class <YourTestName>(AntaTest):
 ```
 
 To define an input field type, refer to the [pydantic documentation](https://docs.pydantic.dev/latest/usage/types/types/) about types.
-You can also leverage [anta.custom_types](../api/types.md) that provides reusable types defined in ANTA tests.
+You can also leverage [anta.custom_types](../api/tests/types.md) that provides reusable types defined in ANTA tests.
 
 Regarding required, optional and nullable fields, refer to this [documentation](https://docs.pydantic.dev/latest/migration/#required-optional-and-nullable-fields) on how to define them.
 

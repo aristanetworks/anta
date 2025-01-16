@@ -231,9 +231,9 @@ nav:
     - Catalog: api/catalog.md
     - Commands: api/commands.md
     - Tests:
-      - Overview:  api/tests.md
-      - AntaTest: api/anta_test.md
-      - Input Types:  api/types.md
+      - AntaTest: api/tests/anta_test.md
+      - Input Types:  api/tests/types.md
+      - Tests Documentation:  /api/tests/
     - Result: api/result.md
     - Reporters:
       - Table: api/reporter/table.md

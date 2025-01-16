@@ -15,7 +15,7 @@ A device is represented in ANTA as a instance of a subclass of the [AntaDevice](
 There are few abstract methods that needs to be implemented by child classes:
 
 - The [collect()](../api/device.md#anta.device.AntaDevice.collect) coroutine is in charge of collecting outputs of [AntaCommand](../api/commands.md#anta.models.AntaCommand) instances.
-- The [refresh()](../api/device.md#anta.device.AntaDevice.refresh) coroutine is in charge of updating attributes of the [AntaDevice](../api/device.md#anta.device.AntaDevice) instance. These attributes are used by [AntaInventory](../api/inventory.md#anta.inventory.AntaInventory) to filter out unreachable devices or by [AntaTest](../api/anta_test.md#anta.models.AntaTest) to skip devices based on their hardware models.
+- The [refresh()](../api/device.md#anta.device.AntaDevice.refresh) coroutine is in charge of updating attributes of the [AntaDevice](../api/device.md#anta.device.AntaDevice) instance. These attributes are used by [AntaInventory](../api/inventory.md#anta.inventory.AntaInventory) to filter out unreachable devices or by [AntaTest](../api/tests/anta_test.md#anta.models.AntaTest) to skip devices based on their hardware models.
 
 The [copy()](../api/device.md#anta.device.AntaDevice.copy) coroutine is used to copy files to and from the device. It does not need to be implemented if tests are not using it.
 
