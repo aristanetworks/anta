@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Markdown report generator for ANTA test results."""
@@ -237,7 +237,7 @@ class SummaryTotalsDeviceUnderTest(MDReportBase):
     def generate_rows(self) -> Generator[str, None, None]:
         """Generate the rows of the summary totals device under test table."""
         for device, stat in self.results.device_stats.items():
-            total_tests = stat.tests_success_count + stat.tests_skipped_count + stat.tests_failure_count + stat.tests_error_count
+            total_tests = stat.tests_success_count + stat.tests_skipped_count + stat.tests_failure_count + stat.tests_error_count + stat.tests_unset_count
             categories_skipped = ", ".join(sorted(convert_categories(list(stat.categories_skipped))))
             categories_failed = ", ".join(sorted(convert_categories(list(stat.categories_failed))))
             yield (
@@ -261,10 +261,11 @@ class SummaryTotalsPerCategory(MDReportBase):
 
     def generate_rows(self) -> Generator[str, None, None]:
         """Generate the rows of the summary totals per category table."""
-        for category, stat in self.results.sorted_category_stats.items():
-            total_tests = stat.tests_success_count + stat.tests_skipped_count + stat.tests_failure_count + stat.tests_error_count
+        for category, stat in self.results.category_stats.items():
+            converted_category = convert_categories([category])[0]
+            total_tests = stat.tests_success_count + stat.tests_skipped_count + stat.tests_failure_count + stat.tests_error_count + stat.tests_unset_count
             yield (
-                f"| {category} | {total_tests} | {stat.tests_success_count} | {stat.tests_skipped_count} | {stat.tests_failure_count} "
+                f"| {converted_category} | {total_tests} | {stat.tests_success_count} | {stat.tests_skipped_count} | {stat.tests_failure_count} "
                 f"| {stat.tests_error_count} |\n"
             )
 
@@ -284,9 +285,9 @@ class TestResults(MDReportBase):
 
     def generate_rows(self) -> Generator[str, None, None]:
         """Generate the rows of the all test results table."""
-        for result in self.results.get_results(sort_by=["name", "test"]):
+        for result in self.results.results:
             messages = self.safe_markdown(", ".join(result.messages))
-            categories = ", ".join(convert_categories(result.categories))
+            categories = ", ".join(sorted(convert_categories(result.categories)))
             yield (
                 f"| {result.name or '-'} | {categories or '-'} | {result.test or '-'} "
                 f"| {result.description or '-'} | {self.safe_markdown(result.custom_field) or '-'} | {result.result or '-'} | {messages or '-'} |\n"

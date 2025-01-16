@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Models to define a TestStructure."""
@@ -15,8 +15,7 @@ from typing import TYPE_CHECKING, Any, Callable, ClassVar, Literal, TypeVar
 
 from pydantic import BaseModel, ConfigDict, ValidationError, create_model
 
-from anta import GITHUB_SUGGESTION
-from anta.constants import KNOWN_EOS_ERRORS
+from anta.constants import KNOWN_EOS_ERRORS, UNSUPPORTED_PLATFORM_ERRORS
 from anta.custom_types import REGEXP_EOS_BLACKLIST_CMDS, Revision
 from anta.logger import anta_log_exception, exc_to_str
 from anta.result_manager.models import AntaTestStatus, TestResult
@@ -258,7 +257,8 @@ class AntaCommand(BaseModel):
             msg = f"Command '{self.command}' has not been collected and has not returned an error. Call AntaDevice.collect()."
 
             raise RuntimeError(msg)
-        return all("not supported on this hardware platform" not in e for e in self.errors)
+
+        return not any(any(error in e for error in UNSUPPORTED_PLATFORM_ERRORS) for e in self.errors)
 
     @property
     def returned_known_eos_error(self) -> bool:
@@ -683,8 +683,6 @@ class AntaTest(ABC):
         cmds = self.failed_commands
         unsupported_commands = [f"'{c.command}' is not supported on {self.device.hw_model}" for c in cmds if not c.supported]
         if unsupported_commands:
-            msg = f"Test {self.name} has been skipped because it is not supported on {self.device.hw_model}: {GITHUB_SUGGESTION}"
-            self.logger.warning(msg)
             self.result.is_skipped("\n".join(unsupported_commands))
             return
         returned_known_eos_error = [f"'{c.command}' failed on {self.device.name}: {', '.join(c.errors)}" for c in cmds if c.returned_known_eos_error]

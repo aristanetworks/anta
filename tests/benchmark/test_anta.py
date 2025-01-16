@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Benchmark tests for ANTA."""
@@ -47,7 +47,7 @@ def test_anta_dry_run(
 
     if len(results.results) != len(inventory) * len(catalog.tests):
         pytest.fail(f"Expected {len(inventory) * len(catalog.tests)} tests but got {len(results.results)}", pytrace=False)
-    bench_info = "\n--- ANTA NRFU Dry-Run Benchmark Information ---\n" f"Test count: {len(results.results)}\n" "-----------------------------------------------"
+    bench_info = f"\n--- ANTA NRFU Dry-Run Benchmark Information ---\nTest count: {len(results.results)}\n-----------------------------------------------"
     logger.info(bench_info)
 
 

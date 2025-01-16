@@ -87,6 +87,7 @@ anta.tests.bfd:
           tx_interval: 1200
           rx_interval: 1200
           multiplier: 3
+          detection_time: 3600
   - VerifyBFDPeersRegProtocols:
       # Verifies the registered routing protocol of IPv4 BFD peer sessions.
       bfd_peers:
@@ -306,6 +307,8 @@ anta.tests.logging:
       vrf: default
   - VerifyLoggingTimestamp:
       # Verifies if logs are generated with the appropriate timestamp.
+  - VerifySyslogLogging:
+      # Verifies if syslog logging is enabled.
 anta.tests.mlag:
   - VerifyMlagConfigSanity:
       # Verifies there are no MLAG config-sanity inconsistencies.
@@ -366,14 +369,14 @@ anta.tests.ptp:
       # Verifies the PTP interfaces state.
 anta.tests.routing.bgp:
   - VerifyBGPAdvCommunities:
-      # Verifies that advertised communities are standard, extended and large for BGP peers.
+      # Verifies that advertised communities are standard, extended and large for BGP IPv4 peer(s).
       bgp_peers:
         - peer_address: 172.30.11.17
           vrf: default
         - peer_address: 172.30.11.21
           vrf: default
   - VerifyBGPExchangedRoutes:
-      # Verifies the advertised and received routes of BGP peers.
+      # Verifies the advertised and received routes of BGP IPv4 peer(s).
       bgp_peers:
         - peer_address: 172.30.255.5
           vrf: default
@@ -388,8 +391,15 @@ anta.tests.routing.bgp:
             - 192.0.254.5/32
           received_routes:
             - 192.0.254.3/32
+  - VerifyBGPNlriAcceptance:
+      # Verifies that all received NLRI are accepted for all AFI/SAFI configured for BGP IPv4 peer(s).
+      bgp_peers:
+        - peer_address: 10.100.0.128
+          vrf: default
+          capabilities:
+            - ipv4Unicast
   - VerifyBGPPeerASNCap:
-      # Verifies the four octet ASN capability of BGP peers.
+      # Verifies the four octet ASN capability of BGP IPv4 peer(s).
       bgp_peers:
         - peer_address: 172.30.11.1
           vrf: default
@@ -418,15 +428,21 @@ anta.tests.routing.bgp:
           drop_stats:
             - inDropAsloop
             - prefixEvpnDroppedUnsupportedRouteType
+  - VerifyBGPPeerGroup:
+      # Verifies BGP peer group of BGP IPv4 peer(s).
+      bgp_peers:
+        - peer_address: 172.30.11.1
+          vrf: default
+          peer_group: IPv4-UNDERLAY-PEERS
   - VerifyBGPPeerMD5Auth:
-      # Verifies the MD5 authentication and state of IPv4 BGP peers in a specified VRF.
+      # Verifies the MD5 authentication and state of IPv4 BGP peer(s) in a specified VRF.
       bgp_peers:
         - peer_address: 172.30.11.1
           vrf: default
         - peer_address: 172.30.11.5
           vrf: default
   - VerifyBGPPeerMPCaps:
-      # Verifies the multiprotocol capabilities of BGP peers.
+      # Verifies the multiprotocol capabilities of BGP IPv4 peer(s).
       bgp_peers:
         - peer_address: 172.30.11.1
           vrf: default
@@ -434,17 +450,41 @@ anta.tests.routing.bgp:
           capabilities:
             - ipv4Unicast
   - VerifyBGPPeerRouteLimit:
-      # Verifies maximum routes and outbound route-maps of BGP IPv4 peer(s).
+      # Verifies maximum routes and warning limit for BGP IPv4 peer(s).
       bgp_peers:
         - peer_address: 172.30.11.1
           vrf: default
           maximum_routes: 12000
           warning_limit: 10000
   - VerifyBGPPeerRouteRefreshCap:
-      # Verifies the route refresh capabilities of a BGP peer in a specified VRF.
+      # Verifies the route refresh capabilities of IPv4 BGP peer(s) in a specified VRF.
       bgp_peers:
         - peer_address: 172.30.11.1
           vrf: default
+  - VerifyBGPPeerSession:
+      # Verifies the session state of BGP IPv4 peer(s).
+      check_tcp_queues: false
+      bgp_peers:
+        - peer_address: 10.1.0.1
+          vrf: default
+        - peer_address: 10.1.0.2
+          vrf: default
+        - peer_address: 10.1.255.2
+          vrf: DEV
+        - peer_address: 10.1.255.4
+          vrf: DEV
+  - VerifyBGPPeerSessionRibd:
+      # Verifies the session state of BGP IPv4 peer(s).
+      check_tcp_queues: false
+      bgp_peers:
+        - peer_address: 10.1.0.1
+          vrf: default
+        - peer_address: 10.1.0.2
+          vrf: default
+        - peer_address: 10.1.255.2
+          vrf: DEV
+        - peer_address: 10.1.255.4
+          vrf: DEV
   - VerifyBGPPeerUpdateErrors:
       # Verifies BGP update error counters for the provided BGP IPv4 peer(s).
       bgp_peers:
@@ -463,6 +503,19 @@ anta.tests.routing.bgp:
           safi: "unicast"
           vrf: "DEV"
           check_tcp_queues: false
+  - VerifyBGPPeersHealthRibd:
+      # Verifies the health of all the BGP IPv4 peer(s).
+      check_tcp_queues: True
+  - VerifyBGPRoutePaths:
+      # Verifies BGP IPv4 route paths.
+      route_entries:
+          - prefix: 10.100.0.128/31
+            vrf: default
+            paths:
+              - nexthop: 10.100.0.10
+                origin: Igp
+              - nexthop: 10.100.4.5
+                origin: Incomplete
   - VerifyBGPSpecificPeers:
       # Verifies the health of specific BGP peer(s) for given address families.
       address_families:
@@ -478,7 +531,7 @@ anta.tests.routing.bgp:
             - 10.1.255.2
             - 10.1.255.4
   - VerifyBGPTimers:
-      # Verifies the timers of BGP peers.
+      # Verifies the timers of BGP IPv4 peer(s).
       bgp_peers:
         - peer_address: 172.30.11.1
           vrf: default
@@ -618,7 +671,7 @@ anta.tests.security:
       number: 3
       vrf: default
   - VerifyAPISSLCertificate:
-      # Verifies the eAPI SSL certificate expiry, common subject name, encryption algorithm and key size.
+      # Verifies the eAPI SSL certificate.
       certificates:
         - certificate_name: ARISTA_SIGNING_CA.crt
           expiry_threshold: 30
@@ -647,7 +700,7 @@ anta.tests.security:
   - VerifyIPSecConnHealth:
       # Verifies all IPv4 security connections.
   - VerifyIPv4ACL:
-      # Verifies the configuration of IPv4 ACLs.
+      # Verifies the IPv4 ACLs.
       ipv4_access_lists:
         - name: default-control-plane-acl
           entries:
@@ -703,12 +756,14 @@ anta.tests.services:
           vrf: MGMT
           priority: 0
   - VerifyErrdisableRecovery:
-      # Verifies the errdisable recovery reason, status, and interval.
+      # Verifies the error disable recovery functionality.
       reasons:
         - reason: acl
           interval: 30
+          status: Enabled
         - reason: bpduguard
           interval: 30
+          status: Enabled
   - VerifyHostname:
       # Verifies the hostname of a device.
       hostname: s1-spine1
@@ -720,6 +775,13 @@ anta.tests.snmp:
       # Verifies the SNMP error counters.
       error_counters:
         - inVersionErrs
+  - VerifySnmpHostLogging:
+      # Verifies SNMP logging configurations.
+      hosts:
+        - hostname: 192.168.1.100
+          vrf: default
+        - hostname: 192.168.1.103
+          vrf: MGMT
   - VerifySnmpIPv4Acl:
       # Verifies if the SNMP agent has IPv4 ACL(s) configured.
       number: 3
@@ -739,6 +801,14 @@ anta.tests.snmp:
   - VerifySnmpStatus:
       # Verifies if the SNMP agent is enabled.
       vrf: default
+  - VerifySnmpUser:
+      # Verifies the SNMP user configurations.
+      snmp_users:
+        - username: test
+          group_name: test_group
+          version: v3
+          auth_type: MD5
+          priv_type: AES-128
 anta.tests.software:
   - VerifyEOSExtensions:
       # Verifies that all EOS extensions installed on the device are enabled for boot persistence.
@@ -757,6 +827,11 @@ anta.tests.stp:
       # Verifies there is no STP blocked ports.
   - VerifySTPCounters:
       # Verifies there is no errors in STP BPDU packets.
+  - VerifySTPDisabledVlans:
+      # Verifies the STP disabled VLAN(s).
+      vlans:
+        - 6
+        - 4094
   - VerifySTPForwardingPorts:
       # Verifies that all interfaces are forwarding for a provided list of VLAN(s).
       vlans:
@@ -827,6 +902,12 @@ anta.tests.system:
       # Verifies the device uptime.
       minimum: 86400
 anta.tests.vlan:
+  - VerifyDynamicVlanSource:
+      # Verifies dynamic VLAN allocation for specified VLAN sources.
+      sources:
+        - evpn
+        - mlagsync
+      strict: False
   - VerifyVlanInternalPolicy:
       # Verifies the VLAN internal allocation policy and the range of VLANs.
       policy: ascending

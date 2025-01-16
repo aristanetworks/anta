@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module that provides predefined types for AntaTest.Input instances."""
@@ -154,16 +154,38 @@ BfdMultiplier = Annotated[int, Field(ge=3, le=50)]
 ErrDisableReasons = Literal[
     "acl",
     "arp-inspection",
+    "bgp-session-tracking",
     "bpduguard",
+    "dot1x",
+    "dot1x-coa",
     "dot1x-session-replace",
+    "evpn-sa-mh",
+    "fabric-link-failure",
+    "fabric-link-flap",
     "hitless-reload-down",
+    "lacp-no-portid",
     "lacp-rate-limit",
+    "license-enforce",
     "link-flap",
+    "mlagasu",
+    "mlagdualprimary",
+    "mlagissu",
+    "mlagmaintdown",
     "no-internal-vlan",
+    "out-of-voqs",
     "portchannelguard",
+    "portgroup-disabled",
     "portsec",
+    "speed-misconfigured",
+    "storm-control",
+    "stp-no-portid",
+    "stuck-queue",
     "tapagg",
     "uplink-failure-detection",
+    "xcvr-misconfigured",
+    "xcvr-overheat",
+    "xcvr-power-unsupported",
+    "xcvr-unsupported",
 ]
 ErrDisableInterval = Annotated[int, Field(ge=30, le=86400)]
 Percent = Annotated[float, Field(ge=0.0, le=100.0)]
@@ -208,7 +230,6 @@ SnmpPdu = Literal["inGetPdus", "inGetNextPdus", "inSetPdus", "outGetResponsePdus
 SnmpErrorCounter = Literal[
     "inVersionErrs", "inBadCommunityNames", "inBadCommunityUses", "inParseErrs", "outTooBigErrs", "outNoSuchNameErrs", "outBadValueErrs", "outGeneralErrs"
 ]
-
 IPv4RouteType = Literal[
     "connected",
     "static",
@@ -238,3 +259,7 @@ IPv4RouteType = Literal[
     "Route Cache Route",
     "CBF Leaked Route",
 ]
+SnmpVersion = Literal["v1", "v2c", "v3"]
+SnmpHashingAlgorithm = Literal["MD5", "SHA", "SHA-224", "SHA-256", "SHA-384", "SHA-512"]
+SnmpEncryptionAlgorithm = Literal["AES-128", "AES-192", "AES-256", "DES"]
+DynamicVlanSource = Literal["dmf", "dot1x", "dynvtep", "evpn", "mlag", "mlagsync", "mvpn", "swfwd", "vccbfd"]
