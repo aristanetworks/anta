@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module related to BFD tests."""
@@ -8,9 +8,9 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, ClassVar, TypeVar
 
-from pydantic import Field
+from pydantic import Field, field_validator
 
 from anta.input_models.bfd import BFDPeer
 from anta.models import AntaCommand, AntaTest
@@ -18,6 +18,9 @@ from anta.tools import get_value
 
 if TYPE_CHECKING:
     from anta.models import AntaTemplate
+
+# Using a TypeVar for the BFDPeer model since mypy thinks it's a ClassVar and not a valid type when used in field validators
+T = TypeVar("T", bound=BFDPeer)
 
 
 class VerifyBFDSpecificPeers(AntaTest):
@@ -99,15 +102,18 @@ class VerifyBFDPeersIntervals(AntaTest):
       1. Confirms that the specified VRF is configured.
       2. Verifies that the peer exists in the BFD configuration.
       3. Confirms that BFD peer is correctly configured with the `Transmit interval, Receive interval and Multiplier`.
+      4. Verifies that BFD peer is correctly configured with the `Detection time`, if provided.
 
     Expected Results
     ----------------
     * Success: If all of the following conditions are met:
         - All specified peers are found in the BFD configuration within the specified VRF.
         - All BFD peers are correctly configured with the `Transmit interval, Receive interval and Multiplier`.
+        - If provided, the `Detection time` is correctly configured.
     * Failure: If any of the following occur:
         - A specified peer is not found in the BFD configuration within the specified VRF.
         - Any BFD peer not correctly configured with the `Transmit interval, Receive interval and Multiplier`.
+        - Any BFD peer is not correctly configured with `Detection time`, if provided.
 
     Examples
     --------
@@ -125,6 +131,7 @@ class VerifyBFDPeersIntervals(AntaTest):
               tx_interval: 1200
               rx_interval: 1200
               multiplier: 3
+              detection_time: 3600
     ```
     """
 
@@ -139,6 +146,23 @@ class VerifyBFDPeersIntervals(AntaTest):
         BFDPeer: ClassVar[type[BFDPeer]] = BFDPeer
         """To maintain backward compatibility"""
 
+        @field_validator("bfd_peers")
+        @classmethod
+        def validate_bfd_peers(cls, bfd_peers: list[T]) -> list[T]:
+            """Validate that 'tx_interval', 'rx_interval' and 'multiplier' fields are provided in each BFD peer."""
+            for peer in bfd_peers:
+                missing_fileds = []
+                if peer.tx_interval is None:
+                    missing_fileds.append("tx_interval")
+                if peer.rx_interval is None:
+                    missing_fileds.append("rx_interval")
+                if peer.multiplier is None:
+                    missing_fileds.append("multiplier")
+                if missing_fileds:
+                    msg = f"{peer} {', '.join(missing_fileds)} field(s) are missing in the input."
+                    raise ValueError(msg)
+            return bfd_peers
+
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyBFDPeersIntervals."""
@@ -151,6 +175,7 @@ class VerifyBFDPeersIntervals(AntaTest):
             tx_interval = bfd_peer.tx_interval
             rx_interval = bfd_peer.rx_interval
             multiplier = bfd_peer.multiplier
+            detect_time = bfd_peer.detection_time
 
             # Check if BFD peer configured
             bfd_output = get_value(
@@ -166,6 +191,7 @@ class VerifyBFDPeersIntervals(AntaTest):
             bfd_details = bfd_output.get("peerStatsDetail", {})
             op_tx_interval = bfd_details.get("operTxInterval") // 1000
             op_rx_interval = bfd_details.get("operRxInterval") // 1000
+            op_detection_time = bfd_details.get("detectTime") // 1000
             detect_multiplier = bfd_details.get("detectMult")
 
             if op_tx_interval != tx_interval:
@@ -176,6 +202,9 @@ class VerifyBFDPeersIntervals(AntaTest):
 
             if detect_multiplier != multiplier:
                 self.result.is_failure(f"{bfd_peer} - Incorrect Multiplier - Expected: {multiplier} Actual: {detect_multiplier}")
+
+            if detect_time and op_detection_time != detect_time:
+                self.result.is_failure(f"{bfd_peer} - Incorrect Detection Time - Expected: {detect_time} Actual: {op_detection_time}")
 
 
 class VerifyBFDPeersHealth(AntaTest):
@@ -298,6 +327,16 @@ class VerifyBFDPeersRegProtocols(AntaTest):
         """List of IPv4 BFD"""
         BFDPeer: ClassVar[type[BFDPeer]] = BFDPeer
         """To maintain backward compatibility"""
+
+        @field_validator("bfd_peers")
+        @classmethod
+        def validate_bfd_peers(cls, bfd_peers: list[T]) -> list[T]:
+            """Validate that 'protocols' field is provided in each BFD peer."""
+            for peer in bfd_peers:
+                if peer.protocols is None:
+                    msg = f"{peer} 'protocols' field missing in the input."
+                    raise ValueError(msg)
+            return bfd_peers
 
     @AntaTest.anta_test
     def test(self) -> None:

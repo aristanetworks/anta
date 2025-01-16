@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Test anta.result_manager.__init__.py."""
@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import re
 from contextlib import AbstractContextManager, nullcontext
 from typing import TYPE_CHECKING, Callable
@@ -19,6 +20,7 @@ if TYPE_CHECKING:
     from anta.result_manager.models import TestResult
 
 
+# pylint: disable=too-many-public-methods
 class TestResultManager:
     """Test ResultManager class."""
 
@@ -85,13 +87,14 @@ class TestResultManager:
 
         result_manager.results = results
 
-        # Check the current categories order
-        expected_order = ["ospf", "bgp", "vxlan", "system"]
+        # Check that category_stats returns sorted order by default
+        expected_order = ["bgp", "ospf", "system", "vxlan"]
         assert list(result_manager.category_stats.keys()) == expected_order
 
-        # Check the sorted categories order
-        expected_order = ["bgp", "ospf", "system", "vxlan"]
-        assert list(result_manager.sorted_category_stats.keys()) == expected_order
+        # Verify deprecation warning for sorted_category_stats
+        with pytest.warns(DeprecationWarning, match="sorted_category_stats is deprecated and will be removed in ANTA v2.0.0"):
+            deprecated_stats = result_manager.sorted_category_stats
+            assert list(deprecated_stats.keys()) == expected_order
 
     @pytest.mark.parametrize(
         ("starting_status", "test_status", "expected_status", "expected_raise"),
@@ -379,3 +382,188 @@ class TestResultManager:
 
         assert len(result_manager.get_devices()) == 2
         assert all(t in result_manager.get_devices() for t in ["Device1", "Device2"])
+
+    def test_stats_computation_methods(self, test_result_factory: Callable[[], TestResult], caplog: pytest.LogCaptureFixture) -> None:
+        """Test ResultManager internal stats computation methods."""
+        result_manager = ResultManager()
+
+        # Initially stats should be unsynced
+        assert result_manager._stats_in_sync is False
+
+        # Test _reset_stats
+        result_manager._reset_stats()
+        assert result_manager._stats_in_sync is False
+        assert len(result_manager._device_stats) == 0
+        assert len(result_manager._category_stats) == 0
+        assert len(result_manager._test_stats) == 0
+
+        # Add some test results
+        test1 = test_result_factory()
+        test1.name = "device1"
+        test1.result = AntaTestStatus.SUCCESS
+        test1.categories = ["system"]
+        test1.test = "test1"
+
+        test2 = test_result_factory()
+        test2.name = "device2"
+        test2.result = AntaTestStatus.FAILURE
+        test2.categories = ["interfaces"]
+        test2.test = "test2"
+
+        result_manager.add(test1)
+        result_manager.add(test2)
+
+        # Stats should still be unsynced after adding results
+        assert result_manager._stats_in_sync is False
+
+        # Test _compute_stats directly
+        with caplog.at_level(logging.INFO):
+            result_manager._compute_stats()
+        assert "Computing statistics for all results" in caplog.text
+        assert result_manager._stats_in_sync is True
+
+        # Verify stats content
+        assert len(result_manager._device_stats) == 2
+        assert len(result_manager._category_stats) == 2
+        assert len(result_manager._test_stats) == 2
+        assert result_manager._device_stats["device1"].tests_success_count == 1
+        assert result_manager._device_stats["device2"].tests_failure_count == 1
+        assert result_manager._category_stats["system"].tests_success_count == 1
+        assert result_manager._category_stats["interfaces"].tests_failure_count == 1
+        assert result_manager._test_stats["test1"].devices_success_count == 1
+        assert result_manager._test_stats["test2"].devices_failure_count == 1
+
+    def test_stats_property_computation(self, test_result_factory: Callable[[], TestResult], caplog: pytest.LogCaptureFixture) -> None:
+        """Test that stats are computed only once when accessed via properties."""
+        result_manager = ResultManager()
+
+        # Add some test results
+        test1 = test_result_factory()
+        test1.name = "device1"
+        test1.result = AntaTestStatus.SUCCESS
+        test1.categories = ["system"]
+        result_manager.add(test1)
+
+        test2 = test_result_factory()
+        test2.name = "device2"
+        test2.result = AntaTestStatus.FAILURE
+        test2.categories = ["interfaces"]
+        result_manager.add(test2)
+
+        # Stats should be unsynced after adding results
+        assert result_manager._stats_in_sync is False
+        assert "Computing statistics" not in caplog.text
+
+        # Access device_stats property - should trigger computation
+        with caplog.at_level(logging.INFO):
+            _ = result_manager.device_stats
+        assert "Computing statistics for all results" in caplog.text
+        assert result_manager._stats_in_sync is True
+
+        # Clear the log
+        caplog.clear()
+
+        # Access other stats properties - should not trigger computation again
+        with caplog.at_level(logging.INFO):
+            _ = result_manager.category_stats
+            _ = result_manager.test_stats
+        assert "Computing statistics" not in caplog.text
+
+        # Add another result - should mark stats as unsynced
+        test3 = test_result_factory()
+        test3.name = "device3"
+        test3.result = "error"
+        result_manager.add(test3)
+        assert result_manager._stats_in_sync is False
+
+        # Access stats again - should trigger recomputation
+        with caplog.at_level(logging.INFO):
+            _ = result_manager.device_stats
+        assert "Computing statistics for all results" in caplog.text
+        assert result_manager._stats_in_sync is True
+
+    def test_sort_by_result(self, test_result_factory: Callable[[], TestResult]) -> None:
+        """Test sorting by result."""
+        result_manager = ResultManager()
+        test1 = test_result_factory()
+        test1.result = AntaTestStatus.SUCCESS
+        test2 = test_result_factory()
+        test2.result = AntaTestStatus.FAILURE
+        test3 = test_result_factory()
+        test3.result = AntaTestStatus.ERROR
+
+        result_manager.results = [test1, test2, test3]
+        sorted_manager = result_manager.sort(["result"])
+        assert [r.result for r in sorted_manager.results] == ["error", "failure", "success"]
+
+    def test_sort_by_name(self, test_result_factory: Callable[[], TestResult]) -> None:
+        """Test sorting by name."""
+        result_manager = ResultManager()
+        test1 = test_result_factory()
+        test1.name = "Device3"
+        test2 = test_result_factory()
+        test2.name = "Device1"
+        test3 = test_result_factory()
+        test3.name = "Device2"
+
+        result_manager.results = [test1, test2, test3]
+        sorted_manager = result_manager.sort(["name"])
+        assert [r.name for r in sorted_manager.results] == ["Device1", "Device2", "Device3"]
+
+    def test_sort_by_categories(self, test_result_factory: Callable[[], TestResult]) -> None:
+        """Test sorting by categories."""
+        result_manager = ResultManager()
+        test1 = test_result_factory()
+        test1.categories = ["VXLAN", "networking"]
+        test2 = test_result_factory()
+        test2.categories = ["BGP", "routing"]
+        test3 = test_result_factory()
+        test3.categories = ["system", "hardware"]
+
+        result_manager.results = [test1, test2, test3]
+        sorted_manager = result_manager.sort(["categories"])
+        results = sorted_manager.results
+
+        assert results[0].categories == ["BGP", "routing"]
+        assert results[1].categories == ["VXLAN", "networking"]
+        assert results[2].categories == ["system", "hardware"]
+
+    def test_sort_multiple_fields(self, test_result_factory: Callable[[], TestResult]) -> None:
+        """Test sorting by multiple fields."""
+        result_manager = ResultManager()
+        test1 = test_result_factory()
+        test1.result = AntaTestStatus.ERROR
+        test1.test = "Test3"
+        test2 = test_result_factory()
+        test2.result = AntaTestStatus.ERROR
+        test2.test = "Test1"
+        test3 = test_result_factory()
+        test3.result = AntaTestStatus.FAILURE
+        test3.test = "Test2"
+
+        result_manager.results = [test1, test2, test3]
+        sorted_manager = result_manager.sort(["result", "test"])
+        results = sorted_manager.results
+
+        assert results[0].result == "error"
+        assert results[0].test == "Test1"
+        assert results[1].result == "error"
+        assert results[1].test == "Test3"
+        assert results[2].result == "failure"
+        assert results[2].test == "Test2"
+
+    def test_sort_invalid_field(self) -> None:
+        """Test that sort method raises ValueError for invalid sort_by fields."""
+        result_manager = ResultManager()
+        with pytest.raises(
+            ValueError,
+            match=re.escape(
+                "Invalid sort_by fields: ['bad_field']. Accepted fields are: ['name', 'test', 'categories', 'description', 'result', 'messages', 'custom_field']",
+            ),
+        ):
+            result_manager.sort(["bad_field"])
+
+    def test_sort_is_chainable(self) -> None:
+        """Test that the sort method is chainable."""
+        result_manager = ResultManager()
+        assert isinstance(result_manager.sort(["name"]), ResultManager)

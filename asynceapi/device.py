@@ -1,4 +1,4 @@
-# Copyright (c) 2024 Arista Networks, Inc.
+# Copyright (c) 2024-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 # Initially written by Jeremy Schulman at https://github.com/jeremyschulman/aio-eapi
@@ -121,7 +121,7 @@ class Device(httpx.AsyncClient):
         """
         return await port_check_url(self.base_url)
 
-    async def cli(  # noqa: PLR0913
+    async def cli(
         self,
         command: str | dict[str, Any] | None = None,
         commands: Sequence[str | dict[str, Any]] | None = None,
@@ -195,7 +195,7 @@ class Device(httpx.AsyncClient):
                 return None
             raise
 
-    def _jsonrpc_command(  # noqa: PLR0913
+    def _jsonrpc_command(
         self,
         commands: Sequence[str | dict[str, Any]] | None = None,
         ofmt: str | None = None,

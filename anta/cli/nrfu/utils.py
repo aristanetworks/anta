@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Utils functions to use with anta.cli.nrfu.commands module."""
@@ -157,7 +157,7 @@ def save_markdown_report(ctx: click.Context, md_output: pathlib.Path) -> None:
         Path to save the markdown report.
     """
     try:
-        MDReportGenerator.generate(results=_get_result_manager(ctx), md_filename=md_output)
+        MDReportGenerator.generate(results=_get_result_manager(ctx).sort(["name", "categories", "test"]), md_filename=md_output)
         console.print(f"Markdown report saved to {md_output} ✅", style="cyan")
     except OSError:
         console.print(f"Failed to save Markdown report to {md_output} ❌", style="cyan")

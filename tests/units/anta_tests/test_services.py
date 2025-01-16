@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Tests for anta.tests.services.py."""
@@ -147,7 +147,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"reasons": [{"reason": "acl", "interval": 300}, {"reason": "arp-inspection", "interval": 30}, {"reason": "tapagg", "interval": 30}]},
         "expected": {
             "result": "failure",
-            "messages": ["`tapagg`: Not found."],
+            "messages": ["Reason: tapagg Status: Enabled Interval: 30 - Not found"],
         },
     },
     {
@@ -165,7 +165,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"reasons": [{"reason": "acl", "interval": 300}, {"reason": "arp-inspection", "interval": 30}]},
         "expected": {
             "result": "failure",
-            "messages": ["`acl`:\nExpected `Enabled` as the status, but found `Disabled` instead."],
+            "messages": ["Reason: acl Status: Enabled Interval: 300 - Incorrect configuration - Status: Disabled Interval: 300"],
         },
     },
     {
@@ -183,7 +183,9 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"reasons": [{"reason": "acl", "interval": 30}, {"reason": "arp-inspection", "interval": 30}]},
         "expected": {
             "result": "failure",
-            "messages": ["`acl`:\nExpected `30` as the interval, but found `300` instead."],
+            "messages": [
+                "Reason: acl Status: Enabled Interval: 30 - Incorrect configuration - Status: Enabled Interval: 300",
+            ],
         },
     },
     {
@@ -202,9 +204,9 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "`acl`:\nExpected `30` as the interval, but found `300` instead.\nExpected `Enabled` as the status, but found `Disabled` instead.",
-                "`arp-inspection`:\nExpected `300` as the interval, but found `30` instead.",
-                "`tapagg`: Not found.",
+                "Reason: acl Status: Enabled Interval: 30 - Incorrect configuration - Status: Disabled Interval: 300",
+                "Reason: arp-inspection Status: Enabled Interval: 300 - Incorrect configuration - Status: Enabled Interval: 30",
+                "Reason: tapagg Status: Enabled Interval: 30 - Not found",
             ],
         },
     },

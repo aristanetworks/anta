@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """decorators for tests."""
@@ -17,7 +17,8 @@ if TYPE_CHECKING:
 F = TypeVar("F", bound=Callable[..., Any])
 
 
-def deprecated_test(new_tests: list[str] | None = None) -> Callable[[F], F]:
+# TODO: Remove this decorator in ANTA v2.0.0 in favor of deprecated_test_class
+def deprecated_test(new_tests: list[str] | None = None) -> Callable[[F], F]:  # pragma: no cover
     """Return a decorator to log a message of WARNING severity when a test is deprecated.
 
     Parameters
@@ -58,6 +59,57 @@ def deprecated_test(new_tests: list[str] | None = None) -> Callable[[F], F]:
             return await function(*args, **kwargs)
 
         return cast(F, wrapper)
+
+    return decorator
+
+
+def deprecated_test_class(new_tests: list[str] | None = None, removal_in_version: str | None = None) -> Callable[[type[AntaTest]], type[AntaTest]]:
+    """Return a decorator to log a message of WARNING severity when a test is deprecated.
+
+    Parameters
+    ----------
+    new_tests
+        A list of new test classes that should replace the deprecated test.
+    removal_in_version
+        A string indicating the version in which the test will be removed.
+
+    Returns
+    -------
+    Callable[[type], type]
+        A decorator that can be used to wrap test functions.
+
+    """
+
+    def decorator(cls: type[AntaTest]) -> type[AntaTest]:
+        """Actual decorator that logs the message.
+
+        Parameters
+        ----------
+        cls
+            The cls to be decorated.
+
+        Returns
+        -------
+        cls
+            The decorated cls.
+        """
+        orig_init = cls.__init__
+
+        def new_init(*args: Any, **kwargs: Any) -> None:
+            """Overload __init__ to generate a warning message for deprecation."""
+            if new_tests:
+                new_test_names = ", ".join(new_tests)
+                logger.warning("%s test is deprecated. Consider using the following new tests: %s.", cls.name, new_test_names)
+            else:
+                logger.warning("%s test is deprecated.", cls.name)
+            orig_init(*args, **kwargs)
+
+        if removal_in_version is not None:
+            cls.__removal_in_version = removal_in_version
+
+        # NOTE: we are ignoring mypy warning as we want to assign to a method here
+        cls.__init__ = new_init  # type: ignore[method-assign]
+        return cls
 
     return decorator
 
