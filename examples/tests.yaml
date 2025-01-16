@@ -569,7 +569,7 @@ anta.tests.routing.generic:
           vrf: default
           route_type: iBGP
   - VerifyRouteEntry:
-      # Verifies the route entries of IPv4 network(s).
+      # Verifies the route entries of the IPv4 prefixes.
       route_entries:
           - prefix: 10.10.0.1/32
             vrf: default
