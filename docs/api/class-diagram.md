@@ -7,10 +7,9 @@ anta_title: ANTA Class Diagram
   ~ that can be found in the LICENSE file.
   -->
 
-| Color | Description |
-| -------- | --------- |
-| :fontawesome-solid-square-full:{ .pydantic_pink } | [:simple-pydantic:{ .pydantic_pink } pydantic model](https://docs.pydantic.dev/latest/concepts/models/) |
+!!! info
+    The classes colored in pink :fontawesome-solid-square-full:{ .pydantic_pink } are [:simple-pydantic:{ .pydantic_pink } pydantic models](https://docs.pydantic.dev/latest/concepts/models/).
 
 ``` mermaid
---8<-- "class-diagram.mmd"
+--8<-- "api/class-diagram.mmd"
 ```
