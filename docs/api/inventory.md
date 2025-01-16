@@ -7,17 +7,14 @@ anta_title: ANTA Inventory API
   ~ that can be found in the LICENSE file.
   -->
 
-### ::: anta.inventory.AntaInventory
+::: anta.inventory.AntaInventory
 
-    options:
-        filters: ["!^_[^_]", "!__str__"]
+::: anta.inventory.models.AntaInventoryInput
 
-### ::: anta.inventory.exceptions
+::: anta.inventory.models.AntaInventoryHost
 
-### ::: anta.inventory.models.AntaInventoryInput
+::: anta.inventory.models.AntaInventoryNetwork
 
-### ::: anta.inventory.models.AntaInventoryHost
+::: anta.inventory.models.AntaInventoryRange
 
-### ::: anta.inventory.models.AntaInventoryNetwork
-
-### ::: anta.inventory.models.AntaInventoryRange
+::: anta.inventory.exceptions

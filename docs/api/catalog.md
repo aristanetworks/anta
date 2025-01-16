@@ -7,11 +7,8 @@ anta_title: ANTA Catalog API
   ~ that can be found in the LICENSE file.
   -->
 
-### ::: anta.catalog.AntaCatalog
+::: anta.catalog.AntaCatalog
 
-    options:
-        filters: ["!^_[^_]", "!__str__"]
+::: anta.catalog.AntaTestDefinition
 
-### ::: anta.catalog.AntaTestDefinition
-
-### ::: anta.catalog.AntaCatalogFile
+::: anta.catalog.AntaCatalogFile

@@ -432,7 +432,7 @@ class AntaTest(ABC):
         inputs: dict[str, Any] | AntaTest.Input | None = None,
         eos_data: list[dict[Any, Any] | str] | None = None,
     ) -> None:
-        """AntaTest Constructor.
+        """Initialize an AntaTest instance.
 
         Parameters
         ----------

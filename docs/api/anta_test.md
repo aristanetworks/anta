@@ -7,7 +7,4 @@ anta_title: ANTA Test API
   ~ that can be found in the LICENSE file.
   -->
 
-## ::: anta.models.AntaTest
-
-    options:
-        filters: ["!^_[^_]", "!__init_subclass__", "!update_progress"]
+::: anta.models.AntaTest
