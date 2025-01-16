@@ -7,12 +7,22 @@ anta_title: ANTA Commands API
   ~ that can be found in the LICENSE file.
   -->
 
-!!! warning
-    CLI commands are protected to avoid execution of critical commands such as `reload` or `write erase`.
+## EOS Commands Error Handling
 
-      - Reload command: `^reload\s*\w*`
-      - Configure mode: `^conf\w*\s*(terminal|session)*`
-      - Write: `^wr\w*\s*\w+`
+::: anta.constants.UNSUPPORTED_PLATFORM_ERRORS
+      options:
+        heading_level: 7
+        show_labels: false
+
+::: anta.constants.EOS_BLACKLIST_CMDS
+      options:
+        heading_level: 7
+        show_labels: false
+
+::: anta.constants.KNOWN_EOS_ERRORS
+      options:
+        heading_level: 7
+        show_labels: false
 
 ## ::: anta.models.AntaCommand
 

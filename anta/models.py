@@ -15,8 +15,8 @@ from typing import TYPE_CHECKING, Any, Callable, ClassVar, Literal, TypeVar
 
 from pydantic import BaseModel, ConfigDict, ValidationError, create_model
 
-from anta.constants import KNOWN_EOS_ERRORS, UNSUPPORTED_PLATFORM_ERRORS
-from anta.custom_types import REGEXP_EOS_BLACKLIST_CMDS, Revision
+from anta.constants import EOS_BLACKLIST_CMDS, KNOWN_EOS_ERRORS, UNSUPPORTED_PLATFORM_ERRORS
+from anta.custom_types import Revision
 from anta.logger import anta_log_exception, exc_to_str
 from anta.result_manager.models import AntaTestStatus, TestResult
 
@@ -575,12 +575,12 @@ class AntaTest(ABC):
         """Check if CLI commands contain a blocked keyword."""
         state = False
         for command in self.instance_commands:
-            for pattern in REGEXP_EOS_BLACKLIST_CMDS:
+            for pattern in EOS_BLACKLIST_CMDS:
                 if re.match(pattern, command.command):
                     self.logger.error(
                         "Command <%s> is blocked for security reason matching %s",
                         command.command,
-                        REGEXP_EOS_BLACKLIST_CMDS,
+                        EOS_BLACKLIST_CMDS,
                     )
                     self.result.is_error(f"<{command.command}> is blocked for security reason")
                     state = True
