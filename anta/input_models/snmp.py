@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 from ipaddress import IPv4Address
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict
 
@@ -54,3 +55,33 @@ class SnmpUser(BaseModel):
         - User: Test Group: Test_Group Version: v2c
         """
         return f"User: {self.username} Group: {self.group_name} Version: {self.version}"
+
+
+class SnmpGroup(BaseModel):
+    """Model for a SNMP group."""
+
+    group_name: str
+    """SNMP group for the user."""
+    version: SnmpVersion
+    """SNMP protocol version."""
+    read_view: str | None = None
+    """View to restrict read access."""
+    write_view: str | None = None
+    """View to restrict write access."""
+    notify_view: str | None = None
+    """View to restrict notifications."""
+    authentication: Literal["v3Auth", "v3Priv", "v3NoAuth"] | None = None
+    """Advanced authentication in v3 SNMP version. Defaults to None.
+    - v3Auth: Group using authentication but not privacy
+    - v3Priv: Group using both authentication and privacy
+    - v3NoAuth: Group using neither authentication nor privacy
+    """
+
+    def __str__(self) -> str:
+        """Return a human-readable string representation of the SnmpGroup for reporting.
+
+        Examples
+        --------
+        - Group: Test_Group Version: v2c
+        """
+        return f"Group: {self.group_name}, Version: {self.version}"

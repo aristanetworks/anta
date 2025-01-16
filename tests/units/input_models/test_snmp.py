@@ -11,10 +11,10 @@ from typing import TYPE_CHECKING
 import pytest
 from pydantic import ValidationError
 
-from anta.tests.snmp import VerifySnmpUser
+from anta.tests.snmp import VerifySnmpGroup, VerifySnmpUser
 
 if TYPE_CHECKING:
-    from anta.input_models.snmp import SnmpUser
+    from anta.input_models.snmp import SnmpGroup, SnmpUser
 
 
 class TestVerifySnmpUserInput:
@@ -42,3 +42,55 @@ class TestVerifySnmpUserInput:
         """Test VerifySnmpUser.Input invalid inputs."""
         with pytest.raises(ValidationError):
             VerifySnmpUser.Input(snmp_users=snmp_users)
+
+
+class TestVerifySnmpGroupInput:
+    """Test anta.tests.snmp.VerifySnmpGroup.Input."""
+
+    @pytest.mark.parametrize(
+        ("snmp_groups"),
+        [
+            pytest.param(
+                [{"group_name": "abc", "version": "v1", "read_view": "group_read_1", "write_view": "group_write_1", "notify_view": "group_notify_1"}], id="valid-v1"
+            ),
+            pytest.param(
+                [
+                    {
+                        "group_name": "abc",
+                        "version": "v3",
+                        "read_view": "group_read_1",
+                        "write_view": "group_write_1",
+                        "notify_view": "group_notify_1",
+                        "authentication": "v3Auth",
+                    }
+                ],
+                id="valid-v3",
+            ),
+        ],
+    )
+    def test_valid(self, snmp_groups: list[SnmpGroup]) -> None:
+        """Test VerifySnmpGroup.Input valid inputs."""
+        VerifySnmpGroup.Input(snmp_groups=snmp_groups)
+
+    @pytest.mark.parametrize(
+        ("snmp_groups"),
+        [
+            pytest.param(
+                [
+                    {
+                        "group_name": "abc",
+                        "version": "v3",
+                        "read_view": "group_read_1",
+                        "write_view": "group_write_1",
+                        "notify_view": "group_notify_1",
+                        "authentication": None,
+                    }
+                ],
+                id="invalid-v3",
+            ),
+        ],
+    )
+    def test_invalid(self, snmp_groups: list[SnmpGroup]) -> None:
+        """Test VerifySnmpGroup.Input invalid inputs."""
+        with pytest.raises(ValidationError):
+            VerifySnmpGroup.Input(snmp_groups=snmp_groups)

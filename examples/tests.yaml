@@ -767,6 +767,14 @@ anta.tests.snmp:
       # Verifies the SNMP error counters.
       error_counters:
         - inVersionErrs
+  - VerifySnmpGroup:
+      # Verifies the SNMP group configurations for specified version(s).
+      snmp_groups:
+        - group_name: Group1
+          version: v1
+          read_view: group_read_1
+          write_view: group_write_1
+          notify_view: group_notify_1
   - VerifySnmpHostLogging:
       # Verifies SNMP logging configurations.
       hosts:
@@ -800,25 +808,7 @@ anta.tests.snmp:
           group_name: test_group
           version: v3
           auth_type: MD5
-          priv_type: AES-128  - VerifySnmpGroup:
-      snmp_groups:
-        - group_name: Group1
-          version: v1
-          read_view: group_read_1
-          write_view: group_write_1
-          notify_view: group_notify_1
-        - group_name: Group2
-          version: v2c
-          read_view: group_read_2
-          write_view: group_write_2
-          notify_view: group_notify_2
-        - group_name: Group3
-          version: v3
-          authentication: v3Auth
-          read_view: group_read_3
-          write_view: group_write_3
-          notify_view: group_notify_3
-
+          priv_type: AES-128
 anta.tests.software:
   - VerifyEOSExtensions:
       # Verifies that all EOS extensions installed on the device are enabled for boot persistence.

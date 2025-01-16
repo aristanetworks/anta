@@ -10,8 +10,8 @@ from typing import Any
 from anta.tests.snmp import (
     VerifySnmpContact,
     VerifySnmpErrorCounters,
-    VerifySnmpHostLogging,
     VerifySnmpGroup,
+    VerifySnmpHostLogging,
     VerifySnmpIPv4Acl,
     VerifySnmpIPv6Acl,
     VerifySnmpLocation,
@@ -636,7 +636,7 @@ DATA: list[dict[str, Any]] = [
                     "Group3": {
                         "versions": {
                             "v3": {
-                                "secModel": "v3Priv",
+                                "secModel": "v3Auth",
                                 "readView": "group_read",
                                 "readViewConfig": True,
                                 "writeView": "group_write",
@@ -666,19 +666,15 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "For SNMP group Group1 with SNMP version v1:\n"
-                "Expected 'group_read_1' as 'readView' but found 'group_read' instead.\n"
-                "Expected 'group_write_1' as 'writeView' but found 'group_write' instead.\n"
-                "Expected 'group_notify_1' as 'notifyView' but found 'group_notify' instead.\n"
-                "For SNMP group Group2 with SNMP version v2c:\n"
-                "Expected 'group_read_2' as 'readView' but found 'group_read' instead.\n"
-                "Expected 'group_write_2' as 'writeView' but found 'group_write' instead.\n"
-                "Expected 'group_notify_2' as 'notifyView' but found 'group_notify' instead.\n"
-                "For SNMP group Group3 with SNMP version v3:\n"
-                "Expected 'group_read_3' as 'readView' but found 'group_read' instead.\n"
-                "Expected 'group_write_3' as 'writeView' but found 'group_write' instead.\n"
-                "Expected 'group_notify_3' as 'notifyView' but found 'group_notify' instead.\n"
-                "Expected 'v3Auth' as security model but found 'v3Priv' instead.\n"
+                "Group: Group1, Version: v1 - Incorrect read view - Expected: group_read_1 Actual: group_read",
+                "Group: Group1, Version: v1 - Incorrect write view - Expected: group_write_1 Actual: group_write",
+                "Group: Group1, Version: v1 - Incorrect notify view - Expected: group_notify_1 Actual: group_notify",
+                "Group: Group2, Version: v2c - Incorrect read view - Expected: group_read_2 Actual: group_read",
+                "Group: Group2, Version: v2c - Incorrect write view - Expected: group_write_2 Actual: group_write",
+                "Group: Group2, Version: v2c - Incorrect notify view - Expected: group_notify_2 Actual: group_notify",
+                "Group: Group3, Version: v3 - Incorrect read view - Expected: group_read_3 Actual: group_read",
+                "Group: Group3, Version: v3 - Incorrect write view - Expected: group_write_3 Actual: group_write",
+                "Group: Group3, Version: v3 - Incorrect notify view - Expected: group_notify_3 Actual: group_notify",
             ],
         },
     },
@@ -732,14 +728,14 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "snmp_groups": [
-                {"group_name": "Group1", "version": "v1", "read_view": "group_read_1", "write_view": "group_write_1", "notify_view": "group_notify_1"},
-                {"group_name": "Group2", "version": "v2c", "read_view": "group_read_2", "write_view": "group_write_2", "notify_view": "group_notify_2"},
+                {"group_name": "Group1", "version": "v1", "read_view": "group_read", "write_view": "group_write", "notify_view": "group_notify"},
+                {"group_name": "Group2", "version": "v2c", "read_view": "group_read", "write_view": "group_write", "notify_view": "group_notify"},
                 {
                     "group_name": "Group3",
                     "version": "v3",
-                    "read_view": "group_read_3",
-                    "write_view": "group_write_3",
-                    "notify_view": "group_notify_3",
+                    "read_view": "group_read",
+                    "write_view": "group_write",
+                    "notify_view": "group_notify",
                     "authentication": "v3Auth",
                 },
             ]
@@ -747,23 +743,20 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "For SNMP group Group1 with SNMP version v1:\n"
-                "The 'group_read_1' view is not configured.\n"
-                "The 'group_write_1' view is not configured.\n"
-                "The 'group_notify_1' view is not configured.\n"
-                "For SNMP group Group2 with SNMP version v2c:\n"
-                "The 'group_read_2' view is not configured.\n"
-                "The 'group_write_2' view is not configured.\n"
-                "The 'group_notify_2' view is not configured.\n"
-                "For SNMP group Group3 with SNMP version v3:\n"
-                "The 'group_read_3' view is not configured.\n"
-                "The 'group_write_3' view is not configured.\n"
-                "The 'group_notify_3' view is not configured.\n"
+                "Group: Group1, Version: v1 - Read view not configured",
+                "Group: Group1, Version: v1 - Write view not configured",
+                "Group: Group1, Version: v1 - Notify view not configured",
+                "Group: Group2, Version: v2c - Read view not configured",
+                "Group: Group2, Version: v2c - Write view not configured",
+                "Group: Group2, Version: v2c - Notify view not configured",
+                "Group: Group3, Version: v3 - Read view not configured",
+                "Group: Group3, Version: v3 - Write view not configured",
+                "Group: Group3, Version: v3 - Notify view not configured",
             ],
         },
     },
     {
-        "name": "failure-view-not-found",
+        "name": "failure-group-version-not-configured",
         "test": VerifySnmpGroup,
         "eos_data": [
             {
@@ -791,9 +784,50 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "SNMP group 'Group1' is not configured with security model 'v1'.\n"
-                "SNMP group 'Group2' is not configured with security model 'v2c'.\n"
-                "SNMP group 'Group3' is not configured with security model 'v3'.\n"
+                "Group: Group1, Version: v1 - Not configured",
+                "Group: Group2, Version: v2c - Not configured",
+                "Group: Group3, Version: v3 - Not configured",
+            ],
+        },
+    },
+    {
+        "name": "failure-incorrect-v3-auth-model",
+        "test": VerifySnmpGroup,
+        "eos_data": [
+            {
+                "groups": {
+                    "Group3": {
+                        "versions": {
+                            "v3": {
+                                "secModel": "v3Priv",
+                                "readView": "group_read",
+                                "readViewConfig": True,
+                                "writeView": "group_write",
+                                "writeViewConfig": True,
+                                "notifyView": "group_notify",
+                                "notifyViewConfig": True,
+                            }
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "snmp_groups": [
+                {
+                    "group_name": "Group3",
+                    "version": "v3",
+                    "read_view": "group_read",
+                    "write_view": "group_write",
+                    "notify_view": "group_notify",
+                    "authentication": "v3Auth",
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Group: Group3, Version: v3 - Incorrect security model - Expected: v3Auth Actual: v3Priv",
             ],
         },
     },
