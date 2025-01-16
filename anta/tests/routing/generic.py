@@ -303,7 +303,7 @@ class VerifyRouteEntry(AntaTest):
         @field_validator("route_entries")
         @classmethod
         def validate_route_entries(cls, route_entries: list[IPv4Routes]) -> list[IPv4Routes]:
-            """Validate that 'capabilities' field is provided in each BGP peer."""
+            """Validate that 'nexthops' field is provided in each route entry."""
             for entry in route_entries:
                 if entry.nexthops is None:
                     msg = f"{entry} 'nexthops' field missing in the input"
