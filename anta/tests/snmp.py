@@ -9,9 +9,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar, get_args
 
-from pydantic import field_validator
-
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
 from anta.custom_types import Interface, PositiveInteger, SnmpErrorCounter, SnmpPdu
 from anta.input_models.snmp import SnmpHost, SnmpUser
