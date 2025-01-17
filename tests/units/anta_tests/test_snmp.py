@@ -15,7 +15,7 @@ from anta.tests.snmp import (
     VerifySnmpIPv6Acl,
     VerifySnmpLocation,
     VerifySnmpPDUCounters,
-    VerifySnmpSourceIntf,
+    VerifySnmpSourceInterface,
     VerifySnmpStatus,
     VerifySnmpUser,
 )
@@ -539,7 +539,7 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "success",
-        "test": VerifySnmpSourceIntf,
+        "test": VerifySnmpSourceInterface,
         "eos_data": [
             {
                 "srcIntf": {"sourceInterfaces": {"default": "Ethernet1", "MGMT": "Management0"}},
@@ -550,18 +550,18 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "failure-not-configured",
-        "test": VerifySnmpSourceIntf,
+        "test": VerifySnmpSourceInterface,
         "eos_data": [
             {
                 "srcIntf": {},
             }
         ],
         "inputs": {"interfaces": [{"interface": "Ethernet1", "vrf": "default"}, {"interface": "Management0", "vrf": "MGMT"}]},
-        "expected": {"result": "failure", "messages": ["SNMP source interface(s) are not configured."]},
+        "expected": {"result": "failure", "messages": ["SNMP source interface(s) not configured"]},
     },
     {
         "name": "failure-incorrect-interfaces",
-        "test": VerifySnmpSourceIntf,
+        "test": VerifySnmpSourceInterface,
         "eos_data": [
             {
                 "srcIntf": {
@@ -575,8 +575,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Expected 'Ethernet1' as source-interface in vrf 'default' but found 'Management0' instead.\n"
-                "Source interface 'Management0' is not configured with vrf 'MGMT'."
+                "VRF: default, Source Interface: Ethernet1 - Incorrect source interface Actual: Management0",
+                "VRF: MGMT, Source Interface: Management0 - Not configured",
             ],
         },
     },

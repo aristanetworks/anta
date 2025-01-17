@@ -9,7 +9,7 @@ from ipaddress import IPv4Address
 
 from pydantic import BaseModel, ConfigDict
 
-from anta.custom_types import Hostname, SnmpEncryptionAlgorithm, SnmpHashingAlgorithm, SnmpVersion
+from anta.custom_types import Hostname, Interface, SnmpEncryptionAlgorithm, SnmpHashingAlgorithm, SnmpVersion
 
 
 class SnmpHost(BaseModel):
@@ -54,3 +54,21 @@ class SnmpUser(BaseModel):
         - User: Test Group: Test_Group Version: v2c
         """
         return f"User: {self.username} Group: {self.group_name} Version: {self.version}"
+
+
+class SnmpSourceInterface(BaseModel):
+    """Model for a SNMP source-interface."""
+
+    interface: Interface
+    """Source-interface to use as source IP address of log messages."""
+    vrf: str = "default"
+    """The VRF name to verify the SNMP agent in. Defaults to `default`."""
+
+    def __str__(self) -> str:
+        """Return a human-readable string representation of the SnmpSourceInterface for reporting.
+
+        Examples
+        --------
+        - VRF: default, Source Interface: Ethernet1
+        """
+        return f"VRF: {self.vrf}, Source Interface: {self.interface}"

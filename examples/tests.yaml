@@ -790,7 +790,7 @@ anta.tests.snmp:
       pdus:
         - outTrapPdus
         - inGetNextPdus
-  - VerifySnmpSourceIntf:
+  - VerifySnmpSourceInterface:
       # Verifies SNMP source-interface for a specified VRF.
       interfaces:
         - interface: Ethernet1
