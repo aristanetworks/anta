@@ -1,5 +1,5 @@
 ---
-anta_title: 🚀 Scaling ANTA: A Comprehensive Guide
+anta_title: "🚀 Scaling ANTA: A Comprehensive Guide"
 ---
 <!--
   ~ Copyright (c) 2023-2025 Arista Networks, Inc.
@@ -18,7 +18,7 @@ anta_title: 🚀 Scaling ANTA: A Comprehensive Guide
 
     This guide also assumes you have a basic understanding of ANTA and are familiar with its core concepts. If you're new to ANTA, we recommend starting with the [ANTA Getting Started](../getting-started.md) before proceeding.
 
-ANTA (Arista Network Test Automation) is continually evolving to meet the demands of large-scale network validation. As networks grow in size and complexity, the need for efficient, scalable testing becomes increasingly important. This guide explores comprehensive strategies for scaling ANTA to handle large network fabrics effectively.
+**ANTA** (Arista Network Test Automation) is continually evolving to meet the demands of large-scale network validation. As networks grow in size and complexity, the need for efficient, scalable testing becomes increasingly important. This guide explores comprehensive strategies for scaling ANTA to handle large network fabrics effectively.
 
 # 🔄 Core Optimizations
 
@@ -58,7 +58,7 @@ export ANTA_NOFILE=16384
 
 On Windows (non-POSIX systems), ANTA cannot adjust file descriptor limits. In these cases, ANTA will:
 
-- Use Python's sys.maxsize as the limit
+- Use Python `sys.maxsize` as the limit
 - Display a warning message: "Running on a non-POSIX system, cannot adjust the maximum number of file descriptors"
 - Continue operation with system defaults
 
@@ -82,7 +82,7 @@ Replace `<user>` with the username running ANTA, and `<value>` with your desired
 
 ## Connection Management
 
-For `AsyncEosDevice` implementations (default in ANTA), ANTA uses the `httpx` library as its underlying HTTP client for device connections. Each device has his own connection pool with a default maximum of `100` connections. On large fabrics, this can lead to a very high number of connections (n x 100), which may overwhelm the ANTA process. Note that custom `AntaDevice` subclasses might implement different HTTP settings. For `AsyncEosDevice`, connection pooling can be tuned via:
+For [`AsyncEosDevice`](../api/device.md#async-eos-device-class) implementations (default in ANTA), ANTA uses the [`httpx`](https://www.python-httpx.org/) library as its underlying HTTP client for device connections. Each device has his own connection pool with a default maximum of `100` connections. On large fabrics, this can lead to a very high number of connections (n x 100), which may overwhelm the ANTA process. Note that custom `AntaDevice` subclasses might implement different HTTP settings. For `AsyncEosDevice`, connection pooling can be tuned via the following environment variables. See [HTTPX documentation](https://www.python-httpx.org/advanced/resource-limits/) for more details.
 
 ```bash
 # Maximum number of allowable connections
@@ -95,7 +95,8 @@ export ANTA_MAX_KEEPALIVE_CONNECTIONS=20
 export ANTA_KEEPALIVE_EXPIRY=5.0
 ```
 
-`ANTA_MAX_KEEPALIVE_CONNECTIONS` should be lower than `ANTA_MAX_CONNECTIONS`. See [HTTPX documentation](https://www.python-httpx.org/advanced/resource-limits/) for more details.
+!!! warning "Variable relationships"
+    The value of `ANTA_MAX_KEEPALIVE_CONNECTIONS` should be lower than `ANTA_MAX_CONNECTIONS`.
 
 ## Timeouts Configuration
 
@@ -122,25 +123,7 @@ export ANTA_POOL_TIMEOUT=30.0
 
 For optimal performance on large fabrics, consider the following tuning parameters:
 
-1. Adjust concurrency based on test count and system resources:
-
-    ```bash
-    # For 250 devices with 100 tests each (25,000 total tests)
-    export ANTA_MAX_CONCURRENCY=25000
-    ```
-
-    Even though the default value is `10000`, it may not be optimal for your system. The optimal value depends on your CPU usage, memory consumption, and total execution time. Start with the default and adjust in increments while monitoring these metrics to find the best balance for your environment.
-
-2. Optimize connection pooling:
-
-    ```bash
-    export ANTA_MAX_CONNECTIONS=10
-    export ANTA_MAX_KEEPALIVE_CONNECTIONS=5
-    ```
-
-    These values are a good starting point for large fabrics. Adjust them based on your fabric size and performance testing.
-
-3. Increase timeouts for stability:
+1. Increase timeouts for stability:
 
     ```bash
     export ANTA_CONNECT_TIMEOUT=60.0
@@ -155,9 +138,25 @@ For optimal performance on large fabrics, consider the following tuning paramete
       - With thousands of tests, not all can acquire a connection immediately
       - The connection pool queues requests when all connections are in use
       - Without `ANTA_POOL_TIMEOUT=None`, requests might fail if they can't get a connection within the default 30-second global timeout
-      - Setting it to None allows the connection pool to manage request queuing naturally
+      - Setting it to `None` allows the connection pool to manage request queuing naturally
 
-    You shouldn't need to adjust the other timeout values unless you have specific requirements.
+2. Adjust concurrency based on test count and system resources:
+
+    ```bash
+    # For 250 devices with 100 tests each (25,000 total tests)
+    export ANTA_MAX_CONCURRENCY=25000
+    ```
+
+    Even though the default value is `10000`, it may not be optimal for your system. The optimal value depends on your CPU usage, memory consumption, and total execution time. Start with the default and adjust in increments while monitoring these metrics to find the best balance for your environment.
+
+3. Optimize connection pooling:
+
+    ```bash
+    export ANTA_MAX_CONNECTIONS=10
+    export ANTA_MAX_KEEPALIVE_CONNECTIONS=5
+    ```
+
+    These values are a good starting point for large fabrics. Adjust them based on your fabric size and performance testing.
 
 4. Consider JSON over YAML for better performance:
 
@@ -195,7 +194,7 @@ Remember to:
 !!! tip "Need Help?"
     Performance tuning can be complex and highly dependent on your specific deployment. See the warning "Advanced Guide" at the beginning of this document for assistance options.
 
-# 📚 Documentation
+# 📚 Additional Documentation
 
 - **Python AsyncIO**
   - [AsyncIO Documentation](https://docs.python.org/3/library/asyncio.html)
