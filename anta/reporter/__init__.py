@@ -6,14 +6,21 @@
 from __future__ import annotations
 
 import logging
-import math
+import warnings
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
+
+from yaml import dump
+
+try:
+    from yaml import CSafeDumper as SafeDumper
+except ImportError:
+    warnings.warn("yaml.CSafeDumper failed to import", ImportWarning, stacklevel=2)
+    from yaml import SafeDumper  # type: ignore[assignment]
 
 from jinja2 import Template
 from rich.table import Table
 from typing_extensions import deprecated
-from yaml import safe_dump, safe_load
 
 from anta import RICH_COLOR_PALETTE, RICH_COLOR_THEME
 from anta.result_manager.models import AtomicTestResult, TestResult
@@ -164,7 +171,7 @@ class ReportTable:
             add_result(result)
         return table
 
-    def generate_expanded(self, manager: ResultManager) -> Table:
+    def generate_expanded(self, manager: ResultManager, *, parent_inputs: bool = False, atomic_inputs: bool = False) -> Table:
         """Create a table report with all tests, expanded atomic results, test descriptions and inputs.
 
         Attributes used to build the table are:
@@ -183,6 +190,10 @@ class ReportTable:
         ----------
         manager
             A ResultManager instance.
+        parent_inputs
+            Show inputs from parent test results
+        atomic_inputs
+            Show inputs from atomic results of parent test results
 
         Returns
         -------
@@ -196,42 +207,41 @@ class ReportTable:
             self.columns.description,
             self.columns.status,
             self.columns.messages,
-            self.columns.inputs,
         ]
+
+        if parent_inputs or atomic_inputs:
+            columns.append(self.columns.inputs)
+
         table = self._build_table(title=self.title.all, columns=columns)
 
-        def add_line(result: TestResult | AtomicTestResult, name: str | None = None) -> None:
+        def add_line(result: TestResult | AtomicTestResult, suffix: str | None = None) -> None:
             categories = device = test = None
+
+            inputs_data: dict[str, Any] | None
             if isinstance(result, TestResult):
                 categories = ", ".join(convert_categories(result.categories))
                 device = str(result.name)
                 test = result.test
-            else:
-                test = name
+                if parent_inputs:
+                    inputs_data = (
+                        result.inputs.model_dump(mode="json", exclude_none=True, exclude={"filters", "result_overwrite"}) if result.inputs is not None else None
+                    )
+            elif suffix is not None:
+                test = f"{result.parent.test} {suffix}"
+                if atomic_inputs:
+                    inputs_data = result.inputs.model_dump(mode="json", exclude_none=True) if result.inputs is not None else None
+
             state = self._color_result(result.result)
             message = self._split_list_to_txt_list(result.messages) if len(result.messages) > 0 else ""
-            inputs = (
-                safe_dump(safe_load(result.inputs.model_dump_json(exclude_none=True)), indent=2, width=math.inf)
-                if isinstance(result, AtomicTestResult) and result.inputs is not None
-                else None
-            )  # See anta.catalog.AntaCatalogFile.yaml() for explanation of this line of code.
-            table.add_row(
-                categories,
-                test,
-                device,
-                result.description,
-                state,
-                message,
-                inputs,
-            )
+            renderables = [categories, test, device, result.description, state, message]
+            if parent_inputs or atomic_inputs:
+                renderables.append(dump(inputs_data, Dumper=SafeDumper, indent=2) if inputs_data else None)
+            table.add_row(*renderables)
 
-        def add_result(result: TestResult) -> None:
+        for result in manager.results_by_category:
             add_line(result)
             for index, atomic_res in enumerate(result.atomic_results):
                 add_line(atomic_res, f"{index + 1}/{len(result.atomic_results)}")
-
-        for result in manager.results_by_category:
-            add_result(result)
         return table
 
     def generate_summary_tests(self, manager: ResultManager, *, tests: set[str] | None = None) -> Table:

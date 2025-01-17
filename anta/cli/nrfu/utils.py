@@ -82,7 +82,7 @@ def print_settings(
     console.print()
 
 
-def print_table(ctx: click.Context, *, expand_atomic: bool, group_by: Literal["device", "test"] | None) -> None:
+def print_table(ctx: click.Context, *, expand: bool, group_by: Literal["device", "test"] | None, inputs: Literal["all", "parent", "atomic"] | None) -> None:
     """Print result in a table."""
     reporter = ReportTable()
     console.print()
@@ -92,8 +92,15 @@ def print_table(ctx: click.Context, *, expand_atomic: bool, group_by: Literal["d
         console.print(reporter.generate_summary_devices(results))
     elif group_by == "test":
         console.print(reporter.generate_summary_tests(results))
-    elif expand_atomic:
-        console.print(reporter.generate_expanded(results))
+    elif expand:
+        if inputs == "all":
+            console.print(reporter.generate_expanded(results, parent_inputs=True, atomic_inputs=True))
+        elif inputs == "parent":
+            console.print(reporter.generate_expanded(results, parent_inputs=True, atomic_inputs=False))
+        elif inputs == "atomic":
+            console.print(reporter.generate_expanded(results, parent_inputs=False, atomic_inputs=True))
+        else:
+            console.print(reporter.generate_expanded(results))
     else:
         console.print(reporter.generate(results))
 

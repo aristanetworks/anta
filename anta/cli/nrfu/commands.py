@@ -28,18 +28,26 @@ logger = logging.getLogger(__name__)
     required=False,
 )
 @click.option(
-    "--expand-atomic",
+    "--expand",
     "-x",
     default=False,
     show_envvar=True,
     is_flag=True,
     show_default=True,
-    help="Flag to indicate if atomic results should be rendered",
+    help="Flag to indicate if test descriptions and atomic results should be shown.",
 )
-def table(ctx: click.Context, *, group_by: Literal["device", "test"] | None, expand_atomic: bool) -> None:
+@click.option(
+    "--inputs",
+    default=None,
+    show_envvar=True,
+    type=click.Choice(["all", "parent", "atomic"], case_sensitive=False),
+    show_default=True,
+    help="Option to indicate if inputs related to each tests or their atomic results should be shown. All show inputs from parent and atomic results.",
+)
+def table(ctx: click.Context, *, group_by: Literal["device", "test"] | None, expand: bool, inputs: Literal["all", "parent", "atomic"] | None) -> None:
     """ANTA command to check network state with table results."""
     run_tests(ctx)
-    print_table(ctx, expand_atomic=expand_atomic, group_by=group_by)
+    print_table(ctx, expand=expand, group_by=group_by, inputs=inputs)
     exit_with_code(ctx)
 
 

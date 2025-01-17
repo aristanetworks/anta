@@ -87,6 +87,7 @@ class AtomicTestResult(BaseTestResult):
 
     Attributes
     ----------
+    parent
     description : str | None
         Description of the AtomicTestResult.
     inputs: BaseModel | None
@@ -111,6 +112,11 @@ class AtomicTestResult(BaseTestResult):
         parent = data.pop("parent")
         super().__init__(**data)
         self._parent = parent
+
+    @property
+    def parent(self) -> TestResult:
+        """Get the parent `TestResult` instance."""
+        return self._parent
 
     def _set_status(self, status: AntaTestStatus, message: str | None = None) -> None:
         """Set status and insert optional message.
