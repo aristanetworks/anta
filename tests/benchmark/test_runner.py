@@ -5,50 +5,41 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from anta.result_manager import ResultManager
-from anta.runner import get_coroutines, prepare_tests
+from anta.runner import RunnerContext, _setup_tests
+from anta.settings import DEFAULT_MAX_CONCURRENCY, DEFAULT_NOFILE
 
 if TYPE_CHECKING:
-    from collections import defaultdict
-    from collections.abc import Coroutine
-
     from pytest_codspeed import BenchmarkFixture
 
-    from anta.catalog import AntaCatalog, AntaTestDefinition
-    from anta.device import AntaDevice
+    from anta.catalog import AntaCatalog
     from anta.inventory import AntaInventory
-    from anta.result_manager.models import TestResult
 
 
-def test_prepare_tests(benchmark: BenchmarkFixture, catalog: AntaCatalog, inventory: AntaInventory) -> None:
-    """Benchmark `anta.runner.prepare_tests`."""
+def test_setup_tests(benchmark: BenchmarkFixture, catalog: AntaCatalog, inventory: AntaInventory) -> None:
+    """Benchmark `anta.runner._setup_tests`."""
+    ctx = RunnerContext(
+        manager=ResultManager(),
+        inventory=inventory,
+        catalog=catalog,
+        devices=None,
+        tests=None,
+        tags=None,
+        established_only=True,
+        dry_run=True,
+        selected_inventory=inventory,
+        max_concurrency=DEFAULT_MAX_CONCURRENCY,
+        file_descriptor_limit=DEFAULT_NOFILE,
+    )
 
-    def _() -> defaultdict[AntaDevice, set[AntaTestDefinition]] | None:
+    def _() -> None:
         catalog.clear_indexes()
-        return prepare_tests(inventory=inventory, catalog=catalog, tests=None, tags=None)
+        _setup_tests(ctx)
 
-    selected_tests = benchmark(_)
+    benchmark(_)
 
-    assert selected_tests is not None
-    assert len(selected_tests) == len(inventory)
-    assert sum(len(tests) for tests in selected_tests.values()) == len(inventory) * len(catalog.tests)
-
-
-def test_get_coroutines(benchmark: BenchmarkFixture, catalog: AntaCatalog, inventory: AntaInventory) -> None:
-    """Benchmark `anta.runner.get_coroutines`."""
-    selected_tests = prepare_tests(inventory=inventory, catalog=catalog, tests=None, tags=None)
-
-    assert selected_tests is not None
-
-    def bench() -> list[Coroutine[Any, Any, TestResult]]:
-        coros = get_coroutines(selected_tests=selected_tests, manager=ResultManager())
-        for c in coros:
-            c.close()
-        return coros
-
-    coroutines = benchmark(bench)
-
-    count = sum(len(tests) for tests in selected_tests.values())
-    assert count == len(coroutines)
+    assert ctx.selected_tests is not None
+    assert len(ctx.selected_tests) == len(inventory)
+    assert sum(len(tests) for tests in ctx.selected_tests.values()) == len(inventory) * len(catalog.tests)
