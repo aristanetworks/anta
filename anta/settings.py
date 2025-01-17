@@ -178,7 +178,7 @@ def get_file_descriptor_limit() -> int:
         The maximum number of file descriptors available to the process.
     """
     if os.name != "posix":
-        logger.info("Running on a non-POSIX system, cannot adjust the maximum number of file descriptors.")
+        logger.warning("Running on a non-POSIX system, cannot adjust the maximum number of file descriptors.")
         return sys.maxsize
 
     import resource
