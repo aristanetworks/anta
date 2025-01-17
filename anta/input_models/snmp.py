@@ -65,11 +65,11 @@ class SnmpGroup(BaseModel):
     version: SnmpVersion
     """SNMP protocol version."""
     read_view: str | None = None
-    """View to restrict read access."""
+    """Optional field, View to restrict read access."""
     write_view: str | None = None
-    """View to restrict write access."""
+    """Optional field, View to restrict write access."""
     notify_view: str | None = None
-    """View to restrict notifications."""
+    """Optional field, View to restrict notifications."""
     authentication: Literal["v3Auth", "v3Priv", "v3NoAuth"] | None = None
     """Advanced authentication in v3 SNMP version. Defaults to None.
     - v3Auth: Group using authentication but not privacy

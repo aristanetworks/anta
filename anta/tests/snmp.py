@@ -497,7 +497,7 @@ class VerifySnmpGroup(AntaTest):
     This test performs the following checks:
 
       1. Verifies that the SNMP group is configured for the specified version.
-      2. For SNMP version 3, verifies that the security model aligns with the expected value.
+      2. For SNMP version 3, verify that the security model matches the expected value.
       3. Ensures that the SNMP views, the read, write and notify settings aligning with version-specific requirements.
 
     Expected Results
@@ -543,34 +543,27 @@ class VerifySnmpGroup(AntaTest):
         """Main test function for VerifySnmpGroup."""
         self.result.is_success()
         for group in self.inputs.snmp_groups:
-            group_name = group.group_name
-            version = group.version
-            read_view = group.read_view
-            write_view = group.write_view
-            notify_view = group.notify_view
-            authentication = group.authentication
-
             # Verify SNMP group details.
-            if not (group_details := get_value(self.instance_commands[0].json_output, f"groups.{group_name}.versions.{version}")):
+            if not (group_details := get_value(self.instance_commands[0].json_output, f"groups.{group.group_name}.versions.{group.version}")):
                 self.result.is_failure(f"{group} - Not configured")
                 continue
 
             # Verify SNMP views, the read, write and notify settings aligning with version-specific requirements.
-            if group_details.get("readView") != read_view:
-                self.result.is_failure(f"{group} - Incorrect read view - Expected: {read_view} Actual: {group_details.get('readView')}")
-            elif not group_details.get("readViewConfig"):
-                self.result.is_failure(f"{group} - Read view not configured")
+            if group.read_view and not all([(act_view := group_details.get("readView")) == group.read_view, (configured := group_details.get("readViewConfig"))]):
+                self.result.is_failure(f"{group}, ReadView: {group.read_view} - View configuration mismatch - ReadView: {act_view}, Configured: {configured}")
 
-            if group_details.get("writeView") != write_view:
-                self.result.is_failure(f"{group} - Incorrect write view - Expected: {write_view} Actual: {group_details.get('writeView')}")
-            elif not group_details.get("writeViewConfig"):
-                self.result.is_failure(f"{group} - Write view not configured")
+            if group.write_view and not all(
+                [(act_view := group_details.get("writeView")) == group.write_view, (view_configured := group_details.get("writeViewConfig"))]
+            ):
+                self.result.is_failure(f"{group}, WriteView: {group.write_view} - View configuration mismatch - WriteView: {act_view}, Configured: {configured}")
 
-            if group_details.get("notifyView") != notify_view:
-                self.result.is_failure(f"{group} - Incorrect notify view - Expected: {notify_view} Actual: {group_details.get('notifyView')}")
-            elif not group_details.get("notifyViewConfig"):
-                self.result.is_failure(f"{group} - Notify view not configured")
+            if group.notify_view and not all(
+                [(act_view := group_details.get("notifyView")) == group.notify_view, (view_configured := group_details.get("notifyViewConfig"))]
+            ):
+                self.result.is_failure(
+                    f"{group}, NotifyView: {group.notify_view} - View configuration mismatch - NotifyView: {act_view}, Configured: {view_configured}"
+                )
 
             # For version v3, verify that the security model aligns with the expected value.
-            if version == "v3" and (actual_auth := group_details.get("secModel")) != authentication:
-                self.result.is_failure(f"{group} - Incorrect security model - Expected: {authentication} Actual: {actual_auth}")
+            if group.version == "v3" and (actual_auth := group_details.get("secModel")) != group.authentication:
+                self.result.is_failure(f"{group} - Incorrect security model - Expected: {group.authentication} Actual: {actual_auth}")

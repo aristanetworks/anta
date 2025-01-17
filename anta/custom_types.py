@@ -230,7 +230,6 @@ SnmpPdu = Literal["inGetPdus", "inGetNextPdus", "inSetPdus", "outGetResponsePdus
 SnmpErrorCounter = Literal[
     "inVersionErrs", "inBadCommunityNames", "inBadCommunityUses", "inParseErrs", "outTooBigErrs", "outNoSuchNameErrs", "outBadValueErrs", "outGeneralErrs"
 ]
-
 IPv4RouteType = Literal[
     "connected",
     "static",
