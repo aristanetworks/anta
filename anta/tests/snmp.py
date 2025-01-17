@@ -536,7 +536,7 @@ class VerifySnmpSourceInterface(AntaTest):
             return
 
         for interface_details in self.inputs.interfaces:
-            # If source-interface is not configured or source-interface is not matches the expected value, test fails.
+            # If the source-interface is not configured, or if it does not match the expected value, the test fails.
             if not (actual_interface := interface_output.get(interface_details.vrf)):
                 self.result.is_failure(f"{interface_details} - Not configured")
             elif actual_interface != interface_details.interface:
