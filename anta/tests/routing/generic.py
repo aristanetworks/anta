@@ -231,6 +231,7 @@ class VerifyIPv4RouteType(AntaTest):
         """Input model for the VerifyIPv4RouteType test."""
 
         routes_entries: list[IPv4Routes]
+        """List of IPv4 route(s)."""
 
     @AntaTest.anta_test
     def test(self) -> None:
