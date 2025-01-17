@@ -406,6 +406,10 @@ async def main(
     dry_run
         Build the list of coroutine to run and stop before test execution.
     """
+    if not catalog.tests:
+        logger.info("The list of tests is empty, exiting")
+        return
+
     # Initialize the ANTA run context
     ctx = RunnerContext(
         manager=manager,
@@ -417,10 +421,6 @@ async def main(
         established_only=established_only,
         dry_run=dry_run,
     )
-
-    if not ctx.catalog.tests:
-        logger.info("The list of tests is empty, exiting")
-        return
 
     with Catchtime(logger=logger, message="Preparing ANTA NRFU Run"):
         # Setup inventory
