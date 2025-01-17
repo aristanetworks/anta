@@ -89,13 +89,13 @@ def print_table(ctx: click.Context, *, expand_atomic: bool, group_by: Literal["d
     results = _get_result_manager(ctx)
 
     if group_by == "device":
-        console.print(reporter.report_summary_devices(results))
+        console.print(reporter.generate_summary_devices(results))
     elif group_by == "test":
-        console.print(reporter.report_summary_tests(results))
+        console.print(reporter.generate_summary_tests(results))
     elif expand_atomic:
-        console.print(reporter.report_expanded(results))
+        console.print(reporter.generate_expanded(results))
     else:
-        console.print(reporter.report(results))
+        console.print(reporter.generate(results))
 
 
 def print_json(ctx: click.Context, output: pathlib.Path | None = None) -> None:
@@ -121,13 +121,13 @@ def print_text(ctx: click.Context, *, expand_atomic: bool) -> None:
     console.print()
     for result in _get_result_manager(ctx).results:
         console.print(f"{result.name} :: {result.test} :: [{result.result}]{result.result.upper()}[/{result.result}]", highlight=False)
-        if result.messages and not expand_atomic:
-            console.print("\n".join(f"    {message}" for message in result.messages), highlight=False)
         if expand_atomic:
             for r in result.atomic_results:
                 console.print(f"    {r.description} :: [{r.result}]{r.result.upper()}[/{r.result}]", highlight=False)
                 if r.messages:
                     console.print("\n".join(f"      {message}" for message in r.messages), highlight=False)
+        elif result.messages:
+            console.print("\n".join(f"    {message}" for message in result.messages), highlight=False)
 
 
 def print_jinja(results: ResultManager, template: pathlib.Path, output: pathlib.Path | None = None) -> None:

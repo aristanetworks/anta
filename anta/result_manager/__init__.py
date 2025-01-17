@@ -69,7 +69,7 @@ class ResultManager:
 
     def __init__(self) -> None:
         """Initialize a ResultManager instance."""
-        self.ta = TypeAdapter(list[TestResult])
+        self._ta = TypeAdapter(list[TestResult])
         self.reset()
 
     def reset(self) -> None:
@@ -102,12 +102,12 @@ class ResultManager:
     @property
     def dump(self) -> list[dict[str, Any]]:
         """Get a list of dictionary of the results."""
-        return self.ta.dump_python(self._results)
+        return self._ta.dump_python(self._results)
 
     @property
     def json(self) -> str:
         """Get a JSON representation of the results."""
-        return self.ta.dump_json(self._results, exclude_none=True, indent=4).decode()
+        return self._ta.dump_json(self._results, exclude_none=True, indent=4).decode()
 
     @property
     def device_stats(self) -> dict[str, DeviceStats]:
@@ -301,7 +301,7 @@ class ResultManager:
         if not set(sort_by).issubset(set(accepted_fields)):
             msg = f"Invalid sort_by fields: {sort_by}. Accepted fields are: {list(accepted_fields)}"
             raise ValueError(msg)
-        self._result_entries.sort(key=lambda result: [getattr(result, field) or "" for field in sort_by])
+        self._results.sort(key=lambda result: [getattr(result, field) or "" for field in sort_by])
         return self
 
     def filter(self, hide: set[AntaTestStatus]) -> ResultManager:

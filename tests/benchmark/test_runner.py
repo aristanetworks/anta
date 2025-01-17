@@ -51,6 +51,7 @@ def test_get_coroutines(benchmark: BenchmarkFixture, catalog: AntaCatalog, inven
     results = ResultManager()
 
     def bench() -> list[Coroutine[Any, Any, TestResult]]:
+        results.reset()
         coros = get_coroutines(selected_tests=selected_tests, manager=results)
         for c in coros:
             c.close()
