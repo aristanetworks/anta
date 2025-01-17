@@ -17,6 +17,7 @@ from yaml import YAMLError
 from anta.catalog import AntaCatalog
 from anta.inventory import AntaInventory
 from anta.inventory.exceptions import InventoryIncorrectSchemaError, InventoryRootKeyError
+from anta.logger import anta_log_exception
 from anta.settings import get_httpx_limits, get_httpx_timeout
 
 if TYPE_CHECKING:
@@ -277,7 +278,8 @@ def core_options(f: Callable[..., Any]) -> Callable[..., Any]:
                 insecure=insecure,
                 disable_cache=disable_cache,
             )
-        except (TypeError, ValueError, YAMLError, OSError, InventoryIncorrectSchemaError, InventoryRootKeyError):
+        except (TypeError, ValueError, YAMLError, OSError, InventoryIncorrectSchemaError, InventoryRootKeyError) as e:
+            anta_log_exception(e, f"Failed to parse the inventory: {inventory}", logger)
             ctx.exit(ExitCode.USAGE_ERROR)
         return f(*args, inventory=i, **kwargs)
 
@@ -354,7 +356,8 @@ def catalog_options(f: Callable[..., Any]) -> Callable[..., Any]:
         try:
             file_format = catalog_format.lower()
             c = AntaCatalog.parse(catalog, file_format=file_format)  # type: ignore[arg-type]
-        except (TypeError, ValueError, YAMLError, OSError):
+        except (TypeError, ValueError, YAMLError, OSError) as e:
+            anta_log_exception(e, f"Failed to parse the catalog: {catalog}", logger)
             ctx.exit(ExitCode.USAGE_ERROR)
         return f(*args, catalog=c, **kwargs)
 

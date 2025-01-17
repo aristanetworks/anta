@@ -8,13 +8,12 @@ from __future__ import annotations
 import asyncio
 import logging
 from abc import ABC, abstractmethod
-from collections import defaultdict
+from collections import OrderedDict, defaultdict
+from time import monotonic
 from typing import TYPE_CHECKING, Any, Literal
 
 import asyncssh
 import httpcore
-from aiocache import Cache
-from aiocache.plugins import HitMissRatioPlugin
 from asyncssh import SSHClientConnection, SSHClientConnectionOptions
 from httpx import ConnectError, HTTPError, Limits, Timeout, TimeoutException
 
@@ -35,6 +34,67 @@ logger = logging.getLogger(__name__)
 CLIENT_KEYS = asyncssh.public_key.load_default_keypairs()
 
 
+class AntaCache:
+    """Class to be used as cache.
+
+    Example
+    -------
+
+    ```python
+    # Create cache
+    cache = AntaCache("device1")
+    with cache.locks[key]:
+        command_output = cache.get(key)
+    ```
+    """
+
+    def __init__(self, device: str, max_size: int = 128, ttl: int = 60) -> None:
+        """Initialize the cache."""
+        self.device = device
+        self.cache: OrderedDict[str, Any] = OrderedDict()
+        self.locks: defaultdict[str, asyncio.Lock] = defaultdict(asyncio.Lock)
+        self.max_size = max_size
+        self.ttl = ttl
+
+        # Stats
+        self.stats: dict[str, int] = {}
+        self._init_stats()
+
+    def _init_stats(self) -> None:
+        """Initialize the stats."""
+        self.stats["hits"] = 0
+        self.stats["total"] = 0
+
+    async def get(self, key: str) -> Any:  # noqa: ANN401
+        """Return the cached entry for key."""
+        self.stats["total"] += 1
+        if key in self.cache:
+            timestamp, value = self.cache[key]
+            if monotonic() - timestamp < self.ttl:
+                # checking the value is still valid
+                self.cache.move_to_end(key)
+                self.stats["hits"] += 1
+                return value
+            # Time expired
+            del self.cache[key]
+            del self.locks[key]
+        return None
+
+    async def set(self, key: str, value: Any) -> bool:  # noqa: ANN401
+        """Set the cached entry for key to value."""
+        timestamp = monotonic()
+        if len(self.cache) > self.max_size:
+            self.cache.popitem(last=False)
+        self.cache[key] = timestamp, value
+        return True
+
+    def clear(self) -> None:
+        """Empty the cache."""
+        logger.debug("Clearing cache for device %s", self.device)
+        self.cache = OrderedDict()
+        self._init_stats()
+
+
 class AntaDevice(ABC):
     """Abstract class representing a device in ANTA.
 
@@ -53,15 +113,15 @@ class AntaDevice(ABC):
         Hardware model of the device.
     tags : set[str]
         Tags for this device.
-    cache : Cache | None
-        In-memory cache from aiocache library for this device (None if cache is disabled).
+    cache : AntaCache | None
+        In-memory cache for this device (None if cache is disabled).
     cache_locks : dict
         Dictionary mapping keys to asyncio locks to guarantee exclusive access to the cache if not disabled.
+        Deprecated, will be removed in ANTA v2.0.0, use self.cache.locks instead.
     max_connections : int | None
         For informational/logging purposes only. Some device implementations may expose their
         maximum concurrent connection limit through this attribute. This does not affect the
         actual device configuration.
-
     """
 
     def __init__(self, name: str, tags: set[str] | None = None, *, disable_cache: bool = False) -> None:
@@ -84,7 +144,8 @@ class AntaDevice(ABC):
         self.tags.add(self.name)
         self.is_online: bool = False
         self.established: bool = False
-        self.cache: Cache | None = None
+        self.cache: AntaCache | None = None
+        # Keeping cache_locks for backward compatibility.
         self.cache_locks: defaultdict[str, asyncio.Lock] | None = None
         self.max_connections: int | None
 
@@ -107,17 +168,16 @@ class AntaDevice(ABC):
 
     def _init_cache(self) -> None:
         """Initialize cache for the device, can be overridden by subclasses to manipulate how it works."""
-        self.cache = Cache(cache_class=Cache.MEMORY, ttl=60, namespace=self.name, plugins=[HitMissRatioPlugin()])
-        self.cache_locks = defaultdict(asyncio.Lock)
+        self.cache = AntaCache(device=self.name, ttl=60)
+        self.cache_locks = self.cache.locks
 
     @property
     def cache_statistics(self) -> dict[str, Any] | None:
         """Return the device cache statistics for logging purposes."""
-        # Need to ignore pylint no-member as Cache is a proxy class and pylint is not smart enough
-        # https://github.com/pylint-dev/pylint/issues/7258
         if self.cache is not None:
-            stats = getattr(self.cache, "hit_miss_ratio", {"total": 0, "hits": 0, "hit_ratio": 0})
-            return {"total_commands_sent": stats["total"], "cache_hits": stats["hits"], "cache_hit_ratio": f"{stats['hit_ratio'] * 100:.2f}%"}
+            stats = self.cache.stats
+            ratio = stats["hits"] / stats["total"] if stats["total"] > 0 else 0
+            return {"total_commands_sent": stats["total"], "cache_hits": stats["hits"], "cache_hit_ratio": f"{ratio * 100:.2f}%"}
         return None
 
     def __rich_repr__(self) -> Iterator[tuple[str, Any]]:
@@ -183,18 +243,16 @@ class AntaDevice(ABC):
         collection_id
             An identifier used to build the eAPI request ID.
         """
-        # Need to ignore pylint no-member as Cache is a proxy class and pylint is not smart enough
-        # https://github.com/pylint-dev/pylint/issues/7258
-        if self.cache is not None and self.cache_locks is not None and command.use_cache:
-            async with self.cache_locks[command.uid]:
-                cached_output = await self.cache.get(command.uid)  # pylint: disable=no-member
+        if self.cache is not None and command.use_cache:
+            async with self.cache.locks[command.uid]:
+                cached_output = await self.cache.get(command.uid)
 
                 if cached_output is not None:
                     logger.debug("Cache hit for %s on %s", command.command, self.name)
                     command.output = cached_output
                 else:
                     await self._collect(command=command, collection_id=collection_id)
-                    await self.cache.set(command.uid, command.output)  # pylint: disable=no-member
+                    await self.cache.set(command.uid, command.output)
         else:
             await self._collect(command=command, collection_id=collection_id)
 

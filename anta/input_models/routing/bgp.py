@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 from ipaddress import IPv4Address, IPv4Network, IPv6Address
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal
 from warnings import warn
 
 from pydantic import BaseModel, ConfigDict, Field, PositiveInt, model_validator
@@ -142,12 +142,14 @@ class BgpPeer(BaseModel):
     """IPv4 address of the BGP peer."""
     vrf: str = "default"
     """Optional VRF for the BGP peer. Defaults to `default`."""
+    peer_group: str | None = None
+    """Peer group of the BGP peer. Required field in the `VerifyBGPPeerGroup` test."""
     advertised_routes: list[IPv4Network] | None = None
     """List of advertised routes in CIDR format. Required field in the `VerifyBGPExchangedRoutes` test."""
     received_routes: list[IPv4Network] | None = None
     """List of received routes in CIDR format. Required field in the `VerifyBGPExchangedRoutes` test."""
     capabilities: list[MultiProtocolCaps] | None = None
-    """List of BGP multiprotocol capabilities. Required field in the `VerifyBGPPeerMPCaps` test."""
+    """List of BGP multiprotocol capabilities. Required field in the `VerifyBGPPeerMPCaps`, `VerifyBGPNlriAcceptance` tests."""
     strict: bool = False
     """If True, requires exact match of the provided BGP multiprotocol capabilities.
 
@@ -209,3 +211,46 @@ class VxlanEndpoint(BaseModel):
     def __str__(self) -> str:
         """Return a human-readable string representation of the VxlanEndpoint for reporting."""
         return f"Address: {self.address} VNI: {self.vni}"
+
+
+class BgpRoute(BaseModel):
+    """Model representing BGP routes.
+
+    Only IPv4 prefixes are supported for now.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+    prefix: IPv4Network
+    """The IPv4 network address."""
+    vrf: str = "default"
+    """Optional VRF for the BGP peer. Defaults to `default`."""
+    paths: list[BgpRoutePath] | None = None
+    """A list of paths for the BGP route. Required field in the `VerifyBGPRouteOrigin` test."""
+
+    def __str__(self) -> str:
+        """Return a human-readable string representation of the BgpRoute for reporting.
+
+        Examples
+        --------
+        - Prefix: 192.168.66.100/24 VRF: default
+        """
+        return f"Prefix: {self.prefix} VRF: {self.vrf}"
+
+
+class BgpRoutePath(BaseModel):
+    """Model representing a BGP route path."""
+
+    model_config = ConfigDict(extra="forbid")
+    nexthop: IPv4Address
+    """The next-hop IPv4 address for the path."""
+    origin: Literal["Igp", "Egp", "Incomplete"]
+    """The BGP origin attribute of the route."""
+
+    def __str__(self) -> str:
+        """Return a human-readable string representation of the RoutePath for reporting.
+
+        Examples
+        --------
+        - Next-hop: 192.168.66.101 Origin: Igp
+        """
+        return f"Next-hop: {self.nexthop} Origin: {self.origin}"
