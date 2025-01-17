@@ -18,6 +18,9 @@ from anta.tools import format_data, get_item, get_value
 # Using a TypeVar for the BgpPeer model since mypy thinks it's a ClassVar and not a valid type when used in field validators
 T = TypeVar("T", bound=BgpPeer)
 
+# pylint: disable=C0302
+# TODO: Refactor to reduce the number of lines in this module later
+
 
 def _check_bgp_neighbor_capability(capability_status: dict[str, bool]) -> bool:
     """Check if a BGP neighbor capability is advertised, received, and enabled.
@@ -1715,21 +1718,6 @@ class VerifyBGPRedistributedRoutes(AntaTest):
           address_families:
             - afi: "ipv4"
               safi: "unicast"
-              vrf: default
-              redistributed_route_protocol: Connected
-              route_map: RM-CONN-2-BGP
-            - afi: "ipv6"
-              safi: "unicast"
-              vrf: default
-              redistributed_route_protocol: Connected
-              route_map: RM-CONN-2-BGP
-            - afi: "ipv4"
-              safi: "multicast"
-              vrf: default
-              redistributed_route_protocol: Connected
-              route_map: RM-CONN-2-BGP
-            - afi: "ipv6"
-              safi: "multicast"
               vrf: default
               redistributed_route_protocol: Connected
               route_map: RM-CONN-2-BGP
