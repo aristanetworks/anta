@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Tests for anta.tests.bfd.py."""
@@ -27,6 +27,7 @@ DATA: list[dict[str, Any]] = [
                                             "operTxInterval": 1200000,
                                             "operRxInterval": 1200000,
                                             "detectMult": 3,
+                                            "detectTime": 3600000,
                                         }
                                     }
                                 }
@@ -42,6 +43,7 @@ DATA: list[dict[str, Any]] = [
                                             "operTxInterval": 1200000,
                                             "operRxInterval": 1200000,
                                             "detectMult": 3,
+                                            "detectTime": 3600000,
                                         }
                                     }
                                 }
@@ -55,6 +57,55 @@ DATA: list[dict[str, Any]] = [
             "bfd_peers": [
                 {"peer_address": "192.0.255.7", "vrf": "default", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3},
                 {"peer_address": "192.0.255.70", "vrf": "MGMT", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3},
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-detection-time",
+        "test": VerifyBFDPeersIntervals,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "ipv4Neighbors": {
+                            "192.0.255.7": {
+                                "peerStats": {
+                                    "": {
+                                        "peerStatsDetail": {
+                                            "operTxInterval": 1200000,
+                                            "operRxInterval": 1200000,
+                                            "detectMult": 3,
+                                            "detectTime": 3600000,
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "MGMT": {
+                        "ipv4Neighbors": {
+                            "192.0.255.70": {
+                                "peerStats": {
+                                    "": {
+                                        "peerStatsDetail": {
+                                            "operTxInterval": 1200000,
+                                            "operRxInterval": 1200000,
+                                            "detectMult": 3,
+                                            "detectTime": 3600000,
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bfd_peers": [
+                {"peer_address": "192.0.255.7", "vrf": "default", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3, "detection_time": 3600},
+                {"peer_address": "192.0.255.70", "vrf": "MGMT", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3, "detection_time": 3600},
             ]
         },
         "expected": {"result": "success"},
@@ -74,6 +125,7 @@ DATA: list[dict[str, Any]] = [
                                             "operTxInterval": 1200000,
                                             "operRxInterval": 1200000,
                                             "detectMult": 3,
+                                            "detectTime": 3600000,
                                         }
                                     }
                                 }
@@ -89,6 +141,7 @@ DATA: list[dict[str, Any]] = [
                                             "operTxInterval": 1200000,
                                             "operRxInterval": 1200000,
                                             "detectMult": 3,
+                                            "detectTime": 3600000,
                                         }
                                     }
                                 }
@@ -100,15 +153,15 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "bfd_peers": [
-                {"peer_address": "192.0.255.7", "vrf": "CS", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3},
-                {"peer_address": "192.0.255.70", "vrf": "MGMT", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3},
+                {"peer_address": "192.0.255.7", "vrf": "CS", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3, "detection_time": 3600},
+                {"peer_address": "192.0.255.70", "vrf": "MGMT", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3, "detection_time": 3600},
             ]
         },
         "expected": {
             "result": "failure",
             "messages": [
-                "Following BFD peers are not configured or timers are not correct:\n"
-                "{'192.0.255.7': {'CS': 'Not Configured'}, '192.0.255.70': {'MGMT': 'Not Configured'}}"
+                "Peer: 192.0.255.7 VRF: CS - Not found",
+                "Peer: 192.0.255.70 VRF: MGMT - Not found",
             ],
         },
     },
@@ -127,6 +180,7 @@ DATA: list[dict[str, Any]] = [
                                             "operTxInterval": 1300000,
                                             "operRxInterval": 1200000,
                                             "detectMult": 4,
+                                            "detectTime": 4000000,
                                         }
                                     }
                                 }
@@ -142,6 +196,7 @@ DATA: list[dict[str, Any]] = [
                                             "operTxInterval": 120000,
                                             "operRxInterval": 120000,
                                             "detectMult": 5,
+                                            "detectTime": 4000000,
                                         }
                                     }
                                 }
@@ -160,9 +215,71 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Following BFD peers are not configured or timers are not correct:\n"
-                "{'192.0.255.7': {'default': {'tx_interval': 1300, 'rx_interval': 1200, 'multiplier': 4}}, "
-                "'192.0.255.70': {'MGMT': {'tx_interval': 120, 'rx_interval': 120, 'multiplier': 5}}}"
+                "Peer: 192.0.255.7 VRF: default - Incorrect Transmit interval - Expected: 1200 Actual: 1300",
+                "Peer: 192.0.255.7 VRF: default - Incorrect Multiplier - Expected: 3 Actual: 4",
+                "Peer: 192.0.255.70 VRF: MGMT - Incorrect Transmit interval - Expected: 1200 Actual: 120",
+                "Peer: 192.0.255.70 VRF: MGMT - Incorrect Receive interval - Expected: 1200 Actual: 120",
+                "Peer: 192.0.255.70 VRF: MGMT - Incorrect Multiplier - Expected: 3 Actual: 5",
+            ],
+        },
+    },
+    {
+        "name": "failure-incorrect-timers-with-detection-time",
+        "test": VerifyBFDPeersIntervals,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "ipv4Neighbors": {
+                            "192.0.255.7": {
+                                "peerStats": {
+                                    "": {
+                                        "peerStatsDetail": {
+                                            "operTxInterval": 1300000,
+                                            "operRxInterval": 1200000,
+                                            "detectMult": 4,
+                                            "detectTime": 4000000,
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "MGMT": {
+                        "ipv4Neighbors": {
+                            "192.0.255.70": {
+                                "peerStats": {
+                                    "": {
+                                        "peerStatsDetail": {
+                                            "operTxInterval": 120000,
+                                            "operRxInterval": 120000,
+                                            "detectMult": 5,
+                                            "detectTime": 4000000,
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bfd_peers": [
+                {"peer_address": "192.0.255.7", "vrf": "default", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3, "detection_time": 3600},
+                {"peer_address": "192.0.255.70", "vrf": "MGMT", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3, "detection_time": 3600},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Peer: 192.0.255.7 VRF: default - Incorrect Transmit interval - Expected: 1200 Actual: 1300",
+                "Peer: 192.0.255.7 VRF: default - Incorrect Multiplier - Expected: 3 Actual: 4",
+                "Peer: 192.0.255.7 VRF: default - Incorrect Detection Time - Expected: 3600 Actual: 4000",
+                "Peer: 192.0.255.70 VRF: MGMT - Incorrect Transmit interval - Expected: 1200 Actual: 120",
+                "Peer: 192.0.255.70 VRF: MGMT - Incorrect Receive interval - Expected: 1200 Actual: 120",
+                "Peer: 192.0.255.70 VRF: MGMT - Incorrect Multiplier - Expected: 3 Actual: 5",
+                "Peer: 192.0.255.70 VRF: MGMT - Incorrect Detection Time - Expected: 3600 Actual: 4000",
             ],
         },
     },
@@ -239,8 +356,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Following BFD peers are not configured, status is not up or remote disc is zero:\n"
-                "{'192.0.255.7': {'CS': 'Not Configured'}, '192.0.255.70': {'MGMT': 'Not Configured'}}"
+                "Peer: 192.0.255.7 VRF: CS - Not found",
+                "Peer: 192.0.255.70 VRF: MGMT - Not found",
             ],
         },
     },
@@ -255,7 +372,7 @@ DATA: list[dict[str, Any]] = [
                             "192.0.255.7": {
                                 "peerStats": {
                                     "": {
-                                        "status": "Down",
+                                        "status": "down",
                                         "remoteDisc": 108328132,
                                     }
                                 }
@@ -267,7 +384,7 @@ DATA: list[dict[str, Any]] = [
                             "192.0.255.70": {
                                 "peerStats": {
                                     "": {
-                                        "status": "Down",
+                                        "status": "down",
                                         "remoteDisc": 0,
                                     }
                                 }
@@ -281,9 +398,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Following BFD peers are not configured, status is not up or remote disc is zero:\n"
-                "{'192.0.255.7': {'default': {'status': 'Down', 'remote_disc': 108328132}}, "
-                "'192.0.255.70': {'MGMT': {'status': 'Down', 'remote_disc': 0}}}"
+                "Peer: 192.0.255.7 VRF: default - Session not properly established - State: down Remote Discriminator: 108328132",
+                "Peer: 192.0.255.70 VRF: MGMT - Session not properly established - State: down Remote Discriminator: 0",
             ],
         },
     },
@@ -414,7 +530,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Following BFD peers are not up:\n192.0.255.7 is down in default VRF with remote disc 0.\n192.0.255.71 is down in MGMT VRF with remote disc 0."
+                "Peer: 192.0.255.7 VRF: default - Session not properly established - State: down Remote Discriminator: 0",
+                "Peer: 192.0.255.71 VRF: MGMT - Session not properly established - State: down Remote Discriminator: 0",
             ],
         },
     },
@@ -458,7 +575,10 @@ DATA: list[dict[str, Any]] = [
         "inputs": {},
         "expected": {
             "result": "failure",
-            "messages": ["Following BFD peers were down:\n192.0.255.7 in default VRF has remote disc 0.\n192.0.255.71 in default VRF has remote disc 0."],
+            "messages": [
+                "Peer: 192.0.255.7 VRF: default - Session not properly established - State: up Remote Discriminator: 0",
+                "Peer: 192.0.255.71 VRF: default - Session not properly established - State: up Remote Discriminator: 0",
+            ],
         },
     },
     {
@@ -512,8 +632,9 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Following BFD peers were down:\n192.0.255.7 in default VRF was down 3 hours ago.\n"
-                "192.0.255.71 in default VRF was down 3 hours ago.\n192.0.255.17 in default VRF was down 3 hours ago."
+                "Peer: 192.0.255.7 VRF: default - Session failure detected within the expected uptime threshold (3 hours ago)",
+                "Peer: 192.0.255.71 VRF: default - Session failure detected within the expected uptime threshold (3 hours ago)",
+                "Peer: 192.0.255.17 VRF: default - Session failure detected within the expected uptime threshold (3 hours ago)",
             ],
         },
     },
@@ -609,15 +730,14 @@ DATA: list[dict[str, Any]] = [
         "inputs": {
             "bfd_peers": [
                 {"peer_address": "192.0.255.7", "vrf": "default", "protocols": ["isis"]},
-                {"peer_address": "192.0.255.70", "vrf": "MGMT", "protocols": ["isis"]},
+                {"peer_address": "192.0.255.70", "vrf": "MGMT", "protocols": ["isis", "ospf"]},
             ]
         },
         "expected": {
             "result": "failure",
             "messages": [
-                "The following BFD peers are not configured or have non-registered protocol(s):\n"
-                "{'192.0.255.7': {'default': ['isis']}, "
-                "'192.0.255.70': {'MGMT': ['isis']}}"
+                "Peer: 192.0.255.7 VRF: default - `isis` routing protocol(s) not configured",
+                "Peer: 192.0.255.70 VRF: MGMT - `isis` `ospf` routing protocol(s) not configured",
             ],
         },
     },
@@ -641,8 +761,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "The following BFD peers are not configured or have non-registered protocol(s):\n"
-                "{'192.0.255.7': {'default': 'Not Configured'}, '192.0.255.70': {'MGMT': 'Not Configured'}}"
+                "Peer: 192.0.255.7 VRF: default - Not found",
+                "Peer: 192.0.255.70 VRF: MGMT - Not found",
             ],
         },
     },

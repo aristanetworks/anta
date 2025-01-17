@@ -2,7 +2,7 @@
 anta_title: Executing Commands on Devices
 ---
 <!--
-  ~ Copyright (c) 2023-2024 Arista Networks, Inc.
+  ~ Copyright (c) 2023-2025 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
   ~ that can be found in the LICENSE file.
   -->
@@ -64,6 +64,7 @@ Options:
   --help                  Show this message and exit.
 ```
 
+> [!TIP]
 > `username`, `password`, `enable-password`, `enable`, `timeout` and `insecure` values are the same for all devices
 
 ### Example
@@ -235,12 +236,14 @@ Options:
                           tag1,tag2,tag3.  [env var: ANTA_TAGS]
   -o, --output PATH       Path for test catalog  [default: ./tech-support]
   --latest INTEGER        Number of scheduled show-tech to retrieve
-  --configure             Ensure devices have 'aaa authorization exec default
-                          local' configured (required for SCP on EOS). THIS
-                          WILL CHANGE THE CONFIGURATION OF YOUR NETWORK.
+  --configure             [DEPRECATED] Ensure devices have 'aaa authorization
+                          exec default local' configured (required for SCP on
+                          EOS). THIS WILL CHANGE THE CONFIGURATION OF YOUR
+                          NETWORK.
   --help                  Show this message and exit.
 ```
 
+> [!TIP]
 > `username`, `password`, `enable-password`, `enable`, `timeout` and `insecure` values are the same for all devices
 
 When executed, this command fetches tech-support files and downloads them locally into a device-specific subfolder within the designated folder. You can specify the output folder with the `--output` option.
@@ -248,13 +251,18 @@ When executed, this command fetches tech-support files and downloads them locall
 ANTA uses SCP to download files from devices and will not trust unknown SSH hosts by default. Add the SSH public keys of your devices to your `known_hosts` file or use the `anta --insecure` option to ignore SSH host keys validation.
 
 The configuration `aaa authorization exec default` must be present on devices to be able to use SCP.
-ANTA can automatically configure `aaa authorization exec default local` using the `anta exec collect-tech-support --configure` option.
+
+> [!CAUTION]
+> **Deprecation**
+>
+> ANTA can automatically configure `aaa authorization exec default local` using the `anta exec collect-tech-support --configure` option but this option is deprecated and will be removed in ANTA 2.0.0.
+
 If you require specific AAA configuration for `aaa authorization exec default`, like `aaa authorization exec default none` or `aaa authorization exec default group tacacs+`, you will need to configure it manually.
 
 The `--latest` option allows retrieval of a specific number of the most recent tech-support files.
 
-!!! warning
-    By default **all** the tech-support files present on the devices are retrieved.
+> [!WARNING]
+> By default **all** the tech-support files present on the devices are retrieved.
 
 ### Example
 

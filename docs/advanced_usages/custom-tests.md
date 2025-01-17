@@ -1,11 +1,11 @@
 <!--
-  ~ Copyright (c) 2023-2024 Arista Networks, Inc.
+  ~ Copyright (c) 2023-2025 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
   ~ that can be found in the LICENSE file.
   -->
 
-!!! info
-    This documentation applies for both creating tests in ANTA or creating your own test package.
+> [!INFO]
+> This documentation applies for both creating tests in ANTA or creating your own test package.
 
 ANTA is not only a Python library with a CLI and a collection of built-in tests, it is also a framework you can extend by building your own tests.
 
@@ -15,7 +15,7 @@ A test is a Python class where a test function is defined and will be run by the
 
 ANTA provides an abstract class [AntaTest](../api/models.md#anta.models.AntaTest). This class does the heavy lifting and provide the logic to define, collect and test data. The code below is an example of a simple test in ANTA, which is an [AntaTest](../api/models.md#anta.models.AntaTest) subclass:
 
-```python
+````python
 from anta.models import AntaTest, AntaCommand
 from anta.decorators import skip_on_platforms
 
@@ -36,8 +36,6 @@ class VerifyTemperature(AntaTest):
     ```
     """
 
-    name = "VerifyTemperature"
-    description = "Verifies the device temperature."
     categories: ClassVar[list[str]] = ["hardware"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show system environment temperature", revision=1)]
 
@@ -51,7 +49,7 @@ class VerifyTemperature(AntaTest):
             self.result.is_success()
         else:
             self.result.is_failure(f"Device temperature exceeds acceptable limits. Current system status: '{temperature_status}'")
-```
+````
 
 [AntaTest](../api/models.md#anta.models.AntaTest) also provide more advanced capabilities like [AntaCommand](../api/models.md#anta.models.AntaCommand) templating using the [AntaTemplate](../api/models.md#anta.models.AntaTemplate) class or test inputs definition and validation using [AntaTest.Input](../api/models.md#anta.models.AntaTest.Input) [pydantic](https://docs.pydantic.dev/latest/) model. This will be discussed in the sections below.
 
@@ -61,13 +59,13 @@ Full AntaTest API documentation is available in the [API documentation section](
 
 ### Class Attributes
 
-- `name` (`str`): Name of the test. Used during reporting.
-- `description` (`str`): A human readable description of your test.
+- `name` (`str`, `optional`): Name of the test. Used during reporting. By default set to the Class name.
+- `description` (`str`, `optional`): A human readable description of your test. By default set to the first line of the docstring.
 - `categories` (`list[str]`): A list of categories in which the test belongs.
 - `commands` (`[list[AntaCommand | AntaTemplate]]`): A list of command to collect from devices. This list **must** be a list of [AntaCommand](../api/models.md#anta.models.AntaCommand) or [AntaTemplate](../api/models.md#anta.models.AntaTemplate) instances. Rendering [AntaTemplate](../api/models.md#anta.models.AntaTemplate) instances will be discussed later.
 
-!!! info
-    All these class attributes are mandatory. If any attribute is missing, a `NotImplementedError` exception will be raised during class instantiation.
+> [!INFO]
+> All these class attributes are mandatory. If any attribute is missing, a `NotImplementedError` exception will be raised during class instantiation.
 
 ### Instance Attributes
 
@@ -84,11 +82,15 @@ Full AntaTest API documentation is available in the [API documentation section](
         show_root_toc_entry: false
         heading_level: 10
 
-!!! note "Logger object"
-    ANTA already provides comprehensive logging at every steps of a test execution. The [AntaTest](../api/models.md#anta.models.AntaTest) class also provides a `logger` attribute that is a Python logger specific to the test instance. See [Python documentation](https://docs.python.org/3/library/logging.html) for more information.
-
-!!! note "AntaDevice object"
-    Even if `device` is not a private attribute, you should not need to access this object in your code.
+> [!NOTE]
+>
+> - **Logger object**
+>
+>     ANTA already provides comprehensive logging at every steps of a test execution. The [AntaTest](../api/models.md#anta.models.AntaTest) class also provides a `logger` attribute that is a Python logger specific to the test instance. See [Python documentation](https://docs.python.org/3/library/logging.html) for more information.
+>
+> - **AntaDevice object**
+>
+>     Even if `device` is not a private attribute, you should not need to access this object in your code.
 
 ### Test Inputs
 
@@ -131,8 +133,8 @@ Full `ResultOverwrite` model documentation is available in [API documentation se
         show_root_toc_entry: false
         heading_level: 10
 
-!!! note
-    The pydantic model is configured using the [`extra=forbid`](https://docs.pydantic.dev/latest/usage/model_config/#extra-attributes) that will fail input validation if extra fields are provided.
+> [!NOTE]
+> The pydantic model is configured using the [`extra=forbid`](https://docs.pydantic.dev/latest/usage/model_config/#extra-attributes) that will fail input validation if extra fields are provided.
 
 ### Methods
 
@@ -162,8 +164,8 @@ In this section, we will go into all the details of writing an [AntaTest](../api
 Import [anta.models.AntaTest](../api/models.md#anta.models.AntaTest) and define your own class.
 Define the mandatory class attributes using [anta.models.AntaCommand](../api/models.md#anta.models.AntaCommand), [anta.models.AntaTemplate](../api/models.md#anta.models.AntaTemplate) or both.
 
-!!! info
-    Caching can be disabled per `AntaCommand` or `AntaTemplate` by setting the `use_cache` argument to `False`. For more details about how caching is implemented in ANTA, please refer to [Caching in ANTA](../advanced_usages/caching.md).
+> [!NOTE]
+> Caching can be disabled per `AntaCommand` or `AntaTemplate` by setting the `use_cache` argument to `False`. For more details about how caching is implemented in ANTA, please refer to [Caching in ANTA](../advanced_usages/caching.md).
 
 ```python
 from anta.models import AntaTest, AntaCommand, AntaTemplate
@@ -171,11 +173,11 @@ from anta.models import AntaTest, AntaCommand, AntaTemplate
 
 class <YourTestName>(AntaTest):
     """
-    <a docstring description of your test>
+    <a docstring description of your test, the first line is used as description of the test by default>
     """
 
-    name = "YourTestName"                                           # should be your class name
-    description = "<test description in human reading format>"
+    # name = <override>        # uncomment to override default behavior of name=Class Name
+    # description = <override> # uncomment to override default behavior of description=first line of docstring
     categories = ["<arbitrary category>", "<another arbitrary category>"]
     commands = [
         AntaCommand(
@@ -195,21 +197,23 @@ class <YourTestName>(AntaTest):
     ]
 ```
 
-!!! tip "Command revision and version"
-    * Most of EOS commands return a JSON structure according to a model (some commands may not be modeled hence the necessity to use `text` outformat sometimes.
-    * The model can change across time (adding feature, ... ) and when the model is changed in a non backward-compatible way, the **revision** number is bumped. The initial model starts with **revision** 1.
-    * A **revision** applies to a particular CLI command whereas a **version** is global to an eAPI call. The **version** is internally translated to a specific **revision** for each CLI command in the RPC call. The currently supported **version** values  are `1` and `latest`.
-    * A **revision takes precedence over a version** (e.g. if a command is run with version="latest" and revision=1, the first revision of the model is returned)
-    * By default, eAPI returns the first revision of each model to ensure that when upgrading, integrations with existing tools are not broken. This is done by using by default `version=1` in eAPI calls.
-
-    By default, ANTA uses `version="latest"` in AntaCommand, but when developing tests, the revision MUST be provided when the outformat of the command is `json`. As explained earlier, this is to ensure that the eAPI always returns the same output model and that the test remains always valid from the day it was created. For some commands, you may also want to run them with a different revision or version.
-
-    For instance, the `VerifyBFDPeersHealth` test leverages the first revision of `show bfd peers`:
-
-    ```
-    # revision 1 as later revision introduce additional nesting for type
-    commands = [AntaCommand(command="show bfd peers", revision=1)]
-    ```
+> [!TIP]
+> **Command revision and version**
+>
+> - Most of EOS commands return a JSON structure according to a model (some commands may not be modeled hence the necessity to use `text` outformat sometimes.
+> - The model can change across time (adding feature, ... ) and when the model is changed in a non backward-compatible way, the **revision** number is bumped. The initial model starts with **revision** 1.
+> - A **revision** applies to a particular CLI command whereas a **version** is global to an eAPI call. The **version** is internally translated to a specific **revision** for each CLI command in the RPC call. The currently supported **version** values  are `1` and `latest`.
+> - A **revision takes precedence over a version** (e.g. if a command is run with version="latest" and revision=1, the first revision of the model is returned)
+> - By default, eAPI returns the first revision of each model to ensure that when upgrading, integrations with existing tools are not broken. This is done by using by default `version=1` in eAPI calls.
+>
+> By default, ANTA uses `version="latest"` in AntaCommand, but when developing tests, the revision MUST be provided when the outformat of the command is `json`. As explained earlier, this is to ensure that the eAPI always returns the same output model and that the test remains always valid from the day it was created. For some commands, you may also want to run them with a different revision or version.
+>
+> For instance, the `VerifyBFDPeersHealth` test leverages the first revision of `show bfd peers`:
+>
+> ```python
+> # revision 1 as later revision introduce additional nesting for type
+> commands = [AntaCommand(command="show bfd peers", revision=1)]
+> ```
 
 ### Inputs definition
 
@@ -244,8 +248,8 @@ You can also leverage [anta.custom_types](../api/types.md) that provides reusabl
 
 Regarding required, optional and nullable fields, refer to this [documentation](https://docs.pydantic.dev/latest/migration/#required-optional-and-nullable-fields) on how to define them.
 
-!!! note
-    All the `pydantic` features are supported. For instance you can define [validators](https://docs.pydantic.dev/latest/usage/validators/) for complex input validation.
+> [!NOTE]
+> All the `pydantic` features are supported. For instance you can define [validators](https://docs.pydantic.dev/latest/usage/validators/) for complex input validation.
 
 ### Template rendering
 
@@ -340,10 +344,10 @@ class VerifyTemperature(AntaTest):
 
 ## Access your custom tests in the test catalog
 
-!!! warning ""
-    This section is required only if you are not merging your development into ANTA. Otherwise, just follow [contribution guide](../contribution.md).
+> [!WARNING]
+> This section is required only if you are not merging your development into ANTA. Otherwise, just follow [contribution guide](../contribution.md).
 
-For that, you need to create your own Python package as described in this [hitchhiker's guide](https://the-hitchhikers-guide-to-packaging.readthedocs.io/en/latest/) to package Python code. We assume it is well known and we won't focus on this aspect. Thus, your package must be impartable by ANTA hence available in the module search path `sys.path` (you can use `PYTHONPATH` for example).
+For that, you need to create your own Python package as described in this [hitchhiker's guide](https://the-hitchhikers-guide-to-packaging.readthedocs.io/en/latest/) to package Python code. We assume it is well known and we won't focus on this aspect. Thus, your package must be importable by ANTA hence available in the module search path `sys.path` (you can use `PYTHONPATH` for example).
 
 It is very similar to what is documented in [catalog section](../usage-inventory-catalog.md) but you have to use your own package name.2
 

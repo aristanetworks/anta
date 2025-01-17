@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """ANTA runner function."""
@@ -8,7 +8,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import os
-import resource
+import sys
 from collections import defaultdict
 from typing import TYPE_CHECKING, Any
 
@@ -26,35 +26,38 @@ if TYPE_CHECKING:
     from anta.result_manager import ResultManager
     from anta.result_manager.models import TestResult
 
+if os.name == "posix":
+    import resource
+
+    DEFAULT_NOFILE = 16384
+
+    def adjust_rlimit_nofile() -> tuple[int, int]:
+        """Adjust the maximum number of open file descriptors for the ANTA process.
+
+        The limit is set to the lower of the current hard limit and the value of the ANTA_NOFILE environment variable.
+
+        If the `ANTA_NOFILE` environment variable is not set or is invalid, `DEFAULT_NOFILE` is used.
+
+        Returns
+        -------
+        tuple[int, int]
+            The new soft and hard limits for open file descriptors.
+        """
+        try:
+            nofile = int(os.environ.get("ANTA_NOFILE", DEFAULT_NOFILE))
+        except ValueError as exception:
+            logger.warning("The ANTA_NOFILE environment variable value is invalid: %s\nDefault to %s.", exc_to_str(exception), DEFAULT_NOFILE)
+            nofile = DEFAULT_NOFILE
+
+        limits = resource.getrlimit(resource.RLIMIT_NOFILE)
+        logger.debug("Initial limit numbers for open file descriptors for the current ANTA process: Soft Limit: %s | Hard Limit: %s", limits[0], limits[1])
+        nofile = min(limits[1], nofile)
+        logger.debug("Setting soft limit for open file descriptors for the current ANTA process to %s", nofile)
+        resource.setrlimit(resource.RLIMIT_NOFILE, (nofile, limits[1]))
+        return resource.getrlimit(resource.RLIMIT_NOFILE)
+
+
 logger = logging.getLogger(__name__)
-
-DEFAULT_NOFILE = 16384
-
-
-def adjust_rlimit_nofile() -> tuple[int, int]:
-    """Adjust the maximum number of open file descriptors for the ANTA process.
-
-    The limit is set to the lower of the current hard limit and the value of the ANTA_NOFILE environment variable.
-
-    If the `ANTA_NOFILE` environment variable is not set or is invalid, `DEFAULT_NOFILE` is used.
-
-    Returns
-    -------
-    tuple[int, int]
-        The new soft and hard limits for open file descriptors.
-    """
-    try:
-        nofile = int(os.environ.get("ANTA_NOFILE", DEFAULT_NOFILE))
-    except ValueError as exception:
-        logger.warning("The ANTA_NOFILE environment variable value is invalid: %s\nDefault to %s.", exc_to_str(exception), DEFAULT_NOFILE)
-        nofile = DEFAULT_NOFILE
-
-    limits = resource.getrlimit(resource.RLIMIT_NOFILE)
-    logger.debug("Initial limit numbers for open file descriptors for the current ANTA process: Soft Limit: %s | Hard Limit: %s", limits[0], limits[1])
-    nofile = min(limits[1], nofile)
-    logger.debug("Setting soft limit for open file descriptors for the current ANTA process to %s", nofile)
-    resource.setrlimit(resource.RLIMIT_NOFILE, (nofile, limits[1]))
-    return resource.getrlimit(resource.RLIMIT_NOFILE)
 
 
 def log_cache_statistics(devices: list[AntaDevice]) -> None:
@@ -112,7 +115,7 @@ async def setup_inventory(inventory: AntaInventory, tags: set[str] | None, devic
 
     # If there are no devices in the inventory after filtering, exit
     if not selected_inventory.devices:
-        msg = f'No reachable device {f"matching the tags {tags} " if tags else ""}was found.{f" Selected devices: {devices} " if devices is not None else ""}'
+        msg = f"No reachable device {f'matching the tags {tags} ' if tags else ''}was found.{f' Selected devices: {devices} ' if devices is not None else ''}"
         logger.warning(msg)
         return None
 
@@ -146,20 +149,26 @@ def prepare_tests(
     # Using a set to avoid inserting duplicate tests
     device_to_tests: defaultdict[AntaDevice, set[AntaTestDefinition]] = defaultdict(set)
 
+    total_test_count = 0
+
     # Create the device to tests mapping from the tags
     for device in inventory.devices:
         if tags:
-            if not any(tag in device.tags for tag in tags):
+            # If there are CLI tags, execute tests with matching tags for this device
+            if not (matching_tags := tags.intersection(device.tags)):
                 # The device does not have any selected tag, skipping
                 continue
+            device_to_tests[device].update(catalog.get_tests_by_tags(matching_tags))
         else:
             # If there is no CLI tags, execute all tests that do not have any tags
             device_to_tests[device].update(catalog.tag_to_tests[None])
 
-        # Add the tests with matching tags from device tags
-        device_to_tests[device].update(catalog.get_tests_by_tags(device.tags))
+            # Then add the tests with matching tags from device tags
+            device_to_tests[device].update(catalog.get_tests_by_tags(device.tags))
 
-    if len(device_to_tests.values()) == 0:
+        total_test_count += len(device_to_tests[device])
+
+    if total_test_count == 0:
         msg = (
             f"There are no tests{f' matching the tags {tags} ' if tags else ' '}to run in the current test catalog and device inventory, please verify your inputs."
         )
@@ -169,7 +178,7 @@ def prepare_tests(
     return device_to_tests
 
 
-def get_coroutines(selected_tests: defaultdict[AntaDevice, set[AntaTestDefinition]], manager: ResultManager) -> list[Coroutine[Any, Any, TestResult]]:
+def get_coroutines(selected_tests: defaultdict[AntaDevice, set[AntaTestDefinition]], manager: ResultManager | None = None) -> list[Coroutine[Any, Any, TestResult]]:
     """Get the coroutines for the ANTA run.
 
     Parameters
@@ -177,7 +186,7 @@ def get_coroutines(selected_tests: defaultdict[AntaDevice, set[AntaTestDefinitio
     selected_tests
         A mapping of devices to the tests to run. The selected tests are generated by the `prepare_tests` function.
     manager
-        A ResultManager
+        An optional ResultManager object to pre-populate with the test results. Used in dry-run mode.
 
     Returns
     -------
@@ -189,7 +198,8 @@ def get_coroutines(selected_tests: defaultdict[AntaDevice, set[AntaTestDefinitio
         for test in test_definitions:
             try:
                 test_instance = test.test(device=device, inputs=test.inputs)
-                manager.add(test_instance.result)
+                if manager is not None:
+                    manager.add(test_instance.result)
                 coros.append(test_instance.test())
             except Exception as e:  # noqa: PERF203, BLE001
                 # An AntaTest instance is potentially user-defined code.
@@ -205,7 +215,7 @@ def get_coroutines(selected_tests: defaultdict[AntaDevice, set[AntaTestDefinitio
 
 
 @cprofile()
-async def main(  # noqa: PLR0913
+async def main(
     manager: ResultManager,
     inventory: AntaInventory,
     catalog: AntaCatalog,
@@ -240,9 +250,6 @@ async def main(  # noqa: PLR0913
     dry_run
         Build the list of coroutine to run and stop before test execution.
     """
-    # Adjust the maximum number of open file descriptors for the ANTA process
-    limits = adjust_rlimit_nofile()
-
     if not catalog.tests:
         logger.info("The list of tests is empty, exiting")
         return
@@ -263,9 +270,18 @@ async def main(  # noqa: PLR0913
             "--- ANTA NRFU Run Information ---\n"
             f"Number of devices: {len(inventory)} ({len(selected_inventory)} established)\n"
             f"Total number of selected tests: {final_tests_count}\n"
-            f"Maximum number of open file descriptors for the current ANTA process: {limits[0]}\n"
-            "---------------------------------"
         )
+
+        if os.name == "posix":
+            # Adjust the maximum number of open file descriptors for the ANTA process
+            limits = adjust_rlimit_nofile()
+            run_info += f"Maximum number of open file descriptors for the current ANTA process: {limits[0]}\n"
+        else:
+            # Running on non-Posix system, cannot manage the resource.
+            limits = (sys.maxsize, sys.maxsize)
+            run_info += "Running on a non-POSIX system, cannot adjust the maximum number of file descriptors.\n"
+
+        run_info += "---------------------------------"
 
         logger.info(run_info)
 
@@ -276,7 +292,7 @@ async def main(  # noqa: PLR0913
                 "Please consult the ANTA FAQ."
             )
 
-        coroutines = get_coroutines(selected_tests, manager)
+        coroutines = get_coroutines(selected_tests, manager if dry_run else None)
 
     if dry_run:
         logger.info("Dry-run mode, exiting before running the tests.")
@@ -288,6 +304,8 @@ async def main(  # noqa: PLR0913
         AntaTest.nrfu_task = AntaTest.progress.add_task("Running NRFU Tests...", total=len(coroutines))
 
     with Catchtime(logger=logger, message="Running ANTA tests"):
-        await asyncio.gather(*coroutines)
+        results = await asyncio.gather(*coroutines)
+        for result in results:
+            manager.add(result)
 
     log_cache_statistics(selected_inventory.devices)

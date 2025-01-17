@@ -79,6 +79,7 @@ watch:
   - anta
 
 plugins:
+  - gh-admonitions
   - mkdocstrings:
       default_handler: python
       custom_templates: docs/templates
@@ -122,47 +123,44 @@ plugins:
       width: 90vw
 
 markdown_extensions:
+  - admonition
   - attr_list
-  - pymdownx.emoji:
-      emoji_index: !!python/name:material.extensions.emoji.twemoji
-      emoji_generator: !!python/name:material.extensions.emoji.to_svg
-  - smarty
+  - codehilite:
+      guess_lang: true
   - pymdownx.arithmatex
   - pymdownx.betterem:
       smart_enable: all
   - pymdownx.caret
   - pymdownx.critic
   - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight
   - pymdownx.inlinehilite
   - pymdownx.magiclink
   - pymdownx.mark
   - pymdownx.smartsymbols
+  - pymdownx.snippets:
+      base_path:
+        - docs/snippets
+        - examples
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
   - pymdownx.tasklist:
       custom_checkbox: true
   - pymdownx.tilde
-  # - fontawesome_markdown
-  - admonition
-  - codehilite:
-      guess_lang: true
+  - smarty
   - toc:
       separator: "-"
       # permalink: "#"
       permalink: true
       baselevel: 2
-  - pymdownx.highlight
-  - pymdownx.snippets:
-      base_path:
-        - docs/snippets
-        - examples
-  - pymdownx.superfences
-  - pymdownx.superfences
-  - pymdownx.tabbed:
-      alternate_style: true
 
 # TOC
 docs_dir: docs/
@@ -178,6 +176,7 @@ nav:
     - Inventory from CVP: cli/inv-from-cvp.md
     - Inventory from Ansible: cli/inv-from-ansible.md
     - Get Inventory Information: cli/get-inventory-information.md
+    - Get Tests Information: cli/get-tests.md
     - Check commands: cli/check.md
     - Debug commands: cli/debug.md
     - Tag Management: cli/tag-management.md
@@ -192,6 +191,7 @@ nav:
     - BFD: api/tests.bfd.md
     - Configuration: api/tests.configuration.md
     - Connectivity: api/tests.connectivity.md
+    - CVX: api/tests.cvx.md
     - Field Notices: api/tests.field_notices.md
     - Flow Tracking: api/tests.flow_tracking.md
     - GreenT: api/tests.greent.md

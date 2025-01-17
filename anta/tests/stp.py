@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module related to various Spanning Tree Protocol (STP) tests."""
@@ -36,8 +36,6 @@ class VerifySTPMode(AntaTest):
     ```
     """
 
-    name = "VerifySTPMode"
-    description = "Verifies the configured STP mode for a provided list of VLAN(s)."
     categories: ClassVar[list[str]] = ["stp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show spanning-tree vlan {vlan}", revision=1)]
 
@@ -93,8 +91,6 @@ class VerifySTPBlockedPorts(AntaTest):
     ```
     """
 
-    name = "VerifySTPBlockedPorts"
-    description = "Verifies there is no STP blocked ports."
     categories: ClassVar[list[str]] = ["stp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show spanning-tree blockedports", revision=1)]
 
@@ -126,8 +122,6 @@ class VerifySTPCounters(AntaTest):
     ```
     """
 
-    name = "VerifySTPCounters"
-    description = "Verifies there is no errors in STP BPDU packets."
     categories: ClassVar[list[str]] = ["stp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show spanning-tree counters", revision=1)]
 
@@ -163,7 +157,6 @@ class VerifySTPForwardingPorts(AntaTest):
     ```
     """
 
-    name = "VerifySTPForwardingPorts"
     description = "Verifies that all interfaces are forwarding for a provided list of VLAN(s)."
     categories: ClassVar[list[str]] = ["stp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show spanning-tree topology vlan {vlan} status", revision=1)]
@@ -222,8 +215,6 @@ class VerifySTPRootPriority(AntaTest):
     ```
     """
 
-    name = "VerifySTPRootPriority"
-    description = "Verifies the STP root priority for a provided list of VLAN or MST instance ID(s)."
     categories: ClassVar[list[str]] = ["stp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show spanning-tree root detail", revision=1)]
 
@@ -279,8 +270,6 @@ class VerifyStpTopologyChanges(AntaTest):
     ```
     """
 
-    name = "VerifyStpTopologyChanges"
-    description = "Verifies the number of changes across all interfaces in the Spanning Tree Protocol (STP) topology is below a threshold."
     categories: ClassVar[list[str]] = ["stp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show spanning-tree topology status detail", revision=1)]
 
@@ -320,3 +309,67 @@ class VerifyStpTopologyChanges(AntaTest):
             self.result.is_failure(f"The following STP topologies are not configured or number of changes not within the threshold:\n{failures}")
         else:
             self.result.is_success()
+
+
+class VerifySTPDisabledVlans(AntaTest):
+    """Verifies the STP disabled VLAN(s).
+
+    This test performs the following checks:
+
+        1. Verifies that the STP is configured.
+        2. Verifies that the specified VLAN(s) exist on the device.
+        3. Verifies that the STP is disabled for the specified VLAN(s).
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if all of the following conditions are met:
+        - STP is properly configured on the device.
+        - The specified VLAN(s) exist on the device.
+        - STP is confirmed to be disabled for all the specified VLAN(s).
+    * Failure: The test will fail if any of the following condition is met:
+        - STP is not configured on the device.
+        - The specified VLAN(s) do not exist on the device.
+        - STP is enabled for any of the specified VLAN(s).
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.stp:
+      - VerifySTPDisabledVlans:
+            vlans:
+              - 6
+              - 4094
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["stp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show spanning-tree vlan detail", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifySTPDisabledVlans test."""
+
+        vlans: list[Vlan]
+        """List of STP disabled VLAN(s)."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifySTPDisabledVlans."""
+        self.result.is_success()
+
+        command_output = self.instance_commands[0].json_output
+        stp_vlan_instances = command_output.get("spanningTreeVlanInstances", {})
+
+        # If the spanningTreeVlanInstances detail are not found in the command output, the test fails.
+        if not stp_vlan_instances:
+            self.result.is_failure("STP is not configured")
+            return
+
+        actual_vlans = list(stp_vlan_instances)
+        # If the specified VLAN is not present on the device, STP is enabled for the VLAN(s), test fails.
+        for vlan in self.inputs.vlans:
+            if str(vlan) not in actual_vlans:
+                self.result.is_failure(f"VLAN: {vlan} - Not configured")
+                continue
+
+            if stp_vlan_instances.get(str(vlan)):
+                self.result.is_failure(f"VLAN: {vlan} - STP is enabled")

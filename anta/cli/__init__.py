@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """ANTA CLI."""
@@ -35,7 +35,7 @@ except ImportError as exc:
 
     cli = build_cli(exc)
 
-__all__ = ["cli", "anta"]
+__all__ = ["anta", "cli"]
 
 if __name__ == "__main__":
     cli()

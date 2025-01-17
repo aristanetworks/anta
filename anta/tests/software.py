@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module related to the EOS software tests."""
@@ -34,7 +34,6 @@ class VerifyEOSVersion(AntaTest):
     ```
     """
 
-    name = "VerifyEOSVersion"
     description = "Verifies the EOS version of the device."
     categories: ClassVar[list[str]] = ["software"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show version", revision=1)]
@@ -74,7 +73,6 @@ class VerifyTerminAttrVersion(AntaTest):
     ```
     """
 
-    name = "VerifyTerminAttrVersion"
     description = "Verifies the TerminAttr version of the device."
     categories: ClassVar[list[str]] = ["software"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show version detail", revision=1)]
@@ -112,8 +110,6 @@ class VerifyEOSExtensions(AntaTest):
     ```
     """
 
-    name = "VerifyEOSExtensions"
-    description = "Verifies that all EOS extensions installed on the device are enabled for boot persistence."
     categories: ClassVar[list[str]] = ["software"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
         AntaCommand(command="show extensions", revision=2),

@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """See https://docs.pytest.org/en/stable/reference/fixtures.html#conftest-py-sharing-fixtures-across-multiple-files."""
@@ -39,6 +39,7 @@ MOCK_CLI_JSON: dict[str, asynceapi.EapiCommandError | dict[str, Any]] = {
         errmsg="Invalid command",
         not_exec=[],
     ),
+    "show interfaces": {},
 }
 
 MOCK_CLI_TEXT: dict[str, asynceapi.EapiCommandError | str] = {
