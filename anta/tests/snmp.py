@@ -549,13 +549,17 @@ class VerifySnmpGroup(AntaTest):
                 continue
 
             # Verify SNMP views, the read, write and notify settings aligning with version-specific requirements.
-            if group.read_view and not all([(act_view := group_details.get("readView")) == group.read_view, (configured := group_details.get("readViewConfig"))]):
-                self.result.is_failure(f"{group}, ReadView: {group.read_view} - View configuration mismatch - ReadView: {act_view}, Configured: {configured}")
+            if group.read_view and not all(
+                [(act_view := group_details.get("readView")) == group.read_view, (view_configured := group_details.get("readViewConfig"))]
+            ):
+                self.result.is_failure(f"{group}, ReadView: {group.read_view} - View configuration mismatch - ReadView: {act_view}, Configured: {view_configured}")
 
             if group.write_view and not all(
                 [(act_view := group_details.get("writeView")) == group.write_view, (view_configured := group_details.get("writeViewConfig"))]
             ):
-                self.result.is_failure(f"{group}, WriteView: {group.write_view} - View configuration mismatch - WriteView: {act_view}, Configured: {configured}")
+                self.result.is_failure(
+                    f"{group}, WriteView: {group.write_view} - View configuration mismatch - WriteView: {act_view}, Configured: {view_configured}"
+                )
 
             if group.notify_view and not all(
                 [(act_view := group_details.get("notifyView")) == group.notify_view, (view_configured := group_details.get("notifyViewConfig"))]
