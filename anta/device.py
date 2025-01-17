@@ -16,13 +16,13 @@ import httpcore
 from aiocache import Cache
 from aiocache.plugins import HitMissRatioPlugin
 from asyncssh import SSHClientConnection, SSHClientConnectionOptions
-from httpx import ConnectError, HTTPError, TimeoutException
+from httpx import ConnectError, HTTPError, Limits, Timeout, TimeoutException
 
 import asynceapi
 from anta import __DEBUG__
 from anta.logger import anta_log_exception, exc_to_str
 from anta.models import AntaCommand
-from anta.settings import get_httpx_limits, get_httpx_timeout
+from anta.settings import DEFAULT_HTTPX_MAX_CONNECTIONS
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -57,6 +57,10 @@ class AntaDevice(ABC):
         In-memory cache from aiocache library for this device (None if cache is disabled).
     cache_locks : dict
         Dictionary mapping keys to asyncio locks to guarantee exclusive access to the cache if not disabled.
+    max_connections : int | None
+        For informational/logging purposes only. Some device implementations may expose their
+        maximum concurrent connection limit through this attribute. This does not affect the
+        actual device configuration.
 
     """
 
@@ -82,6 +86,7 @@ class AntaDevice(ABC):
         self.established: bool = False
         self.cache: Cache | None = None
         self.cache_locks: defaultdict[str, asyncio.Lock] | None = None
+        self.max_connections: int | None
 
         # Initialize cache if not disabled
         if not disable_cache:
@@ -239,7 +244,7 @@ class AntaDevice(ABC):
 
 
 class AsyncEOSDevice(AntaDevice):
-    """Implementation of AntaDevice for EOS using aio-eapi.
+    """Implementation of AntaDevice for EOS using the `asynceapi` library, which is built on HTTPX.
 
     Attributes
     ----------
@@ -253,7 +258,6 @@ class AsyncEOSDevice(AntaDevice):
         Hardware model of the device.
     tags : set[str]
         Tags for this device.
-
     """
 
     def __init__(  # noqa: PLR0913
@@ -267,6 +271,8 @@ class AsyncEOSDevice(AntaDevice):
         ssh_port: int = 22,
         tags: set[str] | None = None,
         timeout: float | None = None,
+        httpx_timeout: Timeout | None = None,
+        httpx_limits: Limits | None = None,
         proto: Literal["http", "https"] = "https",
         *,
         enable: bool = False,
@@ -285,8 +291,6 @@ class AsyncEOSDevice(AntaDevice):
             Password to connect to eAPI and SSH.
         name
             Device name.
-        enable
-            Collect commands using privileged mode.
         enable_password
             Password used to gain privileged access on EOS.
         port
@@ -296,14 +300,20 @@ class AsyncEOSDevice(AntaDevice):
         tags
             Tags for this device.
         timeout
-            Timeout value in seconds for outgoing API calls.
-        insecure
-            Disable SSH Host Key validation.
+            Global timeout value in seconds for outgoing eAPI calls.
+        httpx_timeout
+            Optional HTTPX Timeout object for fine-grained timeout configuration.
+            If provided, it will override the global timeout.
+        httpx_limits
+            Optional HTTPX Limits object for connection pooling configuration.
         proto
             eAPI protocol. Value can be 'http' or 'https'.
+        enable
+            Collect commands using privileged mode.
+        insecure
+            Disable SSH Host Key validation.
         disable_cache
             Disable caching for all commands for this device.
-
         """
         if host is None:
             message = "'host' is required to create an AsyncEOSDevice"
@@ -312,38 +322,36 @@ class AsyncEOSDevice(AntaDevice):
         if name is None:
             name = f"{host}{f':{port}' if port else ''}"
         super().__init__(name, tags, disable_cache=disable_cache)
-        if username is None:
-            message = f"'username' is required to instantiate device '{self.name}'"
+
+        if username is None or password is None:
+            message = f"'username' and 'password' are required to instantiate device '{self.name}'"
             logger.error(message)
             raise ValueError(message)
-        if password is None:
-            message = f"'password' is required to instantiate device '{self.name}'"
-            logger.error(message)
-            raise ValueError(message)
+
         self.enable = enable
         self._enable_password = enable_password
 
-        # Create the async eAPI client
-        self._session = self._create_asynceapi_session(host, port, username, password, proto, timeout)
+        # Build the session settings for the `asynceapi` client
+        session_settings: dict[str, Any] = {
+            "host": host,
+            "port": port,
+            "username": username,
+            "password": password,
+            "proto": proto,
+            "timeout": httpx_timeout if httpx_timeout is not None else timeout,
+        }
+        if httpx_limits is not None:
+            session_settings["limits"] = httpx_limits
+            self.max_connections = httpx_limits.max_connections
+        else:
+            self.max_connections = DEFAULT_HTTPX_MAX_CONNECTIONS
+        self._session: asynceapi.Device = asynceapi.Device(**session_settings)
 
-        # Create the SSH connection options
-        self._ssh_opts = self._create_ssh_options(host, ssh_port, username, password, insecure=insecure)
-
-    def _create_asynceapi_session(
-        self, host: str, port: int | None, username: str, password: str, proto: Literal["http", "https"], timeout: float | None
-    ) -> asynceapi.Device:
-        """Create the asynceapi client with the provided parameters."""
-        # Get resource limits and timeout values
-        session_limits = get_httpx_limits()
-        session_timeout = get_httpx_timeout(timeout)
-
-        return asynceapi.Device(host=host, port=port, username=username, password=password, proto=proto, timeout=session_timeout, limits=session_limits)
-
-    def _create_ssh_options(self, host: str, port: int, username: str, password: str, *, insecure: bool) -> SSHClientConnectionOptions:
-        """Create the SSH connection options with the provided parameters."""
-        ssh_params = {"known_hosts": None} if insecure else {}
-
-        return SSHClientConnectionOptions(host=host, port=port, username=username, password=password, client_keys=CLIENT_KEYS, **ssh_params)
+        # Build the SSH connection options
+        ssh_settings = {"host": host, "port": ssh_port, "username": username, "password": password, "client_keys": CLIENT_KEYS}
+        if insecure:
+            ssh_settings["known_hosts"] = None
+        self._ssh_opts: SSHClientConnectionOptions = SSHClientConnectionOptions(**ssh_settings)
 
     def __rich_repr__(self) -> Iterator[tuple[str, Any]]:
         """Implement Rich Repr Protocol.

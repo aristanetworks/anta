@@ -20,7 +20,6 @@ from .models import CategoryStats, DeviceStats, TestStats
 logger = logging.getLogger(__name__)
 
 
-# pylint: disable=too-many-instance-attributes
 class ResultManager:
     """Helper to manage Test Results and generate reports.
 

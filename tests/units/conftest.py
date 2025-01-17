@@ -14,13 +14,18 @@ from unittest.mock import patch
 import pytest
 import yaml
 
+from anta.catalog import AntaCatalog
 from anta.device import AntaDevice, AsyncEOSDevice
+from anta.inventory import AntaInventory
+from anta.result_manager import ResultManager
+from anta.runner import RunnerContext
 
 if TYPE_CHECKING:
     from collections.abc import Generator, Iterator
 
     from anta.models import AntaCommand
 
+DATA_DIR: Path = Path(__file__).parent.parent.resolve() / "data"
 DEVICE_HW_MODEL = "pytest"
 DEVICE_NAME = "pytest"
 COMMAND_OUTPUT = "retrieved"
@@ -85,6 +90,41 @@ def yaml_file(request: pytest.FixtureRequest, tmp_path: Path) -> Path:
     content: dict[str, Any] = request.param
     file.write_text(yaml.dump(content, allow_unicode=True))
     return file
+
+
+@pytest.fixture
+def runner_context(request: pytest.FixtureRequest) -> RunnerContext:
+    """Fixture providing a basic RunnerContext for testing."""
+    if not hasattr(request, "param"):
+        msg = "runner_context fixture requires requires parameters"
+        raise ValueError(msg)
+
+    params = request.param
+
+    # Check required parameters
+    required_params = {"inventory", "catalog"}
+    missing_params = required_params - params.keys()
+    if missing_params:
+        msg = f"runner_context fixture missing required parameters: {missing_params}"
+        raise ValueError(msg)
+
+    return RunnerContext(
+        manager=ResultManager(),
+        inventory=AntaInventory.parse(
+            filename=DATA_DIR / params["inventory"],
+            username="arista",
+            password="arista",
+            httpx_limits=params.get("httpx_limits", None),
+        ),
+        catalog=AntaCatalog.parse(DATA_DIR / params["catalog"]),
+        devices=params.get("devices", None),
+        tests=params.get("tests", None),
+        tags=params.get("tags", None),
+        established_only=params.get("established_only", True),
+        dry_run=params.get("dry_run", False),
+        max_concurrency=params.get("max_concurrency", 10000),
+        file_descriptor_limit=params.get("file_descriptor_limit", 16384),
+    )
 
 
 @pytest.fixture

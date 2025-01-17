@@ -28,8 +28,8 @@ logger = logging.getLogger(__name__)
 class ReportTable:
     """TableReport Generate a Table based on TestResult."""
 
-    @dataclass()
-    class Headers:  # pylint: disable=too-many-instance-attributes
+    @dataclass
+    class Headers:
         """Headers for the table report."""
 
         device: str = "Device"

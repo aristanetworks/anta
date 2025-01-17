@@ -17,6 +17,7 @@ from yaml import YAMLError
 from anta.catalog import AntaCatalog
 from anta.inventory import AntaInventory
 from anta.inventory.exceptions import InventoryIncorrectSchemaError, InventoryRootKeyError
+from anta.settings import get_httpx_limits, get_httpx_timeout
 
 if TYPE_CHECKING:
     from click import Context, Option, Parameter
@@ -258,6 +259,11 @@ def core_options(f: Callable[..., Any]) -> Callable[..., Any]:
         if not enable and enable_password:
             msg = "Providing a password to access EOS Privileged EXEC mode requires '--enable' option."
             raise click.BadParameter(msg)
+
+        # Get the HTTPX limits and timeout from environment variables
+        httpx_timeout = get_httpx_timeout(timeout)
+        httpx_limits = get_httpx_limits()
+
         try:
             i = AntaInventory.parse(
                 filename=inventory,
@@ -266,6 +272,8 @@ def core_options(f: Callable[..., Any]) -> Callable[..., Any]:
                 enable=enable,
                 enable_password=enable_password,
                 timeout=timeout,
+                httpx_timeout=httpx_timeout,
+                httpx_limits=httpx_limits,
                 insecure=insecure,
                 disable_cache=disable_cache,
             )

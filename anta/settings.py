@@ -5,23 +5,44 @@
 
 from __future__ import annotations
 
+import logging
+import os
+import sys
+
 from httpx import Limits, Timeout
 from pydantic import Field, NonNegativeFloat, NonNegativeInt, PositiveInt
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+logger = logging.getLogger(__name__)
+
 # Default values for HTTPX resource limits
-HTTPX_MAX_CONNECTIONS = 100
-HTTPX_MAX_KEEPALIVE_CONNECTIONS = 20
-HTTPX_KEEPALIVE_EXPIRY = 5.0
+DEFAULT_HTTPX_MAX_CONNECTIONS = 100
+DEFAULT_HTTPX_MAX_KEEPALIVE_CONNECTIONS = 20
+DEFAULT_HTTPX_KEEPALIVE_EXPIRY = 5.0
 
 # Default values for HTTPX timeouts
-HTTPX_CONNECT_TIMEOUT = 5.0
-HTTPX_READ_TIMEOUT = 5.0
-HTTPX_WRITE_TIMEOUT = 5.0
-HTTPX_POOL_TIMEOUT = 5.0
+DEFAULT_HTTPX_CONNECT_TIMEOUT = 5.0
+DEFAULT_HTTPX_READ_TIMEOUT = 5.0
+DEFAULT_HTTPX_WRITE_TIMEOUT = 5.0
+DEFAULT_HTTPX_POOL_TIMEOUT = 5.0
 
 # Default value for the maximum number of concurrent tests in the event loop
-MAX_CONCURRENCY = 10000
+DEFAULT_MAX_CONCURRENCY = 10000
+
+# Default value for the maximum number of open file descriptors for the ANTA process
+DEFAULT_NOFILE = 16384
+
+
+class FileDescriptorSettings(BaseSettings):
+    """Environment variable for configuring the maximum number of open file descriptors for the ANTA process.
+
+    On POSIX systems, this value is used to set the soft limit for the current process.
+    The value cannot exceed the system's hard limit.
+    """
+
+    model_config = SettingsConfigDict(env_prefix="ANTA_")
+
+    nofile: PositiveInt = Field(default=DEFAULT_NOFILE)
 
 
 class MaxConcurrencySettings(BaseSettings):
@@ -29,7 +50,7 @@ class MaxConcurrencySettings(BaseSettings):
 
     model_config = SettingsConfigDict(env_prefix="ANTA_")
 
-    max_concurrency: PositiveInt = Field(default=MAX_CONCURRENCY)
+    max_concurrency: PositiveInt = Field(default=DEFAULT_MAX_CONCURRENCY)
 
 
 class HttpxResourceLimitsSettings(BaseSettings):
@@ -53,9 +74,9 @@ class HttpxResourceLimitsSettings(BaseSettings):
     # The 'None' string is used to allow the environment variable to be set to `None`.
     model_config = SettingsConfigDict(env_parse_none_str="None", env_prefix="ANTA_")
 
-    max_connections: NonNegativeInt | None = Field(default=HTTPX_MAX_CONNECTIONS)
-    max_keepalive_connections: NonNegativeInt | None = Field(default=HTTPX_MAX_KEEPALIVE_CONNECTIONS)
-    keepalive_expiry: NonNegativeFloat | None = Field(default=HTTPX_KEEPALIVE_EXPIRY)
+    max_connections: NonNegativeInt | None = Field(default=DEFAULT_HTTPX_MAX_CONNECTIONS)
+    max_keepalive_connections: NonNegativeInt | None = Field(default=DEFAULT_HTTPX_MAX_KEEPALIVE_CONNECTIONS)
+    keepalive_expiry: NonNegativeFloat | None = Field(default=DEFAULT_HTTPX_KEEPALIVE_EXPIRY)
 
 
 class HttpxTimeoutsSettings(BaseSettings):
@@ -76,10 +97,10 @@ class HttpxTimeoutsSettings(BaseSettings):
     # The 'None' string is used to allow the environment variable to be set to `None`.
     model_config = SettingsConfigDict(env_parse_none_str="None", env_prefix="ANTA_")
 
-    connect_timeout: NonNegativeFloat | None = Field(default=HTTPX_CONNECT_TIMEOUT)
-    read_timeout: NonNegativeFloat | None = Field(default=HTTPX_READ_TIMEOUT)
-    write_timeout: NonNegativeFloat | None = Field(default=HTTPX_WRITE_TIMEOUT)
-    pool_timeout: NonNegativeFloat | None = Field(default=HTTPX_POOL_TIMEOUT)
+    connect_timeout: NonNegativeFloat | None = Field(default=DEFAULT_HTTPX_CONNECT_TIMEOUT)
+    read_timeout: NonNegativeFloat | None = Field(default=DEFAULT_HTTPX_READ_TIMEOUT)
+    write_timeout: NonNegativeFloat | None = Field(default=DEFAULT_HTTPX_WRITE_TIMEOUT)
+    pool_timeout: NonNegativeFloat | None = Field(default=DEFAULT_HTTPX_POOL_TIMEOUT)
 
     # The following properties are used to determine if a specific timeout was set by an environment variable
     @property
@@ -130,8 +151,8 @@ def get_httpx_timeout(default_timeout: float | None) -> Timeout:
     Notes
     -----
     When running ANTA NRFU from the command line, `default_timeout` is set to 30 seconds by default.
-    Otherwise, an `AsyncEOSDevice` class is instantiated with a `timeout` parameter set to `None`
-    by default, meaning no timeout is set.
+    Otherwise, by default, an `AsyncEOSDevice` class is instantiated with a `timeout` parameter set
+    to `None`, meaning no timeout is set.
     """
     settings = HttpxTimeoutsSettings()
     return Timeout(
@@ -140,3 +161,35 @@ def get_httpx_timeout(default_timeout: float | None) -> Timeout:
         write=settings.write_timeout if settings.write_set else default_timeout,
         pool=settings.pool_timeout if settings.pool_set else default_timeout,
     )
+
+
+def get_file_descriptor_limit() -> int:
+    """Get the file descriptor limit for the current ANTA process.
+
+    On POSIX systems, adjusts the process's soft limit based on ANTA_NOFILE environment
+    variable while respecting the system's hard limit, meaning the new soft limit cannot
+    exceed the system's hard limit.
+
+    On non-POSIX systems, returns `sys.maxsize` as the limit.
+
+    Returns
+    -------
+    int
+        The maximum number of file descriptors available to the process.
+    """
+    if os.name != "posix":
+        logger.info("Running on a non-POSIX system, cannot adjust the maximum number of file descriptors.")
+        return sys.maxsize
+
+    import resource
+
+    settings = FileDescriptorSettings()
+    limits = resource.getrlimit(resource.RLIMIT_NOFILE)
+    logger.debug("Initial file descriptor limits: Soft Limit: %s | Hard Limit: %s", limits[0], limits[1])
+
+    # Set new soft limit to minimum of requested and hard limit
+    new_soft_limit = min(limits[1], settings.nofile)
+    logger.debug("Setting file descriptor soft limit to %s", new_soft_limit)
+    resource.setrlimit(resource.RLIMIT_NOFILE, (new_soft_limit, limits[1]))
+
+    return resource.getrlimit(resource.RLIMIT_NOFILE)[0]

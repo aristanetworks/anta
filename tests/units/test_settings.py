@@ -5,26 +5,67 @@
 
 from __future__ import annotations
 
+import logging
+import os
+import sys
+from unittest.mock import patch
+
 import pytest
 from httpx import Limits, Timeout
 from pydantic import ValidationError
 
 from anta.settings import (
-    HTTPX_CONNECT_TIMEOUT,
-    HTTPX_KEEPALIVE_EXPIRY,
-    HTTPX_MAX_CONNECTIONS,
-    HTTPX_MAX_KEEPALIVE_CONNECTIONS,
-    HTTPX_POOL_TIMEOUT,
-    HTTPX_READ_TIMEOUT,
-    HTTPX_WRITE_TIMEOUT,
-    MAX_CONCURRENCY,
+    DEFAULT_HTTPX_CONNECT_TIMEOUT,
+    DEFAULT_HTTPX_KEEPALIVE_EXPIRY,
+    DEFAULT_HTTPX_MAX_CONNECTIONS,
+    DEFAULT_HTTPX_MAX_KEEPALIVE_CONNECTIONS,
+    DEFAULT_HTTPX_POOL_TIMEOUT,
+    DEFAULT_HTTPX_READ_TIMEOUT,
+    DEFAULT_HTTPX_WRITE_TIMEOUT,
+    DEFAULT_MAX_CONCURRENCY,
+    DEFAULT_NOFILE,
+    FileDescriptorSettings,
     HttpxResourceLimitsSettings,
     HttpxTimeoutsSettings,
     MaxConcurrencySettings,
+    get_file_descriptor_limit,
     get_httpx_limits,
     get_httpx_timeout,
     get_max_concurrency,
 )
+
+if os.name == "posix":
+    # The function is not defined on non-POSIX system
+    import resource
+
+
+class TestFileDescriptor:
+    """Tests for the FileDescriptiorSettings class."""
+
+    def test_default(self, setenvvar: pytest.MonkeyPatch) -> None:
+        """Test default file descriptor value."""
+        settings = FileDescriptorSettings()
+        assert settings.nofile == DEFAULT_NOFILE
+
+    def test_env_var(self, setenvvar: pytest.MonkeyPatch) -> None:
+        """Test setting file descriptor limit via environment variable."""
+        setenvvar.setenv("ANTA_NOFILE", "20480")
+        settings = FileDescriptorSettings()
+        assert settings.nofile == 20480
+
+    def test_validation(self, setenvvar: pytest.MonkeyPatch) -> None:
+        """Test validation of file descriptor value."""
+        setenvvar.setenv("ANTA_NOFILE", "-1")
+        with pytest.raises(ValidationError):
+            FileDescriptorSettings()
+
+        setenvvar.setenv("ANTA_NOFILE", "0")
+        with pytest.raises(ValidationError):
+            FileDescriptorSettings()
+
+        setenvvar.setenv("ANTA_NOFILE", "unlimited")
+        with pytest.raises(ValidationError):
+            FileDescriptorSettings()
 
 
 class TestMaxConcurrency:
@@ -33,7 +74,7 @@ class TestMaxConcurrency:
     def test_default(self, setenvvar: pytest.MonkeyPatch) -> None:
         """Test default max concurrency value."""
         settings = MaxConcurrencySettings()
-        assert settings.max_concurrency == MAX_CONCURRENCY
+        assert settings.max_concurrency == DEFAULT_MAX_CONCURRENCY
 
     def test_env_var(self, setenvvar: pytest.MonkeyPatch) -> None:
         """Test setting max concurrency via environment variable."""
@@ -61,9 +102,9 @@ class TestHttpxLimits:
     def test_default(self, setenvvar: pytest.MonkeyPatch) -> None:
         """Test default HTTPX limits."""
         settings = HttpxResourceLimitsSettings()
-        assert settings.max_connections == HTTPX_MAX_CONNECTIONS
-        assert settings.max_keepalive_connections == HTTPX_MAX_KEEPALIVE_CONNECTIONS
-        assert settings.keepalive_expiry == HTTPX_KEEPALIVE_EXPIRY
+        assert settings.max_connections == DEFAULT_HTTPX_MAX_CONNECTIONS
+        assert settings.max_keepalive_connections == DEFAULT_HTTPX_MAX_KEEPALIVE_CONNECTIONS
+        assert settings.keepalive_expiry == DEFAULT_HTTPX_KEEPALIVE_EXPIRY
 
     def test_env_vars(self, setenvvar: pytest.MonkeyPatch) -> None:
         """Test setting HTTPX limits via environment variables."""
@@ -143,10 +184,10 @@ class TestHttpxTimeouts:
     def test_default(self, setenvvar: pytest.MonkeyPatch) -> None:
         """Test default HTTPX timeout values."""
         settings = HttpxTimeoutsSettings()
-        assert settings.connect_timeout == HTTPX_CONNECT_TIMEOUT
-        assert settings.read_timeout == HTTPX_READ_TIMEOUT
-        assert settings.write_timeout == HTTPX_WRITE_TIMEOUT
-        assert settings.pool_timeout == HTTPX_POOL_TIMEOUT
+        assert settings.connect_timeout == DEFAULT_HTTPX_CONNECT_TIMEOUT
+        assert settings.read_timeout == DEFAULT_HTTPX_READ_TIMEOUT
+        assert settings.write_timeout == DEFAULT_HTTPX_WRITE_TIMEOUT
+        assert settings.pool_timeout == DEFAULT_HTTPX_POOL_TIMEOUT
 
     def test_env_vars(self, setenvvar: pytest.MonkeyPatch) -> None:
         """Test setting HTTPX timeouts via environment variables."""
@@ -256,3 +297,44 @@ class TestHttpxTimeouts:
         assert settings.read_timeout == 0.0
         assert settings.write_timeout == 0.0
         assert settings.pool_timeout == 0.0
+
+
+@pytest.mark.skipif(os.name != "posix", reason="Cannot run this test on Windows")
+def test_get_file_descriptor_limit(caplog: pytest.LogCaptureFixture) -> None:
+    """Test get_file_descriptor_limit on POSIX systems."""
+    with (
+        caplog.at_level(logging.DEBUG),
+        patch.dict("os.environ", {"ANTA_NOFILE": "20480"}),
+        patch("resource.getrlimit") as getrlimit_mock,
+        patch("resource.setrlimit") as setrlimit_mock,
+    ):
+        # Simulate the default system limits
+        system_limits = (8192, 1048576)
+
+        # Setup getrlimit mock return value
+        getrlimit_mock.return_value = system_limits
+
+        # Simulate setrlimit behavior
+        def side_effect_setrlimit(resource_id: int, limits: tuple[int, int]) -> None:
+            _ = resource_id
+            getrlimit_mock.return_value = (limits[0], limits[1])
+
+        setrlimit_mock.side_effect = side_effect_setrlimit
+
+        result = get_file_descriptor_limit()
+
+        # Assert the limits were updated as expected
+        assert result == 20480
+        assert "Initial file descriptor limits: Soft Limit: 8192 | Hard Limit: 1048576" in caplog.text
+        assert "Setting file descriptor soft limit to 20480" in caplog.text
+
+        setrlimit_mock.assert_called_once_with(resource.RLIMIT_NOFILE, (20480, 1048576))  # pylint: disable=possibly-used-before-assignment
+
+
+@pytest.mark.skipif(os.name == "posix", reason="Run this test on Windows only")
+def test_get_file_descriptor_limit_windows(caplog: pytest.LogCaptureFixture) -> None:
+    """Test get_file_descriptor_limit on Windows."""
+    caplog.set_level(logging.INFO)
+    result = get_file_descriptor_limit()
+    assert result == sys.maxsize
+    assert "Running on a non-POSIX system, cannot adjust the maximum number of file descriptors." in caplog.text
