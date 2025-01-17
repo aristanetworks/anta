@@ -18,12 +18,12 @@ from anta.catalog import AntaCatalog
 from anta.device import AntaDevice, AsyncEOSDevice
 from anta.inventory import AntaInventory
 from anta.result_manager import ResultManager
-from anta.runner import RunnerContext
 
 if TYPE_CHECKING:
     from collections.abc import Generator, Iterator
 
     from anta.models import AntaCommand
+    from anta.runner import RunnerContext
 
 DATA_DIR: Path = Path(__file__).parent.parent.resolve() / "data"
 DEVICE_HW_MODEL = "pytest"
@@ -95,6 +95,10 @@ def yaml_file(request: pytest.FixtureRequest, tmp_path: Path) -> Path:
 @pytest.fixture
 def runner_context(request: pytest.FixtureRequest) -> RunnerContext:
     """Fixture providing a basic RunnerContext for testing."""
+    # Import must be inside fixture to prevent circular dependency from breaking CLI tests:
+    # anta.runner -> anta.cli.console -> anta.cli/* (not yet loaded) -> anta.cli.anta
+    from anta.runner import RunnerContext
+
     if not hasattr(request, "param"):
         msg = "runner_context fixture requires requires parameters"
         raise ValueError(msg)

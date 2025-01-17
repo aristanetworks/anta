@@ -59,10 +59,12 @@ class RunnerContext:
     selected_inventory: AntaInventory | None = None
     selected_tests: defaultdict[AntaDevice, set[AntaTestDefinition]] | None = None
     inventory_stats: InventoryStats | None = None
-    max_concurrency: int = field(default_factory=get_max_concurrency)
-    file_descriptor_limit: int = field(default_factory=get_file_descriptor_limit)
     total_tests: int = 0
     potential_connections: float | None = None
+
+    # Resource limits
+    max_concurrency: int = field(default_factory=get_max_concurrency)
+    file_descriptor_limit: int = field(default_factory=get_file_descriptor_limit)
 
 
 def _log_run_information(ctx: RunnerContext) -> None:
@@ -88,7 +90,7 @@ def _log_run_information(ctx: RunnerContext) -> None:
         device_lines.append(f"  Excluded by tags: {ctx.inventory_stats.filtered_by_tags}")
     if ctx.inventory_stats.connection_failed > 0:
         device_lines.append(f"  Failed to connect: {ctx.inventory_stats.connection_failed}")
-    device_lines.append(f"  Selected: {ctx.inventory_stats.established}")
+    device_lines.append(f"  Selected: {ctx.inventory_stats.established}{' (dry-run mode)' if ctx.dry_run else ''}")
 
     # Build connection information
     connections_line = (
@@ -223,22 +225,22 @@ async def _setup_inventory(ctx: RunnerContext) -> bool:
     bool
         True if the inventory is set up successfully, False otherwise.
     """
-    total = len(ctx.inventory)
+    total_devices = len(ctx.inventory)
 
     # In dry-run mode, set the selected inventory to the full inventory
     if ctx.dry_run:
         ctx.selected_inventory = ctx.inventory
-        ctx.inventory_stats = InventoryStats(total=total)
+        ctx.inventory_stats = InventoryStats(total=total_devices)
         return True
 
     # If the inventory is empty, exit
-    if total == 0:
+    if total_devices == 0:
         logger.info("The inventory is empty, exiting")
         return False
 
     # Filter the inventory based on the CLI provided tags and devices if any
     filtered_inventory = ctx.inventory.get_inventory(tags=ctx.tags, devices=ctx.devices) if ctx.tags or ctx.devices else ctx.inventory
-    filtered_by_tags = total - len(filtered_inventory)
+    filtered_by_tags = total_devices - len(filtered_inventory)
 
     # Connect to devices
     with Catchtime(logger=logger, message="Connecting to devices"):
@@ -257,7 +259,7 @@ async def _setup_inventory(ctx: RunnerContext) -> bool:
         return False
 
     ctx.inventory_stats = InventoryStats(
-        total=total, filtered_by_tags=filtered_by_tags, connection_failed=connection_failed, established=len(ctx.selected_inventory)
+        total=total_devices, filtered_by_tags=filtered_by_tags, connection_failed=connection_failed, established=len(ctx.selected_inventory)
     )
     return True
 
