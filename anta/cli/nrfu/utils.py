@@ -96,11 +96,13 @@ def print_table(ctx: click.Context, *, expand: bool, group_by: Literal["device",
         if inputs == "all":
             console.print(reporter.generate_expanded(results, parent_inputs=True, atomic_inputs=True))
         elif inputs == "parent":
-            console.print(reporter.generate_expanded(results, parent_inputs=True, atomic_inputs=False))
+            console.print(reporter.generate_expanded(results, parent_inputs=True))
         elif inputs == "atomic":
-            console.print(reporter.generate_expanded(results, parent_inputs=False, atomic_inputs=True))
+            console.print(reporter.generate_expanded(results, atomic_inputs=True))
         else:
             console.print(reporter.generate_expanded(results))
+    elif inputs in ("all", "parent"):
+        console.print(reporter.generate(results, inputs=True))
     else:
         console.print(reporter.generate(results))
 
