@@ -380,9 +380,12 @@ class AsyncEOSDevice(AntaDevice):
         if name is None:
             name = f"{host}{f':{port}' if port else ''}"
         super().__init__(name, tags, disable_cache=disable_cache)
-
-        if username is None or password is None:
-            message = f"'username' and 'password' are required to instantiate device '{self.name}'"
+        if username is None:
+            message = f"'username' is required to instantiate device '{self.name}'"
+            logger.error(message)
+            raise ValueError(message)
+        if password is None:
+            message = f"'password' is required to instantiate device '{self.name}'"
             logger.error(message)
             raise ValueError(message)
 
