@@ -211,7 +211,7 @@ class TestAntaRunner:
             "Limits:",
             "  Max concurrent tests: 10000",
             "  Total potential connections: 300",
-            f"  Max file descriptors: {get_file_descriptor_limit()}",
+            f"  Max file descriptors: {runner.file_descriptor_limit}",
         ]
         for line in expected_output:
             assert line in caplog.text
@@ -240,7 +240,7 @@ class TestAntaRunner:
             "Limits:",
             "  Max concurrent tests: 10000",
             "  Total potential connections: 15",
-            f"  Max file descriptors: {get_file_descriptor_limit()}",
+            f"  Max file descriptors: {runner.file_descriptor_limit}",
         ]
         for line in expected_output:
             assert line in caplog.text
@@ -260,7 +260,7 @@ class TestAntaRunner:
         runner = AntaRunner(inventory=inventory, catalog=CATALOG)
         await runner.run(dry_run=True)
 
-        warning = f"Running with unlimited connections. Connection errors may occur due to file descriptor limit ({get_file_descriptor_limit()})."
+        warning = f"Running with unlimited connections. Connection errors may occur due to file descriptor limit ({runner.file_descriptor_limit})."
         assert warning in caplog.text
 
     async def test_log_run_information_concurrency_limit(self, caplog: pytest.LogCaptureFixture) -> None:
