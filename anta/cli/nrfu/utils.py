@@ -50,6 +50,7 @@ def run_tests(ctx: click.Context) -> None:
 
     print_settings(inventory, catalog)
     with anta_progress_bar() as AntaTest.progress:
+        # TODO: Use AntaRunner in ANTA v2.0.0
         asyncio.run(
             main(
                 ctx.obj["result_manager"],
