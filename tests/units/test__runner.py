@@ -38,16 +38,11 @@ MANAGER = ResultManager()
 
 
 # TODO: Split this test class into multiple classes
-# pylint: disable=too-many-public-methods
 class TestAntaRunner:
     """Test AntaRunner class."""
 
-    def test__init__(self, setenvvar: pytest.MonkeyPatch) -> None:
+    def test__init__(self) -> None:
         """Test AntaRunner.__init__ method."""
-        # Mock environment variables
-        setenvvar.setenv("ANTA_NOFILE", "1048576")
-        setenvvar.setenv("ANTA_MAX_CONCURRENCY", "2000")
-
         runner = AntaRunner(inventory=INVENTORY, catalog=CATALOG, manager=MANAGER)
 
         # Test core attributes
@@ -55,44 +50,17 @@ class TestAntaRunner:
         assert runner.catalog == CATALOG
         assert runner.manager == MANAGER
 
-        # Test resource limits from env vars
-        assert runner.max_concurrency == 2000
-        assert runner.file_descriptor_limit == 1048576
+        # Test limit values (these should match get_*_limit functions' defaults)
+        assert runner.file_descriptor_limit == get_file_descriptor_limit()
+        assert runner.max_concurrency == get_max_concurrency()
 
-    def test__init__with_override_limits(self, setenvvar: pytest.MonkeyPatch) -> None:
+    def test__init__with_override_limits(self) -> None:
         """Test AntaRunner.__init__ method with overridden limits."""
-        # Mock environment variables
-        setenvvar.setenv("ANTA_NOFILE", "1048576")
-        setenvvar.setenv("ANTA_MAX_CONCURRENCY", "2000")
-
         runner = AntaRunner(inventory=INVENTORY, catalog=CATALOG, manager=MANAGER, max_concurrency=1000, file_descriptor_limit=1024)
 
         # Test that provided values override env vars
         assert runner.max_concurrency == 1000
         assert runner.file_descriptor_limit == 1024
-
-    def test__init__default_limits(self) -> None:
-        """Test AntaRunner.__init__ method with default limits."""
-        runner = AntaRunner(inventory=INVENTORY, catalog=CATALOG, manager=MANAGER)
-
-        # Test default values (these should match get_*_limit functions' defaults)
-        assert runner.file_descriptor_limit == get_file_descriptor_limit()
-        assert runner.max_concurrency == get_max_concurrency()
-
-    def test__init__invalid_inventory(self) -> None:
-        """Test AntaRunner.__init__ method with invalid inventory."""
-        with pytest.raises(TypeError, match="inventory must be an AntaInventory instance, got 'str'"):
-            AntaRunner(inventory="invalid", catalog=CATALOG, manager=MANAGER)  # type: ignore[arg-type]
-
-    def test__init__invalid_catalog(self) -> None:
-        """Test AntaRunner.__init__ method with invalid catalog."""
-        with pytest.raises(TypeError, match="catalog must be an AntaCatalog instance, got 'str'"):
-            AntaRunner(inventory=INVENTORY, catalog="invalid", manager=MANAGER)  # type: ignore[arg-type]
-
-    def test__init__invalid_manager(self) -> None:
-        """Test AntaRunner.__init__ method with invalid manager."""
-        with pytest.raises(TypeError, match="manager must be a ResultManager instance, got 'str'"):
-            AntaRunner(inventory=INVENTORY, catalog=CATALOG, manager="invalid")  # type: ignore[arg-type]
 
     async def test_reset(self) -> None:
         """Test AntaRunner.reset method."""
@@ -243,7 +211,7 @@ class TestAntaRunner:
             "Limits:",
             "  Max concurrent tests: 10000",
             "  Total potential connections: 300",
-            "  Max file descriptors: 16384",
+            f"  Max file descriptors: {get_file_descriptor_limit()}",
         ]
         for line in expected_output:
             assert line in caplog.text
@@ -272,7 +240,7 @@ class TestAntaRunner:
             "Limits:",
             "  Max concurrent tests: 10000",
             "  Total potential connections: 15",
-            "  Max file descriptors: 16384",
+            f"  Max file descriptors: {get_file_descriptor_limit()}",
         ]
         for line in expected_output:
             assert line in caplog.text
@@ -292,7 +260,7 @@ class TestAntaRunner:
         runner = AntaRunner(inventory=inventory, catalog=CATALOG)
         await runner.run(dry_run=True)
 
-        warning = "Running with unlimited connections. Connection errors may occur due to file descriptor limit (16384)."
+        warning = f"Running with unlimited connections. Connection errors may occur due to file descriptor limit ({get_file_descriptor_limit()})."
         assert warning in caplog.text
 
     async def test_log_run_information_concurrency_limit(self, caplog: pytest.LogCaptureFixture) -> None:

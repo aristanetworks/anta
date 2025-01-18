@@ -248,7 +248,7 @@ async def main(
     dry_run
         Build the list of coroutine to run and stop before test execution.
     """
-    runner = AntaRunner(inventory, catalog, manager)
+    runner = AntaRunner(inventory=inventory, catalog=catalog, manager=manager)
     scope = AntaRunnerScope(
         devices=devices,
         tests=tests,

@@ -11,11 +11,12 @@ from collections import defaultdict
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field
 
 from anta import GITHUB_SUGGESTION
-from anta.catalog import AntaCatalog
+from anta.catalog import AntaCatalog, AntaTestDefinition
 from anta.cli.console import console
+from anta.device import AntaDevice
 from anta.inventory import AntaInventory
 from anta.logger import anta_log_exception
 from anta.models import AntaTest
@@ -27,8 +28,6 @@ if TYPE_CHECKING:
     from asyncio import Task
     from collections.abc import AsyncGenerator, Coroutine
 
-    from anta.catalog import AntaTestDefinition
-    from anta.device import AntaDevice
     from anta.result_manager.models import TestResult
 
 logger = logging.getLogger(__name__)
@@ -44,56 +43,32 @@ class AntaRunnerInventoryStats:
     established: int = 0
 
 
-class AntaRunnerScope(BaseModel, frozen=True):
+class AntaRunnerScope(BaseModel):
     """ANTA runner scope."""
 
+    model_config = ConfigDict(frozen=True, extra="forbid")
     devices: set[str] | None = None
     tests: set[str] | None = None
     tags: set[str] | None = None
     established_only: bool = True
 
 
-class AntaRunner:
+class AntaRunner(BaseModel):
     """ANTA runner class."""
 
+    model_config = ConfigDict(extra="forbid", arbitrary_types_allowed=True)
+    inventory: AntaInventory
+    catalog: AntaCatalog
+    manager: ResultManager | None = None
+    max_concurrency: int = Field(default_factory=get_max_concurrency)
+    file_descriptor_limit: int = Field(default_factory=get_file_descriptor_limit)
+
     # Internal attributes set during setup phases before each run
-    _selected_inventory: AntaInventory | None
-    _selected_tests: defaultdict[AntaDevice, set[AntaTestDefinition]] | None
-    _inventory_stats: AntaRunnerInventoryStats | None
+    _selected_inventory: AntaInventory | None = None
+    _selected_tests: defaultdict[AntaDevice, set[AntaTestDefinition]] | None = None
+    _inventory_stats: AntaRunnerInventoryStats | None = None
     _total_tests: int = 0
-    _potential_connections: float | None
-
-    def __init__(
-        self,
-        inventory: AntaInventory,
-        catalog: AntaCatalog,
-        manager: ResultManager | None = None,
-        max_concurrency: int | None = None,
-        file_descriptor_limit: int | None = None,
-    ) -> None:
-        """Initialize the ANTA runner."""
-        # Validate core attributes
-        if not isinstance(inventory, AntaInventory):
-            msg = f"inventory must be an AntaInventory instance, got '{type(inventory).__name__}'"
-            raise TypeError(msg)
-        if not isinstance(catalog, AntaCatalog):
-            msg = f"catalog must be an AntaCatalog instance, got '{type(catalog).__name__}'"
-            raise TypeError(msg)
-        if manager is not None and not isinstance(manager, ResultManager):
-            msg = f"manager must be a ResultManager instance, got '{type(manager).__name__}'"
-            raise TypeError(msg)
-
-        # Core attributes
-        self.inventory = inventory
-        self.catalog = catalog
-        self.manager = manager
-
-        # System resource limits
-        self.max_concurrency = max_concurrency if max_concurrency is not None else get_max_concurrency()
-        self.file_descriptor_limit = file_descriptor_limit if file_descriptor_limit is not None else get_file_descriptor_limit()
-
-        # Create internal attributes
-        self.reset()
+    _potential_connections: float | None = None
 
     def reset(self) -> None:
         """Create or reset the attributes of the ANTA runner."""
