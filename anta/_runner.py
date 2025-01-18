@@ -63,7 +63,7 @@ class AntaRunner(BaseModel):
     max_concurrency: int = Field(default_factory=get_max_concurrency)
     file_descriptor_limit: int = Field(default_factory=get_file_descriptor_limit)
 
-    # Internal attributes set during setup phases before each run
+    # Private attributes set during setup phases before each run
     _selected_inventory: AntaInventory | None = None
     _selected_tests: defaultdict[AntaDevice, set[AntaTestDefinition]] | None = None
     _inventory_stats: AntaRunnerInventoryStats | None = None
