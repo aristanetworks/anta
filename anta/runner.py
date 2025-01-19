@@ -31,7 +31,7 @@ if os.name == "posix":
 
     DEFAULT_NOFILE = 16384
 
-    @deprecated("This function is deprecated and will be removed in ANTA v2.0.0.")
+    @deprecated("This function is deprecated and will be removed in ANTA v2.0.0. Use AntaRunner class instead.", category=DeprecationWarning)
     def adjust_rlimit_nofile() -> tuple[int, int]:
         """Adjust the maximum number of open file descriptors for the ANTA process.
 
@@ -61,6 +61,7 @@ if os.name == "posix":
 logger = logging.getLogger(__name__)
 
 
+@deprecated("This function is deprecated and will be removed in ANTA v2.0.0. Use AntaRunner class instead.", category=DeprecationWarning)
 def log_cache_statistics(devices: list[AntaDevice]) -> None:
     """Log cache statistics for each device in the inventory.
 
@@ -81,6 +82,7 @@ def log_cache_statistics(devices: list[AntaDevice]) -> None:
             logger.info("Caching is not enabled on %s", device.name)
 
 
+@deprecated("This function is deprecated and will be removed in ANTA v2.0.0. Use AntaRunner class instead.", category=DeprecationWarning)
 async def setup_inventory(inventory: AntaInventory, tags: set[str] | None, devices: set[str] | None, *, established_only: bool) -> AntaInventory | None:
     """Set up the inventory for the ANTA run.
 
@@ -123,6 +125,7 @@ async def setup_inventory(inventory: AntaInventory, tags: set[str] | None, devic
     return selected_inventory
 
 
+@deprecated("This function is deprecated and will be removed in ANTA v2.0.0. Use AntaRunner class instead.", category=DeprecationWarning)
 def prepare_tests(
     inventory: AntaInventory, catalog: AntaCatalog, tests: set[str] | None, tags: set[str] | None
 ) -> defaultdict[AntaDevice, set[AntaTestDefinition]] | None:
@@ -179,6 +182,7 @@ def prepare_tests(
     return device_to_tests
 
 
+@deprecated("This function is deprecated and will be removed in ANTA v2.0.0. Use AntaRunner class instead.", category=DeprecationWarning)
 def get_coroutines(selected_tests: defaultdict[AntaDevice, set[AntaTestDefinition]], manager: ResultManager | None = None) -> list[Coroutine[Any, Any, TestResult]]:
     """Get the coroutines for the ANTA run.
 

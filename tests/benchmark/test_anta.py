@@ -37,6 +37,7 @@ def test_anta_dry_run(
 
     results = session_results[request.node.callspec.id]
 
+    # TODO: Use AntaRunner in ANTA v2.0.0
     @benchmark
     def _() -> None:
         results.reset()
@@ -69,6 +70,7 @@ def test_anta(
 
     results = session_results[request.node.callspec.id]
 
+    # TODO: Use AntaRunner in ANTA v2.0.0
     @benchmark
     def _() -> None:
         results.reset()
