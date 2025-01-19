@@ -1,7 +1,7 @@
 # Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""test anta._runner.py."""
+"""Test anta._runner.py."""
 
 from __future__ import annotations
 
@@ -102,15 +102,6 @@ class TestAntaRunnerRun:
         assert "Dry-run mode, exiting before running the tests." in caplog.records[-1].message
 
     @pytest.mark.parametrize(("anta_runner"), [{"inventory": "test_inventory_with_tags.yml", "catalog": "test_catalog_with_tags.yml"}], indirect=True)
-    async def test_run_no_manager(self, anta_runner: AntaRunner) -> None:
-        """Test AntaRunner.run method without a ResultManager instance."""
-        assert anta_runner.manager is None
-
-        results = await anta_runner.run(dry_run=True)
-        assert isinstance(results, ResultManager)
-        assert len(results.results) == 27
-
-    @pytest.mark.parametrize(("anta_runner"), [{"inventory": "test_inventory_with_tags.yml", "catalog": "test_catalog_with_tags.yml"}], indirect=True)
     async def test_run_invalid_scope(self, anta_runner: AntaRunner) -> None:
         """Test AntaRunner.run method with invalid scope."""
         with pytest.raises(ValidationError, match="1 validation error for AntaRunnerScope"):
@@ -191,24 +182,34 @@ class TestAntaRunnerRun:
         assert len(anta_runner._selected_tests) == expected_devices
         assert sum(len(tests) for tests in anta_runner._selected_tests.values()) == expected_tests
 
+    @pytest.mark.parametrize(("anta_runner"), [{"inventory": "test_inventory_with_tags.yml", "catalog": "test_catalog_with_tags.yml"}], indirect=True)
+    async def test_multiple_runs_no_manager(self, anta_runner: AntaRunner) -> None:
+        """Test multiple runs without a ResultManager instance."""
+        assert anta_runner.manager is None
+
+        first_run_manager = await anta_runner.run(dry_run=True)
+        assert isinstance(first_run_manager, ResultManager)
+        assert len(first_run_manager.results) == 27
+
+        second_run_manager = await anta_runner.run(dry_run=True)
+        assert isinstance(second_run_manager, ResultManager)
+        assert len(second_run_manager.results) == 27
+
     @pytest.mark.parametrize(
         ("anta_runner"), [{"inventory": "test_inventory_with_tags.yml", "catalog": "test_catalog_with_tags.yml", "manager": ResultManager()}], indirect=True
     )
-    async def test_run_clear_results(self, anta_runner: AntaRunner) -> None:
-        """Test AntaRunner.run method with clearing results."""
+    async def test_multiple_runs_with_manager(self, anta_runner: AntaRunner) -> None:
+        """Test multiple runs with a provided ResultManager instance."""
         assert anta_runner.manager is not None
 
-        initial_run = await anta_runner.run(dry_run=True)
-        assert len(initial_run.results) == 27
-        assert initial_run.results == anta_runner.manager.results
+        first_run_manager = await anta_runner.run(dry_run=True)
+        assert len(first_run_manager.results) == 27
+        assert first_run_manager.results == anta_runner.manager.results
 
-        second_run = await anta_runner.run(dry_run=True)
-        assert len(second_run.results) == 54
-        assert initial_run.results == second_run.results
-
-        third_run = await anta_runner.run(dry_run=True, clear_results=True)
-        assert len(third_run.results) == 27
-        assert initial_run.results == second_run.results == third_run.results
+        # When a manager is provided, results from subsequent runs are appended to the manager
+        second_run_manager = await anta_runner.run(dry_run=True)
+        assert len(second_run_manager.results) == 54
+        assert first_run_manager.results == second_run_manager.results
 
 
 class TestAntaRunnerConcurrency:

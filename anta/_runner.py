@@ -35,7 +35,25 @@ logger = logging.getLogger(__name__)
 
 @dataclass(frozen=True)
 class AntaRunnerInventoryStats:
-    """Statistics about inventory filtering."""
+    """Track inventory filtering statistics during an ANTA run.
+
+    This class maintains counters for tracking how the device inventory is filtered
+    during test setup and.
+
+    When initialized, the counters are set to zero.
+
+    Attributes
+    ----------
+    total : int
+        Total number of devices in the original inventory before filtering.
+    filtered_by_tags : int
+        Number of devices excluded due to tag filtering.
+    connection_failed : int
+        Number of devices that failed to establish a connection.
+    established : int
+        Number of devices with successfully established connections that are
+        included in the final test run.
+    """
 
     total: int = 0
     filtered_by_tags: int = 0
@@ -44,7 +62,27 @@ class AntaRunnerInventoryStats:
 
 
 class AntaRunnerScope(BaseModel):
-    """ANTA runner scope."""
+    """Define the scope of an ANTA test run.
+
+    The scope determines which devices and tests to include in a run, and how to
+    filter them. This class is used with the AntaRunner.run() method.
+
+    Attributes
+    ----------
+    devices : set[str] | None, optional
+        Set of device names to run tests on. If None, includes all devices in
+        the inventory. Commonly set via the NRFU CLI `--device/-d` option.
+    tests : set[str] | None, optional
+        Set of test names to run. If None, runs all available tests in the
+        catalog. Commonly set via the NRFU CLI `--test/-t` option.
+    tags : set[str] | None, optional
+        Set of tags used to filter both devices and tests. A device or test
+        must match any of the provided tags to be included. Commonly set via
+        the NRFU CLI `--tags` option.
+    established_only : bool, default=True
+        When True, only includes devices with established connections in the
+        test run.
+    """
 
     model_config = ConfigDict(frozen=True, extra="forbid")
     devices: set[str] | None = None
@@ -54,7 +92,78 @@ class AntaRunnerScope(BaseModel):
 
 
 class AntaRunner(BaseModel):
-    """ANTA runner class."""
+    """Run and manage ANTA test execution.
+
+    This class orchestrates the execution of ANTA tests across network devices. It handles
+    inventory filtering, test selection, concurrent test execution, and result collection.
+
+    Attributes
+    ----------
+    inventory : AntaInventory
+        Inventory of network devices to test.
+    catalog : AntaCatalog
+        Catalog of available tests to run.
+    manager : ResultManager | None, optional
+        Manager for collecting and storing test results. If None, a new manager
+        is returned for each run, otherwise the provided manager is used
+        and results from subsequent runs are appended to it.
+    max_concurrency : int
+        Maximum number of tests that can run concurrently. Defaults from `get_max_concurrency()`.
+        See the `anta.settings` module for details on how this value is determined from
+        environment variables and system defaults.
+    file_descriptor_limit : int
+        System file descriptor limit for connections. Defaults from `get_file_descriptor_limit()`.
+        See the `anta.settings` module for details on how this value is determined from
+        environment variables and system defaults.
+    _selected_inventory : AntaInventory | None
+        Internal state of filtered inventory for current run.
+    _selected_tests : defaultdict[AntaDevice, set[AntaTestDefinition]] | None
+        Mapping of devices to their selected tests for current run.
+    _inventory_stats : AntaRunnerInventoryStats | None
+        Statistics about inventory filtering for current run.
+    _total_tests : int
+        Total number of tests to run in current execution.
+    _potential_connections : float | None
+        Total potential concurrent connections needed for current run.
+        None if unknown, float('inf') if unlimited.
+
+    Notes
+    -----
+    After initializing an `AntaRunner` instance, tests should only be executed through
+    the `run()` method. This method manages the complete test lifecycle including setup,
+    execution, and cleanup.
+
+    All internal methods and state (prefixed with _) are managed by the `run()` method
+    and should not be called directly. The internal state is reset between runs to
+    ensure clean execution.
+
+
+    Examples
+    --------
+    ```python
+    import asyncio
+
+    from anta._runner import AntaRunner, AntaRunnerScope
+    from anta.catalog import AntaCatalog
+    from anta.inventory import AntaInventory
+
+    inventory = AntaInventory.parse(
+        filename="anta_inventory.yml",
+        username="arista",
+        password="arista",
+    )
+    catalog = AntaCatalog.parse(filename="anta_catalog.yml")
+
+    # Create an ANTA runner
+    runner = AntaRunner(inventory=inventory, catalog=catalog)
+
+    # Run all tests
+    first_run_results = asyncio.run(runner.run())
+
+    # Run with filters
+    second_run_results = asyncio.run(runner.run(scope=AntaRunnerScope(tags={"leaf"})))
+    ```
+    """
 
     model_config = ConfigDict(extra="forbid", arbitrary_types_allowed=True)
     inventory: AntaInventory
@@ -63,7 +172,7 @@ class AntaRunner(BaseModel):
     max_concurrency: int = Field(default_factory=get_max_concurrency)
     file_descriptor_limit: int = Field(default_factory=get_file_descriptor_limit)
 
-    # Private attributes set during setup phases before each run
+    # Internal attributes set during setup phases before each run
     _selected_inventory: AntaInventory | None = None
     _selected_tests: defaultdict[AntaDevice, set[AntaTestDefinition]] | None = None
     _inventory_stats: AntaRunnerInventoryStats | None = None
@@ -71,41 +180,46 @@ class AntaRunner(BaseModel):
     _potential_connections: float | None = None
 
     def reset(self) -> None:
-        """Create or reset the attributes of the ANTA runner."""
+        """Reset the internal attributes of the ANTA runner."""
         self._selected_inventory: AntaInventory | None = None
         self._selected_tests: defaultdict[AntaDevice, set[AntaTestDefinition]] | None = None
         self._inventory_stats: AntaRunnerInventoryStats | None = None
         self._total_tests: int = 0
         self._potential_connections: float | None = None
 
-    async def run(self, scope: AntaRunnerScope | None = None, *, dry_run: bool = False, clear_results: bool = False) -> ResultManager:
-        """Run ANTA."""
+    async def run(self, scope: AntaRunnerScope | None = None, *, dry_run: bool = False) -> ResultManager:
+        """Run ANTA.
+
+        Parameters
+        ----------
+        scope
+            Scope of the ANTA run. If None, runs all tests on all devices.
+        dry_run
+            Dry-run mode flag. If True, runs all setup steps but does not execute tests.
+        """
         scope = scope or AntaRunnerScope()
 
         # Cleanup the instance before each run
         self.reset()
         self.catalog.clear_indexes()
-        if self.manager is None:
-            self.manager = ResultManager()
-        elif clear_results:
-            self.manager.reset()
+        manager = ResultManager() if self.manager is None else self.manager
 
         if not self.catalog.tests:
             logger.info("The list of tests is empty, exiting")
-            return self.manager
+            return manager
 
         with Catchtime(logger=logger, message="Preparing ANTA NRFU Run"):
             # Set up inventory
             if not await self._setup_inventory(scope, dry_run=dry_run):
-                return self.manager
+                return manager
 
             # Set up tests
             with Catchtime(logger=logger, message="Preparing Tests"):
                 if not self._setup_tests(scope):
-                    return self.manager
+                    return manager
 
             # Set up test coroutines
-            generator = self._setup_coroutines(dry_run=dry_run)
+            generator = self._setup_coroutines(manager=manager if dry_run else None)
 
             # Log run information
             self._log_run_information(dry_run=dry_run)
@@ -114,17 +228,17 @@ class AntaRunner(BaseModel):
             logger.info("Dry-run mode, exiting before running the tests.")
             async for test in generator:
                 test.close()
-            return self.manager
+            return manager
 
         if AntaTest.progress is not None:
             AntaTest.nrfu_task = AntaTest.progress.add_task("Running NRFU Tests...", total=self._total_tests)
 
         with Catchtime(logger=logger, message="Running Tests"):
             async for result in self._run(generator):
-                self.manager.add(result)
+                manager.add(result)
 
         self._log_cache_statistics()
-        return self.manager
+        return manager
 
     async def _setup_inventory(self, scope: AntaRunnerScope, *, dry_run: bool = False) -> bool:
         """Set up the inventory for the ANTA run."""
@@ -220,7 +334,7 @@ class AntaRunner(BaseModel):
         self._potential_connections = None if not all_have_connections else float("inf") if unlimited_connections else total_connections
         return True
 
-    async def _setup_coroutines(self, *, dry_run: bool = False) -> AsyncGenerator[Coroutine[Any, Any, TestResult], None]:
+    async def _setup_coroutines(self, *, manager: ResultManager | None = None) -> AsyncGenerator[Coroutine[Any, Any, TestResult], None]:
         """Set up test coroutines from selected tests for the ANTA run.
 
         It creates an async generator of coroutines which are created by the `test` method of the AntaTest instances.
@@ -228,8 +342,8 @@ class AntaRunner(BaseModel):
 
         Parameters
         ----------
-        dry_run
-            Dry-run mode flag. Test results are pre-populated in the manager.
+        manager
+            An optional ResultManager instance to pre-populate with the test results. Used in `dry_run` mode.
 
         Yields
         ------
@@ -243,8 +357,8 @@ class AntaRunner(BaseModel):
             for test in test_definitions:
                 try:
                     test_instance = test.test(device=device, inputs=test.inputs)
-                    if self.manager is not None and dry_run:
-                        self.manager.add(test_instance.result)
+                    if manager is not None:
+                        manager.add(test_instance.result)
                     coroutine = test_instance.test()
                 except Exception as e:  # noqa: PERF203, BLE001
                     # An AntaTest instance is potentially user-defined code.

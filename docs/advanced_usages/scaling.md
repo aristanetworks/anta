@@ -100,7 +100,7 @@ export ANTA_KEEPALIVE_EXPIRY=5.0
 
 ## Timeouts Configuration
 
-ANTA provides several environment variables to control `httpx` timeouts. If not set, these values default to the global timeout of ANTA (30.0 seconds). The global timeout can also be set via the `--timeout` command-line option. See [HTTPX documentation](https://www.python-httpx.org/advanced/timeouts/) for more details.
+ANTA provides several environment variables to control `httpx` timeouts. If not set, these values default to the default global timeout value of ANTA (30.0 seconds). The global timeout can also be set via the `--timeout` command-line option. See [HTTPX documentation](https://www.python-httpx.org/advanced/timeouts/) for more details.
 
 ```bash
 # Global timeout
@@ -177,7 +177,7 @@ While ANTA is designed to work efficiently as a single process, there may be scn
 ## Possible Use Cases
 
 - **Distributed Testing**: Running ANTA instances on different machines to test separate parts of your network (e.g., data centers, regions)
-- **Parallel Execution**: Using tools like `GNU Parallel` to run multiple ANTA instances targeting different device groups (e.g., spines, leaves)
+- **Parallel Execution**: Using tools like `GNU Parallel` to run multiple ANTA instances targeting different device groups (e.g., spines, leafs)
 - **Independent Testing**: Running separate ANTA instances for different testing purposes (e.g., connectivity tests vs. routing tests)
 
 # 🎉 Conclusion
