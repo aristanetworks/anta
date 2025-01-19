@@ -85,8 +85,10 @@ class AntaRunner(BaseModel):
         # Cleanup the instance before each run
         self.reset()
         self.catalog.clear_indexes()
-        if self.manager is None or clear_results:
+        if self.manager is None:
             self.manager = ResultManager()
+        elif clear_results:
+            self.manager.reset()
 
         if not self.catalog.tests:
             logger.info("The list of tests is empty, exiting")
@@ -152,7 +154,7 @@ class AntaRunner(BaseModel):
         connection_failed = len(filtered_inventory) - len(self._selected_inventory)
 
         # If there are no devices in the inventory after filtering, exit
-        if not self._selected_inventory:
+        if not self._selected_inventory.devices:
             # Build message parts
             tag_msg = f"matching the tags {scope.tags} " if scope.tags else ""
             device_msg = f" Selected devices: {scope.devices} " if scope.devices is not None else ""
@@ -241,7 +243,7 @@ class AntaRunner(BaseModel):
             for test in test_definitions:
                 try:
                     test_instance = test.test(device=device, inputs=test.inputs)
-                    if self.manager and dry_run:
+                    if self.manager is not None and dry_run:
                         self.manager.add(test_instance.result)
                     coroutine = test_instance.test()
                 except Exception as e:  # noqa: PERF203, BLE001
