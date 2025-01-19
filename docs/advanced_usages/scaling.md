@@ -196,22 +196,26 @@ Remember to:
 
 # 📚 Additional Documentation
 
-- **Python AsyncIO**
-  - [AsyncIO Documentation](https://docs.python.org/3/library/asyncio.html)
-  - [AsyncIO Event Loop](https://docs.python.org/3/library/asyncio-eventloop.html)
-  - [AsyncIO Tasks and Coroutines](https://docs.python.org/3/library/asyncio-task.html)
+**Python AsyncIO**:
 
-- **HTTPX**
-  - [HTTPX Documentation](https://www.python-httpx.org/)
-  - [Timeouts](https://www.python-httpx.org/advanced/timeouts/)
-  - [Resource Limits](https://www.python-httpx.org/advanced/resource-limits/)
+- [AsyncIO Documentation](https://docs.python.org/3/library/asyncio.html)
+- [AsyncIO Event Loop](https://docs.python.org/3/library/asyncio-eventloop.html)
+- [AsyncIO Tasks and Coroutines](https://docs.python.org/3/library/asyncio-task.html)
 
-- **GNU Parallel**
-  - [GNU Parallel Documentation](https://www.gnu.org/software/parallel/)
-  - [GNU Parallel Tutorial](https://www.gnu.org/software/parallel/parallel_tutorial.html)
+**HTTPX**:
 
-- **JSON and YAML Processing**
-  - [jq Manual](https://jqlang.github.io/jq/manual/)
-  - [jq GitHub Repository](https://github.com/jqlang/jq)
-  - [yq Documentation](https://mikefarah.gitbook.io/yq/)
-  - [yq GitHub Repository](https://github.com/mikefarah/yq/)
+- [HTTPX Documentation](https://www.python-httpx.org/)
+- [Timeouts](https://www.python-httpx.org/advanced/timeouts/)
+- [Resource Limits](https://www.python-httpx.org/advanced/resource-limits/)
+
+**GNU Parallel**:
+
+- [GNU Parallel Documentation](https://www.gnu.org/software/parallel/)
+- [GNU Parallel Tutorial](https://www.gnu.org/software/parallel/parallel_tutorial.html)
+
+**JSON and YAML Processing**:
+
+- [jq Manual](https://jqlang.github.io/jq/manual/)
+- [jq GitHub Repository](https://github.com/jqlang/jq)
+- [yq Documentation](https://mikefarah.gitbook.io/yq/)
+- [yq GitHub Repository](https://github.com/mikefarah/yq/)

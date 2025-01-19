@@ -10,6 +10,8 @@ import os
 from collections import defaultdict
 from typing import TYPE_CHECKING, Any
 
+from typing_extensions import deprecated
+
 from anta import GITHUB_SUGGESTION
 from anta._runner import AntaRunner, AntaRunnerScope
 from anta.logger import anta_log_exception, exc_to_str
@@ -29,6 +31,7 @@ if os.name == "posix":
 
     DEFAULT_NOFILE = 16384
 
+    @deprecated("This function is deprecated and will be removed in ANTA v2.0.0.")
     def adjust_rlimit_nofile() -> tuple[int, int]:
         """Adjust the maximum number of open file descriptors for the ANTA process.
 
