@@ -231,7 +231,7 @@ class VerifyLoggingLogsGeneration(AntaTest):
         """Input model for the VerifyLoggingLogsGeneration test."""
 
         severity_level: LogSeverityLevel = "informational"
-        """Specify log severity level, Defaults to informational."""
+        """Log severity level. Defaults to informational."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for log severity level in the input."""
@@ -288,7 +288,7 @@ class VerifyLoggingHostname(AntaTest):
         """Input model for the VerifyLoggingHostname test."""
 
         severity_level: LogSeverityLevel = "informational"
-        """Specify log severity level, Defaults to informational."""
+        """Log severity level. Defaults to informational."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for log severity level in the input."""
@@ -351,7 +351,7 @@ class VerifyLoggingTimestamp(AntaTest):
         """Input model for the VerifyLoggingTimestamp test."""
 
         severity_level: LogSeverityLevel = "informational"
-        """Specify log severity level, Defaults to informational."""
+        """Log severity level. Defaults to informational."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for log severity level in the input."""
