@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 import pytest
 from pydantic import ValidationError
 
-from anta.tests.routing.generic import VerifyRouteEntry
+from anta.tests.routing.generic import VerifyIPv4RouteType, VerifyRouteEntry
 
 if TYPE_CHECKING:
     from anta.input_models.routing.generic import IPv4Routes
@@ -40,3 +40,28 @@ class TestVerifyRouteEntryInput:
         """Test VerifyRouteEntry.Input invalid inputs."""
         with pytest.raises(ValidationError):
             VerifyRouteEntry.Input(route_entries=route_entries)
+
+
+class TestVerifyIPv4RouteTypeInput:
+    """Test anta.tests.routing.bgp.VerifyIPv4RouteType.Input."""
+
+    @pytest.mark.parametrize(
+        ("routes_entries"),
+        [
+            pytest.param([{"prefix": "192.168.0.0/24", "vrf": "default", "route_type": "eBGP"}], id="valid"),
+        ],
+    )
+    def test_valid(self, routes_entries: list[IPv4Routes]) -> None:
+        """Test VerifyIPv4RouteType.Input valid inputs."""
+        VerifyIPv4RouteType.Input(routes_entries=routes_entries)
+
+    @pytest.mark.parametrize(
+        ("routes_entries"),
+        [
+            pytest.param([{"prefix": "192.168.0.0/24", "vrf": "default"}], id="invalid"),
+        ],
+    )
+    def test_invalid(self, routes_entries: list[IPv4Routes]) -> None:
+        """Test VerifyIPv4RouteType.Input invalid inputs."""
+        with pytest.raises(ValidationError):
+            VerifyIPv4RouteType.Input(routes_entries=routes_entries)

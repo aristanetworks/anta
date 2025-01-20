@@ -291,6 +291,7 @@ anta.tests.logging:
       # Verifies there are no syslog messages with a severity of ERRORS or higher.
   - VerifyLoggingHostname:
       # Verifies if logs are generated with the device FQDN.
+      severity_level: informational
   - VerifyLoggingHosts:
       # Verifies logging hosts (syslog servers) for a specified VRF.
       hosts:
@@ -299,6 +300,7 @@ anta.tests.logging:
       vrf: default
   - VerifyLoggingLogsGeneration:
       # Verifies if logs are generated.
+      severity_level: informational
   - VerifyLoggingPersistent:
       # Verifies if logging persistent is enabled and logs are saved in flash.
   - VerifyLoggingSourceIntf:
@@ -307,6 +309,7 @@ anta.tests.logging:
       vrf: default
   - VerifyLoggingTimestamp:
       # Verifies if logs are generated with the appropriate timestamp.
+      severity_level: informational
   - VerifySyslogLogging:
       # Verifies if syslog logging is enabled.
 anta.tests.mlag:

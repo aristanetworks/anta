@@ -233,6 +233,16 @@ class VerifyIPv4RouteType(AntaTest):
         routes_entries: list[IPv4Routes]
         """List of IPv4 route(s)."""
 
+        @field_validator("routes_entries")
+        @classmethod
+        def validate_routes_entries(cls, routes_entries: list[IPv4Routes]) -> list[IPv4Routes]:
+            """Validate that 'route_type' field is provided in each BGP route entry."""
+            for entry in routes_entries:
+                if entry.route_type is None:
+                    msg = f"{entry} 'route_type' field missing in the input"
+                    raise ValueError(msg)
+            return routes_entries
+
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyIPv4RouteType."""
