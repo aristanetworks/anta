@@ -2684,10 +2684,12 @@
 
   
         <p>Verifies the route-type of the IPv4 prefixes.</p>
-<p>This test performs the following checks for each IPv4 route:
-    1. Verifies that the specified VRF is configured.
-    2. Verifies that the specified IPv4 route is exists in the configuration.
-    3. Verifies that the the specified IPv4 route is of the expected type.</p>
+<p>This test performs the following checks for each IPv4 route:</p>
+<ol>
+<li>Verifies that the specified VRF is configured.</li>
+<li>Verifies that the specified IPv4 route is exists in the configuration.</li>
+<li>Verifies that the the specified IPv4 route is of the expected type.</li>
+</ol>
 
 
 <details class="expected-results" open>
@@ -2754,6 +2756,20 @@
             </tr>
           </thead>
           <tbody>
+              <tr>
+                <td><code>routes_entries</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="anta.input_models.routing.generic.IPv4Routes" href="#anta.input_models.routing.generic.IPv4Routes">IPv4Routes</a>]</code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    List of IPv4 route(s).
+                  </div>
+                </td>
+                <td>
+                    <em>-</em>
+                </td>
+              </tr>
           </tbody>
         </table>
   </div>
@@ -2835,13 +2851,26 @@
 <span class="normal">255</span>
 <span class="normal">256</span>
 <span class="normal">257</span>
-<span class="normal">258</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyIPv4RouteType</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyIPv4RouteType</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the route-type of the IPv4 prefixes.</span>
 
 <span class="sd">    This test performs the following checks for each IPv4 route:</span>
-<span class="sd">        1. Verifies that the specified VRF is configured.</span>
-<span class="sd">        2. Verifies that the specified IPv4 route is exists in the configuration.</span>
-<span class="sd">        3. Verifies that the the specified IPv4 route is of the expected type.</span>
+
+<span class="sd">      1. Verifies that the specified VRF is configured.</span>
+<span class="sd">      2. Verifies that the specified IPv4 route is exists in the configuration.</span>
+<span class="sd">      3. Verifies that the the specified IPv4 route is of the expected type.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
@@ -2880,6 +2909,17 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyIPv4RouteType test.&quot;&quot;&quot;</span>
 
         <span class="n">routes_entries</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">IPv4Routes</span><span class="p">]</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of IPv4 route(s).&quot;&quot;&quot;</span>
+
+        <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;routes_entries&quot;</span><span class="p">)</span>
+        <span class="nd">@classmethod</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">validate_routes_entries</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">routes_entries</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">IPv4Routes</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">IPv4Routes</span><span class="p">]:</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Validate that &#39;route_type&#39; field is provided in each BGP route entry.&quot;&quot;&quot;</span>
+            <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">routes_entries</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">entry</span><span class="o">.</span><span class="n">route_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">entry</span><span class="si">}</span><span class="s2"> &#39;route_type&#39; field missing in the input&quot;</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">routes_entries</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -3667,7 +3707,7 @@
                 </td>
                 <td>
                   <div class="doc-md-description">
-                    The IPV4 network to validate the route type.
+                    IPv4 prefix in CIDR notation.
                   </div>
                 </td>
                 <td>
@@ -3691,15 +3731,15 @@
               <tr>
                 <td><code>route_type</code></td>
                 <td>
-                      <code><a class="autorefs autorefs-internal" title="anta.custom_types.IPv4RouteType" href="../types/#anta.custom_types.IPv4RouteType">IPv4RouteType</a></code>
+                      <code><a class="autorefs autorefs-internal" title="anta.custom_types.IPv4RouteType" href="../types/#anta.custom_types.IPv4RouteType">IPv4RouteType</a> | None</code>
                 </td>
                 <td>
                   <div class="doc-md-description">
-                    List of IPV4 Route type to validate the valid rout type.
+                    Expected route type. Required field in the `VerifyIPv4RouteType` test.
                   </div>
                 </td>
                 <td>
-                    <em>-</em>
+                      <code>None</code>
                 </td>
               </tr>
           </tbody>
@@ -3732,11 +3772,11 @@
 
     <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
     <span class="n">prefix</span><span class="p">:</span> <span class="n">IPv4Network</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The IPV4 network to validate the route type.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;IPv4 prefix in CIDR notation.&quot;&quot;&quot;</span>
     <span class="n">vrf</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;VRF context. Defaults to `default` VRF.&quot;&quot;&quot;</span>
-    <span class="n">route_type</span><span class="p">:</span> <span class="n">IPv4RouteType</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;List of IPV4 Route type to validate the valid rout type.&quot;&quot;&quot;</span>
+    <span class="n">route_type</span><span class="p">:</span> <span class="n">IPv4RouteType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Expected route type. Required field in the `VerifyIPv4RouteType` test.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a human-readable string representation of the IPv4RouteType for reporting.&quot;&quot;&quot;</span>
