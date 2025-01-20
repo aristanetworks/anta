@@ -3,7 +3,6 @@
 # that can be found in the LICENSE file.
 """Tests for anta.input_models.routing.generic.py."""
 
-# pylint: disable=C0302
 from __future__ import annotations
 
 from typing import TYPE_CHECKING

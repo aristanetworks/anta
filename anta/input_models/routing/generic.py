@@ -17,11 +17,11 @@ class IPv4Routes(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
     prefix: IPv4Network
-    """The IPV4 network to validate the route type."""
+    """IPv4 prefix in CIDR notation."""
     vrf: str = "default"
     """VRF context. Defaults to `default` VRF."""
     route_type: IPv4RouteType | None = None
-    """List of IPV4 Route type to validate the valid rout type. Required field in the `VerifyIPv4RouteType` test."""
+    """Expected route type. Required field in the `VerifyIPv4RouteType` test."""
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the IPv4RouteType for reporting."""
