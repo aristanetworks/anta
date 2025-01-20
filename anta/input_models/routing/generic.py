@@ -20,8 +20,8 @@ class IPv4Routes(BaseModel):
     """The IPV4 network to validate the route type."""
     vrf: str = "default"
     """VRF context. Defaults to `default` VRF."""
-    route_type: IPv4RouteType
-    """List of IPV4 Route type to validate the valid rout type."""
+    route_type: IPv4RouteType | None = None
+    """List of IPV4 Route type to validate the valid rout type. Required field in the `VerifyIPv4RouteType` test."""
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the IPv4RouteType for reporting."""

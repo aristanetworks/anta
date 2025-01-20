@@ -11,7 +11,7 @@ from functools import cache
 from ipaddress import IPv4Address, IPv4Interface
 from typing import TYPE_CHECKING, ClassVar, Literal
 
-from pydantic import model_validator
+from pydantic import field_validator, model_validator
 
 from anta.custom_types import PositiveInteger
 from anta.input_models.routing.generic import IPv4Routes
@@ -189,9 +189,10 @@ class VerifyIPv4RouteType(AntaTest):
     """Verifies the route-type of the IPv4 prefixes.
 
     This test performs the following checks for each IPv4 route:
-        1. Verifies that the specified VRF is configured.
-        2. Verifies that the specified IPv4 route is exists in the configuration.
-        3. Verifies that the the specified IPv4 route is of the expected type.
+
+      1. Verifies that the specified VRF is configured.
+      2. Verifies that the specified IPv4 route is exists in the configuration.
+      3. Verifies that the the specified IPv4 route is of the expected type.
 
     Expected Results
     ----------------
@@ -230,6 +231,17 @@ class VerifyIPv4RouteType(AntaTest):
         """Input model for the VerifyIPv4RouteType test."""
 
         routes_entries: list[IPv4Routes]
+        """List of IPv4 route(s)."""
+
+        @field_validator("routes_entries")
+        @classmethod
+        def validate_routes_entries(cls, routes_entries: list[IPv4Routes]) -> list[IPv4Routes]:
+            """Validate that 'route_type' field is provided in each BGP route entry."""
+            for entry in routes_entries:
+                if entry.route_type is None:
+                    msg = f"{entry} 'route_type' field missing in the input"
+                    raise ValueError(msg)
+            return routes_entries
 
     @AntaTest.anta_test
     def test(self) -> None:
