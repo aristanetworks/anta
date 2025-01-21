@@ -265,4 +265,3 @@ SnmpEncryptionAlgorithm = Literal["AES-128", "AES-192", "AES-256", "DES"]
 DynamicVlanSource = Literal["dmf", "dot1x", "dynvtep", "evpn", "mlag", "mlagsync", "mvpn", "swfwd", "vccbfd"]
 LogSeverityLevel = Literal["alerts", "critical", "debugging", "emergencies", "errors", "informational", "notifications", "warnings"]
 RedistributedProtocol = Literal["AttachedHost", "Bgp", "Connected", "Dynamic", "IS-IS", "OSPF Internal", "OSPFv3 Internal", "RIP", "Static", "User"]
-
