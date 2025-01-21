@@ -3,7 +3,6 @@
 # that can be found in the LICENSE file.
 """Tests for anta.input_models.routing.generic.py."""
 
-# pylint: disable=C0302
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -11,14 +10,14 @@ from typing import TYPE_CHECKING
 import pytest
 from pydantic import ValidationError
 
-from anta.tests.routing.generic import VerifyIPv4RouteType, VerifyRouteEntry
+from anta.tests.routing.generic import VerifyIPv4RouteNextHops, VerifyIPv4RouteType
 
 if TYPE_CHECKING:
     from anta.input_models.routing.generic import IPv4Routes
 
 
 class TestVerifyRouteEntryInput:
-    """Test anta.tests.routing.generic.VerifyRouteEntry.Input."""
+    """Test anta.tests.routing.generic.VerifyIPv4RouteNextHops.Input."""
 
     @pytest.mark.parametrize(
         ("route_entries"),
@@ -27,8 +26,8 @@ class TestVerifyRouteEntryInput:
         ],
     )
     def test_valid(self, route_entries: list[IPv4Routes]) -> None:
-        """Test VerifyRouteEntry.Input valid inputs."""
-        VerifyRouteEntry.Input(route_entries=route_entries)
+        """Test VerifyIPv4RouteNextHops.Input valid inputs."""
+        VerifyIPv4RouteNextHops.Input(route_entries=route_entries)
 
     @pytest.mark.parametrize(
         ("route_entries"),
@@ -37,9 +36,9 @@ class TestVerifyRouteEntryInput:
         ],
     )
     def test_invalid(self, route_entries: list[IPv4Routes]) -> None:
-        """Test VerifyRouteEntry.Input invalid inputs."""
+        """Test VerifyIPv4RouteNextHops.Input invalid inputs."""
         with pytest.raises(ValidationError):
-            VerifyRouteEntry.Input(route_entries=route_entries)
+            VerifyIPv4RouteNextHops.Input(route_entries=route_entries)
 
 
 class TestVerifyIPv4RouteTypeInput:

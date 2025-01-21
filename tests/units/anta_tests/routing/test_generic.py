@@ -11,7 +11,7 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
-from anta.tests.routing.generic import VerifyIPv4RouteType, VerifyRouteEntry, VerifyRoutingProtocolModel, VerifyRoutingTableEntry, VerifyRoutingTableSize
+from anta.tests.routing.generic import VerifyIPv4RouteNextHops, VerifyIPv4RouteType, VerifyRoutingProtocolModel, VerifyRoutingTableEntry, VerifyRoutingTableSize
 from tests.units.anta_tests import test
 
 DATA: list[dict[str, Any]] = [
@@ -350,7 +350,7 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "success",
-        "test": VerifyRouteEntry,
+        "test": VerifyIPv4RouteNextHops,
         "eos_data": [
             {
                 "vrfs": {
@@ -385,7 +385,7 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "success-strict-true",
-        "test": VerifyRouteEntry,
+        "test": VerifyIPv4RouteNextHops,
         "eos_data": [
             {
                 "vrfs": {
@@ -416,7 +416,7 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "failure-not-configured",
-        "test": VerifyRouteEntry,
+        "test": VerifyIPv4RouteNextHops,
         "eos_data": [
             {"vrfs": {"default": {"routes": {}}, "MGMT": {"routes": {}}}},
         ],
@@ -433,7 +433,7 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "failure-strict-failed",
-        "test": VerifyRouteEntry,
+        "test": VerifyIPv4RouteNextHops,
         "eos_data": [
             {
                 "vrfs": {
@@ -463,14 +463,14 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Prefix: 10.10.0.1/32 VRF: default - Exact nexthop not listed - Expected: 10.100.0.8, 10.100.0.10, 10.100.0.11 Actual: 10.100.0.8, 10.100.0.10",
-                "Prefix: 10.100.0.128/31 VRF: MGMT - Exact nexthop not listed - Expected: 10.100.0.8, 10.100.0.10, 10.100.0.11 Actual: 10.100.0.8, 10.100.0.10",
+                "Prefix: 10.10.0.1/32 VRF: default - Exact nexthop not listed - Expected: 10.100.0.8, 10.100.0.10, 10.100.0.11 Actual: 10.100.0.10, 10.100.0.8",
+                "Prefix: 10.100.0.128/31 VRF: MGMT - Exact nexthop not listed - Expected: 10.100.0.8, 10.100.0.10, 10.100.0.11 Actual: 10.100.0.10, 10.100.0.8",
             ],
         },
     },
     {
         "name": "failure",
-        "test": VerifyRouteEntry,
+        "test": VerifyIPv4RouteNextHops,
         "eos_data": [
             {
                 "vrfs": {

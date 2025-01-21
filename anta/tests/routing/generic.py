@@ -270,21 +270,21 @@ class VerifyIPv4RouteType(AntaTest):
                 self.result.is_failure(f"{entry} - Incorrect route type - Expected: {expected_route_type} Actual: {actual_route_type}")
 
 
-class VerifyRouteEntry(AntaTest):
-    """Verifies the route entries of the IPv4 prefixes.
+class VerifyIPv4RouteNextHops(AntaTest):
+    """Verifies the next-hops of the IPv4 prefixes.
 
     This test performs the following checks for each IPv4 prefix:
 
-      1. Verifies the specified BGP route exists in the routing table.
+      1. Verifies the specified IPv4 route exists in the routing table.
       2. For each specified next-hop:
           - Verifies a path with matching next-hop exists.
-          - Supports `strict: True` to verify that only the specified nexthops by which routes are learned, requiring an exact match.
+          - Supports `strict: True` to verify that routes must be learned exclusively via the exact next-hops specified.
 
     Expected Results
     ----------------
     * Success: The test will pass if routes exist with paths matching the expected next-hops.
     * Failure: The test will fail if:
-        - A route entry is not found for given ipv4 prefixes.
+        - A route entry is not found for given IPv4 prefixes.
         - A path with specified next-hop is not found.
 
     Examples
@@ -292,7 +292,7 @@ class VerifyRouteEntry(AntaTest):
     ```yaml
     anta.tests.routing:
       generic:
-        - VerifyRouteEntry:
+        - VerifyIPv4RouteNextHops:
             route_entries:
                 - prefix: 10.10.0.1/32
                   vrf: default
@@ -306,7 +306,7 @@ class VerifyRouteEntry(AntaTest):
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip route vrf all", revision=4)]
 
     class Input(AntaTest.Input):
-        """Input model for the VerifyRouteEntry test."""
+        """Input model for the VerifyIPv4RouteNextHops test."""
 
         route_entries: list[IPv4Routes]
         """List of IPv4 route(s)."""
@@ -323,7 +323,7 @@ class VerifyRouteEntry(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """Main test function for VerifyRouteEntry."""
+        """Main test function for VerifyIPv4RouteNextHops."""
         self.result.is_success()
 
         output = self.instance_commands[0].json_output
@@ -334,10 +334,11 @@ class VerifyRouteEntry(AntaTest):
                 self.result.is_failure(f"{entry} - prefix not found")
                 continue
 
-            # Verify the nexthop addresses.
-            actual_nexthops = [route.get("nexthopAddr") for route in route_data["vias"]]
+            # Verify the nexthop addresses
+            actual_nexthops = sorted(["Directly connected" if (next_hop := route.get("nexthopAddr")) == "" else next_hop for route in route_data["vias"]])
+            expected_nexthops = sorted([str(nexthop) for nexthop in entry.nexthops])
 
-            if entry.strict and len(entry.nexthops) != len(actual_nexthops):
+            if entry.strict and expected_nexthops != actual_nexthops:
                 exp_nexthops = ", ".join([str(nexthop) for nexthop in entry.nexthops])
                 self.result.is_failure(f"{entry} - Exact nexthop not listed - Expected: {exp_nexthops} Actual: {', '.join(actual_nexthops)}")
                 continue

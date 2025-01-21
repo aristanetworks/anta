@@ -23,12 +23,12 @@ class IPv4Routes(BaseModel):
     route_type: IPv4RouteType | None = None
     """Expected route type. Required field in the `VerifyIPv4RouteType` test."""
     nexthops: list[IPv4Address] | None = None
-    """A list of the next-hop IP address for the path. Required field in the `VerifyRouteEntry` test."""
+    """A list of the next-hop IP addresses for the route. Required field in the `VerifyIPv4RouteNextHops` test."""
     strict: bool = False
     """If True, requires exact matching of provided nexthop(s). Defaults to False.
 
-    Can be enabled in `VerifyRouteEntry` test."""
+    Can be enabled in `VerifyIPv4RouteNextHops` test."""
 
     def __str__(self) -> str:
-        """Return a human-readable string representation of the IPv4RouteType for reporting."""
+        """Return a human-readable string representation of the IPv4Routes for reporting."""
         return f"Prefix: {self.prefix} VRF: {self.vrf}"
