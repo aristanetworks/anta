@@ -10,7 +10,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict
 
-from anta.custom_types import Hostname, SnmpEncryptionAlgorithm, SnmpHashingAlgorithm, SnmpVersion
+from anta.custom_types import Hostname, Interface, SnmpEncryptionAlgorithm, SnmpHashingAlgorithm, SnmpVersion
 
 
 class SnmpHost(BaseModel):
@@ -55,6 +55,24 @@ class SnmpUser(BaseModel):
         - User: Test Group: Test_Group Version: v2c
         """
         return f"User: {self.username} Group: {self.group_name} Version: {self.version}"
+
+
+class SnmpSourceInterface(BaseModel):
+    """Model for a SNMP source-interface."""
+
+    interface: Interface
+    """Interface to use as the source IP address of SNMP messages."""
+    vrf: str = "default"
+    """VRF of the source interface."""
+
+    def __str__(self) -> str:
+        """Return a human-readable string representation of the SnmpSourceInterface for reporting.
+
+        Examples
+        --------
+        - Source Interface: Ethernet1 VRF: default
+        """
+        return f"Source Interface: {self.interface} VRF: {self.vrf}"
 
 
 class SnmpGroup(BaseModel):
