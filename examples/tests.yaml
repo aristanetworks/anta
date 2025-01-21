@@ -793,6 +793,13 @@ anta.tests.snmp:
       pdus:
         - outTrapPdus
         - inGetNextPdus
+  - VerifySnmpSourceInterface:
+      # Verifies SNMP source interfaces.
+      interfaces:
+        - interface: Ethernet1
+          vrf: default
+        - interface: Management0
+          vrf: MGMT
   - VerifySnmpStatus:
       # Verifies if the SNMP agent is enabled.
       vrf: default
