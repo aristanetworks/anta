@@ -16,6 +16,7 @@ from anta.tests.snmp import (
     VerifySnmpLocation,
     VerifySnmpNotificationHost,
     VerifySnmpPDUCounters,
+    VerifySnmpSourceInterface,
     VerifySnmpStatus,
     VerifySnmpUser,
 )
@@ -747,5 +748,48 @@ DATA: list[dict[str, Any]] = [
             ]
         },
         "expected": {"result": "failure", "messages": ["Host: 192.168.1.100 VRF: default Version: v3 - Incorrect user - Expected: public Actual: private"]},
+    },
+    {
+        "name": "success",
+        "test": VerifySnmpSourceInterface,
+        "eos_data": [
+            {
+                "srcIntf": {"sourceInterfaces": {"default": "Ethernet1", "MGMT": "Management0"}},
+            }
+        ],
+        "inputs": {"interfaces": [{"interface": "Ethernet1", "vrf": "default"}, {"interface": "Management0", "vrf": "MGMT"}]},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-not-configured",
+        "test": VerifySnmpSourceInterface,
+        "eos_data": [
+            {
+                "srcIntf": {},
+            }
+        ],
+        "inputs": {"interfaces": [{"interface": "Ethernet1", "vrf": "default"}, {"interface": "Management0", "vrf": "MGMT"}]},
+        "expected": {"result": "failure", "messages": ["SNMP source interface(s) not configured"]},
+    },
+    {
+        "name": "failure-incorrect-interfaces",
+        "test": VerifySnmpSourceInterface,
+        "eos_data": [
+            {
+                "srcIntf": {
+                    "sourceInterfaces": {
+                        "default": "Management0",
+                    }
+                },
+            }
+        ],
+        "inputs": {"interfaces": [{"interface": "Ethernet1", "vrf": "default"}, {"interface": "Management0", "vrf": "MGMT"}]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Source Interface: Ethernet1 VRF: default - Incorrect source interface - Actual: Management0",
+                "Source Interface: Management0 VRF: MGMT - Not configured",
+            ],
+        },
     },
 ]
