@@ -79,7 +79,7 @@ class SnmpGroup(BaseModel):
     """Model for a SNMP group."""
 
     group_name: str
-    """SNMP group for the user."""
+    """SNMP group name."""
     version: SnmpVersion
     """SNMP protocol version."""
     read_view: str | None = None
@@ -89,7 +89,7 @@ class SnmpGroup(BaseModel):
     notify_view: str | None = None
     """Optional field, View to restrict notifications."""
     authentication: Literal["v3Auth", "v3Priv", "v3NoAuth"] | None = None
-    """Advanced authentication in v3 SNMP version. Defaults to None.
+    """SNMPv3 authentication settings. Required when version is v3.
     - v3Auth: Group using authentication but not privacy
     - v3Priv: Group using both authentication and privacy
     - v3NoAuth: Group using neither authentication nor privacy

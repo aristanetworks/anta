@@ -552,7 +552,7 @@ class VerifySnmpGroup(AntaTest):
 
       1. Verifies that the SNMP group is configured for the specified version.
       2. For SNMP version 3, verify that the security model matches the expected value.
-      3. Ensures that the SNMP views, the read, write and notify settings aligning with version-specific requirements.
+      3. Ensures that SNMP group configurations, including read, write, and notify views, align with version-specific requirements.
 
     Expected Results
     ----------------
@@ -588,7 +588,7 @@ class VerifySnmpGroup(AntaTest):
             """Validate the inputs provided to the SnmpGroup class."""
             for snmp_group in snmp_groups:
                 if snmp_group.version == "v3" and snmp_group.authentication is None:
-                    msg = f"{snmp_group}; advanced `authentication` is required."
+                    msg = f"{snmp_group}; `authentication` field is required for `version: v3`"
                     raise ValueError(msg)
             return snmp_groups
 
@@ -603,24 +603,22 @@ class VerifySnmpGroup(AntaTest):
                 continue
 
             # Verify SNMP views, the read, write and notify settings aligning with version-specific requirements.
-            if group.read_view and not all(
-                [(act_view := group_details.get("readView")) == group.read_view, (view_configured := group_details.get("readViewConfig"))]
-            ):
-                self.result.is_failure(f"{group}, ReadView: {group.read_view} - View configuration mismatch - ReadView: {act_view}, Configured: {view_configured}")
+            for view_type in ["read", "write", "notify"]:
+                expected_view = getattr(group, f"{view_type}_view")
 
-            if group.write_view and not all(
-                [(act_view := group_details.get("writeView")) == group.write_view, (view_configured := group_details.get("writeViewConfig"))]
-            ):
-                self.result.is_failure(
-                    f"{group}, WriteView: {group.write_view} - View configuration mismatch - WriteView: {act_view}, Configured: {view_configured}"
-                )
+                # Verify actual view is configured.
+                if expected_view and not group_details.get(f"{view_type}View"):
+                    self.result.is_failure(f"{group} View: {view_type} - Not configured")
+                    continue
 
-            if group.notify_view and not all(
-                [(act_view := group_details.get("notifyView")) == group.notify_view, (view_configured := group_details.get("notifyViewConfig"))]
-            ):
-                self.result.is_failure(
-                    f"{group}, NotifyView: {group.notify_view} - View configuration mismatch - NotifyView: {act_view}, Configured: {view_configured}"
-                )
+                if expected_view and not all(
+                    [(act_view := group_details.get(f"{view_type}View")) == expected_view, (view_configured := group_details.get(f"{view_type}ViewConfig"))]
+                ):
+                    self.result.is_failure(
+                        f"{group} {view_type.title()} View: {expected_view} - "
+                        f"View configuration mismatch - {view_type.title()} View: {act_view}, "
+                        f"Configured: {view_configured}"
+                    )
 
             # For version v3, verify that the security model aligns with the expected value.
             if group.version == "v3" and (actual_auth := group_details.get("secModel")) != group.authentication:
