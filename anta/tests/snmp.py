@@ -492,16 +492,18 @@ class VerifySnmpUser(AntaTest):
 
 
 class VerifySnmpSourceInterface(AntaTest):
-    """Verifies SNMP source-interface for a specified VRF.
+    """Verifies SNMP source interfaces.
 
     This test performs the following checks:
 
-      1. Verifies that the SNMP source-interface(s) configured for the specified VRF.
+      1. Verifies that source interface(s) are configured for SNMP.
+      2. For each specified source interface:
+          - Interface is configured in the specified VRF.
 
     Expected Results
     ----------------
-    * Success: The test will pass if the provided SNMP source-interface(s) is configured in the specified VRF.
-    * Failure: The test will fail if the provided SNMP source-interface(s) is NOT configured in the specified VRF.
+    * Success: The test will pass if the provided SNMP source interface(s) are configured in their specified VRF.
+    * Failure: The test will fail if any of the provided SNMP source interface(s) are NOT configured in their specified VRF.
 
     Examples
     --------
@@ -523,7 +525,7 @@ class VerifySnmpSourceInterface(AntaTest):
         """Input model for the VerifySnmpSourceInterface test."""
 
         interfaces: list[SnmpSourceInterface]
-        """List of source interfaces"""
+        """List of source interfaces."""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -536,8 +538,8 @@ class VerifySnmpSourceInterface(AntaTest):
             return
 
         for interface_details in self.inputs.interfaces:
-            # If the source-interface is not configured, or if it does not match the expected value, the test fails.
+            # If the source interface is not configured, or if it does not match the expected value, the test fails.
             if not (actual_interface := interface_output.get(interface_details.vrf)):
                 self.result.is_failure(f"{interface_details} - Not configured")
             elif actual_interface != interface_details.interface:
-                self.result.is_failure(f"{interface_details} - Incorrect source interface Actual: {actual_interface}")
+                self.result.is_failure(f"{interface_details} - Incorrect source interface - Actual: {actual_interface}")

@@ -575,8 +575,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "VRF: default, Source Interface: Ethernet1 - Incorrect source interface Actual: Management0",
-                "VRF: MGMT, Source Interface: Management0 - Not configured",
+                "Source Interface: Ethernet1 VRF: default - Incorrect source interface - Actual: Management0",
+                "Source Interface: Management0 VRF: MGMT - Not configured",
             ],
         },
     },

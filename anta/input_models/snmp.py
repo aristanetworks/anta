@@ -60,15 +60,15 @@ class SnmpSourceInterface(BaseModel):
     """Model for a SNMP source-interface."""
 
     interface: Interface
-    """Source-interface to use as source IP address of log messages."""
+    """Interface to use as the source IP address of SNMP messages."""
     vrf: str = "default"
-    """The VRF name to verify the SNMP agent in. Defaults to `default`."""
+    """VRF of the source interface."""
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the SnmpSourceInterface for reporting.
 
         Examples
         --------
-        - VRF: default, Source Interface: Ethernet1
+        - Source Interface: Ethernet1 VRF: default
         """
-        return f"VRF: {self.vrf}, Source Interface: {self.interface}"
+        return f"Source Interface: {self.interface} VRF: {self.vrf}"
