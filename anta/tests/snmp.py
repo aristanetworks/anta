@@ -606,19 +606,20 @@ class VerifySnmpGroup(AntaTest):
             for view_type in ["read", "write", "notify"]:
                 expected_view = getattr(group, f"{view_type}_view")
 
-                # Verify actual view is configured.
-                if expected_view and not group_details.get(f"{view_type}View"):
-                    self.result.is_failure(f"{group} View: {view_type} - Not configured")
-                    continue
+                if expected_view:
+                    # Verify actual view is configured.
+                    if not group_details.get(f"{view_type}View"):
+                        self.result.is_failure(f"{group} View: {view_type} - Not configured")
+                        continue
 
-                if expected_view and not all(
-                    [(act_view := group_details.get(f"{view_type}View")) == expected_view, (view_configured := group_details.get(f"{view_type}ViewConfig"))]
-                ):
-                    self.result.is_failure(
-                        f"{group} {view_type.title()} View: {expected_view} - "
-                        f"View configuration mismatch - {view_type.title()} View: {act_view}, "
-                        f"Configured: {view_configured}"
-                    )
+                    if not all(
+                        [(act_view := group_details.get(f"{view_type}View")) == expected_view, (view_configured := group_details.get(f"{view_type}ViewConfig"))]
+                    ):
+                        self.result.is_failure(
+                            f"{group} {view_type.title()} View: {expected_view} - "
+                            f"View configuration mismatch - {view_type.title()} View: {act_view}, "
+                            f"Configured: {view_configured}"
+                        )
 
             # For version v3, verify that the security model aligns with the expected value.
             if group.version == "v3" and (actual_auth := group_details.get("secModel")) != group.authentication:
