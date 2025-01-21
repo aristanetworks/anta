@@ -105,6 +105,10 @@ plugins:
             show_symbol_type_toc: true
             # default filters here
             filters: ["!^_[^_]"]
+            # TODO: for now this fails for us
+            # extensions:
+            #  - griffe_pydantic:
+            #      schema: true
 
   - search:
       lang: en

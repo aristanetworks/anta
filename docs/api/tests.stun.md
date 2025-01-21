@@ -17,6 +17,10 @@ anta_title: ANTA catalog for STUN tests
       merge_init_into_class: false
       anta_hide_test_module_description: true
       show_labels: true
+      summary:
+        attributes: true
+        functions: false
+        modules: false
       filters:
         - "!test"
         - "!render"
@@ -32,6 +36,10 @@ anta_title: ANTA catalog for STUN tests
       merge_init_into_class: false
       anta_hide_test_module_description: true
       show_labels: true
+      summary:
+        attributes: true
+        functions: false
+        modules: false
       filters:
         - "!^__init__"
         - "!^__str__"

@@ -15,6 +15,10 @@ anta_title: ANTA catalog for VLAN tests
       merge_init_into_class: false
       show_labels: true
       anta_hide_test_module_description: true
+      summary:
+        attributes: true
+        functions: false
+        modules: false
       filters:
         - "!test"
         - "!render"

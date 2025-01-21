@@ -1,6 +1,7 @@
 ---
 anta_title: ANTA catalog for AAA tests
 ---
+
 <!--
   ~ Copyright (c) 2023-2025 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
@@ -8,6 +9,7 @@ anta_title: ANTA catalog for AAA tests
   -->
 
 ::: anta.tests.aaa
+
     options:
       show_root_heading: false
       show_root_toc_entry: false
@@ -15,6 +17,10 @@ anta_title: ANTA catalog for AAA tests
       merge_init_into_class: false
       anta_hide_test_module_description: true
       show_labels: true
+      summary:
+        attributes: true
+        functions: false
+        modules: false
       filters:
         - "!test"
         - "!render"

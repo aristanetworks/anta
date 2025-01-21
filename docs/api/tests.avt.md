@@ -18,6 +18,10 @@ anta_title: ANTA catalog for Adaptive Virtual Topology (AVT) tests
       merge_init_into_class: false
       anta_hide_test_module_description: true
       show_labels: true
+      summary:
+        attributes: true
+        functions: false
+        modules: false
       filters:
         - "!test"
         - "!render"
@@ -33,6 +37,13 @@ anta_title: ANTA catalog for Adaptive Virtual Topology (AVT) tests
       anta_hide_test_module_description: true
       merge_init_into_class: false
       show_labels: true
+      summary:
+        attributes: true
+        functions: false
+        modules: false
       filters:
         - "!^__init__"
         - "!^__str__"
+      extensions:
+        - griffe_pydantic:
+            schema: true
