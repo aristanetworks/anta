@@ -52,7 +52,16 @@
             {% with heading_level = heading_level + extra_level %}
               {% for class in classes|order_members(config.members_order, members_list) %}
                 {% if class.name == "Input" %}
-                  {% filter heading(heading_level, id=html_id ~ "-attributes") %}Inputs{% endfilter %}
+                  {% filter heading(
+                      heading_level,
+                      id=html_id ~ "-attributes",
+                      class="doc doc-heading",
+                      toc_label=('<code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;'|safe if config.show_symbol_type_toc else '') + class.name,) 
+                  %}
+                  {% if config.show_symbol_type_heading %}<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>{% endif %}
+                  Inputs
+                  {% endfilter %}
+
                   {% set root = False %}
                   {% set heading_level = heading_level + 1 %}
                   {% set old_obj = obj %}
