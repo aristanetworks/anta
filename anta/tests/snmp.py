@@ -609,9 +609,7 @@ class VerifySnmpGroup(AntaTest):
                 # Verify actual view is configured.
                 if expected_view and group_details.get(f"{view_type}View") == "":
                     self.result.is_failure(f"{group} View: {view_type} - Not configured")
-                    continue
-
-                if expected_view and not all(
+                elif expected_view and not all(
                     [(act_view := group_details.get(f"{view_type}View")) == expected_view, (view_configured := group_details.get(f"{view_type}ViewConfig"))]
                 ):
                     self.result.is_failure(
