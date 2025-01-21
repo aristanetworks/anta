@@ -59,7 +59,7 @@
 {{ super() }}
 
 {% for dec in class.decorators %}
-{% if dec.value.function.name == "deprecated_test_class" %}
+{% if dec.value.function is defined and dec.value.function.name == "deprecated_test_class" %}
 <img alt="Static Badge" src="https://img.shields.io/badge/DEPRECATED-yellow?style=flat&logoSize=auto">
 {% for arg in dec.value.arguments | selectattr("name", "equalto", "removal_in_version") | list %}
 <img alt="Static Badge" src="https://img.shields.io/badge/REMOVAL-{{ arg.value[1:-1] }}-grey?style=flat&logoSize=auto&labelColor=red">
