@@ -517,7 +517,7 @@ class VerifySnmpNotificationHost(AntaTest):
         - Ensures the following depending on SNMP version:
             - For SNMP version v1/v2c, a community string is not matches the expected value.
             - For SNMP version v3, an user field is not matches the expected value.
-            
+
     Examples
     --------
     ```yaml
