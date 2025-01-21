@@ -15,6 +15,7 @@ from anta.tests.snmp import (
     VerifySnmpIPv6Acl,
     VerifySnmpLocation,
     VerifySnmpPDUCounters,
+    VerifySnmpSourceInterface,
     VerifySnmpStatus,
     VerifySnmpUser,
 )
@@ -533,6 +534,49 @@ DATA: list[dict[str, Any]] = [
                 "User: Test3 Group: TestGroup3 Version: v3 - Incorrect privacy type - Expected: AES-128 Actual: AES-192",
                 "User: Test4 Group: TestGroup4 Version: v3 - Incorrect authentication type - Expected: SHA-512 Actual: SHA-384",
                 "User: Test4 Group: TestGroup4 Version: v3 - Incorrect privacy type - Expected: AES-192 Actual: AES-128",
+            ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifySnmpSourceInterface,
+        "eos_data": [
+            {
+                "srcIntf": {"sourceInterfaces": {"default": "Ethernet1", "MGMT": "Management0"}},
+            }
+        ],
+        "inputs": {"interfaces": [{"interface": "Ethernet1", "vrf": "default"}, {"interface": "Management0", "vrf": "MGMT"}]},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-not-configured",
+        "test": VerifySnmpSourceInterface,
+        "eos_data": [
+            {
+                "srcIntf": {},
+            }
+        ],
+        "inputs": {"interfaces": [{"interface": "Ethernet1", "vrf": "default"}, {"interface": "Management0", "vrf": "MGMT"}]},
+        "expected": {"result": "failure", "messages": ["SNMP source interface(s) not configured"]},
+    },
+    {
+        "name": "failure-incorrect-interfaces",
+        "test": VerifySnmpSourceInterface,
+        "eos_data": [
+            {
+                "srcIntf": {
+                    "sourceInterfaces": {
+                        "default": "Management0",
+                    }
+                },
+            }
+        ],
+        "inputs": {"interfaces": [{"interface": "Ethernet1", "vrf": "default"}, {"interface": "Management0", "vrf": "MGMT"}]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Source Interface: Ethernet1 VRF: default - Incorrect source interface - Actual: Management0",
+                "Source Interface: Management0 VRF: MGMT - Not configured",
             ],
         },
     },
