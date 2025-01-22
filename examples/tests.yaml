@@ -586,7 +586,7 @@ anta.tests.routing.generic:
       maximum: 20
 anta.tests.routing.isis:
   - VerifyISISInterfaceMode:
-      # Verifies interface mode for IS-IS
+      # Verifies the operational mode of IS-IS Interfaces.
       interfaces:
         - name: Loopback0
           mode: passive
@@ -612,7 +612,8 @@ anta.tests.routing.isis:
           count: 2
           # level is set to 2 by default
   - VerifyISISNeighborState:
-      # Verifies all IS-IS neighbors are in UP state.
+      # Verifies the health of all the IS-IS neighbors.
+      check_all_vrfs: bool = False
   - VerifyISISSegmentRoutingAdjacencySegments:
       # Verifies the ISIS SR Adjacency Segments.
       instances:

@@ -18,7 +18,6 @@ from anta.tests.routing.isis import (
     VerifyISISSegmentRoutingAdjacencySegments,
     VerifyISISSegmentRoutingDataplane,
     VerifyISISSegmentRoutingTunnels,
-    _get_interface_data,
 )
 from tests.units.anta_tests import test
 
@@ -1835,78 +1834,3 @@ DATA: list[dict[str, Any]] = [
         },
     },
 ]
-
-
-COMMAND_OUTPUT = {
-    "vrfs": {
-        "default": {
-            "isisInstances": {
-                "CORE-ISIS": {
-                    "interfaces": {
-                        "Loopback0": {
-                            "enabled": True,
-                            "intfLevels": {
-                                "2": {
-                                    "ipv4Metric": 10,
-                                    "sharedSecretProfile": "",
-                                    "isisAdjacencies": [],
-                                    "passive": True,
-                                    "v4Protection": "disabled",
-                                    "v6Protection": "disabled",
-                                }
-                            },
-                            "areaProxyBoundary": False,
-                        },
-                        "Ethernet1": {
-                            "intfLevels": {
-                                "2": {
-                                    "ipv4Metric": 10,
-                                    "numAdjacencies": 1,
-                                    "linkId": "84",
-                                    "sharedSecretProfile": "",
-                                    "isisAdjacencies": [],
-                                    "passive": False,
-                                    "v4Protection": "link",
-                                    "v6Protection": "disabled",
-                                }
-                            },
-                            "interfaceSpeed": 1000,
-                            "areaProxyBoundary": False,
-                        },
-                    }
-                }
-            }
-        },
-        "EMPTY": {"isisInstances": {}},
-        "NO_INTERFACES": {"isisInstances": {"CORE-ISIS": {}}},
-    }
-}
-EXPECTED_LOOPBACK_0_OUTPUT = {
-    "enabled": True,
-    "intfLevels": {
-        "2": {
-            "ipv4Metric": 10,
-            "sharedSecretProfile": "",
-            "isisAdjacencies": [],
-            "passive": True,
-            "v4Protection": "disabled",
-            "v6Protection": "disabled",
-        }
-    },
-    "areaProxyBoundary": False,
-}
-
-
-@pytest.mark.parametrize(
-    ("interface", "vrf", "expected_value"),
-    [
-        pytest.param("Loopback0", "WRONG_VRF", None, id="VRF_not_found"),
-        pytest.param("Loopback0", "EMPTY", None, id="VRF_no_ISIS_instances"),
-        pytest.param("Loopback0", "NO_INTERFACES", None, id="ISIS_instance_no_interfaces"),
-        pytest.param("Loopback42", "default", None, id="interface_not_found"),
-        pytest.param("Loopback0", "default", EXPECTED_LOOPBACK_0_OUTPUT, id="interface_found"),
-    ],
-)
-def test__get_interface_data(interface: str, vrf: str, expected_value: dict[str, Any] | None) -> None:
-    """Test anta.tests.routing.isis._get_interface_data."""
-    assert _get_interface_data(interface, vrf, COMMAND_OUTPUT) == expected_value
