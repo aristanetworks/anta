@@ -81,9 +81,9 @@ class VerifySpecificPath(AntaTest):
 
     Expected Results
     ----------------
-    * Success: The test will pass if the path state under router path selection is either 'IPsecEstablished' or 'Resolved'
+    * Success: The test will pass if the path state under router path-selection is either 'IPsecEstablished' or 'Resolved'
                and telemetry state as 'active'.
-    * Failure: The test will fail if router path selection is not configured, the path state is not 'IPsec established' or 'Resolved',
+    * Failure: The test will fail if router path selection or the peer is not configured or if the path state is not 'IPsec established' or 'Resolved',
                or the telemetry state is 'inactive'.
 
     Examples
@@ -107,7 +107,8 @@ class VerifySpecificPath(AntaTest):
 
         paths: list[DpsPath]
         """List of router paths to verify."""
-        DpsPath: ClassVar[type[DpsPath]] = DpsPath
+        RouterPath: ClassVar[type[DpsPath]] = DpsPath
+        """To maintain backward compatibility."""
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
