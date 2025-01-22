@@ -224,8 +224,8 @@ class BgpRoute(BaseModel):
     """The IPv4 network address."""
     vrf: str = "default"
     """Optional VRF for the BGP peer. Defaults to `default`."""
-    paths: list[BgpRoutePath] | None = None
-    """A list of paths for the BGP route. Required field in the `VerifyBGPRouteOrigin` test."""
+    paths: list[BgpRoutePath]
+    """A list of paths for the BGP route."""
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the BgpRoute for reporting.
