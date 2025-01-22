@@ -6,12 +6,12 @@
 # pylint: disable=C0302
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import pytest
 from pydantic import ValidationError
 
-from anta.input_models.routing.bgp import BgpAddressFamily, BgpPeer
+from anta.input_models.routing.bgp import AddressFamilyConfig, BgpAddressFamily, BgpPeer, RedistributedRoute
 from anta.tests.routing.bgp import (
     VerifyBGPExchangedRoutes,
     VerifyBGPNlriAcceptance,
@@ -19,14 +19,13 @@ from anta.tests.routing.bgp import (
     VerifyBGPPeerGroup,
     VerifyBGPPeerMPCaps,
     VerifyBGPPeerRouteLimit,
-    VerifyBGPRedistributedRoutes,
     VerifyBgpRouteMaps,
     VerifyBGPSpecificPeers,
     VerifyBGPTimers,
 )
 
 if TYPE_CHECKING:
-    from anta.custom_types import Afi, Safi
+    from anta.custom_types import Afi, RedisrbutedAfiSafi, RedistributedProtocol, Safi
 
 
 class TestBgpAddressFamily:
@@ -291,46 +290,67 @@ class TestVerifyBGPNlriAcceptanceInput:
             VerifyBGPNlriAcceptance.Input(bgp_peers=bgp_peers)
 
 
-class TestVerifyBGPRedistributedRoutes:
-    """Test anta.tests.routing.bgp.VerifyBGPRedistributedRoutes.Input."""
+class TestVerifyBGPAddressFamilyConfig:
+    """Test anta.tests.routing.bgp.AddressFamilyConfig.Input."""
 
     @pytest.mark.parametrize(
-        ("address_families"),
+        ("afi_safi", "redistributed_routes"),
         [
             pytest.param(
-                [{"afi": "ipv4", "safi": "unicast", "vrf": "default", "redistributed_route_protocol": "Connected", "route_map": "RM-CONN-2-BGP"}], id="ipv4-valid"
+                [({"afisafi": "ipv4Unicast"}, {"redistributed_routes": [{"proto": "Connected", "include_leaked": True, "route_map": "RM-CONN-2-BGP"}]})],
+                id="afisafi-ipv4-valid",
             ),
             pytest.param(
-                [{"afi": "ipv6", "safi": "multicast", "vrf": "default", "redistributed_route_protocol": "Connected", "route_map": "RM-CONN-2-BGP"}], id="ipv6-valid"
+                [({"afisafi": "ipv6 Multicast"}, {"redistributed_routes": [{"proto": "Connected", "include_leaked": True, "route_map": "RM-CONN-2-BGP"}]})],
+                id="afisafi-ipv6-valid",
             ),
         ],
     )
-    def test_valid(self, address_families: list[BgpAddressFamily]) -> None:
-        """Test VerifyBGPRedistributedRoutes.Input valid inputs."""
-        VerifyBGPRedistributedRoutes.Input(address_families=address_families)
+    def test_valid(self, afi_safi: RedisrbutedAfiSafi, redistributed_routes: list[Any]) -> None:
+        """Test AddressFamilyConfig valid inputs."""
+        AddressFamilyConfig(afi_safi=afi_safi, redistributed_routes=redistributed_routes)
 
     @pytest.mark.parametrize(
-        ("address_families"),
+        ("afi_safi", "redistributed_routes"),
         [
             pytest.param(
-                [{"afi": "ipv4", "safi": "unicast", "vrf": "default", "redistributed_route_protocol": None, "route_map": "RM-CONN-2-BGP"}],
-                id="invalid-redistributed-route-protocol",
+                [({"afi_safi": "evpn"}, {"redistributed_routes": [{"proto": "Connected", "include_leaked": True, "route_map": "RM-CONN-2-BGP"}]})],
+                id="invalid-address-family",
             ),
             pytest.param(
-                [{"afi": "ipv6", "safi": "multicast", "vrf": "default", "redistributed_route_protocol": "Connected", "route_map": None}],
-                id="invalid-route-map",
-            ),
-            pytest.param(
-                [{"afi": "evpn", "safi": "unicast", "vrf": "default", "redistributed_route_protocol": "Connected", "route_map": "RM-CONN-2-BGP"}],
-                id="invalid-afi-for-redistributed-route",
-            ),
-            pytest.param(
-                [{"afi": "ipv6", "safi": "sr-te", "vrf": "default", "redistributed_route_protocol": "Connected", "route_map": "RM-CONN-2-BGP"}],
-                id="invalid-safi-for-redistributed-route",
+                [({"afi_safi": "ipv6 sr-te"}, {"redistributed_routes": [{"proto": "Connected", "include_leaked": True, "route_map": "RM-CONN-2-BGP"}]})],
+                id="ipv6-invalid-address-family",
             ),
         ],
     )
-    def test_invalid(self, address_families: list[BgpAddressFamily]) -> None:
-        """Test VerifyBGPRedistributedRoutes.Input invalid inputs."""
+    def test_invalid(self, afi_safi: RedisrbutedAfiSafi, redistributed_routes: list[Any]) -> None:
+        """Test AddressFamilyConfig invalid inputs."""
         with pytest.raises(ValidationError):
-            VerifyBGPRedistributedRoutes.Input(address_families=address_families)
+            AddressFamilyConfig(afi_safi=afi_safi, redistributed_routes=redistributed_routes)
+
+
+class TestVerifyBGPRedistributedRoute:
+    """Test anta.tests.routing.bgp.RedistributedRoute.Input."""
+
+    @pytest.mark.parametrize(
+        ("proto", "include_leaked"),
+        [
+            pytest.param([{"proto": "Connected", "include_leaked": True}], id="proto-valid"),
+            pytest.param([{"proto": "Static", "include_leaked": False}], id="proto-valid-leaked-false"),
+        ],
+    )
+    def test_valid(self, proto: RedistributedProtocol, include_leaked: bool) -> None:
+        """Test RedistributedRoute valid inputs."""
+        RedistributedRoute(proto=proto, include_leaked=include_leaked)
+
+    @pytest.mark.parametrize(
+        ("proto", "include_leaked"),
+        [
+            pytest.param([{"proto": "Dynamic", "include_leaked": True}], id="proto-valid"),
+            pytest.param([{"proto": "User", "include_leaked": False}], id="proto-valid-leaked-false"),
+        ],
+    )
+    def test_invalid(self, proto: RedistributedProtocol, include_leaked: bool) -> None:
+        """Test RedistributedRoute invalid inputs."""
+        with pytest.raises(ValidationError):
+            RedistributedRoute(proto=proto, include_leaked=include_leaked)

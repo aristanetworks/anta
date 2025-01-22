@@ -36,6 +36,12 @@ REGEX_BGP_IPV4_MPLS_VPN = r"\b(ipv4[\s\-]?mpls[\s\-]?vpn)\b"
 REGEX_BGP_IPV4_UNICAST = r"\b(ipv4[\s\-]?uni[\s\-]?cast)\b"
 """Match IPv4 Unicast."""
 
+# Regular expression for BGP redistributed routes
+REGEX_IPV4_UNICAST = r"\bipv4[\s]?unicast\b"
+REGEX_IPV4_MULTICAST = r"\bipv4[\s]?multicast\b"
+REGEX_IPV6_UNICAST = r"\bipv6[\s]?unicast\b"
+REGEX_IPV6_MULTICAST = r"\bipv6[\s]?multicast\b"
+
 
 def aaa_group_prefix(v: str) -> str:
     """Prefix the AAA method with 'group' if it is known."""
@@ -111,6 +117,27 @@ def validate_regex(value: str) -> str:
     except re.error as e:
         msg = f"Invalid regex: {e}"
         raise ValueError(msg) from e
+    return value
+
+
+def bgp_redistributed_route_proto_abbreviations(value: str) -> str:
+    """Abbreviations for different BGP redistributed route protocols.
+
+    Examples
+    --------
+    - IPv4 Unicast
+    - ipv4Unicast
+    - IPv4 Multicast
+    - ipv4Multicast
+
+    """
+    patterns = {REGEX_IPV4_UNICAST: "v4u", REGEX_IPV4_MULTICAST: "v4m", REGEX_IPV6_UNICAST: "v6u", REGEX_IPV6_MULTICAST: "v6m"}
+
+    for pattern, replacement in patterns.items():
+        match = re.search(pattern, value, re.IGNORECASE)
+        if match:
+            return replacement
+
     return value
 
 
@@ -264,4 +291,20 @@ SnmpHashingAlgorithm = Literal["MD5", "SHA", "SHA-224", "SHA-256", "SHA-384", "S
 SnmpEncryptionAlgorithm = Literal["AES-128", "AES-192", "AES-256", "DES"]
 DynamicVlanSource = Literal["dmf", "dot1x", "dynvtep", "evpn", "mlag", "mlagsync", "mvpn", "swfwd", "vccbfd"]
 LogSeverityLevel = Literal["alerts", "critical", "debugging", "emergencies", "errors", "informational", "notifications", "warnings"]
-RedistributedProtocol = Literal["AttachedHost", "Bgp", "Connected", "Dynamic", "IS-IS", "OSPF Internal", "OSPFv3 Internal", "RIP", "Static", "User"]
+RedistributedProtocol = Literal[
+    "AttachedHost",
+    "Bgp",
+    "Connected",
+    "Dynamic",
+    "IS-IS",
+    "OSPF Internal",
+    "OSPF External",
+    "OSPF Nssa-External",
+    "OSPFv3 Internal",
+    "OSPFv3 External",
+    "OSPFv3 Nssa-External",
+    "RIP",
+    "Static",
+    "User",
+]
+RedisrbutedAfiSafi = Annotated[str, BeforeValidator(bgp_redistributed_route_proto_abbreviations)]

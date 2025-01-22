@@ -28,7 +28,7 @@ from anta.tests.routing.bgp import (
     VerifyBGPPeersHealth,
     VerifyBGPPeersHealthRibd,
     VerifyBGPPeerUpdateErrors,
-    VerifyBGPRedistributedRoutes,
+    VerifyBGPRedistribution,
     VerifyBgpRouteMaps,
     VerifyBGPRoutePaths,
     VerifyBGPSpecificPeers,
@@ -5103,7 +5103,7 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "success",
-        "test": VerifyBGPRedistributedRoutes,
+        "test": VerifyBGPRedistribution,
         "eos_data": [
             {
                 "vrfs": {
@@ -5113,20 +5113,44 @@ DATA: list[dict[str, Any]] = [
             }
         ],
         "inputs": {
-            "address_families": [
+            "vrfs": [
                 {
                     "vrf": "default",
-                    "redistributed_route_protocol": "Connected",
-                    "route_map": "RM-CONN-2-BGP",
-                    "afi": "ipv4",
-                    "safi": "unicast",
+                    "address_families": [
+                        {
+                            "afi_safi": "ipv4Unicast",
+                            "redistributed_routes": [
+                                {"proto": "Connected", "include_leaked": True, "route_map": "RM-CONN-2-BGP"},
+                                {"proto": "Static", "include_leaked": True, "route_map": "RM-CONN-2-BGP"},
+                            ],
+                        },
+                        {
+                            "afi_safi": "IPv6 Unicast",
+                            "redistributed_routes": [
+                                {"proto": "Dynamic", "route_map": "RM-CONN-2-BGP"},
+                                {"proto": "Static", "include_leaked": True, "route_map": "RM-CONN-2-BGP"},
+                            ],
+                        },
+                    ],
                 },
                 {
                     "vrf": "test",
-                    "redistributed_route_protocol": "Connected",
-                    "route_map": "RM-CONN-2-BGP",
-                    "afi": "ipv6",
-                    "safi": "unicast",
+                    "address_families": [
+                        {
+                            "afi_safi": "ipv4Unicast",
+                            "redistributed_routes": [
+                                {"proto": "Connected", "include_leaked": True, "route_map": "RM-CONN-2-BGP"},
+                                {"proto": "Static", "include_leaked": True, "route_map": "RM-CONN-2-BGP"},
+                            ],
+                        },
+                        {
+                            "afi_safi": "IPv6 Unicast",
+                            "redistributed_routes": [
+                                {"proto": "Bgp", "include_leaked": True, "route_map": "RM-CONN-2-BGP"},
+                                {"proto": "Static", "include_leaked": True, "route_map": "RM-CONN-2-BGP"},
+                            ],
+                        },
+                    ],
                 },
             ]
         },
@@ -5134,7 +5158,7 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "failure-afi-safi-config-not-found",
-        "test": VerifyBGPRedistributedRoutes,
+        "test": VerifyBGPRedistribution,
         "eos_data": [
             {
                 "vrfs": {
@@ -5165,7 +5189,7 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "failure-expected-proto-not-found",
-        "test": VerifyBGPRedistributedRoutes,
+        "test": VerifyBGPRedistribution,
         "eos_data": [
             {
                 "vrfs": {
@@ -5212,7 +5236,7 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "failure-route-map-not-found",
-        "test": VerifyBGPRedistributedRoutes,
+        "test": VerifyBGPRedistribution,
         "eos_data": [
             {
                 "vrfs": {
