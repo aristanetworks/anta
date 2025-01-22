@@ -642,8 +642,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Host: 192.168.1.100 VRF: default - Incorrect notification type - Expected: inform Actual: trap",
-                "Host: 192.168.1.101 VRF: default - Incorrect notification type - Expected: trap Actual: inform",
+                "Host: 192.168.1.100 VRF: default - Incorrect notification type - Expected: inform, Actual: trap",
+                "Host: 192.168.1.101 VRF: default - Incorrect notification type - Expected: trap, Actual: inform",
             ],
         },
     },
@@ -681,8 +681,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Host: 192.168.1.100 VRF: default - Incorrect UDP port - Expected: 162 Actual: 163",
-                "Host: 192.168.1.101 VRF: default - Incorrect UDP port - Expected: 162 Actual: 164",
+                "Host: 192.168.1.100 VRF: default - Incorrect UDP port - Expected: 162, Actual: 163",
+                "Host: 192.168.1.101 VRF: default - Incorrect UDP port - Expected: 162, Actual: 164",
             ],
         },
     },
@@ -720,8 +720,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Host: 192.168.1.100 VRF: default Version: v1 - Incorrect community string - Expected: public Actual: private",
-                "Host: 192.168.1.101 VRF: default Version: v2c - Incorrect community string - Expected: public Actual: private",
+                "Host: 192.168.1.100 VRF: default Version: v1 - Incorrect community string - Expected: public, Actual: private",
+                "Host: 192.168.1.101 VRF: default Version: v2c - Incorrect community string - Expected: public, Actual: private",
             ],
         },
     },
@@ -747,7 +747,7 @@ DATA: list[dict[str, Any]] = [
                 {"hostname": "192.168.1.100", "vrf": "default", "notification_type": "trap", "version": "v3", "udp_port": 162, "user": "public"},
             ]
         },
-        "expected": {"result": "failure", "messages": ["Host: 192.168.1.100 VRF: default Version: v3 - Incorrect user - Expected: public Actual: private"]},
+        "expected": {"result": "failure", "messages": ["Host: 192.168.1.100 VRF: default Version: v3 - Incorrect user - Expected: public, Actual: private"]},
     },
     {
         "name": "success",
