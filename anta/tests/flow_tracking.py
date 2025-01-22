@@ -55,7 +55,7 @@ class VerifyHardwareFlowTrackerStatus(AntaTest):
 
       1. Confirms that hardware flow tracking is running.
       2. For each specified flow tracker:
-        - Confirms that the specified input tracker is active.
+        - Confirms that the tracker is active.
         - Optionally, checks the tracker interval/timeout configuration.
         - Optionally, verifies the tracker exporter configuration
 
@@ -69,7 +69,7 @@ class VerifyHardwareFlowTrackerStatus(AntaTest):
             - The exporter configuration matches the expected values, if provided.
     * Failure: The test will fail if any of the following conditions are met:
         - Hardware flow tracking is not running.
-        - For each specified flow tracker:
+        - For any specified flow tracker:
             - The flow tracker is not active.
             - The tracker interval/timeout does not match the expected values, if provided.
             - The exporter configuration does not match the expected values, if provided.
@@ -131,7 +131,7 @@ class VerifyHardwareFlowTrackerStatus(AntaTest):
                 act_interval = tracker_info.get("activeInterval")
                 if not all([inactive_interval == act_inactive, on_interval == act_interval]):
                     self.result.is_failure(
-                        f"{tracker}, {tracker.record_export} - Incorrect durations - Inactive Timeout: {act_inactive}, OnActive Interval: {act_interval}"
+                        f"{tracker}, {tracker.record_export} - Incorrect timers - Inactive Timeout: {act_inactive}, OnActive Interval: {act_interval}"
                     )
 
             # Check the input hardware tracker exporters configuration
