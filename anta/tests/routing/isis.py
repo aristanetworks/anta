@@ -55,7 +55,7 @@ class VerifyISISNeighborState(AntaTest):
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show isis neighbors vrf all", revision=1)]
 
     class Input(AntaTest.Input):
-        """Input model for the VerifyISISNeighborCount test."""
+        """Input model for the VerifyISISNeighborState test."""
 
         check_all_vrfs: bool = False
         """If enabled it verifies the all ISIS instances in all the configured vrfs. Defaults to `False` and verified the `default` vrf only."""
@@ -233,7 +233,7 @@ class VerifyISISInterfaceMode(AntaTest):
             if interface.mode == "passive" and get_value(interface_detail, f"intfLevels.{interface.level}.passive", default=False) is False:
                 self.result.is_failure(f"{interface} - Not running in passive mode")
 
-            elif interface.mode != (interface_type := get_value(interface_detail, "interfaceType", default="unset")):
+            if interface.mode not in ("passive", interface_type := get_value(interface_detail, "interfaceType", default="unset")):
                 self.result.is_failure(f"{interface} - Incorrect circuit type - Expected: {interface.mode} Actual: {interface_type}")
 
 

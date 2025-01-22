@@ -162,19 +162,19 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": ["Instance: CORE-ISIS VRF: default Neighbor: s1-p01 - Session (adjacency) down"],
+            "messages": ["Instance: CORE-ISIS VRF: default Interface: Ethernet1 - Session (adjacency) down"],
         },
     },
     {
         "name": "skipped - no neighbor",
         "test": VerifyISISNeighborState,
         "eos_data": [
-            {"vrfs": {"default": {"isisInstances": {"CORE-ISIS": {"neighbors": {}}}}}},
+            {"vrfs": {}},
         ],
         "inputs": None,
         "expected": {
             "result": "skipped",
-            "messages": ["No IS-IS neighbor detected"],
+            "messages": ["IS-IS is not configured on device"],
         },
     },
     {
@@ -253,7 +253,7 @@ DATA: list[dict[str, Any]] = [
         "name": "skipped - no neighbor",
         "test": VerifyISISNeighborCount,
         "eos_data": [
-            {"vrfs": {"default": {"isisInstances": {"CORE-ISIS": {"interfaces": {}}}}}},
+            {"vrfs": {"default": {"isisInstances": {}}}},
         ],
         "inputs": {
             "interfaces": [
@@ -262,7 +262,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "skipped",
-            "messages": ["No IS-IS neighbor detected"],
+            "messages": ["IS-IS is not configured on device"],
         },
     },
     {
