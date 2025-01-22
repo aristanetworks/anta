@@ -3,7 +3,7 @@
 # that can be found in the LICENSE file.
 """Module related to BGP tests."""
 
-# Mypy does not understand AntaTest.Input typing
+# pylint: disable=too-many-lines
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
@@ -1664,6 +1664,16 @@ class VerifyBGPRoutePaths(AntaTest):
         route_entries: list[BgpRoute]
         """List of BGP IPv4 route(s)."""
 
+        @field_validator("route_entries")
+        @classmethod
+        def validate_route_entries(cls, route_entries: list[BgpRoute]) -> list[BgpRoute]:
+            """Validate that 'paths' field is provided in each BGP route."""
+            for route in route_entries:
+                if route.paths is None:
+                    msg = f"{route} 'paths' field missing in the input"
+                    raise ValueError(msg)
+            return route_entries
+
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyBGPRoutePaths."""
@@ -1685,3 +1695,93 @@ class VerifyBGPRoutePaths(AntaTest):
 
                 if (actual_origin := get_value(route_path, "routeType.origin")) != origin:
                     self.result.is_failure(f"{route} {path} - Origin mismatch - Actual: {actual_origin}")
+
+
+class VerifyBGPRouteECMP(AntaTest):
+    """Verifies BGP IPv4 route ECMP paths.
+
+    This test performs the following checks for each specified BGP route entry:
+
+      1. Route exists in BGP table.
+      2. First path is a valid and active ECMP head.
+      3. Correct number of valid ECMP contributors follow the head path.
+      4. Route is installed in RIB with matching next-hops.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if all specified routes exist in both BGP and RIB tables with correct amount of ECMP paths.
+    * Failure: The test will fail if:
+        - A specified route is not found in BGP table.
+        - A valid and active ECMP head is not found.
+        - ECMP contributors count does not match the expected value.
+        - Route is not installed in RIB table.
+        - BGP and RIB nexthops do not match.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      bgp:
+        - VerifyBGPRouteECMP:
+            route_entries:
+                - prefix: 10.100.0.128/31
+                  vrf: default
+                  ecmp_count: int
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["bgp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
+        AntaCommand(command="show ip bgp vrf all", revision=3),
+        AntaCommand(command="show ip route vrf all", revision=4),
+    ]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyBGPRouteECMP test."""
+
+        route_entries: list[BgpRoute]
+        """List of BGP IPv4 route(s)."""
+
+        @field_validator("route_entries")
+        @classmethod
+        def validate_route_entries(cls, route_entries: list[BgpRoute]) -> list[BgpRoute]:
+            """Validate that 'ecmp_count' field is provided in each BGP route."""
+            for route in route_entries:
+                if route.ecmp_count is None:
+                    msg = f"{route} 'ecmp_count' field missing in the input"
+                    raise ValueError(msg)
+            return route_entries
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyBGPRouteECMP."""
+        self.result.is_success()
+
+        for route in self.inputs.route_entries:
+            # Verify if the prefix exists in BGP table
+            if not (bgp_route_entry := get_value(self.instance_commands[0].json_output, f"vrfs..{route.vrf}..bgpRouteEntries..{route.prefix}", separator="..")):
+                self.result.is_failure(f"{route} - prefix not found in BGP table")
+                continue
+
+            route_paths = iter(bgp_route_entry["bgpRoutePaths"])
+            head = next(route_paths)
+            if not any(head[key] for key in ["valid", "active", "ecmpHead"]):
+                self.result.is_failure(f"{route} - valid and active ECMP head not found")
+                continue
+
+            bgp_nexthops = {head["nextHop"]}
+            bgp_nexthops.update(path["nextHop"] for path in route_paths if all(path[key] for key in ["valid", "ecmp", "ecmpContributor"]))
+
+            if len(bgp_nexthops) != route.ecmp_count:
+                self.result.is_failure(f"{route} - ECMP count mismatch - Expected: {route.ecmp_count}, Actual: {len(bgp_nexthops)}")
+                continue
+
+            # If we are here, the ECMP count is correct so we can compare with RIB nexthops
+            if not (route_entry := get_value(self.instance_commands[1].json_output, f"vrfs..{route.vrf}..routes..{route.prefix}", separator="..")):
+                self.result.is_failure(f"{route} - prefix not found in routing table")
+                continue
+
+            # TODO: Test with BGP unnumbered (RFC5549) and if there are scenarios where `nexthopAddr` might not be present
+            rib_nexthops = {via["nexthopAddr"] for via in route_entry["vias"] if route_entry["routeType"] in {"iBGP", "eBGP"}}
+            if bgp_nexthops != rib_nexthops:
+                self.result.is_failure(f"{route} - nexthops mismatch - BGP: {bgp_nexthops}, RIB: {rib_nexthops}")
