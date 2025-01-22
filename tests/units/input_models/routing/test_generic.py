@@ -22,7 +22,7 @@ class TestVerifyRouteEntryInput:
     @pytest.mark.parametrize(
         ("route_entries"),
         [
-            pytest.param([{"prefix": "10.10.0.1/32", "vrf": "default", "nexthops": ["10.100.0.8", "10.100.0.10"]}], id="valid"),
+            pytest.param([{"prefix": "10.10.0.1/32", "vrf": "default", "strict": True, "nexthops": ["10.100.0.8", "10.100.0.10"]}], id="valid"),
         ],
     )
     def test_valid(self, route_entries: list[IPv4Routes]) -> None:

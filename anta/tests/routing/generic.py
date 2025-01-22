@@ -296,6 +296,7 @@ class VerifyIPv4RouteNextHops(AntaTest):
             route_entries:
                 - prefix: 10.10.0.1/32
                   vrf: default
+                  strict: False
                   nexthops:
                     - 10.100.0.8
                     - 10.100.0.10
@@ -340,7 +341,7 @@ class VerifyIPv4RouteNextHops(AntaTest):
 
             if entry.strict and expected_nexthops != actual_nexthops:
                 exp_nexthops = ", ".join([str(nexthop) for nexthop in entry.nexthops])
-                self.result.is_failure(f"{entry} - Exact nexthop not listed - Expected: {exp_nexthops} Actual: {', '.join(actual_nexthops)}")
+                self.result.is_failure(f"{entry} - List of next-hops not matching - Expected: {exp_nexthops} - Actual: {', '.join(actual_nexthops)}")
                 continue
 
             for nexthop in entry.nexthops:

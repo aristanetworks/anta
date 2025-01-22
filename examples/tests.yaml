@@ -564,6 +564,7 @@ anta.tests.routing.generic:
       route_entries:
           - prefix: 10.10.0.1/32
             vrf: default
+            strict: False
             nexthops:
               - 10.100.0.8
               - 10.100.0.10

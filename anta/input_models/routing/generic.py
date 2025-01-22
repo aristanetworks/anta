@@ -25,7 +25,7 @@ class IPv4Routes(BaseModel):
     nexthops: list[IPv4Address] | None = None
     """A list of the next-hop IP addresses for the route. Required field in the `VerifyIPv4RouteNextHops` test."""
     strict: bool = False
-    """If True, requires exact matching of provided nexthop(s). Defaults to False.
+    """If True, requires exact matching of provided nexthop(s).
 
     Can be enabled in `VerifyIPv4RouteNextHops` test."""
 
