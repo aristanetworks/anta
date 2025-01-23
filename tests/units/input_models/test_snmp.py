@@ -61,7 +61,7 @@ class TestVerifySnmpGroupInput:
                         "read_view": "group_read_1",
                         "write_view": "group_write_1",
                         "notify_view": "group_notify_1",
-                        "authentication": "v3Auth",
+                        "authentication": "noauth",
                     }
                 ],
                 id="valid-v3",
