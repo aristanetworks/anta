@@ -141,6 +141,19 @@ def bgp_redistributed_route_proto_abbreviations(value: str) -> str:
     return value
 
 
+def update_bgp_redistributed_proto_user(value: str) -> str:
+    """Update BGP redistributed route `User` proto with EOS SDK.
+
+    Examples
+    --------
+    - User
+    """
+    if value == "User":
+        value = "EOS SDK"
+
+    return value
+
+
 # AntaTest.Input types
 AAAAuthMethod = Annotated[str, AfterValidator(aaa_group_prefix)]
 Vlan = Annotated[int, Field(ge=0, le=4094)]
@@ -291,20 +304,23 @@ SnmpHashingAlgorithm = Literal["MD5", "SHA", "SHA-224", "SHA-256", "SHA-384", "S
 SnmpEncryptionAlgorithm = Literal["AES-128", "AES-192", "AES-256", "DES"]
 DynamicVlanSource = Literal["dmf", "dot1x", "dynvtep", "evpn", "mlag", "mlagsync", "mvpn", "swfwd", "vccbfd"]
 LogSeverityLevel = Literal["alerts", "critical", "debugging", "emergencies", "errors", "informational", "notifications", "warnings"]
-RedistributedProtocol = Literal[
-    "AttachedHost",
-    "Bgp",
-    "Connected",
-    "Dynamic",
-    "IS-IS",
-    "OSPF Internal",
-    "OSPF External",
-    "OSPF Nssa-External",
-    "OSPFv3 Internal",
-    "OSPFv3 External",
-    "OSPFv3 Nssa-External",
-    "RIP",
-    "Static",
-    "User",
+RedistributedProtocol = Annotated[
+    Literal[
+        "AttachedHost",
+        "Bgp",
+        "Connected",
+        "Dynamic",
+        "IS-IS",
+        "OSPF Internal",
+        "OSPF External",
+        "OSPF Nssa-External",
+        "OSPFv3 Internal",
+        "OSPFv3 External",
+        "OSPFv3 Nssa-External",
+        "RIP",
+        "Static",
+        "User",
+    ],
+    AfterValidator(update_bgp_redistributed_proto_user),
 ]
 RedisrbutedAfiSafi = Annotated[str, BeforeValidator(bgp_redistributed_route_proto_abbreviations)]

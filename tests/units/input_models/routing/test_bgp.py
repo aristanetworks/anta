@@ -290,53 +290,15 @@ class TestVerifyBGPNlriAcceptanceInput:
             VerifyBGPNlriAcceptance.Input(bgp_peers=bgp_peers)
 
 
-class TestVerifyBGPAddressFamilyConfig:
-    """Test anta.tests.routing.bgp.AddressFamilyConfig.Input."""
-
-    @pytest.mark.parametrize(
-        ("afi_safi", "redistributed_routes"),
-        [
-            pytest.param(
-                [({"afisafi": "ipv4Unicast"}, {"redistributed_routes": [{"proto": "Connected", "include_leaked": True, "route_map": "RM-CONN-2-BGP"}]})],
-                id="afisafi-ipv4-valid",
-            ),
-            pytest.param(
-                [({"afisafi": "ipv6 Multicast"}, {"redistributed_routes": [{"proto": "Connected", "include_leaked": True, "route_map": "RM-CONN-2-BGP"}]})],
-                id="afisafi-ipv6-valid",
-            ),
-        ],
-    )
-    def test_valid(self, afi_safi: RedisrbutedAfiSafi, redistributed_routes: list[Any]) -> None:
-        """Test AddressFamilyConfig valid inputs."""
-        AddressFamilyConfig(afi_safi=afi_safi, redistributed_routes=redistributed_routes)
-
-    @pytest.mark.parametrize(
-        ("afi_safi", "redistributed_routes"),
-        [
-            pytest.param(
-                [({"afi_safi": "evpn"}, {"redistributed_routes": [{"proto": "Connected", "include_leaked": True, "route_map": "RM-CONN-2-BGP"}]})],
-                id="invalid-address-family",
-            ),
-            pytest.param(
-                [({"afi_safi": "ipv6 sr-te"}, {"redistributed_routes": [{"proto": "Connected", "include_leaked": True, "route_map": "RM-CONN-2-BGP"}]})],
-                id="ipv6-invalid-address-family",
-            ),
-        ],
-    )
-    def test_invalid(self, afi_safi: RedisrbutedAfiSafi, redistributed_routes: list[Any]) -> None:
-        """Test AddressFamilyConfig invalid inputs."""
-        with pytest.raises(ValidationError):
-            AddressFamilyConfig(afi_safi=afi_safi, redistributed_routes=redistributed_routes)
-
-
 class TestVerifyBGPRedistributedRoute:
     """Test anta.tests.routing.bgp.RedistributedRoute.Input."""
 
     @pytest.mark.parametrize(
         ("proto", "include_leaked"),
         [
-            pytest.param([{"proto": "Connected", "include_leaked": True}], id="proto-valid"),
-            pytest.param([{"proto": "Static", "include_leaked": False}], id="proto-valid-leaked-false"),
+            pytest.param("Connected", True, id="proto-valid"),
+            pytest.param("Static", False, id="proto-valid-leaked-false"),
+            pytest.param("User", False, id="proto-User"),
         ],
     )
     def test_valid(self, proto: RedistributedProtocol, include_leaked: bool) -> None:
@@ -346,11 +308,38 @@ class TestVerifyBGPRedistributedRoute:
     @pytest.mark.parametrize(
         ("proto", "include_leaked"),
         [
-            pytest.param([{"proto": "Dynamic", "include_leaked": True}], id="proto-valid"),
-            pytest.param([{"proto": "User", "include_leaked": False}], id="proto-valid-leaked-false"),
+            pytest.param("Dynamic", True, id="proto-valid"),
+            pytest.param("User", True, id="proto-valid-leaked-false"),
         ],
     )
     def test_invalid(self, proto: RedistributedProtocol, include_leaked: bool) -> None:
         """Test RedistributedRoute invalid inputs."""
         with pytest.raises(ValidationError):
             RedistributedRoute(proto=proto, include_leaked=include_leaked)
+
+
+class TestVerifyBGPAddressFamilyConfig:
+    """Test anta.tests.routing.bgp.AddressFamilyConfig.Input."""
+
+    @pytest.mark.parametrize(
+        ("afi_safi", "redistributed_routes"),
+        [
+            pytest.param("ipv4Unicast", [{"proto": "Connected", "include_leaked": True, "route_map": "RM-CONN-2-BGP"}], id="afisafi-ipv4-valid"),
+            pytest.param("ipv6 Multicast", [{"proto": "Connected", "include_leaked": True, "route_map": "RM-CONN-2-BGP"}], id="afisafi-ipv6-valid"),
+        ],
+    )
+    def test_valid(self, afi_safi: RedisrbutedAfiSafi, redistributed_routes: list[Any]) -> None:
+        """Test AddressFamilyConfig valid inputs."""
+        AddressFamilyConfig(afi_safi=afi_safi, redistributed_routes=redistributed_routes)
+
+    @pytest.mark.parametrize(
+        ("afi_safi", "redistributed_routes"),
+        [
+            pytest.param("evpn", [{"proto": "Connected", "include_leaked": True, "route_map": "RM-CONN-2-BGP"}], id="invalid-address-family"),
+            pytest.param("ipv6 sr-te", [{"proto": "Connected", "include_leaked": True, "route_map": "RM-CONN-2-BGP"}], id="ipv6-invalid-address-family"),
+        ],
+    )
+    def test_invalid(self, afi_safi: RedisrbutedAfiSafi, redistributed_routes: list[Any]) -> None:
+        """Test AddressFamilyConfig invalid inputs."""
+        with pytest.raises(ValidationError):
+            AddressFamilyConfig(afi_safi=afi_safi, redistributed_routes=redistributed_routes)

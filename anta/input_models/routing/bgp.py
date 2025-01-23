@@ -267,6 +267,24 @@ class BgpRoutePath(BaseModel):
         return f"Next-hop: {self.nexthop} Origin: {self.origin}"
 
 
+class BgpVrf(BaseModel):
+    """Model representing BGP vrfs."""
+
+    vrf: str = "default"
+    """VRF for the BGP instance. Defaults to `default`."""
+    address_families: list[AddressFamilyConfig]
+    """list of address family configuration."""
+
+    def __str__(self) -> str:
+        """Return a human-readable string representation of the BgpVrf for reporting.
+
+        Examples
+        --------
+        - VRF: default
+        """
+        return f"VRF: {self.vrf}"
+
+
 class RedistributedRoute(BaseModel):
     """Model representing BGP redistributed route."""
 
@@ -280,10 +298,24 @@ class RedistributedRoute(BaseModel):
     @model_validator(mode="after")
     def validate_include_leaked_support(self) -> Self:
         """Validate the input provided for included leaked field, included _leaked this field is not supported for proto AttachedHost, User, Dynamic, RIP."""
-        if self.include_leaked and self.proto in ["AttachedHost", "User", "Dynamic", "RIP"]:
+        if self.include_leaked and self.proto in ["AttachedHost", "EOS SDK", "Dynamic", "RIP"]:
             msg = f"{self.include_leaked}, field is not supported for redistributed route protocol `{self.proto}`"
             raise ValueError(msg)
         return self
+
+    def __str__(self) -> str:
+        """Return a human-readable string representation of the RedistributedRoute for reporting.
+
+        Examples
+        --------
+        - Proto: Connected, Included Leaked: False, Route Map: RM-CONN-2-BGP
+        """
+        base_string = f"Proto: {self.proto}"
+        if self.include_leaked is not None:
+            base_string += f", Included Leaked: {self.include_leaked}"
+        if self.route_map is not None:
+            base_string += f", Route Map: {self.route_map}"
+        return base_string
 
 
 class AddressFamilyConfig(BaseModel):
@@ -305,20 +337,11 @@ class AddressFamilyConfig(BaseModel):
             raise ValueError(msg)
         return self
 
-
-class BgpVrf(BaseModel):
-    """Model representing BGP vrfs."""
-
-    vrf: str = "default"
-    """VRF for the BGP instance. Defaults to `default`."""
-    address_families: list[AddressFamilyConfig]
-    """list of address family configuration."""
-
     def __str__(self) -> str:
-        """Return a human-readable string representation of the BgpVrf for reporting.
+        """Return a human-readable string representation of the AddressFamilyConfig for reporting.
 
         Examples
         --------
-        - VRF: default
+        - AFI-SAFI: v4u
         """
-        return f"VRF: {self.vrf}"
+        return f"AFI-SAFI: {self.afi_safi}"

@@ -5107,8 +5107,38 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {"afiSafiConfig": {"v4u": {"redistributedRoutes": [{"proto": "Connected", "routeMap": "RM-CONN-2-BGP"}]}}},
-                    "test": {"afiSafiConfig": {"v6u": {"redistributedRoutes": [{"proto": "Connected", "routeMap": "RM-CONN-2-BGP"}]}}},
+                    "default": {
+                        "afiSafiConfig": {
+                            "v4u": {
+                                "redistributedRoutes": [
+                                    {"proto": "Connected", "includeLeaked": True, "routeMap": "RM-CONN-2-BGP"},
+                                    {"proto": "Static", "includeLeaked": True, "routeMap": "RM-CONN-2-BGP"},
+                                ]
+                            },
+                            "v6m": {
+                                "redistributedRoutes": [
+                                    {"proto": "Dynamic", "routeMap": "RM-CONN-2-BGP"},
+                                    {"proto": "IS-IS", "includeLeaked": True, "routeMap": "RM-CONN-2-BGP"},
+                                ]
+                            },
+                        }
+                    },
+                    "test": {
+                        "afiSafiConfig": {
+                            "v4u": {
+                                "redistributedRoutes": [
+                                    {"proto": "EOS SDK", "routeMap": "RM-CONN-2-BGP"},
+                                    {"proto": "OSPF Internal", "includeLeaked": True, "routeMap": "RM-CONN-2-BGP"},
+                                ]
+                            },
+                            "v6m": {
+                                "redistributedRoutes": [
+                                    {"proto": "RIP", "routeMap": "RM-CONN-2-BGP"},
+                                    {"proto": "Bgp", "includeLeaked": True, "routeMap": "RM-CONN-2-BGP"},
+                                ]
+                            },
+                        }
+                    },
                 }
             }
         ],
@@ -5125,10 +5155,10 @@ DATA: list[dict[str, Any]] = [
                             ],
                         },
                         {
-                            "afi_safi": "IPv6 Unicast",
+                            "afi_safi": "IPv6 multicast",
                             "redistributed_routes": [
                                 {"proto": "Dynamic", "route_map": "RM-CONN-2-BGP"},
-                                {"proto": "Static", "include_leaked": True, "route_map": "RM-CONN-2-BGP"},
+                                {"proto": "IS-IS", "include_leaked": True, "route_map": "RM-CONN-2-BGP"},
                             ],
                         },
                     ],
@@ -5137,17 +5167,17 @@ DATA: list[dict[str, Any]] = [
                     "vrf": "test",
                     "address_families": [
                         {
-                            "afi_safi": "ipv4Unicast",
+                            "afi_safi": "ipv4 Unicast",
                             "redistributed_routes": [
-                                {"proto": "Connected", "include_leaked": True, "route_map": "RM-CONN-2-BGP"},
-                                {"proto": "Static", "include_leaked": True, "route_map": "RM-CONN-2-BGP"},
+                                {"proto": "User", "route_map": "RM-CONN-2-BGP"},
+                                {"proto": "OSPF Internal", "include_leaked": True, "route_map": "RM-CONN-2-BGP"},
                             ],
                         },
                         {
-                            "afi_safi": "IPv6 Unicast",
+                            "afi_safi": "IPv6Multicast",
                             "redistributed_routes": [
+                                {"proto": "RIP", "route_map": "RM-CONN-2-BGP"},
                                 {"proto": "Bgp", "include_leaked": True, "route_map": "RM-CONN-2-BGP"},
-                                {"proto": "Static", "include_leaked": True, "route_map": "RM-CONN-2-BGP"},
                             ],
                         },
                     ],
@@ -5168,24 +5198,22 @@ DATA: list[dict[str, Any]] = [
             }
         ],
         "inputs": {
-            "address_families": [
+            "vrfs": [
                 {
                     "vrf": "default",
-                    "redistributed_route_protocol": "Connected",
-                    "route_map": "RM-CONN-2-BGP",
-                    "afi": "ipv4",
-                    "safi": "unicast",
-                },
-                {
-                    "vrf": "test",
-                    "redistributed_route_protocol": "Connected",
-                    "route_map": "RM-CONN-2-BGP",
-                    "afi": "ipv6",
-                    "safi": "multicast",
+                    "address_families": [
+                        {
+                            "afi_safi": "ipv4Unicast",
+                            "redistributed_routes": [
+                                {"proto": "Connected", "include_leaked": True, "route_map": "RM-CONN-2-BGP"},
+                                {"proto": "Static", "include_leaked": True, "route_map": "RM-CONN-2-BGP"},
+                            ],
+                        },
+                    ],
                 },
             ]
         },
-        "expected": {"result": "failure", "messages": ["AFI: ipv4 SAFI: unicast VRF: default - Not found"]},
+        "expected": {"result": "failure", "messages": ["VRF: default, AFI-SAFI: v4u - Not configured"]},
     },
     {
         "name": "failure-expected-proto-not-found",
@@ -5209,28 +5237,39 @@ DATA: list[dict[str, Any]] = [
             }
         ],
         "inputs": {
-            "address_families": [
+            "vrfs": [
                 {
                     "vrf": "default",
-                    "redistributed_route_protocol": "Connected",
-                    "route_map": "RM-CONN-2-BGP",
-                    "afi": "ipv4",
-                    "safi": "multicast",
+                    "address_families": [
+                        {
+                            "afi_safi": "ipv4 multicast",
+                            "redistributed_routes": [
+                                {"proto": "OSPFv3 External", "include_leaked": True, "route_map": "RM-CONN-2-BGP"},
+                                {"proto": "OSPFv3 Nssa-External", "include_leaked": True, "route_map": "RM-CONN-2-BGP"},
+                            ],
+                        }
+                    ],
                 },
                 {
                     "vrf": "test",
-                    "redistributed_route_protocol": "User",
-                    "route_map": "RM-CONN-2-BGP",
-                    "afi": "ipv6",
-                    "safi": "multicast",
+                    "address_families": [
+                        {
+                            "afi_safi": "IPv6Unicast",
+                            "redistributed_routes": [
+                                {"proto": "RIP", "route_map": "RM-CONN-2-BGP"},
+                                {"proto": "Bgp", "include_leaked": True, "route_map": "RM-CONN-2-BGP"},
+                            ],
+                        },
+                    ],
                 },
             ]
         },
         "expected": {
             "result": "failure",
             "messages": [
-                "AFI: ipv4 SAFI: multicast VRF: default Protocol: Connected - Not Found",
-                "AFI: ipv6 SAFI: multicast VRF: test Protocol: User - Not Found",
+                "VRF: default, AFI-SAFI: v4m, Proto: OSPFv3 External, Included Leaked: True, Route Map: RM-CONN-2-BGP - Not configured",
+                "VRF: default, AFI-SAFI: v4m, Proto: OSPFv3 Nssa-External, Included Leaked: True, Route Map: RM-CONN-2-BGP - Not configured",
+                "VRF: test, AFI-SAFI: v6u - Not configured",
             ],
         },
     },
@@ -5240,15 +5279,11 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {
-                        "afiSafiConfig": {
-                            "v4m": {"redistributedRoutes": [{"proto": "Connected", "routeMap": "RM-CONN-10-BGP"}, {"proto": "IS-IS", "routeMap": "RM-MLAG-PEER-IN"}]}
-                        }
-                    },
+                    "default": {"afiSafiConfig": {"v4u": {"redistributedRoutes": [{"proto": "Connected", "routeMap": "RM-CONN-10-BGP"}, {"proto": "Static"}]}}},
                     "test": {
                         "afiSafiConfig": {
                             "v6u": {
-                                "redistributedRoutes": [{"proto": "Connected", "routeMap": "RM-MLAG-PEER-IN"}],
+                                "redistributedRoutes": [{"proto": "EOS SDK", "routeMap": "RM-MLAG-PEER-IN"}, {"proto": "OSPF Internal"}],
                             }
                         }
                     },
@@ -5256,28 +5291,104 @@ DATA: list[dict[str, Any]] = [
             }
         ],
         "inputs": {
-            "address_families": [
+            "vrfs": [
                 {
                     "vrf": "default",
-                    "redistributed_route_protocol": "Connected",
-                    "route_map": "RM-CONN-2-BGP",
-                    "afi": "ipv4",
-                    "safi": "multicast",
+                    "address_families": [
+                        {
+                            "afi_safi": "ipv4 UNicast",
+                            "redistributed_routes": [
+                                {"proto": "Connected", "route_map": "RM-CONN-2-BGP"},
+                                {"proto": "Static", "route_map": "RM-CONN-2-BGP"},
+                            ],
+                        },
+                    ],
                 },
                 {
                     "vrf": "test",
-                    "redistributed_route_protocol": "Connected",
-                    "route_map": "RM-CONN-2-BGP",
-                    "afi": "ipv6",
-                    "safi": "unicast",
+                    "address_families": [
+                        {
+                            "afi_safi": "ipv6 Unicast",
+                            "redistributed_routes": [
+                                {"proto": "User", "route_map": "RM-CONN-2-BGP"},
+                                {"proto": "OSPF Internal", "route_map": "RM-CONN-2-BGP"},
+                            ],
+                        },
+                    ],
                 },
             ]
         },
         "expected": {
             "result": "failure",
             "messages": [
-                "AFI: ipv4 SAFI: multicast VRF: default Protocol: Connected - Route map mismatch - Expected: RM-CONN-2-BGP Actual: RM-CONN-10-BGP",
-                "AFI: ipv6 SAFI: unicast VRF: test Protocol: Connected - Route map mismatch - Expected: RM-CONN-2-BGP Actual: RM-MLAG-PEER-IN",
+                "VRF: default, AFI-SAFI: v4u, Proto: Connected, Route Map: RM-CONN-2-BGP - Route map mismatch - Actual: RM-CONN-10-BGP",
+                "VRF: default, AFI-SAFI: v4u, Proto: Static, Route Map: RM-CONN-2-BGP - Route map mismatch - Actual: Not Found",
+                "VRF: test, AFI-SAFI: v6u, Proto: EOS SDK, Route Map: RM-CONN-2-BGP - Route map mismatch - Actual: RM-MLAG-PEER-IN",
+                "VRF: test, AFI-SAFI: v6u, Proto: OSPF Internal, Route Map: RM-CONN-2-BGP - Route map mismatch - Actual: Not Found",
+            ],
+        },
+    },
+    {
+        "name": "failure-incorrect-value-include-leaked",
+        "test": VerifyBGPRedistribution,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "afiSafiConfig": {
+                            "v4m": {
+                                "redistributedRoutes": [
+                                    {"proto": "Dynamic", "routeMap": "RM-CONN-2-BGP"},
+                                    {"proto": "IS-IS", "includeLeaked": False, "routeMap": "RM-CONN-2-BGP"},
+                                ]
+                            },
+                        }
+                    },
+                    "test": {
+                        "afiSafiConfig": {
+                            "v6u": {
+                                "redistributedRoutes": [
+                                    {"proto": "RIP", "routeMap": "RM-CONN-2-BGP"},
+                                    {"proto": "Bgp", "includeLeaked": True, "routeMap": "RM-CONN-2-BGP"},
+                                ]
+                            },
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "vrfs": [
+                {
+                    "vrf": "default",
+                    "address_families": [
+                        {
+                            "afi_safi": "ipv4multicast",
+                            "redistributed_routes": [
+                                {"proto": "IS-IS", "include_leaked": True, "route_map": "RM-CONN-2-BGP"},
+                            ],
+                        },
+                    ],
+                },
+                {
+                    "vrf": "test",
+                    "address_families": [
+                        {
+                            "afi_safi": "IPv6unicast",
+                            "redistributed_routes": [
+                                {"proto": "RIP", "route_map": "RM-CONN-2-BGP"},
+                                {"proto": "Bgp", "include_leaked": False, "route_map": "RM-CONN-2-BGP"},
+                            ],
+                        },
+                    ],
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "VRF: default, AFI-SAFI: v4m, Proto: IS-IS, Included Leaked: True, Route Map: RM-CONN-2-BGP - Value for included leaked mismatch - Actual: False",
+                "VRF: test, AFI-SAFI: v6u, Proto: Bgp, Included Leaked: False, Route Map: RM-CONN-2-BGP - Value for included leaked mismatch - Actual: True",
             ],
         },
     },

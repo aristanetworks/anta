@@ -7,7 +7,7 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from typing import Any, ClassVar, TypeVar
+from typing import ClassVar, TypeVar
 
 from pydantic import field_validator
 
@@ -41,55 +41,6 @@ def _check_bgp_neighbor_capability(capability_status: dict[str, bool]) -> bool:
     True
     """
     return all(capability_status.get(state, False) for state in ("advertised", "received", "enabled"))
-
-
-def _check_bgp_route_redistribution(vrf: str, address_family: list[Any], cmd_output: dict[str, Any]) -> str:
-    """Check if bgp route proto, included_leaked, routemap values matches the expected values.
-
-    Parameters
-    ----------
-    vrf
-        A VRF name
-    address_family
-        A list containing the bgp address family details.
-    cmd_output
-        A dictionary containing output of `show bgp instance vrf all`
-
-    Returns
-    -------
-    str:
-     Test failure messages.
-    Example
-    -------
-    >>> _check_bgp_route_redistribution(default, [
-    { "afi_safi": "ipv4Unicast","redistributed_routes": ["proto": "Connected","include_leaked": True,"route_map": "RM-CONN-2-BGP"}],
-    "show bgp instance vrf all" command output)
-
-    """
-    failure_result = ""
-    for route_info in address_family.redistributed_routes:
-        proto = "EOS SDK" if route_info.proto == "User" else route_info.proto
-        afi_safi_key = address_family.afi_safi
-        output_msg_str = f"VRF: {vrf}, AFISAFI: {afi_safi_key}, Protocol: {route_info.proto}"
-        # If the specified VRF, AFI-SAFI details are not found, test fails.
-        if not (afi_safi_configs := get_value(cmd_output, f"vrfs.{vrf}.afiSafiConfig.{afi_safi_key}")):
-            failure_result += f"VRF: {vrf}, AFISAFI: {afi_safi_key} - Not found"
-            continue
-
-        # If the redistributed route protocol does not match the expected value, test fails.
-        if not (actual_route := get_item(afi_safi_configs.get("redistributedRoutes"), "proto", proto)):
-            failure_result += f"{output_msg_str} - Not Found"
-            continue
-
-        # If includes leaked field applicable, and it does not matches the expected value, test fails.
-        if route_info.include_leaked and (act_include_leaked := actual_route.get("includeLeaked")) != route_info.include_leaked:
-            failure_result += f"{output_msg_str} - Value for included leaked mismatch - Expected :{route_info.include_leaked}, Actual: {act_include_leaked}"
-
-        # If route map is required and it is not matching the expected value, test fails.
-        if route_info.route_map and (act_route_map := actual_route.get("routeMap", "Not Found")) != route_info.route_map:
-            failure_result += f"{output_msg_str} - Route map mismatch - Expected: {route_info.route_map} Actual: {act_route_map}"
-
-    return failure_result
 
 
 class VerifyBGPPeerCount(AntaTest):
@@ -1745,7 +1696,7 @@ class VerifyBGPRedistribution(AntaTest):
     This test performs the following checks for each specified route:
 
       1. Ensures that the expected address-family is configured on the device.
-      2. Confirms that the redistributed route protocol and route map match the expected values for a route.
+      2. Confirms that the redistributed route protocol, included leaked and route map match the expected values for a route.
 
     Note: For "User" proto field, checking that it's "EOS SDK" versus User.
 
@@ -1753,10 +1704,10 @@ class VerifyBGPRedistribution(AntaTest):
     ----------------
     * Success: If all of the following conditions are met:
         - The expected address-family is configured on the device.
-        - The redistributed route protocol and route map align with the expected values for the route.
+        - The redistributed route protocol, included leaked and route map align with the expected values for the route.
     * Failure: If any of the following occur:
         - The expected address-family is not configured on device.
-        - The redistributed route protocol or route map does not match the expected value for a route.
+        - The redistributed route protocolor, included leaked or route map does not match the expected value for a route.
 
     Examples
     --------
@@ -1802,6 +1753,20 @@ class VerifyBGPRedistribution(AntaTest):
 
         for vrf_data in self.inputs.vrfs:
             for address_family in vrf_data.address_families:
-                failure_messages = _check_bgp_route_redistribution(vrf=vrf_data.vrf, address_family=address_family, cmd_output=command_output)
-                self.result.is_failure(failure_messages)
+                # If the specified VRF, AFI-SAFI details are not found, test fails.
+                if not (afi_safi_configs := get_value(command_output, f"vrfs.{vrf_data.vrf}.afiSafiConfig.{address_family.afi_safi}")):
+                    self.result.is_failure(f"{vrf_data}, {address_family} - Not configured")
+                    continue
+                for route_info in address_family.redistributed_routes:
+                    # If the redistributed route protocol does not match the expected value, test fails.
+                    if not (actual_route := get_item(afi_safi_configs.get("redistributedRoutes"), "proto", route_info.proto)):
+                        self.result.is_failure(f"{vrf_data}, {address_family}, {route_info} - Not configured")
+                        continue
 
+                    # If includes leaked field applicable, and it does not matches the expected value, test fails.
+                    if all([route_info.include_leaked is not None, (act_include_leaked := actual_route.get("includeLeaked")) != route_info.include_leaked]):
+                        self.result.is_failure(f"{vrf_data}, {address_family}, {route_info} - Value for included leaked mismatch - Actual: {act_include_leaked}")
+
+                    # If route map is required and it is not matching the expected value, test fails.
+                    if all([route_info.route_map, (act_route_map := actual_route.get("routeMap", "Not Found")) != route_info.route_map]):
+                        self.result.is_failure(f"{vrf_data}, {address_family}, {route_info} - Route map mismatch - Actual: {act_route_map}")
