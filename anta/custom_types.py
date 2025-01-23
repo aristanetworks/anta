@@ -46,7 +46,8 @@ def aaa_group_prefix(v: str) -> str:
 def snmp_v3_prefix(auth_type: str) -> str:
     """Prefix the SNMP authentication type with 'v3' if it is known."""
     snmp_auth_types = ["auth", "priv", "noauth"]
-    if auth_type.lower() in snmp_auth_types and auth_type == "noauth":
+
+    if auth_type.lower() in snmp_auth_types and auth_type.lower() == "noauth":
         return "v3NoAuth"
     if auth_type.lower() in snmp_auth_types:
         return f"v3{auth_type.title()}"

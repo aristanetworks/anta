@@ -618,7 +618,7 @@ class VerifySnmpGroup(AntaTest):
                 elif (act_view := group_details.get(f"{view_type}View")) != expected_view:
                     self.result.is_failure(f"{group} - Incorrect {view_type.title()} view - Expected: {expected_view}, Actual: {act_view}")
                 elif not group_details.get(f"{view_type}ViewConfig"):
-                    self.result.is_failure(f"{group}, View: {expected_view} - Not configured")
+                    self.result.is_failure(f"{group}, {view_type.title()} View: {expected_view} - Not configured")
 
             # For version v3, verify that the security model aligns with the expected value.
             if group.version == "v3" and (actual_auth := group_details.get("secModel")) != group.authentication:
