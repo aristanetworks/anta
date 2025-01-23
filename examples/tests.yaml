@@ -778,6 +778,12 @@ anta.tests.snmp:
           read_view: group_read_1
           write_view: group_write_1
           notify_view: group_notify_1
+        - group_name: Group2
+          version: v3
+          read_view: group_read_2
+          write_view: group_write_2
+          notify_view: group_notify_2
+          authentication: priv
   - VerifySnmpHostLogging:
       # Verifies SNMP logging configurations.
       hosts:

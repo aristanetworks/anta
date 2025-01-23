@@ -6,11 +6,10 @@
 from __future__ import annotations
 
 from ipaddress import IPv4Address
-from typing import Literal
 
 from pydantic import BaseModel, ConfigDict
 
-from anta.custom_types import Hostname, Interface, SnmpEncryptionAlgorithm, SnmpHashingAlgorithm, SnmpVersion
+from anta.custom_types import Hostname, Interface, SnmpEncryptionAlgorithm, SnmpHashingAlgorithm, SnmpVersion, SnmpVersionV3AuthType
 
 
 class SnmpHost(BaseModel):
@@ -88,7 +87,7 @@ class SnmpGroup(BaseModel):
     """Optional field, View to restrict write access."""
     notify_view: str | None = None
     """Optional field, View to restrict notifications."""
-    authentication: Literal["v3Auth", "v3Priv", "v3NoAuth"] | None = None
+    authentication: SnmpVersionV3AuthType | None = None
     """SNMPv3 authentication settings. Required when version is v3."""
 
     def __str__(self) -> str:

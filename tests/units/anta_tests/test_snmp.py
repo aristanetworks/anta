@@ -639,7 +639,7 @@ DATA: list[dict[str, Any]] = [
                     "read_view": "group_read_3",
                     "write_view": "group_write_3",
                     "notify_view": "group_notify_3",
-                    "authentication": "v3Auth",
+                    "authentication": "auth",
                 },
             ]
         },
@@ -680,7 +680,7 @@ DATA: list[dict[str, Any]] = [
                     "Group3": {
                         "versions": {
                             "v3": {
-                                "secModel": "v3Auth",
+                                "secModel": "v3NoAuth",
                                 "readView": "group_read",
                                 "readViewConfig": True,
                                 "writeView": "group_write",
@@ -696,29 +696,28 @@ DATA: list[dict[str, Any]] = [
         "inputs": {
             "snmp_groups": [
                 {"group_name": "Group1", "version": "v1", "read_view": "group_read_1", "write_view": "group_write_1", "notify_view": "group_notify_1"},
-                {"group_name": "Group2", "version": "v2c", "read_view": "group_read_2", "write_view": "group_write_2", "notify_view": "group_notify_2"},
+                {"group_name": "Group2", "version": "v2c", "read_view": "group_read_2", "notify_view": "group_notify_2"},
                 {
                     "group_name": "Group3",
                     "version": "v3",
                     "read_view": "group_read_3",
                     "write_view": "group_write_3",
                     "notify_view": "group_notify_3",
-                    "authentication": "v3Auth",
+                    "authentication": "noauth",
                 },
             ]
         },
         "expected": {
             "result": "failure",
             "messages": [
-                "Group: Group1, Version: v1 Read View: group_read_1 - View configuration mismatch - Read View: group_read, Configured: True",
-                "Group: Group1, Version: v1 Write View: group_write_1 - View configuration mismatch - Write View: group_write, Configured: True",
-                "Group: Group1, Version: v1 Notify View: group_notify_1 - View configuration mismatch - Notify View: group_notify, Configured: True",
-                "Group: Group2, Version: v2c Read View: group_read_2 - View configuration mismatch - Read View: group_read, Configured: True",
-                "Group: Group2, Version: v2c Write View: group_write_2 - View configuration mismatch - Write View: group_write, Configured: True",
-                "Group: Group2, Version: v2c Notify View: group_notify_2 - View configuration mismatch - Notify View: group_notify, Configured: True",
-                "Group: Group3, Version: v3 Read View: group_read_3 - View configuration mismatch - Read View: group_read, Configured: True",
-                "Group: Group3, Version: v3 Write View: group_write_3 - View configuration mismatch - Write View: group_write, Configured: True",
-                "Group: Group3, Version: v3 Notify View: group_notify_3 - View configuration mismatch - Notify View: group_notify, Configured: True",
+                "Group: Group1, Version: v1 - Incorrect Read view - Expected: group_read_1, Actual: group_read",
+                "Group: Group1, Version: v1 - Incorrect Write view - Expected: group_write_1, Actual: group_write",
+                "Group: Group1, Version: v1 - Incorrect Notify view - Expected: group_notify_1, Actual: group_notify",
+                "Group: Group2, Version: v2c - Incorrect Read view - Expected: group_read_2, Actual: group_read",
+                "Group: Group2, Version: v2c - Incorrect Notify view - Expected: group_notify_2, Actual: group_notify",
+                "Group: Group3, Version: v3 - Incorrect Read view - Expected: group_read_3, Actual: group_read",
+                "Group: Group3, Version: v3 - Incorrect Write view - Expected: group_write_3, Actual: group_write",
+                "Group: Group3, Version: v3 - Incorrect Notify view - Expected: group_notify_3, Actual: group_notify",
             ],
         },
     },
@@ -757,7 +756,7 @@ DATA: list[dict[str, Any]] = [
                     "Group3": {
                         "versions": {
                             "v3": {
-                                "secModel": "v3Auth",
+                                "secModel": "v3Priv",
                                 "readView": "group_read",
                                 "readViewConfig": False,
                                 "writeView": "group_write",
@@ -777,25 +776,23 @@ DATA: list[dict[str, Any]] = [
                 {
                     "group_name": "Group3",
                     "version": "v3",
-                    "read_view": "group_read",
                     "write_view": "group_write",
                     "notify_view": "group_notify",
-                    "authentication": "v3Auth",
+                    "authentication": "priv",
                 },
             ]
         },
         "expected": {
             "result": "failure",
             "messages": [
-                "Group: Group1, Version: v1 Read View: group_read - View configuration mismatch - Read View: group_read, Configured: False",
-                "Group: Group1, Version: v1 Write View: group_write - View configuration mismatch - Write View: group_write, Configured: False",
-                "Group: Group1, Version: v1 Notify View: group_notify - View configuration mismatch - Notify View: group_notify, Configured: False",
-                "Group: Group2, Version: v2c Read View: group_read - View configuration mismatch - Read View: group_read, Configured: False",
-                "Group: Group2, Version: v2c Write View: group_write - View configuration mismatch - Write View: group_write, Configured: False",
-                "Group: Group2, Version: v2c Notify View: group_notify - View configuration mismatch - Notify View: group_notify, Configured: False",
-                "Group: Group3, Version: v3 Read View: group_read - View configuration mismatch - Read View: group_read, Configured: False",
-                "Group: Group3, Version: v3 Write View: group_write - View configuration mismatch - Write View: group_write, Configured: False",
-                "Group: Group3, Version: v3 Notify View: group_notify - View configuration mismatch - Notify View: group_notify, Configured: False",
+                "Group: Group1, Version: v1, View: group_read - Not configured",
+                "Group: Group1, Version: v1, View: group_write - Not configured",
+                "Group: Group1, Version: v1, View: group_notify - Not configured",
+                "Group: Group2, Version: v2c, View: group_read - Not configured",
+                "Group: Group2, Version: v2c, View: group_write - Not configured",
+                "Group: Group2, Version: v2c, View: group_notify - Not configured",
+                "Group: Group3, Version: v3, View: group_write - Not configured",
+                "Group: Group3, Version: v3, View: group_notify - Not configured",
             ],
         },
     },
@@ -813,7 +810,7 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "snmp_groups": [
-                {"group_name": "Group1", "version": "v1", "read_view": "group_read_1", "write_view": "group_write_1", "notify_view": "group_notify_1"},
+                {"group_name": "Group1", "version": "v1", "read_view": "group_read_1", "write_view": "group_write_1"},
                 {"group_name": "Group2", "version": "v2c", "read_view": "group_read_2", "write_view": "group_write_2", "notify_view": "group_notify_2"},
                 {
                     "group_name": "Group3",
@@ -821,7 +818,7 @@ DATA: list[dict[str, Any]] = [
                     "read_view": "group_read_3",
                     "write_view": "group_write_3",
                     "notify_view": "group_notify_3",
-                    "authentication": "v3Auth",
+                    "authentication": "auth",
                 },
             ]
         },
@@ -843,7 +840,7 @@ DATA: list[dict[str, Any]] = [
                     "Group3": {
                         "versions": {
                             "v3": {
-                                "secModel": "v3Priv",
+                                "secModel": "v3Auth",
                                 "readView": "group_read",
                                 "readViewConfig": True,
                                 "writeView": "group_write",
@@ -864,14 +861,14 @@ DATA: list[dict[str, Any]] = [
                     "read_view": "group_read",
                     "write_view": "group_write",
                     "notify_view": "group_notify",
-                    "authentication": "v3Auth",
+                    "authentication": "priv",
                 },
             ]
         },
         "expected": {
             "result": "failure",
             "messages": [
-                "Group: Group3, Version: v3 - Incorrect security model - Expected: v3Auth Actual: v3Priv",
+                "Group: Group3, Version: v3 - Incorrect security model - Expected: v3Priv, Actual: v3Auth",
             ],
         },
     },
@@ -881,7 +878,7 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [
             {
                 "groups": {
-                    "Group3": {"versions": {"v3": {"secModel": "v3Auth", "readView": "group_read", "readViewConfig": True, "writeView": "", "notifyView": ""}}},
+                    "Group3": {"versions": {"v3": {"secModel": "v3NoAuth", "readView": "group_read", "readViewConfig": True, "writeView": "", "notifyView": ""}}},
                 }
             }
         ],
@@ -892,7 +889,7 @@ DATA: list[dict[str, Any]] = [
                     "version": "v3",
                     "read_view": "group_read",
                     "write_view": "group_write",
-                    "authentication": "v3Auth",
+                    "authentication": "noauth",
                 },
             ]
         },

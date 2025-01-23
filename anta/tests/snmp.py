@@ -557,7 +557,7 @@ class VerifySnmpGroup(AntaTest):
     Expected Results
     ----------------
     * Success: The test will pass if the provided SNMP group and all specified parameters are correctly configured.
-    * Failure: The test will fail if the provided SNMP group is not configured or specified parameters are not correctly configured.
+    * Failure: The test will fail if the provided SNMP group is not configured or if any specified parameter is not correctly configured.
 
     Examples
     --------
@@ -570,6 +570,12 @@ class VerifySnmpGroup(AntaTest):
               read_view: group_read_1
               write_view: group_write_1
               notify_view: group_notify_1
+            - group_name: Group2
+              version: v3
+              read_view: group_read_2
+              write_view: group_write_2
+              notify_view: group_notify_2
+              authentication: priv
     ```
     """
 
@@ -588,7 +594,7 @@ class VerifySnmpGroup(AntaTest):
             """Validate the inputs provided to the SnmpGroup class."""
             for snmp_group in snmp_groups:
                 if snmp_group.version == "v3" and snmp_group.authentication is None:
-                    msg = f"{snmp_group}; `authentication` field is required for `version: v3`"
+                    msg = f"{snmp_group}: `authentication` field is required for `version: v3`"
                     raise ValueError(msg)
             return snmp_groups
 
@@ -602,22 +608,18 @@ class VerifySnmpGroup(AntaTest):
                 self.result.is_failure(f"{group} - Not configured")
                 continue
 
+            view_types = [view_type for view_type in ["read", "write", "notify"] if getattr(group, f"{view_type}_view")]
             # Verify SNMP views, the read, write and notify settings aligning with version-specific requirements.
-            for view_type in ["read", "write", "notify"]:
+            for view_type in view_types:
                 expected_view = getattr(group, f"{view_type}_view")
-
                 # Verify actual view is configured.
-                if expected_view and group_details.get(f"{view_type}View") == "":
+                if group_details.get(f"{view_type}View") == "":
                     self.result.is_failure(f"{group} View: {view_type} - Not configured")
-                elif expected_view and not all(
-                    [(act_view := group_details.get(f"{view_type}View")) == expected_view, (view_configured := group_details.get(f"{view_type}ViewConfig"))]
-                ):
-                    self.result.is_failure(
-                        f"{group} {view_type.title()} View: {expected_view} - "
-                        f"View configuration mismatch - {view_type.title()} View: {act_view}, "
-                        f"Configured: {view_configured}"
-                    )
+                elif (act_view := group_details.get(f"{view_type}View")) != expected_view:
+                    self.result.is_failure(f"{group} - Incorrect {view_type.title()} view - Expected: {expected_view}, Actual: {act_view}")
+                elif not group_details.get(f"{view_type}ViewConfig"):
+                    self.result.is_failure(f"{group}, View: {expected_view} - Not configured")
 
             # For version v3, verify that the security model aligns with the expected value.
             if group.version == "v3" and (actual_auth := group_details.get("secModel")) != group.authentication:
-                self.result.is_failure(f"{group} - Incorrect security model - Expected: {group.authentication} Actual: {actual_auth}")
+                self.result.is_failure(f"{group} - Incorrect security model - Expected: {group.authentication}, Actual: {actual_auth}")

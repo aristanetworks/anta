@@ -43,6 +43,17 @@ def aaa_group_prefix(v: str) -> str:
     return f"group {v}" if v not in built_in_methods and not v.startswith("group ") else v
 
 
+def snmp_v3_prefix(auth_type: str) -> str:
+    """Prefix the SNMP authentication type with 'v3' if it is known."""
+    snmp_auth_types = ["auth", "priv", "noauth"]
+    if auth_type.lower() in snmp_auth_types and auth_type == "noauth":
+        return "v3NoAuth"
+    if auth_type.lower() in snmp_auth_types:
+        return f"v3{auth_type.title()}"
+    msg = f"SNMP authentication type `{auth_type}` is not supported, supported types are {', '.join(snmp_auth_types)}"
+    raise ValueError(msg)
+
+
 def interface_autocomplete(v: str) -> str:
     """Allow the user to only provide the beginning of an interface name.
 
@@ -264,3 +275,4 @@ SnmpHashingAlgorithm = Literal["MD5", "SHA", "SHA-224", "SHA-256", "SHA-384", "S
 SnmpEncryptionAlgorithm = Literal["AES-128", "AES-192", "AES-256", "DES"]
 DynamicVlanSource = Literal["dmf", "dot1x", "dynvtep", "evpn", "mlag", "mlagsync", "mvpn", "swfwd", "vccbfd"]
 LogSeverityLevel = Literal["alerts", "critical", "debugging", "emergencies", "errors", "informational", "notifications", "warnings"]
+SnmpVersionV3AuthType = Annotated[str, AfterValidator(snmp_v3_prefix)]
