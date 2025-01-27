@@ -46,6 +46,46 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
+        "name": "success-ipv6",
+        "test": VerifyReachability,
+        "eos_data": [
+            {
+                "messages": [
+                    """PING fd12:3456:789a:1::2(fd12:3456:789a:1::2) from fd12:3456:789a:1::1 : 52 data bytes
+                60 bytes from fd12:3456:789a:1::2: icmp_seq=1 ttl=64 time=0.097 ms
+                60 bytes from fd12:3456:789a:1::2: icmp_seq=2 ttl=64 time=0.033 ms
+
+                --- fd12:3456:789a:1::2 ping statistics ---
+                2 packets transmitted, 2 received, 0% packet loss, time 0ms
+                rtt min/avg/max/mdev = 0.033/0.065/0.097/0.032 ms, ipg/ewma 0.148/0.089 ms
+                """,
+                ],
+            },
+        ],
+        "inputs": {"hosts": [{"destination": "fd12:3456:789a:1::2", "source": "fd12:3456:789a:1::1"}]},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-ipv6-vlan",
+        "test": VerifyReachability,
+        "eos_data": [
+            {
+                "messages": [
+                    """PING fd12:3456:789a:1::2(fd12:3456:789a:1::2) 52 data bytes
+                60 bytes from fd12:3456:789a:1::2: icmp_seq=1 ttl=64 time=0.094 ms
+                60 bytes from fd12:3456:789a:1::2: icmp_seq=2 ttl=64 time=0.027 ms
+
+                --- fd12:3456:789a:1::2 ping statistics ---
+                2 packets transmitted, 2 received, 0% packet loss, time 0ms
+                rtt min/avg/max/mdev = 0.027/0.060/0.094/0.033 ms, ipg/ewma 0.152/0.085 ms
+                """,
+                ],
+            },
+        ],
+        "inputs": {"hosts": [{"destination": "fd12:3456:789a:1::2", "source": "vl110"}]},
+        "expected": {"result": "success"},
+    },
+    {
         "name": "success-interface",
         "test": VerifyReachability,
         "inputs": {"hosts": [{"destination": "10.0.0.1", "source": "Management0"}, {"destination": "10.0.0.2", "source": "Management0"}]},
@@ -154,6 +194,23 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "expected": {"result": "failure", "messages": ["Host 10.0.0.11 (src: 10.0.0.5, vrf: default, size: 100B, repeat: 2) - Unreachable"]},
+    },
+    {
+        "name": "failure-ipv6",
+        "test": VerifyReachability,
+        "eos_data": [
+            {
+                "messages": [
+                    """PING fd12:3456:789a:1::2(fd12:3456:789a:1::2) from fd12:3456:789a:1::1 : 52 data bytes
+
+                    --- fd12:3456:789a:1::3 ping statistics ---
+                    2 packets transmitted, 0 received, 100% packet loss, time 10ms
+                """,
+                ],
+            },
+        ],
+        "inputs": {"hosts": [{"destination": "fd12:3456:789a:1::2", "source": "fd12:3456:789a:1::1"}]},
+        "expected": {"result": "failure", "messages": ["Host fd12:3456:789a:1::2 (src: fd12:3456:789a:1::1, vrf: default, size: 100B, repeat: 2) - Unreachable"]},
     },
     {
         "name": "failure-interface",
