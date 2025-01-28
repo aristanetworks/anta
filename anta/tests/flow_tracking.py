@@ -35,16 +35,16 @@ def validate_exporters(exporters: list[dict[str, str]], tracker_info: dict[str, 
         exporter_name = exporter.name
         actual_exporter_info = tracker_info["exporters"].get(exporter_name)
         if not actual_exporter_info:
-            failure_messages.append(f"Exporter: {exporter_name} - Not configured")
+            failure_messages.append(f"{exporter} - Not configured")
             continue
         local_interface = actual_exporter_info["localIntf"]
         template_interval = actual_exporter_info["templateInterval"]
 
         if local_interface != exporter.local_interface:
-            failure_messages.append(f"Exporter: {exporter_name} - Incorrect local interface - Expected: {exporter.local_interface}, Actual: {local_interface}")
+            failure_messages.append(f"{exporter} - Incorrect local interface - Expected: {exporter.local_interface}, Actual: {local_interface}")
 
         if template_interval != exporter.template_interval:
-            failure_messages.append(f"Exporter: {exporter_name} - Incorrect template interval - Expected: {exporter.template_interval}, Actual: {template_interval}")
+            failure_messages.append(f"{exporter} - Incorrect template interval - Expected: {exporter.template_interval}, Actual: {template_interval}")
     return failure_messages
 
 
