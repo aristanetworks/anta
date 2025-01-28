@@ -589,11 +589,11 @@ class TestAntaDevice:
                 if expected["cache_hit"] is True:
                     assert cmd.output == cached_output
                     assert current_cached_data == cached_output
-                    assert device.cache.hit_miss_ratio["hits"] == 2
+                    assert device.cache.stats["hits"] == 2
                 else:
                     assert cmd.output == COMMAND_OUTPUT
                     assert current_cached_data == COMMAND_OUTPUT
-                    assert device.cache.hit_miss_ratio["hits"] == 1
+                    assert device.cache.stats["hits"] == 1
             else:  # command is not allowed to use cache
                 device._collect.assert_called_once_with(command=cmd, collection_id=None)  # type: ignore[attr-defined]
                 assert cmd.output == COMMAND_OUTPUT
