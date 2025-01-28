@@ -142,7 +142,7 @@ class VerifySpecificPath(AntaTest):
                 continue
 
             path_data = next((path for path in path_group_details.values() if (path.get("source") == source and path.get("destination") == destination)), None)
-            # If the expected and actual source and destination address of the path group are not matched, test fails.
+            #  Source and destination address do not match, the test fails.
             if not path_data:
                 self.result.is_failure(f"{dps_path} - No path matching the source and destination found")
                 continue
