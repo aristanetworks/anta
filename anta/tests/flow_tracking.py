@@ -49,7 +49,7 @@ def validate_exporters(exporters: list[dict[str, str]], tracker_info: dict[str, 
 
 
 class VerifyHardwareFlowTrackerStatus(AntaTest):
-    """Verifies the hardware flow tracking configuration.
+    """Verifies the hardware flow tracking state.
 
     This test performs the following checks:
 
