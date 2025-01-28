@@ -87,21 +87,39 @@ def bgp_multiprotocol_capabilities_abbreviations(value: str) -> str:
     - L2vpnEVPN
     - ipv4 MPLS Labels
     - ipv4Mplsvpn
-
     """
     patterns = {
-        REGEXP_BGP_L2VPN_AFI: "l2VpnEvpn",
-        REGEXP_BGP_IPV4_MPLS_LABELS: "ipv4MplsLabels",
-        REGEX_BGP_IPV4_MPLS_VPN: "ipv4MplsVpn",
-        REGEX_BGP_IPV4_UNICAST: "ipv4Unicast",
+        f"{r'dynamic[-_ ]?path[-_ ]?selection$'}": "dps",
+        f"{r'ipv4[-_ ]?unicast'}$": "ipv4Unicast",
+        f"{r'ipv6[-_ ]?unicast'}$": "ipv6Unicast",
+        f"{r'ipv4[-_ ]?multicast$'}": "ipv4Multicast",
+        f"{r'ipv6[-_ ]?multicast$'}": "ipv6Multicast",
+        f"{r'ipv4[-_ ]?labeled[-_ ]?Unicast$'}": "ipv4MplsLabels",
+        f"{r'ipv6[-_ ]?labeled[-_ ]?Unicast$'}": "ipv6MplsLabels",
+        f"{r'ipv4[-_ ]?sr[-_ ]?te$'}": "ipv4SrTe",  # codespell: ignore
+        f"{r'ipv6[-_ ]?sr[-_ ]?te$'}": "ipv6SrTe",  # codespell: ignore
+        f"{r'ipv4[-_ ]?mpls[-_ ]?label$'}": "ipv4MplsVpn",
+        f"{r'ipv6[-_ ]?mpls[-_ ]?label$'}": "ipv6MplsVpn",
+        f"{r'ipv4[-_ ]?Flow[-_ ]?spec$'}": "ipv4FlowSpec",
+        f"{r'ipv6[-_ ]?Flow[-_ ]?spec$'}": "ipv6FlowSpec",
+        f"{r'ipv4[-_ ]?Flow[-_ ]?spec[-_ ]?vpn$'}": "ipv4FlowSpecVpn",
+        f"{r'ipv6[-_ ]?Flow[-_ ]?spec[-_ ]?vpn$'}": "ipv6FlowSpecVpn",
+        f"{r'l2[-_ ]?vpn[-_ ]?vpls$'}": "l2VpnVpls",
+        f"{r'l2[-_ ]?vpn[-_ ]?evpn$'}": "l2VpnEvpn",
+        f"{r'link[-_ ]?state$'}": "linkState",
+        f"{r'rt[-_ ]?membership$'}": "rtMembership",
+        f"{r'ipv4[-_ ]?rt[-_ ]?membership$'}": "rtMembership",
+        f"{r'ipv4[-_ ]?mvpn$'}": "ipv4Mvpn",
     }
 
     for pattern, replacement in patterns.items():
         match = re.search(pattern, value, re.IGNORECASE)
         if match:
             return replacement
-
-    return value
+        if not match and value in patterns.values():
+            return value
+    msg = f"Invalid input: {value}"
+    raise ValueError(msg)
 
 
 def validate_regex(value: str) -> str:

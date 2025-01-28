@@ -238,15 +238,26 @@ def test_interface_autocomplete_failure() -> None:
     ("str_input", "expected_output"),
     [
         pytest.param("L2VPNEVPN", "l2VpnEvpn", id="l2VpnEvpn"),
-        pytest.param("ipv4-mplsLabels", "ipv4MplsLabels", id="ipv4MplsLabels"),
-        pytest.param("ipv4-mpls-vpn", "ipv4MplsVpn", id="ipv4MplsVpn"),
+        pytest.param("IPv4 Labeled Unicast", "ipv4MplsLabels", id="ipv4MplsLabels"),
+        pytest.param("ipv4-mpls-label", "ipv4MplsVpn", id="ipv4MplsVpn"),
         pytest.param("ipv4-unicast", "ipv4Unicast", id="ipv4Unicast"),
-        pytest.param("BLAH", "BLAH", id="unmatched"),
     ],
 )
 def test_bgp_multiprotocol_capabilities_abbreviationsh(str_input: str, expected_output: str) -> None:
     """Test bgp_multiprotocol_capabilities_abbreviations."""
     assert bgp_multiprotocol_capabilities_abbreviations(str_input) == expected_output
+
+
+@pytest.mark.parametrize(
+    ("str_input"),
+    [
+        pytest.param("BLAH", id="ipv4Unicast"),
+    ],
+)
+def test_bgp_multiprotocol_capabilities_abbreviationsh_invalid_input(str_input: str) -> None:
+    """Test bgp_multiprotocol_capabilities_abbreviations."""
+    with pytest.raises(ValueError, match="Invalid input"):
+        bgp_multiprotocol_capabilities_abbreviations(str_input)
 
 
 def test_aaa_group_prefix_known_method() -> None:
