@@ -296,7 +296,7 @@ class VerifyIPv4RouteNextHops(AntaTest):
             route_entries:
                 - prefix: 10.10.0.1/32
                   vrf: default
-                  strict: False
+                  strict: false
                   nexthops:
                     - 10.100.0.8
                     - 10.100.0.10
