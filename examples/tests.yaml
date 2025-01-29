@@ -559,6 +559,15 @@ anta.tests.routing.bgp:
         - address: aac1.ab5d.b41e
           vni: 10010
 anta.tests.routing.generic:
+  - VerifyIPv4RouteNextHops:
+      # Verifies the next-hops of the IPv4 prefixes.
+      route_entries:
+          - prefix: 10.10.0.1/32
+            vrf: default
+            strict: false
+            nexthops:
+              - 10.100.0.8
+              - 10.100.0.10
   - VerifyIPv4RouteType:
       # Verifies the route-type of the IPv4 prefixes.
       routes_entries:
