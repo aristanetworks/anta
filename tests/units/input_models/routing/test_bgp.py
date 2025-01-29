@@ -21,6 +21,7 @@ from anta.tests.routing.bgp import (
     VerifyBGPPeerRouteLimit,
     VerifyBGPRouteECMP,
     VerifyBgpRouteMaps,
+    VerifyBGPRoutePaths,
     VerifyBGPSpecificPeers,
     VerifyBGPTimers,
 )
@@ -314,3 +315,37 @@ class TestVerifyBGPRouteECMPInput:
         """Test VerifyBGPRouteECMP.Input invalid inputs."""
         with pytest.raises(ValidationError):
             VerifyBGPRouteECMP.Input(route_entries=bgp_routes)
+
+
+class TestVerifyBGPRoutePaths:
+    """Test anta.tests.routing.bgp.VerifyBGPRoutePaths.Input."""
+
+    @pytest.mark.parametrize(
+        ("route_entries"),
+        [
+            pytest.param(
+                [
+                    {
+                        "prefix": "10.100.0.128/31",
+                        "vrf": "default",
+                        "paths": [{"nexthop": "10.100.0.10", "origin": "Igp"}, {"nexthop": "10.100.4.5", "origin": "Incomplete"}],
+                    }
+                ],
+                id="valid",
+            ),
+        ],
+    )
+    def test_valid(self, route_entries: list[BgpRoute]) -> None:
+        """Test VerifyBGPRoutePaths.Input valid inputs."""
+        VerifyBGPRoutePaths.Input(route_entries=route_entries)
+
+    @pytest.mark.parametrize(
+        ("route_entries"),
+        [
+            pytest.param([{"prefix": "10.100.0.128/31", "vrf": "default"}], id="invalid"),
+        ],
+    )
+    def test_invalid(self, route_entries: list[BgpRoute]) -> None:
+        """Test VerifyBGPRoutePaths.Input invalid inputs."""
+        with pytest.raises(ValidationError):
+            VerifyBGPRoutePaths.Input(route_entries=route_entries)
