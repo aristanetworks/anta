@@ -524,12 +524,17 @@ class VerifySnmpNotificationHost(AntaTest):
     anta.tests.snmp:
       - VerifySnmpNotificationHost:
           notification_hosts:
-            - hostname: 192.168.1.100
+            - hostname: spine
               vrf: default
               notification_type: trap
               version: v1
               udp_port: 162
               community_string: public
+            - hostname: 192.168.1.100
+              vrf: default
+              notification_type: trap
+              version: v3
+              udp_port: 162
               user: public
     ```
     """
