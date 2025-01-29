@@ -12,7 +12,7 @@ import pytest
 from pydantic import ValidationError
 
 from anta.input_models.snmp import SnmpGroup
-from anta.tests.snmp import VerifySnmpGroup, VerifySnmpUser
+from anta.tests.snmp import VerifySnmpUser
 
 if TYPE_CHECKING:
     from anta.custom_types import SnmpVersion, SnmpVersionV3AuthType
@@ -46,67 +46,13 @@ class TestVerifySnmpUserInput:
             VerifySnmpUser.Input(snmp_users=snmp_users)
 
 
-class TestVerifySnmpGroupInput:
-    """Test anta.tests.snmp.VerifySnmpGroup.Input."""
-
-    @pytest.mark.parametrize(
-        ("snmp_groups"),
-        [
-            pytest.param(
-                [{"group_name": "abc", "version": "v1", "read_view": "group_read_1", "write_view": "group_write_1", "notify_view": "group_notify_1"}], id="valid-v1"
-            ),
-            pytest.param(
-                [
-                    {
-                        "group_name": "abc",
-                        "version": "v3",
-                        "read_view": "group_read_1",
-                        "write_view": "group_write_1",
-                        "notify_view": "group_notify_1",
-                        "authentication": "noauth",
-                    }
-                ],
-                id="valid-v3",
-            ),
-        ],
-    )
-    def test_valid(self, snmp_groups: list[SnmpGroup]) -> None:
-        """Test VerifySnmpGroup.Input valid inputs."""
-        VerifySnmpGroup.Input(snmp_groups=snmp_groups)
-
-    @pytest.mark.parametrize(
-        ("snmp_groups"),
-        [
-            pytest.param(
-                [
-                    {
-                        "group_name": "abc",
-                        "version": "v3",
-                        "read_view": "group_read_1",
-                        "write_view": "group_write_1",
-                        "notify_view": "group_notify_1",
-                        "authentication": None,
-                    }
-                ],
-                id="invalid-v3",
-            ),
-        ],
-    )
-    def test_invalid(self, snmp_groups: list[SnmpGroup]) -> None:
-        """Test VerifySnmpGroup.Input invalid inputs."""
-        with pytest.raises(ValidationError):
-            VerifySnmpGroup.Input(snmp_groups=snmp_groups)
-
-
-class TestSnmpGroup:
+class TestSnmpGroupInput:
     """Test anta.input_models.snmp.SnmpGroup."""
 
     @pytest.mark.parametrize(
         ("group_name", "version", "read_view", "write_view", "notify_view", "authentication"),
         [
             pytest.param("group1", "v3", "", "write_1", None, "auth", id="snmp-auth"),
-            pytest.param("group2", "v3", "read_1", None, None, "noauth", id="snmp-noauth"),
-            pytest.param("group3", "v3", "", "write_1", "notify_1", "auth", id="snmp-priv"),
         ],
     )
     def test_valid(self, group_name: str, read_view: str, version: SnmpVersion, write_view: str, notify_view: str, authentication: SnmpVersionV3AuthType) -> None:
@@ -116,7 +62,7 @@ class TestSnmpGroup:
     @pytest.mark.parametrize(
         ("group_name", "version", "read_view", "write_view", "notify_view", "authentication"),
         [
-            pytest.param("group1", "v3", "", "write_1", None, "abc", id="snmp-invalid-auth"),
+            pytest.param("group1", "v3", "", "write_1", None, None, id="snmp-invalid-auth"),
         ],
     )
     def test_invalid(self, group_name: str, read_view: str, version: SnmpVersion, write_view: str, notify_view: str, authentication: SnmpVersionV3AuthType) -> None:

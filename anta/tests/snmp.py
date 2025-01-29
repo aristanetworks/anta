@@ -588,16 +588,6 @@ class VerifySnmpGroup(AntaTest):
         snmp_groups: list[SnmpGroup]
         """List of SNMP groups."""
 
-        @field_validator("snmp_groups")
-        @classmethod
-        def validate_snmp_groups(cls, snmp_groups: list[SnmpGroup]) -> list[SnmpGroup]:
-            """Validate the inputs provided to the SnmpGroup class."""
-            for snmp_group in snmp_groups:
-                if snmp_group.version == "v3" and snmp_group.authentication is None:
-                    msg = f"{snmp_group}: `authentication` field is required for `version: v3`"
-                    raise ValueError(msg)
-            return snmp_groups
-
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifySnmpGroup."""
