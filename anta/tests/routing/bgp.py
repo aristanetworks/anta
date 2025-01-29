@@ -1726,7 +1726,7 @@ class VerifyBGPRouteECMP(AntaTest):
             route_entries:
                 - prefix: 10.100.0.128/31
                   vrf: default
-                  ecmp_count: int
+                  ecmp_count: 2
     ```
     """
 
@@ -1763,15 +1763,14 @@ class VerifyBGPRouteECMP(AntaTest):
                 self.result.is_failure(f"{route} - prefix not found in BGP table")
                 continue
 
-            route_paths = iter(bgp_route_entry["bgpRoutePaths"])
-            head = next(route_paths)
-            if not any(head[key] for key in ["valid", "active", "ecmpHead"]):
+            route_paths = bgp_route_entry["bgpRoutePaths"]
+            head = next((path for path in route_paths if all(path.get("routeType", {}).get(key, False) for key in ["valid", "active", "ecmpHead"])), None)
+
+            if not head:
                 self.result.is_failure(f"{route} - valid and active ECMP head not found")
                 continue
 
-            bgp_nexthops = {head["nextHop"]}
-            bgp_nexthops.update(path["nextHop"] for path in route_paths if all(path[key] for key in ["valid", "ecmp", "ecmpContributor"]))
-
+            bgp_nexthops = {path["nextHop"] for path in route_paths if all(path.get("routeType")[key] for key in ["valid", "ecmp", "ecmpContributor"])}
             if len(bgp_nexthops) != route.ecmp_count:
                 self.result.is_failure(f"{route} - ECMP count mismatch - Expected: {route.ecmp_count}, Actual: {len(bgp_nexthops)}")
                 continue
@@ -1781,7 +1780,7 @@ class VerifyBGPRouteECMP(AntaTest):
                 self.result.is_failure(f"{route} - prefix not found in routing table")
                 continue
 
-            # TODO: Test with BGP unnumbered (RFC5549) and if there are scenarios where `nexthopAddr` might not be present
-            rib_nexthops = {via["nexthopAddr"] for via in route_entry["vias"] if route_entry["routeType"] in {"iBGP", "eBGP"}}
-            if bgp_nexthops != rib_nexthops:
-                self.result.is_failure(f"{route} - nexthops mismatch - BGP: {bgp_nexthops}, RIB: {rib_nexthops}")
+            # TODO: Test with BGP unnumbered (RFC5549)
+            rib_nexthops = {via["nexthopAddr"] for via in route_entry["vias"] if route_entry["routeType"] in {"iBGP", "eBGP"} and via["nexthopAddr"] != ""}
+            if sorted(bgp_nexthops) != sorted(rib_nexthops):
+                self.result.is_failure(f"{route} - nexthops mismatch - BGP: {', '.join(sorted(bgp_nexthops))}, RIB: {', '.join(sorted(rib_nexthops))}")

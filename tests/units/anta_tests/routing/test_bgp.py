@@ -28,6 +28,7 @@ from anta.tests.routing.bgp import (
     VerifyBGPPeersHealth,
     VerifyBGPPeersHealthRibd,
     VerifyBGPPeerUpdateErrors,
+    VerifyBGPRouteECMP,
     VerifyBgpRouteMaps,
     VerifyBGPRoutePaths,
     VerifyBGPSpecificPeers,
@@ -5099,5 +5100,449 @@ DATA: list[dict[str, Any]] = [
             "result": "failure",
             "messages": ["Prefix: 10.100.0.128/31 VRF: default - prefix not found", "Prefix: 10.100.0.130/31 VRF: MGMT - prefix not found"],
         },
+    },
+    {
+        "name": "success",
+        "test": VerifyBGPRouteECMP,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "vrf": "default",
+                        "routerId": "10.111.254.1",
+                        "asn": "65101",
+                        "bgpRouteEntries": {
+                            "10.111.134.0/24": {
+                                "address": "10.111.134.0",
+                                "maskLength": 24,
+                                "bgpRoutePaths": [
+                                    {
+                                        "nextHop": "10.111.1.0",
+                                        "routeType": {
+                                            "valid": True,
+                                            "active": True,
+                                            "ecmpHead": True,
+                                            "ecmp": True,
+                                            "ecmpContributor": True,
+                                        },
+                                    },
+                                    {
+                                        "nextHop": "10.111.2.0",
+                                        "routeType": {
+                                            "valid": True,
+                                            "active": False,
+                                            "ecmpHead": False,
+                                            "ecmp": True,
+                                            "ecmpContributor": True,
+                                        },
+                                    },
+                                    {
+                                        "nextHop": "10.255.255.2",
+                                        "routeType": {
+                                            "valid": True,
+                                            "active": False,
+                                            "ecmpHead": False,
+                                            "ecmp": False,
+                                            "ecmpContributor": False,
+                                        },
+                                    },
+                                ],
+                                "totalPaths": 3,
+                            },
+                        },
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "routingDisabled": False,
+                        "allRoutesProgrammedHardware": True,
+                        "allRoutesProgrammedKernel": True,
+                        "defaultRouteState": "notSet",
+                        "routes": {
+                            "10.111.112.0/24": {"routeAction": "forward", "vias": [{"interface": "Vlan112"}]},
+                            "10.111.134.0/24": {
+                                "routeType": "eBGP",
+                                "vias": [{"nexthopAddr": "10.111.1.0", "interface": "Ethernet2"}, {"nexthopAddr": "10.111.2.0", "interface": "Ethernet3"}],
+                                "directlyConnected": False,
+                            },
+                        },
+                    }
+                }
+            },
+        ],
+        "inputs": {"route_entries": [{"prefix": "10.111.134.0/24", "vrf": "default", "ecmp_count": 2}]},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-prefix-not-found-bgp-table",
+        "test": VerifyBGPRouteECMP,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "vrf": "default",
+                        "routerId": "10.111.254.1",
+                        "asn": "65101",
+                        "bgpRouteEntries": {
+                            "10.111.134.0/24": {
+                                "address": "10.111.134.0",
+                                "maskLength": 24,
+                                "bgpRoutePaths": [
+                                    {
+                                        "nextHop": "10.111.1.0",
+                                        "routeType": {
+                                            "valid": True,
+                                            "active": True,
+                                            "ecmpHead": True,
+                                            "ecmp": True,
+                                            "ecmpContributor": True,
+                                        },
+                                    },
+                                    {
+                                        "nextHop": "10.111.2.0",
+                                        "routeType": {
+                                            "valid": True,
+                                            "active": False,
+                                            "ecmpHead": False,
+                                            "ecmp": True,
+                                            "ecmpContributor": True,
+                                        },
+                                    },
+                                    {
+                                        "nextHop": "10.255.255.2",
+                                        "routeType": {
+                                            "valid": True,
+                                            "active": False,
+                                            "ecmpHead": False,
+                                            "ecmp": False,
+                                            "ecmpContributor": False,
+                                        },
+                                    },
+                                ],
+                                "totalPaths": 3,
+                            },
+                        },
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "routingDisabled": False,
+                        "allRoutesProgrammedHardware": True,
+                        "allRoutesProgrammedKernel": True,
+                        "defaultRouteState": "notSet",
+                        "routes": {
+                            "10.111.112.0/24": {"routeAction": "forward", "vias": [{"interface": "Vlan112"}]},
+                            "10.111.134.0/24": {
+                                "routeType": "eBGP",
+                                "vias": [{"nexthopAddr": "10.111.1.0", "interface": "Ethernet2"}, {"nexthopAddr": "10.111.2.0", "interface": "Ethernet3"}],
+                                "directlyConnected": False,
+                            },
+                        },
+                    }
+                }
+            },
+        ],
+        "inputs": {"route_entries": [{"prefix": "10.111.124.0/24", "vrf": "default", "ecmp_count": 2}]},
+        "expected": {"result": "failure", "messages": ["Prefix: 10.111.124.0/24 VRF: default - prefix not found in BGP table"]},
+    },
+    {
+        "name": "failure-valid-active-ecmp-head-not-found",
+        "test": VerifyBGPRouteECMP,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "vrf": "default",
+                        "routerId": "10.111.254.1",
+                        "asn": "65101",
+                        "bgpRouteEntries": {
+                            "10.111.134.0/24": {
+                                "address": "10.111.134.0",
+                                "maskLength": 24,
+                                "bgpRoutePaths": [
+                                    {
+                                        "nextHop": "10.111.1.0",
+                                        "routeType": {
+                                            "valid": False,
+                                            "active": True,
+                                            "ecmpHead": False,
+                                            "ecmp": True,
+                                            "ecmpContributor": True,
+                                        },
+                                    },
+                                    {
+                                        "nextHop": "10.111.2.0",
+                                        "routeType": {
+                                            "valid": False,
+                                            "active": True,
+                                            "ecmpHead": True,
+                                            "ecmp": True,
+                                            "ecmpContributor": True,
+                                        },
+                                    },
+                                    {
+                                        "nextHop": "10.255.255.2",
+                                        "routeType": {
+                                            "valid": True,
+                                            "active": False,
+                                            "ecmpHead": False,
+                                            "ecmp": False,
+                                            "ecmpContributor": False,
+                                        },
+                                    },
+                                ],
+                                "totalPaths": 3,
+                            },
+                        },
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "routingDisabled": False,
+                        "allRoutesProgrammedHardware": True,
+                        "allRoutesProgrammedKernel": True,
+                        "defaultRouteState": "notSet",
+                        "routes": {
+                            "10.111.112.0/24": {"routeAction": "forward", "vias": [{"interface": "Vlan112"}]},
+                            "10.111.134.0/24": {
+                                "routeType": "eBGP",
+                                "vias": [{"nexthopAddr": "10.111.1.0", "interface": "Ethernet2"}, {"nexthopAddr": "10.111.2.0", "interface": "Ethernet3"}],
+                                "directlyConnected": False,
+                            },
+                        },
+                    }
+                }
+            },
+        ],
+        "inputs": {"route_entries": [{"prefix": "10.111.134.0/24", "vrf": "default", "ecmp_count": 2}]},
+        "expected": {"result": "failure", "messages": ["Prefix: 10.111.134.0/24 VRF: default - valid and active ECMP head not found"]},
+    },
+    {
+        "name": "failure-ecmp-count-mismatch",
+        "test": VerifyBGPRouteECMP,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "vrf": "default",
+                        "routerId": "10.111.254.1",
+                        "asn": "65101",
+                        "bgpRouteEntries": {
+                            "10.111.134.0/24": {
+                                "address": "10.111.134.0",
+                                "maskLength": 24,
+                                "bgpRoutePaths": [
+                                    {
+                                        "nextHop": "10.111.1.0",
+                                        "routeType": {
+                                            "valid": True,
+                                            "active": True,
+                                            "ecmpHead": True,
+                                            "ecmp": True,
+                                            "ecmpContributor": True,
+                                        },
+                                    },
+                                    {
+                                        "nextHop": "10.111.2.0",
+                                        "routeType": {
+                                            "valid": False,
+                                            "active": True,
+                                            "ecmpHead": True,
+                                            "ecmp": True,
+                                            "ecmpContributor": True,
+                                        },
+                                    },
+                                    {
+                                        "nextHop": "10.255.255.2",
+                                        "routeType": {
+                                            "valid": True,
+                                            "active": False,
+                                            "ecmpHead": False,
+                                            "ecmp": False,
+                                            "ecmpContributor": False,
+                                        },
+                                    },
+                                ],
+                                "totalPaths": 3,
+                            },
+                        },
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "routingDisabled": False,
+                        "allRoutesProgrammedHardware": True,
+                        "allRoutesProgrammedKernel": True,
+                        "defaultRouteState": "notSet",
+                        "routes": {
+                            "10.111.112.0/24": {"routeAction": "forward", "vias": [{"interface": "Vlan112"}]},
+                            "10.111.134.0/24": {
+                                "routeType": "eBGP",
+                                "vias": [{"nexthopAddr": "10.111.1.0", "interface": "Ethernet2"}, {"nexthopAddr": "10.111.2.0", "interface": "Ethernet3"}],
+                                "directlyConnected": False,
+                            },
+                        },
+                    }
+                }
+            },
+        ],
+        "inputs": {"route_entries": [{"prefix": "10.111.134.0/24", "vrf": "default", "ecmp_count": 2}]},
+        "expected": {"result": "failure", "messages": ["Prefix: 10.111.134.0/24 VRF: default - ECMP count mismatch - Expected: 2, Actual: 1"]},
+    },
+    {
+        "name": "failure-prefix-not-found-routing-table",
+        "test": VerifyBGPRouteECMP,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "vrf": "default",
+                        "routerId": "10.111.254.1",
+                        "asn": "65101",
+                        "bgpRouteEntries": {
+                            "10.111.134.0/24": {
+                                "address": "10.111.134.0",
+                                "maskLength": 24,
+                                "bgpRoutePaths": [
+                                    {
+                                        "nextHop": "10.111.1.0",
+                                        "routeType": {
+                                            "valid": True,
+                                            "active": True,
+                                            "ecmpHead": True,
+                                            "ecmp": True,
+                                            "ecmpContributor": True,
+                                        },
+                                    },
+                                    {
+                                        "nextHop": "10.111.2.0",
+                                        "routeType": {
+                                            "valid": True,
+                                            "active": False,
+                                            "ecmpHead": False,
+                                            "ecmp": True,
+                                            "ecmpContributor": True,
+                                        },
+                                    },
+                                    {
+                                        "nextHop": "10.255.255.2",
+                                        "routeType": {
+                                            "valid": True,
+                                            "active": False,
+                                            "ecmpHead": False,
+                                            "ecmp": False,
+                                            "ecmpContributor": False,
+                                        },
+                                    },
+                                ],
+                                "totalPaths": 3,
+                            },
+                        },
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "routingDisabled": False,
+                        "allRoutesProgrammedHardware": True,
+                        "allRoutesProgrammedKernel": True,
+                        "defaultRouteState": "notSet",
+                        "routes": {
+                            "10.111.112.0/24": {"routeAction": "forward", "vias": [{"interface": "Vlan112"}]},
+                            "10.111.114.0/24": {
+                                "routeType": "eBGP",
+                                "vias": [{"nexthopAddr": "10.111.1.0", "interface": "Ethernet2"}, {"nexthopAddr": "10.111.2.0", "interface": "Ethernet3"}],
+                                "directlyConnected": False,
+                            },
+                        },
+                    }
+                }
+            },
+        ],
+        "inputs": {"route_entries": [{"prefix": "10.111.134.0/24", "vrf": "default", "ecmp_count": 2}]},
+        "expected": {"result": "failure", "messages": ["Prefix: 10.111.134.0/24 VRF: default - prefix not found in routing table"]},
+    },
+    {
+        "name": "failure-nexthops-mismatch",
+        "test": VerifyBGPRouteECMP,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "vrf": "default",
+                        "routerId": "10.111.254.1",
+                        "asn": "65101",
+                        "bgpRouteEntries": {
+                            "10.111.134.0/24": {
+                                "address": "10.111.134.0",
+                                "maskLength": 24,
+                                "bgpRoutePaths": [
+                                    {
+                                        "nextHop": "10.111.1.0",
+                                        "routeType": {
+                                            "valid": True,
+                                            "active": True,
+                                            "ecmpHead": True,
+                                            "ecmp": True,
+                                            "ecmpContributor": True,
+                                        },
+                                    },
+                                    {
+                                        "nextHop": "10.111.2.0",
+                                        "routeType": {
+                                            "valid": True,
+                                            "active": False,
+                                            "ecmpHead": False,
+                                            "ecmp": True,
+                                            "ecmpContributor": True,
+                                        },
+                                    },
+                                    {
+                                        "nextHop": "10.255.255.2",
+                                        "routeType": {
+                                            "valid": True,
+                                            "active": False,
+                                            "ecmpHead": False,
+                                            "ecmp": False,
+                                            "ecmpContributor": False,
+                                        },
+                                    },
+                                ],
+                                "totalPaths": 3,
+                            },
+                        },
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "routingDisabled": False,
+                        "allRoutesProgrammedHardware": True,
+                        "allRoutesProgrammedKernel": True,
+                        "defaultRouteState": "notSet",
+                        "routes": {
+                            "10.111.112.0/24": {"routeAction": "forward", "vias": [{"interface": "Vlan112"}]},
+                            "10.111.134.0/24": {
+                                "routeType": "eBGP",
+                                "vias": [{"nexthopAddr": "10.111.1.0", "interface": "Ethernet2"}],
+                                "directlyConnected": False,
+                            },
+                        },
+                    }
+                }
+            },
+        ],
+        "inputs": {"route_entries": [{"prefix": "10.111.134.0/24", "vrf": "default", "ecmp_count": 2}]},
+        "expected": {"result": "failure", "messages": ["Prefix: 10.111.134.0/24 VRF: default - nexthops mismatch - BGP: 10.111.1.0, 10.111.2.0, RIB: 10.111.1.0"]},
     },
 ]
