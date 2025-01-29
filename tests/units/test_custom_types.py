@@ -251,7 +251,7 @@ def test_bgp_multiprotocol_capabilities_abbreviationsh(str_input: str, expected_
 @pytest.mark.parametrize(
     ("str_input"),
     [
-        pytest.param("BLAH", id="ipv4Unicast"),
+        pytest.param("BLAH", id="invalid-capabilities"),
     ],
 )
 def test_bgp_multiprotocol_capabilities_abbreviationsh_invalid_input(str_input: str) -> None:

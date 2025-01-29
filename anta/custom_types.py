@@ -85,13 +85,13 @@ def bgp_multiprotocol_capabilities_abbreviations(value: str) -> str:
     --------
     - IPv4 Unicast
     - L2vpnEVPN
-    - ipv4 MPLS Labels
+    - ipv4MPLSLabels
     - ipv4Mplsvpn
     """
     patterns = {
         f"{r'dynamic[-_ ]?path[-_ ]?selection$'}": "dps",
-        f"{r'ipv4[-_ ]?unicast'}$": "ipv4Unicast",
-        f"{r'ipv6[-_ ]?unicast'}$": "ipv6Unicast",
+        f"{r'ipv4[-_ ]?unicast$'}": "ipv4Unicast",
+        f"{r'ipv6[-_ ]?unicast$'}": "ipv6Unicast",
         f"{r'ipv4[-_ ]?multicast$'}": "ipv4Multicast",
         f"{r'ipv6[-_ ]?multicast$'}": "ipv6Multicast",
         f"{r'ipv4[-_ ]?labeled[-_ ]?Unicast$'}": "ipv4MplsLabels",
@@ -111,13 +111,13 @@ def bgp_multiprotocol_capabilities_abbreviations(value: str) -> str:
         f"{r'ipv4[-_ ]?rt[-_ ]?membership$'}": "rtMembership",
         f"{r'ipv4[-_ ]?mvpn$'}": "ipv4Mvpn",
     }
-
     for pattern, replacement in patterns.items():
-        match = re.search(pattern, value, re.IGNORECASE)
+        match = re.match(pattern, value, re.IGNORECASE)
         if match:
             return replacement
         if not match and value in patterns.values():
             return value
+
     msg = f"Invalid input: {value}"
     raise ValueError(msg)
 

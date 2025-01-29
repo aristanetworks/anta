@@ -550,7 +550,8 @@ class VerifyBGPPeerMPCaps(AntaTest):
                 vrf: default
                 strict: False
                 capabilities:
-                  - ipv4Unicast
+                  - ipv4 labeled-Unicast
+                  - ipv4MplsVpn
     ```
     """
 
