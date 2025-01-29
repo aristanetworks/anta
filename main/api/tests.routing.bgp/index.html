@@ -8315,11 +8315,15 @@ have successfully negotiated the specified AFI/SAFI</li>
 
   
         <p>Verifies BGP IPv4 route paths.</p>
-<p>This test performs the following checks for each specified BGP route entry:
-  1. Verifies the specified BGP route exists in the routing table.
-  2. For each expected paths:
-      - Verifies a path with matching next-hop exists.
-      - Verifies the path&rsquo;s origin attribute matches the expected value.</p>
+<p>This test performs the following checks for each specified BGP route entry:</p>
+<ol>
+<li>Verifies the specified BGP route exists in the routing table.</li>
+<li>For each expected paths:<ul>
+<li>Verifies a path with matching next-hop exists.</li>
+<li>Verifies the path&rsquo;s origin attribute matches the expected value.</li>
+</ul>
+</li>
+</ol>
 
 
 <details class="expected-results" open>
@@ -8467,10 +8471,12 @@ have successfully negotiated the specified AFI/SAFI</li>
 <span class="normal">1684</span>
 <span class="normal">1685</span>
 <span class="normal">1686</span>
-<span class="normal">1687</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPRoutePaths</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">1687</span>
+<span class="normal">1688</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPRoutePaths</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies BGP IPv4 route paths.</span>
 
 <span class="sd">    This test performs the following checks for each specified BGP route entry:</span>
+
 <span class="sd">      1. Verifies the specified BGP route exists in the routing table.</span>
 <span class="sd">      2. For each expected paths:</span>
 <span class="sd">          - Verifies a path with matching next-hop exists.</span>
