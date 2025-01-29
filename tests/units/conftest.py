@@ -5,20 +5,26 @@
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
+from unittest import mock
 from unittest.mock import patch
 
 import pytest
 import yaml
 
+from anta.catalog import AntaCatalog
 from anta.device import AntaDevice, AsyncEOSDevice
+from anta.inventory import AntaInventory
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator
+    from collections.abc import Generator, Iterator
 
+    from anta._runner import AntaRunner
     from anta.models import AntaCommand
 
+DATA_DIR: Path = Path(__file__).parent.parent.resolve() / "data"
 DEVICE_HW_MODEL = "pytest"
 DEVICE_NAME = "pytest"
 COMMAND_OUTPUT = "retrieved"
@@ -83,3 +89,60 @@ def yaml_file(request: pytest.FixtureRequest, tmp_path: Path) -> Path:
     content: dict[str, Any] = request.param
     file.write_text(yaml.dump(content, allow_unicode=True))
     return file
+
+
+@pytest.fixture
+def anta_runner(request: pytest.FixtureRequest) -> AntaRunner:
+    """AntaRunner fixture.
+
+    Must be parametrized with a dictionary containing the following keys:
+    - inventory: Inventory file name from the data directory
+    - catalog: Catalog file name from the data directory
+
+    Optional keys:
+    - manager: ResultManager instance
+    - max_concurrency: Maximum concurrency limit
+    - file_descriptor_limit: File descriptor limit
+    - httpx_limits: HTTPX Limits instance when creating the inventory
+    """
+    # Import must be inside fixture to prevent circular dependency from breaking CLI tests:
+    # anta.runner -> anta.cli.console -> anta.cli/* (not yet loaded) -> anta.cli.anta
+    from anta._runner import AntaRunner
+
+    if not hasattr(request, "param"):
+        msg = "anta_runner fixture requires a parameter dictionary"
+        raise ValueError(msg)
+
+    params = request.param
+
+    # Check required parameters
+    required_params = {"inventory", "catalog"}
+    missing_params = required_params - params.keys()
+    if missing_params:
+        msg = f"runner_context fixture missing required parameters: {missing_params}"
+        raise ValueError(msg)
+
+    # Build AntaRunner settings
+    settings = {
+        "inventory": AntaInventory.parse(
+            filename=DATA_DIR / params["inventory"],
+            username="arista",
+            password="arista",
+            httpx_limits=params.get("httpx_limits", None),
+        ),
+        "catalog": AntaCatalog.parse(DATA_DIR / params["catalog"]),
+        "manager": params.get("manager", None),
+    }
+    if "max_concurrency" in params:
+        settings["max_concurrency"] = params["max_concurrency"]
+    if "file_descriptor_limit" in params:
+        settings["file_descriptor_limit"] = params["file_descriptor_limit"]
+
+    return AntaRunner(**settings)
+
+
+@pytest.fixture
+def setenvvar(monkeypatch: pytest.MonkeyPatch) -> Generator[pytest.MonkeyPatch, None, None]:
+    """Fixture to set environment variables for testing."""
+    with mock.patch.dict(os.environ, clear=True):
+        yield monkeypatch

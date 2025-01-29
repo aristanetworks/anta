@@ -15,12 +15,13 @@ from typing import TYPE_CHECKING, Any, Literal
 import asyncssh
 import httpcore
 from asyncssh import SSHClientConnection, SSHClientConnectionOptions
-from httpx import ConnectError, HTTPError, TimeoutException
+from httpx import ConnectError, HTTPError, Limits, Timeout, TimeoutException
 
 import asynceapi
 from anta import __DEBUG__
 from anta.logger import anta_log_exception, exc_to_str
 from anta.models import AntaCommand
+from anta.settings import DEFAULT_HTTPX_MAX_CONNECTIONS
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -117,7 +118,10 @@ class AntaDevice(ABC):
     cache_locks : dict
         Dictionary mapping keys to asyncio locks to guarantee exclusive access to the cache if not disabled.
         Deprecated, will be removed in ANTA v2.0.0, use self.cache.locks instead.
-
+    max_connections : int | None
+        For informational/logging purposes only. Some device implementations may expose their
+        maximum concurrent connection limit through this attribute. This does not affect the
+        actual device configuration.
     """
 
     def __init__(self, name: str, tags: set[str] | None = None, *, disable_cache: bool = False) -> None:
@@ -143,6 +147,7 @@ class AntaDevice(ABC):
         self.cache: AntaCache | None = None
         # Keeping cache_locks for backward compatibility.
         self.cache_locks: defaultdict[str, asyncio.Lock] | None = None
+        self.max_connections: int | None
 
         # Initialize cache if not disabled
         if not disable_cache:
@@ -297,7 +302,7 @@ class AntaDevice(ABC):
 
 
 class AsyncEOSDevice(AntaDevice):
-    """Implementation of AntaDevice for EOS using aio-eapi.
+    """Implementation of AntaDevice for EOS using the `asynceapi` library, which is built on HTTPX.
 
     Attributes
     ----------
@@ -311,7 +316,6 @@ class AsyncEOSDevice(AntaDevice):
         Hardware model of the device.
     tags : set[str]
         Tags for this device.
-
     """
 
     def __init__(  # noqa: PLR0913
@@ -322,9 +326,11 @@ class AsyncEOSDevice(AntaDevice):
         name: str | None = None,
         enable_password: str | None = None,
         port: int | None = None,
-        ssh_port: int | None = 22,
+        ssh_port: int = 22,
         tags: set[str] | None = None,
         timeout: float | None = None,
+        httpx_timeout: Timeout | None = None,
+        httpx_limits: Limits | None = None,
         proto: Literal["http", "https"] = "https",
         *,
         enable: bool = False,
@@ -343,8 +349,6 @@ class AsyncEOSDevice(AntaDevice):
             Password to connect to eAPI and SSH.
         name
             Device name.
-        enable
-            Collect commands using privileged mode.
         enable_password
             Password used to gain privileged access on EOS.
         port
@@ -354,14 +358,20 @@ class AsyncEOSDevice(AntaDevice):
         tags
             Tags for this device.
         timeout
-            Timeout value in seconds for outgoing API calls.
-        insecure
-            Disable SSH Host Key validation.
+            Global timeout value in seconds for outgoing eAPI calls.
+        httpx_timeout
+            Optional HTTPX Timeout object for fine-grained timeout configuration.
+            If provided, it will override the global timeout.
+        httpx_limits
+            Optional HTTPX Limits object for connection pooling configuration.
         proto
             eAPI protocol. Value can be 'http' or 'https'.
+        enable
+            Collect commands using privileged mode.
+        insecure
+            Disable SSH Host Key validation.
         disable_cache
             Disable caching for all commands for this device.
-
         """
         if host is None:
             message = "'host' is required to create an AsyncEOSDevice"
@@ -378,15 +388,31 @@ class AsyncEOSDevice(AntaDevice):
             message = f"'password' is required to instantiate device '{self.name}'"
             logger.error(message)
             raise ValueError(message)
+
         self.enable = enable
         self._enable_password = enable_password
-        self._session: asynceapi.Device = asynceapi.Device(host=host, port=port, username=username, password=password, proto=proto, timeout=timeout)
-        ssh_params: dict[str, Any] = {}
+
+        # Build the session settings for the `asynceapi` client
+        session_settings: dict[str, Any] = {
+            "host": host,
+            "port": port,
+            "username": username,
+            "password": password,
+            "proto": proto,
+            "timeout": httpx_timeout if httpx_timeout is not None else timeout,
+        }
+        if httpx_limits is not None:
+            session_settings["limits"] = httpx_limits
+            self.max_connections = httpx_limits.max_connections
+        else:
+            self.max_connections = DEFAULT_HTTPX_MAX_CONNECTIONS
+        self._session: asynceapi.Device = asynceapi.Device(**session_settings)
+
+        # Build the SSH connection options
+        ssh_settings = {"host": host, "port": ssh_port, "username": username, "password": password, "client_keys": CLIENT_KEYS}
         if insecure:
-            ssh_params["known_hosts"] = None
-        self._ssh_opts: SSHClientConnectionOptions = SSHClientConnectionOptions(
-            host=host, port=ssh_port, username=username, password=password, client_keys=CLIENT_KEYS, **ssh_params
-        )
+            ssh_settings["known_hosts"] = None
+        self._ssh_opts: SSHClientConnectionOptions = SSHClientConnectionOptions(**ssh_settings)
 
     def __rich_repr__(self) -> Iterator[tuple[str, Any]]:
         """Implement Rich Repr Protocol.
@@ -474,7 +500,11 @@ class AsyncEOSDevice(AntaDevice):
             command.errors = [exc_to_str(e)]
             timeouts = self._session.timeout.as_dict()
             logger.error(
-                "%s occurred while sending a command to %s. Consider increasing the timeout.\nCurrent timeouts: Connect: %s | Read: %s | Write: %s | Pool: %s",
+                "%s occurred while sending a command to %s.\n"
+                "Current timeouts: Connect: %s | Read: %s | Write: %s | Pool: %s\n"
+                "You can either increase the global timeout or configure specific timeout behaviors. "
+                "See Scaling ANTA documentation for details: "
+                "https://anta.arista.com/stable/advanced_usages/scaling/",
                 exc_to_str(e),
                 self.name,
                 timeouts["connect"],
