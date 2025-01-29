@@ -7,6 +7,10 @@ anta_title: ANTA Commands API
   ~ that can be found in the LICENSE file.
   -->
 
+## ::: anta.models.AntaCommand
+
+## ::: anta.models.AntaTemplate
+
 ## EOS Commands Error Handling
 
 ::: anta.constants.UNSUPPORTED_PLATFORM_ERRORS
@@ -23,7 +27,3 @@ anta_title: ANTA Commands API
       options:
         heading_level: 7
         show_labels: false
-
-## ::: anta.models.AntaCommand
-
-## ::: anta.models.AntaTemplate
