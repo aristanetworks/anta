@@ -1384,12 +1384,12 @@ DATA: list[dict[str, Any]] = [
                 {
                     "peer_address": "172.30.11.1",
                     "vrf": "default",
-                    "capabilities": ["Ipv4 Unicast", "ipv4 Mpls labels"],
+                    "capabilities": ["Ipv4 Unicast", "IPv4 Labeled Unicast"],
                 },
                 {
                     "peer_address": "172.30.11.10",
                     "vrf": "MGMT",
-                    "capabilities": ["ipv4 Unicast", "ipv4 MplsVpn"],
+                    "capabilities": ["ipv4 Unicast", "IPv4 MPLS Label"],
                 },
             ]
         },
@@ -1570,17 +1570,17 @@ DATA: list[dict[str, Any]] = [
                 {
                     "peer_address": "172.30.11.1",
                     "vrf": "default",
-                    "capabilities": ["ipv4 unicast", "ipv4 mpls vpn", "L2 vpn EVPN"],
+                    "capabilities": ["ipv4 unicast", "IPv4MPLS Label", "L2 vpn EVPN"],
                 },
                 {
                     "peer_address": "172.30.11.10",
                     "vrf": "MGMT",
-                    "capabilities": ["ipv4unicast", "ipv4 mplsvpn", "L2vpnEVPN"],
+                    "capabilities": ["ipv4unicast", "ipv4mplslabel", "L2vpnEVPN"],
                 },
                 {
                     "peer_address": "172.30.11.11",
                     "vrf": "MGMT",
-                    "capabilities": ["Ipv4 Unicast", "ipv4 MPLSVPN", "L2 vpnEVPN"],
+                    "capabilities": ["Ipv4 Unicast", "IPv4-MPLS_Label", "L2 vpnEVPN"],
                 },
             ]
         },
@@ -1656,13 +1656,13 @@ DATA: list[dict[str, Any]] = [
                     "peer_address": "172.30.11.1",
                     "vrf": "default",
                     "strict": True,
-                    "capabilities": ["Ipv4 Unicast", "ipv4 Mpls labels"],
+                    "capabilities": ["Ipv4 Unicast", "ipv4MplsLabels"],
                 },
                 {
                     "peer_address": "172.30.11.10",
                     "vrf": "MGMT",
                     "strict": True,
-                    "capabilities": ["ipv4 Unicast", "ipv4 MplsVpn"],
+                    "capabilities": ["ipv4 Unicast", "ipv4MplsVpn"],
                 },
             ]
         },
