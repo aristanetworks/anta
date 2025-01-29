@@ -135,6 +135,11 @@ anta.tests.connectivity:
           vrf: MGMT
           df_bit: True
           size: 100
+        - source: fd12:3456:789a:1::1
+          destination: fd12:3456:789a:1::2
+          vrf: default
+          df_bit: True
+          size: 100
 anta.tests.cvx:
   - VerifyActiveCVXConnections:
       # Verifies the number of active CVX Connections.
