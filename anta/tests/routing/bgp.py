@@ -11,12 +11,15 @@ from typing import ClassVar, TypeVar
 
 from pydantic import field_validator
 
-from anta.input_models.routing.bgp import BgpAddressFamily, BgpAfi, BgpNeighbor, BgpPeer, BgpRoute, VxlanEndpoint
+from anta.input_models.routing.bgp import BgpAddressFamily, BgpAfi, BgpNeighbor, BgpPeer, BgpRoute, BgpVrf, VxlanEndpoint
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import format_data, get_item, get_value
 
 # Using a TypeVar for the BgpPeer model since mypy thinks it's a ClassVar and not a valid type when used in field validators
 T = TypeVar("T", bound=BgpPeer)
+
+# pylint: disable=C0302
+# TODO: Refactor to reduce the number of lines in this module later
 
 
 def _check_bgp_neighbor_capability(capability_status: dict[str, bool]) -> bool:
@@ -1686,3 +1689,85 @@ class VerifyBGPRoutePaths(AntaTest):
 
                 if (actual_origin := get_value(route_path, "routeType.origin")) != origin:
                     self.result.is_failure(f"{route} {path} - Origin mismatch - Actual: {actual_origin}")
+
+
+class VerifyBGPRedistribution(AntaTest):
+    """Verifies BGP redistributed routes protocol and route-map.
+
+    This test performs the following checks for each specified route:
+
+      1. Ensures that the expected address-family is configured on the device.
+      2. Confirms that the redistributed route protocol, included leaked and route map match the expected values for a route.
+
+    Note: For "User" proto field, checking that it's "EOS SDK" versus User.
+
+    Expected Results
+    ----------------
+    * Success: If all of the following conditions are met:
+        - The expected address-family is configured on the device.
+        - The redistributed route protocol, included leaked and route map align with the expected values for the route.
+    * Failure: If any of the following occur:
+        - The expected address-family is not configured on device.
+        - The redistributed route protocolor, included leaked or route map does not match the expected value for a route.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      bgp:
+        - VerifyBGPRedistribution:
+          vrfs:
+            - vrf: default
+              address_families:
+                - afi_safi: ipv4Unicast
+                  redistributed_routes:
+                    - proto: Connected
+                      include_leaked: True
+                      route_map: RM-CONN-2-BGP
+                    - proto: Static
+                      include_leaked: True
+                      route_map: RM-CONN-2-BGP
+                - afi_safi: IPv6 Unicast
+                  redistributed_routes:
+                    - proto: Dynamic
+                      route_map: RM-CONN-2-BGP
+                    - proto: Static
+                      include_leaked: True
+                      route_map: RM-CONN-2-BGP
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["bgp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp instance vrf all", revision=4)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyBGPRedistribution test."""
+
+        vrfs: list[BgpVrf]
+        """List of address families."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyBGPRedistribution."""
+        self.result.is_success()
+        command_output = self.instance_commands[0].json_output
+
+        for vrf_data in self.inputs.vrfs:
+            for address_family in vrf_data.address_families:
+                # If the specified VRF, AFI-SAFI details are not found, test fails.
+                if not (afi_safi_configs := get_value(command_output, f"vrfs.{vrf_data.vrf}.afiSafiConfig.{address_family.afi_safi}")):
+                    self.result.is_failure(f"{vrf_data}, {address_family} - Not configured")
+                    continue
+                for route_info in address_family.redistributed_routes:
+                    # If the redistributed route protocol does not match the expected value, test fails.
+                    if not (actual_route := get_item(afi_safi_configs.get("redistributedRoutes"), "proto", route_info.proto)):
+                        self.result.is_failure(f"{vrf_data}, {address_family}, {route_info} - Not configured")
+                        continue
+
+                    # If includes leaked field applicable, and it does not matches the expected value, test fails.
+                    if all([route_info.include_leaked is not None, (act_include_leaked := actual_route.get("includeLeaked")) != route_info.include_leaked]):
+                        self.result.is_failure(f"{vrf_data}, {address_family}, {route_info} - Value for included leaked mismatch - Actual: {act_include_leaked}")
+
+                    # If route map is required and it is not matching the expected value, test fails.
+                    if all([route_info.route_map, (act_route_map := actual_route.get("routeMap", "Not Found")) != route_info.route_map]):
+                        self.result.is_failure(f"{vrf_data}, {address_family}, {route_info} - Route map mismatch - Actual: {act_route_map}")

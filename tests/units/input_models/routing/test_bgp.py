@@ -6,12 +6,12 @@
 # pylint: disable=C0302
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import pytest
 from pydantic import ValidationError
 
-from anta.input_models.routing.bgp import BgpAddressFamily, BgpPeer
+from anta.input_models.routing.bgp import AddressFamilyConfig, BgpAddressFamily, BgpPeer, RedistributedRoute
 from anta.tests.routing.bgp import (
     VerifyBGPExchangedRoutes,
     VerifyBGPNlriAcceptance,
@@ -25,7 +25,7 @@ from anta.tests.routing.bgp import (
 )
 
 if TYPE_CHECKING:
-    from anta.custom_types import Afi, Safi
+    from anta.custom_types import Afi, RedisrbutedAfiSafi, RedistributedProtocol, Safi
 
 
 class TestBgpAddressFamily:
@@ -288,3 +288,58 @@ class TestVerifyBGPNlriAcceptanceInput:
         """Test VerifyBGPNlriAcceptance.Input invalid inputs."""
         with pytest.raises(ValidationError):
             VerifyBGPNlriAcceptance.Input(bgp_peers=bgp_peers)
+
+
+class TestVerifyBGPRedistributedRoute:
+    """Test anta.tests.routing.bgp.RedistributedRoute.Input."""
+
+    @pytest.mark.parametrize(
+        ("proto", "include_leaked"),
+        [
+            pytest.param("Connected", True, id="proto-valid"),
+            pytest.param("Static", False, id="proto-valid-leaked-false"),
+            pytest.param("User", False, id="proto-User"),
+        ],
+    )
+    def test_valid(self, proto: RedistributedProtocol, include_leaked: bool) -> None:
+        """Test RedistributedRoute valid inputs."""
+        RedistributedRoute(proto=proto, include_leaked=include_leaked)
+
+    @pytest.mark.parametrize(
+        ("proto", "include_leaked"),
+        [
+            pytest.param("Dynamic", True, id="proto-valid"),
+            pytest.param("User", True, id="proto-valid-leaked-false"),
+        ],
+    )
+    def test_invalid(self, proto: RedistributedProtocol, include_leaked: bool) -> None:
+        """Test RedistributedRoute invalid inputs."""
+        with pytest.raises(ValidationError):
+            RedistributedRoute(proto=proto, include_leaked=include_leaked)
+
+
+class TestVerifyBGPAddressFamilyConfig:
+    """Test anta.tests.routing.bgp.AddressFamilyConfig.Input."""
+
+    @pytest.mark.parametrize(
+        ("afi_safi", "redistributed_routes"),
+        [
+            pytest.param("ipv4Unicast", [{"proto": "Connected", "include_leaked": True, "route_map": "RM-CONN-2-BGP"}], id="afisafi-ipv4-valid"),
+            pytest.param("ipv6 Multicast", [{"proto": "Connected", "include_leaked": True, "route_map": "RM-CONN-2-BGP"}], id="afisafi-ipv6-valid"),
+        ],
+    )
+    def test_valid(self, afi_safi: RedisrbutedAfiSafi, redistributed_routes: list[Any]) -> None:
+        """Test AddressFamilyConfig valid inputs."""
+        AddressFamilyConfig(afi_safi=afi_safi, redistributed_routes=redistributed_routes)
+
+    @pytest.mark.parametrize(
+        ("afi_safi", "redistributed_routes"),
+        [
+            pytest.param("evpn", [{"proto": "Connected", "include_leaked": True, "route_map": "RM-CONN-2-BGP"}], id="invalid-address-family"),
+            pytest.param("ipv6 sr-te", [{"proto": "Connected", "include_leaked": True, "route_map": "RM-CONN-2-BGP"}], id="ipv6-invalid-address-family"),
+        ],
+    )
+    def test_invalid(self, afi_safi: RedisrbutedAfiSafi, redistributed_routes: list[Any]) -> None:
+        """Test AddressFamilyConfig invalid inputs."""
+        with pytest.raises(ValidationError):
+            AddressFamilyConfig(afi_safi=afi_safi, redistributed_routes=redistributed_routes)
