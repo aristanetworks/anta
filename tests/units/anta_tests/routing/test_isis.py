@@ -12,6 +12,7 @@ from typing import Any
 import pytest
 
 from anta.tests.routing.isis import (
+    VerifyISISGracefulRestart,
     VerifyISISInterfaceMode,
     VerifyISISNeighborCount,
     VerifyISISNeighborState,
@@ -1838,6 +1839,107 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": ["Tunnel to 1.0.0.111/32 is incorrect: incorrect tunnel ID"],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifyISISGracefulRestart,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "isisInstances": {
+                            "1": {"gracefulRestart": True, "gracefulRestartHelper": True},
+                            "2": {"gracefulRestart": True, "gracefulRestartHelper": True},
+                        }
+                    },
+                    "test": {
+                        "isisInstances": {
+                            "1": {"gracefulRestart": True, "gracefulRestartHelper": True},
+                            "2": {"gracefulRestart": True, "gracefulRestartHelper": True},
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "instances": [
+                {"vrf": "default", "name": "1", "graceful_restart": True, "graceful_helper": True},
+                {"vrf": "default", "name": "2", "graceful_restart": True, "graceful_helper": True},
+                {"vrf": "test", "name": "1", "graceful_restart": True, "graceful_helper": True},
+                {"vrf": "test", "name": "2", "graceful_restart": True, "graceful_helper": True},
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-isis-not-configured",
+        "test": VerifyISISGracefulRestart,
+        "eos_data": [{"vrfs": {}}],
+        "inputs": {"instances": [{"vrf": "default", "name": "1", "graceful_restart": True, "graceful_helper": True}]},
+        "expected": {"result": "failure", "messages": ["ISIS is not configured"]},
+    },
+    {
+        "name": "failure-isis-instance-not-found",
+        "test": VerifyISISGracefulRestart,
+        "eos_data": [{"vrfs": {"default": {"isisInstances": {"2": {"gracefulRestart": True, "gracefulRestartHelper": True}}}}}],
+        "inputs": {"instances": [{"vrf": "default", "name": "1", "graceful_restart": True, "graceful_helper": True}]},
+        "expected": {"result": "failure", "messages": ["Instance: 1 VRF: default - Not found"]},
+    },
+    {
+        "name": "failure-graceful-restart-disabled",
+        "test": VerifyISISGracefulRestart,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "isisInstances": {
+                            "1": {"gracefulRestart": False, "gracefulRestartHelper": True},
+                            "2": {"gracefulRestart": True, "gracefulRestartHelper": True},
+                        }
+                    },
+                    "test": {
+                        "isisInstances": {
+                            "1": {"gracefulRestart": False, "gracefulRestartHelper": True},
+                            "2": {"gracefulRestart": True, "gracefulRestartHelper": True},
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "instances": [
+                {"vrf": "default", "name": "1", "graceful_restart": True, "graceful_helper": True},
+                {"vrf": "default", "name": "2", "graceful_restart": True, "graceful_helper": True},
+                {"vrf": "test", "name": "1", "graceful_restart": True, "graceful_helper": True},
+                {"vrf": "test", "name": "2", "graceful_restart": True, "graceful_helper": True},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": ["Instance: 1 VRF: default - Graceful Restart disabled", "Instance: 1 VRF: test - Graceful Restart disabled"],
+        },
+    },
+    {
+        "name": "failure-graceful-restart-helper-disabled",
+        "test": VerifyISISGracefulRestart,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {"isisInstances": {"1": {"gracefulRestart": True, "gracefulRestartHelper": False}}},
+                    "test": {"isisInstances": {"1": {"gracefulRestart": True, "gracefulRestartHelper": False}}},
+                }
+            }
+        ],
+        "inputs": {
+            "instances": [
+                {"vrf": "default", "name": "1", "graceful_restart": True, "graceful_helper": True},
+                {"vrf": "test", "name": "1", "graceful_restart": True, "graceful_helper": True},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": ["Instance: 1 VRF: default - Graceful Restart Helper disabled", "Instance: 1 VRF: test - Graceful Restart Helper disabled"],
         },
     },
 ]
