@@ -74,8 +74,8 @@ class TestResultManager:
             assert test.get("custom_field") is None
             assert test.get("result") == "success"
 
-    def test_sorted_category_stats(self, list_result_factory: Callable[[int], list[TestResult]]) -> None:
-        """Test ResultManager.sorted_category_stats."""
+    def test_category_stats(self, list_result_factory: Callable[[int], list[TestResult]]) -> None:
+        """Test ResultManager.category_stats."""
         result_manager = ResultManager()
         results = list_result_factory(4)
 
@@ -90,11 +90,6 @@ class TestResultManager:
         # Check that category_stats returns sorted order by default
         expected_order = ["bgp", "ospf", "system", "vxlan"]
         assert list(result_manager.category_stats.keys()) == expected_order
-
-        # Verify deprecation warning for sorted_category_stats
-        with pytest.warns(DeprecationWarning, match="sorted_category_stats is deprecated and will be removed in ANTA v2.0.0"):
-            deprecated_stats = result_manager.sorted_category_stats
-            assert list(deprecated_stats.keys()) == expected_order
 
     @pytest.mark.parametrize(
         ("starting_status", "test_status", "expected_status", "expected_raise"),
