@@ -35,8 +35,36 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-# { <module_name> : [ { <test_class_name>: <input_as_dict_or_None> }, ... ] }
-RawCatalogInput = dict[str, list[dict[str, Optional[dict[str, Any]]]]]
+
+class RawCatalogInputModuleOptionModel(RootModel[Union[dict[str, Any], None]]):  # pylint: disable=R0903
+    """Model capturing test option in catalog input."""
+
+    root: dict[str, Any] | None
+
+
+class RawCatalogInputModuleModel(RootModel[dict[str, RawCatalogInputModuleOptionModel]]):  # pylint: disable=R0903
+    """Model capturing test module in catalog input."""
+
+    root: dict[str, RawCatalogInputModuleOptionModel]
+
+
+class RawCatalogInputModel(RootModel[dict[str, list[RawCatalogInputModuleModel]]]):  # pylint: disable=R0903
+    """Model for tests catalog input defined by user.
+
+    Originally defined with:
+        RawCatalogInput = dict[str, list[dict[str, Optional[dict[str, Any]]]]]
+
+    Example:
+        raw_catalog_input = RawCatalogInputModel.parse_obj({
+            "module_name": [
+                {"test_name": {"key": "value"}},
+                {"another_test": None}
+            ]
+        })
+    """
+
+    root: dict[str, list[RawCatalogInputModuleModel]]
+
 
 # [ ( <AntaTest class>, <input_as AntaTest.Input or dict or None > ), ... ]
 ListAntaTestTuples = list[tuple[type[AntaTest], Optional[Union[AntaTest.Input, dict[str, Any]]]]]
@@ -356,10 +384,10 @@ class AntaCatalog:
         return AntaCatalog.from_dict(data, filename=filename)
 
     @staticmethod
-    def from_dict(data: RawCatalogInput, filename: str | Path | None = None) -> AntaCatalog:
+    def from_dict(data: RawCatalogInputModel, filename: str | Path | None = None) -> AntaCatalog:
         """Create an AntaCatalog instance from a dictionary data structure.
 
-        See RawCatalogInput type alias for details.
+        See RawCatalogInputModel type alias for details.
         It is the data structure returned by `yaml.load()` function of a valid
         YAML Test Catalog file.
 
@@ -385,7 +413,7 @@ class AntaCatalog:
             raise TypeError(msg)
 
         try:
-            catalog_data = AntaCatalogFile(data)  # type: ignore[arg-type]
+            catalog_data = AntaCatalogFile(data)
         except ValidationError as e:
             anta_log_exception(
                 e,
