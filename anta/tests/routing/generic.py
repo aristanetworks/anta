@@ -340,7 +340,7 @@ class VerifyIPv4RouteNextHops(AntaTest):
             expected_nexthops = sorted([str(nexthop) for nexthop in entry.nexthops])
 
             if entry.strict and expected_nexthops != actual_nexthops:
-                exp_nexthops = ", ".join([str(nexthop) for nexthop in entry.nexthops])
+                exp_nexthops = ", ".join(expected_nexthops)
                 self.result.is_failure(f"{entry} - List of next-hops not matching - Expected: {exp_nexthops} - Actual: {', '.join(actual_nexthops)}")
                 continue
 
