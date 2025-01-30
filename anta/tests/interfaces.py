@@ -9,9 +9,9 @@ from __future__ import annotations
 
 import re
 from ipaddress import IPv4Interface
-from typing import Any, ClassVar
+from typing import Any, ClassVar, TypeVar
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from pydantic_extra_types.mac_address import MacAddress
 
 from anta import GITHUB_SUGGESTION
@@ -22,6 +22,9 @@ from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import custom_division, format_data, get_failed_logs, get_item, get_value
 
 BPS_GBPS_CONVERSIONS = 1000000000
+
+# Using a TypeVar for the InterfaceState model since mypy thinks it's a ClassVar and not a valid type when used in field validators
+T = TypeVar("T", bound=InterfaceState)
 
 
 class VerifyInterfaceUtilization(AntaTest):
@@ -225,6 +228,16 @@ class VerifyInterfacesStatus(AntaTest):
         interfaces: list[InterfaceState]
         """List of interfaces with their expected state."""
         InterfaceState: ClassVar[type[InterfaceState]] = InterfaceState
+
+        @field_validator("interfaces")
+        @classmethod
+        def validate_interfaces(cls, interfaces: list[T]) -> list[T]:
+            """Validate that 'status' field is provided in each interface."""
+            for interface in interfaces:
+                if interface.status is None:
+                    msg = f"{interface} 'status' field missing in the input"
+                    raise ValueError(msg)
+            return interfaces
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -890,6 +903,16 @@ class VerifyLACPInterfacesStatus(AntaTest):
         interfaces: list[InterfaceState]
         """List of interfaces with their expected state."""
         InterfaceState: ClassVar[type[InterfaceState]] = InterfaceState
+
+        @field_validator("interfaces")
+        @classmethod
+        def validate_interfaces(cls, interfaces: list[T]) -> list[T]:
+            """Validate that 'portchannel' field is provided in each interface."""
+            for interface in interfaces:
+                if interface.portchannel is None:
+                    msg = f"{interface} 'portchannel' field missing in the input"
+                    raise ValueError(msg)
+            return interfaces
 
     @AntaTest.anta_test
     def test(self) -> None:

@@ -10,9 +10,6 @@ from pydantic import Field
 from pydantic.functional_validators import AfterValidator, BeforeValidator
 
 # Regular Expression definition
-# TODO: make this configurable - with an env var maybe?
-REGEXP_EOS_BLACKLIST_CMDS = [r"^reload.*", r"^conf\w*\s*(terminal|session)*", r"^wr\w*\s*\w+"]
-"""List of regular expressions to blacklist from eos commands."""
 REGEXP_PATH_MARKERS = r"[\\\/\s]"
 """Match directory path from string."""
 REGEXP_INTERFACE_ID = r"\d+(\/\d+)*(\.\d+)?"
@@ -263,3 +260,4 @@ SnmpVersion = Literal["v1", "v2c", "v3"]
 SnmpHashingAlgorithm = Literal["MD5", "SHA", "SHA-224", "SHA-256", "SHA-384", "SHA-512"]
 SnmpEncryptionAlgorithm = Literal["AES-128", "AES-192", "AES-256", "DES"]
 DynamicVlanSource = Literal["dmf", "dot1x", "dynvtep", "evpn", "mlag", "mlagsync", "mvpn", "swfwd", "vccbfd"]
+LogSeverityLevel = Literal["alerts", "critical", "debugging", "emergencies", "errors", "informational", "notifications", "warnings"]
