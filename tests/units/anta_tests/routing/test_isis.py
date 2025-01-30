@@ -1398,7 +1398,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Tunnel to endpoint=IPv4Network('1.0.0.122/32') vias=None is not found."],
+            "messages": ["Endpoint: 1.0.0.122/32 - Tunnel not found"],
         },
     },
     {
@@ -1479,7 +1479,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Tunnel to 1.0.0.13/32 is incorrect: incorrect tunnel type"],
+            "messages": ["Endpoint: 1.0.0.13/32 Type: tunnel - incorrect tunnel type"],
         },
     },
     {
@@ -1567,12 +1567,12 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Tunnel to 1.0.0.122/32 is incorrect: incorrect nexthop"],
+            "messages": ["Endpoint: 1.0.0.122/32 Next-hop: 10.0.1.2 Type: ip Interface: Ethernet1 - incorrect nexthop"],
         },
     },
     {
         "test": VerifyISISSegmentRoutingTunnels,
-        "name": "fails with incorrect nexthop",
+        "name": "fails with incorrect interface",
         "eos_data": [
             {
                 "entries": {
@@ -1655,7 +1655,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Tunnel to 1.0.0.122/32 is incorrect: incorrect interface"],
+            "messages": ["Endpoint: 1.0.0.122/32 Next-hop: 10.0.1.1 Type: ip Interface: Ethernet4 - incorrect interface"],
         },
     },
     {
@@ -1743,7 +1743,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Tunnel to 1.0.0.122/32 is incorrect: incorrect nexthop"],
+            "messages": ["Endpoint: 1.0.0.122/32 Next-hop: 10.0.1.2 Type: ip Interface: Ethernet1 - incorrect nexthop"],
         },
     },
     {
@@ -1830,7 +1830,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Tunnel to 1.0.0.111/32 is incorrect: incorrect tunnel ID"],
+            "messages": ["Endpoint: 1.0.0.111/32 Type: tunnel TunnelID: unset - incorrect tunnel ID"],
         },
     },
 ]

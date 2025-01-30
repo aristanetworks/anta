@@ -7,13 +7,9 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from ipaddress import IPv4Address, IPv4Network
-from typing import Any, ClassVar, Literal
+from typing import Any, ClassVar
 
-from pydantic import BaseModel
-
-from anta.custom_types import Interface
-from anta.input_models.routing.isis import ISISInstance, ISISInterface
+from anta.input_models.routing.isis import ISISInstance, ISISInterface, SRTunnelEntry
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_value
 
@@ -77,10 +73,9 @@ class VerifyISISNeighborState(AntaTest):
         for vrf, vrf_data in vrfs_to_check.items():
             for isis_instance, instace_data in vrf_data["isisInstances"].items():
                 neighbors = instace_data.get("neighbors", {})
-                for neighbor in neighbors.values():
-                    for adjacencies in neighbor["adjacencies"]:
-                        if adjacencies["state"] != "up":
-                            self.result.is_failure(f"Instance: {isis_instance} VRF: {vrf} Interface: {adjacencies['interfaceName']} - Session (adjacency) down")
+                interfaces = [adj["interfaceName"] for neighbor in neighbors.values() for adj in neighbor["adjacencies"] if adj["state"] != "up"]
+                for interface in interfaces:
+                    self.result.is_failure(f"Instance: {isis_instance} VRF: {vrf} Interface: {interface} - Session (adjacency) down")
 
 
 class VerifyISISNeighborCount(AntaTest):
@@ -414,32 +409,12 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyISISSegmentRoutingTunnels test."""
 
-        entries: list[Entry]
+        entries: list[SRTunnelEntry]
         """List of tunnels to check on device."""
 
-        class Entry(BaseModel):
-            """Definition of a tunnel entry."""
-
-            endpoint: IPv4Network
-            """Endpoint IP of the tunnel."""
-            vias: list[Vias] | None = None
-            """Optional list of path to reach endpoint."""
-
-            class Vias(BaseModel):
-                """Definition of a tunnel path."""
-
-                nexthop: IPv4Address | None = None
-                """Nexthop of the tunnel. If None, then it is not tested. Default: None"""
-                type: Literal["ip", "tunnel"] | None = None
-                """Type of the tunnel. If None, then it is not tested. Default: None"""
-                interface: Interface | None = None
-                """Interface of the tunnel. If None, then it is not tested. Default: None"""
-                tunnel_id: Literal["TI-LFA", "ti-lfa", "unset"] | None = None
-                """Computation method of the tunnel. If None, then it is not tested. Default: None"""
-
-    def _eos_entry_lookup(self, search_value: IPv4Network, entries: dict[str, Any], search_key: str = "endpoint") -> dict[str, Any] | None:
+    def _eos_entry_lookup(self, search_value: str, entries: dict[str, Any], search_key: str = "endpoint") -> dict[str, Any] | None:
         return next(
-            (entry_value for entry_id, entry_value in entries.items() if str(entry_value[search_key]) == str(search_value)),
+            (entry_value for entry_id, entry_value in entries.items() if str(entry_value[search_key]) == search_value),
             None,
         )
 
@@ -453,41 +428,32 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
         command_output = self.instance_commands[0].json_output
         self.result.is_success()
 
-        # initiate defaults
-        failure_message = []
-
         if len(command_output["entries"]) == 0:
             self.result.is_skipped("IS-IS-SR is not running on device.")
             return
 
         for input_entry in self.inputs.entries:
-            eos_entry = self._eos_entry_lookup(search_value=input_entry.endpoint, entries=command_output["entries"])
+            eos_entry = self._eos_entry_lookup(search_value=str(input_entry.endpoint), entries=command_output["entries"])
             if eos_entry is None:
-                failure_message.append(f"Tunnel to {input_entry} is not found.")
+                self.result.is_failure(f"{input_entry} - Tunnel not found")
             elif input_entry.vias is not None:
-                failure_src = []
                 for via_input in input_entry.vias:
                     if not self._check_tunnel_type(via_input, eos_entry):
-                        failure_src.append("incorrect tunnel type")
+                        self.result.is_failure(f"{input_entry} {via_input} - incorrect tunnel type")
                     if not self._check_tunnel_nexthop(via_input, eos_entry):
-                        failure_src.append("incorrect nexthop")
+                        self.result.is_failure(f"{input_entry} {via_input} - incorrect nexthop")
                     if not self._check_tunnel_interface(via_input, eos_entry):
-                        failure_src.append("incorrect interface")
+                        self.result.is_failure(f"{input_entry} {via_input} - incorrect interface")
                     if not self._check_tunnel_id(via_input, eos_entry):
-                        failure_src.append("incorrect tunnel ID")
+                        self.result.is_failure(f"{input_entry} {via_input} - incorrect tunnel ID")
 
-                if failure_src:
-                    failure_message.append(f"Tunnel to {input_entry.endpoint!s} is incorrect: {', '.join(failure_src)}")
-
-        if failure_message:
-            self.result.is_failure("\n".join(failure_message))
-
-    def _check_tunnel_type(self, via_input: VerifyISISSegmentRoutingTunnels.Input.Entry.Vias, eos_entry: dict[str, Any]) -> bool:
+    def _check_tunnel_type(self, via_input: dict[str, Any], eos_entry: dict[str, Any]) -> bool:
         """Check if the tunnel type specified in `via_input` matches any of the tunnel types in `eos_entry`.
 
         Parameters
         ----------
-        via_input : VerifyISISSegmentRoutingTunnels.Input.Entry.Vias
+        via_input : dict[str, Any]
+            VerifyISISSegmentRoutingTunnels.Input.Entry.Vias
             The input tunnel type to check.
         eos_entry : dict[str, Any]
             The EOS entry containing the tunnel types.
@@ -509,12 +475,13 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
             )
         return True
 
-    def _check_tunnel_nexthop(self, via_input: VerifyISISSegmentRoutingTunnels.Input.Entry.Vias, eos_entry: dict[str, Any]) -> bool:
+    def _check_tunnel_nexthop(self, via_input: dict[str, Any], eos_entry: dict[str, Any]) -> bool:
         """Check if the tunnel nexthop matches the given input.
 
         Parameters
         ----------
-        via_input : VerifyISISSegmentRoutingTunnels.Input.Entry.Vias
+        via_input : dict[str, Any]
+            VerifyISISSegmentRoutingTunnels.Input.Entry.Vias
             The input via object.
         eos_entry : dict[str, Any]
             The EOS entry dictionary.
@@ -536,12 +503,13 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
             )
         return True
 
-    def _check_tunnel_interface(self, via_input: VerifyISISSegmentRoutingTunnels.Input.Entry.Vias, eos_entry: dict[str, Any]) -> bool:
+    def _check_tunnel_interface(self, via_input: dict[str, Any], eos_entry: dict[str, Any]) -> bool:
         """Check if the tunnel interface exists in the given EOS entry.
 
         Parameters
         ----------
-        via_input : VerifyISISSegmentRoutingTunnels.Input.Entry.Vias
+        via_input : dict[str, Any]
+            VerifyISISSegmentRoutingTunnels.Input.Entry.Vias
             The input via object.
         eos_entry : dict[str, Any]
             The EOS entry dictionary.
@@ -563,12 +531,13 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
             )
         return True
 
-    def _check_tunnel_id(self, via_input: VerifyISISSegmentRoutingTunnels.Input.Entry.Vias, eos_entry: dict[str, Any]) -> bool:
+    def _check_tunnel_id(self, via_input: dict[str, Any], eos_entry: dict[str, Any]) -> bool:
         """Check if the tunnel ID matches any of the tunnel IDs in the EOS entry's vias.
 
         Parameters
         ----------
-        via_input : VerifyISISSegmentRoutingTunnels.Input.Entry.Vias
+        via_input : dict[str, Any]
+            VerifyISISSegmentRoutingTunnels.Input.Entry.Vias
             The input vias to check.
         eos_entry : dict[str, Any])
             The EOS entry to compare against.
