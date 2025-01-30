@@ -41,6 +41,7 @@ anta_title: ANTA catalog for BGP tests
     options:
       anta_hide_test_module_description: true
       filters:
+        - "!^__init__"
         - "!^__str__"
         - "!AFI_SAFI_EOS_KEY"
         - "!eos_key"
