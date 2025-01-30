@@ -12,18 +12,35 @@
 {%     set anta_test_input_model.found = True %}
 {% endif %}
 {% block children %}
-{%   if anta_test.found  or anta_test_input_model.found %}
-  {# render children before source code #}
-  {{ super () }}
+{%   if anta_test.found %}
+  {% set root = False %}
+  {% set heading_level = heading_level + 1 %}
+  {% include "anta_test.html.jinja" with context %}
+  {# render source after children - TODO make add flag to respect disabling it.. though do we want to disable?#}
   <details class="quote">
-    <summary>Source code in <code>
-      {%- if class.relative_filepath.is_absolute() -%}
-        {{ class.relative_package_filepath }}
-      {%- else -%}
-        {{ class.relative_filepath }}
-      {%- endif -%}
-    </code></summary>
-    {{ class.source|highlight(language="python", linestart=class.lineno, linenums=True) }}
+  <summary>Source code in <code>
+    {%- if class.relative_filepath.is_absolute() -%}
+      {{ class.relative_package_filepath }}
+    {%- else -%}
+      {{ class.relative_filepath }}
+    {%- endif -%}
+  </code></summary>
+  {{ class.source|highlight(language="python", linestart=class.lineno, linenums=True) }}
+  </details>
+{%    elif anta_test_input_model.found %}
+  {% set root = False %}
+  {% set heading_level = heading_level + 1 %}
+  {% include "anta_test_input_model.html.jinja" with context %}
+  {# render source after children - TODO make add flag to respect disabling it.. though do we want to disable?#}
+  <details class="quote">
+  <summary>Source code in <code>
+    {%- if class.relative_filepath.is_absolute() -%}
+      {{ class.relative_package_filepath }}
+    {%- else -%}
+      {{ class.relative_filepath }}
+    {%- endif -%}
+  </code></summary>
+  {{ class.source|highlight(language="python", linestart=class.lineno, linenums=True) }}
   </details>
 {%   else %}
   {{ super() }}
@@ -32,7 +49,7 @@
 
 {# Do not render source before children for AntaTest #}
 {% block source %}
-{%   if not anta_test.found and not anta_test_input_model %}
+{%   if not anta_test.found and not anta_test_input_model%}
   {{ super() }}
 {%   endif %}
 {% endblock source %}
