@@ -317,7 +317,7 @@ class TestVerifyBGPRouteECMPInput:
             VerifyBGPRouteECMP.Input(route_entries=bgp_routes)
 
 
-class TestVerifyBGPRoutePaths:
+class TestVerifyBGPRoutePathsInput:
     """Test anta.tests.routing.bgp.VerifyBGPRoutePaths.Input."""
 
     @pytest.mark.parametrize(

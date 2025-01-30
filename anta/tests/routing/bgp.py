@@ -1758,29 +1758,33 @@ class VerifyBGPRouteECMP(AntaTest):
         self.result.is_success()
 
         for route in self.inputs.route_entries:
-            # Verify if the prefix exists in BGP table
+            # Verify if the prefix exists in BGP table.
             if not (bgp_route_entry := get_value(self.instance_commands[0].json_output, f"vrfs..{route.vrf}..bgpRouteEntries..{route.prefix}", separator="..")):
                 self.result.is_failure(f"{route} - prefix not found in BGP table")
                 continue
 
             route_paths = bgp_route_entry["bgpRoutePaths"]
             head = next((path for path in route_paths if all(path.get("routeType", {}).get(key, False) for key in ["valid", "active", "ecmpHead"])), None)
-
+            # Verify if the active ECMP head exists in routepath.
             if not head:
                 self.result.is_failure(f"{route} - valid and active ECMP head not found")
                 continue
 
-            bgp_nexthops = {path["nextHop"] for path in route_paths if all(path.get("routeType")[key] for key in ["valid", "ecmp", "ecmpContributor"])}
-            bgp_nexthops = {"linked-locally" if nexthop == "" else nexthop for nexthop in bgp_nexthops}
+            bgp_nexthops = [head.get("nextHop")]
+            route_paths.remove(head)
+            bgp_nexthops.extend([path.get("nextHop") for path in route_paths if all(path.get("routeType")[key] for key in ["valid", "ecmp", "ecmpContributor"])])
+            bgp_nexthops = ["linked-locally" if nexthop == "" else nexthop for nexthop in bgp_nexthops]
+            # Verify ECMP count is correct.
             if len(bgp_nexthops) != route.ecmp_count:
                 self.result.is_failure(f"{route} - ECMP count mismatch - Expected: {route.ecmp_count}, Actual: {len(bgp_nexthops)}")
                 continue
 
-            # If we are here, the ECMP count is correct so we can compare with RIB nexthops
+            # Verify if the prefix exists in routing table.
             if not (route_entry := get_value(self.instance_commands[1].json_output, f"vrfs..{route.vrf}..routes..{route.prefix}", separator="..")):
                 self.result.is_failure(f"{route} - prefix not found in routing table")
                 continue
 
-            rib_nexthops = {via.get("nexthopAddr", "linked-locally") for via in route_entry["vias"] if route_entry["routeType"] in {"iBGP", "eBGP"}}
+            rib_nexthops = [via.get("nexthopAddr", "linked-locally") for via in route_entry["vias"] if route_entry["routeType"] in {"iBGP", "eBGP"}]
+            # Verify BGP and RIB nexthops are same.
             if sorted(bgp_nexthops) != sorted(rib_nexthops):
                 self.result.is_failure(f"{route} - nexthops mismatch - BGP: {', '.join(sorted(bgp_nexthops))}, RIB: {', '.join(sorted(rib_nexthops))}")

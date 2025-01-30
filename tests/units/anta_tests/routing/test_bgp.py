@@ -5137,13 +5137,13 @@ DATA: list[dict[str, Any]] = [
                                         },
                                     },
                                     {
-                                        "nextHop": "10.255.255.2",
+                                        "nextHop": "",
                                         "routeType": {
                                             "valid": True,
                                             "active": False,
                                             "ecmpHead": False,
-                                            "ecmp": False,
-                                            "ecmpContributor": False,
+                                            "ecmp": True,
+                                            "ecmpContributor": True,
                                         },
                                     },
                                 ],
@@ -5164,7 +5164,7 @@ DATA: list[dict[str, Any]] = [
                             "10.111.112.0/24": {"routeAction": "forward", "vias": [{"interface": "Vlan112"}]},
                             "10.111.134.0/24": {
                                 "routeType": "eBGP",
-                                "vias": [{"nexthopAddr": "10.111.1.0", "interface": "Ethernet2"}, {"interface": "Ethernet3"}],
+                                "vias": [{"nexthopAddr": "10.111.1.0", "interface": "Ethernet2"}, {"interface": "Ethernet3"}, {"interface": "Ethernet4"}],
                                 "directlyConnected": False,
                             },
                         },
@@ -5172,7 +5172,7 @@ DATA: list[dict[str, Any]] = [
                 }
             },
         ],
-        "inputs": {"route_entries": [{"prefix": "10.111.134.0/24", "vrf": "default", "ecmp_count": 2}]},
+        "inputs": {"route_entries": [{"prefix": "10.111.134.0/24", "vrf": "default", "ecmp_count": 3}]},
         "expected": {"result": "success"},
     },
     {
