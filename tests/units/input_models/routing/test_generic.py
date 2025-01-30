@@ -10,10 +10,35 @@ from typing import TYPE_CHECKING
 import pytest
 from pydantic import ValidationError
 
-from anta.tests.routing.generic import VerifyIPv4RouteType
+from anta.tests.routing.generic import VerifyIPv4RouteNextHops, VerifyIPv4RouteType
 
 if TYPE_CHECKING:
     from anta.input_models.routing.generic import IPv4Routes
+
+
+class TestVerifyRouteEntryInput:
+    """Test anta.tests.routing.generic.VerifyIPv4RouteNextHops.Input."""
+
+    @pytest.mark.parametrize(
+        ("route_entries"),
+        [
+            pytest.param([{"prefix": "10.10.0.1/32", "vrf": "default", "strict": True, "nexthops": ["10.100.0.8", "10.100.0.10"]}], id="valid"),
+        ],
+    )
+    def test_valid(self, route_entries: list[IPv4Routes]) -> None:
+        """Test VerifyIPv4RouteNextHops.Input valid inputs."""
+        VerifyIPv4RouteNextHops.Input(route_entries=route_entries)
+
+    @pytest.mark.parametrize(
+        ("route_entries"),
+        [
+            pytest.param([{"prefix": "10.10.0.1/32", "vrf": "default"}], id="invalid"),
+        ],
+    )
+    def test_invalid(self, route_entries: list[IPv4Routes]) -> None:
+        """Test VerifyIPv4RouteNextHops.Input invalid inputs."""
+        with pytest.raises(ValidationError):
+            VerifyIPv4RouteNextHops.Input(route_entries=route_entries)
 
 
 class TestVerifyIPv4RouteTypeInput:

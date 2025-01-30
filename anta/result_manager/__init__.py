@@ -7,11 +7,12 @@ from __future__ import annotations
 
 import json
 import logging
-import warnings
 from collections import defaultdict
 from functools import cached_property
 from itertools import chain
 from typing import Any
+
+from typing_extensions import deprecated
 
 from anta.result_manager.models import AntaTestStatus, TestResult
 
@@ -22,56 +23,40 @@ logger = logging.getLogger(__name__)
 
 # pylint: disable=too-many-instance-attributes
 class ResultManager:
-    """Helper to manage Test Results and generate reports.
+    """Manager of ANTA Results.
 
-    Examples
-    --------
-    Create Inventory:
+    The status of the class is initialized to "unset"
 
-        inventory_anta = AntaInventory.parse(
-            filename='examples/inventory.yml',
-            username='ansible',
-            password='ansible',
-        )
+    Then when adding a test with a status that is NOT 'error' the following
+    table shows the updated status:
 
-    Create Result Manager:
+    | Current Status |         Added test Status       | Updated Status |
+    | -------------- | ------------------------------- | -------------- |
+    |      unset     |              Any                |       Any      |
+    |     skipped    |         unset, skipped          |     skipped    |
+    |     skipped    |            success              |     success    |
+    |     skipped    |            failure              |     failure    |
+    |     success    |     unset, skipped, success     |     success    |
+    |     success    |            failure              |     failure    |
+    |     failure    | unset, skipped success, failure |     failure    |
 
-        manager = ResultManager()
+    If the status of the added test is error, the status is untouched and the
+    `error_status` attribute is set to True.
 
-    Run tests for all connected devices:
-
-        for device in inventory_anta.get_inventory().devices:
-            manager.add(
-                VerifyNTP(device=device).test()
-            )
-            manager.add(
-                VerifyEOSVersion(device=device).test(version='4.28.3M')
-            )
-
-    Print result in native format:
-
-        manager.results
-        [
-            TestResult(
-                name="pf1",
-                test="VerifyZeroTouch",
-                categories=["configuration"],
-                description="Verifies ZeroTouch is disabled",
-                result="success",
-                messages=[],
-                custom_field=None,
-            ),
-            TestResult(
-                name="pf1",
-                test='VerifyNTP',
-                categories=["software"],
-                categories=['system'],
-                description='Verifies if NTP is synchronised.',
-                result='failure',
-                messages=["The device is not synchronized with the configured NTP server(s): 'NTP is disabled.'"],
-                custom_field=None,
-            ),
-        ]
+    Attributes
+    ----------
+    results
+    dump
+    status
+        Status rerpesenting all the results.
+    error_status
+        Will be `True` if a test returned an error.
+    results_by_status
+    dump
+    json
+    device_stats
+    category_stats
+    test_stats
     """
 
     _result_entries: list[TestResult]
@@ -84,26 +69,7 @@ class ResultManager:
     _stats_in_sync: bool
 
     def __init__(self) -> None:
-        """Class constructor.
-
-        The status of the class is initialized to "unset"
-
-        Then when adding a test with a status that is NOT 'error' the following
-        table shows the updated status:
-
-        | Current Status |         Added test Status       | Updated Status |
-        | -------------- | ------------------------------- | -------------- |
-        |      unset     |              Any                |       Any      |
-        |     skipped    |         unset, skipped          |     skipped    |
-        |     skipped    |            success              |     success    |
-        |     skipped    |            failure              |     failure    |
-        |     success    |     unset, skipped, success     |     success    |
-        |     success    |            failure              |     failure    |
-        |     failure    | unset, skipped success, failure |     failure    |
-
-        If the status of the added test is error, the status is untouched and the
-        error_status is set to True.
-        """
+        """Initialize a ResultManager instance."""
         self.reset()
 
     def reset(self) -> None:
@@ -162,22 +128,9 @@ class ResultManager:
         return dict(sorted(self._test_stats.items()))
 
     @property
+    @deprecated("This property is deprecated, use `category_stats` instead. This will be removed in ANTA v2.0.0.", category=DeprecationWarning)
     def sorted_category_stats(self) -> dict[str, CategoryStats]:
-        """A property that returns the category_stats dictionary sorted by key name.
-
-        Deprecated
-        ----------
-            This property is deprecated and will be removed in ANTA v2.0.0.
-            Use `category_stats` instead as it is now sorted by default.
-
-        TODO: Remove this property in ANTA v2.0.0.
-        """
-        warnings.warn(
-            "sorted_category_stats is deprecated and will be removed in ANTA v2.0.0. Use category_stats instead as it is now sorted by default.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        self._ensure_stats_in_sync()
+        """A property that returns the category_stats dictionary sorted by key name."""
         return self.category_stats
 
     @cached_property
