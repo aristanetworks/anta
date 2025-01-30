@@ -5127,7 +5127,7 @@ DATA: list[dict[str, Any]] = [
                                         },
                                     },
                                     {
-                                        "nextHop": "10.111.2.0",
+                                        "nextHop": "",
                                         "routeType": {
                                             "valid": True,
                                             "active": False,
@@ -5164,7 +5164,7 @@ DATA: list[dict[str, Any]] = [
                             "10.111.112.0/24": {"routeAction": "forward", "vias": [{"interface": "Vlan112"}]},
                             "10.111.134.0/24": {
                                 "routeType": "eBGP",
-                                "vias": [{"nexthopAddr": "10.111.1.0", "interface": "Ethernet2"}, {"nexthopAddr": "10.111.2.0", "interface": "Ethernet3"}],
+                                "vias": [{"nexthopAddr": "10.111.1.0", "interface": "Ethernet2"}, {"interface": "Ethernet3"}],
                                 "directlyConnected": False,
                             },
                         },

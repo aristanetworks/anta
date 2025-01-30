@@ -1771,6 +1771,7 @@ class VerifyBGPRouteECMP(AntaTest):
                 continue
 
             bgp_nexthops = {path["nextHop"] for path in route_paths if all(path.get("routeType")[key] for key in ["valid", "ecmp", "ecmpContributor"])}
+            bgp_nexthops = {"linked-locally" if nexthop == "" else nexthop for nexthop in bgp_nexthops}
             if len(bgp_nexthops) != route.ecmp_count:
                 self.result.is_failure(f"{route} - ECMP count mismatch - Expected: {route.ecmp_count}, Actual: {len(bgp_nexthops)}")
                 continue
@@ -1780,7 +1781,6 @@ class VerifyBGPRouteECMP(AntaTest):
                 self.result.is_failure(f"{route} - prefix not found in routing table")
                 continue
 
-            # TODO: Test with BGP unnumbered (RFC5549)
-            rib_nexthops = {via["nexthopAddr"] for via in route_entry["vias"] if route_entry["routeType"] in {"iBGP", "eBGP"} and via["nexthopAddr"] != ""}
+            rib_nexthops = {via.get("nexthopAddr", "linked-locally") for via in route_entry["vias"] if route_entry["routeType"] in {"iBGP", "eBGP"}}
             if sorted(bgp_nexthops) != sorted(rib_nexthops):
                 self.result.is_failure(f"{route} - nexthops mismatch - BGP: {', '.join(sorted(bgp_nexthops))}, RIB: {', '.join(sorted(rib_nexthops))}")
