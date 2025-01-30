@@ -1,5 +1,5 @@
 ---
-anta_title: ANTA Catalog API
+anta_title: ANTA Result API
 ---
 <!--
   ~ Copyright (c) 2023-2025 Arista Networks, Inc.
@@ -7,8 +7,7 @@ anta_title: ANTA Catalog API
   ~ that can be found in the LICENSE file.
   -->
 
-::: anta.catalog.AntaCatalog
-
-::: anta.catalog.AntaTestDefinition
-
-::: anta.catalog.AntaCatalogFile
+::: anta.result_manager.ResultManager
+    options:
+      extensions: [griffe_warnings_deprecated]
+::: anta.result_manager.models.TestResult
