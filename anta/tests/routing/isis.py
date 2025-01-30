@@ -17,10 +17,8 @@ from anta.tools import get_value
 def _get_adjacency_segment_data_by_neighbor(neighbor: str, instance: str, vrf: str, command_output: dict[str, Any]) -> dict[str, Any] | None:
     """Extract data related to an IS-IS interface for testing."""
     search_path = f"vrfs.{vrf}.isisInstances.{instance}.adjacencySegments"
-    if get_value(dictionary=command_output, key=search_path, default=None) is None:
+    if (isis_instance := get_value(dictionary=command_output, key=search_path, default=None)) is None:
         return None
-
-    isis_instance = get_value(dictionary=command_output, key=search_path, default=None)
 
     return next(
         (segment_data for segment_data in isis_instance if neighbor == segment_data["ipAddress"]),

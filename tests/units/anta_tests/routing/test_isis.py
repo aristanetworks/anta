@@ -59,7 +59,27 @@ DATA: list[dict[str, Any]] = [
                                 }
                             }
                         }
-                    }
+                    },
+                    "customer": {
+                        "isisInstances": {
+                            "CORE-ISIS": {
+                                "neighbors": {
+                                    "0168.0000.0112": {
+                                        "adjacencies": [
+                                            {
+                                                "hostname": "s1-p02",
+                                                "circuitId": "87",
+                                                "interfaceName": "Ethernet2",
+                                                "state": "down",
+                                                "lastHelloTime": 1713688405,
+                                                "routerIdV4": "1.0.0.112",
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
                 }
             },
         ],
@@ -91,31 +111,31 @@ DATA: list[dict[str, Any]] = [
                                 },
                             },
                         },
-                        "customer": {
-                            "isisInstances": {
-                                "CORE-ISIS": {
-                                    "neighbors": {
-                                        "0168.0000.0112": {
-                                            "adjacencies": [
-                                                {
-                                                    "hostname": "s1-p02",
-                                                    "circuitId": "87",
-                                                    "interfaceName": "Ethernet2",
-                                                    "state": "up",
-                                                    "lastHelloTime": 1713688405,
-                                                    "routerIdV4": "1.0.0.112",
-                                                }
-                                            ]
-                                        }
+                    },
+                    "customer": {
+                        "isisInstances": {
+                            "CORE-ISIS": {
+                                "neighbors": {
+                                    "0168.0000.0112": {
+                                        "adjacencies": [
+                                            {
+                                                "hostname": "s1-p02",
+                                                "circuitId": "87",
+                                                "interfaceName": "Ethernet2",
+                                                "state": "up",
+                                                "lastHelloTime": 1713688405,
+                                                "routerIdV4": "1.0.0.112",
+                                            }
+                                        ]
                                     }
                                 }
                             }
-                        },
-                    }
+                        }
+                    },
                 }
             },
         ],
-        "inputs": None,
+        "inputs": {"check_all_vrfs": True},
         "expected": {"result": "success"},
     },
     {
@@ -175,6 +195,61 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "skipped",
             "messages": ["IS-IS is not configured on device"],
+        },
+    },
+    {
+        "name": "failure different vrfs",
+        "test": VerifyISISNeighborState,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "isisInstances": {
+                            "CORE-ISIS": {
+                                "neighbors": {
+                                    "0168.0000.0111": {
+                                        "adjacencies": [
+                                            {
+                                                "hostname": "s1-p01",
+                                                "circuitId": "83",
+                                                "interfaceName": "Ethernet1",
+                                                "state": "up",
+                                                "lastHelloTime": 1713688408,
+                                                "routerIdV4": "1.0.0.111",
+                                            }
+                                        ]
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "customer": {
+                        "isisInstances": {
+                            "CORE-ISIS": {
+                                "neighbors": {
+                                    "0168.0000.0112": {
+                                        "adjacencies": [
+                                            {
+                                                "hostname": "s1-p02",
+                                                "circuitId": "87",
+                                                "interfaceName": "Ethernet2",
+                                                "state": "down",
+                                                "lastHelloTime": 1713688405,
+                                                "routerIdV4": "1.0.0.112",
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                }
+            },
+        ],
+        "inputs": {"check_all_vrfs": True},
+        "expected": {
+            "result": "failure",
+            "messages": ["Instance: CORE-ISIS VRF: customer Interface: Ethernet2 - Session (adjacency) down"],
         },
     },
     {
