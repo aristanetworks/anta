@@ -18,7 +18,6 @@ from anta.tests.routing.isis import (
     VerifyISISSegmentRoutingAdjacencySegments,
     VerifyISISSegmentRoutingDataplane,
     VerifyISISSegmentRoutingTunnels,
-    _get_interface_data,
 )
 from tests.units.anta_tests import test
 
@@ -60,7 +59,27 @@ DATA: list[dict[str, Any]] = [
                                 }
                             }
                         }
-                    }
+                    },
+                    "customer": {
+                        "isisInstances": {
+                            "CORE-ISIS": {
+                                "neighbors": {
+                                    "0168.0000.0112": {
+                                        "adjacencies": [
+                                            {
+                                                "hostname": "s1-p02",
+                                                "circuitId": "87",
+                                                "interfaceName": "Ethernet2",
+                                                "state": "down",
+                                                "lastHelloTime": 1713688405,
+                                                "routerIdV4": "1.0.0.112",
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
                 }
             },
         ],
@@ -92,31 +111,31 @@ DATA: list[dict[str, Any]] = [
                                 },
                             },
                         },
-                        "customer": {
-                            "isisInstances": {
-                                "CORE-ISIS": {
-                                    "neighbors": {
-                                        "0168.0000.0112": {
-                                            "adjacencies": [
-                                                {
-                                                    "hostname": "s1-p02",
-                                                    "circuitId": "87",
-                                                    "interfaceName": "Ethernet2",
-                                                    "state": "up",
-                                                    "lastHelloTime": 1713688405,
-                                                    "routerIdV4": "1.0.0.112",
-                                                }
-                                            ]
-                                        }
+                    },
+                    "customer": {
+                        "isisInstances": {
+                            "CORE-ISIS": {
+                                "neighbors": {
+                                    "0168.0000.0112": {
+                                        "adjacencies": [
+                                            {
+                                                "hostname": "s1-p02",
+                                                "circuitId": "87",
+                                                "interfaceName": "Ethernet2",
+                                                "state": "up",
+                                                "lastHelloTime": 1713688405,
+                                                "routerIdV4": "1.0.0.112",
+                                            }
+                                        ]
                                     }
                                 }
                             }
-                        },
-                    }
+                        }
+                    },
                 }
             },
         ],
-        "inputs": None,
+        "inputs": {"check_all_vrfs": True},
         "expected": {"result": "success"},
     },
     {
@@ -163,19 +182,74 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": ["Some neighbors are not in the correct state (UP): [{'vrf': 'default', 'instance': 'CORE-ISIS', 'neighbor': 's1-p01', 'state': 'down'}]."],
+            "messages": ["Instance: CORE-ISIS VRF: default Interface: Ethernet1 - Session (adjacency) down"],
         },
     },
     {
         "name": "skipped - no neighbor",
         "test": VerifyISISNeighborState,
         "eos_data": [
-            {"vrfs": {"default": {"isisInstances": {"CORE-ISIS": {"neighbors": {}}}}}},
+            {"vrfs": {}},
         ],
         "inputs": None,
         "expected": {
             "result": "skipped",
-            "messages": ["No IS-IS neighbor detected"],
+            "messages": ["IS-IS is not configured on device"],
+        },
+    },
+    {
+        "name": "failure different vrfs",
+        "test": VerifyISISNeighborState,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "isisInstances": {
+                            "CORE-ISIS": {
+                                "neighbors": {
+                                    "0168.0000.0111": {
+                                        "adjacencies": [
+                                            {
+                                                "hostname": "s1-p01",
+                                                "circuitId": "83",
+                                                "interfaceName": "Ethernet1",
+                                                "state": "up",
+                                                "lastHelloTime": 1713688408,
+                                                "routerIdV4": "1.0.0.111",
+                                            }
+                                        ]
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "customer": {
+                        "isisInstances": {
+                            "CORE-ISIS": {
+                                "neighbors": {
+                                    "0168.0000.0112": {
+                                        "adjacencies": [
+                                            {
+                                                "hostname": "s1-p02",
+                                                "circuitId": "87",
+                                                "interfaceName": "Ethernet2",
+                                                "state": "down",
+                                                "lastHelloTime": 1713688405,
+                                                "routerIdV4": "1.0.0.112",
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                }
+            },
+        ],
+        "inputs": {"check_all_vrfs": True},
+        "expected": {
+            "result": "failure",
+            "messages": ["Instance: CORE-ISIS VRF: customer Interface: Ethernet2 - Session (adjacency) down"],
         },
     },
     {
@@ -254,7 +328,7 @@ DATA: list[dict[str, Any]] = [
         "name": "skipped - no neighbor",
         "test": VerifyISISNeighborCount,
         "eos_data": [
-            {"vrfs": {"default": {"isisInstances": {"CORE-ISIS": {"interfaces": {}}}}}},
+            {"vrfs": {"default": {"isisInstances": {}}}},
         ],
         "inputs": {
             "interfaces": [
@@ -263,7 +337,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "skipped",
-            "messages": ["No IS-IS neighbor detected"],
+            "messages": ["IS-IS is not configured on device"],
         },
     },
     {
@@ -306,7 +380,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["No neighbor detected for interface Ethernet2"],
+            "messages": ["Interface: Ethernet2 VRF: default Level: 2 - Not configured"],
         },
     },
     {
@@ -349,7 +423,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Interface Ethernet1: expected Level 2: count 1, got Level 2: count 3"],
+            "messages": ["Interface: Ethernet1 VRF: default Level: 2 - Neighbor count mismatch - Expected: 1 Actual: 3"],
         },
     },
     {
@@ -516,7 +590,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Interface Ethernet2 in VRF default is not running in passive mode"],
+            "messages": ["Interface: Ethernet2 VRF: default Level: 2 - Not running in passive mode"],
         },
     },
     {
@@ -601,7 +675,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Interface Ethernet1 in VRF default is not running in point-to-point reporting broadcast"],
+            "messages": ["Interface: Ethernet1 VRF: default Level: 2 - Incorrect circuit type - Expected: point-to-point Actual: broadcast"],
         },
     },
     {
@@ -687,9 +761,9 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Interface Loopback0 not found in VRF default",
-                "Interface Ethernet2 not found in VRF default",
-                "Interface Ethernet1 not found in VRF default",
+                "Interface: Loopback0 VRF: default Level: 2 - Not configured",
+                "Interface: Ethernet2 VRF: default Level: 2 - Not configured",
+                "Interface: Ethernet1 VRF: default Level: 2 - Not configured",
             ],
         },
     },
@@ -704,7 +778,7 @@ DATA: list[dict[str, Any]] = [
                 {"name": "Ethernet1", "mode": "point-to-point", "vrf": "default"},
             ]
         },
-        "expected": {"result": "skipped", "messages": ["IS-IS is not configured on device"]},
+        "expected": {"result": "skipped", "messages": ["No IS-IS neighbor detected"]},
     },
     {
         "name": "Skipped of VerifyISISSegmentRoutingAdjacencySegments no VRF.",
@@ -725,7 +799,7 @@ DATA: list[dict[str, Any]] = [
                 }
             ]
         },
-        "expected": {"result": "skipped", "messages": ["IS-IS is not configured on device"]},
+        "expected": {"result": "skipped", "messages": ["No IS-IS neighbor detected"]},
     },
     {
         "test": VerifyISISSegmentRoutingAdjacencySegments,
@@ -885,7 +959,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Your segment has not been found: interface='Ethernet3' level=2 sid_origin='dynamic' address=IPv4Address('10.0.1.2')."],
+            "messages": ["Instance: CORE-ISIS VRF: default Interface: Ethernet3 IP Addr: 10.0.1.2 - Segment not configured"],
         },
     },
     {
@@ -968,7 +1042,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["VRF custom is not configured to run segment routging."],
+            "messages": ["Instance: CORE-ISIS VRF: custom - VRF not configured"],
         },
     },
     {
@@ -1051,7 +1125,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Instance CORE-ISIS2 is not found in vrf default."],
+            "messages": ["Instance: CORE-ISIS2 VRF: default - Not configured"],
         },
     },
     {
@@ -1114,13 +1188,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": [
-                (
-                    "Your segment is not correct: Expected: interface='Ethernet2' level=1 sid_origin='dynamic' address=IPv4Address('10.0.1.3') - "
-                    "Found: {'ipAddress': '10.0.1.3', 'localIntf': 'Ethernet2', 'sid': 116384, 'lan': False, 'sidOrigin': 'dynamic', 'protection': "
-                    "'unprotected', 'flags': {'b': False, 'v': True, 'l': True, 'f': False, 's': False}, 'level': 2}."
-                )
-            ],
+            "messages": ["Instance: CORE-ISIS VRF: default Interface: Ethernet2 IP Addr: 10.0.1.3 - Incorrect IS-IS level - Expected: 1 Actual: 2"],
         },
     },
     {
@@ -1186,7 +1254,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["ISIS instance CORE-ISIS is not running dataplane unset (MPLS)"],
+            "messages": ["Instance: CORE-ISIS VRF: default - Dataplane not correctly configured - Expected: UNSET Actual: MPLS"],
         },
     },
     {
@@ -1219,7 +1287,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Instance CORE-ISIS2 is not found in vrf default."],
+            "messages": ["Instance: CORE-ISIS2 VRF: default - Not configured"],
         },
     },
     {
@@ -1252,7 +1320,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["VRF wrong_vrf is not configured to run segment routing."],
+            "messages": ["Instance: CORE-ISIS VRF: wrong_vrf - Not configured"],
         },
     },
     {
@@ -1270,7 +1338,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "skipped",
-            "messages": ["IS-IS-SR is not running on device"],
+            "messages": ["No IS-IS neighbor detected"],
         },
     },
     {
@@ -1405,7 +1473,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Tunnel to endpoint=IPv4Network('1.0.0.122/32') vias=None is not found."],
+            "messages": ["Endpoint: 1.0.0.122/32 - Tunnel not found"],
         },
     },
     {
@@ -1486,7 +1554,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Tunnel to 1.0.0.13/32 is incorrect: incorrect tunnel type"],
+            "messages": ["Endpoint: 1.0.0.13/32 Type: tunnel - incorrect tunnel type"],
         },
     },
     {
@@ -1574,12 +1642,12 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Tunnel to 1.0.0.122/32 is incorrect: incorrect nexthop"],
+            "messages": ["Endpoint: 1.0.0.122/32 Next-hop: 10.0.1.2 Type: ip Interface: Ethernet1 - incorrect nexthop"],
         },
     },
     {
         "test": VerifyISISSegmentRoutingTunnels,
-        "name": "fails with incorrect nexthop",
+        "name": "fails with incorrect interface",
         "eos_data": [
             {
                 "entries": {
@@ -1662,7 +1730,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Tunnel to 1.0.0.122/32 is incorrect: incorrect interface"],
+            "messages": ["Endpoint: 1.0.0.122/32 Next-hop: 10.0.1.1 Type: ip Interface: Ethernet4 - incorrect interface"],
         },
     },
     {
@@ -1750,7 +1818,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Tunnel to 1.0.0.122/32 is incorrect: incorrect nexthop"],
+            "messages": ["Endpoint: 1.0.0.122/32 Next-hop: 10.0.1.2 Type: ip Interface: Ethernet1 - incorrect nexthop"],
         },
     },
     {
@@ -1837,82 +1905,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Tunnel to 1.0.0.111/32 is incorrect: incorrect tunnel ID"],
+            "messages": ["Endpoint: 1.0.0.111/32 Type: tunnel TunnelID: unset - incorrect tunnel ID"],
         },
     },
 ]
-
-
-COMMAND_OUTPUT = {
-    "vrfs": {
-        "default": {
-            "isisInstances": {
-                "CORE-ISIS": {
-                    "interfaces": {
-                        "Loopback0": {
-                            "enabled": True,
-                            "intfLevels": {
-                                "2": {
-                                    "ipv4Metric": 10,
-                                    "sharedSecretProfile": "",
-                                    "isisAdjacencies": [],
-                                    "passive": True,
-                                    "v4Protection": "disabled",
-                                    "v6Protection": "disabled",
-                                }
-                            },
-                            "areaProxyBoundary": False,
-                        },
-                        "Ethernet1": {
-                            "intfLevels": {
-                                "2": {
-                                    "ipv4Metric": 10,
-                                    "numAdjacencies": 1,
-                                    "linkId": "84",
-                                    "sharedSecretProfile": "",
-                                    "isisAdjacencies": [],
-                                    "passive": False,
-                                    "v4Protection": "link",
-                                    "v6Protection": "disabled",
-                                }
-                            },
-                            "interfaceSpeed": 1000,
-                            "areaProxyBoundary": False,
-                        },
-                    }
-                }
-            }
-        },
-        "EMPTY": {"isisInstances": {}},
-        "NO_INTERFACES": {"isisInstances": {"CORE-ISIS": {}}},
-    }
-}
-EXPECTED_LOOPBACK_0_OUTPUT = {
-    "enabled": True,
-    "intfLevels": {
-        "2": {
-            "ipv4Metric": 10,
-            "sharedSecretProfile": "",
-            "isisAdjacencies": [],
-            "passive": True,
-            "v4Protection": "disabled",
-            "v6Protection": "disabled",
-        }
-    },
-    "areaProxyBoundary": False,
-}
-
-
-@pytest.mark.parametrize(
-    ("interface", "vrf", "expected_value"),
-    [
-        pytest.param("Loopback0", "WRONG_VRF", None, id="VRF_not_found"),
-        pytest.param("Loopback0", "EMPTY", None, id="VRF_no_ISIS_instances"),
-        pytest.param("Loopback0", "NO_INTERFACES", None, id="ISIS_instance_no_interfaces"),
-        pytest.param("Loopback42", "default", None, id="interface_not_found"),
-        pytest.param("Loopback0", "default", EXPECTED_LOOPBACK_0_OUTPUT, id="interface_found"),
-    ],
-)
-def test__get_interface_data(interface: str, vrf: str, expected_value: dict[str, Any] | None) -> None:
-    """Test anta.tests.routing.isis._get_interface_data."""
-    assert _get_interface_data(interface, vrf, COMMAND_OUTPUT) == expected_value
