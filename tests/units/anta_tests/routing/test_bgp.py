@@ -5121,7 +5121,7 @@ DATA: list[dict[str, Any]] = [
                             },
                         ]
                     },
-                    "Test": {"peerList": [{"peerAddress": "10.111.0.2", "ttl": 255, "maxTtlHops": 255}]},
+                    "Test": {"peerList": [{"peerAddress": "10.111.0.3", "ttl": 255, "maxTtlHops": 255}]},
                 }
             }
         ],
@@ -5140,7 +5140,7 @@ DATA: list[dict[str, Any]] = [
                     "max_ttl_hops": 1,
                 },
                 {
-                    "peer_address": "10.111.0.2",
+                    "peer_address": "10.111.0.3",
                     "vrf": "Test",
                     "ttl_time": 255,
                     "max_ttl_hops": 255,
@@ -5211,7 +5211,7 @@ DATA: list[dict[str, Any]] = [
                             },
                         ]
                     },
-                    "Test": {"peerList": [{"peerAddress": "10.111.0.2", "ttl": 205, "maxTtlHops": 255}]},
+                    "Test": {"peerList": [{"peerAddress": "10.111.0.3", "ttl": 205, "maxTtlHops": 255}]},
                 }
             }
         ],
@@ -5230,7 +5230,7 @@ DATA: list[dict[str, Any]] = [
                     "max_ttl_hops": 1,
                 },
                 {
-                    "peer_address": "10.111.0.2",
+                    "peer_address": "10.111.0.3",
                     "vrf": "Test",
                     "ttl_time": 255,
                     "max_ttl_hops": 255,
@@ -5242,7 +5242,7 @@ DATA: list[dict[str, Any]] = [
             "messages": [
                 "Peer: 10.111.0.1 VRF: default - TTL time mismatch - Expected: 2, Actual: 12",
                 "Peer: 10.111.0.2 VRF: default - TTL time mismatch - Expected: 1, Actual: 120",
-                "Peer: 10.111.0.2 VRF: Test - TTL time mismatch - Expected: 255, Actual: 205",
+                "Peer: 10.111.0.3 VRF: Test - TTL time mismatch - Expected: 255, Actual: 205",
             ],
         },
     },
@@ -5266,7 +5266,7 @@ DATA: list[dict[str, Any]] = [
                             },
                         ]
                     },
-                    "Test": {"peerList": [{"peerAddress": "10.111.0.2", "ttl": 255, "maxTtlHops": 205}]},
+                    "Test": {"peerList": [{"peerAddress": "10.111.0.3", "ttl": 255, "maxTtlHops": 205}]},
                 }
             }
         ],
@@ -5285,7 +5285,7 @@ DATA: list[dict[str, Any]] = [
                     "max_ttl_hops": 1,
                 },
                 {
-                    "peer_address": "10.111.0.2",
+                    "peer_address": "10.111.0.3",
                     "vrf": "Test",
                     "ttl_time": 255,
                     "max_ttl_hops": 255,
@@ -5297,7 +5297,7 @@ DATA: list[dict[str, Any]] = [
             "messages": [
                 "Peer: 10.111.0.1 VRF: default - MaxTtlHops mismatch - Expected: 2, Actual: 12",
                 "Peer: 10.111.0.2 VRF: default - MaxTtlHops mismatch - Expected: 1, Actual: 100",
-                "Peer: 10.111.0.2 VRF: Test - MaxTtlHops mismatch - Expected: 255, Actual: 205",
+                "Peer: 10.111.0.3 VRF: Test - MaxTtlHops mismatch - Expected: 255, Actual: 205",
             ],
         },
     },

@@ -1714,11 +1714,11 @@ class VerifyBGPPeerTtlMultiHops(AntaTest):
                 - peer_address: 172.30.11.1
                   vrf: default
                   ttl_time: 3
-                  max_ttl_hops:3
+                  max_ttl_hops: 3
                 - peer_address: 172.30.11.2
                   vrf: test
                   ttl_time: 30
-                  max_ttl_hops:30
+                  max_ttl_hops: 30
     ```
     """
 

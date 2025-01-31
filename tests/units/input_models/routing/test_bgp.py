@@ -308,7 +308,7 @@ class TestVerifyBGPPeerTtlMultiHopsInput:
         ("bgp_peers"),
         [
             pytest.param([{"peer_address": "172.30.255.5", "vrf": "default", "ttl_time": None, "max_ttl_hops": 3}], id="invalid-ttl-time"),
-            pytest.param([{"peer_address": "172.30.255.5", "vrf": "default", "ttl_time": 3, "max_ttl_hops": None}], id="invalid-max-ttl-hops"),
+            pytest.param([{"peer_address": "172.30.255.6", "vrf": "default", "ttl_time": 3, "max_ttl_hops": None}], id="invalid-max-ttl-hops"),
         ],
     )
     def test_invalid(self, bgp_peers: list[BgpPeer]) -> None:
