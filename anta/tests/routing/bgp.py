@@ -5,6 +5,7 @@
 
 # Mypy does not understand AntaTest.Input typing
 # mypy: disable-error-code=attr-defined
+# pylint: disable=too-many-lines
 from __future__ import annotations
 
 from typing import ClassVar, TypeVar
@@ -13,7 +14,7 @@ from pydantic import field_validator
 
 from anta.input_models.routing.bgp import BgpAddressFamily, BgpAfi, BgpNeighbor, BgpPeer, BgpRoute, VxlanEndpoint
 from anta.models import AntaCommand, AntaTemplate, AntaTest
-from anta.tools import format_data, get_item, get_value
+from anta.tools import format_data, get_dict_superset, get_item, get_value
 
 # Using a TypeVar for the BgpPeer model since mypy thinks it's a ClassVar and not a valid type when used in field validators
 T = TypeVar("T", bound=BgpPeer)
@@ -1686,3 +1687,81 @@ class VerifyBGPRoutePaths(AntaTest):
 
                 if (actual_origin := get_value(route_path, "routeType.origin")) != origin:
                     self.result.is_failure(f"{route} {path} - Origin mismatch - Actual: {actual_origin}")
+
+
+class VerifyBGPPeerTtlMultiHops(AntaTest):
+    """Verifies BGP TTL, max-ttl-hops count for BGP IPv4 peer(s).
+
+    This test performs the following checks for each specified BGP peer:
+
+      1. Verifies the specified BGP peer exists in the bgp configuration.
+      2. Verifies the TTL and max-ttl-hops attribute matches the expected value.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if all specified peer exist with TTL and max-ttl-hops attribute matching the expected values.
+    * Failure: If any of the following occur:
+        - A specified BGP peer is not found.
+        - A TTL or max-ttl-hops attribute doesn't match the expected value.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      bgp:
+        - VerifyBGPPeerTtlMultiHops:
+            bgp_peers:
+                - peer_address: 172.30.11.1
+                  vrf: default
+                  ttl_time: 3
+                  max_ttl_hops:3
+                - peer_address: 172.30.11.2
+                  vrf: test
+                  ttl_time: 30
+                  max_ttl_hops:30
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["bgp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip bgp neighbors vrf all", revision=2)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyBGPPeerTtlMultiHops test."""
+
+        bgp_peers: list[BgpPeer]
+        """List of IPv4 peer(s)."""
+
+        @field_validator("bgp_peers")
+        @classmethod
+        def validate_bgp_peers(cls, bgp_peers: list[BgpPeer]) -> list[BgpPeer]:
+            """Validate that 'ttl_time' and 'max_ttl_hops' field is provided in each BGP peer."""
+            for peer in bgp_peers:
+                if peer.ttl_time is None:
+                    msg = f"{peer} 'ttl_time' field missing in the input"
+                    raise ValueError(msg)
+                if peer.max_ttl_hops is None:
+                    msg = f"{peer} 'max_ttl_hops' field missing in the input"
+                    raise ValueError(msg)
+
+            return bgp_peers
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyBGPPeerTtlMultiHops."""
+        self.result.is_success()
+        command_output = self.instance_commands[0].json_output
+
+        for peer in self.inputs.bgp_peers:
+            peer_details = get_dict_superset(command_output["vrfs"].get(peer.vrf, {}).get("peerList"), {"peerAddress": str(peer.peer_address)})
+            # Verify if the peer address exists in the BGP configuration.
+            if not peer_details:
+                self.result.is_failure(f"{peer} - Not found")
+                continue
+
+            # Verify if the TTL time matches the expected value.
+            if peer_details.get("ttl") != peer.ttl_time:
+                self.result.is_failure(f"{peer} - TTL time mismatch - Expected: {peer.ttl_time}, Actual: {peer_details.get('ttl')}")
+
+            # Verify if the max-ttl-hops time matches the expected value.
+            if peer_details.get("maxTtlHops") != peer.max_ttl_hops:
+                self.result.is_failure(f"{peer} - MaxTtlHops mismatch - Expected: {peer.max_ttl_hops}, Actual: {peer_details.get('maxTtlHops')}")
