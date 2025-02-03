@@ -1763,17 +1763,16 @@ class VerifyBGPRouteECMP(AntaTest):
                 self.result.is_failure(f"{route} - prefix not found in BGP table")
                 continue
 
-            route_paths = bgp_route_entry["bgpRoutePaths"]
-            head = next((path for path in route_paths if all(path.get("routeType", {}).get(key, False) for key in ["valid", "active", "ecmpHead"])), None)
-            # Verify if the active ECMP head exists in routepath.
-            if not head:
+            route_paths = iter(bgp_route_entry["bgpRoutePaths"])
+            head = next(route_paths, None)
+            # Verify if the active ECMP head exists.
+            if head is None or not all(head["routeType"][key] for key in ["valid", "active", "ecmpHead"]):
                 self.result.is_failure(f"{route} - valid and active ECMP head not found")
                 continue
 
-            bgp_nexthops = [head.get("nextHop")]
-            route_paths.remove(head)
-            bgp_nexthops.extend([path.get("nextHop") for path in route_paths if all(path.get("routeType")[key] for key in ["valid", "ecmp", "ecmpContributor"])])
-            bgp_nexthops = ["linked-locally" if nexthop == "" else nexthop for nexthop in bgp_nexthops]
+            bgp_nexthops = {head["nextHop"]}
+            bgp_nexthops.update([path["nextHop"] for path in route_paths if all(path["routeType"][key] for key in ["valid", "ecmp", "ecmpContributor"])])
+
             # Verify ECMP count is correct.
             if len(bgp_nexthops) != route.ecmp_count:
                 self.result.is_failure(f"{route} - ECMP count mismatch - Expected: {route.ecmp_count}, Actual: {len(bgp_nexthops)}")
@@ -1784,7 +1783,7 @@ class VerifyBGPRouteECMP(AntaTest):
                 self.result.is_failure(f"{route} - prefix not found in routing table")
                 continue
 
-            rib_nexthops = [via.get("nexthopAddr", "linked-locally") for via in route_entry["vias"] if route_entry["routeType"] in {"iBGP", "eBGP"}]
+            rib_nexthops = {via["nexthopAddr"] for via in route_entry["vias"] if route_entry["routeType"] in {"iBGP", "eBGP"}}
             # Verify BGP and RIB nexthops are same.
-            if sorted(bgp_nexthops) != sorted(rib_nexthops):
+            if bgp_nexthops != rib_nexthops:
                 self.result.is_failure(f"{route} - nexthops mismatch - BGP: {', '.join(sorted(bgp_nexthops))}, RIB: {', '.join(sorted(rib_nexthops))}")

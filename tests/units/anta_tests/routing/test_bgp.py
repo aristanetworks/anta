@@ -5117,7 +5117,7 @@ DATA: list[dict[str, Any]] = [
                                 "maskLength": 24,
                                 "bgpRoutePaths": [
                                     {
-                                        "nextHop": "10.111.1.0",
+                                        "nextHop": "10.111.2.0",
                                         "routeType": {
                                             "valid": True,
                                             "active": True,
@@ -5127,17 +5127,7 @@ DATA: list[dict[str, Any]] = [
                                         },
                                     },
                                     {
-                                        "nextHop": "",
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": False,
-                                            "ecmpHead": False,
-                                            "ecmp": True,
-                                            "ecmpContributor": True,
-                                        },
-                                    },
-                                    {
-                                        "nextHop": "",
+                                        "nextHop": "10.111.1.0",
                                         "routeType": {
                                             "valid": True,
                                             "active": False,
@@ -5147,7 +5137,7 @@ DATA: list[dict[str, Any]] = [
                                         },
                                     },
                                 ],
-                                "totalPaths": 3,
+                                "totalPaths": 2,
                             },
                         },
                     }
@@ -5161,10 +5151,13 @@ DATA: list[dict[str, Any]] = [
                         "allRoutesProgrammedKernel": True,
                         "defaultRouteState": "notSet",
                         "routes": {
-                            "10.111.112.0/24": {"routeAction": "forward", "vias": [{"interface": "Vlan112"}]},
+                            "10.111.112.0/24": {"routeType": "eBGP", "vias": [{"interface": "Vlan112"}]},
                             "10.111.134.0/24": {
                                 "routeType": "eBGP",
-                                "vias": [{"nexthopAddr": "10.111.1.0", "interface": "Ethernet2"}, {"interface": "Ethernet3"}, {"interface": "Ethernet4"}],
+                                "vias": [
+                                    {"nexthopAddr": "10.111.1.0", "interface": "Ethernet2"},
+                                    {"nexthopAddr": "10.111.2.0", "interface": "Ethernet3"},
+                                ],
                                 "directlyConnected": False,
                             },
                         },
@@ -5172,7 +5165,7 @@ DATA: list[dict[str, Any]] = [
                 }
             },
         ],
-        "inputs": {"route_entries": [{"prefix": "10.111.134.0/24", "vrf": "default", "ecmp_count": 3}]},
+        "inputs": {"route_entries": [{"prefix": "10.111.134.0/24", "vrf": "default", "ecmp_count": 2}]},
         "expected": {"result": "success"},
     },
     {
@@ -5235,7 +5228,7 @@ DATA: list[dict[str, Any]] = [
                         "allRoutesProgrammedKernel": True,
                         "defaultRouteState": "notSet",
                         "routes": {
-                            "10.111.112.0/24": {"routeAction": "forward", "vias": [{"interface": "Vlan112"}]},
+                            "10.111.112.0/24": {"routeType": "eBGP", "vias": [{"interface": "Vlan112"}]},
                             "10.111.134.0/24": {
                                 "routeType": "eBGP",
                                 "vias": [{"nexthopAddr": "10.111.1.0", "interface": "Ethernet2"}, {"nexthopAddr": "10.111.2.0", "interface": "Ethernet3"}],
@@ -5309,7 +5302,7 @@ DATA: list[dict[str, Any]] = [
                         "allRoutesProgrammedKernel": True,
                         "defaultRouteState": "notSet",
                         "routes": {
-                            "10.111.112.0/24": {"routeAction": "forward", "vias": [{"interface": "Vlan112"}]},
+                            "10.111.112.0/24": {"routeType": "eBGP", "vias": [{"interface": "Vlan112"}]},
                             "10.111.134.0/24": {
                                 "routeType": "eBGP",
                                 "vias": [{"nexthopAddr": "10.111.1.0", "interface": "Ethernet2"}, {"nexthopAddr": "10.111.2.0", "interface": "Ethernet3"}],
@@ -5383,7 +5376,7 @@ DATA: list[dict[str, Any]] = [
                         "allRoutesProgrammedKernel": True,
                         "defaultRouteState": "notSet",
                         "routes": {
-                            "10.111.112.0/24": {"routeAction": "forward", "vias": [{"interface": "Vlan112"}]},
+                            "10.111.112.0/24": {"routeType": "eBGP", "vias": [{"interface": "Vlan112"}]},
                             "10.111.134.0/24": {
                                 "routeType": "eBGP",
                                 "vias": [{"nexthopAddr": "10.111.1.0", "interface": "Ethernet2"}, {"nexthopAddr": "10.111.2.0", "interface": "Ethernet3"}],
@@ -5457,7 +5450,7 @@ DATA: list[dict[str, Any]] = [
                         "allRoutesProgrammedKernel": True,
                         "defaultRouteState": "notSet",
                         "routes": {
-                            "10.111.112.0/24": {"routeAction": "forward", "vias": [{"interface": "Vlan112"}]},
+                            "10.111.112.0/24": {"routeType": "eBGP", "vias": [{"interface": "Vlan112"}]},
                             "10.111.114.0/24": {
                                 "routeType": "eBGP",
                                 "vias": [{"nexthopAddr": "10.111.1.0", "interface": "Ethernet2"}, {"nexthopAddr": "10.111.2.0", "interface": "Ethernet3"}],
@@ -5531,7 +5524,7 @@ DATA: list[dict[str, Any]] = [
                         "allRoutesProgrammedKernel": True,
                         "defaultRouteState": "notSet",
                         "routes": {
-                            "10.111.112.0/24": {"routeAction": "forward", "vias": [{"interface": "Vlan112"}]},
+                            "10.111.112.0/24": {"routeType": "eBGP", "vias": [{"interface": "Vlan112"}]},
                             "10.111.134.0/24": {
                                 "routeType": "eBGP",
                                 "vias": [{"nexthopAddr": "10.111.1.0", "interface": "Ethernet2"}],
