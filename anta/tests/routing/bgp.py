@@ -446,8 +446,6 @@ class VerifyBGPExchangedRoutes(AntaTest):
                 advertised_routes:
                   - 192.0.255.1/32
                   - 192.0.254.5/32
-                received_routes:
-                  - 192.0.254.3/32
     ```
     """
 
@@ -469,8 +467,8 @@ class VerifyBGPExchangedRoutes(AntaTest):
         def validate_bgp_peers(cls, bgp_peers: list[BgpPeer]) -> list[BgpPeer]:
             """Validate that 'advertised_routes' or 'received_routes' field is provided in each BGP peer."""
             for peer in bgp_peers:
-                if peer.advertised_routes is None or peer.received_routes is None:
-                    msg = f"{peer} 'advertised_routes' or 'received_routes' field missing in the input"
+                if peer.advertised_routes is None and peer.received_routes is None:
+                    msg = f"{peer} 'advertised_routes' and 'received_routes' field missing in the input"
                     raise ValueError(msg)
             return bgp_peers
 
@@ -499,6 +497,10 @@ class VerifyBGPExchangedRoutes(AntaTest):
 
             # Validate both advertised and received routes
             for route_type, routes in zip(["Advertised", "Received"], [peer.advertised_routes, peer.received_routes]):
+                # skipping the validation for routes if user input is None
+                if not routes:
+                    continue
+
                 entries = command_output[route_type]
                 for route in routes:
                     # Check if the route is found

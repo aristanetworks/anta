@@ -118,6 +118,7 @@ class TestVerifyBGPExchangedRoutesInput:
                 [{"peer_address": "172.30.255.5", "vrf": "default", "advertised_routes": ["192.0.254.5/32"], "received_routes": ["192.0.255.4/32"]}],
                 id="valid_both_received_advertised",
             ),
+            pytest.param([{"peer_address": "172.30.255.5", "vrf": "default", "advertised_routes": ["192.0.254.5/32"]}], id="valid_advertised_routes"),
         ],
     )
     def test_valid(self, bgp_peers: list[BgpPeer]) -> None:
@@ -128,8 +129,6 @@ class TestVerifyBGPExchangedRoutesInput:
         ("bgp_peers"),
         [
             pytest.param([{"peer_address": "172.30.255.5", "vrf": "default"}], id="invalid"),
-            pytest.param([{"peer_address": "172.30.255.5", "vrf": "default", "advertised_routes": ["192.0.254.5/32"]}], id="invalid_received_route"),
-            pytest.param([{"peer_address": "172.30.255.5", "vrf": "default", "received_routes": ["192.0.254.5/32"]}], id="invalid_advertised_route"),
         ],
     )
     def test_invalid(self, bgp_peers: list[BgpPeer]) -> None:

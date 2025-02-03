@@ -392,8 +392,6 @@ anta.tests.routing.bgp:
           advertised_routes:
             - 192.0.255.1/32
             - 192.0.254.5/32
-          received_routes:
-            - 192.0.254.3/32
   - VerifyBGPNlriAcceptance:
       # Verifies that all received NLRI are accepted for all AFI/SAFI configured for BGP IPv4 peer(s).
       bgp_peers:
