@@ -5146,10 +5146,6 @@ DATA: list[dict[str, Any]] = [
             {
                 "vrfs": {
                     "default": {
-                        "routingDisabled": False,
-                        "allRoutesProgrammedHardware": True,
-                        "allRoutesProgrammedKernel": True,
-                        "defaultRouteState": "notSet",
                         "routes": {
                             "10.111.112.0/24": {"routeType": "eBGP", "vias": [{"interface": "Vlan112"}]},
                             "10.111.134.0/24": {
@@ -5223,10 +5219,6 @@ DATA: list[dict[str, Any]] = [
             {
                 "vrfs": {
                     "default": {
-                        "routingDisabled": False,
-                        "allRoutesProgrammedHardware": True,
-                        "allRoutesProgrammedKernel": True,
-                        "defaultRouteState": "notSet",
                         "routes": {
                             "10.111.112.0/24": {"routeType": "eBGP", "vias": [{"interface": "Vlan112"}]},
                             "10.111.134.0/24": {
@@ -5297,10 +5289,6 @@ DATA: list[dict[str, Any]] = [
             {
                 "vrfs": {
                     "default": {
-                        "routingDisabled": False,
-                        "allRoutesProgrammedHardware": True,
-                        "allRoutesProgrammedKernel": True,
-                        "defaultRouteState": "notSet",
                         "routes": {
                             "10.111.112.0/24": {"routeType": "eBGP", "vias": [{"interface": "Vlan112"}]},
                             "10.111.134.0/24": {
@@ -5371,10 +5359,6 @@ DATA: list[dict[str, Any]] = [
             {
                 "vrfs": {
                     "default": {
-                        "routingDisabled": False,
-                        "allRoutesProgrammedHardware": True,
-                        "allRoutesProgrammedKernel": True,
-                        "defaultRouteState": "notSet",
                         "routes": {
                             "10.111.112.0/24": {"routeType": "eBGP", "vias": [{"interface": "Vlan112"}]},
                             "10.111.134.0/24": {
@@ -5445,10 +5429,6 @@ DATA: list[dict[str, Any]] = [
             {
                 "vrfs": {
                     "default": {
-                        "routingDisabled": False,
-                        "allRoutesProgrammedHardware": True,
-                        "allRoutesProgrammedKernel": True,
-                        "defaultRouteState": "notSet",
                         "routes": {
                             "10.111.112.0/24": {"routeType": "eBGP", "vias": [{"interface": "Vlan112"}]},
                             "10.111.114.0/24": {
@@ -5519,10 +5499,6 @@ DATA: list[dict[str, Any]] = [
             {
                 "vrfs": {
                     "default": {
-                        "routingDisabled": False,
-                        "allRoutesProgrammedHardware": True,
-                        "allRoutesProgrammedKernel": True,
-                        "defaultRouteState": "notSet",
                         "routes": {
                             "10.111.112.0/24": {"routeType": "eBGP", "vias": [{"interface": "Vlan112"}]},
                             "10.111.134.0/24": {
@@ -5536,6 +5512,6 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"route_entries": [{"prefix": "10.111.134.0/24", "vrf": "default", "ecmp_count": 2}]},
-        "expected": {"result": "failure", "messages": ["Prefix: 10.111.134.0/24 VRF: default - nexthops mismatch - BGP: 10.111.1.0, 10.111.2.0, RIB: 10.111.1.0"]},
+        "expected": {"result": "failure", "messages": ["Prefix: 10.111.134.0/24 VRF: default - Nexthops count mismatch - BGP: 2, RIB: 1"]},
     },
 ]

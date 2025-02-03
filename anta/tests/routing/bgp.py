@@ -1705,7 +1705,7 @@ class VerifyBGPRouteECMP(AntaTest):
       1. Route exists in BGP table.
       2. First path is a valid and active ECMP head.
       3. Correct number of valid ECMP contributors follow the head path.
-      4. Route is installed in RIB with matching next-hops.
+      4. Route is installed in RIB with same amount of next-hops.
 
     Expected Results
     ----------------
@@ -1715,7 +1715,7 @@ class VerifyBGPRouteECMP(AntaTest):
         - A valid and active ECMP head is not found.
         - ECMP contributors count does not match the expected value.
         - Route is not installed in RIB table.
-        - BGP and RIB nexthops do not match.
+        - BGP and RIB nexthops count do not match.
 
     Examples
     --------
@@ -1733,7 +1733,7 @@ class VerifyBGPRouteECMP(AntaTest):
     categories: ClassVar[list[str]] = ["bgp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
         AntaCommand(command="show ip bgp vrf all", revision=3),
-        AntaCommand(command="show ip route vrf all", revision=4),
+        AntaCommand(command="show ip route vrf all bgp", revision=4),
     ]
 
     class Input(AntaTest.Input):
@@ -1783,7 +1783,6 @@ class VerifyBGPRouteECMP(AntaTest):
                 self.result.is_failure(f"{route} - prefix not found in routing table")
                 continue
 
-            rib_nexthops = {via["nexthopAddr"] for via in route_entry["vias"] if route_entry["routeType"] in {"iBGP", "eBGP"}}
             # Verify BGP and RIB nexthops are same.
-            if bgp_nexthops != rib_nexthops:
-                self.result.is_failure(f"{route} - nexthops mismatch - BGP: {', '.join(sorted(bgp_nexthops))}, RIB: {', '.join(sorted(rib_nexthops))}")
+            if len(bgp_nexthops) != len(route_entry["vias"]):
+                self.result.is_failure(f"{route} - Nexthops count mismatch - BGP: {len(bgp_nexthops)}, RIB: {len(route_entry['vias'])}")
