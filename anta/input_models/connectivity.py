@@ -11,15 +11,15 @@ from warnings import warn
 
 from pydantic import BaseModel, ConfigDict
 
-from anta.custom_types import Hostname, Interface
+from anta.custom_types import Interface
 
 
 class Host(BaseModel):
     """Model for a remote host to ping."""
 
     model_config = ConfigDict(extra="forbid")
-    destination: IPv4Address | IPv6Address | Hostname
-    """Destination address or hostname to ping."""
+    destination: IPv4Address | IPv6Address
+    """Destination address to ping."""
     source: IPv4Address | IPv6Address | Interface
     """Source address IP or egress interface to use."""
     vrf: str = "default"
