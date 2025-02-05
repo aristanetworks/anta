@@ -96,7 +96,7 @@ class VerifySSHIPv4Acl(AntaTest):
         not_configured_acl = [acl["name"] for acl in ipv4_acl_list if self.inputs.vrf not in acl["configuredVrfs"] or self.inputs.vrf not in acl["activeVrfs"]]
 
         if not_configured_acl:
-            self.result.is_failure(f"SSH IPv4 ACL(s) not configured or active in vrf {self.inputs.vrf}: {not_configured_acl}")
+            self.result.is_failure(f"SSH IPv4 ACL(s) not configured or active in vrf {self.inputs.vrf}: {', '.join(not_configured_acl)}")
         else:
             self.result.is_success()
 
@@ -144,7 +144,7 @@ class VerifySSHIPv6Acl(AntaTest):
         not_configured_acl = [acl["name"] for acl in ipv6_acl_list if self.inputs.vrf not in acl["configuredVrfs"] or self.inputs.vrf not in acl["activeVrfs"]]
 
         if not_configured_acl:
-            self.result.is_failure(f"SSH IPv6 ACL(s) not configured or active in vrf {self.inputs.vrf}: {not_configured_acl}")
+            self.result.is_failure(f"SSH IPv6 ACL(s) not configured or active in vrf {self.inputs.vrf}: {', '.join(not_configured_acl)}")
         else:
             self.result.is_success()
 
@@ -224,7 +224,6 @@ class VerifyAPIHttpsSSL(AntaTest):
     ```
     """
 
-    description = "Verifies if the eAPI has a valid SSL profile."
     categories: ClassVar[list[str]] = ["security"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management api http-commands", revision=1)]
 
@@ -242,10 +241,10 @@ class VerifyAPIHttpsSSL(AntaTest):
             if command_output["sslProfile"]["name"] == self.inputs.profile and command_output["sslProfile"]["state"] == "valid":
                 self.result.is_success()
             else:
-                self.result.is_failure(f"eAPI HTTPS server SSL profile ({self.inputs.profile}) is misconfigured or invalid")
+                self.result.is_failure(f"eAPI HTTPS server SSL profile: {self.inputs.profile} is misconfigured or invalid")
 
         except KeyError:
-            self.result.is_failure(f"eAPI HTTPS server SSL profile ({self.inputs.profile}) is not configured")
+            self.result.is_failure(f"eAPI HTTPS server SSL profile: {self.inputs.profile} is not configured")
 
 
 class VerifyAPIIPv4Acl(AntaTest):
@@ -290,7 +289,7 @@ class VerifyAPIIPv4Acl(AntaTest):
         not_configured_acl = [acl["name"] for acl in ipv4_acl_list if self.inputs.vrf not in acl["configuredVrfs"] or self.inputs.vrf not in acl["activeVrfs"]]
 
         if not_configured_acl:
-            self.result.is_failure(f"eAPI IPv4 ACL(s) not configured or active in vrf {self.inputs.vrf}: {not_configured_acl}")
+            self.result.is_failure(f"eAPI IPv4 ACL(s) not configured or active in vrf {self.inputs.vrf}: {', '.join(not_configured_acl)}")
         else:
             self.result.is_success()
 
@@ -338,7 +337,7 @@ class VerifyAPIIPv6Acl(AntaTest):
         not_configured_acl = [acl["name"] for acl in ipv6_acl_list if self.inputs.vrf not in acl["configuredVrfs"] or self.inputs.vrf not in acl["activeVrfs"]]
 
         if not_configured_acl:
-            self.result.is_failure(f"eAPI IPv6 ACL(s) not configured or active in vrf {self.inputs.vrf}: {not_configured_acl}")
+            self.result.is_failure(f"eAPI IPv6 ACL(s) not configured or active in vrf {self.inputs.vrf}: {', '.join(not_configured_acl)}")
         else:
             self.result.is_success()
 
