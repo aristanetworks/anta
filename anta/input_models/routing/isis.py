@@ -1,7 +1,7 @@
 # Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""Module containing input models for routing ISIS tests."""
+"""Module containing input models for routing IS-IS tests."""
 
 from __future__ import annotations
 
@@ -22,9 +22,9 @@ class ISISInstance(BaseModel):
     vrf: str = "default"
     """VRF context of the IS-IS instance."""
     dataplane: Literal["MPLS", "mpls", "unset"] = "MPLS"
-    """Configured data-plane for the IS-IS instance."""
+    """Configured SR data-plane for the IS-IS instance."""
     segments: list[Segment] | None = None
-    """List of IS-IS segments associated with the instance. Required field in the `VerifyISISSegmentRoutingAdjacencySegments` test."""
+    """List of IS-IS SR segments associated with the instance. Required field in the `VerifyISISSegmentRoutingAdjacencySegments` test."""
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the ISISInstance for reporting."""
