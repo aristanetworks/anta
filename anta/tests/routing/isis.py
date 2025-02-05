@@ -7,25 +7,15 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from typing import Any, ClassVar
+from ipaddress import IPv4Address, IPv4Network
+from typing import Any, ClassVar, Literal
 
-from pydantic import field_validator
+from pydantic import BaseModel, field_validator
 
-from anta.input_models.routing.isis import ISISInstance, ISISInterface, SRTunnelEntry
+from anta.custom_types import Interface
+from anta.input_models.routing.isis import ISISInstance, ISISInterface
 from anta.models import AntaCommand, AntaTemplate, AntaTest
-from anta.tools import get_value
-
-
-def _get_adjacency_segment_data_by_neighbor(neighbor: str, instance: str, vrf: str, command_output: dict[str, Any]) -> dict[str, Any] | None:
-    """Extract data related to an IS-IS interface for testing."""
-    search_path = f"vrfs.{vrf}.isisInstances.{instance}.adjacencySegments"
-    if (isis_instance := get_value(dictionary=command_output, key=search_path, default=None)) is None:
-        return None
-
-    return next(
-        (segment_data for segment_data in isis_instance if neighbor == segment_data["ipAddress"]),
-        None,
-    )
+from anta.tools import get_item, get_value
 
 
 class VerifyISISNeighborState(AntaTest):
@@ -79,7 +69,7 @@ class VerifyISISNeighborState(AntaTest):
                 no_neighbor = False
                 interfaces = [adj["interfaceName"] for neighbor in neighbors.values() for adj in neighbor["adjacencies"] if adj["state"] != "up"]
                 for interface in interfaces:
-                    self.result.is_failure(f"Instance: {isis_instance} VRF: {vrf} Interface: {interface} - Session (adjacency) down")
+                    self.result.is_failure(f"Instance: {isis_instance} VRF: {vrf} Interface: {interface} - Adjacency down")
 
         if no_neighbor:
             self.result.is_skipped("No IS-IS neighbor detected")
@@ -90,7 +80,7 @@ class VerifyISISNeighborCount(AntaTest):
 
     Expected Results
     ----------------
-    * Success: The test will pass if all of the provided IS-IS interfaces have the expected number of neighbors.
+    * Success: The test will pass if all provided IS-IS interfaces have the expected number of neighbors.
     * Failure: The test will fail if any of the provided IS-IS interfaces are not configured or have an incorrect number of neighbors.
     * Skipped: The test will be skipped if IS-IS is not configured.
 
@@ -134,7 +124,7 @@ class VerifyISISNeighborCount(AntaTest):
 
         for interface in self.inputs.interfaces:
             interface_detail = {}
-            vrf_instances = get_value(command_output, f"{interface.vrf}.isisInstances", separator="..")
+            vrf_instances = get_value(command_output, f"{interface.vrf}..isisInstances", default={}, separator="..")
             for instance_data in vrf_instances.values():
                 if interface_data := get_value(instance_data, f"interfaces..{interface.name}..intfLevels..{interface.level}", separator=".."):
                     interface_detail = interface_data
@@ -154,7 +144,7 @@ class VerifyISISInterfaceMode(AntaTest):
 
     Expected Results
     ----------------
-    * Success: The test will pass if the provided IS-IS interfaces are running in the correct mode.
+    * Success: The test will pass if all provided IS-IS interfaces are running in the correct mode.
     * Failure: The test will fail if any of the provided IS-IS interfaces are not configured or running in the incorrect mode.
     * Skipped: The test will be skipped if IS-IS is not configured.
 
@@ -198,7 +188,7 @@ class VerifyISISInterfaceMode(AntaTest):
 
         for interface in self.inputs.interfaces:
             interface_detail = {}
-            vrf_instances = get_value(command_output, f"{interface.vrf}..isisInstances", separator="..")
+            vrf_instances = get_value(command_output, f"{interface.vrf}..isisInstances", default={}, separator="..")
             for instance_data in vrf_instances.values():
                 if interface_data := get_value(instance_data, f"interfaces..{interface.name}", separator=".."):
                     interface_detail = interface_data
@@ -220,13 +210,18 @@ class VerifyISISInterfaceMode(AntaTest):
 
 
 class VerifyISISSegmentRoutingAdjacencySegments(AntaTest):
-    """Verifies the ISIS SR Adjacency Segments.
+    """Verifies IS-IS segment routing adjacency segments.
+
+    !!! warning "IS-IS SR Limitation"
+        As of EOS 4.33.1F, IS-IS SR is supported only in the default VRF.
+        Please refer to the IS-IS Segment Routing [documentation](https://www.arista.com/en/support/toi/eos-4-17-0f/13789-isis-segment-routing)
+        for more information.
 
     Expected Results
     ----------------
-    * Success: The test will pass if all listed interfaces have correct adjacencies.
-    * Failure: The test will fail if any of the listed interfaces has not expected list of adjacencies.
-    * Skipped: The test will be skipped if no ISIS SR Adjacency is found.
+    * Success: The test will pass if all provided IS-IS instances have the correct adjacency segments.
+    * Failure: The test will fail if any of the provided IS-IS instances have no adjacency segments or incorrect segments.
+    * Skipped: The test will be skipped if IS-IS is not configured.
 
     Examples
     --------
@@ -260,7 +255,7 @@ class VerifyISISSegmentRoutingAdjacencySegments(AntaTest):
             """Validate that 'vrf' field is 'default' in each IS-IS instance."""
             for instance in instances:
                 if instance.vrf != "default":
-                    msg = f"{instance} 'vrf' field must be 'default'. As of EOS 4.33.1F, IS-IS SR is supported only in default VRF."
+                    msg = f"{instance} 'vrf' field must be 'default'"
                     raise ValueError(msg)
             return instances
 
@@ -269,63 +264,43 @@ class VerifyISISSegmentRoutingAdjacencySegments(AntaTest):
         """Main test function for VerifyISISSegmentRoutingAdjacencySegments."""
         self.result.is_success()
 
-        command_output = self.instance_commands[0].json_output
-        if len(command_output["vrfs"]) == 0:
-            self.result.is_skipped("No IS-IS neighbor detected")
+        # Verify if IS-IS is configured
+        if not (command_output := self.instance_commands[0].json_output["vrfs"]):
+            self.result.is_skipped("IS-IS not configured")
             return
 
-        # Check if VRFs and instances are present in output.
         for instance in self.inputs.instances:
-            vrf_data = get_value(
-                dictionary=command_output,
-                key=f"vrfs.{instance.vrf}",
-                default=None,
-            )
-            if vrf_data is None:
-                self.result.is_failure(f"{instance} - VRF not configured")
+            if not (act_segments := get_value(command_output, f"{instance.vrf}..isisInstances..{instance.name}..adjacencySegments", default=[], separator="..")):
+                self.result.is_failure(f"{instance} - No adjacency segments found")
                 continue
 
-            if get_value(dictionary=vrf_data, key=f"isisInstances.{instance.name}", default=None) is None:
-                self.result.is_failure(f"{instance} - Not configured")
-                continue
-
-            for input_segment in instance.segments:
-                eos_segment = _get_adjacency_segment_data_by_neighbor(
-                    neighbor=str(input_segment.address),
-                    instance=instance.name,
-                    vrf=instance.vrf,
-                    command_output=command_output,
-                )
-                if eos_segment is None:
-                    self.result.is_failure(f"{instance} {input_segment} - Segment not configured")
+            for segment in instance.segments:
+                if (act_segment := get_item(act_segments, "ipAddress", str(segment.address))) is None:
+                    self.result.is_failure(f"{instance} {segment} - Adjacency segment not found")
                     continue
 
-                if (act_origin := eos_segment["sidOrigin"]) != input_segment.sid_origin:
-                    self.result.is_failure(
-                        f"{instance} {input_segment} - Incorrect Segment Identifier origin - Expected: {input_segment.sid_origin} Actual: {act_origin}"
-                    )
+                # Check SID origin
+                if (act_origin := act_segment["sidOrigin"]) != segment.sid_origin:
+                    self.result.is_failure(f"{instance} {segment} - Incorrect SID origin - Expected: {segment.sid_origin} Actual: {act_origin}")
 
-                if (actual_level := eos_segment["level"]) != input_segment.level:
-                    self.result.is_failure(f"{instance} {input_segment} - Incorrect IS-IS level - Expected: {input_segment.level} Actual: {actual_level}")
+                # Check IS-IS level
+                if (actual_level := act_segment["level"]) != segment.level:
+                    self.result.is_failure(f"{instance} {segment} - Incorrect IS-IS level - Expected: {segment.level} Actual: {actual_level}")
 
 
 class VerifyISISSegmentRoutingDataplane(AntaTest):
-    """Verifies the Dataplane of ISIS-SR Instances.
+    """Verifies IS-IS segment routing data-plane configuration.
 
-    This test performs the following checks:
-
-      1. Validates that listed ISIS-SR instance exists.
-      2. Validates the configured dataplane matches the expected value for each instance.
+    !!! warning "IS-IS SR Limitation"
+        As of EOS 4.33.1F, IS-IS SR is supported only in the default VRF.
+        Please refer to the IS-IS Segment Routing [documentation](https://www.arista.com/en/support/toi/eos-4-17-0f/13789-isis-segment-routing)
+        for more information.
 
     Expected Results
     ----------------
-    * Success: If all of the following occur:
-        - All specified ISIS-SR instances are configured.
-        - Each instance has the correct dataplane.
-    * Failure: If any of the following occur:
-        - Any specified ISIS-SR instance is not configured.
-        - Any instance has an incorrect dataplane configuration.
-    * Skipped: The test will be skipped if no IS-IS neighbor is found.
+    * Success: The test will pass if all provided IS-IS instances have the correct data-plane configured.
+    * Failure: The test will fail if any of the provided IS-IS instances have an incorrect data-plane configured.
+    * Skipped: The test will be skipped if IS-IS is not configured.
 
     Examples
     --------
@@ -347,7 +322,7 @@ class VerifyISISSegmentRoutingDataplane(AntaTest):
         """Input model for the VerifyISISSegmentRoutingDataplane test."""
 
         instances: list[ISISInstance]
-        """list of ISIS instances with their information."""
+        """List of IS-IS instances with their information."""
         IsisInstance: ClassVar[type[ISISInstance]] = ISISInstance
 
         @field_validator("instances")
@@ -356,7 +331,7 @@ class VerifyISISSegmentRoutingDataplane(AntaTest):
             """Validate that 'vrf' field is 'default' in each IS-IS instance."""
             for instance in instances:
                 if instance.vrf != "default":
-                    msg = f"{instance} 'vrf' field must be 'default'. As of EOS 4.33.1F, IS-IS SR is supported only in default VRF."
+                    msg = f"{instance} 'vrf' field must be 'default'"
                     raise ValueError(msg)
             return instances
 
@@ -365,18 +340,18 @@ class VerifyISISSegmentRoutingDataplane(AntaTest):
         """Main test function for VerifyISISSegmentRoutingDataplane."""
         self.result.is_success()
 
+        # Verify if IS-IS is configured
         if not (command_output := self.instance_commands[0].json_output["vrfs"]):
-            self.result.is_skipped("No IS-IS neighbor detected")
+            self.result.is_skipped("IS-IS not configured")
             return
 
-        # Check if VRFs and instances are present in output.
         for instance in self.inputs.instances:
             if not (instance_data := get_value(command_output, f"{instance.vrf}..isisInstances..{instance.name}", separator="..")):
                 self.result.is_failure(f"{instance} - Not configured")
                 continue
 
-            if instance.dataplane.upper() != (plane := instance_data["dataPlane"]):
-                self.result.is_failure(f"{instance} - Dataplane not correctly configured - Expected: {instance.dataplane.upper()} Actual: {plane}")
+            if instance.dataplane.upper() != (dataplane := instance_data["dataPlane"]):
+                self.result.is_failure(f"{instance} - Data-plane not correctly configured - Expected: {instance.dataplane.upper()} Actual: {dataplane}")
 
 
 class VerifyISISSegmentRoutingTunnels(AntaTest):
@@ -416,12 +391,32 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyISISSegmentRoutingTunnels test."""
 
-        entries: list[SRTunnelEntry]
+        entries: list[Entry]
         """List of tunnels to check on device."""
 
-    def _eos_entry_lookup(self, search_value: str, entries: dict[str, Any], search_key: str = "endpoint") -> dict[str, Any] | None:
+        class Entry(BaseModel):
+            """Definition of a tunnel entry."""
+
+            endpoint: IPv4Network
+            """Endpoint IP of the tunnel."""
+            vias: list[Vias] | None = None
+            """Optional list of path to reach endpoint."""
+
+            class Vias(BaseModel):
+                """Definition of a tunnel path."""
+
+                nexthop: IPv4Address | None = None
+                """Nexthop of the tunnel. If None, then it is not tested. Default: None"""
+                type: Literal["ip", "tunnel"] | None = None
+                """Type of the tunnel. If None, then it is not tested. Default: None"""
+                interface: Interface | None = None
+                """Interface of the tunnel. If None, then it is not tested. Default: None"""
+                tunnel_id: Literal["TI-LFA", "ti-lfa", "unset"] | None = None
+                """Computation method of the tunnel. If None, then it is not tested. Default: None"""
+
+    def _eos_entry_lookup(self, search_value: IPv4Network, entries: dict[str, Any], search_key: str = "endpoint") -> dict[str, Any] | None:
         return next(
-            (entry_value for entry_id, entry_value in entries.items() if str(entry_value[search_key]) == search_value),
+            (entry_value for entry_id, entry_value in entries.items() if str(entry_value[search_key]) == str(search_value)),
             None,
         )
 
@@ -435,32 +430,41 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
         command_output = self.instance_commands[0].json_output
         self.result.is_success()
 
+        # initiate defaults
+        failure_message = []
+
         if len(command_output["entries"]) == 0:
             self.result.is_skipped("IS-IS-SR is not running on device.")
             return
 
         for input_entry in self.inputs.entries:
-            eos_entry = self._eos_entry_lookup(search_value=str(input_entry.endpoint), entries=command_output["entries"])
+            eos_entry = self._eos_entry_lookup(search_value=input_entry.endpoint, entries=command_output["entries"])
             if eos_entry is None:
-                self.result.is_failure(f"{input_entry} - Tunnel not found")
+                failure_message.append(f"Tunnel to {input_entry} is not found.")
             elif input_entry.vias is not None:
+                failure_src = []
                 for via_input in input_entry.vias:
                     if not self._check_tunnel_type(via_input, eos_entry):
-                        self.result.is_failure(f"{input_entry} {via_input} - incorrect tunnel type")
+                        failure_src.append("incorrect tunnel type")
                     if not self._check_tunnel_nexthop(via_input, eos_entry):
-                        self.result.is_failure(f"{input_entry} {via_input} - incorrect nexthop")
+                        failure_src.append("incorrect nexthop")
                     if not self._check_tunnel_interface(via_input, eos_entry):
-                        self.result.is_failure(f"{input_entry} {via_input} - incorrect interface")
+                        failure_src.append("incorrect interface")
                     if not self._check_tunnel_id(via_input, eos_entry):
-                        self.result.is_failure(f"{input_entry} {via_input} - incorrect tunnel ID")
+                        failure_src.append("incorrect tunnel ID")
 
-    def _check_tunnel_type(self, via_input: dict[str, Any], eos_entry: dict[str, Any]) -> bool:
+                if failure_src:
+                    failure_message.append(f"Tunnel to {input_entry.endpoint!s} is incorrect: {', '.join(failure_src)}")
+
+        if failure_message:
+            self.result.is_failure("\n".join(failure_message))
+
+    def _check_tunnel_type(self, via_input: VerifyISISSegmentRoutingTunnels.Input.Entry.Vias, eos_entry: dict[str, Any]) -> bool:
         """Check if the tunnel type specified in `via_input` matches any of the tunnel types in `eos_entry`.
 
         Parameters
         ----------
-        via_input : dict[str, Any]
-            VerifyISISSegmentRoutingTunnels.Input.Entry.Vias
+        via_input : VerifyISISSegmentRoutingTunnels.Input.Entry.Vias
             The input tunnel type to check.
         eos_entry : dict[str, Any]
             The EOS entry containing the tunnel types.
@@ -482,13 +486,12 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
             )
         return True
 
-    def _check_tunnel_nexthop(self, via_input: dict[str, Any], eos_entry: dict[str, Any]) -> bool:
+    def _check_tunnel_nexthop(self, via_input: VerifyISISSegmentRoutingTunnels.Input.Entry.Vias, eos_entry: dict[str, Any]) -> bool:
         """Check if the tunnel nexthop matches the given input.
 
         Parameters
         ----------
-        via_input : dict[str, Any]
-            VerifyISISSegmentRoutingTunnels.Input.Entry.Vias
+        via_input : VerifyISISSegmentRoutingTunnels.Input.Entry.Vias
             The input via object.
         eos_entry : dict[str, Any]
             The EOS entry dictionary.
@@ -510,13 +513,12 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
             )
         return True
 
-    def _check_tunnel_interface(self, via_input: dict[str, Any], eos_entry: dict[str, Any]) -> bool:
+    def _check_tunnel_interface(self, via_input: VerifyISISSegmentRoutingTunnels.Input.Entry.Vias, eos_entry: dict[str, Any]) -> bool:
         """Check if the tunnel interface exists in the given EOS entry.
 
         Parameters
         ----------
-        via_input : dict[str, Any]
-            VerifyISISSegmentRoutingTunnels.Input.Entry.Vias
+        via_input : VerifyISISSegmentRoutingTunnels.Input.Entry.Vias
             The input via object.
         eos_entry : dict[str, Any]
             The EOS entry dictionary.
@@ -538,13 +540,12 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
             )
         return True
 
-    def _check_tunnel_id(self, via_input: dict[str, Any], eos_entry: dict[str, Any]) -> bool:
+    def _check_tunnel_id(self, via_input: VerifyISISSegmentRoutingTunnels.Input.Entry.Vias, eos_entry: dict[str, Any]) -> bool:
         """Check if the tunnel ID matches any of the tunnel IDs in the EOS entry's vias.
 
         Parameters
         ----------
-        via_input : dict[str, Any]
-            VerifyISISSegmentRoutingTunnels.Input.Entry.Vias
+        via_input : VerifyISISSegmentRoutingTunnels.Input.Entry.Vias
             The input vias to check.
         eos_entry : dict[str, Any])
             The EOS entry to compare against.
