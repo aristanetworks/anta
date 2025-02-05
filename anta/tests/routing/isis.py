@@ -86,13 +86,13 @@ class VerifyISISNeighborState(AntaTest):
 
 
 class VerifyISISNeighborCount(AntaTest):
-    """Verifies the number of IS-IS neighbors per level and per interface.
+    """Verifies the number of IS-IS neighbors per interface and level.
 
     Expected Results
     ----------------
-    * Success: The test will pass if the number of neighbors is correct.
-    * Failure: The test will fail if the number of neighbors is incorrect.
-    * Skipped: The test will be skipped if IS-IS is not configured or no IS-IS neighbor is found.
+    * Success: The test will pass if all of the provided IS-IS interfaces have the expected number of neighbors.
+    * Failure: The test will fail if any of the provided IS-IS interfaces are not configured or have an incorrect number of neighbors.
+    * Skipped: The test will be skipped if IS-IS is not configured.
 
     Examples
     --------
@@ -150,13 +150,13 @@ class VerifyISISNeighborCount(AntaTest):
 
 
 class VerifyISISInterfaceMode(AntaTest):
-    """Verifies the IS-IS interface mode.
+    """Verifies IS-IS interfaces are running in the correct mode.
 
     Expected Results
     ----------------
-    * Success: The test will pass if all listed interfaces are running in the correct mode.
-    * Failure: The test will fail if any of the listed interfaces are not running in the correct mode.
-    * Skipped: The test will be skipped if IS-IS is not configured or no IS-IS neighbor is found.
+    * Success: The test will pass if the provided IS-IS interfaces are running in the correct mode.
+    * Failure: The test will fail if any of the provided IS-IS interfaces are not configured or running in the incorrect mode.
+    * Skipped: The test will be skipped if IS-IS is not configured.
 
     Examples
     --------

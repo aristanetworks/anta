@@ -595,7 +595,7 @@ anta.tests.routing.generic:
       maximum: 20
 anta.tests.routing.isis:
   - VerifyISISInterfaceMode:
-      # Verifies the IS-IS interface mode.
+      # Verifies IS-IS interfaces are running in the correct mode.
       interfaces:
         - name: Loopback0
           mode: passive
@@ -606,7 +606,7 @@ anta.tests.routing.isis:
           mode: point-to-point
           vrf: PROD
   - VerifyISISNeighborCount:
-      # Verifies the number of IS-IS neighbors per level and per interface.
+      # Verifies the number of IS-IS neighbors per interface and level.
       interfaces:
         - name: Ethernet1
           level: 1
