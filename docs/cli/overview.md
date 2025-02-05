@@ -2,7 +2,7 @@
 anta_title: Overview of ANTA's Command-Line Interface (CLI)
 ---
 <!--
-  ~ Copyright (c) 2023-2024 Arista Networks, Inc.
+  ~ Copyright (c) 2023-2025 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
   ~ that can be found in the LICENSE file.
   -->
@@ -45,9 +45,10 @@ Then, run the CLI without options:
 anta nrfu
 ```
 
-!!! note
-    All environment variables may not be needed for every commands.
-    Refer to `<command> --help` for the comprehensive environment variables names.
+> [!NOTE]
+> All environment variables may not be needed for every commands.
+>
+> Refer to `<command> --help` for the comprehensive environment variables names.
 
 Below are the environment variables usable with the `anta nrfu` command:
 
@@ -63,8 +64,8 @@ Below are the environment variables usable with the `anta nrfu` command:
 | ANTA_ENABLE | Whether it is necessary to go to enable mode on devices. |  No  |
 | ANTA_ENABLE_PASSWORD | The optional enable password, when this variable is set, ANTA_ENABLE or `--enable` is required. |  No  |
 
-!!! info
-    Caching can be disabled with the global parameter `--disable-cache`. For more details about how caching is implemented in ANTA, please refer to [Caching in ANTA](../advanced_usages/caching.md).
+> [!NOTE]
+> Caching can be disabled with the global parameter `--disable-cache`. For more details about how caching is implemented in ANTA, please refer to [Caching in ANTA](../advanced_usages/caching.md).
 
 ## ANTA Exit Codes
 

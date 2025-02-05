@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module related to OSPF tests."""
@@ -109,8 +109,6 @@ class VerifyOSPFNeighborState(AntaTest):
     ```
     """
 
-    name = "VerifyOSPFNeighborState"
-    description = "Verifies all OSPF neighbors are in FULL state."
     categories: ClassVar[list[str]] = ["ospf"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip ospf neighbor", revision=1)]
 
@@ -146,8 +144,6 @@ class VerifyOSPFNeighborCount(AntaTest):
     ```
     """
 
-    name = "VerifyOSPFNeighborCount"
-    description = "Verifies the number of OSPF neighbors in FULL state is the one we expect."
     categories: ClassVar[list[str]] = ["ospf"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip ospf neighbor", revision=1)]
 
@@ -190,7 +186,6 @@ class VerifyOSPFMaxLSA(AntaTest):
     ```
     """
 
-    name = "VerifyOSPFMaxLSA"
     description = "Verifies all OSPF instances did not cross the maximum LSA threshold."
     categories: ClassVar[list[str]] = ["ospf"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip ospf", revision=1)]

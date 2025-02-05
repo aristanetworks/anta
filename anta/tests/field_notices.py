@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module related to field notices tests."""
@@ -34,7 +34,6 @@ class VerifyFieldNotice44Resolution(AntaTest):
     ```
     """
 
-    name = "VerifyFieldNotice44Resolution"
     description = "Verifies that the device is using the correct Aboot version per FN0044."
     categories: ClassVar[list[str]] = ["field notices"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show version detail", revision=1)]
@@ -110,15 +109,11 @@ class VerifyFieldNotice44Resolution(AntaTest):
 
         self.result.is_success()
         incorrect_aboot_version = (
-            aboot_version.startswith("4.0.")
-            and int(aboot_version.split(".")[2]) < 7
-            or aboot_version.startswith("4.1.")
-            and int(aboot_version.split(".")[2]) < 1
+            (aboot_version.startswith("4.0.") and int(aboot_version.split(".")[2]) < 7)
+            or (aboot_version.startswith("4.1.") and int(aboot_version.split(".")[2]) < 1)
             or (
-                aboot_version.startswith("6.0.")
-                and int(aboot_version.split(".")[2]) < 9
-                or aboot_version.startswith("6.1.")
-                and int(aboot_version.split(".")[2]) < 7
+                (aboot_version.startswith("6.0.") and int(aboot_version.split(".")[2]) < 9)
+                or (aboot_version.startswith("6.1.") and int(aboot_version.split(".")[2]) < 7)
             )
         )
         if incorrect_aboot_version:
@@ -143,7 +138,6 @@ class VerifyFieldNotice72Resolution(AntaTest):
     ```
     """
 
-    name = "VerifyFieldNotice72Resolution"
     description = "Verifies if the device is exposed to FN0072, and if the issue has been mitigated."
     categories: ClassVar[list[str]] = ["field notices"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show version detail", revision=1)]

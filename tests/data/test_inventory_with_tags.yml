@@ -3,7 +3,7 @@ anta_inventory:
   hosts:
     - name: leaf1
       host: leaf1.anta.arista.com
-      tags: ["leaf"]
+      tags: ["leaf", "dc1"]
     - name: leaf2
       host: leaf2.anta.arista.com
       tags: ["leaf"]

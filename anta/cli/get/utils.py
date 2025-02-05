@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Utils functions to use with anta.cli.get.commands module."""
@@ -6,8 +6,14 @@
 from __future__ import annotations
 
 import functools
+import importlib
+import inspect
 import json
 import logging
+import pkgutil
+import re
+import sys
+import textwrap
 from pathlib import Path
 from sys import stdin
 from typing import Any, Callable
@@ -17,9 +23,11 @@ import requests
 import urllib3
 import yaml
 
+from anta.cli.console import console
 from anta.cli.utils import ExitCode
 from anta.inventory import AntaInventory
 from anta.inventory.models import AntaInventoryHost, AntaInventoryInput
+from anta.models import AntaTest
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -114,11 +122,28 @@ def get_cv_token(cvp_ip: str, cvp_username: str, cvp_password: str, *, verify_ce
 
 
 def write_inventory_to_file(hosts: list[AntaInventoryHost], output: Path) -> None:
-    """Write a file inventory from pydantic models."""
+    """Write a file inventory from pydantic models.
+
+    Parameters
+    ----------
+    hosts:
+        the list of AntaInventoryHost to write to an inventory file
+    output:
+        the Path where the inventory should be written.
+
+    Raises
+    ------
+    OSError
+        When anything goes wrong while writing the file.
+    """
     i = AntaInventoryInput(hosts=hosts)
-    with output.open(mode="w", encoding="UTF-8") as out_fd:
-        out_fd.write(yaml.dump({AntaInventory.INVENTORY_ROOT_KEY: yaml.safe_load(i.yaml())}))
-    logger.info("ANTA inventory file has been created: '%s'", output)
+    try:
+        with output.open(mode="w", encoding="UTF-8") as out_fd:
+            out_fd.write(yaml.dump({AntaInventory.INVENTORY_ROOT_KEY: yaml.safe_load(i.yaml())}))
+        logger.info("ANTA inventory file has been created: '%s'", output)
+    except OSError as exc:
+        msg = f"Could not write inventory to path '{output}'."
+        raise OSError(msg) from exc
 
 
 def create_inventory_from_cvp(inv: list[dict[str, Any]], output: Path) -> None:
@@ -204,3 +229,148 @@ def create_inventory_from_ansible(inventory: Path, output: Path, ansible_group: 
         raise ValueError(msg)
     ansible_hosts = deep_yaml_parsing(ansible_inventory)
     write_inventory_to_file(ansible_hosts, output)
+
+
+def explore_package(module_name: str, test_name: str | None = None, *, short: bool = False, count: bool = False) -> int:
+    """Parse ANTA test submodules recursively and print AntaTest examples.
+
+    Parameters
+    ----------
+    module_name
+        Name of the module to explore (e.g., 'anta.tests.routing.bgp').
+    test_name
+        If provided, only show tests starting with this name.
+    short
+        If True, only print test names without their inputs.
+    count
+        If True, only count the tests.
+
+    Returns
+    -------
+    int:
+        The number of tests found.
+    """
+    try:
+        module_spec = importlib.util.find_spec(module_name)
+    except ModuleNotFoundError:
+        # Relying on module_spec check below.
+        module_spec = None
+    except ImportError as e:
+        msg = "`anta get tests --module <module>` does not support relative imports"
+        raise ValueError(msg) from e
+
+    # Giving a second chance adding CWD to PYTHONPATH
+    if module_spec is None:
+        try:
+            logger.info("Could not find module `%s`, injecting CWD in PYTHONPATH and retrying...", module_name)
+            sys.path = [str(Path.cwd()), *sys.path]
+            module_spec = importlib.util.find_spec(module_name)
+        except ImportError:
+            module_spec = None
+
+    if module_spec is None or module_spec.origin is None:
+        msg = f"Module `{module_name}` was not found!"
+        raise ValueError(msg)
+
+    tests_found = 0
+    if module_spec.submodule_search_locations:
+        for _, sub_module_name, ispkg in pkgutil.walk_packages(module_spec.submodule_search_locations):
+            qname = f"{module_name}.{sub_module_name}"
+            if ispkg:
+                tests_found += explore_package(qname, test_name=test_name, short=short, count=count)
+                continue
+            tests_found += find_tests_examples(qname, test_name, short=short, count=count)
+
+    else:
+        tests_found += find_tests_examples(module_spec.name, test_name, short=short, count=count)
+
+    return tests_found
+
+
+def find_tests_examples(qname: str, test_name: str | None, *, short: bool = False, count: bool = False) -> int:
+    """Print tests from `qname`, filtered by `test_name` if provided.
+
+    Parameters
+    ----------
+    qname
+        Name of the module to explore (e.g., 'anta.tests.routing.bgp').
+    test_name
+        If provided, only show tests starting with this name.
+    short
+        If True, only print test names without their inputs.
+    count
+        If True, only count the tests.
+
+    Returns
+    -------
+    int:
+        The number of tests found.
+    """
+    try:
+        qname_module = importlib.import_module(qname)
+    except (AssertionError, ImportError) as e:
+        msg = f"Error when importing `{qname}` using importlib!"
+        raise ValueError(msg) from e
+
+    module_printed = False
+    tests_found = 0
+
+    for _name, obj in inspect.getmembers(qname_module):
+        # Only retrieves the subclasses of AntaTest
+        if not inspect.isclass(obj) or not issubclass(obj, AntaTest) or obj == AntaTest:
+            continue
+        if test_name and not obj.name.startswith(test_name):
+            continue
+        if not module_printed:
+            if not count:
+                console.print(f"{qname}:")
+            module_printed = True
+        tests_found += 1
+        if count:
+            continue
+        print_test(obj, short=short)
+
+    return tests_found
+
+
+def print_test(test: type[AntaTest], *, short: bool = False) -> None:
+    """Print a single test.
+
+    Parameters
+    ----------
+    test
+        the representation of the AntaTest as returned by inspect.getmembers
+    short
+        If True, only print test names without their inputs.
+    """
+    if not test.__doc__ or (example := extract_examples(test.__doc__)) is None:
+        msg = f"Test {test.name} in module {test.__module__} is missing an Example"
+        raise LookupError(msg)
+    # Picking up only the inputs in the examples
+    # Need to handle the fact that we nest the routing modules in Examples.
+    # This is a bit fragile.
+    inputs = example.split("\n")
+    try:
+        test_name_line = next((i for i, input_entry in enumerate(inputs) if test.name in input_entry))
+    except StopIteration as e:
+        msg = f"Could not find the name of the test '{test.name}' in the Example section in the docstring."
+        raise ValueError(msg) from e
+    # TODO: handle not found
+    console.print(f"  {inputs[test_name_line].strip()}")
+    # Injecting the description
+    console.print(f"      # {test.description}", soft_wrap=True)
+    if not short and len(inputs) > test_name_line + 2:  # There are params
+        console.print(textwrap.indent(textwrap.dedent("\n".join(inputs[test_name_line + 1 : -1])), " " * 6))
+
+
+def extract_examples(docstring: str) -> str | None:
+    """Extract the content of the Example section in a Numpy docstring.
+
+    Returns
+    -------
+    str | None
+        The content of the section if present, None if the section is absent or empty.
+    """
+    pattern = r"Examples\s*--------\s*(.*)(?:\n\s*\n|\Z)"
+    match = re.search(pattern, docstring, flags=re.DOTALL)
+    return match[1].strip() if match and match[1].strip() != "" else None

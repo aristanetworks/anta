@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Click commands to execute various scripts on EOS devices."""
@@ -84,7 +84,10 @@ def snapshot(inventory: AntaInventory, tags: set[str] | None, commands_list: Pat
 )
 @click.option(
     "--configure",
-    help="Ensure devices have 'aaa authorization exec default local' configured (required for SCP on EOS). THIS WILL CHANGE THE CONFIGURATION OF YOUR NETWORK.",
+    help=(
+        "[DEPRECATED] Ensure devices have 'aaa authorization exec default local' configured (required for SCP on EOS). "
+        "THIS WILL CHANGE THE CONFIGURATION OF YOUR NETWORK."
+    ),
     default=False,
     is_flag=True,
     show_default=True,

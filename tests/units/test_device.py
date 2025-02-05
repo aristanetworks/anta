@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """test anta.device.py."""
@@ -6,13 +6,15 @@
 from __future__ import annotations
 
 import asyncio
+from contextlib import AbstractContextManager
+from contextlib import nullcontext as does_not_raise
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 from unittest.mock import patch
 
 import pytest
 from asyncssh import SSHClientConnection, SSHClientConnectionOptions
-from httpx import ConnectError, HTTPError
+from httpx import ConnectError, HTTPError, TimeoutException
 from rich import print as rprint
 
 from anta.device import AntaDevice, AsyncEOSDevice
@@ -24,13 +26,37 @@ if TYPE_CHECKING:
     from _pytest.mark.structures import ParameterSet
 
 INIT_PARAMS: list[ParameterSet] = [
-    pytest.param({"host": "42.42.42.42", "username": "anta", "password": "anta"}, {"name": "42.42.42.42"}, id="no name, no port"),
-    pytest.param({"host": "42.42.42.42", "username": "anta", "password": "anta", "port": 666}, {"name": "42.42.42.42:666"}, id="no name, port"),
+    pytest.param({"host": "42.42.42.42", "username": "anta", "password": "anta"}, {"name": "42.42.42.42"}, does_not_raise(), id="no name, no port"),
+    pytest.param({"host": "42.42.42.42", "username": "anta", "password": "anta", "port": 666}, {"name": "42.42.42.42:666"}, does_not_raise(), id="no name, port"),
     pytest.param(
-        {"host": "42.42.42.42", "username": "anta", "password": "anta", "name": "test.anta.ninja", "disable_cache": True}, {"name": "test.anta.ninja"}, id="name"
+        {"host": "42.42.42.42", "username": "anta", "password": "anta", "name": "test.anta.ninja", "disable_cache": True},
+        {"name": "test.anta.ninja"},
+        does_not_raise(),
+        id="name",
     ),
     pytest.param(
-        {"host": "42.42.42.42", "username": "anta", "password": "anta", "name": "test.anta.ninja", "insecure": True}, {"name": "test.anta.ninja"}, id="insecure"
+        {"host": "42.42.42.42", "username": "anta", "password": "anta", "name": "test.anta.ninja", "insecure": True},
+        {"name": "test.anta.ninja"},
+        does_not_raise(),
+        id="insecure",
+    ),
+    pytest.param(
+        {"host": None, "username": "anta", "password": "anta", "name": "test.anta.ninja"},
+        None,
+        pytest.raises(ValueError, match="'host' is required to create an AsyncEOSDevice"),
+        id="host is None",
+    ),
+    pytest.param(
+        {"host": "42.42.42.42", "username": None, "password": "anta", "name": "test.anta.ninja"},
+        None,
+        pytest.raises(ValueError, match="'username' is required to instantiate device 'test.anta.ninja'"),
+        id="username is None",
+    ),
+    pytest.param(
+        {"host": "42.42.42.42", "username": "anta", "password": None, "name": "test.anta.ninja"},
+        None,
+        pytest.raises(ValueError, match="'password' is required to instantiate device 'test.anta.ninja'"),
+        id="password is None",
     ),
 ]
 EQUALITY_PARAMS: list[ParameterSet] = [
@@ -48,7 +74,10 @@ EQUALITY_PARAMS: list[ParameterSet] = [
         id="not-equal-port",
     ),
     pytest.param(
-        {"host": "42.42.42.41", "username": "anta", "password": "anta"}, {"host": "42.42.42.42", "username": "anta", "password": "anta"}, False, id="not-equal-host"
+        {"host": "42.42.42.41", "username": "anta", "password": "anta"},
+        {"host": "42.42.42.42", "username": "anta", "password": "anta"},
+        False,
+        id="not-equal-host",
     ),
 ]
 ASYNCEAPI_COLLECT_PARAMS: list[ParameterSet] = [
@@ -287,7 +316,58 @@ ASYNCEAPI_COLLECT_PARAMS: list[ParameterSet] = [
             },
         },
         {"output": None, "errors": ["Authorization denied for command 'show version'"]},
-        id="asynceapi.EapiCommandError",
+        id="asynceapi.EapiCommandError - Authorization denied",
+    ),
+    pytest.param(
+        {},
+        {
+            "command": "show version",
+            "patch_kwargs": {
+                "side_effect": EapiCommandError(
+                    passed=[],
+                    failed="show version",
+                    errors=["not supported on this hardware platform"],
+                    errmsg="Invalid command",
+                    not_exec=[],
+                )
+            },
+        },
+        {"output": None, "errors": ["not supported on this hardware platform"]},
+        id="asynceapi.EapiCommandError - not supported",
+    ),
+    pytest.param(
+        {},
+        {
+            "command": "show version",
+            "patch_kwargs": {
+                "side_effect": EapiCommandError(
+                    passed=[],
+                    failed="show version",
+                    errors=["BGP inactive"],
+                    errmsg="Invalid command",
+                    not_exec=[],
+                )
+            },
+        },
+        {"output": None, "errors": ["BGP inactive"]},
+        id="asynceapi.EapiCommandError - known EOS error",
+    ),
+    pytest.param(
+        {},
+        {
+            "command": "show version",
+            "patch_kwargs": {
+                "side_effect": EapiCommandError(
+                    passed=[],
+                    failed="show version",
+                    errors=["Invalid input (privileged mode required)"],
+                    errmsg="Invalid command",
+                    not_exec=[],
+                )
+            },
+        },
+        {"output": None, "errors": ["Invalid input (privileged mode required)"]},
+        id="asynceapi.EapiCommandError - requires privileges",
     ),
     pytest.param(
         {},
@@ -300,6 +380,12 @@ ASYNCEAPI_COLLECT_PARAMS: list[ParameterSet] = [
         {"command": "show version", "patch_kwargs": {"side_effect": ConnectError("Cannot open port")}},
         {"output": None, "errors": ["ConnectError: Cannot open port"]},
         id="httpx.ConnectError",
+    ),
+    pytest.param(
+        {},
+        {"command": "show version", "patch_kwargs": {"side_effect": TimeoutException("Test")}},
+        {"output": None, "errors": ["TimeoutException: Test"]},
+        id="httpx.TimeoutException",
     ),
 ]
 ASYNCEAPI_COPY_PARAMS: list[ParameterSet] = [
@@ -503,11 +589,11 @@ class TestAntaDevice:
                 if expected["cache_hit"] is True:
                     assert cmd.output == cached_output
                     assert current_cached_data == cached_output
-                    assert device.cache.hit_miss_ratio["hits"] == 2
+                    assert device.cache.stats["hits"] == 2
                 else:
                     assert cmd.output == COMMAND_OUTPUT
                     assert current_cached_data == COMMAND_OUTPUT
-                    assert device.cache.hit_miss_ratio["hits"] == 1
+                    assert device.cache.stats["hits"] == 1
             else:  # command is not allowed to use cache
                 device._collect.assert_called_once_with(command=cmd, collection_id=None)  # type: ignore[attr-defined]
                 assert cmd.output == COMMAND_OUTPUT
@@ -531,22 +617,24 @@ class TestAntaDevice:
 class TestAsyncEOSDevice:
     """Test for anta.device.AsyncEOSDevice."""
 
-    @pytest.mark.parametrize(("device", "expected"), INIT_PARAMS)
-    def test__init__(self, device: dict[str, Any], expected: dict[str, Any]) -> None:
+    @pytest.mark.parametrize(("device", "expected", "expected_raise"), INIT_PARAMS)
+    def test__init__(self, device: dict[str, Any], expected: dict[str, Any] | None, expected_raise: AbstractContextManager[Exception]) -> None:
         """Test the AsyncEOSDevice constructor."""
-        dev = AsyncEOSDevice(**device)
+        with expected_raise:
+            dev = AsyncEOSDevice(**device)
 
-        assert dev.name == expected["name"]
-        if device.get("disable_cache") is True:
-            assert dev.cache is None
-            assert dev.cache_locks is None
-        else:  # False or None
-            assert dev.cache is not None
-            assert dev.cache_locks is not None
-        hash(dev)
+            assert expected is not None
+            assert dev.name == expected["name"]
+            if device.get("disable_cache") is True:
+                assert dev.cache is None
+                assert dev.cache_locks is None
+            else:  # False or None
+                assert dev.cache is not None
+                assert dev.cache_locks is not None
+            hash(dev)
 
-        with patch("anta.device.__DEBUG__", new=True):
-            rprint(dev)
+            with patch("anta.device.__DEBUG__", new=True):
+                rprint(dev)
 
     @pytest.mark.parametrize(("device1", "device2", "expected"), EQUALITY_PARAMS)
     def test__eq(self, device1: dict[str, Any], device2: dict[str, Any], expected: bool) -> None:

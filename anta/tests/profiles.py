@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module related to ASIC profile tests."""
@@ -33,7 +33,6 @@ class VerifyUnifiedForwardingTableMode(AntaTest):
     ```
     """
 
-    name = "VerifyUnifiedForwardingTableMode"
     description = "Verifies the device is using the expected UFT mode."
     categories: ClassVar[list[str]] = ["profiles"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show platform trident forwarding-table partition", revision=1)]
@@ -52,7 +51,7 @@ class VerifyUnifiedForwardingTableMode(AntaTest):
         if command_output["uftMode"] == str(self.inputs.mode):
             self.result.is_success()
         else:
-            self.result.is_failure(f"Device is not running correct UFT mode (expected: {self.inputs.mode} / running: {command_output['uftMode']})")
+            self.result.is_failure(f"Not running the correct UFT mode - Expected: {self.inputs.mode}, Actual: {command_output['uftMode']}")
 
 
 class VerifyTcamProfile(AntaTest):
@@ -72,7 +71,6 @@ class VerifyTcamProfile(AntaTest):
     ```
     """
 
-    name = "VerifyTcamProfile"
     description = "Verifies the device TCAM profile."
     categories: ClassVar[list[str]] = ["profiles"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show hardware tcam profile", revision=1)]

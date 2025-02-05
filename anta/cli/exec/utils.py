@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 
@@ -127,6 +127,13 @@ async def collect_show_tech(inv: AntaInventory, root_dir: Path, *, configure: bo
                 if not configure:
                     logger.error("Unable to collect tech-support on %s: configuration 'aaa authorization exec default local' is not present", device.name)
                     return
+
+                # TODO: ANTA 2.0.0
+                msg = (
+                    "[DEPRECATED] Using '--configure' for collecting show-techs is deprecated and will be removed in ANTA 2.0.0. "
+                    "Please add the required configuration on your devices before running this command from ANTA."
+                )
+                logger.warning(msg)
 
                 commands = []
                 # TODO: @mtache - add `config` field to `AntaCommand` object to handle this use case.
