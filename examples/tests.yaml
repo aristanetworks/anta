@@ -595,21 +595,18 @@ anta.tests.routing.generic:
       maximum: 20
 anta.tests.routing.isis:
   - VerifyISISInterfaceMode:
-      # Verifies the operational mode of IS-IS Interfaces.
+      # Verifies the IS-IS interface mode.
       interfaces:
         - name: Loopback0
           mode: passive
-          # vrf is set to default by default
         - name: Ethernet2
           mode: passive
           level: 2
-          # vrf is set to default by default
         - name: Ethernet1
           mode: point-to-point
-          vrf: default
-          # level is set to 2 by default
+          vrf: PROD
   - VerifyISISNeighborCount:
-      # Verifies the number of IS-IS neighbors.
+      # Verifies the number of IS-IS neighbors per level and per interface.
       interfaces:
         - name: Ethernet1
           level: 1
@@ -619,10 +616,9 @@ anta.tests.routing.isis:
           count: 1
         - name: Ethernet3
           count: 2
-          # level is set to 2 by default
   - VerifyISISNeighborState:
-      # Verifies the health of all the IS-IS neighbors.
-      check_all_vrfs: bool = False
+      # Verifies the health of IS-IS neighbors.
+      check_all_vrfs: true
   - VerifyISISSegmentRoutingAdjacencySegments:
       # Verifies the ISIS SR Adjacency Segments.
       instances:

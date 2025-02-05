@@ -20,11 +20,11 @@ class ISISInstance(BaseModel):
     name: str
     """The name of the IS-IS instance."""
     vrf: str = "default"
-    """VRF context where the IS-IS instance is configured. Defaults to `default`."""
+    """VRF context of the IS-IS instance."""
     dataplane: Literal["MPLS", "mpls", "unset"] = "MPLS"
-    """Configured dataplane for the IS-IS instance. Required field in the `VerifyISISSegmentRoutingDataplane` test."""
+    """Configured dataplane for the IS-IS instance."""
     segments: list[Segment] | None = None
-    """A list of IS-IS segments associated with the instance. Required field in the `VerifyISISSegmentRoutingAdjacencySegments` test."""
+    """List of IS-IS segments associated with the instance. Required field in the `VerifyISISSegmentRoutingAdjacencySegments` test."""
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the ISISInstance for reporting."""
@@ -36,13 +36,13 @@ class Segment(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
     interface: Interface
-    """Interface name to check."""
+    """Interface name."""
     level: Literal[1, 2] = 2
-    """IS-IS level configured for interface. Default is 2."""
+    """IS-IS level configured."""
     sid_origin: Literal["dynamic"] = "dynamic"
-    "Specifies the origin of the Segment ID."
+    """Specifies the origin of the Segment ID."""
     address: IPv4Address
-    """IP address of the remote end of the segment(segment endpoint)."""
+    """IPv4 address of the remote end of the segment."""
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the Segment for reporting."""
@@ -50,19 +50,19 @@ class Segment(BaseModel):
 
 
 class ISISInterface(BaseModel):
-    """Model for a IS-IS Interface."""
+    """Model for an IS-IS enabled interface."""
 
     model_config = ConfigDict(extra="forbid")
     name: Interface
-    """Interface name to check."""
+    """Interface name."""
     vrf: str = "default"
-    """VRF name where IS-IS instance is configured."""
+    """VRF context of the interface."""
     level: Literal[1, 2] = 2
-    """IS-IS level (1 or 2) configured for the interface. Default is 2."""
+    """IS-IS level of the interface."""
     count: int | None = None
-    """The total number of IS-IS neighbors associated with interface."""
+    """Expected number of IS-IS neighbors on this interface. Required field in the `VerifyISISNeighborCount` test."""
     mode: Literal["point-to-point", "broadcast", "passive"] | None = None
-    """The configured IS-IS circuit type for this interface."""
+    """IS-IS network type of the interface. Required field in the `VerifyISISInterfaceMode` test."""
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the ISISInterface for reporting."""

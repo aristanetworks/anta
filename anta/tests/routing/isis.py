@@ -9,6 +9,8 @@ from __future__ import annotations
 
 from typing import Any, ClassVar
 
+from pydantic import field_validator
+
 from anta.input_models.routing.isis import ISISInstance, ISISInterface, SRTunnelEntry
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_value
@@ -27,13 +29,13 @@ def _get_adjacency_segment_data_by_neighbor(neighbor: str, instance: str, vrf: s
 
 
 class VerifyISISNeighborState(AntaTest):
-    """Verifies the health of all the IS-IS neighbors.
+    """Verifies the health of IS-IS neighbors.
 
     Expected Results
     ----------------
-    * Success: The test will pass if all IS-IS neighbors are in UP state.
+    * Success: The test will pass if all IS-IS neighbors are in the `up` state.
     * Failure: The test will fail if any IS-IS neighbor adjacency is down.
-    * Skipped: The test will be skipped if no IS-IS neighbor is found.
+    * Skipped: The test will be skipped if IS-IS is not configured or no IS-IS neighbor is found.
 
     Examples
     --------
@@ -41,7 +43,7 @@ class VerifyISISNeighborState(AntaTest):
     anta.tests.routing:
       isis:
         - VerifyISISNeighborState:
-            check_all_vrfs: bool = False
+            check_all_vrfs: true
     ```
     """
 
@@ -52,50 +54,45 @@ class VerifyISISNeighborState(AntaTest):
         """Input model for the VerifyISISNeighborState test."""
 
         check_all_vrfs: bool = False
-        """If enabled it verifies the all ISIS instances in all the configured vrfs. Defaults to `False` and verified the `default` vrf only."""
+        """If enabled, verifies IS-IS instances of all VRFs."""
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyISISNeighborState."""
         self.result.is_success()
 
-        # Verify if ISIS neighbors are configured. Skip the test if none are found.
+        # Verify if IS-IS is configured
         if not (command_output := self.instance_commands[0].json_output["vrfs"]):
-            self.result.is_skipped("IS-IS is not configured on device")
+            self.result.is_skipped("IS-IS not configured")
             return
 
         vrfs_to_check = command_output
         if not self.inputs.check_all_vrfs:
             vrfs_to_check = {"default": command_output["default"]}
 
+        no_neighbor = True
         for vrf, vrf_data in vrfs_to_check.items():
-            for isis_instance, instace_data in vrf_data["isisInstances"].items():
-                neighbors = instace_data.get("neighbors", {})
+            for isis_instance, instance_data in vrf_data["isisInstances"].items():
+                neighbors = instance_data["neighbors"]
+                if not neighbors:
+                    continue
+                no_neighbor = False
                 interfaces = [adj["interfaceName"] for neighbor in neighbors.values() for adj in neighbor["adjacencies"] if adj["state"] != "up"]
                 for interface in interfaces:
                     self.result.is_failure(f"Instance: {isis_instance} VRF: {vrf} Interface: {interface} - Session (adjacency) down")
 
+        if no_neighbor:
+            self.result.is_skipped("No IS-IS neighbor detected")
+
 
 class VerifyISISNeighborCount(AntaTest):
-    """Verifies the number of IS-IS neighbors.
-
-    This test performs the following checks for each specified interface:
-
-      1. Validates the IS-IS neighbors configured on specified interface.
-      2. Validates the number of IS-IS neighbors for each interface at specified level.
-
-    !! Warning
-        Test supports the `default` vrf only.
+    """Verifies the number of IS-IS neighbors per level and per interface.
 
     Expected Results
     ----------------
-    * Success: If all of the following occur:
-        - The IS-IS neighbors configured on specified interface.
-        - The number of IS-IS neighbors for each interface at specified level matches the given input.
-    * Failure: If any of the following occur:
-        - The IS-IS neighbors are not configured on specified interface.
-        - The number of IS-IS neighbors for each interface at specified level does not matches the given input.
-    * Skipped: The test will be skipped if no IS-IS neighbor is found.
+    * Success: The test will pass if the number of neighbors is correct.
+    * Failure: The test will fail if the number of neighbors is incorrect.
+    * Skipped: The test will be skipped if IS-IS is not configured or no IS-IS neighbor is found.
 
     Examples
     --------
@@ -112,12 +109,11 @@ class VerifyISISNeighborCount(AntaTest):
                 count: 1
               - name: Ethernet3
                 count: 2
-                # level is set to 2 by default
     ```
     """
 
     categories: ClassVar[list[str]] = ["isis"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show isis interface brief", revision=1)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show isis interface brief vrf all", revision=1)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyISISNeighborCount test."""
@@ -131,41 +127,36 @@ class VerifyISISNeighborCount(AntaTest):
         """Main test function for VerifyISISNeighborCount."""
         self.result.is_success()
 
-        command_output = self.instance_commands[0].json_output
-
-        # Verify if ISIS neighbors are configured. Skip the test if none are found.
-        if not (instance_detail := get_value(command_output, "vrfs..default..isisInstances", separator="..")):
-            self.result.is_skipped("IS-IS is not configured on device")
+        # Verify if IS-IS is configured
+        if not (command_output := self.instance_commands[0].json_output["vrfs"]):
+            self.result.is_skipped("IS-IS not configured")
             return
 
         for interface in self.inputs.interfaces:
             interface_detail = {}
-            for instance_data in instance_detail.values():
+            vrf_instances = get_value(command_output, f"{interface.vrf}.isisInstances", separator="..")
+            for instance_data in vrf_instances.values():
                 if interface_data := get_value(instance_data, f"interfaces..{interface.name}..intfLevels..{interface.level}", separator=".."):
                     interface_detail = interface_data
+                    # An interface can only be configured in one IS-IS instance at a time
                     break
 
             if not interface_detail:
                 self.result.is_failure(f"{interface} - Not configured")
                 continue
 
-            if (act_count := interface_detail.get("numAdjacencies", 0)) != interface.count:
+            if interface_detail["passive"] is False and (act_count := interface_detail["numAdjacencies"]) != interface.count:
                 self.result.is_failure(f"{interface} - Neighbor count mismatch - Expected: {interface.count} Actual: {act_count}")
 
 
 class VerifyISISInterfaceMode(AntaTest):
-    """Verifies the operational mode of IS-IS Interfaces.
-
-    This test performs the following checks:
-
-      1. Validates that all specified IS-IS interfaces are configured.
-      2. Validates the operational mode of each IS-IS interface (e.g., "active," "passive," or "unset").
+    """Verifies the IS-IS interface mode.
 
     Expected Results
     ----------------
-    * Success: The test will pass if all listed interfaces are running in correct mode.
-    * Failure: The test will fail if any of the listed interfaces is not running in correct mode.
-    * Skipped: The test will be skipped if no ISIS neighbor is found.
+    * Success: The test will pass if all listed interfaces are running in the correct mode.
+    * Failure: The test will fail if any of the listed interfaces are not running in the correct mode.
+    * Skipped: The test will be skipped if IS-IS is not configured or no IS-IS neighbor is found.
 
     Examples
     --------
@@ -176,15 +167,12 @@ class VerifyISISInterfaceMode(AntaTest):
             interfaces:
               - name: Loopback0
                 mode: passive
-                # vrf is set to default by default
               - name: Ethernet2
                 mode: passive
                 level: 2
-                # vrf is set to default by default
               - name: Ethernet1
                 mode: point-to-point
-                vrf: default
-                # level is set to 2 by default
+                vrf: PROD
     ```
     """
 
@@ -192,10 +180,10 @@ class VerifyISISInterfaceMode(AntaTest):
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show isis interface brief vrf all", revision=1)]
 
     class Input(AntaTest.Input):
-        """Input model for the VerifyISISNeighborCount test."""
+        """Input model for the VerifyISISInterfaceMode test."""
 
         interfaces: list[ISISInterface]
-        """list of interfaces with their information."""
+        """List of IS-IS interfaces with their information."""
         InterfaceState: ClassVar[type[ISISInterface]] = ISISInterface
 
     @AntaTest.anta_test
@@ -203,19 +191,18 @@ class VerifyISISInterfaceMode(AntaTest):
         """Main test function for VerifyISISInterfaceMode."""
         self.result.is_success()
 
-        command_output = self.instance_commands[0].json_output
-
-        # Verify if ISIS neighbors are configured. Skip the test if none are found.
-        if len(command_output["vrfs"]) == 0:
-            self.result.is_skipped("No IS-IS neighbor detected")
+        # Verify if IS-IS is configured
+        if not (command_output := self.instance_commands[0].json_output["vrfs"]):
+            self.result.is_skipped("IS-IS not configured")
             return
 
         for interface in self.inputs.interfaces:
             interface_detail = {}
-            instance_detail = get_value(command_output, f"vrfs..{interface.vrf}..isisInstances", separator="..", default={})
-            for instance_data in instance_detail.values():
+            vrf_instances = get_value(command_output, f"{interface.vrf}..isisInstances", separator="..")
+            for instance_data in vrf_instances.values():
                 if interface_data := get_value(instance_data, f"interfaces..{interface.name}", separator=".."):
                     interface_detail = interface_data
+                    # An interface can only be configured in one IS-IS instance at a time
                     break
 
             if not interface_detail:
@@ -223,11 +210,13 @@ class VerifyISISInterfaceMode(AntaTest):
                 continue
 
             # Check for passive
-            if interface.mode == "passive" and get_value(interface_detail, f"intfLevels.{interface.level}.passive", default=False) is False:
-                self.result.is_failure(f"{interface} - Not running in passive mode")
-
-            if interface.mode not in ("passive", interface_type := get_value(interface_detail, "interfaceType", default="unset")):
-                self.result.is_failure(f"{interface} - Incorrect circuit type - Expected: {interface.mode} Actual: {interface_type}")
+            if interface.mode == "passive":
+                if get_value(interface_detail, f"intfLevels.{interface.level}.passive", default=False) is False:
+                    self.result.is_failure(f"{interface} - Not running in passive mode")
+                    continue
+            # Check for point-to-point or broadcast
+            elif interface.mode != (interface_type := get_value(interface_detail, "interfaceType", default="unset")):
+                self.result.is_failure(f"{interface} - Incorrect interface mode - Expected: {interface.mode} Actual: {interface_type}")
 
 
 class VerifyISISSegmentRoutingAdjacencySegments(AntaTest):
@@ -262,8 +251,18 @@ class VerifyISISSegmentRoutingAdjacencySegments(AntaTest):
         """Input model for the VerifyISISSegmentRoutingAdjacencySegments test."""
 
         instances: list[ISISInstance]
-        """list of ISIS instances with their information."""
+        """List of IS-IS instances with their information."""
         IsisInstance: ClassVar[type[ISISInstance]] = ISISInstance
+
+        @field_validator("instances")
+        @classmethod
+        def validate_instances(cls, instances: list[ISISInstance]) -> list[ISISInstance]:
+            """Validate that 'vrf' field is 'default' in each IS-IS instance."""
+            for instance in instances:
+                if instance.vrf != "default":
+                    msg = f"{instance} 'vrf' field must be 'default'. As of EOS 4.33.1F, IS-IS SR is supported only in default VRF."
+                    raise ValueError(msg)
+            return instances
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -350,6 +349,16 @@ class VerifyISISSegmentRoutingDataplane(AntaTest):
         instances: list[ISISInstance]
         """list of ISIS instances with their information."""
         IsisInstance: ClassVar[type[ISISInstance]] = ISISInstance
+
+        @field_validator("instances")
+        @classmethod
+        def validate_instances(cls, instances: list[ISISInstance]) -> list[ISISInstance]:
+            """Validate that 'vrf' field is 'default' in each IS-IS instance."""
+            for instance in instances:
+                if instance.vrf != "default":
+                    msg = f"{instance} 'vrf' field must be 'default'. As of EOS 4.33.1F, IS-IS SR is supported only in default VRF."
+                    raise ValueError(msg)
+            return instances
 
     @AntaTest.anta_test
     def test(self) -> None:
