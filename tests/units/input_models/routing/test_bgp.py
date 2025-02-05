@@ -317,6 +317,18 @@ class TestVerifyBGPRedistributedRoute:
         with pytest.raises(ValidationError):
             RedistributedRoute(proto=proto, include_leaked=include_leaked)
 
+    @pytest.mark.parametrize(
+        ("proto", "include_leaked", "route_map", "expected"),
+        [
+            pytest.param("Connected", True, "RM-CONN-2-BGP", "Proto: Connected, Included Leaked: True, Route Map: RM-CONN-2-BGP", id="check-all-params"),
+            pytest.param("Static", False, None, "Proto: Static, Included Leaked: False", id="check-proto-include_leaked"),
+            pytest.param("Bgp", None, "RM-CONN-2-BGP", "Proto: Bgp, Route Map: RM-CONN-2-BGP", id="check-proto-route_map"),
+        ],
+    )
+    def test_valid_str(self, proto: RedistributedProtocol, include_leaked: bool | None, route_map: str | None, expected: str) -> None:
+        """Test RedistributedRoute __str__."""
+        assert str(RedistributedRoute(proto=proto, include_leaked=include_leaked, route_map=route_map)) == expected
+
 
 class TestVerifyBGPAddressFamilyConfig:
     """Test anta.tests.routing.bgp.AddressFamilyConfig.Input."""

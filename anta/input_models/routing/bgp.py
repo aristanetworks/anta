@@ -40,10 +40,6 @@ AFI_SAFI_EOS_KEY = {
 }
 """Dictionary mapping AFI/SAFI to EOS key representation."""
 
-AFI_SAFI_REDISTRIBUTED_ROUTE_KEY = {"ipv4Unicast": "v4u", "ipv4Multicast": "v4m", "ipv6Unicast": "v6u", "ipv6Multicast": "v6m"}
-
-"""Dictionary mapping of AFI/SAFI to redistributed routes key representation."""
-
 
 class BgpAddressFamily(BaseModel):
     """Model for a BGP address family."""
@@ -102,11 +98,6 @@ class BgpAddressFamily(BaseModel):
         """AFI/SAFI EOS key representation."""
         # Pydantic handles the validation of the AFI/SAFI combination, so we can ignore error handling here.
         return AFI_SAFI_EOS_KEY[(self.afi, self.safi)]
-
-    @property
-    def redistributed_route_key(self) -> str:
-        """AFI/SAFI  Redistributed route key representation."""
-        return AFI_SAFI_REDISTRIBUTED_ROUTE_KEY[self.eos_key]
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the BgpAddressFamily for reporting.

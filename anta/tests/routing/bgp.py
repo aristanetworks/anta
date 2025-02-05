@@ -7,7 +7,7 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from typing import ClassVar, TypeVar
+from typing import Any, ClassVar, TypeVar
 
 from pydantic import field_validator
 
@@ -1716,24 +1716,24 @@ class VerifyBGPRedistribution(AntaTest):
     anta.tests.routing:
       bgp:
         - VerifyBGPRedistribution:
-          vrfs:
-            - vrf: default
-              address_families:
-                - afi_safi: ipv4Unicast
-                  redistributed_routes:
-                    - proto: Connected
-                      include_leaked: True
-                      route_map: RM-CONN-2-BGP
-                    - proto: Static
-                      include_leaked: True
-                      route_map: RM-CONN-2-BGP
-                - afi_safi: IPv6 Unicast
-                  redistributed_routes:
-                    - proto: Dynamic
-                      route_map: RM-CONN-2-BGP
-                    - proto: Static
-                      include_leaked: True
-                      route_map: RM-CONN-2-BGP
+            vrfs:
+              - vrf: default
+                address_families:
+                  - afi_safi: ipv4Unicast
+                    redistributed_routes:
+                      - proto: Connected
+                        include_leaked: True
+                        route_map: RM-CONN-2-BGP
+                      - proto: Static
+                        include_leaked: True
+                        route_map: RM-CONN-2-BGP
+                  - afi_safi: IPv6 Unicast
+                    redistributed_routes:
+                      - proto: Dynamic
+                        route_map: RM-CONN-2-BGP
+                      - proto: Static
+                        include_leaked: True
+                        route_map: RM-CONN-2-BGP
     ```
     """
 
@@ -1745,6 +1745,22 @@ class VerifyBGPRedistribution(AntaTest):
 
         vrfs: list[BgpVrf]
         """List of address families."""
+
+    def _validate_redistribute_route_details(self, vrf_data: str, address_family: dict[str, Any], afi_safi_configs: list[dict[str, Any]]) -> None:
+        """Validate the redstributed route details for a given address family."""
+        for route_info in address_family.redistributed_routes:
+            # If the redistributed route protocol does not match the expected value, test fails.
+            if not (actual_route := get_item(afi_safi_configs.get("redistributedRoutes"), "proto", route_info.proto)):
+                self.result.is_failure(f"{vrf_data}, {address_family}, {route_info} - Not configured")
+                continue
+
+            # If includes leaked field applicable, and it does not matches the expected value, test fails.
+            if all([route_info.include_leaked is not None, (act_include_leaked := actual_route.get("includeLeaked", "Not Found")) != route_info.include_leaked]):
+                self.result.is_failure(f"{vrf_data}, {address_family}, {route_info} - Value for included leaked mismatch - Actual: {act_include_leaked}")
+
+            # If route map is required and it is not matching the expected value, test fails.
+            if all([route_info.route_map, (act_route_map := actual_route.get("routeMap", "Not Found")) != route_info.route_map]):
+                self.result.is_failure(f"{vrf_data}, {address_family}, {route_info} - Route map mismatch - Actual: {act_route_map}")
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -1758,16 +1774,4 @@ class VerifyBGPRedistribution(AntaTest):
                 if not (afi_safi_configs := get_value(command_output, f"vrfs.{vrf_data.vrf}.afiSafiConfig.{address_family.afi_safi}")):
                     self.result.is_failure(f"{vrf_data}, {address_family} - Not configured")
                     continue
-                for route_info in address_family.redistributed_routes:
-                    # If the redistributed route protocol does not match the expected value, test fails.
-                    if not (actual_route := get_item(afi_safi_configs.get("redistributedRoutes"), "proto", route_info.proto)):
-                        self.result.is_failure(f"{vrf_data}, {address_family}, {route_info} - Not configured")
-                        continue
-
-                    # If includes leaked field applicable, and it does not matches the expected value, test fails.
-                    if all([route_info.include_leaked is not None, (act_include_leaked := actual_route.get("includeLeaked")) != route_info.include_leaked]):
-                        self.result.is_failure(f"{vrf_data}, {address_family}, {route_info} - Value for included leaked mismatch - Actual: {act_include_leaked}")
-
-                    # If route map is required and it is not matching the expected value, test fails.
-                    if all([route_info.route_map, (act_route_map := actual_route.get("routeMap", "Not Found")) != route_info.route_map]):
-                        self.result.is_failure(f"{vrf_data}, {address_family}, {route_info} - Route map mismatch - Actual: {act_route_map}")
+                self._validate_redistribute_route_details(str(vrf_data), address_family, afi_safi_configs)
