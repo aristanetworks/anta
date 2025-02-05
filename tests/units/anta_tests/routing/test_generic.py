@@ -68,7 +68,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"minimum": 42, "maximum": 666},
-        "expected": {"result": "failure", "messages": ["routing-table has 1000 routes and not between min (42) and maximum (666)"]},
+        "expected": {"result": "failure", "messages": ["routing-table has 1000 routes and not between min `42` and maximum `666`"]},
     },
     {
         "name": "success",
@@ -204,9 +204,20 @@ DATA: list[dict[str, Any]] = [
                     },
                 },
             },
+            {
+                "vrfs": {
+                    "default": {
+                        "routingDisabled": False,
+                        "allRoutesProgrammedHardware": True,
+                        "allRoutesProgrammedKernel": True,
+                        "defaultRouteState": "notSet",
+                        "routes": {},
+                    },
+                },
+            },
         ],
-        "inputs": {"vrf": "default", "routes": ["10.1.0.1", "10.1.0.2"]},
-        "expected": {"result": "failure", "messages": ["The following route(s) are missing from the routing table of VRF default: ['10.1.0.1']"]},
+        "inputs": {"vrf": "default", "routes": ["10.1.0.1", "10.1.0.2", "10.1.0.3"]},
+        "expected": {"result": "failure", "messages": ["The following route(s) are missing from the routing table of VRF default: 10.1.0.1, 10.1.0.3"]},
     },
     {
         "name": "failure-wrong-route",
@@ -260,7 +271,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"vrf": "default", "routes": ["10.1.0.1", "10.1.0.2"]},
-        "expected": {"result": "failure", "messages": ["The following route(s) are missing from the routing table of VRF default: ['10.1.0.2']"]},
+        "expected": {"result": "failure", "messages": ["The following route(s) are missing from the routing table of VRF default: 10.1.0.2"]},
     },
     {
         "name": "failure-wrong-route-collect-all",
@@ -302,7 +313,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"vrf": "default", "routes": ["10.1.0.1", "10.1.0.2"], "collect": "all"},
-        "expected": {"result": "failure", "messages": ["The following route(s) are missing from the routing table of VRF default: ['10.1.0.2']"]},
+        "expected": {"result": "failure", "messages": ["The following route(s) are missing from the routing table of VRF default: 10.1.0.2"]},
     },
     {
         "name": "success-valid-route-type",
