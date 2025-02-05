@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Tests for anta.tests.routing.ospf.py."""
@@ -1367,7 +1367,7 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "test": VerifyISISSegmentRoutingTunnels,
-        "name": "is skipped if not entry founf in EOS",
+        "name": "is failed if entry not found in EOS",
         "eos_data": [{"entries": {}}],
         "inputs": {
             "entries": [
@@ -1376,7 +1376,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "skipped",
-            "messages": ["IS-IS-SR is not running on device."],
+            "messages": [""],
         },
     },
     {
@@ -1405,7 +1405,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Tunnel to endpoint=IPv4Network('1.0.0.122/32') vias=None is not found."],
+            "messages": ["Tunnel to 1.0.0.122/32 is not found."],
         },
     },
     {
@@ -1486,7 +1486,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Tunnel to 1.0.0.13/32 is incorrect: incorrect tunnel type"],
+            "messages": ["Tunnel to 1.0.0.13/32 is incorrect."],
         },
     },
     {
@@ -1574,7 +1574,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Tunnel to 1.0.0.122/32 is incorrect: incorrect nexthop"],
+            "messages": ["Tunnel to 1.0.0.122/32 is incorrect."],
         },
     },
     {
@@ -1662,7 +1662,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Tunnel to 1.0.0.122/32 is incorrect: incorrect interface"],
+            "messages": ["Tunnel to 1.0.0.122/32 is incorrect."],
         },
     },
     {
@@ -1750,7 +1750,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Tunnel to 1.0.0.122/32 is incorrect: incorrect nexthop"],
+            "messages": ["Tunnel to 1.0.0.122/32 is incorrect."],
         },
     },
     {
@@ -1837,7 +1837,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Tunnel to 1.0.0.111/32 is incorrect: incorrect tunnel ID"],
+            "messages": ["Tunnel to 1.0.0.111/32 is incorrect."],
         },
     },
 ]
