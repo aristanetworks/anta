@@ -447,8 +447,7 @@ class VerifyISISSegmentRoutingAdjacencySegments(AntaTest):
 
 
 class VerifyISISSegmentRoutingDataplane(AntaTest):
-    """
-    Verify dataplane of a list of ISIS-SR instances.
+    """Verify dataplane of a list of ISIS-SR instances.
 
     Expected Results
     ----------------
@@ -531,8 +530,7 @@ class VerifyISISSegmentRoutingDataplane(AntaTest):
 
 
 class VerifyISISSegmentRoutingTunnels(AntaTest):
-    """
-    Verify ISIS-SR tunnels computed by device.
+    """Verify ISIS-SR tunnels computed by device.
 
     Expected Results
     ----------------
@@ -632,8 +630,7 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
             self.result.is_failure("\n".join(failure_message))
 
     def _via_matches(self, via_input: VerifyISISSegmentRoutingTunnels.Input.Entry.Vias, eos_via: dict[str, Any]) -> bool:
-        """
-        Check if the via input matches the eos via.
+        """Check if the via input matches the eos via.
 
         Parameters
         ----------

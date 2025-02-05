@@ -609,7 +609,7 @@ anta.tests.routing.isis:
           vrf: default
           # level is set to 2 by default
   - VerifyISISNeighborCount:
-      # Verifies number of IS-IS neighbors per level and per interface.
+      # Verifies count of IS-IS interface per level
       interfaces:
         - name: Ethernet1
           level: 1
@@ -623,7 +623,7 @@ anta.tests.routing.isis:
   - VerifyISISNeighborState:
       # Verifies all IS-IS neighbors are in UP state.
   - VerifyISISSegmentRoutingAdjacencySegments:
-      # Verify that all expected Adjacency segments are correctly visible for each interface.
+      # Verify expected Adjacency segments are correctly visible for each interface.
       instances:
         - name: CORE-ISIS
           vrf: default
@@ -631,27 +631,28 @@ anta.tests.routing.isis:
             - interface: Ethernet2
               address: 10.0.1.3
               sid_origin: dynamic
+
   - VerifyISISSegmentRoutingDataplane:
-      # Verify dataplane of a list of ISIS-SR instances.
+      # Verify dataplane of a list of ISIS-SR instances
       instances:
         - name: CORE-ISIS
           vrf: default
           dataplane: MPLS
   - VerifyISISSegmentRoutingTunnels:
-      # Verify ISIS-SR tunnels computed by device.
+      # Verify ISIS-SR tunnels computed by device
       entries:
-        # Check only endpoint
-        - endpoint: 1.0.0.122/32
-        # Check endpoint and via TI-LFA
-        - endpoint: 1.0.0.13/32
-          vias:
-            - type: tunnel
-              tunnel_id: ti-lfa
-        # Check endpoint and via IP routers
-        - endpoint: 1.0.0.14/32
-          vias:
-            - type: ip
-              nexthop: 1.1.1.1
+      # Check only endpoint
+      - endpoint: 1.0.0.122/32
+      # Check endpoint and via TI-LFA
+      - endpoint: 1.0.0.13/32
+        vias:
+          - type: tunnel
+            tunnel_id: ti-lfa
+      # Check endpoint and via IP routers
+      - endpoint: 1.0.0.14/32
+        vias:
+          - type: ip
+            nexthop: 1.1.1.1
 anta.tests.routing.ospf:
   - VerifyOSPFMaxLSA:
       # Verifies all OSPF instances did not cross the maximum LSA threshold.
