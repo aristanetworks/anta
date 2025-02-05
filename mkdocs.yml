@@ -98,15 +98,20 @@ plugins:
             inherited_members: false
             merge_init_into_class: true
             separate_signature: true
+            show_signature_annotations: true
+            signature_crossrefs: true
             show_root_heading: true
             show_root_full_path: false
-            show_signature_annotations: true
             # sadly symbols are for insiders only
             # https://mkdocstrings.github.io/python/usage/configuration/headings/#show_symbol_type_toc
             # show_symbol_type_heading: true
             # show_symbol_type_toc: true
             # default filters here
-            filters: ["!^_[^_]"]
+            filters: ["!^_"]
+            extensions:
+              - griffe_warnings_deprecated:
+                  kind: danger
+                  title: Deprecated
 
   - search:
       lang: en
@@ -143,6 +148,7 @@ markdown_extensions:
   - pymdownx.smartsymbols
   - pymdownx.snippets:
       base_path:
+        - docs
         - docs/snippets
         - examples
   - pymdownx.superfences:
@@ -186,54 +192,54 @@ nav:
     - ANTA as a Python Library: advanced_usages/as-python-lib.md
   - Tests Documentation:
     - Overview: api/tests.md
-    - AAA: api/tests.aaa.md
-    - Adaptive Virtual Topology: api/tests.avt.md
-    - BFD: api/tests.bfd.md
-    - Configuration: api/tests.configuration.md
-    - Connectivity: api/tests.connectivity.md
-    - CVX: api/tests.cvx.md
-    - Field Notices: api/tests.field_notices.md
-    - Flow Tracking: api/tests.flow_tracking.md
-    - GreenT: api/tests.greent.md
-    - Hardware: api/tests.hardware.md
-    - Interfaces: api/tests.interfaces.md
-    - LANZ: api/tests.lanz.md
-    - Logging: api/tests.logging.md
-    - MLAG: api/tests.mlag.md
-    - Multicast: api/tests.multicast.md
-    - Profiles: api/tests.profiles.md
-    - PTP: api/tests.ptp.md
-    - Router Path Selection: api/tests.path_selection.md
+    - AAA: api/tests/aaa.md
+    - Adaptive Virtual Topology: api/tests/avt.md
+    - BFD: api/tests/bfd.md
+    - Configuration: api/tests/configuration.md
+    - Connectivity: api/tests/connectivity.md
+    - CVX: api/tests/cvx.md
+    - Field Notices: api/tests/field_notices.md
+    - Flow Tracking: api/tests/flow_tracking.md
+    - GreenT: api/tests/greent.md
+    - Hardware: api/tests/hardware.md
+    - Interfaces: api/tests/interfaces.md
+    - LANZ: api/tests/lanz.md
+    - Logging: api/tests/logging.md
+    - MLAG: api/tests/mlag.md
+    - Multicast: api/tests/multicast.md
+    - Profiles: api/tests/profiles.md
+    - PTP: api/tests/ptp.md
+    - Router Path Selection: api/tests/path_selection.md
     - Routing:
-      - Generic: api/tests.routing.generic.md
-      - BGP: api/tests.routing.bgp.md
-      - OSPF: api/tests.routing.ospf.md
-      - ISIS: api/tests.routing.isis.md
-    - Security: api/tests.security.md
-    - Services: api/tests.services.md
-    - SNMP: api/tests.snmp.md
-    - STP: api/tests.stp.md
-    - STUN: api/tests.stun.md
-    - Software: api/tests.software.md
-    - System: api/tests.system.md
-    - VXLAN: api/tests.vxlan.md
-    - VLAN: api/tests.vlan.md
+      - Generic: api/tests/routing.generic.md
+      - BGP: api/tests/routing.bgp.md
+      - OSPF: api/tests/routing.ospf.md
+      - ISIS: api/tests/routing.isis.md
+    - Security: api/tests/security.md
+    - Services: api/tests/services.md
+    - SNMP: api/tests/snmp.md
+    - STP: api/tests/stp.md
+    - STUN: api/tests/stun.md
+    - Software: api/tests/software.md
+    - System: api/tests/system.md
+    - VXLAN: api/tests/vxlan.md
+    - VLAN: api/tests/vlan.md
   - API Documentation:
+    - Class Diagram: api/class-diagram.md
     - Device: api/device.md
-    - Inventory:
-      - Inventory module: api/inventory.md
-      - Inventory models: api/inventory.models.input.md
-    - Test Catalog: api/catalog.md
-    - Test:
-      - Test models: api/models.md
-      - Input Types:  api/types.md
-    - Result Manager:
-      - Result Manager module: api/result_manager.md
-      - Result Manager models: api/result_manager_models.md
-    - Reporter:
-      - CSV reporter: api/csv_reporter.md
-      - Markdown reporter: api/md_reporter.md
-      - Other reporters: api/reporters.md
+    - Inventory: api/inventory.md
+    - Catalog: api/catalog.md
+    - Commands: api/commands.md
+    - Tests:
+      - AntaTest: api/tests/anta_test.md
+      - Input Types:  api/tests/types.md
+      - Tests Documentation:  /api/tests/
+    - Result: api/result.md
+    - Reporters:
+      - Table: api/reporter/table.md
+      - Markdown: api/reporter/markdown.md
+      - CSV: api/reporter/csv.md
+      - Jinja: api/reporter/jinja.md
     - Runner: api/runner.md
   - Troubleshooting ANTA: troubleshooting.md
   - Contributions: contribution.md

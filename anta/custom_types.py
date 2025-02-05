@@ -10,9 +10,6 @@ from pydantic import Field
 from pydantic.functional_validators import AfterValidator, BeforeValidator
 
 # Regular Expression definition
-# TODO: make this configurable - with an env var maybe?
-REGEXP_EOS_BLACKLIST_CMDS = [r"^reload.*", r"^conf\w*\s*(terminal|session)*", r"^wr\w*\s*\w+"]
-"""List of regular expressions to blacklist from eos commands."""
 REGEXP_PATH_MARKERS = r"[\\\/\s]"
 """Match directory path from string."""
 REGEXP_INTERFACE_ID = r"\d+(\/\d+)*(\.\d+)?"

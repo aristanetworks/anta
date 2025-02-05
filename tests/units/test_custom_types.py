@@ -20,7 +20,6 @@ from anta.custom_types import (
     REGEX_TYPE_PORTCHANNEL,
     REGEXP_BGP_IPV4_MPLS_LABELS,
     REGEXP_BGP_L2VPN_AFI,
-    REGEXP_EOS_BLACKLIST_CMDS,
     REGEXP_INTERFACE_ID,
     REGEXP_PATH_MARKERS,
     REGEXP_TYPE_EOS_INTERFACE,
@@ -172,35 +171,6 @@ def test_regexp_type_hostname() -> None:
     assert re.match(REGEXP_TYPE_HOSTNAME, ".hostname.com") is None
     assert re.match(REGEXP_TYPE_HOSTNAME, "hostname-.com") is None
     assert re.match(REGEXP_TYPE_HOSTNAME, "hostname..com") is None
-
-
-@pytest.mark.parametrize(
-    ("test_string", "expected"),
-    [
-        ("reload", True),  # matches "^reload.*"
-        ("reload now", True),  # matches "^reload.*"
-        ("configure terminal", True),  # matches "^conf\w*\s*(terminal|session)*"
-        ("conf t", True),  # matches "^conf\w*\s*(terminal|session)*"
-        ("write memory", True),  # matches "^wr\w*\s*\w+"
-        ("wr mem", True),  # matches "^wr\w*\s*\w+"
-        ("show running-config", False),  # does not match any regex
-        ("no shutdown", False),  # does not match any regex
-        ("", False),  # empty string does not match any regex
-    ],
-)
-def test_regexp_eos_blacklist_cmds(test_string: str, expected: bool) -> None:
-    """Test REGEXP_EOS_BLACKLIST_CMDS."""
-
-    def matches_any_regex(string: str, regex_list: list[str]) -> bool:
-        """Check if a string matches at least one regular expression in a list.
-
-        :param string: The string to check.
-        :param regex_list: A list of regular expressions.
-        :return: True if the string matches at least one regular expression, False otherwise.
-        """
-        return any(re.match(regex, string) for regex in regex_list)
-
-    assert matches_any_regex(test_string, REGEXP_EOS_BLACKLIST_CMDS) == expected
 
 
 # ------------------------------------------------------------------------------

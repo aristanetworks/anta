@@ -16,7 +16,7 @@ from pydantic import field_validator, model_validator
 from anta.custom_types import PositiveInteger
 from anta.input_models.routing.generic import IPv4Routes
 from anta.models import AntaCommand, AntaTemplate, AntaTest
-from anta.tools import get_value
+from anta.tools import get_item, get_value
 
 if TYPE_CHECKING:
     import sys
@@ -268,3 +268,82 @@ class VerifyIPv4RouteType(AntaTest):
             # Verifying that the specified IPv4 routes are of the expected type.
             if expected_route_type != (actual_route_type := route_data.get("routeType")):
                 self.result.is_failure(f"{entry} - Incorrect route type - Expected: {expected_route_type} Actual: {actual_route_type}")
+
+
+class VerifyIPv4RouteNextHops(AntaTest):
+    """Verifies the next-hops of the IPv4 prefixes.
+
+    This test performs the following checks for each IPv4 prefix:
+
+      1. Verifies the specified IPv4 route exists in the routing table.
+      2. For each specified next-hop:
+          - Verifies a path with matching next-hop exists.
+          - Supports `strict: True` to verify that routes must be learned exclusively via the exact next-hops specified.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if routes exist with paths matching the expected next-hops.
+    * Failure: The test will fail if:
+        - A route entry is not found for given IPv4 prefixes.
+        - A path with specified next-hop is not found.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      generic:
+        - VerifyIPv4RouteNextHops:
+            route_entries:
+                - prefix: 10.10.0.1/32
+                  vrf: default
+                  strict: false
+                  nexthops:
+                    - 10.100.0.8
+                    - 10.100.0.10
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["routing"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip route vrf all", revision=4)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyIPv4RouteNextHops test."""
+
+        route_entries: list[IPv4Routes]
+        """List of IPv4 route(s)."""
+
+        @field_validator("route_entries")
+        @classmethod
+        def validate_route_entries(cls, route_entries: list[IPv4Routes]) -> list[IPv4Routes]:
+            """Validate that 'nexthops' field is provided in each route entry."""
+            for entry in route_entries:
+                if entry.nexthops is None:
+                    msg = f"{entry} 'nexthops' field missing in the input"
+                    raise ValueError(msg)
+            return route_entries
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyIPv4RouteNextHops."""
+        self.result.is_success()
+
+        output = self.instance_commands[0].json_output
+
+        for entry in self.inputs.route_entries:
+            # Verify if the prefix exists in route table
+            if (route_data := get_value(output, f"vrfs..{entry.vrf}..routes..{entry.prefix}", separator="..")) is None:
+                self.result.is_failure(f"{entry} - prefix not found")
+                continue
+
+            # Verify the nexthop addresses
+            actual_nexthops = sorted(["Directly connected" if (next_hop := route.get("nexthopAddr")) == "" else next_hop for route in route_data["vias"]])
+            expected_nexthops = sorted([str(nexthop) for nexthop in entry.nexthops])
+
+            if entry.strict and expected_nexthops != actual_nexthops:
+                exp_nexthops = ", ".join(expected_nexthops)
+                self.result.is_failure(f"{entry} - List of next-hops not matching - Expected: {exp_nexthops} - Actual: {', '.join(actual_nexthops)}")
+                continue
+
+            for nexthop in entry.nexthops:
+                if not get_item(route_data["vias"], "nexthopAddr", str(nexthop)):
+                    self.result.is_failure(f"{entry} Nexthop: {nexthop} - Route not found")
