@@ -456,7 +456,8 @@ anta.tests.routing.bgp:
           vrf: default
           strict: False
           capabilities:
-            - ipv4Unicast
+            - ipv4 labeled-Unicast
+            - ipv4MplsVpn
   - VerifyBGPPeerRouteLimit:
       # Verifies maximum routes and warning limit for BGP IPv4 peer(s).
       bgp_peers:

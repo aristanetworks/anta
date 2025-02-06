@@ -1384,12 +1384,12 @@ DATA: list[dict[str, Any]] = [
                 {
                     "peer_address": "172.30.11.1",
                     "vrf": "default",
-                    "capabilities": ["Ipv4 Unicast", "ipv4 Mpls labels"],
+                    "capabilities": ["Ipv4Unicast", "ipv4 Mpls labels"],
                 },
                 {
                     "peer_address": "172.30.11.10",
                     "vrf": "MGMT",
-                    "capabilities": ["ipv4 Unicast", "ipv4 MplsVpn"],
+                    "capabilities": ["ipv4_Unicast", "ipv4 MplsVpn"],
                 },
             ]
         },
@@ -1441,12 +1441,12 @@ DATA: list[dict[str, Any]] = [
                 {
                     "peer_address": "172.30.11.10",
                     "vrf": "default",
-                    "capabilities": ["ipv4Unicast", "L2 Vpn EVPN"],
+                    "capabilities": ["ipv4Unicast", "l2-vpn-EVPN"],
                 },
                 {
                     "peer_address": "172.30.11.1",
                     "vrf": "MGMT",
-                    "capabilities": ["ipv4Unicast", "L2 Vpn EVPN"],
+                    "capabilities": ["ipv4Unicast", "l2vpnevpn"],
                 },
             ]
         },
@@ -1575,7 +1575,7 @@ DATA: list[dict[str, Any]] = [
                 {
                     "peer_address": "172.30.11.10",
                     "vrf": "MGMT",
-                    "capabilities": ["ipv4unicast", "ipv4 mplsvpn", "L2vpnEVPN"],
+                    "capabilities": ["ipv4_unicast", "ipv4 mplsvpn", "L2vpnEVPN"],
                 },
                 {
                     "peer_address": "172.30.11.11",
@@ -1656,13 +1656,13 @@ DATA: list[dict[str, Any]] = [
                     "peer_address": "172.30.11.1",
                     "vrf": "default",
                     "strict": True,
-                    "capabilities": ["Ipv4 Unicast", "ipv4 Mpls labels"],
+                    "capabilities": ["Ipv4 Unicast", "ipv4MplsLabels"],
                 },
                 {
                     "peer_address": "172.30.11.10",
                     "vrf": "MGMT",
                     "strict": True,
-                    "capabilities": ["ipv4 Unicast", "ipv4 MplsVpn"],
+                    "capabilities": ["ipv4-Unicast", "ipv4MplsVpn"],
                 },
             ]
         },

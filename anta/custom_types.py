@@ -23,16 +23,6 @@ REGEX_TYPE_PORTCHANNEL = r"^Port-Channel[0-9]{1,6}$"
 REGEXP_TYPE_HOSTNAME = r"^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$"
 """Match hostname like `my-hostname`, `my-hostname-1`, `my-hostname-1-2`."""
 
-# Regexp BGP AFI/SAFI
-REGEXP_BGP_L2VPN_AFI = r"\b(l2[\s\-]?vpn[\s\-]?evpn)\b"
-"""Match L2VPN EVPN AFI."""
-REGEXP_BGP_IPV4_MPLS_LABELS = r"\b(ipv4[\s\-]?mpls[\s\-]?label(s)?)\b"
-"""Match IPv4 MPLS Labels."""
-REGEX_BGP_IPV4_MPLS_VPN = r"\b(ipv4[\s\-]?mpls[\s\-]?vpn)\b"
-"""Match IPv4 MPLS VPN."""
-REGEX_BGP_IPV4_UNICAST = r"\b(ipv4[\s\-]?uni[\s\-]?cast)\b"
-"""Match IPv4 Unicast."""
-
 
 def aaa_group_prefix(v: str) -> str:
     """Prefix the AAA method with 'group' if it is known."""
@@ -78,26 +68,57 @@ def interface_case_sensitivity(v: str) -> str:
 def bgp_multiprotocol_capabilities_abbreviations(value: str) -> str:
     """Abbreviations for different BGP multiprotocol capabilities.
 
+    Handles different separators (hyphen, underscore, space) and case sensitivity.
+
     Examples
     --------
-    - IPv4 Unicast
-    - L2vpnEVPN
-    - ipv4 MPLS Labels
-    - ipv4Mplsvpn
-
+    ```python
+    >>> bgp_multiprotocol_capabilities_abbreviations("IPv4 Unicast")
+    'ipv4Unicast'
+    >>> bgp_multiprotocol_capabilities_abbreviations("ipv4-Flow_Spec Vpn")
+    'ipv4FlowSpecVpn'
+     >>> bgp_multiprotocol_capabilities_abbreviations("ipv6_labeled-unicast")
+    'ipv6MplsLabels'
+     >>> bgp_multiprotocol_capabilities_abbreviations("ipv4_mpls_vpn")
+    'ipv4MplsVpn'
+     >>> bgp_multiprotocol_capabilities_abbreviations("ipv4 mpls labels")
+    'ipv4MplsLabels'
+    >>> bgp_multiprotocol_capabilities_abbreviations("rt-membership")
+    'rtMembership'
+     >>> bgp_multiprotocol_capabilities_abbreviations("dynamic-path-selection")
+    'dps'
+    ```
     """
     patterns = {
-        REGEXP_BGP_L2VPN_AFI: "l2VpnEvpn",
-        REGEXP_BGP_IPV4_MPLS_LABELS: "ipv4MplsLabels",
-        REGEX_BGP_IPV4_MPLS_VPN: "ipv4MplsVpn",
-        REGEX_BGP_IPV4_UNICAST: "ipv4Unicast",
+        f"{r'dynamic[-_ ]?path[-_ ]?selection$'}": "dps",
+        f"{r'dps$'}": "dps",
+        f"{r'ipv4[-_ ]?unicast$'}": "ipv4Unicast",
+        f"{r'ipv6[-_ ]?unicast$'}": "ipv6Unicast",
+        f"{r'ipv4[-_ ]?multicast$'}": "ipv4Multicast",
+        f"{r'ipv6[-_ ]?multicast$'}": "ipv6Multicast",
+        f"{r'ipv4[-_ ]?labeled[-_ ]?Unicast$'}": "ipv4MplsLabels",
+        f"{r'ipv4[-_ ]?mpls[-_ ]?labels$'}": "ipv4MplsLabels",
+        f"{r'ipv6[-_ ]?labeled[-_ ]?Unicast$'}": "ipv6MplsLabels",
+        f"{r'ipv6[-_ ]?mpls[-_ ]?labels$'}": "ipv6MplsLabels",
+        f"{r'ipv4[-_ ]?sr[-_ ]?te$'}": "ipv4SrTe",  # codespell:ignore
+        f"{r'ipv6[-_ ]?sr[-_ ]?te$'}": "ipv6SrTe",  # codespell:ignore
+        f"{r'ipv4[-_ ]?mpls[-_ ]?vpn$'}": "ipv4MplsVpn",
+        f"{r'ipv6[-_ ]?mpls[-_ ]?vpn$'}": "ipv6MplsVpn",
+        f"{r'ipv4[-_ ]?Flow[-_ ]?spec$'}": "ipv4FlowSpec",
+        f"{r'ipv6[-_ ]?Flow[-_ ]?spec$'}": "ipv6FlowSpec",
+        f"{r'ipv4[-_ ]?Flow[-_ ]?spec[-_ ]?vpn$'}": "ipv4FlowSpecVpn",
+        f"{r'ipv6[-_ ]?Flow[-_ ]?spec[-_ ]?vpn$'}": "ipv6FlowSpecVpn",
+        f"{r'l2[-_ ]?vpn[-_ ]?vpls$'}": "l2VpnVpls",
+        f"{r'l2[-_ ]?vpn[-_ ]?evpn$'}": "l2VpnEvpn",
+        f"{r'link[-_ ]?state$'}": "linkState",
+        f"{r'rt[-_ ]?membership$'}": "rtMembership",
+        f"{r'ipv4[-_ ]?rt[-_ ]?membership$'}": "rtMembership",
+        f"{r'ipv4[-_ ]?mvpn$'}": "ipv4Mvpn",
     }
-
     for pattern, replacement in patterns.items():
-        match = re.search(pattern, value, re.IGNORECASE)
+        match = re.match(pattern, value, re.IGNORECASE)
         if match:
             return replacement
-
     return value
 
 
@@ -145,7 +166,31 @@ Safi = Literal["unicast", "multicast", "labeled-unicast", "sr-te"]
 EncryptionAlgorithm = Literal["RSA", "ECDSA"]
 RsaKeySize = Literal[2048, 3072, 4096]
 EcdsaKeySize = Literal[256, 384, 512]
-MultiProtocolCaps = Annotated[str, BeforeValidator(bgp_multiprotocol_capabilities_abbreviations)]
+MultiProtocolCaps = Annotated[
+    Literal[
+        "dps",
+        "ipv4Unicast",
+        "ipv6Unicast",
+        "ipv4Multicast",
+        "ipv6Multicast",
+        "ipv4MplsLabels",
+        "ipv6MplsLabels",
+        "ipv4SrTe",
+        "ipv6SrTe",
+        "ipv4MplsVpn",
+        "ipv6MplsVpn",
+        "ipv4FlowSpec",
+        "ipv6FlowSpec",
+        "ipv4FlowSpecVpn",
+        "ipv6FlowSpecVpn",
+        "l2VpnVpls",
+        "l2VpnEvpn",
+        "linkState",
+        "rtMembership",
+        "ipv4Mvpn",
+    ],
+    BeforeValidator(bgp_multiprotocol_capabilities_abbreviations),
+]
 BfdInterval = Annotated[int, Field(ge=50, le=60000)]
 BfdMultiplier = Annotated[int, Field(ge=3, le=50)]
 ErrDisableReasons = Literal[
