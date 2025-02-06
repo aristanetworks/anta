@@ -90,7 +90,7 @@ DATA: list[dict[str, Any]] = [
         "test": VerifySSHIPv4Acl,
         "eos_data": [{"ipAclList": {"aclList": [{"type": "Ip4Acl", "name": "ACL_IPV4_SSH", "configuredVrfs": ["default"], "activeVrfs": ["default"]}]}}],
         "inputs": {"number": 1, "vrf": "MGMT"},
-        "expected": {"result": "failure", "messages": ["SSH IPv4 ACL(s) not configured or active in vrf MGMT: ['ACL_IPV4_SSH']"]},
+        "expected": {"result": "failure", "messages": ["SSH IPv4 ACL(s) not configured or active in vrf MGMT: ACL_IPV4_SSH"]},
     },
     {
         "name": "success",
@@ -111,7 +111,7 @@ DATA: list[dict[str, Any]] = [
         "test": VerifySSHIPv6Acl,
         "eos_data": [{"ipv6AclList": {"aclList": [{"type": "Ip6Acl", "name": "ACL_IPV6_SSH", "configuredVrfs": ["default"], "activeVrfs": ["default"]}]}}],
         "inputs": {"number": 1, "vrf": "MGMT"},
-        "expected": {"result": "failure", "messages": ["SSH IPv6 ACL(s) not configured or active in vrf MGMT: ['ACL_IPV6_SSH']"]},
+        "expected": {"result": "failure", "messages": ["SSH IPv6 ACL(s) not configured or active in vrf MGMT: ACL_IPV6_SSH"]},
     },
     {
         "name": "success",
@@ -192,7 +192,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"profile": "API_SSL_Profile"},
-        "expected": {"result": "failure", "messages": ["eAPI HTTPS server SSL profile (API_SSL_Profile) is not configured"]},
+        "expected": {"result": "failure", "messages": ["eAPI HTTPS server SSL profile API_SSL_Profile is not configured"]},
     },
     {
         "name": "failure-misconfigured-invalid",
@@ -209,7 +209,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"profile": "API_SSL_Profile"},
-        "expected": {"result": "failure", "messages": ["eAPI HTTPS server SSL profile (API_SSL_Profile) is misconfigured or invalid"]},
+        "expected": {"result": "failure", "messages": ["eAPI HTTPS server SSL profile API_SSL_Profile is misconfigured or invalid"]},
     },
     {
         "name": "success",
@@ -230,7 +230,7 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyAPIIPv4Acl,
         "eos_data": [{"ipAclList": {"aclList": [{"type": "Ip4Acl", "name": "ACL_IPV4_API", "configuredVrfs": ["default"], "activeVrfs": ["default"]}]}}],
         "inputs": {"number": 1, "vrf": "MGMT"},
-        "expected": {"result": "failure", "messages": ["eAPI IPv4 ACL(s) not configured or active in vrf MGMT: ['ACL_IPV4_API']"]},
+        "expected": {"result": "failure", "messages": ["eAPI IPv4 ACL(s) not configured or active in vrf MGMT: ACL_IPV4_API"]},
     },
     {
         "name": "success",
@@ -251,7 +251,7 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyAPIIPv6Acl,
         "eos_data": [{"ipv6AclList": {"aclList": [{"type": "Ip6Acl", "name": "ACL_IPV6_API", "configuredVrfs": ["default"], "activeVrfs": ["default"]}]}}],
         "inputs": {"number": 1, "vrf": "MGMT"},
-        "expected": {"result": "failure", "messages": ["eAPI IPv6 ACL(s) not configured or active in vrf MGMT: ['ACL_IPV6_API']"]},
+        "expected": {"result": "failure", "messages": ["eAPI IPv6 ACL(s) not configured or active in vrf MGMT: ACL_IPV6_API"]},
     },
     {
         "name": "success",

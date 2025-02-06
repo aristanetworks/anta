@@ -112,7 +112,7 @@ class VerifyRoutingTableSize(AntaTest):
         if self.inputs.minimum <= total_routes <= self.inputs.maximum:
             self.result.is_success()
         else:
-            self.result.is_failure(f"routing-table has {total_routes} routes and not between min ({self.inputs.minimum}) and maximum ({self.inputs.maximum})")
+            self.result.is_failure(f"Routing table has {total_routes} routes, outside the range of {self.inputs.minimum} to {self.inputs.maximum}")
 
 
 class VerifyRoutingTableEntry(AntaTest):
@@ -182,7 +182,7 @@ class VerifyRoutingTableEntry(AntaTest):
         if not missing_routes:
             self.result.is_success()
         else:
-            self.result.is_failure(f"The following route(s) are missing from the routing table of VRF {self.inputs.vrf}: {missing_routes}")
+            self.result.is_failure(f"The following route(s) are missing from the routing table of VRF {self.inputs.vrf}: {', '.join(missing_routes)}")
 
 
 class VerifyIPv4RouteType(AntaTest):
