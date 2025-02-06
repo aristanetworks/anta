@@ -99,7 +99,7 @@ def bgp_multiprotocol_capabilities_abbreviations(value: str) -> str:
         f"{r'ipv4[-_ ]?labeled[-_ ]?Unicast$'}": "ipv4MplsLabels",
         f"{r'ipv4[-_ ]?mpls[-_ ]?labels$'}": "ipv4MplsLabels",
         f"{r'ipv6[-_ ]?labeled[-_ ]?Unicast$'}": "ipv6MplsLabels",
-        f"{r'ipv6[-_ ]?mpls[-_ ]?labels$'}": "ipv4MplsLabels",
+        f"{r'ipv6[-_ ]?mpls[-_ ]?labels$'}": "ipv6MplsLabels",
         f"{r'ipv4[-_ ]?sr[-_ ]?te$'}": "ipv4SrTe",  # codespell: ignore
         f"{r'ipv6[-_ ]?sr[-_ ]?te$'}": "ipv6SrTe",  # codespell: ignore
         f"{r'ipv4[-_ ]?mpls[-_ ]?label$'}": "ipv4MplsVpn",
