@@ -669,7 +669,7 @@ anta.tests.security:
   - VerifyAPIHttpStatus:
       # Verifies if eAPI HTTP server is disabled globally.
   - VerifyAPIHttpsSSL:
-      # Verifies if the eAPI has a valid SSL profile.
+      # Verifies if eAPI HTTPS server SSL profile is configured and valid.
       profile: default
   - VerifyAPIIPv4Acl:
       # Verifies if eAPI has the right number IPv4 ACL(s) configured for a specified VRF.
