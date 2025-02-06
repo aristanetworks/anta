@@ -203,7 +203,7 @@ class VerifyISISInterfaceMode(AntaTest):
             if interface.mode == "passive":
                 if get_value(interface_detail, f"intfLevels.{interface.level}.passive", default=False) is False:
                     self.result.is_failure(f"{interface} - Not running in passive mode")
-                    continue
+
             # Check for point-to-point or broadcast
             elif interface.mode != (interface_type := get_value(interface_detail, "interfaceType", default="unset")):
                 self.result.is_failure(f"{interface} - Incorrect interface mode - Expected: {interface.mode} Actual: {interface_type}")
