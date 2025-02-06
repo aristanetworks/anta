@@ -304,16 +304,11 @@ LogSeverityLevel = Literal["alerts", "critical", "debugging", "emergencies", "er
 ########################################
 # SNMP
 ########################################
-def snmp_v3_prefix(auth_type: str) -> str:
-    """Prefix the SNMP authentication type with 'v3' if it is known."""
-    snmp_auth_types = ["auth", "priv", "noauth"]
-
-    if auth_type.lower() in snmp_auth_types and auth_type.lower() == "noauth":
+def snmp_v3_prefix(auth_type: Literal["auth", "priv", "noauth"]) -> str:
+    """Prefix the SNMP authentication type with 'v3'."""
+    if auth_type == "noauth":
         return "v3NoAuth"
-    if auth_type.lower() in snmp_auth_types:
-        return f"v3{auth_type.title()}"
-    msg = f"SNMP authentication type `{auth_type}` is not supported, supported types are {', '.join(snmp_auth_types)}"
-    raise ValueError(msg)
+    return f"v3{auth_type.title()}"
 
 
 SnmpVersion = Literal["v1", "v2c", "v3"]

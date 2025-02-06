@@ -264,12 +264,6 @@ def test_validate_regex_invalid(str_input: str, error: str) -> None:
 
 def test_snmp_v3_prefix_valid_input() -> None:
     """Test snmp_v3_prefix with valid authentication type."""
-    assert snmp_v3_prefix("Auth") == "v3Auth"
+    assert snmp_v3_prefix("auth") == "v3Auth"
     assert snmp_v3_prefix("noauth") == "v3NoAuth"
     assert snmp_v3_prefix("priv") == "v3Priv"
-
-
-def test_snmp_v3_prefix_invalid_input() -> None:
-    """Test snmp_v3_prefix for invalid authentication type."""
-    with pytest.raises(ValueError, match="SNMP authentication type `InvalidAuth` is not supported, supported types are auth, priv, noauth"):
-        snmp_v3_prefix("InvalidAuth")
