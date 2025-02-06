@@ -1968,6 +1968,40 @@
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#anta.tests.routing.bgp.VerifyBGPRouteECMP" class="md-nav__link">
+      <span class="md-ellipsis">
+        VerifyBGPRouteECMP
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="VerifyBGPRouteECMP">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.routing.bgp.VerifyBGPRouteECMP-attributes" class="md-nav__link">
+      <span class="md-ellipsis">
+        Inputs
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#anta.tests.routing.bgp.VerifyBGPRoutePaths" class="md-nav__link">
       <span class="md-ellipsis">
         VerifyBGPRoutePaths
@@ -3633,6 +3667,40 @@
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
     <a href="#anta.tests.routing.bgp.VerifyBGPPeersHealthRibd-attributes" class="md-nav__link">
+      <span class="md-ellipsis">
+        Inputs
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.routing.bgp.VerifyBGPRouteECMP" class="md-nav__link">
+      <span class="md-ellipsis">
+        VerifyBGPRouteECMP
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="VerifyBGPRouteECMP">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.routing.bgp.VerifyBGPRouteECMP-attributes" class="md-nav__link">
       <span class="md-ellipsis">
         Inputs
       </span>
@@ -8331,6 +8399,295 @@ have successfully negotiated the specified AFI/SAFI</li>
 
 
 
+<h2 id="anta.tests.routing.bgp.VerifyBGPRouteECMP" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">VerifyBGPRouteECMP</span>
+
+
+<a href="#anta.tests.routing.bgp.VerifyBGPRouteECMP" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+  
+        <p>Verifies BGP IPv4 route ECMP paths.</p>
+<p>This test performs the following checks for each specified BGP route entry:</p>
+<ol>
+<li>Route exists in BGP table.</li>
+<li>First path is a valid and active ECMP head.</li>
+<li>Correct number of valid ECMP contributors follow the head path.</li>
+<li>Route is installed in RIB with same amount of next-hops.</li>
+</ol>
+
+
+<details class="expected-results" open>
+  <summary>Expected Results</summary>
+  <ul>
+<li>Success: The test will pass if all specified routes exist in both BGP and RIB tables with correct amount of ECMP paths.</li>
+<li>Failure: The test will fail if:<ul>
+<li>A specified route is not found in BGP table.</li>
+<li>A valid and active ECMP head is not found.</li>
+<li>ECMP contributors count does not match the expected value.</li>
+<li>Route is not installed in RIB table.</li>
+<li>BGP and RIB nexthops count do not match.</li>
+</ul>
+</li>
+</ul>
+</details>
+
+
+<details class="example" open>
+  <summary>Examples</summary>
+        <div class="highlight"><pre><span></span><code><span class="nt">anta.tests.routing</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">bgp</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyBGPRouteECMP</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">route_entries</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.100.0.128/31</span>
+<span class="w">              </span><span class="nt">vrf</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
+<span class="w">              </span><span class="nt">ecmp_count</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+</code></pre></div>
+</details>
+
+
+
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+<h3 id="anta.tests.routing.bgp.VerifyBGPRouteECMP-attributes">Inputs<a href="#anta.tests.routing.bgp.VerifyBGPRouteECMP-attributes" class="headerlink" title="Permanent link">&para;</a></h3>  
+
+  <div class="doc doc-children">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Description</th>
+              <th>Default</th>
+            </tr>
+          </thead>
+          <tbody>
+              <tr>
+                <td><code>route_entries</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="anta.input_models.routing.bgp.BgpRoute" href="#anta.input_models.routing.bgp.BgpRoute">BgpRoute</a>]</code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    List of BGP IPv4 route(s).
+                  </div>
+                </td>
+                <td>
+                    <em>-</em>
+                </td>
+              </tr>
+          </tbody>
+        </table>
+  </div>
+
+
+
+
+
+  </div>
+  <details class="quote">
+  <summary>Source code in <code>anta/tests/routing/bgp.py</code></summary>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1702</span>
+<span class="normal">1703</span>
+<span class="normal">1704</span>
+<span class="normal">1705</span>
+<span class="normal">1706</span>
+<span class="normal">1707</span>
+<span class="normal">1708</span>
+<span class="normal">1709</span>
+<span class="normal">1710</span>
+<span class="normal">1711</span>
+<span class="normal">1712</span>
+<span class="normal">1713</span>
+<span class="normal">1714</span>
+<span class="normal">1715</span>
+<span class="normal">1716</span>
+<span class="normal">1717</span>
+<span class="normal">1718</span>
+<span class="normal">1719</span>
+<span class="normal">1720</span>
+<span class="normal">1721</span>
+<span class="normal">1722</span>
+<span class="normal">1723</span>
+<span class="normal">1724</span>
+<span class="normal">1725</span>
+<span class="normal">1726</span>
+<span class="normal">1727</span>
+<span class="normal">1728</span>
+<span class="normal">1729</span>
+<span class="normal">1730</span>
+<span class="normal">1731</span>
+<span class="normal">1732</span>
+<span class="normal">1733</span>
+<span class="normal">1734</span>
+<span class="normal">1735</span>
+<span class="normal">1736</span>
+<span class="normal">1737</span>
+<span class="normal">1738</span>
+<span class="normal">1739</span>
+<span class="normal">1740</span>
+<span class="normal">1741</span>
+<span class="normal">1742</span>
+<span class="normal">1743</span>
+<span class="normal">1744</span>
+<span class="normal">1745</span>
+<span class="normal">1746</span>
+<span class="normal">1747</span>
+<span class="normal">1748</span>
+<span class="normal">1749</span>
+<span class="normal">1750</span>
+<span class="normal">1751</span>
+<span class="normal">1752</span>
+<span class="normal">1753</span>
+<span class="normal">1754</span>
+<span class="normal">1755</span>
+<span class="normal">1756</span>
+<span class="normal">1757</span>
+<span class="normal">1758</span>
+<span class="normal">1759</span>
+<span class="normal">1760</span>
+<span class="normal">1761</span>
+<span class="normal">1762</span>
+<span class="normal">1763</span>
+<span class="normal">1764</span>
+<span class="normal">1765</span>
+<span class="normal">1766</span>
+<span class="normal">1767</span>
+<span class="normal">1768</span>
+<span class="normal">1769</span>
+<span class="normal">1770</span>
+<span class="normal">1771</span>
+<span class="normal">1772</span>
+<span class="normal">1773</span>
+<span class="normal">1774</span>
+<span class="normal">1775</span>
+<span class="normal">1776</span>
+<span class="normal">1777</span>
+<span class="normal">1778</span>
+<span class="normal">1779</span>
+<span class="normal">1780</span>
+<span class="normal">1781</span>
+<span class="normal">1782</span>
+<span class="normal">1783</span>
+<span class="normal">1784</span>
+<span class="normal">1785</span>
+<span class="normal">1786</span>
+<span class="normal">1787</span>
+<span class="normal">1788</span>
+<span class="normal">1789</span>
+<span class="normal">1790</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPRouteECMP</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies BGP IPv4 route ECMP paths.</span>
+
+<span class="sd">    This test performs the following checks for each specified BGP route entry:</span>
+
+<span class="sd">      1. Route exists in BGP table.</span>
+<span class="sd">      2. First path is a valid and active ECMP head.</span>
+<span class="sd">      3. Correct number of valid ECMP contributors follow the head path.</span>
+<span class="sd">      4. Route is installed in RIB with same amount of next-hops.</span>
+
+<span class="sd">    Expected Results</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    * Success: The test will pass if all specified routes exist in both BGP and RIB tables with correct amount of ECMP paths.</span>
+<span class="sd">    * Failure: The test will fail if:</span>
+<span class="sd">        - A specified route is not found in BGP table.</span>
+<span class="sd">        - A valid and active ECMP head is not found.</span>
+<span class="sd">        - ECMP contributors count does not match the expected value.</span>
+<span class="sd">        - Route is not installed in RIB table.</span>
+<span class="sd">        - BGP and RIB nexthops count do not match.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    ```yaml</span>
+<span class="sd">    anta.tests.routing:</span>
+<span class="sd">      bgp:</span>
+<span class="sd">        - VerifyBGPRouteECMP:</span>
+<span class="sd">            route_entries:</span>
+<span class="sd">                - prefix: 10.100.0.128/31</span>
+<span class="sd">                  vrf: default</span>
+<span class="sd">                  ecmp_count: 2</span>
+<span class="sd">    ```</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;bgp&quot;</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show ip bgp vrf all&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span>
+        <span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show ip route vrf all bgp&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">4</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyBGPRouteECMP test.&quot;&quot;&quot;</span>
+
+        <span class="n">route_entries</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BgpRoute</span><span class="p">]</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of BGP IPv4 route(s).&quot;&quot;&quot;</span>
+
+        <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;route_entries&quot;</span><span class="p">)</span>
+        <span class="nd">@classmethod</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">validate_route_entries</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">route_entries</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BgpRoute</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">BgpRoute</span><span class="p">]:</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Validate that &#39;ecmp_count&#39; field is provided in each BGP route.&quot;&quot;&quot;</span>
+            <span class="k">for</span> <span class="n">route</span> <span class="ow">in</span> <span class="n">route_entries</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">route</span><span class="o">.</span><span class="n">ecmp_count</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">route</span><span class="si">}</span><span class="s2"> &#39;ecmp_count&#39; field missing in the input&quot;</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">route_entries</span>
+
+    <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyBGPRouteECMP.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">route</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">route_entries</span><span class="p">:</span>
+            <span class="c1"># Verify if the prefix exists in BGP table.</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">bgp_route_entry</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;vrfs..</span><span class="si">{</span><span class="n">route</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">..bgpRouteEntries..</span><span class="si">{</span><span class="n">route</span><span class="o">.</span><span class="n">prefix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;..&quot;</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">route</span><span class="si">}</span><span class="s2"> - prefix not found in BGP table&quot;</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="n">route_paths</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">bgp_route_entry</span><span class="p">[</span><span class="s2">&quot;bgpRoutePaths&quot;</span><span class="p">])</span>
+            <span class="n">head</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">route_paths</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="c1"># Verify if the active ECMP head exists.</span>
+            <span class="k">if</span> <span class="n">head</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">head</span><span class="p">[</span><span class="s2">&quot;routeType&quot;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;valid&quot;</span><span class="p">,</span> <span class="s2">&quot;active&quot;</span><span class="p">,</span> <span class="s2">&quot;ecmpHead&quot;</span><span class="p">]):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">route</span><span class="si">}</span><span class="s2"> - valid and active ECMP head not found&quot;</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="n">bgp_nexthops</span> <span class="o">=</span> <span class="p">{</span><span class="n">head</span><span class="p">[</span><span class="s2">&quot;nextHop&quot;</span><span class="p">]}</span>
+            <span class="n">bgp_nexthops</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="n">path</span><span class="p">[</span><span class="s2">&quot;nextHop&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">route_paths</span> <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">path</span><span class="p">[</span><span class="s2">&quot;routeType&quot;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;valid&quot;</span><span class="p">,</span> <span class="s2">&quot;ecmp&quot;</span><span class="p">,</span> <span class="s2">&quot;ecmpContributor&quot;</span><span class="p">])])</span>
+
+            <span class="c1"># Verify ECMP count is correct.</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bgp_nexthops</span><span class="p">)</span> <span class="o">!=</span> <span class="n">route</span><span class="o">.</span><span class="n">ecmp_count</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">route</span><span class="si">}</span><span class="s2"> - ECMP count mismatch - Expected: </span><span class="si">{</span><span class="n">route</span><span class="o">.</span><span class="n">ecmp_count</span><span class="si">}</span><span class="s2">, Actual: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">bgp_nexthops</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># Verify if the prefix exists in routing table.</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">route_entry</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;vrfs..</span><span class="si">{</span><span class="n">route</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">..routes..</span><span class="si">{</span><span class="n">route</span><span class="o">.</span><span class="n">prefix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;..&quot;</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">route</span><span class="si">}</span><span class="s2"> - prefix not found in routing table&quot;</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># Verify BGP and RIB nexthops are same.</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bgp_nexthops</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">route_entry</span><span class="p">[</span><span class="s2">&quot;vias&quot;</span><span class="p">]):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">route</span><span class="si">}</span><span class="s2"> - Nexthops count mismatch - BGP: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">bgp_nexthops</span><span class="p">)</span><span class="si">}</span><span class="s2">, RIB: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">route_entry</span><span class="p">[</span><span class="s1">&#39;vias&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+  </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
 <h2 id="anta.tests.routing.bgp.VerifyBGPRoutePaths" class="doc doc-heading">
             <span class="doc doc-object-name doc-class-name">VerifyBGPRoutePaths</span>
 
@@ -8501,7 +8858,17 @@ have successfully negotiated the specified AFI/SAFI</li>
 <span class="normal">1686</span>
 <span class="normal">1687</span>
 <span class="normal">1688</span>
-<span class="normal">1689</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPRoutePaths</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">1689</span>
+<span class="normal">1690</span>
+<span class="normal">1691</span>
+<span class="normal">1692</span>
+<span class="normal">1693</span>
+<span class="normal">1694</span>
+<span class="normal">1695</span>
+<span class="normal">1696</span>
+<span class="normal">1697</span>
+<span class="normal">1698</span>
+<span class="normal">1699</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPRoutePaths</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies BGP IPv4 route paths.</span>
 
 <span class="sd">    This test performs the following checks for each specified BGP route entry:</span>
@@ -8544,6 +8911,16 @@ have successfully negotiated the specified AFI/SAFI</li>
 
         <span class="n">route_entries</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BgpRoute</span><span class="p">]</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;List of BGP IPv4 route(s).&quot;&quot;&quot;</span>
+
+        <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;route_entries&quot;</span><span class="p">)</span>
+        <span class="nd">@classmethod</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">validate_route_entries</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">route_entries</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BgpRoute</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">BgpRoute</span><span class="p">]:</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Validate that &#39;paths&#39; field is provided in each BGP route.&quot;&quot;&quot;</span>
+            <span class="k">for</span> <span class="n">route</span> <span class="ow">in</span> <span class="n">route_entries</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">route</span><span class="o">.</span><span class="n">paths</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">route</span><span class="si">}</span><span class="s2"> &#39;paths&#39; field missing in the input&quot;</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">route_entries</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -10619,15 +10996,29 @@ Optional field in the `VerifyBGPPeerRouteLimit` test. If not provided, the test 
               <tr>
                 <td><code>paths</code></td>
                 <td>
-                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="anta.input_models.routing.bgp.BgpRoutePath" href="#anta.input_models.routing.bgp.BgpRoutePath">BgpRoutePath</a>]</code>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="anta.input_models.routing.bgp.BgpRoutePath" href="#anta.input_models.routing.bgp.BgpRoutePath">BgpRoutePath</a>] | None</code>
                 </td>
                 <td>
                   <div class="doc-md-description">
-                    A list of paths for the BGP route.
+                    A list of paths for the BGP route. Required field in the `VerifyBGPRoutePaths` test.
                   </div>
                 </td>
                 <td>
-                    <em>-</em>
+                      <code>None</code>
+                </td>
+              </tr>
+              <tr>
+                <td><code>ecmp_count</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a> | None</code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    The expected number of ECMP paths for the BGP route. Required field in the `VerifyBGPRouteECMP` test.
+                  </div>
+                </td>
+                <td>
+                      <code>None</code>
                 </td>
               </tr>
           </tbody>
@@ -10663,7 +11054,9 @@ Optional field in the `VerifyBGPPeerRouteLimit` test. If not provided, the test 
 <span class="normal">234</span>
 <span class="normal">235</span>
 <span class="normal">236</span>
-<span class="normal">237</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BgpRoute</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BgpRoute</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Model representing BGP routes.</span>
 
 <span class="sd">    Only IPv4 prefixes are supported for now.</span>
@@ -10674,8 +11067,10 @@ Optional field in the `VerifyBGPPeerRouteLimit` test. If not provided, the test 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;The IPv4 network address.&quot;&quot;&quot;</span>
     <span class="n">vrf</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Optional VRF for the BGP peer. Defaults to `default`.&quot;&quot;&quot;</span>
-    <span class="n">paths</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BgpRoutePath</span><span class="p">]</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A list of paths for the BGP route.&quot;&quot;&quot;</span>
+    <span class="n">paths</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BgpRoutePath</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A list of paths for the BGP route. Required field in the `VerifyBGPRoutePaths` test.&quot;&quot;&quot;</span>
+    <span class="n">ecmp_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The expected number of ECMP paths for the BGP route. Required field in the `VerifyBGPRouteECMP` test.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a human-readable string representation of the BgpRoute for reporting.</span>
@@ -10776,9 +11171,7 @@ Optional field in the `VerifyBGPPeerRouteLimit` test. If not provided, the test 
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/input_models/routing/bgp.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">240</span>
-<span class="normal">241</span>
-<span class="normal">242</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">242</span>
 <span class="normal">243</span>
 <span class="normal">244</span>
 <span class="normal">245</span>
@@ -10792,7 +11185,9 @@ Optional field in the `VerifyBGPPeerRouteLimit` test. If not provided, the test 
 <span class="normal">253</span>
 <span class="normal">254</span>
 <span class="normal">255</span>
-<span class="normal">256</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BgpRoutePath</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BgpRoutePath</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Model representing a BGP route path.&quot;&quot;&quot;</span>
 
     <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
