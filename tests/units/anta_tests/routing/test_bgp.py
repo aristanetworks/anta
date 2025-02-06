@@ -1384,12 +1384,12 @@ DATA: list[dict[str, Any]] = [
                 {
                     "peer_address": "172.30.11.1",
                     "vrf": "default",
-                    "capabilities": ["Ipv4 Unicast", "IPv4 Labeled Unicast"],
+                    "capabilities": ["Ipv4Unicast", "IPv4 labeled unicast"],
                 },
                 {
                     "peer_address": "172.30.11.10",
                     "vrf": "MGMT",
-                    "capabilities": ["ipv4 Unicast", "IPv4 MPLS Label"],
+                    "capabilities": ["ipv4_Unicast", "IPv4-MPLS-Label"],
                 },
             ]
         },
@@ -1441,12 +1441,12 @@ DATA: list[dict[str, Any]] = [
                 {
                     "peer_address": "172.30.11.10",
                     "vrf": "default",
-                    "capabilities": ["ipv4Unicast", "L2 Vpn EVPN"],
+                    "capabilities": ["ipv4Unicast", "l2-vpn-EVPN"],
                 },
                 {
                     "peer_address": "172.30.11.1",
                     "vrf": "MGMT",
-                    "capabilities": ["ipv4Unicast", "L2 Vpn EVPN"],
+                    "capabilities": ["ipv4Unicast", "l2vpnevpn"],
                 },
             ]
         },
@@ -1575,7 +1575,7 @@ DATA: list[dict[str, Any]] = [
                 {
                     "peer_address": "172.30.11.10",
                     "vrf": "MGMT",
-                    "capabilities": ["ipv4unicast", "ipv4mplslabel", "L2vpnEVPN"],
+                    "capabilities": ["ipv4_unicast", "ipv4mplslabel", "L2vpnEVPN"],
                 },
                 {
                     "peer_address": "172.30.11.11",
@@ -1662,7 +1662,7 @@ DATA: list[dict[str, Any]] = [
                     "peer_address": "172.30.11.10",
                     "vrf": "MGMT",
                     "strict": True,
-                    "capabilities": ["ipv4 Unicast", "ipv4MplsVpn"],
+                    "capabilities": ["ipv4-Unicast", "ipv4MplsVpn"],
                 },
             ]
         },
