@@ -454,7 +454,8 @@ anta.tests.routing.bgp:
           vrf: default
           strict: False
           capabilities:
-            - ipv4Unicast
+            - ipv4 labeled-Unicast
+            - ipv4MplsVpn
   - VerifyBGPPeerRouteLimit:
       # Verifies maximum routes and warning limit for BGP IPv4 peer(s).
       bgp_peers:
@@ -512,6 +513,12 @@ anta.tests.routing.bgp:
   - VerifyBGPPeersHealthRibd:
       # Verifies the health of all the BGP IPv4 peer(s).
       check_tcp_queues: True
+  - VerifyBGPRouteECMP:
+      # Verifies BGP IPv4 route ECMP paths.
+      route_entries:
+          - prefix: 10.100.0.128/31
+            vrf: default
+            ecmp_count: 2
   - VerifyBGPRoutePaths:
       # Verifies BGP IPv4 route paths.
       route_entries:
@@ -598,21 +605,18 @@ anta.tests.routing.generic:
       maximum: 20
 anta.tests.routing.isis:
   - VerifyISISInterfaceMode:
-      # Verifies interface mode for IS-IS
+      # Verifies IS-IS interfaces are running in the correct mode.
       interfaces:
         - name: Loopback0
           mode: passive
-          # vrf is set to default by default
         - name: Ethernet2
           mode: passive
           level: 2
-          # vrf is set to default by default
         - name: Ethernet1
           mode: point-to-point
-          vrf: default
-          # level is set to 2 by default
+          vrf: PROD
   - VerifyISISNeighborCount:
-      # Verifies number of IS-IS neighbors per level and per interface.
+      # Verifies the number of IS-IS neighbors per interface and level.
       interfaces:
         - name: Ethernet1
           level: 1
@@ -622,11 +626,11 @@ anta.tests.routing.isis:
           count: 1
         - name: Ethernet3
           count: 2
-          # level is set to 2 by default
   - VerifyISISNeighborState:
-      # Verifies all IS-IS neighbors are in UP state.
+      # Verifies the health of IS-IS neighbors.
+      check_all_vrfs: true
   - VerifyISISSegmentRoutingAdjacencySegments:
-      # Verify that all expected Adjacency segments are correctly visible for each interface.
+      # Verifies IS-IS segment routing adjacency segments.
       instances:
         - name: CORE-ISIS
           vrf: default
@@ -635,7 +639,7 @@ anta.tests.routing.isis:
               address: 10.0.1.3
               sid_origin: dynamic
   - VerifyISISSegmentRoutingDataplane:
-      # Verify dataplane of a list of ISIS-SR instances.
+      # Verifies IS-IS segment routing data-plane configuration.
       instances:
         - name: CORE-ISIS
           vrf: default
