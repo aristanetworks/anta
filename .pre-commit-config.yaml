@@ -46,7 +46,7 @@ repos:
           - '<!--|  ~|  -->'
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.9.2
+    rev: v0.9.4
     hooks:
     - id: ruff
       name: Run Ruff linter
@@ -55,7 +55,7 @@ repos:
       name: Run Ruff formatter
 
   - repo: https://github.com/pycqa/pylint
-    rev: "v3.3.3"
+    rev: "v3.3.4"
     hooks:
       - id: pylint
         name: Check code style with pylint
@@ -77,7 +77,7 @@ repos:
           - pydantic-settings
 
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.3.0
+    rev: v2.4.1
     hooks:
       - id: codespell
         name: Checks for common misspellings in text files.
@@ -101,7 +101,7 @@ repos:
         files: ^(anta|tests)/
 
   - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.43.0
+    rev: v0.44.0
     hooks:
       - id: markdownlint
         name: Check Markdown files style.

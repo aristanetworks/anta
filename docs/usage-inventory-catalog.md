@@ -45,7 +45,7 @@ The inventory file must start with the `anta_inventory` key then define one or m
 - `networks`: scan a network for devices accessible via eAPI
 - `ranges`: scan a range for devices accessible via eAPI
 
-A full description of the inventory model is available in [API documentation](api/inventory.models.input.md)
+A full description of the inventory model is available in [API documentation](api/inventory.md)
 
 > [!INFO]
 > Caching can be disabled per device, network or range by setting the `disable_cache` key to `True` in the inventory file. For more details about how caching is implemented in ANTA, please refer to [Caching in ANTA](advanced_usages/caching.md).

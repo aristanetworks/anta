@@ -515,7 +515,7 @@ ANTATEST_DATA: list[dict[str, Any]] = [
     },
 ]
 
-BLACKLIST_COMMANDS_PARAMS = ["reload", "reload --force", "write", "wr mem"]
+BLACKLIST_COMMANDS_PARAMS = ["reload", "reload now", "reload --force", "write", "wr mem", "write memory", "conf t", "configure terminal", "configure session"]
 
 
 class TestAntaTest:

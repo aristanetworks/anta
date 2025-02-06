@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from ipaddress import IPv4Network
+from ipaddress import IPv4Address, IPv4Network
 
 from pydantic import BaseModel, ConfigDict
 
@@ -22,7 +22,13 @@ class IPv4Routes(BaseModel):
     """VRF context. Defaults to `default` VRF."""
     route_type: IPv4RouteType | None = None
     """Expected route type. Required field in the `VerifyIPv4RouteType` test."""
+    nexthops: list[IPv4Address] | None = None
+    """A list of the next-hop IP addresses for the route. Required field in the `VerifyIPv4RouteNextHops` test."""
+    strict: bool = False
+    """If True, requires exact matching of provided nexthop(s).
+
+    Can be enabled in `VerifyIPv4RouteNextHops` test."""
 
     def __str__(self) -> str:
-        """Return a human-readable string representation of the IPv4RouteType for reporting."""
+        """Return a human-readable string representation of the IPv4Routes for reporting."""
         return f"Prefix: {self.prefix} VRF: {self.vrf}"
