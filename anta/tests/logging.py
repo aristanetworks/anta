@@ -192,7 +192,7 @@ class VerifyLoggingHosts(AntaTest):
         if not not_configured:
             self.result.is_success()
         else:
-            self.result.is_failure(f"Syslog servers {not_configured} are not configured in VRF {self.inputs.vrf}")
+            self.result.is_failure(f"Syslog servers {', '.join(not_configured)} are not configured in VRF {self.inputs.vrf}")
 
 
 class VerifyLoggingLogsGeneration(AntaTest):
