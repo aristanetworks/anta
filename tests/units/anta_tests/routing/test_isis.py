@@ -1405,7 +1405,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Tunnel to endpoint=IPv4Network('1.0.0.122/32') vias=None is not found."],
+            "messages": ["Tunnel to 1.0.0.122/32 is not found."],
         },
     },
     {
@@ -1486,7 +1486,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Tunnel to 1.0.0.13/32 is incorrect: incorrect tunnel type"],
+            "messages": ["Tunnel to 1.0.0.13/32 is incorrect."],
         },
     },
     {
@@ -1574,7 +1574,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Tunnel to 1.0.0.122/32 is incorrect: incorrect nexthop"],
+            "messages": ["Tunnel to 1.0.0.122/32 is incorrect."],
         },
     },
     {
@@ -1662,7 +1662,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Tunnel to 1.0.0.122/32 is incorrect: incorrect interface"],
+            "messages": ["Tunnel to 1.0.0.122/32 is incorrect."],
         },
     },
     {
@@ -1750,7 +1750,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Tunnel to 1.0.0.122/32 is incorrect: incorrect nexthop"],
+            "messages": ["Tunnel to 1.0.0.122/32 is incorrect."],
         },
     },
     {
@@ -1837,7 +1837,28 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Tunnel to 1.0.0.111/32 is incorrect: incorrect tunnel ID"],
+            "messages": ["Tunnel to 1.0.0.111/32 is incorrect."],
+        },
+    },
+    {
+        "test": VerifyISISSegmentRoutingTunnels,
+        "name": "skipped with ISIS-SR not running",
+        "eos_data": [{"entries": {}}],
+        "inputs": {
+            "entries": [
+                {"endpoint": "1.0.0.122/32"},
+                {"endpoint": "1.0.0.13/32", "vias": [{"type": "ip"}]},
+                {
+                    "endpoint": "1.0.0.111/32",
+                    "vias": [
+                        {"type": "tunnel", "tunnel_id": "unset"},
+                    ],
+                },
+            ]
+        },
+        "expected": {
+            "result": "skipped",
+            "messages": ["IS-IS-SR is not running on device."],
         },
     },
 ]

@@ -592,9 +592,6 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
         command_output = self.instance_commands[0].json_output
         self.result.is_success()
 
-        # initiate defaults
-        failure_message = []
-
         if len(command_output["entries"]) == 0:
             self.result.is_skipped("IS-IS-SR is not running on device.")
             return
@@ -602,129 +599,31 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
         for input_entry in self.inputs.entries:
             eos_entry = self._eos_entry_lookup(search_value=input_entry.endpoint, entries=command_output["entries"])
             if eos_entry is None:
-                failure_message.append(f"Tunnel to {input_entry} is not found.")
+                self.result.is_failure(f"Tunnel to {input_entry.endpoint!s} is not found.")
             elif input_entry.vias is not None:
-                failure_src = []
                 for via_input in input_entry.vias:
-                    if not self._check_tunnel_type(via_input, eos_entry):
-                        failure_src.append("incorrect tunnel type")
-                    if not self._check_tunnel_nexthop(via_input, eos_entry):
-                        failure_src.append("incorrect nexthop")
-                    if not self._check_tunnel_interface(via_input, eos_entry):
-                        failure_src.append("incorrect interface")
-                    if not self._check_tunnel_id(via_input, eos_entry):
-                        failure_src.append("incorrect tunnel ID")
+                    via_search_result = any(self._via_matches(via_input, eos_via) for eos_via in eos_entry["vias"])
+                    if not via_search_result:
+                        self.result.is_failure(f"Tunnel to {input_entry.endpoint!s} is incorrect.")
 
-                if failure_src:
-                    failure_message.append(f"Tunnel to {input_entry.endpoint!s} is incorrect: {', '.join(failure_src)}")
-
-        if failure_message:
-            self.result.is_failure("\n".join(failure_message))
-
-    def _check_tunnel_type(self, via_input: VerifyISISSegmentRoutingTunnels.Input.Entry.Vias, eos_entry: dict[str, Any]) -> bool:
-        """Check if the tunnel type specified in `via_input` matches any of the tunnel types in `eos_entry`.
+    def _via_matches(self, via_input: VerifyISISSegmentRoutingTunnels.Input.Entry.Vias, eos_via: dict[str, Any]) -> bool:
+        """Check if the via input matches the eos via.
 
         Parameters
         ----------
         via_input : VerifyISISSegmentRoutingTunnels.Input.Entry.Vias
-            The input tunnel type to check.
-        eos_entry : dict[str, Any]
-            The EOS entry containing the tunnel types.
+            The input via to check.
+        eos_via : dict[str, Any]
+            The EOS via to compare against.
 
         Returns
         -------
         bool
-            True if the tunnel type matches any of the tunnel types in `eos_entry`, False otherwise.
+            True if the via input matches the eos via, False otherwise.
         """
-        if via_input.type is not None:
-            return any(
-                via_input.type
-                == get_value(
-                    dictionary=eos_via,
-                    key="type",
-                    default="undefined",
-                )
-                for eos_via in eos_entry["vias"]
-            )
-        return True
-
-    def _check_tunnel_nexthop(self, via_input: VerifyISISSegmentRoutingTunnels.Input.Entry.Vias, eos_entry: dict[str, Any]) -> bool:
-        """Check if the tunnel nexthop matches the given input.
-
-        Parameters
-        ----------
-        via_input : VerifyISISSegmentRoutingTunnels.Input.Entry.Vias
-            The input via object.
-        eos_entry : dict[str, Any]
-            The EOS entry dictionary.
-
-        Returns
-        -------
-        bool
-            True if the tunnel nexthop matches, False otherwise.
-        """
-        if via_input.nexthop is not None:
-            return any(
-                str(via_input.nexthop)
-                == get_value(
-                    dictionary=eos_via,
-                    key="nexthop",
-                    default="undefined",
-                )
-                for eos_via in eos_entry["vias"]
-            )
-        return True
-
-    def _check_tunnel_interface(self, via_input: VerifyISISSegmentRoutingTunnels.Input.Entry.Vias, eos_entry: dict[str, Any]) -> bool:
-        """Check if the tunnel interface exists in the given EOS entry.
-
-        Parameters
-        ----------
-        via_input : VerifyISISSegmentRoutingTunnels.Input.Entry.Vias
-            The input via object.
-        eos_entry : dict[str, Any]
-            The EOS entry dictionary.
-
-        Returns
-        -------
-        bool
-            True if the tunnel interface exists, False otherwise.
-        """
-        if via_input.interface is not None:
-            return any(
-                via_input.interface
-                == get_value(
-                    dictionary=eos_via,
-                    key="interface",
-                    default="undefined",
-                )
-                for eos_via in eos_entry["vias"]
-            )
-        return True
-
-    def _check_tunnel_id(self, via_input: VerifyISISSegmentRoutingTunnels.Input.Entry.Vias, eos_entry: dict[str, Any]) -> bool:
-        """Check if the tunnel ID matches any of the tunnel IDs in the EOS entry's vias.
-
-        Parameters
-        ----------
-        via_input : VerifyISISSegmentRoutingTunnels.Input.Entry.Vias
-            The input vias to check.
-        eos_entry : dict[str, Any])
-            The EOS entry to compare against.
-
-        Returns
-        -------
-        bool
-            True if the tunnel ID matches any of the tunnel IDs in the EOS entry's vias, False otherwise.
-        """
-        if via_input.tunnel_id is not None:
-            return any(
-                via_input.tunnel_id.upper()
-                == get_value(
-                    dictionary=eos_via,
-                    key="tunnelId.type",
-                    default="undefined",
-                ).upper()
-                for eos_via in eos_entry["vias"]
-            )
-        return True
+        return (
+            (via_input.type is None or via_input.type == eos_via.get("type"))
+            and (via_input.nexthop is None or str(via_input.nexthop) == eos_via.get("nexthop"))
+            and (via_input.interface is None or via_input.interface == eos_via.get("interface"))
+            and (via_input.tunnel_id is None or via_input.tunnel_id.upper() == get_value(eos_via, "tunnelId.type", default="").upper())
+        )
