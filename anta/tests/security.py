@@ -241,10 +241,10 @@ class VerifyAPIHttpsSSL(AntaTest):
             if command_output["sslProfile"]["name"] == self.inputs.profile and command_output["sslProfile"]["state"] == "valid":
                 self.result.is_success()
             else:
-                self.result.is_failure(f"eAPI HTTPS server SSL profile: {self.inputs.profile} is misconfigured or invalid")
+                self.result.is_failure(f"eAPI HTTPS server SSL profile {self.inputs.profile} is misconfigured or invalid")
 
         except KeyError:
-            self.result.is_failure(f"eAPI HTTPS server SSL profile: {self.inputs.profile} is not configured")
+            self.result.is_failure(f"eAPI HTTPS server SSL profile {self.inputs.profile} is not configured")
 
 
 class VerifyAPIIPv4Acl(AntaTest):

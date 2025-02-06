@@ -192,7 +192,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"profile": "API_SSL_Profile"},
-        "expected": {"result": "failure", "messages": ["eAPI HTTPS server SSL profile: API_SSL_Profile is not configured"]},
+        "expected": {"result": "failure", "messages": ["eAPI HTTPS server SSL profile API_SSL_Profile is not configured"]},
     },
     {
         "name": "failure-misconfigured-invalid",
@@ -209,7 +209,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"profile": "API_SSL_Profile"},
-        "expected": {"result": "failure", "messages": ["eAPI HTTPS server SSL profile: API_SSL_Profile is misconfigured or invalid"]},
+        "expected": {"result": "failure", "messages": ["eAPI HTTPS server SSL profile API_SSL_Profile is misconfigured or invalid"]},
     },
     {
         "name": "success",
