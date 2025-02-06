@@ -68,7 +68,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"minimum": 42, "maximum": 666},
-        "expected": {"result": "failure", "messages": ["routing-table has 1000 routes and not between min `42` and maximum `666`"]},
+        "expected": {"result": "failure", "messages": ["Routing table contains 1000 routes, outside the range of 42 to 666"]},
     },
     {
         "name": "success",
