@@ -94,7 +94,7 @@ class SnmpSourceInterface(BaseModel):
 
 
 class SnmpGroup(BaseModel):
-    """Model for a SNMP group."""
+    """Model for an SNMP group."""
 
     group_name: str
     """SNMP group name."""
