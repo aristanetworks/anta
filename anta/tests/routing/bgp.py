@@ -550,7 +550,8 @@ class VerifyBGPPeerMPCaps(AntaTest):
                 vrf: default
                 strict: False
                 capabilities:
-                  - ipv4Unicast
+                  - ipv4 labeled-Unicast
+                  - ipv4MplsVpn
     ```
     """
 
@@ -1625,6 +1626,7 @@ class VerifyBGPRoutePaths(AntaTest):
     """Verifies BGP IPv4 route paths.
 
     This test performs the following checks for each specified BGP route entry:
+
       1. Verifies the specified BGP route exists in the routing table.
       2. For each expected paths:
           - Verifies a path with matching next-hop exists.

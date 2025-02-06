@@ -15,12 +15,7 @@ import re
 import pytest
 
 from anta.custom_types import (
-    REGEX_BGP_IPV4_MPLS_VPN,
-    REGEX_BGP_IPV4_UNICAST,
     REGEX_TYPE_PORTCHANNEL,
-    REGEXP_BGP_IPV4_MPLS_LABELS,
-    REGEXP_BGP_L2VPN_AFI,
-    REGEXP_EOS_BLACKLIST_CMDS,
     REGEXP_INTERFACE_ID,
     REGEXP_PATH_MARKERS,
     REGEXP_TYPE_EOS_INTERFACE,
@@ -49,40 +44,6 @@ def test_regexp_path_markers() -> None:
     assert re.search(REGEXP_PATH_MARKERS, "aaaa") is None
     assert re.search(REGEXP_PATH_MARKERS, "11111") is None
     assert re.search(REGEXP_PATH_MARKERS, ".[]?<>") is None
-
-
-def test_regexp_bgp_l2vpn_afi() -> None:
-    """Test REGEXP_BGP_L2VPN_AFI."""
-    # Test strings that should match the pattern
-    assert re.search(REGEXP_BGP_L2VPN_AFI, "l2vpn-evpn") is not None
-    assert re.search(REGEXP_BGP_L2VPN_AFI, "l2 vpn evpn") is not None
-    assert re.search(REGEXP_BGP_L2VPN_AFI, "l2-vpn evpn") is not None
-    assert re.search(REGEXP_BGP_L2VPN_AFI, "l2vpn evpn") is not None
-    assert re.search(REGEXP_BGP_L2VPN_AFI, "l2vpnevpn") is not None
-    assert re.search(REGEXP_BGP_L2VPN_AFI, "l2 vpnevpn") is not None
-
-    # Test strings that should not match the pattern
-    assert re.search(REGEXP_BGP_L2VPN_AFI, "al2vpn evpn") is None
-    assert re.search(REGEXP_BGP_L2VPN_AFI, "l2vpn-evpna") is None
-
-
-def test_regexp_bgp_ipv4_mpls_labels() -> None:
-    """Test REGEXP_BGP_IPV4_MPLS_LABELS."""
-    assert re.search(REGEXP_BGP_IPV4_MPLS_LABELS, "ipv4-mpls-label") is not None
-    assert re.search(REGEXP_BGP_IPV4_MPLS_LABELS, "ipv4 mpls labels") is not None
-    assert re.search(REGEXP_BGP_IPV4_MPLS_LABELS, "ipv4Mplslabel") is None
-
-
-def test_regex_bgp_ipv4_mpls_vpn() -> None:
-    """Test REGEX_BGP_IPV4_MPLS_VPN."""
-    assert re.search(REGEX_BGP_IPV4_MPLS_VPN, "ipv4-mpls-vpn") is not None
-    assert re.search(REGEX_BGP_IPV4_MPLS_VPN, "ipv4_mplsvpn") is None
-
-
-def test_regex_bgp_ipv4_unicast() -> None:
-    """Test REGEX_BGP_IPV4_UNICAST."""
-    assert re.search(REGEX_BGP_IPV4_UNICAST, "ipv4-uni-cast") is not None
-    assert re.search(REGEX_BGP_IPV4_UNICAST, "ipv4+unicast") is None
 
 
 def test_regexp_type_interface_id() -> None:
@@ -174,35 +135,6 @@ def test_regexp_type_hostname() -> None:
     assert re.match(REGEXP_TYPE_HOSTNAME, "hostname..com") is None
 
 
-@pytest.mark.parametrize(
-    ("test_string", "expected"),
-    [
-        ("reload", True),  # matches "^reload.*"
-        ("reload now", True),  # matches "^reload.*"
-        ("configure terminal", True),  # matches "^conf\w*\s*(terminal|session)*"
-        ("conf t", True),  # matches "^conf\w*\s*(terminal|session)*"
-        ("write memory", True),  # matches "^wr\w*\s*\w+"
-        ("wr mem", True),  # matches "^wr\w*\s*\w+"
-        ("show running-config", False),  # does not match any regex
-        ("no shutdown", False),  # does not match any regex
-        ("", False),  # empty string does not match any regex
-    ],
-)
-def test_regexp_eos_blacklist_cmds(test_string: str, expected: bool) -> None:
-    """Test REGEXP_EOS_BLACKLIST_CMDS."""
-
-    def matches_any_regex(string: str, regex_list: list[str]) -> bool:
-        """Check if a string matches at least one regular expression in a list.
-
-        :param string: The string to check.
-        :param regex_list: A list of regular expressions.
-        :return: True if the string matches at least one regular expression, False otherwise.
-        """
-        return any(re.match(regex, string) for regex in regex_list)
-
-    assert matches_any_regex(test_string, REGEXP_EOS_BLACKLIST_CMDS) == expected
-
-
 # ------------------------------------------------------------------------------
 # TEST custom_types.py functions
 # ------------------------------------------------------------------------------
@@ -219,6 +151,7 @@ def test_interface_autocomplete_success() -> None:
     assert interface_autocomplete("lo4") == "Loopback4"
     assert interface_autocomplete("Po1000") == "Port-Channel1000"
     assert interface_autocomplete("Po 1000") == "Port-Channel1000"
+    assert interface_autocomplete("Vl1000") == "Vlan1000"
 
 
 def test_interface_autocomplete_no_alias() -> None:
@@ -238,13 +171,29 @@ def test_interface_autocomplete_failure() -> None:
     ("str_input", "expected_output"),
     [
         pytest.param("L2VPNEVPN", "l2VpnEvpn", id="l2VpnEvpn"),
-        pytest.param("ipv4-mplsLabels", "ipv4MplsLabels", id="ipv4MplsLabels"),
+        pytest.param("IPv4 Labeled Unicast", "ipv4MplsLabels", id="ipv4MplsLabels"),
         pytest.param("ipv4-mpls-vpn", "ipv4MplsVpn", id="ipv4MplsVpn"),
-        pytest.param("ipv4-unicast", "ipv4Unicast", id="ipv4Unicast"),
-        pytest.param("BLAH", "BLAH", id="unmatched"),
+        pytest.param("ipv4_unicast", "ipv4Unicast", id="ipv4Unicast"),
+        pytest.param("ipv4 Mvpn", "ipv4Mvpn", id="ipv4Mvpn"),
+        pytest.param("ipv4_Flow-Spec Vpn", "ipv4FlowSpecVpn", id="ipv4FlowSpecVpn"),
+        pytest.param("Dynamic-Path-Selection", "dps", id="dps"),
+        pytest.param("ipv6unicast", "ipv6Unicast", id="ipv6Unicast"),
+        pytest.param("IPv4-Multicast", "ipv4Multicast", id="ipv4Multicast"),
+        pytest.param("IPv6_multicast", "ipv6Multicast", id="ipv6Multicast"),
+        pytest.param("ipv6_Mpls-Labels", "ipv6MplsLabels", id="ipv6MplsLabels"),
+        pytest.param("IPv4_SR_TE", "ipv4SrTe", id="ipv4SrTe"),
+        pytest.param("iPv6-sR-tE", "ipv6SrTe", id="ipv6SrTe"),
+        pytest.param("ipv6_mpls-vpn", "ipv6MplsVpn", id="ipv6MplsVpn"),
+        pytest.param("IPv4 Flow-spec", "ipv4FlowSpec", id="ipv4FlowSpec"),
+        pytest.param("IPv6Flow_spec", "ipv6FlowSpec", id="ipv6FlowSpec"),
+        pytest.param("ipv6 Flow-Spec Vpn", "ipv6FlowSpecVpn", id="ipv6FlowSpecVpn"),
+        pytest.param("L2VPN VPLS", "l2VpnVpls", id="l2VpnVpls"),
+        pytest.param("link-state", "linkState", id="linkState"),
+        pytest.param("RT_Membership", "rtMembership", id="rtMembership"),
+        pytest.param("ipv4-RT_Membership", "rtMembership", id="rtMembership"),
     ],
 )
-def test_bgp_multiprotocol_capabilities_abbreviationsh(str_input: str, expected_output: str) -> None:
+def test_bgp_multiprotocol_capabilities_abbreviations(str_input: str, expected_output: str) -> None:
     """Test bgp_multiprotocol_capabilities_abbreviations."""
     assert bgp_multiprotocol_capabilities_abbreviations(str_input) == expected_output
 
@@ -286,11 +235,7 @@ def test_interface_case_sensitivity_uppercase() -> None:
 @pytest.mark.parametrize(
     "str_input",
     [
-        REGEX_BGP_IPV4_MPLS_VPN,
-        REGEX_BGP_IPV4_UNICAST,
         REGEX_TYPE_PORTCHANNEL,
-        REGEXP_BGP_IPV4_MPLS_LABELS,
-        REGEXP_BGP_L2VPN_AFI,
         REGEXP_INTERFACE_ID,
         REGEXP_PATH_MARKERS,
         REGEXP_TYPE_EOS_INTERFACE,
