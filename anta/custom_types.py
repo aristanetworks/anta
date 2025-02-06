@@ -10,9 +10,6 @@ from pydantic import Field
 from pydantic.functional_validators import AfterValidator, BeforeValidator
 
 # Regular Expression definition
-# TODO: make this configurable - with an env var maybe?
-REGEXP_EOS_BLACKLIST_CMDS = [r"^reload.*", r"^conf\w*\s*(terminal|session)*", r"^wr\w*\s*\w+"]
-"""List of regular expressions to blacklist from eos commands."""
 REGEXP_PATH_MARKERS = r"[\\\/\s]"
 """Match directory path from string."""
 REGEXP_INTERFACE_ID = r"\d+(\/\d+)*(\.\d+)?"
@@ -58,7 +55,7 @@ def interface_autocomplete(v: str) -> str:
         raise ValueError(msg)
     intf_id = m[0]
 
-    alias_map = {"et": "Ethernet", "eth": "Ethernet", "po": "Port-Channel", "lo": "Loopback"}
+    alias_map = {"et": "Ethernet", "eth": "Ethernet", "po": "Port-Channel", "lo": "Loopback", "vl": "Vlan"}
 
     return next((f"{full_name}{intf_id}" for alias, full_name in alias_map.items() if v.lower().startswith(alias)), v)
 

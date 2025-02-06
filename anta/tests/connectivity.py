@@ -7,10 +7,15 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from typing import ClassVar
+from typing import ClassVar, TypeVar
+
+from pydantic import field_validator
 
 from anta.input_models.connectivity import Host, LLDPNeighbor, Neighbor
 from anta.models import AntaCommand, AntaTemplate, AntaTest
+
+# Using a TypeVar for the Host model since mypy thinks it's a ClassVar and not a valid type when used in field validators
+T = TypeVar("T", bound=Host)
 
 
 class VerifyReachability(AntaTest):
@@ -37,6 +42,11 @@ class VerifyReachability(AntaTest):
               vrf: MGMT
               df_bit: True
               size: 100
+            - source: fd12:3456:789a:1::1
+              destination: fd12:3456:789a:1::2
+              vrf: default
+              df_bit: True
+              size: 100
     ```
     """
 
@@ -53,6 +63,16 @@ class VerifyReachability(AntaTest):
         """List of host to ping."""
         Host: ClassVar[type[Host]] = Host
         """To maintain backward compatibility."""
+
+        @field_validator("hosts")
+        @classmethod
+        def validate_hosts(cls, hosts: list[T]) -> list[T]:
+            """Validate the 'destination' and 'source' IP address family in each host."""
+            for host in hosts:
+                if not isinstance(host.source, str) and host.destination.version != host.source.version:
+                    msg = f"{host} IP address family for destination does not match source"
+                    raise ValueError(msg)
+            return hosts
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each host in the input list."""
