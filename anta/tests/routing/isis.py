@@ -13,7 +13,7 @@ from typing import Any, ClassVar, Literal
 from pydantic import BaseModel, field_validator
 
 from anta.custom_types import Interface
-from anta.input_models.routing.isis import ISISInstance, ISISInterface
+from anta.input_models.routing.isis import InterfaceCount, InterfaceState, ISISInstance, IsisInstance, ISISInterface
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_item, get_value
 
@@ -110,7 +110,7 @@ class VerifyISISNeighborCount(AntaTest):
 
         interfaces: list[ISISInterface]
         """List of IS-IS interfaces with their information."""
-        InterfaceCount: ClassVar[type[ISISInterface]] = ISISInterface
+        InterfaceCount: ClassVar[type[InterfaceCount]] = InterfaceCount
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -174,7 +174,7 @@ class VerifyISISInterfaceMode(AntaTest):
 
         interfaces: list[ISISInterface]
         """List of IS-IS interfaces with their information."""
-        InterfaceState: ClassVar[type[ISISInterface]] = ISISInterface
+        InterfaceState: ClassVar[type[InterfaceState]] = InterfaceState
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -247,7 +247,7 @@ class VerifyISISSegmentRoutingAdjacencySegments(AntaTest):
 
         instances: list[ISISInstance]
         """List of IS-IS instances with their information."""
-        IsisInstance: ClassVar[type[ISISInstance]] = ISISInstance
+        IsisInstance: ClassVar[type[IsisInstance]] = IsisInstance
 
         @field_validator("instances")
         @classmethod
@@ -323,7 +323,7 @@ class VerifyISISSegmentRoutingDataplane(AntaTest):
 
         instances: list[ISISInstance]
         """List of IS-IS instances with their information."""
-        IsisInstance: ClassVar[type[ISISInstance]] = ISISInstance
+        IsisInstance: ClassVar[type[IsisInstance]] = IsisInstance
 
         @field_validator("instances")
         @classmethod

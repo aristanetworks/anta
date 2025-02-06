@@ -6,7 +6,8 @@
 from __future__ import annotations
 
 from ipaddress import IPv4Address
-from typing import Literal
+from typing import Any, Literal
+from warnings import warn
 
 from pydantic import BaseModel, ConfigDict
 
@@ -39,7 +40,7 @@ class Segment(BaseModel):
     """Local interface name."""
     level: Literal[1, 2] = 2
     """IS-IS level of the segment."""
-    sid_origin: Literal["dynamic"] = "dynamic"
+    sid_origin: Literal["dynamic", "configured"] = "dynamic"
     """Origin of the segment ID."""
     address: IPv4Address
     """Adjacency IPv4 address of the segment."""
@@ -67,3 +68,57 @@ class ISISInterface(BaseModel):
     def __str__(self) -> str:
         """Return a human-readable string representation of the ISISInterface for reporting."""
         return f"Interface: {self.name} VRF: {self.vrf} Level: {self.level}"
+
+
+class InterfaceCount(ISISInterface):  # pragma: no cover
+    """Alias for the ISISInterface model to maintain backward compatibility.
+
+    When initialized, it will emit a deprecation warning and call the ISISInterface model.
+
+    TODO: Remove this class in ANTA v2.0.0.
+    """
+
+    def __init__(self, **data: Any) -> None:  # noqa: ANN401
+        """Initialize the InterfaceCount class, emitting a deprecation warning."""
+        warn(
+            message="InterfaceCount model is deprecated and will be removed in ANTA v2.0.0. Use the ISISInterface model instead.",
+            category=DeprecationWarning,
+            stacklevel=2,
+        )
+        super().__init__(**data)
+
+
+class InterfaceState(ISISInterface):  # pragma: no cover
+    """Alias for the ISISInterface model to maintain backward compatibility.
+
+    When initialized, it will emit a deprecation warning and call the ISISInterface model.
+
+    TODO: Remove this class in ANTA v2.0.0.
+    """
+
+    def __init__(self, **data: Any) -> None:  # noqa: ANN401
+        """Initialize the InterfaceState class, emitting a deprecation warning."""
+        warn(
+            message="InterfaceState model is deprecated and will be removed in ANTA v2.0.0. Use the ISISInterface model instead.",
+            category=DeprecationWarning,
+            stacklevel=2,
+        )
+        super().__init__(**data)
+
+
+class IsisInstance(ISISInstance):  # pragma: no cover
+    """Alias for the ISISInstance model to maintain backward compatibility.
+
+    When initialized, it will emit a deprecation warning and call the ISISInstance model.
+
+    TODO: Remove this class in ANTA v2.0.0.
+    """
+
+    def __init__(self, **data: Any) -> None:  # noqa: ANN401
+        """Initialize the IsisInstance class, emitting a deprecation warning."""
+        warn(
+            message="IsisInstance model is deprecated and will be removed in ANTA v2.0.0. Use the ISISInstance model instead.",
+            category=DeprecationWarning,
+            stacklevel=2,
+        )
+        super().__init__(**data)
