@@ -477,7 +477,7 @@ class VerifyBGPExchangedRoutes(AntaTest):
         return [template.render(peer=str(bgp_peer.peer_address), vrf=bgp_peer.vrf) for bgp_peer in self.inputs.bgp_peers]
 
     def _validate_bgp_route_paths(self, peer: str, route_type: str, route: str, entries: dict[str, Any]) -> str | None:
-        """Validate the bgp route paths."""
+        """Validate the BGP route paths."""
         # Check if the route is found
         if route in entries:
             # Check if the route is active and valid
