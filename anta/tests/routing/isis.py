@@ -592,9 +592,6 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
         command_output = self.instance_commands[0].json_output
         self.result.is_success()
 
-        # initiate defaults
-        failure_message = []
-
         if len(command_output["entries"]) == 0:
             self.result.is_skipped("IS-IS-SR is not running on device.")
             return
