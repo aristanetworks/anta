@@ -515,6 +515,12 @@ anta.tests.routing.bgp:
   - VerifyBGPPeersHealthRibd:
       # Verifies the health of all the BGP IPv4 peer(s).
       check_tcp_queues: True
+  - VerifyBGPRouteECMP:
+      # Verifies BGP IPv4 route ECMP paths.
+      route_entries:
+          - prefix: 10.100.0.128/31
+            vrf: default
+            ecmp_count: 2
   - VerifyBGPRoutePaths:
       # Verifies BGP IPv4 route paths.
       route_entries:

@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 import pytest
 from pydantic import ValidationError
 
-from anta.input_models.routing.bgp import BgpAddressFamily, BgpPeer
+from anta.input_models.routing.bgp import BgpAddressFamily, BgpPeer, BgpRoute
 from anta.tests.routing.bgp import (
     VerifyBGPExchangedRoutes,
     VerifyBGPNlriAcceptance,
@@ -19,7 +19,9 @@ from anta.tests.routing.bgp import (
     VerifyBGPPeerGroup,
     VerifyBGPPeerMPCaps,
     VerifyBGPPeerRouteLimit,
+    VerifyBGPRouteECMP,
     VerifyBgpRouteMaps,
+    VerifyBGPRoutePaths,
     VerifyBGPSpecificPeers,
     VerifyBGPTimers,
 )
@@ -288,3 +290,62 @@ class TestVerifyBGPNlriAcceptanceInput:
         """Test VerifyBGPNlriAcceptance.Input invalid inputs."""
         with pytest.raises(ValidationError):
             VerifyBGPNlriAcceptance.Input(bgp_peers=bgp_peers)
+
+
+class TestVerifyBGPRouteECMPInput:
+    """Test anta.tests.routing.bgp.VerifyBGPRouteECMP.Input."""
+
+    @pytest.mark.parametrize(
+        ("bgp_routes"),
+        [
+            pytest.param([{"prefix": "10.100.0.128/31", "vrf": "default", "ecmp_count": 2}], id="valid"),
+        ],
+    )
+    def test_valid(self, bgp_routes: list[BgpRoute]) -> None:
+        """Test VerifyBGPRouteECMP.Input valid inputs."""
+        VerifyBGPRouteECMP.Input(route_entries=bgp_routes)
+
+    @pytest.mark.parametrize(
+        ("bgp_routes"),
+        [
+            pytest.param([{"prefix": "10.100.0.128/31", "vrf": "default"}], id="invalid"),
+        ],
+    )
+    def test_invalid(self, bgp_routes: list[BgpRoute]) -> None:
+        """Test VerifyBGPRouteECMP.Input invalid inputs."""
+        with pytest.raises(ValidationError):
+            VerifyBGPRouteECMP.Input(route_entries=bgp_routes)
+
+
+class TestVerifyBGPRoutePathsInput:
+    """Test anta.tests.routing.bgp.VerifyBGPRoutePaths.Input."""
+
+    @pytest.mark.parametrize(
+        ("route_entries"),
+        [
+            pytest.param(
+                [
+                    {
+                        "prefix": "10.100.0.128/31",
+                        "vrf": "default",
+                        "paths": [{"nexthop": "10.100.0.10", "origin": "Igp"}, {"nexthop": "10.100.4.5", "origin": "Incomplete"}],
+                    }
+                ],
+                id="valid",
+            ),
+        ],
+    )
+    def test_valid(self, route_entries: list[BgpRoute]) -> None:
+        """Test VerifyBGPRoutePaths.Input valid inputs."""
+        VerifyBGPRoutePaths.Input(route_entries=route_entries)
+
+    @pytest.mark.parametrize(
+        ("route_entries"),
+        [
+            pytest.param([{"prefix": "10.100.0.128/31", "vrf": "default"}], id="invalid"),
+        ],
+    )
+    def test_invalid(self, route_entries: list[BgpRoute]) -> None:
+        """Test VerifyBGPRoutePaths.Input invalid inputs."""
+        with pytest.raises(ValidationError):
+            VerifyBGPRoutePaths.Input(route_entries=route_entries)
