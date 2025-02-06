@@ -7,7 +7,7 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from typing import ClassVar, TypeVar
+from typing import Any, ClassVar, TypeVar
 
 from pydantic import field_validator
 
@@ -446,8 +446,6 @@ class VerifyBGPExchangedRoutes(AntaTest):
                 advertised_routes:
                   - 192.0.255.1/32
                   - 192.0.254.5/32
-                received_routes:
-                  - 192.0.254.3/32
     ```
     """
 
@@ -469,7 +467,7 @@ class VerifyBGPExchangedRoutes(AntaTest):
         def validate_bgp_peers(cls, bgp_peers: list[BgpPeer]) -> list[BgpPeer]:
             """Validate that 'advertised_routes' or 'received_routes' field is provided in each BGP peer."""
             for peer in bgp_peers:
-                if peer.advertised_routes is None or peer.received_routes is None:
+                if peer.advertised_routes is None and peer.received_routes is None:
                     msg = f"{peer} 'advertised_routes' or 'received_routes' field missing in the input"
                     raise ValueError(msg)
             return bgp_peers
@@ -477,6 +475,20 @@ class VerifyBGPExchangedRoutes(AntaTest):
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each BGP peer in the input list."""
         return [template.render(peer=str(bgp_peer.peer_address), vrf=bgp_peer.vrf) for bgp_peer in self.inputs.bgp_peers]
+
+    def _validate_bgp_route_paths(self, peer: str, route_type: str, route: str, entries: dict[str, Any]) -> str | None:
+        """Validate the BGP route paths."""
+        # Check if the route is found
+        if route in entries:
+            # Check if the route is active and valid
+            route_paths = entries[route]["bgpRoutePaths"][0]["routeType"]
+            is_active = route_paths["active"]
+            is_valid = route_paths["valid"]
+            if not is_active or not is_valid:
+                return f"{peer} {route_type} route: {route} - Valid: {is_valid}, Active: {is_active}"
+            return None
+
+        return f"{peer} {route_type} route: {route} - Not found"
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -499,19 +511,16 @@ class VerifyBGPExchangedRoutes(AntaTest):
 
             # Validate both advertised and received routes
             for route_type, routes in zip(["Advertised", "Received"], [peer.advertised_routes, peer.received_routes]):
+                # Skipping the validation for routes if user input is None
+                if not routes:
+                    continue
+
                 entries = command_output[route_type]
                 for route in routes:
-                    # Check if the route is found
-                    if str(route) not in entries:
-                        self.result.is_failure(f"{peer} {route_type} route: {route} - Not found")
-                        continue
-
-                    # Check if the route is active and valid
-                    route_paths = entries[str(route)]["bgpRoutePaths"][0]["routeType"]
-                    is_active = route_paths["active"]
-                    is_valid = route_paths["valid"]
-                    if not is_active or not is_valid:
-                        self.result.is_failure(f"{peer} {route_type} route: {route} - Valid: {is_valid}, Active: {is_active}")
+                    # Check if the route is found. If yes then checks the route is active and valid
+                    failure_msg = self._validate_bgp_route_paths(str(peer), route_type, str(route), entries)
+                    if failure_msg:
+                        self.result.is_failure(failure_msg)
 
 
 class VerifyBGPPeerMPCaps(AntaTest):
