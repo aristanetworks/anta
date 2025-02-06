@@ -1843,11 +1843,7 @@ DATA: list[dict[str, Any]] = [
     {
         "test": VerifyISISSegmentRoutingTunnels,
         "name": "skipped with ISIS-SR not running",
-        "eos_data": [
-            {
-                "entries": {}
-            }
-        ],
+        "eos_data": [{"entries": {}}],
         "inputs": {
             "entries": [
                 {"endpoint": "1.0.0.122/32"},

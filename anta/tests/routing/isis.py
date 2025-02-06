@@ -1,4 +1,3 @@
-
 # Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
@@ -8,8 +7,6 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-import sys
-import logging
 from ipaddress import IPv4Address, IPv4Network
 from typing import Any, ClassVar, Literal
 
@@ -520,8 +517,7 @@ class VerifyISISSegmentRoutingDataplane(AntaTest):
 
 
 class VerifyISISSegmentRoutingTunnels(AntaTest):
-    """
-    Verify ISIS-SR tunnels computed by device.
+    """Verify ISIS-SR tunnels computed by device.
 
     Expected Results
     ----------------
@@ -614,8 +610,7 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
                         self.result.is_failure(f"Tunnel to {input_entry.endpoint!s} is incorrect.")
 
     def _via_matches(self, via_input: VerifyISISSegmentRoutingTunnels.Input.Entry.Vias, eos_via: dict[str, Any]) -> bool:
-        """
-        Check if the via input matches the eos via.
+        """Check if the via input matches the eos via.
 
         Parameters
         ----------
@@ -633,5 +628,5 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
             (via_input.type is None or via_input.type == eos_via.get("type"))
             and (via_input.nexthop is None or str(via_input.nexthop) == eos_via.get("nexthop"))
             and (via_input.interface is None or via_input.interface == eos_via.get("interface"))
-            and (via_input.tunnel_id is None or via_input.tunnel_id.upper() ==get_value(eos_via, "tunnelId.type", default="").upper())
+            and (via_input.tunnel_id is None or via_input.tunnel_id.upper() == get_value(eos_via, "tunnelId.type", default="").upper())
         )
