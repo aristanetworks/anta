@@ -2467,6 +2467,20 @@
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#anta.custom_types.SnmpVersionV3AuthType" class="md-nav__link">
+      <span class="md-ellipsis">
+        SnmpVersionV3AuthType
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#anta.custom_types.Vlan" class="md-nav__link">
       <span class="md-ellipsis">
         Vlan
@@ -2554,6 +2568,20 @@
     <a href="#anta.custom_types.interface_case_sensitivity" class="md-nav__link">
       <span class="md-ellipsis">
         interface_case_sensitivity
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.custom_types.snmp_v3_prefix" class="md-nav__link">
+      <span class="md-ellipsis">
+        snmp_v3_prefix
       </span>
     </a>
 
@@ -3448,6 +3476,20 @@
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#anta.custom_types.SnmpVersionV3AuthType" class="md-nav__link">
+      <span class="md-ellipsis">
+        SnmpVersionV3AuthType
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#anta.custom_types.Vlan" class="md-nav__link">
       <span class="md-ellipsis">
         Vlan
@@ -3535,6 +3577,20 @@
     <a href="#anta.custom_types.interface_case_sensitivity" class="md-nav__link">
       <span class="md-ellipsis">
         interface_case_sensitivity
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.custom_types.snmp_v3_prefix" class="md-nav__link">
+      <span class="md-ellipsis">
+        snmp_v3_prefix
       </span>
     </a>
 
@@ -4639,6 +4695,30 @@
 
 
 
+<h4 id="anta.custom_types.SnmpVersionV3AuthType" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">SnmpVersionV3AuthType</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+<a href="#anta.custom_types.SnmpVersionV3AuthType" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">SnmpVersionV3AuthType</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Annotated" href="https://docs.python.org/3/library/typing.html#typing.Annotated">Annotated</a></span><span class="p">[</span>
+    <span class="n"><a class="autorefs autorefs-external" title="typing.Literal" href="https://docs.python.org/3/library/typing.html#typing.Literal">Literal</a></span><span class="p">[</span><span class="s2">&quot;auth&quot;</span><span class="p">,</span> <span class="s2">&quot;priv&quot;</span><span class="p">,</span> <span class="s2">&quot;noauth&quot;</span><span class="p">],</span>
+    <span class="n"><span title="pydantic.functional_validators.AfterValidator">AfterValidator</span></span><span class="p">(</span><span class="n"><a class="autorefs autorefs-internal" title="anta.custom_types.snmp_v3_prefix" href="#anta.custom_types.snmp_v3_prefix">snmp_v3_prefix</a></span><span class="p">),</span>
+<span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
 <h4 id="anta.custom_types.Vlan" class="doc doc-heading">
             <span class="doc doc-object-name doc-attribute-name">Vlan</span>
 
@@ -5004,6 +5084,40 @@
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">v</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">isupper</span><span class="p">():</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}{</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="k">return</span> <span class="n">v</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="anta.custom_types.snmp_v3_prefix" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">snmp_v3_prefix</span>
+
+
+<a href="#anta.custom_types.snmp_v3_prefix" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">snmp_v3_prefix</span><span class="p">(</span>
+    <span class="n">auth_type</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Literal" href="https://docs.python.org/3/library/typing.html#typing.Literal">Literal</a></span><span class="p">[</span><span class="s2">&quot;auth&quot;</span><span class="p">,</span> <span class="s2">&quot;priv&quot;</span><span class="p">,</span> <span class="s2">&quot;noauth&quot;</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+  
+        <p>Prefix the SNMP authentication type with &lsquo;v3&rsquo;.</p>
+
+            <details class="quote">
+              <summary>Source code in <code>anta/custom_types.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">snmp_v3_prefix</span><span class="p">(</span><span class="n">auth_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;auth&quot;</span><span class="p">,</span> <span class="s2">&quot;priv&quot;</span><span class="p">,</span> <span class="s2">&quot;noauth&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Prefix the SNMP authentication type with &#39;v3&#39;.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">auth_type</span> <span class="o">==</span> <span class="s2">&quot;noauth&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;v3NoAuth&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;v3</span><span class="si">{</span><span class="n">auth_type</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
