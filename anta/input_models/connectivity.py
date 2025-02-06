@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from ipaddress import IPv4Address
+from ipaddress import IPv4Address, IPv6Address
 from typing import Any
 from warnings import warn
 
@@ -18,10 +18,10 @@ class Host(BaseModel):
     """Model for a remote host to ping."""
 
     model_config = ConfigDict(extra="forbid")
-    destination: IPv4Address
-    """IPv4 address to ping."""
-    source: IPv4Address | Interface
-    """IPv4 address source IP or egress interface to use."""
+    destination: IPv4Address | IPv6Address
+    """Destination address to ping."""
+    source: IPv4Address | IPv6Address | Interface
+    """Source address IP or egress interface to use."""
     vrf: str = "default"
     """VRF context. Defaults to `default`."""
     repeat: int = 2
