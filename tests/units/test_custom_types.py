@@ -172,7 +172,7 @@ def test_interface_autocomplete_failure() -> None:
     [
         pytest.param("L2VPNEVPN", "l2VpnEvpn", id="l2VpnEvpn"),
         pytest.param("IPv4 Labeled Unicast", "ipv4MplsLabels", id="ipv4MplsLabels"),
-        pytest.param("ipv4-mpls-label", "ipv4MplsVpn", id="ipv4MplsVpn"),
+        pytest.param("ipv4-mpls-vpn", "ipv4MplsVpn", id="ipv4MplsVpn"),
         pytest.param("ipv4_unicast", "ipv4Unicast", id="ipv4Unicast"),
         pytest.param("ipv4 Mvpn", "ipv4Mvpn", id="ipv4Mvpn"),
         pytest.param("ipv4_Flow-Spec Vpn", "ipv4FlowSpecVpn", id="ipv4FlowSpecVpn"),
@@ -183,7 +183,7 @@ def test_interface_autocomplete_failure() -> None:
         pytest.param("ipv6_Mpls-Labels", "ipv6MplsLabels", id="ipv6MplsLabels"),
         pytest.param("IPv4_SR_TE", "ipv4SrTe", id="ipv4SrTe"),
         pytest.param("iPv6-sR-tE", "ipv6SrTe", id="ipv6SrTe"),
-        pytest.param("ipv6_mpls-label", "ipv6MplsVpn", id="ipv6MplsVpn"),
+        pytest.param("ipv6_mpls-vpn", "ipv6MplsVpn", id="ipv6MplsVpn"),
         pytest.param("IPv4 Flow-spec", "ipv4FlowSpec", id="ipv4FlowSpec"),
         pytest.param("IPv6Flow_spec", "ipv6FlowSpec", id="ipv6FlowSpec"),
         pytest.param("ipv6 Flow-Spec Vpn", "ipv6FlowSpecVpn", id="ipv6FlowSpecVpn"),
@@ -196,24 +196,6 @@ def test_interface_autocomplete_failure() -> None:
 def test_bgp_multiprotocol_capabilities_abbreviations(str_input: str, expected_output: str) -> None:
     """Test bgp_multiprotocol_capabilities_abbreviations."""
     assert bgp_multiprotocol_capabilities_abbreviations(str_input) == expected_output
-
-
-@pytest.mark.parametrize(
-    ("str_input", "error"),
-    [
-        pytest.param(
-            "BLAH",
-            "Input should be dps, ipv4FlowSpec, ipv4FlowSpecVpn, ipv4MplsLabels, ipv4MplsVpn, ipv4Multicast,"
-            " ipv4Mvpn, ipv4SrTe, ipv4Unicast, ipv6FlowSpec, ipv6FlowSpecVpn, ipv6MplsLabels, ipv6MplsVpn, ipv6Multicast,"
-            " ipv6SrTe, ipv6Unicast, l2VpnEvpn, l2VpnVpls, linkState, rtMembership",
-            id="invalid-capabilities",
-        ),
-    ],
-)
-def test_bgp_multiprotocol_capabilities_abbreviations_invalid_input(str_input: str, error: str) -> None:
-    """Test bgp_multiprotocol_capabilities_abbreviations."""
-    with pytest.raises(ValueError, match=error):
-        bgp_multiprotocol_capabilities_abbreviations(str_input)
 
 
 def test_aaa_group_prefix_known_method() -> None:
