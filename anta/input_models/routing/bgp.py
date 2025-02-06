@@ -176,8 +176,8 @@ class BgpPeer(BaseModel):
     """The warning limit for the maximum routes. `0` means no warning.
 
     Optional field in the `VerifyBGPPeerRouteLimit` test. If not provided, the test will not verify the warning limit."""
-    ttl_time: int | None = Field(default=None, ge=1, le=255)
-    """The TTL time. Required field in the `VerifyBGPPeerTtlMultiHops` test."""
+    ttl_duration: int | None = Field(default=None, ge=1, le=255)
+    """The TTL duration. Required field in the `VerifyBGPPeerTtlMultiHops` test."""
     max_ttl_hops: int | None = Field(default=None, ge=1, le=255)
     """The Max TTL hops. Required field in the `VerifyBGPPeerTtlMultiHops` test."""
 

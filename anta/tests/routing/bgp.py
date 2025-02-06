@@ -14,7 +14,7 @@ from pydantic import field_validator
 
 from anta.input_models.routing.bgp import BgpAddressFamily, BgpAfi, BgpNeighbor, BgpPeer, BgpRoute, VxlanEndpoint
 from anta.models import AntaCommand, AntaTemplate, AntaTest
-from anta.tools import format_data, get_dict_superset, get_item, get_value
+from anta.tools import format_data, get_item, get_value
 
 # Using a TypeVar for the BgpPeer model since mypy thinks it's a ClassVar and not a valid type when used in field validators
 T = TypeVar("T", bound=BgpPeer)
@@ -1713,11 +1713,11 @@ class VerifyBGPPeerTtlMultiHops(AntaTest):
             bgp_peers:
                 - peer_address: 172.30.11.1
                   vrf: default
-                  ttl_time: 3
+                  ttl_duration: 3
                   max_ttl_hops: 3
                 - peer_address: 172.30.11.2
                   vrf: test
-                  ttl_time: 30
+                  ttl_duration: 30
                   max_ttl_hops: 30
     ```
     """
@@ -1734,10 +1734,10 @@ class VerifyBGPPeerTtlMultiHops(AntaTest):
         @field_validator("bgp_peers")
         @classmethod
         def validate_bgp_peers(cls, bgp_peers: list[BgpPeer]) -> list[BgpPeer]:
-            """Validate that 'ttl_time' and 'max_ttl_hops' field is provided in each BGP peer."""
+            """Validate that 'ttl_duration' and 'max_ttl_hops' field is provided in each BGP peer."""
             for peer in bgp_peers:
-                if peer.ttl_time is None:
-                    msg = f"{peer} 'ttl_time' field missing in the input"
+                if peer.ttl_duration is None:
+                    msg = f"{peer} 'ttl_duration' field missing in the input"
                     raise ValueError(msg)
                 if peer.max_ttl_hops is None:
                     msg = f"{peer} 'max_ttl_hops' field missing in the input"
@@ -1752,15 +1752,17 @@ class VerifyBGPPeerTtlMultiHops(AntaTest):
         command_output = self.instance_commands[0].json_output
 
         for peer in self.inputs.bgp_peers:
-            peer_details = get_dict_superset(command_output["vrfs"].get(peer.vrf, {}).get("peerList"), {"peerAddress": str(peer.peer_address)})
-            # Verify if the peer address exists in the BGP configuration.
-            if not peer_details:
+            peer_ip = str(peer.peer_address)
+            peer_list = get_value(command_output, f"vrfs.{peer.vrf}.peerList", default=[])
+
+            # Check if the peer is found
+            if (peer_details := get_item(peer_list, "peerAddress", peer_ip)) is None:
                 self.result.is_failure(f"{peer} - Not found")
                 continue
 
-            # Verify if the TTL time matches the expected value.
-            if peer_details.get("ttl") != peer.ttl_time:
-                self.result.is_failure(f"{peer} - TTL time mismatch - Expected: {peer.ttl_time}, Actual: {peer_details.get('ttl')}")
+            # Verify if the TTL duration matches the expected value.
+            if peer_details.get("ttl") != peer.ttl_duration:
+                self.result.is_failure(f"{peer} - TTL duration mismatch - Expected: {peer.ttl_duration}, Actual: {peer_details.get('ttl')}")
 
             # Verify if the max-ttl-hops time matches the expected value.
             if peer_details.get("maxTtlHops") != peer.max_ttl_hops:
