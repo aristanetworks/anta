@@ -189,6 +189,7 @@ def test_interface_autocomplete_success() -> None:
     assert interface_autocomplete("lo4") == "Loopback4"
     assert interface_autocomplete("Po1000") == "Port-Channel1000"
     assert interface_autocomplete("Po 1000") == "Port-Channel1000"
+    assert interface_autocomplete("Vl1000") == "Vlan1000"
 
 
 def test_interface_autocomplete_no_alias() -> None:

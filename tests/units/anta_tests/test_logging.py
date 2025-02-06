@@ -142,7 +142,7 @@ DATA: list[dict[str, Any]] = [
                 """,
         ],
         "inputs": {"hosts": ["10.22.10.92", "10.22.10.93", "10.22.10.94"], "vrf": "MGMT"},
-        "expected": {"result": "failure", "messages": ["Syslog servers ['10.22.10.93', '10.22.10.94'] are not configured in VRF MGMT"]},
+        "expected": {"result": "failure", "messages": ["Syslog servers 10.22.10.93, 10.22.10.94 are not configured in VRF MGMT"]},
     },
     {
         "name": "failure-vrf",
@@ -157,7 +157,7 @@ DATA: list[dict[str, Any]] = [
                 """,
         ],
         "inputs": {"hosts": ["10.22.10.92", "10.22.10.93", "10.22.10.94"], "vrf": "MGMT"},
-        "expected": {"result": "failure", "messages": ["Syslog servers ['10.22.10.93', '10.22.10.94'] are not configured in VRF MGMT"]},
+        "expected": {"result": "failure", "messages": ["Syslog servers 10.22.10.93, 10.22.10.94 are not configured in VRF MGMT"]},
     },
     {
         "name": "success",
