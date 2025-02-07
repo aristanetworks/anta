@@ -324,7 +324,7 @@ class AntaCatalog:
                 raise TypeError(msg)
         self._tests = value
         # Tests were modified so indexes need to be rebuilt.
-        self._init_indexes()
+        self.clear_indexes()
 
     @staticmethod
     def parse(filename: str | Path, file_format: Literal["yaml", "json"] = "yaml") -> AntaCatalog:
