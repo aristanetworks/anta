@@ -103,7 +103,7 @@ def anta_runner(request: pytest.FixtureRequest) -> AntaRunner:
     - manager: ResultManager instance
     - max_concurrency: Maximum concurrency limit
     - file_descriptor_limit: File descriptor limit
-    - httpx_limits: HTTPX Limits instance when creating the inventory
+    - limits: HTTPX Limits instance when creating the inventory
     """
     # Import must be inside fixture to prevent circular dependency from breaking CLI tests:
     # anta.runner -> anta.cli.console -> anta.cli/* (not yet loaded) -> anta.cli.anta

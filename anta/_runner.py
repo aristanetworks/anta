@@ -35,12 +35,10 @@ logger = logging.getLogger(__name__)
 
 @dataclass(frozen=True)
 class AntaRunnerInventoryStats:
-    """Track inventory filtering statistics during an ANTA run.
+    """Store inventory filtering statistics for an ANTA run.
 
     This class maintains counters for tracking how the device inventory is filtered
-    during test setup and.
-
-    When initialized, the counters are set to zero.
+    during test setup.
 
     Attributes
     ----------
@@ -55,10 +53,10 @@ class AntaRunnerInventoryStats:
         included in the final test run.
     """
 
-    total: int = 0
-    filtered_by_tags: int = 0
-    connection_failed: int = 0
-    established: int = 0
+    total: int
+    filtered_by_tags: int
+    connection_failed: int
+    established: int
 
 
 class AntaRunnerScope(BaseModel):
@@ -247,7 +245,7 @@ class AntaRunner(BaseModel):
         # In dry-run mode, set the selected inventory to the full inventory
         if dry_run:
             self._selected_inventory = self.inventory
-            self._inventory_stats = AntaRunnerInventoryStats(total=total_devices)
+            self._inventory_stats = AntaRunnerInventoryStats(total=total_devices, filtered_by_tags=0, connection_failed=0, established=0)
             return True
 
         # If the inventory is empty, exit

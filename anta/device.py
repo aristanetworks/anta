@@ -24,7 +24,7 @@ from anta.logger import anta_log_exception, exc_to_str
 from anta.models import AntaCommand
 
 if TYPE_CHECKING:
-    from collections.abc import Generator, Iterator
+    from collections.abc import Generator
     from pathlib import Path
 
 logger = logging.getLogger(__name__)
@@ -184,7 +184,7 @@ class AntaDevice(ABC):
             return {"total_commands_sent": stats["total"], "cache_hits": stats["hits"], "cache_hit_ratio": f"{ratio * 100:.2f}%"}
         return None
 
-    def __rich_repr__(self) -> Iterator[tuple[str, Any]]:
+    def __rich_repr__(self) -> Generator[tuple[str, Any]]:
         """Implement Rich Repr Protocol.
 
         https://rich.readthedocs.io/en/stable/pretty.html#rich-repr-protocol.
