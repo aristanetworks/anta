@@ -293,7 +293,6 @@ class AntaRunner(BaseModel):
         device_to_tests: defaultdict[AntaDevice, set[AntaTestDefinition]] = defaultdict(set)
         total_tests = 0
         total_connections = 0
-        unlimited_connections = False
         all_have_connections = True
 
         # Create the device to tests mapping from the tags and calculate connection stats
@@ -314,10 +313,8 @@ class AntaRunner(BaseModel):
             total_tests += len(device_to_tests[device])
 
             # Check device connections
-            if not hasattr(device, "max_connections"):
+            if not hasattr(device, "max_connections") or device.max_connections is None:
                 all_have_connections = False
-            elif device.max_connections is None:
-                unlimited_connections = True
             else:
                 total_connections += device.max_connections
 
@@ -331,7 +328,7 @@ class AntaRunner(BaseModel):
 
         self._selected_tests = device_to_tests
         self._total_tests = total_tests
-        self._potential_connections = None if not all_have_connections else float("inf") if unlimited_connections else total_connections
+        self._potential_connections = None if not all_have_connections else total_connections
         return True
 
     async def _setup_coroutines(self, *, manager: ResultManager | None = None) -> AsyncGenerator[Coroutine[Any, Any, TestResult], None]:
@@ -399,11 +396,7 @@ class AntaRunner(BaseModel):
         device_lines.append(f"  Selected: {self._inventory_stats.established}{' (dry-run mode)' if dry_run else ''}")
 
         # Build connection information
-        connections_line = (
-            ""
-            if self._potential_connections is None
-            else f"  Total potential connections: {'Unlimited' if self._potential_connections == float('inf') else self._potential_connections}\n"
-        )
+        connections_line = "" if self._potential_connections is None else f"  Total potential connections: {self._potential_connections}\n"
 
         run_info = (
             f"{' ANTA NRFU Run Information ':-^{width}}\n"
@@ -422,12 +415,7 @@ class AntaRunner(BaseModel):
             logger.warning(
                 "Tests count (%s) exceeds concurrent limit (%s). Tests will be throttled. See Scaling ANTA documentation.", self._total_tests, self.max_concurrency
             )
-        if self._potential_connections == float("inf"):
-            logger.warning(
-                "Running with unlimited connections. Connection errors may occur due to file descriptor limit (%s). See Scaling ANTA documentation.",
-                self.file_descriptor_limit,
-            )
-        elif self._potential_connections is not None and self._potential_connections > self.file_descriptor_limit:
+        if self._potential_connections is not None and self._potential_connections > self.file_descriptor_limit:
             logger.warning(
                 "Potential connections (%s) exceeds file descriptor limit (%s). Connection errors may occur. See Scaling ANTA documentation.",
                 self._potential_connections,

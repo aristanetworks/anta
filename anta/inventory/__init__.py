@@ -180,9 +180,8 @@ class AntaInventory(dict[str, AntaDevice]):
         username: str,
         password: str,
         enable_password: str | None = None,
-        timeout: float | None = None,
-        httpx_timeout: Timeout | None = None,
-        httpx_limits: Limits | None = None,
+        timeout: Timeout | float | None = None,
+        limits: Limits | None = None,
         *,
         enable: bool = False,
         insecure: bool = False,
@@ -203,12 +202,10 @@ class AntaInventory(dict[str, AntaDevice]):
         enable_password
             Enable password to use if required.
         timeout
-            Global timeout value in seconds for outgoing eAPI calls.
-        httpx_timeout
-            Optional HTTPX Timeout object for fine-grained timeout configuration.
-            If provided, it will override the global timeout.
-        httpx_limits
-            Optional HTTPX Limits object for connection pooling configuration.
+            Global timeout value in seconds for outgoing eAPI calls. None means no timeout.
+            Can also provide an HTTPX Timeout object for fine-grained timeout configuration.
+        limits
+            HTTPX Limits object for connection pooling configuration.
         enable
             Whether or not the commands need to be run in enable mode towards the devices.
         insecure
@@ -231,8 +228,7 @@ class AntaInventory(dict[str, AntaDevice]):
             "enable": enable,
             "enable_password": enable_password,
             "timeout": timeout,
-            "httpx_timeout": httpx_timeout,
-            "httpx_limits": httpx_limits,
+            "limits": limits,
             "insecure": insecure,
             "disable_cache": disable_cache,
         }

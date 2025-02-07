@@ -21,7 +21,7 @@ from anta.logger import anta_log_exception
 from anta.settings import get_httpx_limits, get_httpx_timeout
 
 if TYPE_CHECKING:
-    from click import Context, Option, Parameter
+    from click import Option
 
 logger = logging.getLogger(__name__)
 
@@ -39,32 +39,6 @@ class ExitCode(enum.IntEnum):
     TESTS_ERROR = 3
     # Tests failed
     TESTS_FAILED = 4
-
-
-class FloatOrNoneParamType(click.ParamType):
-    """Click ParamType that accepts float values or 'None'.
-
-    https://click.palletsprojects.com/en/stable/parameters/#how-to-implement-custom-types
-    """
-
-    name = "float_or_none"
-
-    # pylint: disable=inconsistent-return-statements
-    def convert(self, value: str | float | None, param: Parameter | None, ctx: Context | None) -> float | None:
-        """Convert the value to a float or None."""
-        if value is None or isinstance(value, float):
-            return value
-
-        try:
-            if isinstance(value, str) and value.lower() == "none":
-                return None
-            return float(value)
-        except ValueError:
-            self.fail(f"{value!r} is not a valid float or 'None'", param, ctx)
-            # No return here because `self.fail` raises an exception
-
-
-FLOAT_OR_NONE = FloatOrNoneParamType()
 
 
 def parse_tags(ctx: click.Context, param: Option, value: str | None) -> set[str] | None:
@@ -186,11 +160,9 @@ def core_options(f: Callable[..., Any]) -> Callable[..., Any]:
     @click.option(
         "--timeout",
         help="Global API timeout. This value will be used for all devices.",
-        default=30.0,
         show_envvar=True,
         envvar="ANTA_TIMEOUT",
-        show_default=True,
-        type=FLOAT_OR_NONE,
+        type=float,
     )
     @click.option(
         "--insecure",
@@ -272,9 +244,8 @@ def core_options(f: Callable[..., Any]) -> Callable[..., Any]:
                 password=password,
                 enable=enable,
                 enable_password=enable_password,
-                timeout=timeout,
-                httpx_timeout=httpx_timeout,
-                httpx_limits=httpx_limits,
+                timeout=httpx_timeout,
+                limits=httpx_limits,
                 insecure=insecure,
                 disable_cache=disable_cache,
             )

@@ -8,23 +8,24 @@ from __future__ import annotations
 import logging
 import os
 import sys
+from typing import Any
 
 from httpx import Limits, Timeout
-from pydantic import Field, NonNegativeFloat, NonNegativeInt, PositiveInt
+from pydantic import Field, NonNegativeFloat, NonNegativeInt, PositiveInt, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 logger = logging.getLogger(__name__)
 
 # Default values for HTTPX resource limits
-DEFAULT_HTTPX_MAX_CONNECTIONS = 100
-DEFAULT_HTTPX_MAX_KEEPALIVE_CONNECTIONS = 20
+DEFAULT_HTTPX_MAX_CONNECTIONS = 10
+DEFAULT_HTTPX_MAX_KEEPALIVE_CONNECTIONS = 10
 DEFAULT_HTTPX_KEEPALIVE_EXPIRY = 5.0
 
 # Default values for HTTPX timeouts
-DEFAULT_HTTPX_CONNECT_TIMEOUT = 5.0
-DEFAULT_HTTPX_READ_TIMEOUT = 5.0
-DEFAULT_HTTPX_WRITE_TIMEOUT = 5.0
-DEFAULT_HTTPX_POOL_TIMEOUT = 5.0
+DEFAULT_HTTPX_CONNECT_TIMEOUT = 30.0
+DEFAULT_HTTPX_READ_TIMEOUT = 30.0
+DEFAULT_HTTPX_WRITE_TIMEOUT = 30.0
+DEFAULT_HTTPX_POOL_TIMEOUT = None
 
 # Default value for the maximum number of concurrent tests in the event loop
 DEFAULT_MAX_CONCURRENCY = 10000
@@ -61,22 +62,30 @@ class HttpxResourceLimitsSettings(BaseSettings):
         - ANTA_MAX_KEEPALIVE_CONNECTIONS: Number of allowable keep-alive connections.
         - ANTA_KEEPALIVE_EXPIRY: Time limit on idle keep-alive connections in seconds.
 
-    If any environment variable is not set, the following HTTPX default limits are used:
-        - max_connections: 100
-        - max_keepalive_connections: 20
-        - keepalive_expiry: 5.0
+    Limits values should be a positive int/float or `inf` to disable the limit for the given operation.
 
-    These limits are set for all devices. `None` means no limit is set for the given operation.
+    If any environment variable is not set, the following default limits are used in ANTA:
+        - max_connections: 10
+        - max_keepalive_connections: 10
+        - keepalive_expiry: 5.0
 
     For more information on HTTPX resource limits, see: https://www.python-httpx.org/advanced/resource-limits/
     """
 
-    # The 'None' string is used to allow the environment variable to be set to `None`.
-    model_config = SettingsConfigDict(env_parse_none_str="None", env_prefix="ANTA_")
+    # Prefix for environment variables
+    model_config = SettingsConfigDict(env_prefix="ANTA_")
 
     max_connections: NonNegativeInt | None = Field(default=DEFAULT_HTTPX_MAX_CONNECTIONS)
     max_keepalive_connections: NonNegativeInt | None = Field(default=DEFAULT_HTTPX_MAX_KEEPALIVE_CONNECTIONS)
     keepalive_expiry: NonNegativeFloat | None = Field(default=DEFAULT_HTTPX_KEEPALIVE_EXPIRY)
+
+    @field_validator("max_connections", "max_keepalive_connections", "keepalive_expiry", mode="before")
+    @classmethod
+    def convert_inf(cls, value: Any) -> Any:  # noqa: ANN401
+        """Convert the value to `None` if it is equal to `inf`."""
+        if value == "inf":
+            return None
+        return value
 
 
 class HttpxTimeoutsSettings(BaseSettings):
@@ -88,40 +97,32 @@ class HttpxTimeoutsSettings(BaseSettings):
         - ANTA_WRITE_TIMEOUT: Maximum duration to wait for a chunk of data to be sent (for example, a chunk of the request body).
         - ANTA_POOL_TIMEOUT: Maximum duration to wait for acquiring a connection from the connection pool.
 
-    If any environment variable is not set, the default HTTPX timeout is used, 5 seconds.
-    `None` will disable the timeout for the given operation.
+    Timeouts values should be a positive float or `inf` to disable the timeout for the given operation.
+
+    If any environment variable is not set, the following default timeouts are used in ANTA:
+        - connect_timeout: 30.0
+        - read_timeout: 30.0
+        - write_timeout: 30.0
+        - pool_timeout: None (no timeout)
 
     For more information on HTTPX timeouts, see: https://www.python-httpx.org/advanced/timeouts/
     """
 
-    # The 'None' string is used to allow the environment variable to be set to `None`.
-    model_config = SettingsConfigDict(env_parse_none_str="None", env_prefix="ANTA_")
+    # Prefix for environment variables
+    model_config = SettingsConfigDict(env_prefix="ANTA_")
 
     connect_timeout: NonNegativeFloat | None = Field(default=DEFAULT_HTTPX_CONNECT_TIMEOUT)
     read_timeout: NonNegativeFloat | None = Field(default=DEFAULT_HTTPX_READ_TIMEOUT)
     write_timeout: NonNegativeFloat | None = Field(default=DEFAULT_HTTPX_WRITE_TIMEOUT)
     pool_timeout: NonNegativeFloat | None = Field(default=DEFAULT_HTTPX_POOL_TIMEOUT)
 
-    # The following properties are used to determine if a specific timeout was set by an environment variable
-    @property
-    def connect_set(self) -> bool:
-        """Return True if the connect timeout was set by an environment variable."""
-        return "connect_timeout" in self.model_fields_set
-
-    @property
-    def read_set(self) -> bool:
-        """Return True if the read timeout was set by an environment variable."""
-        return "read_timeout" in self.model_fields_set
-
-    @property
-    def write_set(self) -> bool:
-        """Return True if the write timeout was set by an environment variable."""
-        return "write_timeout" in self.model_fields_set
-
-    @property
-    def pool_set(self) -> bool:
-        """Return True if the pool timeout was set by an environment variable."""
-        return "pool_timeout" in self.model_fields_set
+    @field_validator("connect_timeout", "read_timeout", "write_timeout", "pool_timeout", mode="before")
+    @classmethod
+    def convert_inf(cls, value: Any) -> Any:  # noqa: ANN401
+        """Convert the value to `None` if it is equal to `inf`."""
+        if value == "inf":
+            return None
+        return value
 
 
 def get_max_concurrency() -> int:
@@ -140,26 +141,30 @@ def get_httpx_limits() -> Limits:
     )
 
 
-def get_httpx_timeout(default_timeout: float | None) -> Timeout:
-    """Get the HTTPX Timeout object from environment variables.
+def get_httpx_timeout(cli_timeout: float | None = None) -> Timeout:
+    """Get the HTTPX Timeout object.
 
     Parameters
     ----------
-    default_timeout : float | None
-        Default timeout value to use if no specific timeout is set for a given operation.
-
-    Notes
-    -----
-    When running ANTA NRFU from the command line, `default_timeout` is set to 30 seconds by default.
-    Otherwise, by default, an `AsyncEOSDevice` class is instantiated with a `timeout` parameter set
-    to `None`, meaning no timeout is set.
+    cli_timeout : float, optional
+        The timeout value set by the command line. When provided, this value is used for all timeouts.
+        `float("inf")` is supported to disable all timeouts.
     """
+    # If cli_timeout is set to float("inf"), disable all timeouts
+    if cli_timeout == float("inf"):
+        return Timeout(timeout=None)
+
+    # If cli_timeout is set, we use that value for all timeouts
+    if cli_timeout is not None:
+        return Timeout(timeout=cli_timeout)
+
+    # If cli_timeout is None, no timeout was set by the command line so we load and use the environment variables or defaults
     settings = HttpxTimeoutsSettings()
     return Timeout(
-        connect=settings.connect_timeout if settings.connect_set else default_timeout,
-        read=settings.read_timeout if settings.read_set else default_timeout,
-        write=settings.write_timeout if settings.write_set else default_timeout,
-        pool=settings.pool_timeout if settings.pool_set else default_timeout,
+        connect=settings.connect_timeout,
+        read=settings.read_timeout,
+        write=settings.write_timeout,
+        pool=settings.pool_timeout,
     )
 
 

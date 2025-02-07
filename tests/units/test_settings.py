@@ -118,11 +118,11 @@ class TestHttpxLimits:
         assert limits.max_keepalive_connections == 40
         assert limits.keepalive_expiry == 10.0
 
-    def test_none_values(self, setenvvar: pytest.MonkeyPatch) -> None:
-        """Test setting HTTPX limits to None via environment variables."""
-        setenvvar.setenv("ANTA_MAX_CONNECTIONS", "None")
-        setenvvar.setenv("ANTA_MAX_KEEPALIVE_CONNECTIONS", "None")
-        setenvvar.setenv("ANTA_KEEPALIVE_EXPIRY", "None")
+    def test_inf_values(self, setenvvar: pytest.MonkeyPatch) -> None:
+        """Test setting HTTPX limits to inf via environment variables."""
+        setenvvar.setenv("ANTA_MAX_CONNECTIONS", "inf")
+        setenvvar.setenv("ANTA_MAX_KEEPALIVE_CONNECTIONS", "inf")
+        setenvvar.setenv("ANTA_KEEPALIVE_EXPIRY", "inf")
 
         limits = get_httpx_limits()
         assert limits.max_connections is None
@@ -130,8 +130,8 @@ class TestHttpxLimits:
         assert limits.keepalive_expiry is None
 
     def test_mixed_values(self, setenvvar: pytest.MonkeyPatch) -> None:
-        """Test mixing None and numeric values."""
-        setenvvar.setenv("ANTA_MAX_CONNECTIONS", "None")
+        """Test mixing inf and numeric values."""
+        setenvvar.setenv("ANTA_MAX_CONNECTIONS", "inf")
         setenvvar.setenv("ANTA_MAX_KEEPALIVE_CONNECTIONS", "50")
         setenvvar.setenv("ANTA_KEEPALIVE_EXPIRY", "15.0")
 
@@ -196,45 +196,37 @@ class TestHttpxTimeouts:
         setenvvar.setenv("ANTA_WRITE_TIMEOUT", "20.0")
         setenvvar.setenv("ANTA_POOL_TIMEOUT", "25.0")
 
-        timeout = get_httpx_timeout(default_timeout=30.0)
+        timeout = get_httpx_timeout()
         assert isinstance(timeout, Timeout)
         assert timeout.connect == 10.0
         assert timeout.read == 15.0
         assert timeout.write == 20.0
         assert timeout.pool == 25.0
 
-    def test_none_values(self, setenvvar: pytest.MonkeyPatch) -> None:
-        """Test setting HTTPX timeouts to None (no timeout) via environment variables."""
-        setenvvar.setenv("ANTA_CONNECT_TIMEOUT", "None")
-        setenvvar.setenv("ANTA_READ_TIMEOUT", "None")
-        setenvvar.setenv("ANTA_WRITE_TIMEOUT", "None")
-        setenvvar.setenv("ANTA_POOL_TIMEOUT", "None")
+    def test_inf_values(self, setenvvar: pytest.MonkeyPatch) -> None:
+        """Test setting HTTPX timeouts to inf (no timeout) via environment variables."""
+        setenvvar.setenv("ANTA_CONNECT_TIMEOUT", "inf")
+        setenvvar.setenv("ANTA_READ_TIMEOUT", "inf")
+        setenvvar.setenv("ANTA_WRITE_TIMEOUT", "inf")
+        setenvvar.setenv("ANTA_POOL_TIMEOUT", "inf")
 
-        timeout = get_httpx_timeout(default_timeout=30.0)
+        timeout = get_httpx_timeout()
         assert timeout.connect is None
         assert timeout.read is None
         assert timeout.write is None
         assert timeout.pool is None
 
-    def test_property_flags(self, setenvvar: pytest.MonkeyPatch) -> None:
-        """Test the timeout property flags that indicate if values were set by environment variables."""
-        settings = HttpxTimeoutsSettings()
-        assert not settings.connect_set
-        assert not settings.read_set
-        assert not settings.write_set
-        assert not settings.pool_set
+    def test_timeout_with_cli_value(self, setenvvar: pytest.MonkeyPatch) -> None:
+        """Test behavior when cli_timeout is provided."""
+        timeout = get_httpx_timeout(cli_timeout=360.0)
+        assert timeout.connect == 360.0
+        assert timeout.read == 360.0
+        assert timeout.write == 360.0
+        assert timeout.pool == 360.0
 
-        setenvvar.setenv("ANTA_CONNECT_TIMEOUT", "None")
-        setenvvar.setenv("ANTA_READ_TIMEOUT", "15.0")
-        settings = HttpxTimeoutsSettings()
-        assert settings.connect_set
-        assert settings.read_set
-        assert not settings.write_set
-        assert not settings.pool_set
-
-    def test_timeout_with_default_none(self, setenvvar: pytest.MonkeyPatch) -> None:
-        """Test behavior when default_timeout is None."""
-        timeout = get_httpx_timeout(default_timeout=None)
+    def test_timeout_with_cli_inf(self, setenvvar: pytest.MonkeyPatch) -> None:
+        """Test behavior when cli_timeout is inf."""
+        timeout = get_httpx_timeout(cli_timeout=float("inf"))
         assert timeout.connect is None
         assert timeout.read is None
         assert timeout.write is None
@@ -243,13 +235,13 @@ class TestHttpxTimeouts:
     def test_mixed_timeouts(self, setenvvar: pytest.MonkeyPatch) -> None:
         """Test mixing different timeout configurations."""
         setenvvar.setenv("ANTA_CONNECT_TIMEOUT", "5.0")
-        setenvvar.setenv("ANTA_READ_TIMEOUT", "None")
+        setenvvar.setenv("ANTA_READ_TIMEOUT", "inf")
 
-        timeout = get_httpx_timeout(default_timeout=10.0)
+        timeout = get_httpx_timeout()
         assert timeout.connect == 5.0
         assert timeout.read is None
-        assert timeout.write == 10.0
-        assert timeout.pool == 10.0
+        assert timeout.write == DEFAULT_HTTPX_WRITE_TIMEOUT
+        assert timeout.pool is DEFAULT_HTTPX_POOL_TIMEOUT
 
     def test_httpx_timeouts_validation(self, setenvvar: pytest.MonkeyPatch) -> None:
         """Test validation of HTTPX timeout values."""

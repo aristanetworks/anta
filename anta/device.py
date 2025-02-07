@@ -9,6 +9,7 @@ import asyncio
 import logging
 from abc import ABC, abstractmethod
 from collections import OrderedDict, defaultdict
+from operator import attrgetter
 from time import monotonic
 from typing import TYPE_CHECKING, Any, Literal
 
@@ -21,10 +22,9 @@ import asynceapi
 from anta import __DEBUG__
 from anta.logger import anta_log_exception, exc_to_str
 from anta.models import AntaCommand
-from anta.settings import DEFAULT_HTTPX_MAX_CONNECTIONS
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator
+    from collections.abc import Generator, Iterator
     from pathlib import Path
 
 logger = logging.getLogger(__name__)
@@ -109,19 +109,19 @@ class AntaDevice(ABC):
         True if the device IP is reachable and a port can be open.
     established : bool
         True if remote command execution succeeds.
-    hw_model : str
+    hw_model : str | None
         Hardware model of the device.
     tags : set[str]
         Tags for this device.
     cache : AntaCache | None
         In-memory cache for this device (None if cache is disabled).
-    cache_locks : dict
+    cache_locks : defaultdict[str, asyncio.Lock] | None
         Dictionary mapping keys to asyncio locks to guarantee exclusive access to the cache if not disabled.
         Deprecated, will be removed in ANTA v2.0.0, use self.cache.locks instead.
     max_connections : int | None
         For informational/logging purposes only. Some device implementations may expose their
         maximum concurrent connection limit through this attribute. This does not affect the
-        actual device configuration.
+        actual device configuration. None if not available.
     """
 
     def __init__(self, name: str, tags: set[str] | None = None, *, disable_cache: bool = False) -> None:
@@ -147,7 +147,6 @@ class AntaDevice(ABC):
         self.cache: AntaCache | None = None
         # Keeping cache_locks for backward compatibility.
         self.cache_locks: defaultdict[str, asyncio.Lock] | None = None
-        self.max_connections: int | None
 
         # Initialize cache if not disabled
         if not disable_cache:
@@ -157,6 +156,11 @@ class AntaDevice(ABC):
     @abstractmethod
     def _keys(self) -> tuple[Any, ...]:
         """Read-only property to implement hashing and equality for AntaDevice classes."""
+
+    @property
+    def max_connections(self) -> int | None:
+        """Maximum number of concurrent connections allowed by the device. Can be overridden by subclasses, returns None if not available."""
+        return None
 
     def __eq__(self, other: object) -> bool:
         """Implement equality for AntaDevice objects."""
@@ -328,9 +332,8 @@ class AsyncEOSDevice(AntaDevice):
         port: int | None = None,
         ssh_port: int = 22,
         tags: set[str] | None = None,
-        timeout: float | None = None,
-        httpx_timeout: Timeout | None = None,
-        httpx_limits: Limits | None = None,
+        timeout: Timeout | float | None = None,
+        limits: Limits | None = None,
         proto: Literal["http", "https"] = "https",
         *,
         enable: bool = False,
@@ -358,12 +361,10 @@ class AsyncEOSDevice(AntaDevice):
         tags
             Tags for this device.
         timeout
-            Global timeout value in seconds for outgoing eAPI calls.
-        httpx_timeout
-            Optional HTTPX Timeout object for fine-grained timeout configuration.
-            If provided, it will override the global timeout.
-        httpx_limits
-            Optional HTTPX Limits object for connection pooling configuration.
+            Global timeout value in seconds for outgoing eAPI calls. None means no timeout.
+            Can also provide an HTTPX Timeout object for fine-grained timeout configuration.
+        limits
+            HTTPX Limits object for connection pooling configuration.
         proto
             eAPI protocol. Value can be 'http' or 'https'.
         enable
@@ -399,13 +400,10 @@ class AsyncEOSDevice(AntaDevice):
             "username": username,
             "password": password,
             "proto": proto,
-            "timeout": httpx_timeout if httpx_timeout is not None else timeout,
+            "timeout": timeout,
         }
-        if httpx_limits is not None:
-            session_settings["limits"] = httpx_limits
-            self.max_connections = httpx_limits.max_connections
-        else:
-            self.max_connections = DEFAULT_HTTPX_MAX_CONNECTIONS
+        if limits is not None:
+            session_settings["limits"] = limits
         self._session: asynceapi.Device = asynceapi.Device(**session_settings)
 
         # Build the SSH connection options
@@ -414,7 +412,7 @@ class AsyncEOSDevice(AntaDevice):
             ssh_settings["known_hosts"] = None
         self._ssh_opts: SSHClientConnectionOptions = SSHClientConnectionOptions(**ssh_settings)
 
-    def __rich_repr__(self) -> Iterator[tuple[str, Any]]:
+    def __rich_repr__(self) -> Generator[tuple[str, Any]]:
         """Implement Rich Repr Protocol.
 
         https://rich.readthedocs.io/en/stable/pretty.html#rich-repr-protocol.
@@ -432,6 +430,7 @@ class AsyncEOSDevice(AntaDevice):
             _ssh_opts["kwargs"]["password"] = removed_pw
             yield ("_session", vars(self._session))
             yield ("_ssh_opts", _ssh_opts)
+            yield ("max_connections", self.max_connections) if self.max_connections is not None else ("max_connections", "N/A")
 
     def __repr__(self) -> str:
         """Return a printable representation of an AsyncEOSDevice."""
@@ -456,6 +455,14 @@ class AsyncEOSDevice(AntaDevice):
         This covers the use case of port forwarding when the host is localhost and the devices have different ports.
         """
         return (self._session.host, self._session.port)
+
+    @property
+    def max_connections(self) -> int | None:
+        """Maximum number of concurrent connections allowed by the device. Returns None if not available."""
+        try:
+            return attrgetter("_transport._pool._max_connections")(self._session)
+        except AttributeError:
+            return None
 
     async def _collect(self, command: AntaCommand, *, collection_id: str | None = None) -> None:
         """Collect device command output from EOS using aio-eapi.

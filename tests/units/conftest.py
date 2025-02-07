@@ -128,7 +128,7 @@ def anta_runner(request: pytest.FixtureRequest) -> AntaRunner:
             filename=DATA_DIR / params["inventory"],
             username="arista",
             password="arista",
-            httpx_limits=params.get("httpx_limits", None),
+            limits=params.get("limits", None),
         ),
         "catalog": AntaCatalog.parse(DATA_DIR / params["catalog"]),
         "manager": params.get("manager", None),

@@ -337,7 +337,7 @@ class TestAntaRunnerLogging:
             {
                 "inventory": "test_inventory_with_tags.yml",
                 "catalog": "test_catalog_with_tags.yml",
-                "httpx_limits": Limits(max_connections=5, max_keepalive_connections=5),
+                "limits": Limits(max_connections=5, max_keepalive_connections=5),
             }
         ],
         indirect=True,
@@ -361,26 +361,6 @@ class TestAntaRunnerLogging:
         ]
         for line in expected_output:
             assert line in caplog.text
-
-    @pytest.mark.parametrize(
-        ("anta_runner"),
-        [
-            {
-                "inventory": "test_inventory_with_tags.yml",
-                "catalog": "test_catalog_with_tags.yml",
-                "httpx_limits": Limits(max_connections=None, max_keepalive_connections=None),
-            }
-        ],
-        indirect=True,
-    )
-    async def test_log_run_information_unlimited(self, caplog: pytest.LogCaptureFixture, anta_runner: AntaRunner) -> None:
-        """Test _log_run_information with unlimited max connections."""
-        caplog.set_level(logging.WARNING)
-
-        await anta_runner.run(dry_run=True)
-
-        warning = f"Running with unlimited connections. Connection errors may occur due to file descriptor limit ({anta_runner.file_descriptor_limit})."
-        assert warning in caplog.text
 
     @pytest.mark.parametrize(
         ("anta_runner"), [{"inventory": "test_inventory_with_tags.yml", "catalog": "test_catalog_with_tags.yml", "max_concurrency": 20}], indirect=True
