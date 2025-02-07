@@ -6,11 +6,19 @@
 from __future__ import annotations
 
 from ipaddress import IPv4Address
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, model_validator
 
-from anta.custom_types import Hostname, Interface, Port, SnmpEncryptionAlgorithm, SnmpHashingAlgorithm, SnmpVersion
+from anta.custom_types import Hostname, Interface, Port, SnmpEncryptionAlgorithm, SnmpHashingAlgorithm, SnmpVersion, SnmpVersionV3AuthType
+
+if TYPE_CHECKING:
+    import sys
+
+    if sys.version_info >= (3, 11):
+        from typing import Self
+    else:
+        from typing_extensions import Self
 
 
 class SnmpHost(BaseModel):
@@ -83,3 +91,37 @@ class SnmpSourceInterface(BaseModel):
         - Source Interface: Ethernet1 VRF: default
         """
         return f"Source Interface: {self.interface} VRF: {self.vrf}"
+
+
+class SnmpGroup(BaseModel):
+    """Model for an SNMP group."""
+
+    group_name: str
+    """SNMP group name."""
+    version: SnmpVersion
+    """SNMP protocol version."""
+    read_view: str | None = None
+    """Optional field, View to restrict read access."""
+    write_view: str | None = None
+    """Optional field, View to restrict write access."""
+    notify_view: str | None = None
+    """Optional field, View to restrict notifications."""
+    authentication: SnmpVersionV3AuthType | None = None
+    """SNMPv3 authentication settings. Required when version is v3. Can be provided in the `VerifySnmpGroup` test."""
+
+    @model_validator(mode="after")
+    def validate_inputs(self) -> Self:
+        """Validate the inputs provided to the SnmpGroup class."""
+        if self.version == "v3" and self.authentication is None:
+            msg = f"{self!s}: `authentication` field is missing in the input"
+            raise ValueError(msg)
+        return self
+
+    def __str__(self) -> str:
+        """Return a human-readable string representation of the SnmpGroup for reporting.
+
+        Examples
+        --------
+        - Group: Test_Group Version: v2c
+        """
+        return f"Group: {self.group_name}, Version: {self.version}"
