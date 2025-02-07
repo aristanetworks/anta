@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING, ClassVar, get_args
 from pydantic import field_validator
 
 from anta.custom_types import PositiveInteger, SnmpErrorCounter, SnmpPdu
-from anta.input_models.snmp import SnmpHost, SnmpSourceInterface, SnmpUser
+from anta.input_models.snmp import SnmpGroup, SnmpHost, SnmpSourceInterface, SnmpUser
 from anta.models import AntaCommand, AntaTest
 from anta.tools import get_value
 
@@ -664,3 +664,73 @@ class VerifySnmpSourceInterface(AntaTest):
                 self.result.is_failure(f"{interface_details} - Not configured")
             elif actual_interface != interface_details.interface:
                 self.result.is_failure(f"{interface_details} - Incorrect source interface - Actual: {actual_interface}")
+
+
+class VerifySnmpGroup(AntaTest):
+    """Verifies the SNMP group configurations for specified version(s).
+
+    This test performs the following checks:
+
+      1. Verifies that the SNMP group is configured for the specified version.
+      2. For SNMP version 3, verify that the security model matches the expected value.
+      3. Ensures that SNMP group configurations, including read, write, and notify views, align with version-specific requirements.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the provided SNMP group and all specified parameters are correctly configured.
+    * Failure: The test will fail if the provided SNMP group is not configured or if any specified parameter is not correctly configured.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.snmp:
+      - VerifySnmpGroup:
+          snmp_groups:
+            - group_name: Group1
+              version: v1
+              read_view: group_read_1
+              write_view: group_write_1
+              notify_view: group_notify_1
+            - group_name: Group2
+              version: v3
+              read_view: group_read_2
+              write_view: group_write_2
+              notify_view: group_notify_2
+              authentication: priv
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["snmp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show snmp group", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifySnmpGroup test."""
+
+        snmp_groups: list[SnmpGroup]
+        """List of SNMP groups."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifySnmpGroup."""
+        self.result.is_success()
+        for group in self.inputs.snmp_groups:
+            # Verify SNMP group details.
+            if not (group_details := get_value(self.instance_commands[0].json_output, f"groups.{group.group_name}.versions.{group.version}")):
+                self.result.is_failure(f"{group} - Not configured")
+                continue
+
+            view_types = [view_type for view_type in ["read", "write", "notify"] if getattr(group, f"{view_type}_view")]
+            # Verify SNMP views, the read, write and notify settings aligning with version-specific requirements.
+            for view_type in view_types:
+                expected_view = getattr(group, f"{view_type}_view")
+                # Verify actual view is configured.
+                if group_details.get(f"{view_type}View") == "":
+                    self.result.is_failure(f"{group} View: {view_type} - Not configured")
+                elif (act_view := group_details.get(f"{view_type}View")) != expected_view:
+                    self.result.is_failure(f"{group} - Incorrect {view_type.title()} view - Expected: {expected_view}, Actual: {act_view}")
+                elif not group_details.get(f"{view_type}ViewConfig"):
+                    self.result.is_failure(f"{group}, {view_type.title()} View: {expected_view} - Not configured")
+
+            # For version v3, verify that the security model aligns with the expected value.
+            if group.version == "v3" and (actual_auth := group_details.get("secModel")) != group.authentication:
+                self.result.is_failure(f"{group} - Incorrect security model - Expected: {group.authentication}, Actual: {actual_auth}")

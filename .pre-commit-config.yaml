@@ -84,6 +84,7 @@ repos:
         entry: codespell
         language: python
         types: [text]
+        args: ["--ignore-words", ".codespellignore"]
 
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.14.1
