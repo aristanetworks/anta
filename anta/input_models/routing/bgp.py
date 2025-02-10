@@ -325,13 +325,5 @@ class AddressFamilyConfig(BaseModel):
         --------
         - AFI-SAFI: IPv4 Unicast
         """
-        base_string = "AFI-SAFI:"
-        if self.afi_safi == "v4u":
-            base_string = f"{base_string} IPv4 Unicast"
-        elif self.afi_safi == "v4m":
-            base_string = f"{base_string} IPv4 Multicast"
-        elif self.afi_safi == "v6u":
-            base_string = f"{base_string} IPv6 Unicast"
-        elif self.afi_safi == "v6m":
-            base_string = f"{base_string} IPv6 Multicast"
-        return base_string
+        mappings = {"v4u": "IPv4 Unicast", "v4m": "IPv4 Multicast", "v6u": "IPv6 Unicast", "v6m": "IPv6 Multicast"}
+        return f"AFI-SAFI: {mappings[self.afi_safi]}"
