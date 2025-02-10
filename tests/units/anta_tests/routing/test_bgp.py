@@ -5875,6 +5875,43 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
+        "name": "failure-vrf-not-found",
+        "test": VerifyBGPRedistribution,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {"afiSafiConfig": {"v6m": {"redistributedRoutes": [{"proto": "Connected", "routeMap": "RM-CONN-2-BGP"}]}}},
+                    "tenant": {"afiSafiConfig": {"v4u": {"redistributedRoutes": [{"proto": "Connected"}]}}},
+                }
+            }
+        ],
+        "inputs": {
+            "vrfs": [
+                {
+                    "vrf": "default",
+                    "address_families": [
+                        {
+                            "afi_safi": "ipv6 Multicast",
+                            "redistributed_routes": [{"proto": "Connected", "include_leaked": False, "route_map": "RM-CONN-2-BGP"}],
+                        },
+                    ],
+                },
+                {
+                    "vrf": "test",
+                    "address_families": [
+                        {
+                            "afi_safi": "ipv6 Multicast",
+                            "redistributed_routes": [
+                                {"proto": "Connected", "include_leaked": True, "route_map": "RM-CONN-2-BGP"},
+                            ],
+                        },
+                    ],
+                },
+            ]
+        },
+        "expected": {"result": "failure", "messages": ["VRF: test - Not configured"]},
+    },
+    {
         "name": "failure-afi-safi-config-not-found",
         "test": VerifyBGPRedistribution,
         "eos_data": [
@@ -5916,7 +5953,7 @@ DATA: list[dict[str, Any]] = [
                     },
                     "test": {
                         "afiSafiConfig": {
-                            "v6m": {
+                            "v6u": {
                                 "redistributedRoutes": [{"proto": "Static", "routeMap": "RM-CONN-2-BGP"}],
                             }
                         }
@@ -5955,9 +5992,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "VRF: default, AFI-SAFI: IPv4 Multicast, Proto: OSPFv3 External, Include Leaked: present, Route Map: RM-CONN-2-BGP - Not configured",
-                "VRF: default, AFI-SAFI: IPv4 Multicast, Proto: OSPFv3 Nssa-External, Include Leaked: present, Route Map: RM-CONN-2-BGP - Not configured",
-                "VRF: test, AFI-SAFI: IPv6 Unicast - Not configured",
+                "VRF: default, AFI-SAFI: IPv4 Multicast, Proto: OSPFv3 External - Not configured",
+                "VRF: default, AFI-SAFI: IPv4 Multicast, Proto: OSPFv3 Nssa-External - Not configured",
+                "VRF: test, AFI-SAFI: IPv6 Unicast, Proto: RIP - Not configured",
+                "VRF: test, AFI-SAFI: IPv6 Unicast, Proto: Bgp - Not configured",
             ],
         },
     },

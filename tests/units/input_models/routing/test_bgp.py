@@ -420,3 +420,18 @@ class TestVerifyBGPAddressFamilyConfig:
         """Test AddressFamilyConfig invalid inputs."""
         with pytest.raises(ValidationError):
             AddressFamilyConfig(afi_safi=afi_safi, redistributed_routes=redistributed_routes)
+
+    @pytest.mark.parametrize(
+        ("afi_safi", "redistributed_routes", "expected"),
+        [
+            pytest.param(
+                "v4u", [{"proto": "OSPFv3 Nssa-External", "include_leaked": True, "route_map": "RM-CONN-2-BGP"}], "AFI-SAFI: IPv4 Unicast", id="valid-ipv4-unicast"
+            ),
+            pytest.param("v4m", [{"proto": "RIP", "route_map": "RM-CONN-2-BGP"}], "AFI-SAFI: IPv4 Multicast", id="valid-ipv4-multicast"),
+            pytest.param("v6u", [{"proto": "Bgp", "include_leaked": True, "route_map": "RM-CONN-2-BGP"}], "AFI-SAFI: IPv6 Unicast", id="valid-ipv6-unicast"),
+            pytest.param("v6m", [{"proto": "Static", "include_leaked": True, "route_map": "RM-CONN-2-BGP"}], "AFI-SAFI: IPv6 Multicast", id="valid-ipv6-multicast"),
+        ],
+    )
+    def test_valid_str(self, afi_safi: RedistributedAfiSafi, redistributed_routes: list[Any], expected: str) -> None:
+        """Test AddressFamilyConfig invalid inputs."""
+        assert str(AddressFamilyConfig(afi_safi=afi_safi, redistributed_routes=redistributed_routes)) == expected

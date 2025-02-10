@@ -1857,21 +1857,23 @@ class VerifyBGPRedistribution(AntaTest):
         vrfs: list[BgpVrf]
         """List of VRFs in the BGP instance."""
 
-    def _validate_redistribute_route(self, vrf_data: str, addr_family: str, afi_safi_configs: list[dict[str, Any]], route_info: dict[str, Any]) -> str | None:
+    def _validate_redistribute_route(self, vrf_data: str, addr_family: str, afi_safi_configs: list[dict[str, Any]], route_info: dict[str, Any]) -> list[Any]:
         """Validate the redstributed route details for a given address family."""
+        failure_msg = []
         # If the redistributed route protocol does not match the expected value, test fails.
         if not (actual_route := get_item(afi_safi_configs.get("redistributedRoutes"), "proto", route_info.proto)):
-            return f"{vrf_data}, {addr_family}, {route_info} - Not configured"
+            failure_msg.append(f"{vrf_data}, {addr_family}, Proto: {route_info.proto} - Not configured")
+            return failure_msg
 
         # If includes leaked field applicable, and it does not matches the expected value, test fails.
         if all([route_info.include_leaked is not None, (act_include_leaked := actual_route.get("includeLeaked", False)) != route_info.include_leaked]):
             act_include_leaked = "present" if act_include_leaked else "absent"
-            return f"{vrf_data}, {addr_family}, {route_info} - Value for include leaked mismatch - Actual: {act_include_leaked}"
+            failure_msg.append(f"{vrf_data}, {addr_family}, {route_info} - Value for include leaked mismatch - Actual: {act_include_leaked}")
 
         # If route map is required and it is not matching the expected value, test fails.
         if all([route_info.route_map, (act_route_map := actual_route.get("routeMap", "Not Found")) != route_info.route_map]):
-            return f"{vrf_data}, {addr_family}, {route_info} - Route map mismatch - Actual: {act_route_map}"
-        return None
+            failure_msg.append(f"{vrf_data}, {addr_family}, {route_info} - Route map mismatch - Actual: {act_route_map}")
+        return failure_msg
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -1892,5 +1894,5 @@ class VerifyBGPRedistribution(AntaTest):
 
                 for route_info in address_family.redistributed_routes:
                     failure_msg = self._validate_redistribute_route(str(vrf_data), str(address_family), afi_safi_configs, route_info)
-                    if failure_msg:
-                        self.result.is_failure(failure_msg)
+                    for msg in failure_msg:
+                        self.result.is_failure(msg)
