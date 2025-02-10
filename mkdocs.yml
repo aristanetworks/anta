@@ -2,7 +2,7 @@
 site_name: Arista Network Test Automation - ANTA
 site_author: Khelil Sator
 site_description: Arista Network Test Automation
-copyright: Copyright &copy; 2019 - 2024 Arista Networks
+copyright: Copyright &copy; 2019 - 2025 Arista Networks
 
 # Repository
 repo_name: ANTA on Github
@@ -240,6 +240,7 @@ nav:
           - CSV: api/reporter/csv.md
           - Jinja: api/reporter/jinja.md
       - Runner: api/runner.md
+      - Settings: api/settings.md
   - Troubleshooting ANTA: troubleshooting.md
   - Contributions: contribution.md
   - FAQ: faq.md

@@ -218,7 +218,7 @@ class TestHttpxTimeouts:
 
     def test_timeout_with_cli_value(self, setenvvar: pytest.MonkeyPatch) -> None:
         """Test behavior when cli_timeout is provided."""
-        timeout = get_httpx_timeout(cli_timeout=360.0)
+        timeout = get_httpx_timeout(timeout=360.0)
         assert timeout.connect == 360.0
         assert timeout.read == 360.0
         assert timeout.write == 360.0
@@ -226,7 +226,7 @@ class TestHttpxTimeouts:
 
     def test_timeout_with_cli_inf(self, setenvvar: pytest.MonkeyPatch) -> None:
         """Test behavior when cli_timeout is inf."""
-        timeout = get_httpx_timeout(cli_timeout=float("inf"))
+        timeout = get_httpx_timeout(timeout=float("inf"))
         assert timeout.connect is None
         assert timeout.read is None
         assert timeout.write is None

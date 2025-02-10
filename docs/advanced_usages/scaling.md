@@ -30,14 +30,14 @@ ANTA uses Python `asyncio` library for concurrent execution:
 - ⚡ Tests run concurrently, not in parallel
 - ⚙️ The event loop manages all coroutines and network I/O
 
-!!! important "Key Concept"
+!!! note "Key Concept"
     While `asyncio` provides excellent concurrency, there are practical limits to how many coroutines can be efficiently managed in a single event loop running on one CPU core. High coroutine counts increase event loop overhead, lead to frequent context switching, consume more memory, and may degrade performance.
 
 ## Resource Management
 
 This section describes the environment variables to control resource usage provided by ANTA.
 
-!!! note "Default Values"
+!!! tip "Default Values"
     The values specified in the following examples are the actual default values used by ANTA. See the [Performance Tuning](#performance-tuning) section for guidance on adjusting these values.
 
 ### **Test Concurrency**
@@ -82,14 +82,14 @@ Replace `<user>` with the username running ANTA, and `<value>` with your desired
 
 ## Connection Management
 
-For [`AsyncEosDevice`](../api/device.md#async-eos-device-class) implementations (default in ANTA), ANTA uses the [`httpx`](https://www.python-httpx.org/) library as its underlying HTTP client for device connections. Each device has his own connection pool with a default maximum of `100` connections. On large fabrics, this can lead to a very high number of connections (n x 100), which may overwhelm the ANTA process. Note that custom `AntaDevice` subclasses might implement different HTTP settings. For `AsyncEosDevice`, connection pooling can be tuned via the following environment variables. See [HTTPX documentation](https://www.python-httpx.org/advanced/resource-limits/) for more details.
+For [`AsyncEosDevice`](../api/device.md#anta.device.AsyncEOSDevice) implementations (default in ANTA), ANTA uses the [`httpx`](https://www.python-httpx.org/) library as its underlying HTTP client for device connections. Each device has his own connection pool and HTTPX uses a default maximum of `100` connections. On large fabrics, this can lead to a very high number of connections (n x 100), which may overwhelm the ANTA process. Note that custom `AntaDevice` subclasses might implement different HTTP settings. For `AsyncEosDevice`, connection pooling can be tuned via the following environment variables. See [HTTPX documentation](https://www.python-httpx.org/advanced/resource-limits/) for more details.
 
 ```bash
 # Maximum number of allowable connections
-export ANTA_MAX_CONNECTIONS=100
+export ANTA_MAX_CONNECTIONS=10
 
 # Number of allowable keep-alive connections
-export ANTA_MAX_KEEPALIVE_CONNECTIONS=20
+export ANTA_MAX_KEEPALIVE_CONNECTIONS=10
 
 # Time limit on idle keep-alive connections in seconds
 export ANTA_KEEPALIVE_EXPIRY=5.0
@@ -100,12 +100,9 @@ export ANTA_KEEPALIVE_EXPIRY=5.0
 
 ## Timeouts Configuration
 
-ANTA provides several environment variables to control `httpx` timeouts. If not set, these values default to the default global timeout value of ANTA (30.0 seconds). The global timeout can also be set via the `--timeout` command-line option. See [HTTPX documentation](https://www.python-httpx.org/advanced/timeouts/) for more details.
+ANTA provides several environment variables to control `httpx` timeouts. A global timeout can be set via the `--timeout` command-line option or the `ANTA_TIMEOUT` environment variable. See [HTTPX documentation](https://www.python-httpx.org/advanced/timeouts/) for more details.
 
 ```bash
-# Global timeout
-export ANTA_TIMEOUT=30.0
-
 # Maximum amount of time to wait until a socket connection to the requested host is established
 export ANTA_CONNECT_TIMEOUT=30.0
 
@@ -116,8 +113,11 @@ export ANTA_READ_TIMEOUT=30.0
 export ANTA_WRITE_TIMEOUT=30.0
 
 # Maximum duration to wait for acquiring a connection from the connection pool
-export ANTA_POOL_TIMEOUT=30.0
+export ANTA_POOL_TIMEOUT=None
 ```
+
+!!! warning "Global timeout"
+    Setting a global timeout via the `--timeout` command-line option or the `ANTA_TIMEOUT` environment variable will override **ALL** individual timeout settings.
 
 ## Performance Tuning
 
@@ -132,12 +132,12 @@ For optimal performance on large fabrics, consider the following tuning paramete
     export ANTA_POOL_TIMEOUT=None
     ```
 
-    This is **very** important for large fabrics. Setting appropriate timeouts for each operation type prevents test failures while maintaining proper error detection. The `ANTA_POOL_TIMEOUT=None` setting is crucial for large-scale deployments because:
+    This is **very** important for large fabrics. Setting appropriate timeouts for each operation type prevents test failures while maintaining proper error detection. The `ANTA_POOL_TIMEOUT=None` default setting is crucial for large-scale deployments because:
 
       - ANTA launches multiple test coroutines simultaneously (up to `ANTA_MAX_CONCURRENCY`)
       - With thousands of tests, not all can acquire a connection immediately
       - The connection pool queues requests when all connections are in use
-      - Without `ANTA_POOL_TIMEOUT=None`, requests might fail if they can't get a connection within the default 30-second global timeout
+      - Without `ANTA_POOL_TIMEOUT=None`, requests might fail if they can't get a connection within the specified timeout
       - Setting it to `None` allows the connection pool to manage request queuing naturally
 
 2. Adjust concurrency based on test count and system resources:
@@ -153,10 +153,10 @@ For optimal performance on large fabrics, consider the following tuning paramete
 
     ```bash
     export ANTA_MAX_CONNECTIONS=10
-    export ANTA_MAX_KEEPALIVE_CONNECTIONS=5
+    export ANTA_MAX_KEEPALIVE_CONNECTIONS=10
     ```
 
-    These values are a good starting point for large fabrics. Adjust them based on your fabric size and performance testing.
+    The default values are a good starting point for large fabrics. Adjust them based on your fabric size and performance testing.
 
 4. Consider JSON over YAML for better performance:
 
