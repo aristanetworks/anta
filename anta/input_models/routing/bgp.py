@@ -327,11 +327,11 @@ class AddressFamilyConfig(BaseModel):
         """
         base_string = "AFI-SAFI:"
         if self.afi_safi == "v4u":
-            base_string =+ f"{base_string} IPv4 Unicast"
+            base_string = f"{base_string} IPv4 Unicast"
         elif self.afi_safi == "v4m":
-            base_string =+ f"{base_string} IPv4 Multicast"
+            base_string = f"{base_string} IPv4 Multicast"
         elif self.afi_safi == "v6u":
-            base_string =+f"{base_string} IPv6 Unicast"
+            base_string = f"{base_string} IPv6 Unicast"
         elif self.afi_safi == "v6m":
-            base_string =+ f"{base_string} IPv4 Multicast"
+            base_string = f"{base_string} IPv6 Multicast"
         return base_string

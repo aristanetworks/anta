@@ -5880,8 +5880,8 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {"afiSafiConfig": {"v4u": {}}},
-                    "test": {"afiSafiConfig": {"v6m": {"redistributedRoutes": [{"proto": "Connected", "routeMap": "RM-CONN-2-BGP"}]}}},
+                    "default": {"afiSafiConfig": {"v6m": {}}},
+                    "test": {"afiSafiConfig": {"v4u": {"redistributedRoutes": [{"proto": "Connected", "routeMap": "RM-CONN-2-BGP"}]}}},
                 }
             }
         ],
@@ -5891,7 +5891,7 @@ DATA: list[dict[str, Any]] = [
                     "vrf": "default",
                     "address_families": [
                         {
-                            "afi_safi": "ipv4Unicast",
+                            "afi_safi": "ipv6 Multicast",
                             "redistributed_routes": [
                                 {"proto": "Connected", "include_leaked": True, "route_map": "RM-CONN-2-BGP"},
                                 {"proto": "Static", "include_leaked": True, "route_map": "RM-CONN-2-BGP"},
@@ -5901,7 +5901,7 @@ DATA: list[dict[str, Any]] = [
                 },
             ]
         },
-        "expected": {"result": "failure", "messages": ["VRF: default, AFI-SAFI: IPv4 Unicast - Not configured"]},
+        "expected": {"result": "failure", "messages": ["VRF: default, AFI-SAFI: IPv6 Multicast - Not configured"]},
     },
     {
         "name": "failure-expected-proto-not-found",
@@ -5996,7 +5996,7 @@ DATA: list[dict[str, Any]] = [
                     "vrf": "test",
                     "address_families": [
                         {
-                            "afi_safi": "ipv6 Unicast",
+                            "afi_safi": "ipv6-Unicast",
                             "redistributed_routes": [
                                 {"proto": "User", "route_map": "RM-CONN-2-BGP"},
                                 {"proto": "OSPF Internal", "route_map": "RM-CONN-2-BGP"},
@@ -6051,7 +6051,7 @@ DATA: list[dict[str, Any]] = [
                     "vrf": "default",
                     "address_families": [
                         {
-                            "afi_safi": "ipv4multicast",
+                            "afi_safi": "ipv4-multicast",
                             "redistributed_routes": [
                                 {"proto": "IS-IS", "include_leaked": True, "route_map": "RM-CONN-2-BGP"},
                             ],
@@ -6062,7 +6062,7 @@ DATA: list[dict[str, Any]] = [
                     "vrf": "test",
                     "address_families": [
                         {
-                            "afi_safi": "IPv6unicast",
+                            "afi_safi": "IPv6_unicast",
                             "redistributed_routes": [
                                 {"proto": "RIP", "route_map": "RM-CONN-2-BGP"},
                                 {"proto": "Bgp", "include_leaked": False, "route_map": "RM-CONN-2-BGP"},
