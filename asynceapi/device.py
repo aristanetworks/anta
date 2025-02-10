@@ -1,4 +1,4 @@
-# Copyright (c) 2024 Arista Networks, Inc.
+# Copyright (c) 2024-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 # Initially written by Jeremy Schulman at https://github.com/jeremyschulman/aio-eapi
@@ -250,7 +250,7 @@ class Device(httpx.AsyncClient):
     ) -> list[EapiTextOutput] | None: ...
 
     # Actual implementation
-    async def cli(  # noqa: PLR0913
+    async def cli(
         self,
         command: EapiSimpleCommand | EapiComplexCommand | None = None,
         commands: list[EapiSimpleCommand | EapiComplexCommand] | None = None,
@@ -354,7 +354,7 @@ class Device(httpx.AsyncClient):
                 return None
             raise
 
-    def _jsonrpc_command(  # noqa: PLR0913
+    def _jsonrpc_command(
         self,
         commands: list[EapiSimpleCommand | EapiComplexCommand],
         ofmt: Literal["json", "text"] = "json",

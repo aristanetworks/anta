@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module related to GreenT (Postcard Telemetry) tests."""
@@ -25,8 +25,9 @@ class VerifyGreenTCounters(AntaTest):
     --------
     ```yaml
     anta.tests.greent:
-      - VerifyGreenT:
+      - VerifyGreenTCounters:
     ```
+
     """
 
     description = "Verifies if the GreenT counters are incremented."
@@ -56,8 +57,9 @@ class VerifyGreenT(AntaTest):
     --------
     ```yaml
     anta.tests.greent:
-      - VerifyGreenTCounters:
+      - VerifyGreenT:
     ```
+
     """
 
     description = "Verifies if a GreenT policy other than the default is created."

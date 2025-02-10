@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module related to various connectivity tests."""
@@ -7,13 +7,15 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from typing import ClassVar
+from typing import ClassVar, TypeVar
 
-from pydantic import BaseModel
+from pydantic import field_validator
 
-from anta.custom_types import Interface
-from anta.input_models.connectivity import Host
+from anta.input_models.connectivity import Host, LLDPNeighbor, Neighbor
 from anta.models import AntaCommand, AntaTemplate, AntaTest
+
+# Using a TypeVar for the Host model since mypy thinks it's a ClassVar and not a valid type when used in field validators
+T = TypeVar("T", bound=Host)
 
 
 class VerifyReachability(AntaTest):
@@ -40,6 +42,11 @@ class VerifyReachability(AntaTest):
               vrf: MGMT
               df_bit: True
               size: 100
+            - source: fd12:3456:789a:1::1
+              destination: fd12:3456:789a:1::2
+              vrf: default
+              df_bit: True
+              size: 100
     ```
     """
 
@@ -55,16 +62,26 @@ class VerifyReachability(AntaTest):
         hosts: list[Host]
         """List of host to ping."""
         Host: ClassVar[type[Host]] = Host
+        """To maintain backward compatibility."""
+
+        @field_validator("hosts")
+        @classmethod
+        def validate_hosts(cls, hosts: list[T]) -> list[T]:
+            """Validate the 'destination' and 'source' IP address family in each host."""
+            for host in hosts:
+                if not isinstance(host.source, str) and host.destination.version != host.source.version:
+                    msg = f"{host} IP address family for destination does not match source"
+                    raise ValueError(msg)
+            return hosts
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each host in the input list."""
-        commands = []
-        for host in self.inputs.hosts:
-            # df_bit includes leading space when enabled, empty string when disabled
-            df_bit = " df-bit" if host.df_bit else ""
-            command = template.render(destination=host.destination, source=host.source, vrf=host.vrf, repeat=host.repeat, size=host.size, df_bit=df_bit)
-            commands.append(command)
-        return commands
+        return [
+            template.render(
+                destination=host.destination, source=host.source, vrf=host.vrf, repeat=host.repeat, size=host.size, df_bit=" df-bit" if host.df_bit else ""
+            )
+            for host in self.inputs.hosts
+        ]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -77,14 +94,20 @@ class VerifyReachability(AntaTest):
 
 
 class VerifyLLDPNeighbors(AntaTest):
-    """Verifies that the provided LLDP neighbors are present and connected with the correct configuration.
+    """Verifies the connection status of the specified LLDP (Link Layer Discovery Protocol) neighbors.
+
+    This test performs the following checks for each specified LLDP neighbor:
+
+      1. Confirming matching ports on both local and neighboring devices.
+      2. Ensuring compatibility of device names and interface identifiers.
+      3. Verifying neighbor configurations match expected values per interface; extra neighbors are ignored.
 
     Expected Results
     ----------------
-    * Success: The test will pass if each of the provided LLDP neighbors is present and connected to the specified port and device.
+    * Success: The test will pass if all the provided LLDP neighbors are present and correctly connected to the specified port and device.
     * Failure: The test will fail if any of the following conditions are met:
-        - The provided LLDP neighbor is not found.
-        - The system name or port of the LLDP neighbor does not match the provided information.
+        - The provided LLDP neighbor is not found in the LLDP table.
+        - The system name or port of the LLDP neighbor does not match the expected information.
 
     Examples
     --------
@@ -101,59 +124,37 @@ class VerifyLLDPNeighbors(AntaTest):
     ```
     """
 
-    description = "Verifies that the provided LLDP neighbors are connected properly."
     categories: ClassVar[list[str]] = ["connectivity"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show lldp neighbors detail", revision=1)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyLLDPNeighbors test."""
 
-        neighbors: list[Neighbor]
+        neighbors: list[LLDPNeighbor]
         """List of LLDP neighbors."""
-
-        class Neighbor(BaseModel):
-            """Model for an LLDP neighbor."""
-
-            port: Interface
-            """LLDP port."""
-            neighbor_device: str
-            """LLDP neighbor device."""
-            neighbor_port: Interface
-            """LLDP neighbor port."""
+        Neighbor: ClassVar[type[Neighbor]] = Neighbor
+        """To maintain backward compatibility."""
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyLLDPNeighbors."""
-        failures: dict[str, list[str]] = {}
+        self.result.is_success()
 
         output = self.instance_commands[0].json_output["lldpNeighbors"]
-
         for neighbor in self.inputs.neighbors:
             if neighbor.port not in output:
-                failures.setdefault("Port(s) not configured", []).append(neighbor.port)
+                self.result.is_failure(f"{neighbor} - Port not found")
                 continue
 
             if len(lldp_neighbor_info := output[neighbor.port]["lldpNeighborInfo"]) == 0:
-                failures.setdefault("No LLDP neighbor(s) on port(s)", []).append(neighbor.port)
+                self.result.is_failure(f"{neighbor} - No LLDP neighbors")
                 continue
 
-            if not any(
+            # Check if the system name and neighbor port matches
+            match_found = any(
                 info["systemName"] == neighbor.neighbor_device and info["neighborInterfaceInfo"]["interfaceId_v2"] == neighbor.neighbor_port
                 for info in lldp_neighbor_info
-            ):
-                neighbors = "\n      ".join(
-                    [
-                        f"{neighbor[0]}_{neighbor[1]}"
-                        for neighbor in [(info["systemName"], info["neighborInterfaceInfo"]["interfaceId_v2"]) for info in lldp_neighbor_info]
-                    ]
-                )
-                failures.setdefault("Wrong LLDP neighbor(s) on port(s)", []).append(f"{neighbor.port}\n      {neighbors}")
-
-        if not failures:
-            self.result.is_success()
-        else:
-            failure_messages = []
-            for failure_type, ports in failures.items():
-                ports_str = "\n   ".join(ports)
-                failure_messages.append(f"{failure_type}:\n   {ports_str}")
-            self.result.is_failure("\n".join(failure_messages))
+            )
+            if not match_found:
+                failure_msg = [f"{info['systemName']}/{info['neighborInterfaceInfo']['interfaceId_v2']}" for info in lldp_neighbor_info]
+                self.result.is_failure(f"{neighbor} - Wrong LLDP neighbors: {', '.join(failure_msg)}")

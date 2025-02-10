@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module related to the EOS various AAA tests."""
@@ -108,7 +108,7 @@ class VerifyTacacsServers(AntaTest):
         if not not_configured:
             self.result.is_success()
         else:
-            self.result.is_failure(f"TACACS servers {not_configured} are not configured in VRF {self.inputs.vrf}")
+            self.result.is_failure(f"TACACS servers {', '.join(not_configured)} are not configured in VRF {self.inputs.vrf}")
 
 
 class VerifyTacacsServerGroups(AntaTest):
@@ -151,7 +151,7 @@ class VerifyTacacsServerGroups(AntaTest):
         if not not_configured:
             self.result.is_success()
         else:
-            self.result.is_failure(f"TACACS server group(s) {not_configured} are not configured")
+            self.result.is_failure(f"TACACS server group(s) {', '.join(not_configured)} are not configured")
 
 
 class VerifyAuthenMethods(AntaTest):
@@ -167,14 +167,14 @@ class VerifyAuthenMethods(AntaTest):
     ```yaml
     anta.tests.aaa:
       - VerifyAuthenMethods:
-        methods:
-          - local
-          - none
-          - logging
-        types:
-          - login
-          - enable
-          - dot1x
+          methods:
+            - local
+            - none
+            - logging
+          types:
+            - login
+            - enable
+            - dot1x
     ```
     """
 
@@ -204,14 +204,14 @@ class VerifyAuthenMethods(AntaTest):
                     self.result.is_failure("AAA authentication methods are not configured for login console")
                     return
                 if v["login"]["methods"] != self.inputs.methods:
-                    self.result.is_failure(f"AAA authentication methods {self.inputs.methods} are not matching for login console")
+                    self.result.is_failure(f"AAA authentication methods {', '.join(self.inputs.methods)} are not matching for login console")
                     return
             not_matching.extend(auth_type for methods in v.values() if methods["methods"] != self.inputs.methods)
 
         if not not_matching:
             self.result.is_success()
         else:
-            self.result.is_failure(f"AAA authentication methods {self.inputs.methods} are not matching for {not_matching}")
+            self.result.is_failure(f"AAA authentication methods {', '.join(self.inputs.methods)} are not matching for {', '.join(not_matching)}")
 
 
 class VerifyAuthzMethods(AntaTest):
@@ -263,7 +263,7 @@ class VerifyAuthzMethods(AntaTest):
         if not not_matching:
             self.result.is_success()
         else:
-            self.result.is_failure(f"AAA authorization methods {self.inputs.methods} are not matching for {not_matching}")
+            self.result.is_failure(f"AAA authorization methods {', '.join(self.inputs.methods)} are not matching for {', '.join(not_matching)}")
 
 
 class VerifyAcctDefaultMethods(AntaTest):
@@ -319,12 +319,12 @@ class VerifyAcctDefaultMethods(AntaTest):
                 if methods["defaultMethods"] != self.inputs.methods:
                     not_matching.append(acct_type)
         if not_configured:
-            self.result.is_failure(f"AAA default accounting is not configured for {not_configured}")
+            self.result.is_failure(f"AAA default accounting is not configured for {', '.join(not_configured)}")
             return
         if not not_matching:
             self.result.is_success()
         else:
-            self.result.is_failure(f"AAA accounting default methods {self.inputs.methods} are not matching for {not_matching}")
+            self.result.is_failure(f"AAA accounting default methods {', '.join(self.inputs.methods)} are not matching for {', '.join(not_matching)}")
 
 
 class VerifyAcctConsoleMethods(AntaTest):
@@ -380,9 +380,9 @@ class VerifyAcctConsoleMethods(AntaTest):
                 if methods["consoleMethods"] != self.inputs.methods:
                     not_matching.append(acct_type)
         if not_configured:
-            self.result.is_failure(f"AAA console accounting is not configured for {not_configured}")
+            self.result.is_failure(f"AAA console accounting is not configured for {', '.join(not_configured)}")
             return
         if not not_matching:
             self.result.is_success()
         else:
-            self.result.is_failure(f"AAA accounting console methods {self.inputs.methods} are not matching for {not_matching}")
+            self.result.is_failure(f"AAA accounting console methods {', '.join(self.inputs.methods)} are not matching for {', '.join(not_matching)}")

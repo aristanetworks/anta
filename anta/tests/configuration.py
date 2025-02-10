@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module related to the device configuration tests."""
@@ -94,9 +94,9 @@ class VerifyRunningConfigLines(AntaTest):
     ```yaml
     anta.tests.configuration:
       - VerifyRunningConfigLines:
-            regex_patterns:
-                - "^enable password.*$"
-                - "bla bla"
+          regex_patterns:
+            - "^enable password.*$"
+            - "bla bla"
     ```
     """
 
@@ -126,41 +126,3 @@ class VerifyRunningConfigLines(AntaTest):
             self.result.is_success()
         else:
             self.result.is_failure("Following patterns were not found: " + ",".join(failure_msgs))
-
-
-class VerifyManagementCVX(AntaTest):
-    """Verifies the management CVX global status.
-
-    Expected Results
-    ----------------
-    * Success: The test will pass if the management CVX global status matches the expected status.
-    * Failure: The test will fail if the management CVX global status does not match the expected status.
-
-    Examples
-    --------
-    ```yaml
-    anta.tests.configuration:
-      - VerifyManagementCVX:
-          enabled: true
-    ```
-    """
-
-    name = "VerifyManagementCVX"
-    description = "Verifies the management CVX global status."
-    categories: ClassVar[list[str]] = ["configuration"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show management cvx", revision=1)]
-
-    class Input(AntaTest.Input):
-        """Input model for the VerifyManagementCVX test."""
-
-        enabled: bool
-        """Whether management CVX must be enabled (True) or disabled (False)."""
-
-    @AntaTest.anta_test
-    def test(self) -> None:
-        """Main test function for VerifyManagementCVX."""
-        command_output = self.instance_commands[0].json_output
-        self.result.is_success()
-        cluster_status = command_output["clusterStatus"]
-        if (cluster_state := cluster_status.get("enabled")) != self.inputs.enabled:
-            self.result.is_failure(f"Management CVX status is not valid: {cluster_state}")

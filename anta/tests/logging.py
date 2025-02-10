@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module related to the EOS various logging tests.
@@ -14,12 +14,11 @@ import re
 from ipaddress import IPv4Address
 from typing import TYPE_CHECKING, ClassVar
 
-from anta.models import AntaCommand, AntaTest
+from anta.custom_types import LogSeverityLevel
+from anta.models import AntaCommand, AntaTemplate, AntaTest
 
 if TYPE_CHECKING:
     import logging
-
-    from anta.models import AntaTemplate
 
 
 def _get_logging_states(logger: logging.Logger, command_output: str) -> str:
@@ -41,6 +40,35 @@ def _get_logging_states(logger: logging.Logger, command_output: str) -> str:
     log_states = command_output.partition("\n\nExternal configuration:")[0]
     logger.debug("Device logging states:\n%s", log_states)
     return log_states
+
+
+class VerifySyslogLogging(AntaTest):
+    """Verifies if syslog logging is enabled.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if syslog logging is enabled.
+    * Failure: The test will fail if syslog logging is disabled.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.logging:
+      - VerifySyslogLogging:
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["logging"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show logging", ofmt="text")]
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifySyslogLogging."""
+        self.result.is_success()
+        log_output = self.instance_commands[0].text_output
+
+        if "Syslog logging: enabled" not in _get_logging_states(self.logger, log_output):
+            self.result.is_failure("Syslog logging is disabled.")
 
 
 class VerifyLoggingPersistent(AntaTest):
@@ -164,7 +192,7 @@ class VerifyLoggingHosts(AntaTest):
         if not not_configured:
             self.result.is_success()
         else:
-            self.result.is_failure(f"Syslog servers {not_configured} are not configured in VRF {self.inputs.vrf}")
+            self.result.is_failure(f"Syslog servers {', '.join(not_configured)} are not configured in VRF {self.inputs.vrf}")
 
 
 class VerifyLoggingLogsGeneration(AntaTest):
@@ -172,34 +200,42 @@ class VerifyLoggingLogsGeneration(AntaTest):
 
     This test performs the following checks:
 
-      1. Sends a test log message at the **informational** level
-      2. Retrieves the most recent logs (last 30 seconds)
-      3. Verifies that the test message was successfully logged
-
-    !!! warning
-        EOS logging buffer should be set to severity level `informational` or higher for this test to work.
+      1. Sends a test log message at the specified severity log level.
+      2. Retrieves the most recent logs (last 30 seconds).
+      3. Verifies that the test message was successfully logged.
 
     Expected Results
     ----------------
     * Success: If logs are being generated and the test message is found in recent logs.
     * Failure: If any of the following occur:
-        - The test message is not found in recent logs
-        - The logging system is not capturing new messages
-        - No logs are being generated
+        - The test message is not found in recent logs.
+        - The logging system is not capturing new messages.
+        - No logs are being generated.
 
     Examples
     --------
     ```yaml
     anta.tests.logging:
       - VerifyLoggingLogsGeneration:
+          severity_level: informational
     ```
     """
 
     categories: ClassVar[list[str]] = ["logging"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
-        AntaCommand(command="send log level informational message ANTA VerifyLoggingLogsGeneration validation", ofmt="text"),
-        AntaCommand(command="show logging informational last 30 seconds | grep ANTA", ofmt="text", use_cache=False),
+        AntaTemplate(template="send log level {severity_level} message ANTA VerifyLoggingLogsGeneration validation", ofmt="text"),
+        AntaTemplate(template="show logging {severity_level} last 30 seconds | grep ANTA", ofmt="text", use_cache=False),
     ]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyLoggingLogsGeneration test."""
+
+        severity_level: LogSeverityLevel = "informational"
+        """Log severity level. Defaults to informational."""
+
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        """Render the template for log severity level in the input."""
+        return [template.render(severity_level=self.inputs.severity_level)]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -219,36 +255,44 @@ class VerifyLoggingHostname(AntaTest):
 
     This test performs the following checks:
 
-      1. Retrieves the device's configured FQDN
-      2. Sends a test log message at the **informational** level
-      3. Retrieves the most recent logs (last 30 seconds)
-      4. Verifies that the test message includes the complete FQDN of the device
-
-    !!! warning
-          EOS logging buffer should be set to severity level `informational` or higher for this test to work.
+      1. Retrieves the device's configured FQDN.
+      2. Sends a test log message at the specified severity log level.
+      3. Retrieves the most recent logs (last 30 seconds).
+      4. Verifies that the test message includes the complete FQDN of the device.
 
     Expected Results
     ----------------
     * Success: If logs are generated with the device's complete FQDN.
     * Failure: If any of the following occur:
-        - The test message is not found in recent logs
-        - The log message does not include the device's FQDN
-        - The FQDN in the log message doesn't match the configured FQDN
+        - The test message is not found in recent logs.
+        - The log message does not include the device's FQDN.
+        - The FQDN in the log message doesn't match the configured FQDN.
 
     Examples
     --------
     ```yaml
     anta.tests.logging:
       - VerifyLoggingHostname:
+          severity_level: informational
     ```
     """
 
     categories: ClassVar[list[str]] = ["logging"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
         AntaCommand(command="show hostname", revision=1),
-        AntaCommand(command="send log level informational message ANTA VerifyLoggingHostname validation", ofmt="text"),
-        AntaCommand(command="show logging informational last 30 seconds | grep ANTA", ofmt="text", use_cache=False),
+        AntaTemplate(template="send log level {severity_level} message ANTA VerifyLoggingHostname validation", ofmt="text"),
+        AntaTemplate(template="show logging {severity_level} last 30 seconds | grep ANTA", ofmt="text", use_cache=False),
     ]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyLoggingHostname test."""
+
+        severity_level: LogSeverityLevel = "informational"
+        """Log severity level. Defaults to informational."""
+
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        """Render the template for log severity level in the input."""
+        return [template.render(severity_level=self.inputs.severity_level)]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -274,36 +318,44 @@ class VerifyLoggingTimestamp(AntaTest):
 
     This test performs the following checks:
 
-      1. Sends a test log message at the **informational** level
-      2. Retrieves the most recent logs (last 30 seconds)
-      3. Verifies that the test message is present with a high-resolution RFC3339 timestamp format
-        - Example format: `2024-01-25T15:30:45.123456+00:00`
-        - Includes microsecond precision
-        - Contains timezone offset
-
-    !!! warning
-          EOS logging buffer should be set to severity level `informational` or higher for this test to work.
+      1. Sends a test log message at the specified severity log level.
+      2. Retrieves the most recent logs (last 30 seconds).
+      3. Verifies that the test message is present with a high-resolution RFC3339 timestamp format.
+        - Example format: `2024-01-25T15:30:45.123456+00:00`.
+        - Includes microsecond precision.
+        - Contains timezone offset.
 
     Expected Results
     ----------------
     * Success: If logs are generated with the correct high-resolution RFC3339 timestamp format.
     * Failure: If any of the following occur:
-        - The test message is not found in recent logs
-        - The timestamp format does not match the expected RFC3339 format
+        - The test message is not found in recent logs.
+        - The timestamp format does not match the expected RFC3339 format.
 
     Examples
     --------
     ```yaml
     anta.tests.logging:
       - VerifyLoggingTimestamp:
+          severity_level: informational
     ```
     """
 
     categories: ClassVar[list[str]] = ["logging"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
-        AntaCommand(command="send log level informational message ANTA VerifyLoggingTimestamp validation", ofmt="text"),
-        AntaCommand(command="show logging informational last 30 seconds | grep ANTA", ofmt="text", use_cache=False),
+        AntaTemplate(template="send log level {severity_level} message ANTA VerifyLoggingTimestamp validation", ofmt="text"),
+        AntaTemplate(template="show logging {severity_level} last 30 seconds | grep ANTA", ofmt="text", use_cache=False),
     ]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyLoggingTimestamp test."""
+
+        severity_level: LogSeverityLevel = "informational"
+        """Log severity level. Defaults to informational."""
+
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        """Render the template for log severity level in the input."""
+        return [template.render(severity_level=self.inputs.severity_level)]
 
     @AntaTest.anta_test
     def test(self) -> None:
