@@ -25,10 +25,10 @@ REGEXP_TYPE_HOSTNAME = r"^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)
 
 
 # Regular expression for BGP redistributed routes
-REGEX_IPV4_UNICAST = r"\bipv4[\s]?unicast\b"
-REGEX_IPV4_MULTICAST = r"\bipv4[\s]?multicast\b"
-REGEX_IPV6_UNICAST = r"\bipv6[\s]?unicast\b"
-REGEX_IPV6_MULTICAST = r"\bipv6[\s]?multicast\b"
+REGEX_IPV4_UNICAST = r"ipv4[-_ ]?unicast$"
+REGEX_IPV4_MULTICAST = r"ipv4[-_ ]?multicast$"
+REGEX_IPV6_UNICAST = r"ipv6[-_ ]?unicast$"
+REGEX_IPV6_MULTICAST = r"ipv6[-_ ]?multicast$"
 
 
 def aaa_group_prefix(v: str) -> str:
@@ -99,10 +99,10 @@ def bgp_multiprotocol_capabilities_abbreviations(value: str) -> str:
     patterns = {
         f"{r'dynamic[-_ ]?path[-_ ]?selection$'}": "dps",
         f"{r'dps$'}": "dps",
-        f"{r'ipv4[-_ ]?unicast$'}": "ipv4Unicast",
-        f"{r'ipv6[-_ ]?unicast$'}": "ipv6Unicast",
-        f"{r'ipv4[-_ ]?multicast$'}": "ipv4Multicast",
-        f"{r'ipv6[-_ ]?multicast$'}": "ipv6Multicast",
+        f"{REGEX_IPV4_UNICAST}": "ipv4Unicast",
+        f"{REGEX_IPV6_UNICAST}": "ipv6Unicast",
+        f"{REGEX_IPV4_MULTICAST}": "ipv4Multicast",
+        f"{REGEX_IPV6_MULTICAST}": "ipv6Multicast",
         f"{r'ipv4[-_ ]?labeled[-_ ]?Unicast$'}": "ipv4MplsLabels",
         f"{r'ipv4[-_ ]?mpls[-_ ]?labels$'}": "ipv4MplsLabels",
         f"{r'ipv6[-_ ]?labeled[-_ ]?Unicast$'}": "ipv6MplsLabels",
@@ -142,18 +142,25 @@ def validate_regex(value: str) -> str:
 def bgp_redistributed_route_proto_abbreviations(value: str) -> str:
     """Abbreviations for different BGP redistributed route protocols.
 
+    Handles different separators (hyphen, underscore, space) and case sensitivity.
+
     Examples
     --------
-    - IPv4 Unicast
-    - ipv4Unicast
-    - IPv4 Multicast
-    - ipv4Multicast
-
+    ```python
+    >>> bgp_redistributed_route_proto_abbreviations("IPv4 Unicast")
+    'v4u'
+    >>> bgp_redistributed_route_proto_abbreviations("IPv4-multicast")
+    'v4m'
+    >>> bgp_redistributed_route_proto_abbreviations("IPv6_multicast")
+    'v6m'
+    >>> bgp_redistributed_route_proto_abbreviations("ipv6unicast")
+    'v6u'
+    ```
     """
     patterns = {REGEX_IPV4_UNICAST: "v4u", REGEX_IPV4_MULTICAST: "v4m", REGEX_IPV6_UNICAST: "v6u", REGEX_IPV6_MULTICAST: "v6m"}
 
     for pattern, replacement in patterns.items():
-        match = re.search(pattern, value, re.IGNORECASE)
+        match = re.match(pattern, value, re.IGNORECASE)
         if match:
             return replacement
 
@@ -165,7 +172,14 @@ def update_bgp_redistributed_proto_user(value: str) -> str:
 
     Examples
     --------
-    - User
+    ```python
+    >>> update_bgp_redistributed_proto_user("User")
+    'EOS SDK'
+    >>> update_bgp_redistributed_proto_user("Bgp")
+    'Bgp'
+    >>> update_bgp_redistributed_proto_user("RIP")
+    'RIP'
+    ```
     """
     if value == "User":
         value = "EOS SDK"
@@ -379,4 +393,4 @@ RedistributedProtocol = Annotated[
     ],
     AfterValidator(update_bgp_redistributed_proto_user),
 ]
-RedisrbutedAfiSafi = Annotated[str, BeforeValidator(bgp_redistributed_route_proto_abbreviations)]
+RedistributedAfiSafi = Annotated[Literal["v4u", "v4m", "v6u", "v6m"], BeforeValidator(bgp_redistributed_route_proto_abbreviations)]

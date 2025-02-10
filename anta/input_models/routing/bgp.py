@@ -12,7 +12,7 @@ from warnings import warn
 from pydantic import BaseModel, ConfigDict, Field, PositiveInt, model_validator
 from pydantic_extra_types.mac_address import MacAddress
 
-from anta.custom_types import Afi, BgpDropStats, BgpUpdateError, MultiProtocolCaps, RedisrbutedAfiSafi, RedistributedProtocol, Safi, Vni
+from anta.custom_types import Afi, BgpDropStats, BgpUpdateError, MultiProtocolCaps, RedistributedAfiSafi, RedistributedProtocol, Safi, Vni
 
 if TYPE_CHECKING:
     import sys
@@ -69,9 +69,6 @@ class BgpAddressFamily(BaseModel):
     """Flag to check if the peers are established with negotiated AFI/SAFI. Defaults to `False`.
 
     Can be enabled in the `VerifyBGPPeerCount` tests."""
-
-    route_map: str | None = None
-    """Specify redistributed route protocol route map. Required field in the `VerifyBGPRedistribution` test."""
 
     @model_validator(mode="after")
     def validate_inputs(self) -> Self:
@@ -261,12 +258,12 @@ class BgpRoutePath(BaseModel):
 
 
 class BgpVrf(BaseModel):
-    """Model representing BGP vrfs."""
+    """Model representing a VRF in a BGP instance."""
 
     vrf: str = "default"
-    """VRF for the BGP instance. Defaults to `default`."""
+    """VRF context."""
     address_families: list[AddressFamilyConfig]
-    """list of address family configuration."""
+    """List of address family configuration."""
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the BgpVrf for reporting.
@@ -278,63 +275,63 @@ class BgpVrf(BaseModel):
         return f"VRF: {self.vrf}"
 
 
-class RedistributedRoute(BaseModel):
-    """Model representing BGP redistributed route."""
+class RedistributedRouteConfig(BaseModel):
+    """Model representing a BGP redistributed route configuration."""
 
     proto: RedistributedProtocol
-    """The redistributed route protocol."""
+    """he redistributed protocol."""
     include_leaked: bool | None = None
-    """Flag to include leaked BGP routes in the advertisement"""
+    """Flag to include leaked routes of the redistributed protocol while redistributing."""
     route_map: str | None = None
-    """The route map of the redistributed routes."""
+    """Optional route map applied to the redistribution."""
 
     @model_validator(mode="after")
-    def validate_include_leaked_support(self) -> Self:
-        """Validate the input provided for included leaked field, included _leaked this field is not supported for proto AttachedHost, User, Dynamic, RIP."""
+    def validate_inputs(self) -> Self:
+        """Validate that 'include_leaked' is not set when the redistributed protocol is AttachedHost, User, Dynamic, or RIP."""
         if self.include_leaked and self.proto in ["AttachedHost", "EOS SDK", "Dynamic", "RIP"]:
-            msg = f"{self.include_leaked}, field is not supported for redistributed route protocol `{self.proto}`"
+            msg = f"'include_leaked' field is not supported for redistributed protocol '{self.proto}'"
             raise ValueError(msg)
         return self
 
     def __str__(self) -> str:
-        """Return a human-readable string representation of the RedistributedRoute for reporting.
+        """Return a human-readable string representation of the RedistributedRouteConfig for reporting.
 
         Examples
         --------
-        - Proto: Connected, Included Leaked: False, Route Map: RM-CONN-2-BGP
+        - Proto: Connected, Include Leaked: absent, Route Map: RM-CONN-2-BGP
         """
         base_string = f"Proto: {self.proto}"
-        if self.include_leaked is not None:
-            base_string += f", Included Leaked: {self.include_leaked}"
-        if self.route_map is not None:
+        if not self.include_leaked and self.include_leaked is not None:
+            base_string += ", Include Leaked: absent"
+        if self.include_leaked:
+            base_string += ", Include Leaked: present"
+        if self.route_map:
             base_string += f", Route Map: {self.route_map}"
         return base_string
 
 
 class AddressFamilyConfig(BaseModel):
-    """Model representing BGP address family configs."""
+    """Model representing a BGP address family configuration."""
 
-    afi_safi: RedisrbutedAfiSafi
-    """BGP redistributed route supported address families"""
-    redistributed_routes: list[RedistributedRoute]
-    """A list of redistributed route"""
-
-    @model_validator(mode="after")
-    def validate_inputs(self) -> Self:
-        """Validate the inputs provided to the AddressFamilyConfig class.
-
-        address families must be `ipv4` or `ipv6` only, and sub address families can be `unicast` or `multicast`.
-        """
-        if self.afi_safi not in ["v4u", "v4m", "v6u", "v6m"]:
-            msg = f"Redistributed route protocol is not supported for address family `{self.afi_safi}`"
-            raise ValueError(msg)
-        return self
+    afi_safi: RedistributedAfiSafi
+    """AFI/SAFI abbreviation per EOS."""
+    redistributed_routes: list[RedistributedRouteConfig]
+    """List of redistributed route configuration."""
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the AddressFamilyConfig for reporting.
 
         Examples
         --------
-        - AFI-SAFI: v4u
+        - AFI-SAFI: IPv4 Unicast
         """
-        return f"AFI-SAFI: {self.afi_safi}"
+        base_string = "AFI-SAFI:"
+        if self.afi_safi == "v4u":
+            base_string =+ f"{base_string} IPv4 Unicast"
+        elif self.afi_safi == "v4m":
+            base_string =+ f"{base_string} IPv4 Multicast"
+        elif self.afi_safi == "v6u":
+            base_string =+f"{base_string} IPv6 Unicast"
+        elif self.afi_safi == "v6m":
+            base_string =+ f"{base_string} IPv4 Multicast"
+        return base_string

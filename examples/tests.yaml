@@ -514,7 +514,7 @@ anta.tests.routing.bgp:
       # Verifies the health of all the BGP IPv4 peer(s).
       check_tcp_queues: True
   - VerifyBGPRedistribution:
-      # Verifies BGP redistributed routes protocol and route-map.
+      # Verifies BGP redistribution.
       vrfs:
         - vrf: default
           address_families:

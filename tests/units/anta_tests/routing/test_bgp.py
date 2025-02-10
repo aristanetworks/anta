@@ -5901,7 +5901,7 @@ DATA: list[dict[str, Any]] = [
                 },
             ]
         },
-        "expected": {"result": "failure", "messages": ["VRF: default, AFI-SAFI: v4u - Not configured"]},
+        "expected": {"result": "failure", "messages": ["VRF: default, AFI-SAFI: IPv4 Unicast - Not configured"]},
     },
     {
         "name": "failure-expected-proto-not-found",
@@ -5955,9 +5955,9 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "VRF: default, AFI-SAFI: v4m, Proto: OSPFv3 External, Included Leaked: True, Route Map: RM-CONN-2-BGP - Not configured",
-                "VRF: default, AFI-SAFI: v4m, Proto: OSPFv3 Nssa-External, Included Leaked: True, Route Map: RM-CONN-2-BGP - Not configured",
-                "VRF: test, AFI-SAFI: v6u - Not configured",
+                "VRF: default, AFI-SAFI: IPv4 Multicast, Proto: OSPFv3 External, Include Leaked: present, Route Map: RM-CONN-2-BGP - Not configured",
+                "VRF: default, AFI-SAFI: IPv4 Multicast, Proto: OSPFv3 Nssa-External, Include Leaked: present, Route Map: RM-CONN-2-BGP - Not configured",
+                "VRF: test, AFI-SAFI: IPv6 Unicast - Not configured",
             ],
         },
     },
@@ -6009,10 +6009,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "VRF: default, AFI-SAFI: v4u, Proto: Connected, Route Map: RM-CONN-2-BGP - Route map mismatch - Actual: RM-CONN-10-BGP",
-                "VRF: default, AFI-SAFI: v4u, Proto: Static, Route Map: RM-CONN-2-BGP - Route map mismatch - Actual: Not Found",
-                "VRF: test, AFI-SAFI: v6u, Proto: EOS SDK, Route Map: RM-CONN-2-BGP - Route map mismatch - Actual: RM-MLAG-PEER-IN",
-                "VRF: test, AFI-SAFI: v6u, Proto: OSPF Internal, Route Map: RM-CONN-2-BGP - Route map mismatch - Actual: Not Found",
+                "VRF: default, AFI-SAFI: IPv4 Unicast, Proto: Connected, Route Map: RM-CONN-2-BGP - Route map mismatch - Actual: RM-CONN-10-BGP",
+                "VRF: default, AFI-SAFI: IPv4 Unicast, Proto: Static, Route Map: RM-CONN-2-BGP - Route map mismatch - Actual: Not Found",
+                "VRF: test, AFI-SAFI: IPv6 Unicast, Proto: EOS SDK, Route Map: RM-CONN-2-BGP - Route map mismatch - Actual: RM-MLAG-PEER-IN",
+                "VRF: test, AFI-SAFI: IPv6 Unicast, Proto: OSPF Internal, Route Map: RM-CONN-2-BGP - Route map mismatch - Actual: Not Found",
             ],
         },
     },
@@ -6075,8 +6075,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "VRF: default, AFI-SAFI: v4m, Proto: IS-IS, Included Leaked: True, Route Map: RM-CONN-2-BGP - Value for included leaked mismatch - Actual: False",
-                "VRF: test, AFI-SAFI: v6u, Proto: Bgp, Included Leaked: False, Route Map: RM-CONN-2-BGP - Value for included leaked mismatch - Actual: True",
+                "VRF: default, AFI-SAFI: IPv4 Multicast, Proto: IS-IS, Include Leaked: present, Route Map: RM-CONN-2-BGP - Value for include leaked mismatch "
+                "- Actual: absent",
+                "VRF: test, AFI-SAFI: IPv6 Unicast, Proto: Bgp, Include Leaked: absent, Route Map: RM-CONN-2-BGP - Value for include leaked mismatch "
+                "- Actual: present",
             ],
         },
     },
