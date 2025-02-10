@@ -113,11 +113,14 @@ export ANTA_READ_TIMEOUT=30.0
 export ANTA_WRITE_TIMEOUT=30.0
 
 # Maximum duration to wait for acquiring a connection from the connection pool
-export ANTA_POOL_TIMEOUT=None
+export ANTA_POOL_TIMEOUT=inf
 ```
 
 !!! warning "Global timeout"
     Setting a global timeout via the `--timeout` command-line option or the `ANTA_TIMEOUT` environment variable will override **ALL** individual timeout settings.
+
+!!! tip "Disabling timeouts"
+    Setting a timeout to the float value `inf` will disable the timeout for that operation. ANTA will convert this value to `None` internally.
 
 ## Performance Tuning
 
@@ -129,15 +132,15 @@ For optimal performance on large fabrics, consider the following tuning paramete
     export ANTA_CONNECT_TIMEOUT=60.0
     export ANTA_READ_TIMEOUT=300.0
     export ANTA_WRITE_TIMEOUT=60.0
-    export ANTA_POOL_TIMEOUT=None
+    export ANTA_POOL_TIMEOUT=inf
     ```
 
-    This is **very** important for large fabrics. Setting appropriate timeouts for each operation type prevents test failures while maintaining proper error detection. The `ANTA_POOL_TIMEOUT=None` default setting is crucial for large-scale deployments because:
+    This is **very** important for large fabrics. Setting appropriate timeouts for each operation type prevents test failures while maintaining proper error detection. The `ANTA_POOL_TIMEOUT=inf` default setting is crucial for large-scale deployments because:
 
       - ANTA launches multiple test coroutines simultaneously (up to `ANTA_MAX_CONCURRENCY`)
       - With thousands of tests, not all can acquire a connection immediately
       - The connection pool queues requests when all connections are in use
-      - Without `ANTA_POOL_TIMEOUT=None`, requests might fail if they can't get a connection within the specified timeout
+      - Without `ANTA_POOL_TIMEOUT=inf`, requests might fail if they can't get a connection within the specified timeout
       - Setting it to `None` allows the connection pool to manage request queuing naturally
 
 2. Adjust concurrency based on test count and system resources:

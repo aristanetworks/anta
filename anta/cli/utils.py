@@ -159,7 +159,7 @@ def core_options(f: Callable[..., Any]) -> Callable[..., Any]:
     )
     @click.option(
         "--timeout",
-        help="Global API timeout. This value will be used for all devices.",
+        help="Global API timeout. Use 'inf' to disable all timeouts. See Scaling ANTA documentation.",
         show_envvar=True,
         envvar="ANTA_TIMEOUT",
         type=float,
