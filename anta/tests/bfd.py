@@ -362,5 +362,5 @@ class VerifyBFDPeersRegProtocols(AntaTest):
             # Check registered protocols
             difference = sorted(set(protocols) - set(get_value(bfd_output, "peerStatsDetail.apps")))
             if difference:
-                failures = " ".join(f"`{item}`" for item in difference)
+                failures = ", ".join(f"`{item}`" for item in difference)
                 self.result.is_failure(f"{bfd_peer} - {failures} routing protocol(s) not configured")

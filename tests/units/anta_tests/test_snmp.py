@@ -10,10 +10,12 @@ from typing import Any
 from anta.tests.snmp import (
     VerifySnmpContact,
     VerifySnmpErrorCounters,
+    VerifySnmpGroup,
     VerifySnmpHostLogging,
     VerifySnmpIPv4Acl,
     VerifySnmpIPv6Acl,
     VerifySnmpLocation,
+    VerifySnmpNotificationHost,
     VerifySnmpPDUCounters,
     VerifySnmpSourceInterface,
     VerifySnmpStatus,
@@ -539,6 +541,217 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "success",
+        "test": VerifySnmpNotificationHost,
+        "eos_data": [
+            {
+                "hosts": [
+                    {
+                        "hostname": "192.168.1.100",
+                        "port": 162,
+                        "vrf": "",
+                        "notificationType": "trap",
+                        "protocolVersion": "v3",
+                        "v3Params": {"user": "public", "securityLevel": "authNoPriv"},
+                    },
+                    {
+                        "hostname": "192.168.1.101",
+                        "port": 162,
+                        "vrf": "MGMT",
+                        "notificationType": "trap",
+                        "protocolVersion": "v2c",
+                        "v1v2cParams": {"communityString": "public"},
+                    },
+                ]
+            }
+        ],
+        "inputs": {
+            "notification_hosts": [
+                {"hostname": "192.168.1.100", "vrf": "default", "notification_type": "trap", "version": "v3", "udp_port": 162, "user": "public"},
+                {"hostname": "192.168.1.101", "vrf": "MGMT", "notification_type": "trap", "version": "v2c", "udp_port": 162, "community_string": "public"},
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-not-configured",
+        "test": VerifySnmpNotificationHost,
+        "eos_data": [{"hosts": []}],
+        "inputs": {
+            "notification_hosts": [
+                {"hostname": "192.168.1.100", "vrf": "default", "notification_type": "trap", "version": "v3", "udp_port": 162, "user": "public"},
+                {"hostname": "192.168.1.101", "vrf": "default", "notification_type": "trap", "version": "v2c", "udp_port": 162, "community_string": "public"},
+            ]
+        },
+        "expected": {"result": "failure", "messages": ["No SNMP host is configured."]},
+    },
+    {
+        "name": "failure-details-host-not-found",
+        "test": VerifySnmpNotificationHost,
+        "eos_data": [
+            {
+                "hosts": [
+                    {
+                        "hostname": "192.168.1.100",
+                        "port": 162,
+                        "vrf": "",
+                        "notificationType": "trap",
+                        "protocolVersion": "v3",
+                        "v3Params": {"user": "public", "securityLevel": "authNoPriv"},
+                    },
+                ]
+            }
+        ],
+        "inputs": {
+            "notification_hosts": [
+                {"hostname": "192.168.1.100", "vrf": "default", "notification_type": "trap", "version": "v3", "udp_port": 162, "user": "public"},
+                {"hostname": "192.168.1.101", "vrf": "default", "notification_type": "trap", "version": "v2c", "udp_port": 162, "community_string": "public"},
+            ]
+        },
+        "expected": {"result": "failure", "messages": ["Host: 192.168.1.101 VRF: default Version: v2c - Not configured"]},
+    },
+    {
+        "name": "failure-incorrect-notification-type",
+        "test": VerifySnmpNotificationHost,
+        "eos_data": [
+            {
+                "hosts": [
+                    {
+                        "hostname": "192.168.1.100",
+                        "port": 162,
+                        "vrf": "",
+                        "notificationType": "trap",
+                        "protocolVersion": "v3",
+                        "v3Params": {"user": "public", "securityLevel": "authNoPriv"},
+                    },
+                    {
+                        "hostname": "192.168.1.101",
+                        "port": 162,
+                        "vrf": "",
+                        "notificationType": "inform",
+                        "protocolVersion": "v2c",
+                        "v1v2cParams": {"communityString": "public"},
+                    },
+                ]
+            }
+        ],
+        "inputs": {
+            "notification_hosts": [
+                {"hostname": "192.168.1.100", "vrf": "default", "notification_type": "inform", "version": "v3", "udp_port": 162, "user": "public"},
+                {"hostname": "192.168.1.101", "vrf": "default", "notification_type": "trap", "version": "v2c", "udp_port": 162, "community_string": "public"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Host: 192.168.1.100 VRF: default - Incorrect notification type - Expected: inform, Actual: trap",
+                "Host: 192.168.1.101 VRF: default - Incorrect notification type - Expected: trap, Actual: inform",
+            ],
+        },
+    },
+    {
+        "name": "failure-incorrect-udp-port",
+        "test": VerifySnmpNotificationHost,
+        "eos_data": [
+            {
+                "hosts": [
+                    {
+                        "hostname": "192.168.1.100",
+                        "port": 163,
+                        "vrf": "",
+                        "notificationType": "trap",
+                        "protocolVersion": "v3",
+                        "v3Params": {"user": "public", "securityLevel": "authNoPriv"},
+                    },
+                    {
+                        "hostname": "192.168.1.101",
+                        "port": 164,
+                        "vrf": "",
+                        "notificationType": "trap",
+                        "protocolVersion": "v2c",
+                        "v1v2cParams": {"communityString": "public"},
+                    },
+                ]
+            }
+        ],
+        "inputs": {
+            "notification_hosts": [
+                {"hostname": "192.168.1.100", "vrf": "default", "notification_type": "trap", "version": "v3", "udp_port": 162, "user": "public"},
+                {"hostname": "192.168.1.101", "vrf": "default", "notification_type": "trap", "version": "v2c", "udp_port": 162, "community_string": "public"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Host: 192.168.1.100 VRF: default - Incorrect UDP port - Expected: 162, Actual: 163",
+                "Host: 192.168.1.101 VRF: default - Incorrect UDP port - Expected: 162, Actual: 164",
+            ],
+        },
+    },
+    {
+        "name": "failure-incorrect-community-string-version-v1-v2c",
+        "test": VerifySnmpNotificationHost,
+        "eos_data": [
+            {
+                "hosts": [
+                    {
+                        "hostname": "192.168.1.100",
+                        "port": 162,
+                        "vrf": "",
+                        "notificationType": "trap",
+                        "protocolVersion": "v1",
+                        "v1v2cParams": {"communityString": "private"},
+                    },
+                    {
+                        "hostname": "192.168.1.101",
+                        "port": 162,
+                        "vrf": "",
+                        "notificationType": "trap",
+                        "protocolVersion": "v2c",
+                        "v1v2cParams": {"communityString": "private"},
+                    },
+                ]
+            }
+        ],
+        "inputs": {
+            "notification_hosts": [
+                {"hostname": "192.168.1.100", "vrf": "default", "notification_type": "trap", "version": "v1", "udp_port": 162, "community_string": "public"},
+                {"hostname": "192.168.1.101", "vrf": "default", "notification_type": "trap", "version": "v2c", "udp_port": 162, "community_string": "public"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Host: 192.168.1.100 VRF: default Version: v1 - Incorrect community string - Expected: public, Actual: private",
+                "Host: 192.168.1.101 VRF: default Version: v2c - Incorrect community string - Expected: public, Actual: private",
+            ],
+        },
+    },
+    {
+        "name": "failure-incorrect-user-for-version-v3",
+        "test": VerifySnmpNotificationHost,
+        "eos_data": [
+            {
+                "hosts": [
+                    {
+                        "hostname": "192.168.1.100",
+                        "port": 162,
+                        "vrf": "",
+                        "notificationType": "trap",
+                        "protocolVersion": "v3",
+                        "v3Params": {"user": "private", "securityLevel": "authNoPriv"},
+                    }
+                ]
+            }
+        ],
+        "inputs": {
+            "notification_hosts": [
+                {"hostname": "192.168.1.100", "vrf": "default", "notification_type": "trap", "version": "v3", "udp_port": 162, "user": "public"},
+            ]
+        },
+        "expected": {"result": "failure", "messages": ["Host: 192.168.1.100 VRF: default Version: v3 - Incorrect user - Expected: public, Actual: private"]},
+    },
+    {
+        "name": "success",
         "test": VerifySnmpSourceInterface,
         "eos_data": [
             {
@@ -577,6 +790,325 @@ DATA: list[dict[str, Any]] = [
             "messages": [
                 "Source Interface: Ethernet1 VRF: default - Incorrect source interface - Actual: Management0",
                 "Source Interface: Management0 VRF: MGMT - Not configured",
+            ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifySnmpGroup,
+        "eos_data": [
+            {
+                "groups": {
+                    "Group1": {
+                        "versions": {
+                            "v1": {
+                                "secModel": "v1",
+                                "readView": "group_read_1",
+                                "readViewConfig": True,
+                                "writeView": "group_write_1",
+                                "writeViewConfig": True,
+                                "notifyView": "group_notify_1",
+                                "notifyViewConfig": True,
+                            }
+                        }
+                    },
+                    "Group2": {
+                        "versions": {
+                            "v2c": {
+                                "secModel": "v2c",
+                                "readView": "group_read_2",
+                                "readViewConfig": True,
+                                "writeView": "group_write_2",
+                                "writeViewConfig": True,
+                                "notifyView": "group_notify_2",
+                                "notifyViewConfig": True,
+                            }
+                        }
+                    },
+                    "Group3": {
+                        "versions": {
+                            "v3": {
+                                "secModel": "v3Auth",
+                                "readView": "group_read_3",
+                                "readViewConfig": True,
+                                "writeView": "group_write_3",
+                                "writeViewConfig": True,
+                                "notifyView": "group_notify_3",
+                                "notifyViewConfig": True,
+                            }
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "snmp_groups": [
+                {"group_name": "Group1", "version": "v1", "read_view": "group_read_1", "write_view": "group_write_1", "notify_view": "group_notify_1"},
+                {"group_name": "Group2", "version": "v2c", "read_view": "group_read_2", "write_view": "group_write_2", "notify_view": "group_notify_2"},
+                {
+                    "group_name": "Group3",
+                    "version": "v3",
+                    "read_view": "group_read_3",
+                    "write_view": "group_write_3",
+                    "notify_view": "group_notify_3",
+                    "authentication": "auth",
+                },
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-incorrect-view",
+        "test": VerifySnmpGroup,
+        "eos_data": [
+            {
+                "groups": {
+                    "Group1": {
+                        "versions": {
+                            "v1": {
+                                "secModel": "v1",
+                                "readView": "group_read",
+                                "readViewConfig": True,
+                                "writeView": "group_write",
+                                "writeViewConfig": True,
+                                "notifyView": "group_notify",
+                                "notifyViewConfig": True,
+                            }
+                        }
+                    },
+                    "Group2": {
+                        "versions": {
+                            "v2c": {
+                                "secModel": "v2c",
+                                "readView": "group_read",
+                                "readViewConfig": True,
+                                "writeView": "group_write",
+                                "writeViewConfig": True,
+                                "notifyView": "group_notify",
+                                "notifyViewConfig": True,
+                            }
+                        }
+                    },
+                    "Group3": {
+                        "versions": {
+                            "v3": {
+                                "secModel": "v3NoAuth",
+                                "readView": "group_read",
+                                "readViewConfig": True,
+                                "writeView": "group_write",
+                                "writeViewConfig": True,
+                                "notifyView": "group_notify",
+                                "notifyViewConfig": True,
+                            }
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "snmp_groups": [
+                {"group_name": "Group1", "version": "v1", "read_view": "group_read_1", "write_view": "group_write_1", "notify_view": "group_notify_1"},
+                {"group_name": "Group2", "version": "v2c", "read_view": "group_read_2", "notify_view": "group_notify_2"},
+                {
+                    "group_name": "Group3",
+                    "version": "v3",
+                    "read_view": "group_read_3",
+                    "write_view": "group_write_3",
+                    "notify_view": "group_notify_3",
+                    "authentication": "noauth",
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Group: Group1, Version: v1 - Incorrect Read view - Expected: group_read_1, Actual: group_read",
+                "Group: Group1, Version: v1 - Incorrect Write view - Expected: group_write_1, Actual: group_write",
+                "Group: Group1, Version: v1 - Incorrect Notify view - Expected: group_notify_1, Actual: group_notify",
+                "Group: Group2, Version: v2c - Incorrect Read view - Expected: group_read_2, Actual: group_read",
+                "Group: Group2, Version: v2c - Incorrect Notify view - Expected: group_notify_2, Actual: group_notify",
+                "Group: Group3, Version: v3 - Incorrect Read view - Expected: group_read_3, Actual: group_read",
+                "Group: Group3, Version: v3 - Incorrect Write view - Expected: group_write_3, Actual: group_write",
+                "Group: Group3, Version: v3 - Incorrect Notify view - Expected: group_notify_3, Actual: group_notify",
+            ],
+        },
+    },
+    {
+        "name": "failure-view-config-not-found",
+        "test": VerifySnmpGroup,
+        "eos_data": [
+            {
+                "groups": {
+                    "Group1": {
+                        "versions": {
+                            "v1": {
+                                "secModel": "v1",
+                                "readView": "group_read",
+                                "readViewConfig": False,
+                                "writeView": "group_write",
+                                "writeViewConfig": False,
+                                "notifyView": "group_notify",
+                                "notifyViewConfig": False,
+                            }
+                        }
+                    },
+                    "Group2": {
+                        "versions": {
+                            "v2c": {
+                                "secModel": "v2c",
+                                "readView": "group_read",
+                                "readViewConfig": False,
+                                "writeView": "group_write",
+                                "writeViewConfig": False,
+                                "notifyView": "group_notify",
+                                "notifyViewConfig": False,
+                            }
+                        }
+                    },
+                    "Group3": {
+                        "versions": {
+                            "v3": {
+                                "secModel": "v3Priv",
+                                "readView": "group_read",
+                                "readViewConfig": False,
+                                "writeView": "group_write",
+                                "writeViewConfig": False,
+                                "notifyView": "group_notify",
+                                "notifyViewConfig": False,
+                            }
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "snmp_groups": [
+                {"group_name": "Group1", "version": "v1", "read_view": "group_read", "write_view": "group_write", "notify_view": "group_notify"},
+                {"group_name": "Group2", "version": "v2c", "read_view": "group_read", "write_view": "group_write", "notify_view": "group_notify"},
+                {
+                    "group_name": "Group3",
+                    "version": "v3",
+                    "write_view": "group_write",
+                    "notify_view": "group_notify",
+                    "authentication": "priv",
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Group: Group1, Version: v1, Read View: group_read - Not configured",
+                "Group: Group1, Version: v1, Write View: group_write - Not configured",
+                "Group: Group1, Version: v1, Notify View: group_notify - Not configured",
+                "Group: Group2, Version: v2c, Read View: group_read - Not configured",
+                "Group: Group2, Version: v2c, Write View: group_write - Not configured",
+                "Group: Group2, Version: v2c, Notify View: group_notify - Not configured",
+                "Group: Group3, Version: v3, Write View: group_write - Not configured",
+                "Group: Group3, Version: v3, Notify View: group_notify - Not configured",
+            ],
+        },
+    },
+    {
+        "name": "failure-group-version-not-configured",
+        "test": VerifySnmpGroup,
+        "eos_data": [
+            {
+                "groups": {
+                    "Group1": {"versions": {"v1": {}}},
+                    "Group2": {"versions": {"v2c": {}}},
+                    "Group3": {"versions": {"v3": {}}},
+                }
+            }
+        ],
+        "inputs": {
+            "snmp_groups": [
+                {"group_name": "Group1", "version": "v1", "read_view": "group_read_1", "write_view": "group_write_1"},
+                {"group_name": "Group2", "version": "v2c", "read_view": "group_read_2", "write_view": "group_write_2", "notify_view": "group_notify_2"},
+                {
+                    "group_name": "Group3",
+                    "version": "v3",
+                    "read_view": "group_read_3",
+                    "write_view": "group_write_3",
+                    "notify_view": "group_notify_3",
+                    "authentication": "auth",
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Group: Group1, Version: v1 - Not configured",
+                "Group: Group2, Version: v2c - Not configured",
+                "Group: Group3, Version: v3 - Not configured",
+            ],
+        },
+    },
+    {
+        "name": "failure-incorrect-v3-auth-model",
+        "test": VerifySnmpGroup,
+        "eos_data": [
+            {
+                "groups": {
+                    "Group3": {
+                        "versions": {
+                            "v3": {
+                                "secModel": "v3Auth",
+                                "readView": "group_read",
+                                "readViewConfig": True,
+                                "writeView": "group_write",
+                                "writeViewConfig": True,
+                                "notifyView": "group_notify",
+                                "notifyViewConfig": True,
+                            }
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "snmp_groups": [
+                {
+                    "group_name": "Group3",
+                    "version": "v3",
+                    "read_view": "group_read",
+                    "write_view": "group_write",
+                    "notify_view": "group_notify",
+                    "authentication": "priv",
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Group: Group3, Version: v3 - Incorrect security model - Expected: v3Priv, Actual: v3Auth",
+            ],
+        },
+    },
+    {
+        "name": "failure-view-not-configured",
+        "test": VerifySnmpGroup,
+        "eos_data": [
+            {
+                "groups": {
+                    "Group3": {"versions": {"v3": {"secModel": "v3NoAuth", "readView": "group_read", "readViewConfig": True, "writeView": "", "notifyView": ""}}},
+                }
+            }
+        ],
+        "inputs": {
+            "snmp_groups": [
+                {
+                    "group_name": "Group3",
+                    "version": "v3",
+                    "read_view": "group_read",
+                    "write_view": "group_write",
+                    "authentication": "noauth",
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Group: Group3, Version: v3 View: write - Not configured",
             ],
         },
     },
