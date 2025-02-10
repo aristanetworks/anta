@@ -34,7 +34,7 @@
               {% set heading_level = heading_level + 1 %}
               {% set old_obj = obj %}
               {% set obj = class %}
-              {% include "attributes_table.html" with context %}
+              {% include "attributes_table.html.jinja" with context %}
               {% set obj = old_obj %}
             {% endwith %}
           {% endif %}

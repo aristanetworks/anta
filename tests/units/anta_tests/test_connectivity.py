@@ -46,6 +46,46 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
+        "name": "success-ipv6",
+        "test": VerifyReachability,
+        "eos_data": [
+            {
+                "messages": [
+                    """PING fd12:3456:789a:1::2(fd12:3456:789a:1::2) from fd12:3456:789a:1::1 : 52 data bytes
+                60 bytes from fd12:3456:789a:1::2: icmp_seq=1 ttl=64 time=0.097 ms
+                60 bytes from fd12:3456:789a:1::2: icmp_seq=2 ttl=64 time=0.033 ms
+
+                --- fd12:3456:789a:1::2 ping statistics ---
+                2 packets transmitted, 2 received, 0% packet loss, time 0ms
+                rtt min/avg/max/mdev = 0.033/0.065/0.097/0.032 ms, ipg/ewma 0.148/0.089 ms
+                """,
+                ],
+            },
+        ],
+        "inputs": {"hosts": [{"destination": "fd12:3456:789a:1::2", "source": "fd12:3456:789a:1::1"}]},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-ipv6-vlan",
+        "test": VerifyReachability,
+        "eos_data": [
+            {
+                "messages": [
+                    """PING fd12:3456:789a:1::2(fd12:3456:789a:1::2) 52 data bytes
+                60 bytes from fd12:3456:789a:1::2: icmp_seq=1 ttl=64 time=0.094 ms
+                60 bytes from fd12:3456:789a:1::2: icmp_seq=2 ttl=64 time=0.027 ms
+
+                --- fd12:3456:789a:1::2 ping statistics ---
+                2 packets transmitted, 2 received, 0% packet loss, time 0ms
+                rtt min/avg/max/mdev = 0.027/0.060/0.094/0.033 ms, ipg/ewma 0.152/0.085 ms
+                """,
+                ],
+            },
+        ],
+        "inputs": {"hosts": [{"destination": "fd12:3456:789a:1::2", "source": "vl110"}]},
+        "expected": {"result": "success"},
+    },
+    {
         "name": "success-interface",
         "test": VerifyReachability,
         "inputs": {"hosts": [{"destination": "10.0.0.1", "source": "Management0"}, {"destination": "10.0.0.2", "source": "Management0"}]},
@@ -153,7 +193,24 @@ DATA: list[dict[str, Any]] = [
                 ],
             },
         ],
-        "expected": {"result": "failure", "messages": ["Host 10.0.0.11 (src: 10.0.0.5, vrf: default, size: 100B, repeat: 2) - Unreachable"]},
+        "expected": {"result": "failure", "messages": ["Host: 10.0.0.11 Source: 10.0.0.5 VRF: default - Unreachable"]},
+    },
+    {
+        "name": "failure-ipv6",
+        "test": VerifyReachability,
+        "eos_data": [
+            {
+                "messages": [
+                    """PING fd12:3456:789a:1::2(fd12:3456:789a:1::2) from fd12:3456:789a:1::1 : 52 data bytes
+
+                    --- fd12:3456:789a:1::3 ping statistics ---
+                    2 packets transmitted, 0 received, 100% packet loss, time 10ms
+                """,
+                ],
+            },
+        ],
+        "inputs": {"hosts": [{"destination": "fd12:3456:789a:1::2", "source": "fd12:3456:789a:1::1"}]},
+        "expected": {"result": "failure", "messages": ["Host: fd12:3456:789a:1::2 Source: fd12:3456:789a:1::1 VRF: default - Unreachable"]},
     },
     {
         "name": "failure-interface",
@@ -187,7 +244,7 @@ DATA: list[dict[str, Any]] = [
                 ],
             },
         ],
-        "expected": {"result": "failure", "messages": ["Host 10.0.0.11 (src: Management0, vrf: default, size: 100B, repeat: 2) - Unreachable"]},
+        "expected": {"result": "failure", "messages": ["Host: 10.0.0.11 Source: Management0 VRF: default - Unreachable"]},
     },
     {
         "name": "failure-size",
@@ -209,7 +266,7 @@ DATA: list[dict[str, Any]] = [
                 ],
             },
         ],
-        "expected": {"result": "failure", "messages": ["Host 10.0.0.1 (src: Management0, vrf: default, size: 1501B, repeat: 5, df-bit: enabled) - Unreachable"]},
+        "expected": {"result": "failure", "messages": ["Host: 10.0.0.1 Source: Management0 VRF: default - Unreachable"]},
     },
     {
         "name": "success",
@@ -330,7 +387,7 @@ DATA: list[dict[str, Any]] = [
                 {"port": "Ethernet2", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"},
             ],
         },
-        "expected": {"result": "failure", "messages": ["Port Ethernet2 (Neighbor: DC1-SPINE2, Neighbor Port: Ethernet1) - Port not found"]},
+        "expected": {"result": "failure", "messages": ["Port: Ethernet2 Neighbor: DC1-SPINE2 Neighbor Port: Ethernet1 - Port not found"]},
     },
     {
         "name": "failure-no-neighbor",
@@ -363,7 +420,7 @@ DATA: list[dict[str, Any]] = [
                 {"port": "Ethernet2", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"},
             ],
         },
-        "expected": {"result": "failure", "messages": ["Port Ethernet2 (Neighbor: DC1-SPINE2, Neighbor Port: Ethernet1) - No LLDP neighbors"]},
+        "expected": {"result": "failure", "messages": ["Port: Ethernet2 Neighbor: DC1-SPINE2 Neighbor Port: Ethernet1 - No LLDP neighbors"]},
     },
     {
         "name": "failure-wrong-neighbor",
@@ -412,7 +469,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Port Ethernet2 (Neighbor: DC1-SPINE2, Neighbor Port: Ethernet1) - Wrong LLDP neighbors: DC1-SPINE2/Ethernet2"],
+            "messages": ["Port: Ethernet2 Neighbor: DC1-SPINE2 Neighbor Port: Ethernet1 - Wrong LLDP neighbors: DC1-SPINE2/Ethernet2"],
         },
     },
     {
@@ -450,9 +507,9 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Port Ethernet1 (Neighbor: DC1-SPINE1, Neighbor Port: Ethernet1) - Wrong LLDP neighbors: DC1-SPINE1/Ethernet2",
-                "Port Ethernet2 (Neighbor: DC1-SPINE2, Neighbor Port: Ethernet1) - No LLDP neighbors",
-                "Port Ethernet3 (Neighbor: DC1-SPINE3, Neighbor Port: Ethernet1) - Port not found",
+                "Port: Ethernet1 Neighbor: DC1-SPINE1 Neighbor Port: Ethernet1 - Wrong LLDP neighbors: DC1-SPINE1/Ethernet2",
+                "Port: Ethernet2 Neighbor: DC1-SPINE2 Neighbor Port: Ethernet1 - No LLDP neighbors",
+                "Port: Ethernet3 Neighbor: DC1-SPINE3 Neighbor Port: Ethernet1 - Port not found",
             ],
         },
     },
@@ -498,7 +555,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Port Ethernet1 (Neighbor: DC1-SPINE3, Neighbor Port: Ethernet1) - Wrong LLDP neighbors: DC1-SPINE1/Ethernet1, DC1-SPINE2/Ethernet1"],
+            "messages": ["Port: Ethernet1 Neighbor: DC1-SPINE3 Neighbor Port: Ethernet1 - Wrong LLDP neighbors: DC1-SPINE1/Ethernet1, DC1-SPINE2/Ethernet1"],
         },
     },
 ]

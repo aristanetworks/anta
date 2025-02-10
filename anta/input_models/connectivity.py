@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from ipaddress import IPv4Address
+from ipaddress import IPv4Address, IPv6Address
 from typing import Any
 from warnings import warn
 
@@ -18,10 +18,10 @@ class Host(BaseModel):
     """Model for a remote host to ping."""
 
     model_config = ConfigDict(extra="forbid")
-    destination: IPv4Address
-    """IPv4 address to ping."""
-    source: IPv4Address | Interface
-    """IPv4 address source IP or egress interface to use."""
+    destination: IPv4Address | IPv6Address
+    """Destination address to ping."""
+    source: IPv4Address | IPv6Address | Interface
+    """Source address IP or egress interface to use."""
     vrf: str = "default"
     """VRF context. Defaults to `default`."""
     repeat: int = 2
@@ -36,11 +36,10 @@ class Host(BaseModel):
 
         Examples
         --------
-        Host 10.1.1.1 (src: 10.2.2.2, vrf: mgmt, size: 100B, repeat: 2)
+        Host: 10.1.1.1 Source: 10.2.2.2 VRF: mgmt
 
         """
-        df_status = ", df-bit: enabled" if self.df_bit else ""
-        return f"Host {self.destination} (src: {self.source}, vrf: {self.vrf}, size: {self.size}B, repeat: {self.repeat}{df_status})"
+        return f"Host: {self.destination} Source: {self.source} VRF: {self.vrf}"
 
 
 class LLDPNeighbor(BaseModel):
@@ -59,10 +58,10 @@ class LLDPNeighbor(BaseModel):
 
         Examples
         --------
-        Port Ethernet1 (Neighbor: DC1-SPINE2, Neighbor Port: Ethernet2)
+        Port: Ethernet1 Neighbor: DC1-SPINE2 Neighbor Port: Ethernet2
 
         """
-        return f"Port {self.port} (Neighbor: {self.neighbor_device}, Neighbor Port: {self.neighbor_port})"
+        return f"Port: {self.port} Neighbor: {self.neighbor_device} Neighbor Port: {self.neighbor_port}"
 
 
 class Neighbor(LLDPNeighbor):  # pragma: no cover

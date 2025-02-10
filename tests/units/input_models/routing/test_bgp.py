@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING, Any
 import pytest
 from pydantic import ValidationError
 
-from anta.input_models.routing.bgp import AddressFamilyConfig, BgpAddressFamily, BgpPeer, RedistributedRoute
+from anta.input_models.routing.bgp import AddressFamilyConfig, BgpAddressFamily, BgpPeer, BgpRoute, RedistributedRoute
 from anta.tests.routing.bgp import (
     VerifyBGPExchangedRoutes,
     VerifyBGPNlriAcceptance,
@@ -19,7 +19,9 @@ from anta.tests.routing.bgp import (
     VerifyBGPPeerGroup,
     VerifyBGPPeerMPCaps,
     VerifyBGPPeerRouteLimit,
+    VerifyBGPRouteECMP,
     VerifyBgpRouteMaps,
+    VerifyBGPRoutePaths,
     VerifyBGPSpecificPeers,
     VerifyBGPTimers,
 )
@@ -118,6 +120,7 @@ class TestVerifyBGPExchangedRoutesInput:
                 [{"peer_address": "172.30.255.5", "vrf": "default", "advertised_routes": ["192.0.254.5/32"], "received_routes": ["192.0.255.4/32"]}],
                 id="valid_both_received_advertised",
             ),
+            pytest.param([{"peer_address": "172.30.255.5", "vrf": "default", "advertised_routes": ["192.0.254.5/32"]}], id="valid_advertised_routes"),
         ],
     )
     def test_valid(self, bgp_peers: list[BgpPeer]) -> None:
@@ -128,8 +131,6 @@ class TestVerifyBGPExchangedRoutesInput:
         ("bgp_peers"),
         [
             pytest.param([{"peer_address": "172.30.255.5", "vrf": "default"}], id="invalid"),
-            pytest.param([{"peer_address": "172.30.255.5", "vrf": "default", "advertised_routes": ["192.0.254.5/32"]}], id="invalid_received_route"),
-            pytest.param([{"peer_address": "172.30.255.5", "vrf": "default", "received_routes": ["192.0.254.5/32"]}], id="invalid_advertised_route"),
         ],
     )
     def test_invalid(self, bgp_peers: list[BgpPeer]) -> None:
@@ -288,6 +289,65 @@ class TestVerifyBGPNlriAcceptanceInput:
         """Test VerifyBGPNlriAcceptance.Input invalid inputs."""
         with pytest.raises(ValidationError):
             VerifyBGPNlriAcceptance.Input(bgp_peers=bgp_peers)
+
+
+class TestVerifyBGPRouteECMPInput:
+    """Test anta.tests.routing.bgp.VerifyBGPRouteECMP.Input."""
+
+    @pytest.mark.parametrize(
+        ("bgp_routes"),
+        [
+            pytest.param([{"prefix": "10.100.0.128/31", "vrf": "default", "ecmp_count": 2}], id="valid"),
+        ],
+    )
+    def test_valid(self, bgp_routes: list[BgpRoute]) -> None:
+        """Test VerifyBGPRouteECMP.Input valid inputs."""
+        VerifyBGPRouteECMP.Input(route_entries=bgp_routes)
+
+    @pytest.mark.parametrize(
+        ("bgp_routes"),
+        [
+            pytest.param([{"prefix": "10.100.0.128/31", "vrf": "default"}], id="invalid"),
+        ],
+    )
+    def test_invalid(self, bgp_routes: list[BgpRoute]) -> None:
+        """Test VerifyBGPRouteECMP.Input invalid inputs."""
+        with pytest.raises(ValidationError):
+            VerifyBGPRouteECMP.Input(route_entries=bgp_routes)
+
+
+class TestVerifyBGPRoutePathsInput:
+    """Test anta.tests.routing.bgp.VerifyBGPRoutePaths.Input."""
+
+    @pytest.mark.parametrize(
+        ("route_entries"),
+        [
+            pytest.param(
+                [
+                    {
+                        "prefix": "10.100.0.128/31",
+                        "vrf": "default",
+                        "paths": [{"nexthop": "10.100.0.10", "origin": "Igp"}, {"nexthop": "10.100.4.5", "origin": "Incomplete"}],
+                    }
+                ],
+                id="valid",
+            ),
+        ],
+    )
+    def test_valid(self, route_entries: list[BgpRoute]) -> None:
+        """Test VerifyBGPRoutePaths.Input valid inputs."""
+        VerifyBGPRoutePaths.Input(route_entries=route_entries)
+
+    @pytest.mark.parametrize(
+        ("route_entries"),
+        [
+            pytest.param([{"prefix": "10.100.0.128/31", "vrf": "default"}], id="invalid"),
+        ],
+    )
+    def test_invalid(self, route_entries: list[BgpRoute]) -> None:
+        """Test VerifyBGPRoutePaths.Input invalid inputs."""
+        with pytest.raises(ValidationError):
+            VerifyBGPRoutePaths.Input(route_entries=route_entries)
 
 
 class TestVerifyBGPRedistributedRoute:
