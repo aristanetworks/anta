@@ -2635,7 +2635,15 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/vxlan.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">215</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
 <span class="normal">216</span>
 <span class="normal">217</span>
 <span class="normal">218</span>
@@ -2676,15 +2684,7 @@
 <span class="normal">253</span>
 <span class="normal">254</span>
 <span class="normal">255</span>
-<span class="normal">256</span>
-<span class="normal">257</span>
-<span class="normal">258</span>
-<span class="normal">259</span>
-<span class="normal">260</span>
-<span class="normal">261</span>
-<span class="normal">262</span>
-<span class="normal">263</span>
-<span class="normal">264</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyVxlan1ConnSettings</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">256</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyVxlan1ConnSettings</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the interface vxlan1 source interface and UDP port.</span>
 
 <span class="sd">    Expected Results</span>
@@ -2731,9 +2731,9 @@
 
         <span class="c1"># Check vxlan1 source interface and udp port</span>
         <span class="k">if</span> <span class="n">src_intf</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">source_interface</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Source interface is not correct. Expected `</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">source_interface</span><span class="si">}</span><span class="s2">` as source interface but found `</span><span class="si">{</span><span class="n">src_intf</span><span class="si">}</span><span class="s2">` instead.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Interface: Vxlan1 - Incorrect Source interface - Expected: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">source_interface</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">src_intf</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">port</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">udp_port</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;UDP port is not correct. Expected `</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">udp_port</span><span class="si">}</span><span class="s2">` as UDP port but found `</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s2">` instead.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Interface: Vxlan1 - Incorrect UDP port - Expected: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">udp_port</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -2864,26 +2864,26 @@
 <span class="sd">    ```</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Verifies the Vxlan1 interface status.&quot;</span>
     <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;vxlan&quot;</span><span class="p">]</span>
     <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show interfaces description&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyVxlan1Interface.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
-        <span class="k">if</span> <span class="s2">&quot;Vxlan1&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;interfaceDescriptions&quot;</span><span class="p">]:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;Vxlan1 interface is not configured&quot;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="p">(</span>
-            <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;interfaceDescriptions&quot;</span><span class="p">][</span><span class="s2">&quot;Vxlan1&quot;</span><span class="p">][</span><span class="s2">&quot;lineProtocolStatus&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;up&quot;</span>
-            <span class="ow">and</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;interfaceDescriptions&quot;</span><span class="p">][</span><span class="s2">&quot;Vxlan1&quot;</span><span class="p">][</span><span class="s2">&quot;interfaceStatus&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;up&quot;</span>
-        <span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Vxlan1 interface is </span><span class="si">{</span><span class="n">command_output</span><span class="p">[</span><span class="s1">&#39;interfaceDescriptions&#39;</span><span class="p">][</span><span class="s1">&#39;Vxlan1&#39;</span><span class="p">][</span><span class="s1">&#39;lineProtocolStatus&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="n">command_output</span><span class="p">[</span><span class="s1">&#39;interfaceDescriptions&#39;</span><span class="p">][</span><span class="s1">&#39;Vxlan1&#39;</span><span class="p">][</span><span class="s1">&#39;interfaceStatus&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-            <span class="p">)</span>
+
+        <span class="c1"># Skipping the test if the Vxlan1 interface is not configured</span>
+        <span class="k">if</span> <span class="s2">&quot;Vxlan1&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">interface_details</span> <span class="o">:=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;interfaceDescriptions&quot;</span><span class="p">]):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;Interface: Vxlan1 - Not configured&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">line_protocol_status</span> <span class="o">=</span> <span class="n">interface_details</span><span class="p">[</span><span class="s2">&quot;Vxlan1&quot;</span><span class="p">][</span><span class="s2">&quot;lineProtocolStatus&quot;</span><span class="p">]</span>
+        <span class="n">interface_status</span> <span class="o">=</span> <span class="n">interface_details</span><span class="p">[</span><span class="s2">&quot;Vxlan1&quot;</span><span class="p">][</span><span class="s2">&quot;interfaceStatus&quot;</span><span class="p">]</span>
+
+        <span class="c1"># Checking against both status and line protocol status</span>
+        <span class="k">if</span> <span class="n">interface_status</span> <span class="o">!=</span> <span class="s2">&quot;up&quot;</span> <span class="ow">or</span> <span class="n">line_protocol_status</span> <span class="o">!=</span> <span class="s2">&quot;up&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Interface: Vxlan1 - Incorrect Line protocol status/Status - Expected: up/up Actual: </span><span class="si">{</span><span class="n">line_protocol_status</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">interface_status</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -3006,19 +3006,19 @@
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyVxlanConfigSanity.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
+
+        <span class="c1"># Skipping the test if VXLAN is not configured</span>
         <span class="k">if</span> <span class="s2">&quot;categories&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">command_output</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;categories&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;VXLAN is not configured&quot;</span><span class="p">)</span>
             <span class="k">return</span>
-        <span class="n">failed_categories</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="n">category</span><span class="p">:</span> <span class="n">content</span>
-            <span class="k">for</span> <span class="n">category</span><span class="p">,</span> <span class="n">content</span> <span class="ow">in</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;categories&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">category</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;localVtep&quot;</span><span class="p">,</span> <span class="s2">&quot;mlag&quot;</span><span class="p">,</span> <span class="s2">&quot;pd&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">content</span><span class="p">[</span><span class="s2">&quot;allCheckPass&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span>
-        <span class="p">}</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">failed_categories</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;VXLAN config sanity check is not passing: </span><span class="si">{</span><span class="n">failed_categories</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+
+        <span class="c1"># Verifies the Vxlan config sanity</span>
+        <span class="n">categories_to_check</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;localVtep&quot;</span><span class="p">,</span> <span class="s2">&quot;mlag&quot;</span><span class="p">,</span> <span class="s2">&quot;pd&quot;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">category</span> <span class="ow">in</span> <span class="n">categories_to_check</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;categories.</span><span class="si">{</span><span class="n">category</span><span class="si">}</span><span class="s2">.allCheckPass&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Vxlan Category: </span><span class="si">{</span><span class="n">category</span><span class="si">}</span><span class="s2"> - Config sanity check is not passing&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -3166,15 +3166,7 @@
 <span class="normal">151</span>
 <span class="normal">152</span>
 <span class="normal">153</span>
-<span class="normal">154</span>
-<span class="normal">155</span>
-<span class="normal">156</span>
-<span class="normal">157</span>
-<span class="normal">158</span>
-<span class="normal">159</span>
-<span class="normal">160</span>
-<span class="normal">161</span>
-<span class="normal">162</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyVxlanVniBinding</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">154</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyVxlanVniBinding</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the VNI-VLAN bindings of the Vxlan1 interface.</span>
 
 <span class="sd">    Expected Results</span>
@@ -3208,31 +3200,23 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyVxlanVniBinding.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
-        <span class="n">no_binding</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">wrong_binding</span> <span class="o">=</span> <span class="p">[]</span>
-
         <span class="k">if</span> <span class="p">(</span><span class="n">vxlan1</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">,</span> <span class="s2">&quot;vxlanIntfs.Vxlan1&quot;</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_skipped</span><span class="p">(</span><span class="s2">&quot;Vxlan1 interface is not configured&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="k">for</span> <span class="n">vni</span><span class="p">,</span> <span class="n">vlan</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">bindings</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">str_vni</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">vni</span><span class="p">)</span>
+            <span class="n">retrieved_vlan</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
             <span class="k">if</span> <span class="n">str_vni</span> <span class="ow">in</span> <span class="n">vxlan1</span><span class="p">[</span><span class="s2">&quot;vniBindings&quot;</span><span class="p">]:</span>
-                <span class="n">retrieved_vlan</span> <span class="o">=</span> <span class="n">vxlan1</span><span class="p">[</span><span class="s2">&quot;vniBindings&quot;</span><span class="p">][</span><span class="n">str_vni</span><span class="p">][</span><span class="s2">&quot;vlan&quot;</span><span class="p">]</span>
+                <span class="n">retrieved_vlan</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">vxlan1</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;vniBindings..</span><span class="si">{</span><span class="n">str_vni</span><span class="si">}</span><span class="s2">..vlan&quot;</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;..&quot;</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">str_vni</span> <span class="ow">in</span> <span class="n">vxlan1</span><span class="p">[</span><span class="s2">&quot;vniBindingsToVrf&quot;</span><span class="p">]:</span>
-                <span class="n">retrieved_vlan</span> <span class="o">=</span> <span class="n">vxlan1</span><span class="p">[</span><span class="s2">&quot;vniBindingsToVrf&quot;</span><span class="p">][</span><span class="n">str_vni</span><span class="p">][</span><span class="s2">&quot;vlan&quot;</span><span class="p">]</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">no_binding</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">str_vni</span><span class="p">)</span>
-                <span class="n">retrieved_vlan</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">retrieved_vlan</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">vxlan1</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;vniBindingsToVrf..</span><span class="si">{</span><span class="n">str_vni</span><span class="si">}</span><span class="s2">..vlan&quot;</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;..&quot;</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">retrieved_vlan</span> <span class="ow">and</span> <span class="n">vlan</span> <span class="o">!=</span> <span class="n">retrieved_vlan</span><span class="p">:</span>
-                <span class="n">wrong_binding</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="n">str_vni</span><span class="p">:</span> <span class="n">retrieved_vlan</span><span class="p">})</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">retrieved_vlan</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Interface: Vxlan1 VNI: </span><span class="si">{</span><span class="n">str_vni</span><span class="si">}</span><span class="s2"> - Binding not found&quot;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">no_binding</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The following VNI(s) have no binding: </span><span class="si">{</span><span class="n">no_binding</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">wrong_binding</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The following VNI(s) have the wrong VLAN binding: </span><span class="si">{</span><span class="n">wrong_binding</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">vlan</span> <span class="o">!=</span> <span class="n">retrieved_vlan</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Interface: Vxlan1 VNI: </span><span class="si">{</span><span class="n">str_vni</span><span class="si">}</span><span class="s2"> VLAN: </span><span class="si">{</span><span class="n">vlan</span><span class="si">}</span><span class="s2"> - Wrong VLAN binding - Actual: </span><span class="si">{</span><span class="n">retrieved_vlan</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -3330,7 +3314,15 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/vxlan.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">165</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
 <span class="normal">166</span>
 <span class="normal">167</span>
 <span class="normal">168</span>
@@ -3369,15 +3361,7 @@
 <span class="normal">201</span>
 <span class="normal">202</span>
 <span class="normal">203</span>
-<span class="normal">204</span>
-<span class="normal">205</span>
-<span class="normal">206</span>
-<span class="normal">207</span>
-<span class="normal">208</span>
-<span class="normal">209</span>
-<span class="normal">210</span>
-<span class="normal">211</span>
-<span class="normal">212</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyVxlanVtep</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">204</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyVxlanVtep</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the VTEP peers of the Vxlan1 interface.</span>
 
 <span class="sd">    Expected Results</span>
@@ -3421,10 +3405,10 @@
         <span class="n">difference2</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">vxlan1</span><span class="p">[</span><span class="s2">&quot;vteps&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">inputs_vteps</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="n">difference1</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The following VTEP peer(s) are missing from the Vxlan1 interface: </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="n">difference1</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The following VTEP peer(s) are missing from the Vxlan1 interface: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">difference1</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">difference2</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unexpected VTEP peer(s) on Vxlan1 interface: </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="n">difference2</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unexpected VTEP peer(s) on Vxlan1 interface: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">difference2</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
