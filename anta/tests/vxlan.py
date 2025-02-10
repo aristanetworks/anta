@@ -41,26 +41,26 @@ class VerifyVxlan1Interface(AntaTest):
     ```
     """
 
-    description = "Verifies the Vxlan1 interface status."
     categories: ClassVar[list[str]] = ["vxlan"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces description", revision=1)]
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyVxlan1Interface."""
+        self.result.is_success()
         command_output = self.instance_commands[0].json_output
-        if "Vxlan1" not in command_output["interfaceDescriptions"]:
-            self.result.is_skipped("Vxlan1 interface is not configured")
-        elif (
-            command_output["interfaceDescriptions"]["Vxlan1"]["lineProtocolStatus"] == "up"
-            and command_output["interfaceDescriptions"]["Vxlan1"]["interfaceStatus"] == "up"
-        ):
-            self.result.is_success()
-        else:
-            self.result.is_failure(
-                f"Vxlan1 interface is {command_output['interfaceDescriptions']['Vxlan1']['lineProtocolStatus']}"
-                f"/{command_output['interfaceDescriptions']['Vxlan1']['interfaceStatus']}",
-            )
+
+        # Skipping the test if the Vxlan1 interface is not configured
+        if "Vxlan1" not in (interface_details := command_output["interfaceDescriptions"]):
+            self.result.is_skipped("Interface: Vxlan1 - Not configured")
+            return
+
+        line_protocol_status = interface_details["Vxlan1"]["lineProtocolStatus"]
+        interface_status = interface_details["Vxlan1"]["interfaceStatus"]
+
+        # Checking against both status and line protocol status
+        if interface_status != "up" or line_protocol_status != "up":
+            self.result.is_failure(f"Interface: Vxlan1 - Incorrect Line protocol status/Status - Expected: up/up Actual: {line_protocol_status}/{interface_status}")
 
 
 class VerifyVxlanConfigSanity(AntaTest):
@@ -86,19 +86,19 @@ class VerifyVxlanConfigSanity(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyVxlanConfigSanity."""
+        self.result.is_success()
         command_output = self.instance_commands[0].json_output
+
+        # Skipping the test if VXLAN is not configured
         if "categories" not in command_output or len(command_output["categories"]) == 0:
             self.result.is_skipped("VXLAN is not configured")
             return
-        failed_categories = {
-            category: content
-            for category, content in command_output["categories"].items()
-            if category in ["localVtep", "mlag", "pd"] and content["allCheckPass"] is not True
-        }
-        if len(failed_categories) > 0:
-            self.result.is_failure(f"VXLAN config sanity check is not passing: {failed_categories}")
-        else:
-            self.result.is_success()
+
+        # Verifies the Vxlan config sanity
+        categories_to_check = ["localVtep", "mlag", "pd"]
+        for category in categories_to_check:
+            if not get_value(command_output, f"categories.{category}.allCheckPass"):
+                self.result.is_failure(f"Vxlan Category: {category} - Config sanity check is not passing")
 
 
 class VerifyVxlanVniBinding(AntaTest):
@@ -135,31 +135,23 @@ class VerifyVxlanVniBinding(AntaTest):
         """Main test function for VerifyVxlanVniBinding."""
         self.result.is_success()
 
-        no_binding = []
-        wrong_binding = []
-
         if (vxlan1 := get_value(self.instance_commands[0].json_output, "vxlanIntfs.Vxlan1")) is None:
             self.result.is_skipped("Vxlan1 interface is not configured")
             return
 
         for vni, vlan in self.inputs.bindings.items():
             str_vni = str(vni)
+            retrieved_vlan = ""
             if str_vni in vxlan1["vniBindings"]:
-                retrieved_vlan = vxlan1["vniBindings"][str_vni]["vlan"]
+                retrieved_vlan = get_value(vxlan1, f"vniBindings..{str_vni}..vlan", separator="..")
             elif str_vni in vxlan1["vniBindingsToVrf"]:
-                retrieved_vlan = vxlan1["vniBindingsToVrf"][str_vni]["vlan"]
-            else:
-                no_binding.append(str_vni)
-                retrieved_vlan = None
+                retrieved_vlan = get_value(vxlan1, f"vniBindingsToVrf..{str_vni}..vlan", separator="..")
 
-            if retrieved_vlan and vlan != retrieved_vlan:
-                wrong_binding.append({str_vni: retrieved_vlan})
+            if not retrieved_vlan:
+                self.result.is_failure(f"Interface: Vxlan1 VNI: {str_vni} - Binding not found")
 
-        if no_binding:
-            self.result.is_failure(f"The following VNI(s) have no binding: {no_binding}")
-
-        if wrong_binding:
-            self.result.is_failure(f"The following VNI(s) have the wrong VLAN binding: {wrong_binding}")
+            elif vlan != retrieved_vlan:
+                self.result.is_failure(f"Interface: Vxlan1 VNI: {str_vni} VLAN: {vlan} - Wrong VLAN binding - Actual: {retrieved_vlan}")
 
 
 class VerifyVxlanVtep(AntaTest):
@@ -206,10 +198,10 @@ class VerifyVxlanVtep(AntaTest):
         difference2 = set(vxlan1["vteps"]).difference(set(inputs_vteps))
 
         if difference1:
-            self.result.is_failure(f"The following VTEP peer(s) are missing from the Vxlan1 interface: {sorted(difference1)}")
+            self.result.is_failure(f"The following VTEP peer(s) are missing from the Vxlan1 interface: {', '.join(sorted(difference1))}")
 
         if difference2:
-            self.result.is_failure(f"Unexpected VTEP peer(s) on Vxlan1 interface: {sorted(difference2)}")
+            self.result.is_failure(f"Unexpected VTEP peer(s) on Vxlan1 interface: {', '.join(sorted(difference2))}")
 
 
 class VerifyVxlan1ConnSettings(AntaTest):
@@ -259,6 +251,6 @@ class VerifyVxlan1ConnSettings(AntaTest):
 
         # Check vxlan1 source interface and udp port
         if src_intf != self.inputs.source_interface:
-            self.result.is_failure(f"Source interface is not correct. Expected `{self.inputs.source_interface}` as source interface but found `{src_intf}` instead.")
+            self.result.is_failure(f"Interface: Vxlan1 - Incorrect Source interface - Expected: {self.inputs.source_interface} Actual: {src_intf}")
         if port != self.inputs.udp_port:
-            self.result.is_failure(f"UDP port is not correct. Expected `{self.inputs.udp_port}` as UDP port but found `{port}` instead.")
+            self.result.is_failure(f"Interface: Vxlan1 - Incorrect UDP port - Expected: {self.inputs.udp_port} Actual: {port}")
