@@ -39,7 +39,7 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyPtpModeStatus,
         "eos_data": [{"ptpMode": "ptpDisabled", "ptpIntfSummaries": {}}],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["The device is not configured as a PTP Boundary Clock: 'ptpDisabled'"]},
+        "expected": {"result": "failure", "messages": ["The device is not configured as a PTP Boundary Clock - Actual: ptpDisabled"]},
     },
     {
         "name": "skipped",
@@ -158,7 +158,7 @@ DATA: list[dict[str, Any]] = [
             }
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["The device lock is more than 60s old: 157s"]},
+        "expected": {"result": "failure", "messages": ["The device lock is more than 60s old - Actual: 157s"]},
     },
     {
         "name": "skipped",
@@ -236,7 +236,9 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": [("The device timing offset from master is greater than +/- 1000ns: {'Ethernet27/1': [1200, -1300]}")],
+            "messages": [
+                "Interface: Ethernet27/1 - The device timing offset from master is greater than +/- 1000ns: Actual: 1200, -1300",
+            ],
         },
     },
     {
@@ -335,6 +337,6 @@ DATA: list[dict[str, Any]] = [
             }
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["The following interface(s) are not in a valid PTP state: '['Ethernet53', 'Ethernet1']'"]},
+        "expected": {"result": "failure", "messages": ["The following interface(s) are not in a valid PTP state: Ethernet53, Ethernet1"]},
     },
 ]
