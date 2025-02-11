@@ -33,4 +33,4 @@ class AVTPath(BaseModel):
         AVT CONTROL-PLANE-PROFILE VRF: default (Destination: 10.101.255.2, Next-hop: 10.101.255.1)
 
         """
-        return f"AVT: {self.avt_name}, VRF: {self.vrf}, Destination: {self.destination}, Next-hop: {self.next_hop}"
+        return f"AVT: {self.avt_name} VRF: {self.vrf} Destination: {self.destination} Next-hop: {self.next_hop}"

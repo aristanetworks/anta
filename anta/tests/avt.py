@@ -148,7 +148,7 @@ class VerifyAVTSpecificPath(AntaTest):
             # If no matching path found, mark the test as failed
             if not path_found:
                 if avt_path.path_type and not path_type_found:
-                    self.result.is_failure(f"{avt_path}, Path Type: {avt_path.path_type} - Path not found")
+                    self.result.is_failure(f"{avt_path} Path Type: {avt_path.path_type} - Path not found")
                 else:
                     self.result.is_failure(f"{avt_path} - Path not found")
 
