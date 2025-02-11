@@ -133,7 +133,7 @@ class Device(httpx.AsyncClient):
         suppress_error: Literal[False] = False,
         auto_complete: bool = False,
         expand_aliases: bool = False,
-        stop_on_error: bool = True,
+        timestamps: bool = False,
         req_id: int | str | None = None,
     ) -> EapiJsonOutput: ...
 
@@ -149,7 +149,7 @@ class Device(httpx.AsyncClient):
         suppress_error: Literal[False] = False,
         auto_complete: bool = False,
         expand_aliases: bool = False,
-        stop_on_error: bool = True,
+        timestamps: bool = False,
         req_id: int | str | None = None,
     ) -> list[EapiJsonOutput]: ...
 
@@ -165,7 +165,7 @@ class Device(httpx.AsyncClient):
         suppress_error: Literal[False] = False,
         auto_complete: bool = False,
         expand_aliases: bool = False,
-        stop_on_error: bool = True,
+        timestamps: bool = False,
         req_id: int | str | None = None,
     ) -> EapiTextOutput: ...
 
@@ -181,7 +181,7 @@ class Device(httpx.AsyncClient):
         suppress_error: Literal[False] = False,
         auto_complete: bool = False,
         expand_aliases: bool = False,
-        stop_on_error: bool = True,
+        timestamps: bool = False,
         req_id: int | str | None = None,
     ) -> list[EapiTextOutput]: ...
 
@@ -197,7 +197,7 @@ class Device(httpx.AsyncClient):
         suppress_error: Literal[True],
         auto_complete: bool = False,
         expand_aliases: bool = False,
-        stop_on_error: bool = True,
+        timestamps: bool = False,
         req_id: int | str | None = None,
     ) -> EapiJsonOutput | None: ...
 
@@ -213,7 +213,7 @@ class Device(httpx.AsyncClient):
         suppress_error: Literal[True],
         auto_complete: bool = False,
         expand_aliases: bool = False,
-        stop_on_error: bool = True,
+        timestamps: bool = False,
         req_id: int | str | None = None,
     ) -> list[EapiJsonOutput] | None: ...
 
@@ -229,7 +229,7 @@ class Device(httpx.AsyncClient):
         suppress_error: Literal[True],
         auto_complete: bool = False,
         expand_aliases: bool = False,
-        stop_on_error: bool = True,
+        timestamps: bool = False,
         req_id: int | str | None = None,
     ) -> EapiTextOutput | None: ...
 
@@ -245,7 +245,7 @@ class Device(httpx.AsyncClient):
         suppress_error: Literal[True],
         auto_complete: bool = False,
         expand_aliases: bool = False,
-        stop_on_error: bool = True,
+        timestamps: bool = False,
         req_id: int | str | None = None,
     ) -> list[EapiTextOutput] | None: ...
 
@@ -260,7 +260,7 @@ class Device(httpx.AsyncClient):
         suppress_error: bool = False,
         auto_complete: bool = False,
         expand_aliases: bool = False,
-        stop_on_error: bool = True,
+        timestamps: bool = False,
         req_id: int | str | None = None,
     ) -> EapiJsonOutput | EapiTextOutput | list[EapiJsonOutput] | list[EapiTextOutput] | None:
         """Execute one or more CLI commands.
@@ -302,36 +302,29 @@ class Device(httpx.AsyncClient):
                 For example if an alias is configured as 'sv' for 'show version'
                 then an API call with sv and the expandAliases parameter will
                 return the output of show version.
-        stop_on_error
-            Enables/disables the command stop-on-error feature of the eAPI. Per the
-            documentation:
-                If true, eAPI will stop if an error is seen when executing a command.
-
-                For example, when sending 'show version', 'bad command', 'show clock',
-                commands, only 'show version' runs by default. If set to False,
-                'show version' and 'show clock' outputs are returned in the error
-                object even if 'bad command' fails.
+        timestamps
+            If True, return the per-command execution time.
         req_id
             A unique identifier that will be echoed back by the switch. May be a string or number.
 
         Returns
         -------
-        Single command, JSON output (suppress_error=False):
-            dict[str, Any]
-        Multiple commands, JSON output (suppress_error=False):
-            list[dict[str, Any]]
-        Single command, TEXT output (suppress_error=False):
-            str
-        Multiple commands, TEXT output (suppress_error=False):
-            list[str]
-        Single command, JSON output (suppress_error=True):
-            dict[str, Any] | None
-        Multiple commands, JSON output (suppress_error=True):
-            list[dict[str, Any]] | None
-        Single command, TEXT output (suppress_error=True):
-            str | None
-        Multiple commands, TEXT output (suppress_error=True):
-            list[str] | None
+        dict[str, Any]
+            Single command, JSON output, suppress_error=False
+        list[dict[str, Any]]
+            Multiple commands, JSON output, suppress_error=False
+        str
+            Single command, TEXT output, suppress_error=False
+        list[str]
+            Multiple commands, TEXT output, suppress_error=False
+        dict[str, Any] | None
+            Single command, JSON output, suppress_error=True
+        list[dict[str, Any]] | None
+            Multiple commands, JSON output, suppress_error=True
+        str | None
+            Single command, TEXT output, suppress_error=True
+        list[str] | None
+            Multiple commands, TEXT output, suppress_error=True
         """
         if command and commands:
             msg = "Cannot provide both 'command' and 'commands'"
@@ -343,7 +336,7 @@ class Device(httpx.AsyncClient):
             raise RuntimeError(msg)
 
         jsonrpc = self._jsonrpc_command(
-            commands=cmds, ofmt=ofmt, version=version, auto_complete=auto_complete, expand_aliases=expand_aliases, stop_on_error=stop_on_error, req_id=req_id
+            commands=cmds, ofmt=ofmt, version=version, auto_complete=auto_complete, expand_aliases=expand_aliases, timestamps=timestamps, req_id=req_id
         )
 
         try:
@@ -362,7 +355,7 @@ class Device(httpx.AsyncClient):
         *,
         auto_complete: bool = False,
         expand_aliases: bool = False,
-        stop_on_error: bool = True,
+        timestamps: bool = False,
         req_id: int | str | None = None,
     ) -> JsonRpc:
         """Create the JSON-RPC command dictionary object.
@@ -393,15 +386,8 @@ class Device(httpx.AsyncClient):
                 For example if an alias is configured as 'sv' for 'show version'
                 then an API call with sv and the expandAliases parameter will
                 return the output of show version.
-        stop_on_error
-            Enables/disables the command stop-on-error feature of the eAPI. Per the
-            documentation:
-                If true, eAPI will stop if an error is seen when executing a command.
-
-                For example, when sending 'show version', 'bad command', 'show clock',
-                commands, only 'show version' runs by default. If set to False,
-                'show version' and 'show clock' outputs are returned in the error
-                object even if 'bad command' fails.
+        timestamps
+            If True, return the per-command execution time.
         req_id
             A unique identifier that will be echoed back by the switch. May be a string or number.
 
@@ -420,7 +406,7 @@ class Device(httpx.AsyncClient):
                 "format": ofmt,
                 "autoComplete": auto_complete,
                 "expandAliases": expand_aliases,
-                "stopOnError": stop_on_error,
+                "timestamps": timestamps,
             },
             "id": req_id or id(self),
         }

@@ -1,4 +1,4 @@
-# Copyright (c) 2024 Arista Networks, Inc.
+# Copyright (c) 2024-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Type definitions used for the asynceapi package."""
@@ -40,4 +40,4 @@ class JsonRpcParams(TypedDict):
     format: NotRequired[Literal["json", "text"]]
     autoComplete: NotRequired[bool]
     expandAliases: NotRequired[bool]
-    stopOnError: NotRequired[bool]
+    timestamps: NotRequired[bool]

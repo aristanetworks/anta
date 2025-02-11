@@ -3,7 +3,9 @@
 # that can be found in the LICENSE file.
 """Unit tests data for the asynceapi client package."""
 
-SUCCESS_EAPI_RESPONSE = {
+from asynceapi._types import EapiJsonOutput, JsonRpc
+
+SUCCESS_EAPI_RESPONSE: EapiJsonOutput = {
     "jsonrpc": "2.0",
     "id": "EapiExplorer-1",
     "result": [
@@ -49,7 +51,7 @@ SUCCESS_EAPI_RESPONSE = {
 }
 """Successful eAPI JSON response."""
 
-ERROR_EAPI_RESPONSE = {
+ERROR_EAPI_RESPONSE: EapiJsonOutput = {
     "jsonrpc": "2.0",
     "id": "EapiExplorer-1",
     "error": {
@@ -84,5 +86,5 @@ ERROR_EAPI_RESPONSE = {
 }
 """Error eAPI JSON response."""
 
-JSONRPC_REQUEST_TEMPLATE = {"jsonrpc": "2.0", "method": "runCmds", "params": {"version": 1, "cmds": [], "format": "json"}, "id": "EapiExplorer-1"}
+JSONRPC_REQUEST_TEMPLATE: JsonRpc = {"jsonrpc": "2.0", "method": "runCmds", "params": {"version": 1, "cmds": [], "format": "json"}, "id": "EapiExplorer-1"}
 """Template for JSON-RPC eAPI request. `cmds` must be filled by the parametrize decorator."""
