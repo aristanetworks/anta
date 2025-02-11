@@ -966,7 +966,7 @@ anta.tests.vxlan:
       source_interface: Loopback1
       udp_port: 4789
   - VerifyVxlan1Interface:
-      # Verifies the Vxlan1 interface status.
+      # Verifies if the Vxlan1 interface is configured and 'up/up'.
   - VerifyVxlanConfigSanity:
       # Verifies there are no VXLAN config-sanity inconsistencies.
   - VerifyVxlanVniBinding:
