@@ -444,7 +444,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["AVT MGMT-AVT-POLICY-DEFAULT VRF: default (Destination: 10.101.255.2, Next-hop: 10.101.255.1) - No AVT path configured"],
+            "messages": ["AVT: MGMT-AVT-POLICY-DEFAULT, VRF: default, Destination: 10.101.255.2, Next-hop: 10.101.255.1 - No AVT path configured"],
         },
     },
     {
@@ -507,8 +507,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "AVT DEFAULT-AVT-POLICY-CONTROL-PLANE VRF: default (Destination: 10.101.255.2, Next-hop: 10.101.255.11) Path Type: multihop - Path not found",
-                "AVT DATA-AVT-POLICY-CONTROL-PLANE VRF: data (Destination: 10.101.255.1, Next-hop: 10.101.255.21) Path Type: direct - Path not found",
+                "AVT: DEFAULT-AVT-POLICY-CONTROL-PLANE, VRF: default, Destination: 10.101.255.2, Next-hop: 10.101.255.11, Path Type: multihop - Path not found",
+                "AVT: DATA-AVT-POLICY-CONTROL-PLANE, VRF: data, Destination: 10.101.255.1, Next-hop: 10.101.255.21, Path Type: direct - Path not found",
             ],
         },
     },
@@ -571,8 +571,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "AVT DEFAULT-AVT-POLICY-CONTROL-PLANE VRF: default (Destination: 10.101.255.2, Next-hop: 10.101.255.11) - Path not found",
-                "AVT DATA-AVT-POLICY-CONTROL-PLANE VRF: data (Destination: 10.101.255.1, Next-hop: 10.101.255.21) - Path not found",
+                "AVT: DEFAULT-AVT-POLICY-CONTROL-PLANE, VRF: default, Destination: 10.101.255.2, Next-hop: 10.101.255.11 - Path not found",
+                "AVT: DATA-AVT-POLICY-CONTROL-PLANE, VRF: data, Destination: 10.101.255.1, Next-hop: 10.101.255.21 - Path not found",
             ],
         },
     },
@@ -646,11 +646,11 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "AVT DEFAULT-AVT-POLICY-CONTROL-PLANE VRF: default (Destination: 10.101.255.2, Next-hop: 10.101.255.1) - "
+                "AVT: DEFAULT-AVT-POLICY-CONTROL-PLANE, VRF: default, Destination: 10.101.255.2, Next-hop: 10.101.255.1 - "
                 "Incorrect path multihop:3 - Valid: False, Active: True",
-                "AVT DATA-AVT-POLICY-CONTROL-PLANE VRF: data (Destination: 10.101.255.1, Next-hop: 10.101.255.1) - "
+                "AVT: DATA-AVT-POLICY-CONTROL-PLANE, VRF: data, Destination: 10.101.255.1, Next-hop: 10.101.255.1 - "
                 "Incorrect path direct:10 - Valid: False, Active: True",
-                "AVT DATA-AVT-POLICY-CONTROL-PLANE VRF: data (Destination: 10.101.255.1, Next-hop: 10.101.255.1) - "
+                "AVT: DATA-AVT-POLICY-CONTROL-PLANE, VRF: data, Destination: 10.101.255.1, Next-hop: 10.101.255.1 - "
                 "Incorrect path direct:9 - Valid: True, Active: False",
             ],
         },
@@ -667,6 +667,6 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyAVTRole,
         "eos_data": [{"role": "transit"}],
         "inputs": {"role": "edge"},
-        "expected": {"result": "failure", "messages": ["Expected AVT role as `edge`, but found `transit` instead."]},
+        "expected": {"result": "failure", "messages": ["AVT role mismatch - Expected: edge, Actual: transit"]},
     },
 ]
