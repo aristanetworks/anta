@@ -30,13 +30,33 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "skipped", "messages": ["MLAG is disabled"]},
     },
     {
-        "name": "failure",
+        "name": "failure-negotian-status",
+        "test": VerifyMlagStatus,
+        "eos_data": [{"state": "active", "peerLinkStatus": "up", "localIntfStatus": "up"}],
+        "inputs": None,
+        "expected": {
+            "result": "failure",
+            "messages": ["MLAG Negotiation status is not connected"],
+        },
+    },
+    {
+        "name": "failure-local-interface",
+        "test": VerifyMlagStatus,
+        "eos_data": [{"state": "active", "negStatus": "connected", "peerLinkStatus": "up", "localIntfStatus": "down"}],
+        "inputs": None,
+        "expected": {
+            "result": "failure",
+            "messages": ["Operational state of the MLAG local interface is not up"],
+        },
+    },
+    {
+        "name": "failure-peer-link",
         "test": VerifyMlagStatus,
         "eos_data": [{"state": "active", "negStatus": "connected", "peerLinkStatus": "down", "localIntfStatus": "up"}],
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": ["MLAG status is not OK: {'state': 'active', 'negStatus': 'connected', 'localIntfStatus': 'up', 'peerLinkStatus': 'down'}"],
+            "messages": ["Operational state of the MLAG peer link is not up"],
         },
     },
     {
@@ -74,7 +94,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": ["MLAG status is not OK: {'Disabled': 0, 'Configured': 0, 'Inactive': 0, 'Active-partial': 1, 'Active-full': 1}"],
+            "messages": ["MLAG status is not ok - Inactive Ports: 0 Partial Active Ports: 1"],
         },
     },
     {
@@ -89,7 +109,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": ["MLAG status is not OK: {'Disabled': 0, 'Configured': 0, 'Inactive': 1, 'Active-partial': 1, 'Active-full': 1}"],
+            "messages": ["MLAG status is not ok - Inactive Ports: 1 Partial Active Ports: 1"],
         },
     },
     {
@@ -124,12 +144,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": [
-                "MLAG config-sanity returned inconsistencies: "
-                "{'globalConfiguration': {'mlag': {'globalParameters': "
-                "{'dual-primary-detection-delay': {'localValue': '0', 'peerValue': '200'}}}}, "
-                "'interfaceConfiguration': {}}",
-            ],
+            "messages": ["MLAG config-sanity found in global configuration"],
         },
     },
     {
@@ -146,12 +161,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": [
-                "MLAG config-sanity returned inconsistencies: "
-                "{'globalConfiguration': {}, "
-                "'interfaceConfiguration': {'trunk-native-vlan mlag30': "
-                "{'interface': {'Port-Channel30': {'localValue': '123', 'peerValue': '3700'}}}}}",
-            ],
+            "messages": ["MLAG config-sanity found in interface configuration"],
         },
     },
     {
@@ -177,7 +187,10 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyMlagReloadDelay,
         "eos_data": [{"state": "active", "reloadDelay": 400, "reloadDelayNonMlag": 430}],
         "inputs": {"reload_delay": 300, "reload_delay_non_mlag": 330},
-        "expected": {"result": "failure", "messages": ["The reload-delay parameters are not configured properly: {'reloadDelay': 400, 'reloadDelayNonMlag': 430}"]},
+        "expected": {
+            "result": "failure",
+            "messages": ["MLAG reload delay mismatch - Expected: 300s Actual: 400s", "Delay for non MLAG ports mismatch - Expected: 330s Actual: 430s"],
+        },
     },
     {
         "name": "success",
@@ -236,13 +249,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                (
-                    "The dual-primary parameters are not configured properly: "
-                    "{'detail.dualPrimaryDetectionDelay': 300, "
-                    "'detail.dualPrimaryAction': 'none', "
-                    "'dualPrimaryMlagRecoveryDelay': 160, "
-                    "'dualPrimaryNonMlagRecoveryDelay': 0}"
-                ),
+                "Dual-primary detection delay mismatch - Expected: 200 Actual: 300",
+                "Dual-primary MLAG recovery delay mismatch - Expected: 60 Actual: 160",
             ],
         },
     },
@@ -262,15 +270,26 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"detection_delay": 200, "errdisabled": True, "recovery_delay": 60, "recovery_delay_non_mlag": 0},
         "expected": {
             "result": "failure",
-            "messages": [
-                (
-                    "The dual-primary parameters are not configured properly: "
-                    "{'detail.dualPrimaryDetectionDelay': 200, "
-                    "'detail.dualPrimaryAction': 'none', "
-                    "'dualPrimaryMlagRecoveryDelay': 60, "
-                    "'dualPrimaryNonMlagRecoveryDelay': 0}"
-                ),
-            ],
+            "messages": ["Dual-primary action mismatch - Expected: errdisableAllInterfaces Actual: none"],
+        },
+    },
+    {
+        "name": "failure-wrong-non-mlag-delay",
+        "test": VerifyMlagDualPrimary,
+        "eos_data": [
+            {
+                "state": "active",
+                "dualPrimaryDetectionState": "configured",
+                "dualPrimaryPortsErrdisabled": False,
+                "dualPrimaryMlagRecoveryDelay": 60,
+                "dualPrimaryNonMlagRecoveryDelay": 120,
+                "detail": {"dualPrimaryDetectionDelay": 200, "dualPrimaryAction": "errdisableAllInterfaces"},
+            },
+        ],
+        "inputs": {"detection_delay": 200, "errdisabled": True, "recovery_delay": 60, "recovery_delay_non_mlag": 60},
+        "expected": {
+            "result": "failure",
+            "messages": ["Dual-primary non MLAG recovery delay mismatch - Expected: 60 Actual: 120"],
         },
     },
     {
@@ -325,7 +344,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"primary_priority": 1},
         "expected": {
             "result": "failure",
-            "messages": ["The device is not set as MLAG primary.", "The primary priority does not match expected. Expected `1`, but found `32767` instead."],
+            "messages": ["The device is not set as MLAG primary.", "The primary priority mismatch - Expected: 1 Actual: 32767"],
         },
     },
 ]
