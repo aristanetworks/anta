@@ -667,7 +667,6 @@ anta.tests.routing.ospf:
       number: 3
   - VerifyOSPFNeighborState:
       # Verifies all OSPF neighbors are in FULL state.
-
 anta.tests.security:
   - VerifyAPIHttpStatus:
       # Verifies if eAPI HTTP server is disabled globally.
