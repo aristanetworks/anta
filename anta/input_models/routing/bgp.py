@@ -298,7 +298,7 @@ class RedistributedRouteConfig(BaseModel):
 
         Examples
         --------
-        - Proto: Connected, Include Leaked: absent, Route Map: RM-CONN-2-BGP
+        - Proto: Connected, Include Leaked: True, Route Map: RM-CONN-2-BGP
         """
         base_string = f"Proto: {self.proto}"
         if self.include_leaked:
