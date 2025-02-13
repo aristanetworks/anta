@@ -6113,7 +6113,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "VRF: default, AFI-SAFI: IPv4 Multicast, Proto: IS-IS, Include Leaked: present, Route Map: RM-CONN-2-BGP - Include leaked mismatch - Actual: False"
+                "VRF: default, AFI-SAFI: IPv4 Multicast, Proto: IS-IS, Include Leaked: True, Route Map: RM-CONN-2-BGP - Include leaked mismatch - Actual: False",
+                "VRF: test, AFI-SAFI: IPv6 Unicast, Proto: Bgp, Route Map: RM-CONN-2-BGP - Include leaked mismatch - Actual: True",
             ],
         },
     },

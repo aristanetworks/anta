@@ -302,7 +302,7 @@ class RedistributedRouteConfig(BaseModel):
         """
         base_string = f"Proto: {self.proto}"
         if self.include_leaked:
-            base_string += ", Include Leaked: present"
+            base_string += f", Include Leaked: {self.include_leaked}"
         if self.route_map:
             base_string += f", Route Map: {self.route_map}"
         return base_string

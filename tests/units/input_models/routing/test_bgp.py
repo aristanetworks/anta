@@ -380,8 +380,8 @@ class TestVerifyBGPRedistributedRoute:
     @pytest.mark.parametrize(
         ("proto", "include_leaked", "route_map", "expected"),
         [
-            pytest.param("Connected", True, "RM-CONN-2-BGP", "Proto: Connected, Include Leaked: present, Route Map: RM-CONN-2-BGP", id="check-all-params"),
-            pytest.param("Static", False, None, "Proto: Static", id="check-proto-include_leaked"),
+            pytest.param("Connected", True, "RM-CONN-2-BGP", "Proto: Connected, Include Leaked: True, Route Map: RM-CONN-2-BGP", id="check-all-params"),
+            pytest.param("Static", False, None, "Proto: Static", id="check-proto-include_leaked-false"),
             pytest.param("User", False, "RM-CONN-2-BGP", "Proto: EOS SDK, Route Map: RM-CONN-2-BGP", id="check-proto-route_map"),
             pytest.param("Dynamic", False, None, "Proto: Dynamic", id="check-proto-only"),
         ],

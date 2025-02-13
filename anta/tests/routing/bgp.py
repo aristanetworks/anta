@@ -1866,7 +1866,7 @@ class VerifyBGPRedistribution(AntaTest):
             return failure_msg
 
         # If includes leaked field applicable, and it does not matches the expected value, test fails.
-        if all([route_info.include_leaked, (act_include_leaked := actual_route.get("includeLeaked", "absent")) != route_info.include_leaked]):
+        if (act_include_leaked := actual_route.get("includeLeaked", False)) != route_info.include_leaked:
             failure_msg.append(f"{vrf_data}, {addr_family}, {route_info} - Include leaked mismatch - Actual: {act_include_leaked}")
 
         # If route map is required and it is not matching the expected value, test fails.
