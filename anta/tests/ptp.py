@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
 
 class VerifyPtpModeStatus(AntaTest):
-    """Verifies that the device is configured as a Precision Time Protocol (PTP) Boundary Clock (BC).
+    """Verifies that the device is configured as a PTP Boundary Clock.
 
     Expected Results
     ----------------
@@ -47,13 +47,13 @@ class VerifyPtpModeStatus(AntaTest):
             return
 
         if ptp_mode != "ptpBoundaryClock":
-            self.result.is_failure(f"The device is not configured as a PTP Boundary Clock - Actual: {ptp_mode}")
+            self.result.is_failure(f"Not configured as a PTP Boundary Clock - Actual: {ptp_mode}")
         else:
             self.result.is_success()
 
 
 class VerifyPtpGMStatus(AntaTest):
-    """Verifies that the device is locked to a valid Precision Time Protocol (PTP) Grandmaster (GM).
+    """Verifies that the device is locked to a valid PTP Grandmaster.
 
     To test PTP failover, re-run the test with a secondary GMID configured.
 
@@ -100,7 +100,7 @@ class VerifyPtpGMStatus(AntaTest):
 
 
 class VerifyPtpLockStatus(AntaTest):
-    """Verifies that the device was locked to the upstream Precision Time Protocol (PTP) Grandmaster (GM) in the last minute.
+    """Verifies that the device was locked to the upstream PTP GM in the last minute.
 
     Expected Results
     ----------------
@@ -133,13 +133,13 @@ class VerifyPtpLockStatus(AntaTest):
         time_difference = ptp_clock_summary["currentPtpSystemTime"] - ptp_clock_summary["lastSyncTime"]
 
         if time_difference >= threshold:
-            self.result.is_failure(f"The device lock is more than {threshold}s old - Actual: {time_difference}s")
+            self.result.is_failure(f"Lock is more than {threshold}s old - Actual: {time_difference}s")
         else:
             self.result.is_success()
 
 
 class VerifyPtpOffset(AntaTest):
-    """Verifies that the Precision Time Protocol (PTP) timing offset is within +/- 1000ns from the master clock.
+    """Verifies that the PTP timing offset is within +/- 1000ns from the master clock.
 
     Expected Results
     ----------------
@@ -175,13 +175,11 @@ class VerifyPtpOffset(AntaTest):
                 offset_interfaces.setdefault(interface["intf"], []).append(interface["offsetFromMaster"])
 
         for interface, data in offset_interfaces.items():
-            self.result.is_failure(
-                f"Interface: {interface} - The device timing offset from master is greater than +/- {threshold}ns: Actual: {', '.join(map(str, data))}"
-            )
+            self.result.is_failure(f"Interface: {interface} - Timing offset from master is greater than +/- {threshold}ns: Actual: {', '.join(map(str, data))}")
 
 
 class VerifyPtpPortModeStatus(AntaTest):
-    """Verifies that all interfaces are in a valid Precision Time Protocol (PTP) state.
+    """Verifies the PTP interfaces state.
 
     The interfaces can be in one of the following state: Master, Slave, Passive, or Disabled.
 

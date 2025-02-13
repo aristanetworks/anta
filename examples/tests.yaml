@@ -365,16 +365,16 @@ anta.tests.profiles:
       mode: 3
 anta.tests.ptp:
   - VerifyPtpGMStatus:
-      # Verifies that the device is locked to a valid Precision Time Protocol (PTP) Grandmaster (GM).
+      # Verifies that the device is locked to a valid PTP Grandmaster.
       gmid: 0xec:46:70:ff:fe:00:ff:a9
   - VerifyPtpLockStatus:
-      # Verifies that the device was locked to the upstream Precision Time Protocol (PTP) Grandmaster (GM) in the last minute.
+      # Verifies that the device was locked to the upstream PTP GM in the last minute.
   - VerifyPtpModeStatus:
-      # Verifies that the device is configured as a Precision Time Protocol (PTP) Boundary Clock (BC).
+      # Verifies that the device is configured as a PTP Boundary Clock.
   - VerifyPtpOffset:
-      # Verifies that the Precision Time Protocol (PTP) timing offset is within +/- 1000ns from the master clock.
+      # Verifies that the PTP timing offset is within +/- 1000ns from the master clock.
   - VerifyPtpPortModeStatus:
-      # Verifies that all interfaces are in a valid Precision Time Protocol (PTP) state.
+      # Verifies the PTP interfaces state.
 anta.tests.routing.bgp:
   - VerifyBGPAdvCommunities:
       # Verifies that advertised communities are standard, extended and large for BGP IPv4 peer(s).
@@ -860,12 +860,12 @@ anta.tests.software:
   - VerifyEOSExtensions:
       # Verifies that all EOS extensions installed on the device are enabled for boot persistence.
   - VerifyEOSVersion:
-      # Verifies that the device is running one of the allowed EOS version.
+      # Verifies the EOS version of the device.
       versions:
         - 4.25.4M
         - 4.26.1F
   - VerifyTerminAttrVersion:
-      # Verifies that he device is running one of the allowed TerminAttr version.
+      # Verifies the TerminAttr version of the device.
       versions:
         - v1.13.6
         - v1.8.0

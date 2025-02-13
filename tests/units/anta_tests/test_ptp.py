@@ -39,7 +39,7 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyPtpModeStatus,
         "eos_data": [{"ptpMode": "ptpDisabled", "ptpIntfSummaries": {}}],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["The device is not configured as a PTP Boundary Clock - Actual: ptpDisabled"]},
+        "expected": {"result": "failure", "messages": ["Not configured as a PTP Boundary Clock - Actual: ptpDisabled"]},
     },
     {
         "name": "skipped",
@@ -158,7 +158,7 @@ DATA: list[dict[str, Any]] = [
             }
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["The device lock is more than 60s old - Actual: 157s"]},
+        "expected": {"result": "failure", "messages": ["Lock is more than 60s old - Actual: 157s"]},
     },
     {
         "name": "skipped",
@@ -237,7 +237,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Interface: Ethernet27/1 - The device timing offset from master is greater than +/- 1000ns: Actual: 1200, -1300",
+                "Interface: Ethernet27/1 - Timing offset from master is greater than +/- 1000ns: Actual: 1200, -1300",
             ],
         },
     },

@@ -35,7 +35,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"versions": ["4.27.1F"]},
-        "expected": {"result": "failure", "messages": ["Device version mismatch - Actual: 4.27.0F not in Expected: 4.27.1F"]},
+        "expected": {"result": "failure", "messages": ["EOS version mismatch - Actual: 4.27.0F not in Expected: 4.27.1F"]},
     },
     {
         "name": "success",
@@ -77,7 +77,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"versions": ["v1.17.1", "v1.18.1"]},
-        "expected": {"result": "failure", "messages": ["Device TerminAttr version mismatch - Actual: v1.17.0 not in Expected: v1.17.1, v1.18.1"]},
+        "expected": {"result": "failure", "messages": ["TerminAttr version mismatch - Actual: v1.17.0 not in Expected: v1.17.1, v1.18.1"]},
     },
     # TODO: add a test with a real extension?
     {

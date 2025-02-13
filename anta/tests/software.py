@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 
 class VerifyEOSVersion(AntaTest):
-    """Verifies that the device is running one of the allowed EOS version.
+    """Verifies the EOS version of the device.
 
     Expected Results
     ----------------
@@ -49,11 +49,11 @@ class VerifyEOSVersion(AntaTest):
         command_output = self.instance_commands[0].json_output
         self.result.is_success()
         if command_output["version"] not in self.inputs.versions:
-            self.result.is_failure(f"Device version mismatch - Actual: {command_output['version']} not in Expected: {', '.join(self.inputs.versions)}")
+            self.result.is_failure(f"EOS version mismatch - Actual: {command_output['version']} not in Expected: {', '.join(self.inputs.versions)}")
 
 
 class VerifyTerminAttrVersion(AntaTest):
-    """Verifies that he device is running one of the allowed TerminAttr version.
+    """Verifies the TerminAttr version of the device.
 
     Expected Results
     ----------------
@@ -87,7 +87,7 @@ class VerifyTerminAttrVersion(AntaTest):
         self.result.is_success()
         command_output_data = command_output["details"]["packages"]["TerminAttr-core"]["version"]
         if command_output_data not in self.inputs.versions:
-            self.result.is_failure(f"Device TerminAttr version mismatch - Actual: {command_output_data} not in Expected: {', '.join(self.inputs.versions)}")
+            self.result.is_failure(f"TerminAttr version mismatch - Actual: {command_output_data} not in Expected: {', '.join(self.inputs.versions)}")
 
 
 class VerifyEOSExtensions(AntaTest):
