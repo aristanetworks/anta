@@ -18,6 +18,7 @@ from anta.catalog import AntaCatalog
 from anta.inventory import AntaInventory
 from anta.inventory.exceptions import InventoryIncorrectSchemaError, InventoryRootKeyError
 from anta.logger import anta_log_exception
+from anta.settings import get_httpx_limits, get_httpx_timeout
 
 if TYPE_CHECKING:
     from click import Option
@@ -158,11 +159,10 @@ def core_options(f: Callable[..., Any]) -> Callable[..., Any]:
     )
     @click.option(
         "--timeout",
-        help="Global API timeout. This value will be used for all devices.",
-        default=30.0,
+        help="Global API timeout. Use 'inf' to disable all timeouts. See Scaling ANTA documentation.",
         show_envvar=True,
         envvar="ANTA_TIMEOUT",
-        show_default=True,
+        type=float,
     )
     @click.option(
         "--insecure",
@@ -202,7 +202,7 @@ def core_options(f: Callable[..., Any]) -> Callable[..., Any]:
         enable_password: str | None,
         enable: bool,
         prompt: bool,
-        timeout: float,
+        timeout: float | None,
         insecure: bool,
         disable_cache: bool,
         **kwargs: dict[str, Any],
@@ -232,6 +232,11 @@ def core_options(f: Callable[..., Any]) -> Callable[..., Any]:
         if not enable and enable_password:
             msg = "Providing a password to access EOS Privileged EXEC mode requires '--enable' option."
             raise click.BadParameter(msg)
+
+        # Get the HTTPX limits and timeout from environment variables
+        httpx_timeout = get_httpx_timeout(timeout)
+        httpx_limits = get_httpx_limits()
+
         try:
             i = AntaInventory.parse(
                 filename=inventory,
@@ -239,7 +244,8 @@ def core_options(f: Callable[..., Any]) -> Callable[..., Any]:
                 password=password,
                 enable=enable,
                 enable_password=enable_password,
-                timeout=timeout,
+                timeout=httpx_timeout,
+                limits=httpx_limits,
                 insecure=insecure,
                 disable_cache=disable_cache,
             )

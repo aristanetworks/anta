@@ -7,6 +7,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
+import pytest
+
+from anta._runner import AntaRunner, AntaRunnerScope
 from anta.result_manager import ResultManager
 from anta.runner import get_coroutines, prepare_tests
 
@@ -22,6 +25,8 @@ if TYPE_CHECKING:
     from anta.result_manager.models import TestResult
 
 
+# TODO: Remove this in ANTA v2.0.0
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 def test_prepare_tests(benchmark: BenchmarkFixture, catalog: AntaCatalog, inventory: AntaInventory) -> None:
     """Benchmark `anta.runner.prepare_tests`."""
 
@@ -36,6 +41,8 @@ def test_prepare_tests(benchmark: BenchmarkFixture, catalog: AntaCatalog, invent
     assert sum(len(tests) for tests in selected_tests.values()) == len(inventory) * len(catalog.tests)
 
 
+# TODO: Remove this in ANTA v2.0.0
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 def test_get_coroutines(benchmark: BenchmarkFixture, catalog: AntaCatalog, inventory: AntaInventory) -> None:
     """Benchmark `anta.runner.get_coroutines`."""
     selected_tests = prepare_tests(inventory=inventory, catalog=catalog, tests=None, tags=None)
@@ -52,3 +59,19 @@ def test_get_coroutines(benchmark: BenchmarkFixture, catalog: AntaCatalog, inven
 
     count = sum(len(tests) for tests in selected_tests.values())
     assert count == len(coroutines)
+
+
+def test_setup_tests(benchmark: BenchmarkFixture, catalog: AntaCatalog, inventory: AntaInventory) -> None:
+    """Benchmark `anta._runner.AntaRunner._setup_tests`."""
+    runner = AntaRunner(inventory=inventory, catalog=catalog)
+    runner._selected_inventory = inventory
+
+    def bench() -> bool:
+        catalog.clear_indexes()
+        return runner._setup_tests(scope=AntaRunnerScope())
+
+    benchmark(bench)
+
+    assert runner._selected_tests is not None
+    assert len(runner._selected_tests) == len(inventory)
+    assert sum(len(tests) for tests in runner._selected_tests.values()) == len(inventory) * len(catalog.tests)
