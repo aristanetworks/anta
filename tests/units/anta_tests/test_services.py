@@ -25,7 +25,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"hostname": "s1-spine1"},
         "expected": {
             "result": "failure",
-            "messages": ["Expected `s1-spine1` as the hostname, but found `s1-spine2` instead."],
+            "messages": ["Incorrect Hostname - Expected: s1-spine1 Actual: s1-spine2"],
         },
     },
     {
@@ -88,7 +88,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Server 10.14.0.10 (VRF: default, Priority: 0) - Not configured", "Server 10.14.0.21 (VRF: MGMT, Priority: 1) - Not configured"],
+            "messages": ["Server 10.14.0.10 VRF: default Priority: 0 - Not configured", "Server 10.14.0.21 VRF: MGMT Priority: 1 - Not configured"],
         },
     },
     {
@@ -109,9 +109,9 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Server 10.14.0.1 (VRF: CS, Priority: 0) - Incorrect priority - Priority: 1",
-                "Server 10.14.0.11 (VRF: default, Priority: 0) - Not configured",
-                "Server 10.14.0.110 (VRF: MGMT, Priority: 0) - Not configured",
+                "Server 10.14.0.1 VRF: CS Priority: 0 - Incorrect priority - Priority: 1",
+                "Server 10.14.0.11 VRF: default Priority: 0 - Not configured",
+                "Server 10.14.0.110 VRF: MGMT Priority: 0 - Not configured",
             ],
         },
     },
