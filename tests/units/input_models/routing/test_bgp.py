@@ -351,7 +351,7 @@ class TestVerifyBGPRoutePathsInput:
 
 
 class TestVerifyBGPRedistributedRoute:
-    """Test anta.tests.routing.bgp.RedistributedRouteConfig.Input."""
+    """Test anta.input_models.routing.bgp.RedistributedRouteConfig."""
 
     @pytest.mark.parametrize(
         ("proto", "include_leaked"),
@@ -361,7 +361,7 @@ class TestVerifyBGPRedistributedRoute:
             pytest.param("User", False, id="proto-User"),
         ],
     )
-    def test_valid(self, proto: RedistributedProtocol, include_leaked: bool) -> None:
+    def test_validate_inputs(self, proto: RedistributedProtocol, include_leaked: bool) -> None:
         """Test RedistributedRouteConfig valid inputs."""
         RedistributedRouteConfig(proto=proto, include_leaked=include_leaked)
 
@@ -381,25 +381,25 @@ class TestVerifyBGPRedistributedRoute:
         ("proto", "include_leaked", "route_map", "expected"),
         [
             pytest.param("Connected", True, "RM-CONN-2-BGP", "Proto: Connected, Include Leaked: present, Route Map: RM-CONN-2-BGP", id="check-all-params"),
-            pytest.param("Static", False, None, "Proto: Static, Include Leaked: absent", id="check-proto-include_leaked"),
-            pytest.param("User", None, "RM-CONN-2-BGP", "Proto: EOS SDK, Route Map: RM-CONN-2-BGP", id="check-proto-route_map"),
-            pytest.param("Dynamic", None, None, "Proto: Dynamic", id="check-proto-only"),
+            pytest.param("Static", False, None, "Proto: Static", id="check-proto-include_leaked"),
+            pytest.param("User", False, "RM-CONN-2-BGP", "Proto: EOS SDK, Route Map: RM-CONN-2-BGP", id="check-proto-route_map"),
+            pytest.param("Dynamic", False, None, "Proto: Dynamic", id="check-proto-only"),
         ],
     )
-    def test_valid_str(self, proto: RedistributedProtocol, include_leaked: bool | None, route_map: str | None, expected: str) -> None:
+    def test_valid_str(self, proto: RedistributedProtocol, include_leaked: bool, route_map: str | None, expected: str) -> None:
         """Test RedistributedRouteConfig __str__."""
         assert str(RedistributedRouteConfig(proto=proto, include_leaked=include_leaked, route_map=route_map)) == expected
 
 
 class TestVerifyBGPAddressFamilyConfig:
-    """Test anta.tests.routing.bgp.AddressFamilyConfig.Input."""
+    """Test anta.input_models.routing.bgp.AddressFamilyConfig."""
 
     @pytest.mark.parametrize(
         ("afi_safi", "redistributed_routes"),
         [
             pytest.param("ipv4Unicast", [{"proto": "OSPFv3 External", "include_leaked": True, "route_map": "RM-CONN-2-BGP"}], id="afisafi-ipv4-unicast"),
             pytest.param("ipv6 Multicast", [{"proto": "OSPF Internal", "include_leaked": True, "route_map": "RM-CONN-2-BGP"}], id="afisafi-ipv6-multicast"),
-            pytest.param("ipv4-Multicast", [{"proto": "IS-IS", "include_leaked": True, "route_map": "RM-CONN-2-BGP"}], id="afisafi-ipv4-multicast"),
+            pytest.param("ipv4-Multicast", [{"proto": "IS-IS", "include_leaked": False, "route_map": "RM-CONN-2-BGP"}], id="afisafi-ipv4-multicast"),
             pytest.param("ipv6_Unicast", [{"proto": "AttachedHost", "route_map": "RM-CONN-2-BGP"}], id="afisafi-ipv6-unicast"),
         ],
     )
@@ -433,5 +433,5 @@ class TestVerifyBGPAddressFamilyConfig:
         ],
     )
     def test_valid_str(self, afi_safi: RedistributedAfiSafi, redistributed_routes: list[Any], expected: str) -> None:
-        """Test AddressFamilyConfig invalid inputs."""
+        """Test AddressFamilyConfig __str__."""
         assert str(AddressFamilyConfig(afi_safi=afi_safi, redistributed_routes=redistributed_routes)) == expected

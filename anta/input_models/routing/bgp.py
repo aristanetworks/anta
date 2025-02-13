@@ -279,8 +279,8 @@ class RedistributedRouteConfig(BaseModel):
     """Model representing a BGP redistributed route configuration."""
 
     proto: RedistributedProtocol
-    """he redistributed protocol."""
-    include_leaked: bool | None = None
+    """The redistributed protocol."""
+    include_leaked: bool = False
     """Flag to include leaked routes of the redistributed protocol while redistributing."""
     route_map: str | None = None
     """Optional route map applied to the redistribution."""
@@ -301,8 +301,6 @@ class RedistributedRouteConfig(BaseModel):
         - Proto: Connected, Include Leaked: absent, Route Map: RM-CONN-2-BGP
         """
         base_string = f"Proto: {self.proto}"
-        if not self.include_leaked and self.include_leaked is not None:
-            base_string += ", Include Leaked: absent"
         if self.include_leaked:
             base_string += ", Include Leaked: present"
         if self.route_map:

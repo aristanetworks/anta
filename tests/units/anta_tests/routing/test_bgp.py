@@ -5938,7 +5938,7 @@ DATA: list[dict[str, Any]] = [
                 },
             ]
         },
-        "expected": {"result": "failure", "messages": ["VRF: default, AFI-SAFI: IPv6 Multicast - Not configured"]},
+        "expected": {"result": "failure", "messages": ["VRF: default, AFI-SAFI: IPv6 Multicast - Not redistributed"]},
     },
     {
         "name": "failure-expected-proto-not-found",
@@ -6113,10 +6113,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "VRF: default, AFI-SAFI: IPv4 Multicast, Proto: IS-IS, Include Leaked: present, Route Map: RM-CONN-2-BGP - Value for include leaked mismatch "
-                "- Actual: absent",
-                "VRF: test, AFI-SAFI: IPv6 Unicast, Proto: Bgp, Include Leaked: absent, Route Map: RM-CONN-2-BGP - Value for include leaked mismatch "
-                "- Actual: present",
+                "VRF: default, AFI-SAFI: IPv4 Multicast, Proto: IS-IS, Include Leaked: present, Route Map: RM-CONN-2-BGP - Include leaked mismatch - Actual: False"
             ],
         },
     },

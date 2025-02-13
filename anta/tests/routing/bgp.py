@@ -18,7 +18,6 @@ from anta.tools import format_data, get_item, get_value
 # Using a TypeVar for the BgpPeer model since mypy thinks it's a ClassVar and not a valid type when used in field validators
 T = TypeVar("T", bound=BgpPeer)
 
-# pylint: disable=C0302
 # TODO: Refactor to reduce the number of lines in this module later
 
 
@@ -1810,7 +1809,8 @@ class VerifyBGPRedistribution(AntaTest):
       1. Ensures that the expected address-family is configured on the device.
       2. Confirms that the redistributed route protocol, include leaked and route map match the expected values for a route.
 
-    Note: For "User" proto field, checking that it's "EOS SDK" versus User.
+    !!! Note
+        For "User" proto field, checking that it's "EOS SDK" versus User.
 
     Expected Results
     ----------------
@@ -1819,7 +1819,7 @@ class VerifyBGPRedistribution(AntaTest):
         - The redistributed route protocol, include leaked and route map align with the expected values for the route.
     * Failure: If any of the following occur:
         - The expected address-family is not configured on device.
-        - The redistributed route protocolor, include leaked or route map does not match the expected value for a route.
+        - The redistributed route protocol, include leaked or route map does not match the expected value for a route.
 
     Examples
     --------
@@ -1866,9 +1866,8 @@ class VerifyBGPRedistribution(AntaTest):
             return failure_msg
 
         # If includes leaked field applicable, and it does not matches the expected value, test fails.
-        if all([route_info.include_leaked is not None, (act_include_leaked := actual_route.get("includeLeaked", False)) != route_info.include_leaked]):
-            act_include_leaked = "present" if act_include_leaked else "absent"
-            failure_msg.append(f"{vrf_data}, {addr_family}, {route_info} - Value for include leaked mismatch - Actual: {act_include_leaked}")
+        if all([route_info.include_leaked, (act_include_leaked := actual_route.get("includeLeaked", "absent")) != route_info.include_leaked]):
+            failure_msg.append(f"{vrf_data}, {addr_family}, {route_info} - Include leaked mismatch - Actual: {act_include_leaked}")
 
         # If route map is required and it is not matching the expected value, test fails.
         if all([route_info.route_map, (act_route_map := actual_route.get("routeMap", "Not Found")) != route_info.route_map]):
@@ -1889,7 +1888,7 @@ class VerifyBGPRedistribution(AntaTest):
             for address_family in vrf_data.address_families:
                 # If the AFI-SAFI configuration details are not found, test fails.
                 if not (afi_safi_configs := get_value(instance_details, f"afiSafiConfig.{address_family.afi_safi}")):
-                    self.result.is_failure(f"{vrf_data}, {address_family} - Not configured")
+                    self.result.is_failure(f"{vrf_data}, {address_family} - Not redistributed")
                     continue
 
                 for route_info in address_family.redistributed_routes:
