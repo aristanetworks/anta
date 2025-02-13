@@ -131,4 +131,4 @@ class VerifyEOSExtensions(AntaTest):
         if installed_extensions != boot_extensions:
             str_installed_extensions = ", ".join(installed_extensions) if installed_extensions else "Not found"
             str_boot_extensions = ", ".join(boot_extensions) if boot_extensions else "Not found"
-            self.result.is_failure(f"Installed and Boot extensions mismatch - Installed: {str_installed_extensions}, Configured: {str_boot_extensions}")
+            self.result.is_failure(f"EOS extensions mismatch - Installed: {str_installed_extensions}, Configured: {str_boot_extensions}")
