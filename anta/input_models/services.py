@@ -32,7 +32,7 @@ class DnsServer(BaseModel):
         --------
         Server 10.0.0.1 (VRF: default, Priority: 1)
         """
-        return f"Server {self.server_address} (VRF: {self.vrf}, Priority: {self.priority})"
+        return f"Server {self.server_address} VRF: {self.vrf} Priority: {self.priority}"
 
 
 class ErrdisableRecovery(BaseModel):
