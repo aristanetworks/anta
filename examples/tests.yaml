@@ -528,7 +528,7 @@ anta.tests.routing.bgp:
                   route_map: RM-CONN-2-BGP
             - afi_safi: IPv6 Unicast
               redistributed_routes:
-                - proto: Dynamic
+                - proto: User # Converted to EOS SDK
                   route_map: RM-CONN-2-BGP
                 - proto: Static
                   include_leaked: True

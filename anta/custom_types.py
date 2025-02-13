@@ -378,7 +378,6 @@ RedistributedProtocol = Annotated[
     Literal[
         "AttachedHost",
         "Bgp",
-        "BGP",
         "Connected",
         "Dynamic",
         "IS-IS",

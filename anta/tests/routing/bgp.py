@@ -1807,10 +1807,8 @@ class VerifyBGPRedistribution(AntaTest):
     This test performs the following checks for each specified VRF in the BGP instance:
 
       1. Ensures that the expected address-family is configured on the device.
-      2. Confirms that the redistributed route protocol, include leaked and route map match the expected values for a route.
+      2. Confirms that the redistributed route protocol, include leaked and route map match the expected values.
 
-    !!! Note
-        For "User" proto field, checking that it's "EOS SDK" versus User.
 
     Expected Results
     ----------------
@@ -1819,7 +1817,7 @@ class VerifyBGPRedistribution(AntaTest):
         - The redistributed route protocol, include leaked and route map align with the expected values for the route.
     * Failure: If any of the following occur:
         - The expected address-family is not configured on device.
-        - The redistributed route protocol, include leaked or route map does not match the expected value for a route.
+        - The redistributed route protocol, include leaked or route map does not match the expected values.
 
     Examples
     --------
@@ -1840,7 +1838,7 @@ class VerifyBGPRedistribution(AntaTest):
                         route_map: RM-CONN-2-BGP
                   - afi_safi: IPv6 Unicast
                     redistributed_routes:
-                      - proto: Dynamic
+                      - proto: User # Converted to EOS SDK
                         route_map: RM-CONN-2-BGP
                       - proto: Static
                         include_leaked: True
