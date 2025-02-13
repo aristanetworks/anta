@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.3">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.4">
     
     
       
@@ -28,7 +28,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.d7758b05.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.8608ea7d.min.css">
       
         
         <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
@@ -2886,7 +2886,7 @@
 
         <span class="c1"># Check if the AVT role matches the expected role</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">role</span> <span class="o">!=</span> <span class="n">command_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;role&quot;</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected AVT role as `</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">role</span><span class="si">}</span><span class="s2">`, but found `</span><span class="si">{</span><span class="n">command_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;role&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">` instead.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;AVT role mismatch - Expected: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">role</span><span class="si">}</span><span class="s2">, Actual: </span><span class="si">{</span><span class="n">command_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;role&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -3393,7 +3393,7 @@
 <span class="sd">        AVT CONTROL-PLANE-PROFILE VRF: default (Destination: 10.101.255.2, Next-hop: 10.101.255.1)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;AVT </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">avt_name</span><span class="si">}</span><span class="s2"> VRF: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> (Destination: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">destination</span><span class="si">}</span><span class="s2">, Next-hop: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">next_hop</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;AVT: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">avt_name</span><span class="si">}</span><span class="s2"> VRF: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> Destination: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">destination</span><span class="si">}</span><span class="s2"> Next-hop: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">next_hop</span><span class="si">}</span><span class="s2">&quot;</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
