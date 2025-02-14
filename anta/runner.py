@@ -26,6 +26,9 @@ if TYPE_CHECKING:
     from anta.result_manager import ResultManager
     from anta.result_manager.models import TestResult
 
+logger = logging.getLogger(__name__)
+COMMAND_QUEUING = False
+
 if os.name == "posix":
     import resource
 
@@ -57,7 +60,14 @@ if os.name == "posix":
         return resource.getrlimit(resource.RLIMIT_NOFILE)
 
 
-logger = logging.getLogger(__name__)
+def get_command_queuing() -> bool:
+    """Return the command queuing flag from the environment variable if set."""
+    try:
+        command_queuing = bool(os.environ.get("ANTA_COMMAND_QUEUING", COMMAND_QUEUING))
+    except ValueError as exception:
+        logger.warning("The ANTA_COMMAND_QUEUING environment variable value is invalid: %s\nDefault to %s.", exc_to_str(exception), COMMAND_QUEUING)
+        command_queuing = COMMAND_QUEUING
+    return command_queuing
 
 
 def log_cache_statistics(devices: list[AntaDevice]) -> None:
@@ -193,11 +203,12 @@ def get_coroutines(selected_tests: defaultdict[AntaDevice, set[AntaTestDefinitio
     list[Coroutine[Any, Any, TestResult]]
         The list of coroutines to run.
     """
+    command_queuing = get_command_queuing()
     coros = []
     for device, test_definitions in selected_tests.items():
         for test in test_definitions:
             try:
-                test_instance = test.test(device=device, inputs=test.inputs)
+                test_instance = test.test(device=device, inputs=test.inputs, command_queuing=command_queuing)
                 if manager is not None:
                     manager.add(test_instance.result)
                 coros.append(test_instance.test())
@@ -215,7 +226,7 @@ def get_coroutines(selected_tests: defaultdict[AntaDevice, set[AntaTestDefinitio
 
 
 @cprofile()
-async def main(
+async def main(  # noqa: C901
     manager: ResultManager,
     inventory: AntaInventory,
     catalog: AntaCatalog,
@@ -308,4 +319,5 @@ async def main(
         for result in results:
             manager.add(result)
 
-    log_cache_statistics(selected_inventory.devices)
+    if not get_command_queuing():
+        log_cache_statistics(selected_inventory.devices)
