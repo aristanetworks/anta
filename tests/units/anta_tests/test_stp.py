@@ -37,7 +37,7 @@ DATA: list[dict[str, Any]] = [
             {"spanningTreeVlanInstances": {}},
         ],
         "inputs": {"mode": "rstp", "vlans": [10, 20]},
-        "expected": {"result": "failure", "messages": ["STP mode 'rstp' not configured for the following VLAN(s): [10, 20]"]},
+        "expected": {"result": "failure", "messages": ["STP mode rstp not configured for the following VLAN(s): 10, 20"]},
     },
     {
         "name": "failure-wrong-mode",
@@ -47,7 +47,7 @@ DATA: list[dict[str, Any]] = [
             {"spanningTreeVlanInstances": {"20": {"spanningTreeVlanInstance": {"protocol": "mstp"}}}},
         ],
         "inputs": {"mode": "rstp", "vlans": [10, 20]},
-        "expected": {"result": "failure", "messages": ["Wrong STP mode configured for the following VLAN(s): [10, 20]"]},
+        "expected": {"result": "failure", "messages": ["Wrong STP mode configured for the following VLAN(s): 10, 20"]},
     },
     {
         "name": "failure-both",
@@ -59,7 +59,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"mode": "rstp", "vlans": [10, 20]},
         "expected": {
             "result": "failure",
-            "messages": ["STP mode 'rstp' not configured for the following VLAN(s): [10]", "Wrong STP mode configured for the following VLAN(s): [20]"],
+            "messages": ["STP mode rstp not configured for the following VLAN(s): 10", "Wrong STP mode configured for the following VLAN(s): 20"],
         },
     },
     {
@@ -74,7 +74,7 @@ DATA: list[dict[str, Any]] = [
         "test": VerifySTPBlockedPorts,
         "eos_data": [{"spanningTreeInstances": {"MST0": {"spanningTreeBlockedPorts": ["Ethernet10"]}, "MST10": {"spanningTreeBlockedPorts": ["Ethernet10"]}}}],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["The following ports are blocked by STP: {'MST0': ['Ethernet10'], 'MST10': ['Ethernet10']}"]},
+        "expected": {"result": "failure", "messages": ["STP Instance: MST0 blocked ports are: Ethernet10", "STP Instance: MST10 blocked ports are: Ethernet10"]},
     },
     {
         "name": "success",
@@ -95,7 +95,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["The following interfaces have STP BPDU packet errors: ['Ethernet10', 'Ethernet11']"]},
+        "expected": {"result": "failure", "messages": ["The following interfaces have STP BPDU packet errors: Ethernet10, Ethernet11"]},
     },
     {
         "name": "success",
@@ -134,7 +134,7 @@ DATA: list[dict[str, Any]] = [
         "test": VerifySTPForwardingPorts,
         "eos_data": [{"unmappedVlans": [], "topologies": {}}, {"unmappedVlans": [], "topologies": {}}],
         "inputs": {"vlans": [10, 20]},
-        "expected": {"result": "failure", "messages": ["STP instance is not configured for the following VLAN(s): [10, 20]"]},
+        "expected": {"result": "failure", "messages": ["VLAN: 10 - STP instance is not configured", "VLAN: 20 - STP instance is not configured"]},
     },
     {
         "name": "failure",
@@ -152,7 +152,10 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"vlans": [10, 20]},
         "expected": {
             "result": "failure",
-            "messages": ["The following VLAN(s) have interface(s) that are not in a forwarding state: [{'VLAN 10': ['Ethernet10']}, {'VLAN 20': ['Ethernet10']}]"],
+            "messages": [
+                "VLAN: 10 - Following interface(s) that are not in a forwarding state: Ethernet10",
+                "VLAN: 20 - Following interface(s) that are not in a forwarding state: Ethernet10",
+            ],
         },
     },
     {
@@ -330,7 +333,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"priority": 32768, "instances": [10, 20, 30]},
-        "expected": {"result": "failure", "messages": ["The following instance(s) have the wrong STP root priority configured: ['VL20', 'VL30']"]},
+        "expected": {"result": "failure", "messages": ["The following instance(s) have the wrong STP root priority configured: VL20, VL30"]},
     },
     {
         "name": "success-mstp",
@@ -470,8 +473,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "The following STP topologies are not configured or number of changes not within the threshold:\n"
-                "{'topologies': {'Cist': {'Cpu': {'Number of changes': 15}, 'Port-Channel5': {'Number of changes': 15}}}}"
+                "Topology: Cist Interface: Cpu - Number of changes not within the threshold - Expected: 10 Actual: 15",
+                "Topology: Cist Interface: Port-Channel5 - Number of changes not within the threshold - Expected: 10 Actual: 15",
             ],
         },
     },

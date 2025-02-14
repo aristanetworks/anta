@@ -95,14 +95,14 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyCoredump,
         "eos_data": [{"mode": "compressedDeferred", "coreFiles": ["core.2344.1584483862.Mlag.gz", "core.23101.1584483867.Mlag.gz"]}],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Core dump(s) have been found: ['core.2344.1584483862.Mlag.gz', 'core.23101.1584483867.Mlag.gz']"]},
+        "expected": {"result": "failure", "messages": ["Core dump(s) have been found: core.2344.1584483862.Mlag.gz, core.23101.1584483867.Mlag.gz"]},
     },
     {
         "name": "failure-with-minidump",
         "test": VerifyCoredump,
         "eos_data": [{"mode": "compressedDeferred", "coreFiles": ["minidump", "core.2344.1584483862.Mlag.gz", "core.23101.1584483867.Mlag.gz"]}],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Core dump(s) have been found: ['core.2344.1584483862.Mlag.gz', 'core.23101.1584483867.Mlag.gz']"]},
+        "expected": {"result": "failure", "messages": ["Core dump(s) have been found: core.2344.1584483862.Mlag.gz, core.23101.1584483867.Mlag.gz"]},
     },
     {
         "name": "success",
@@ -278,7 +278,7 @@ poll interval unknown
 """,
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["The device is not synchronized with the configured NTP server(s): 'unsynchronised'"]},
+        "expected": {"result": "failure", "messages": ["The device is not synchronized with the configured NTP server(s) - Actual: unsynchronised"]},
     },
     {
         "name": "success",
@@ -413,9 +413,9 @@ poll interval unknown
         "expected": {
             "result": "failure",
             "messages": [
-                "1.1.1.1 (Preferred: True, Stratum: 1) - Bad association - Condition: candidate, Stratum: 2",
-                "2.2.2.2 (Preferred: False, Stratum: 2) - Bad association - Condition: sys.peer, Stratum: 2",
-                "3.3.3.3 (Preferred: False, Stratum: 2) - Bad association - Condition: sys.peer, Stratum: 3",
+                "1.1.1.1 Preferred: True Stratum: 1 - Bad association - Condition: candidate, Stratum: 2",
+                "2.2.2.2 Preferred: False Stratum: 2 - Bad association - Condition: sys.peer, Stratum: 2",
+                "3.3.3.3 Preferred: False Stratum: 2 - Bad association - Condition: sys.peer, Stratum: 3",
             ],
         },
     },
@@ -463,7 +463,7 @@ poll interval unknown
         },
         "expected": {
             "result": "failure",
-            "messages": ["3.3.3.3 (Preferred: False, Stratum: 1) - Not configured"],
+            "messages": ["3.3.3.3 Preferred: False Stratum: 1 - Not configured"],
         },
     },
     {
@@ -490,9 +490,9 @@ poll interval unknown
         "expected": {
             "result": "failure",
             "messages": [
-                "1.1.1.1 (Preferred: True, Stratum: 1) - Bad association - Condition: candidate, Stratum: 1",
-                "2.2.2.2 (Preferred: False, Stratum: 1) - Not configured",
-                "3.3.3.3 (Preferred: False, Stratum: 1) - Not configured",
+                "1.1.1.1 Preferred: True Stratum: 1 - Bad association - Condition: candidate, Stratum: 1",
+                "2.2.2.2 Preferred: False Stratum: 1 - Not configured",
+                "3.3.3.3 Preferred: False Stratum: 1 - Not configured",
             ],
         },
     },

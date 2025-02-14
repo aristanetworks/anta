@@ -133,7 +133,7 @@ class VerifyCoredump(AntaTest):
         if not core_files:
             self.result.is_success()
         else:
-            self.result.is_failure(f"Core dump(s) have been found: {core_files}")
+            self.result.is_failure(f"Core dump(s) have been found: {', '.join(core_files)}")
 
 
 class VerifyAgentLogs(AntaTest):
@@ -284,7 +284,7 @@ class VerifyNTP(AntaTest):
             self.result.is_success()
         else:
             data = command_output.split("\n")[0]
-            self.result.is_failure(f"The device is not synchronized with the configured NTP server(s): '{data}'")
+            self.result.is_failure(f"The device is not synchronized with the configured NTP server(s) - Actual: {data}")
 
 
 class VerifyNTPAssociations(AntaTest):

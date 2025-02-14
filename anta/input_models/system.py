@@ -28,4 +28,4 @@ class NTPServer(BaseModel):
 
     def __str__(self) -> str:
         """Representation of the NTPServer model."""
-        return f"{self.server_address} (Preferred: {self.preferred}, Stratum: {self.stratum})"
+        return f"{self.server_address} Preferred: {self.preferred} Stratum: {self.stratum}"
