@@ -524,6 +524,26 @@ anta.tests.routing.bgp:
   - VerifyBGPPeersHealthRibd:
       # Verifies the health of all the BGP IPv4 peer(s).
       check_tcp_queues: True
+  - VerifyBGPRedistribution:
+      # Verifies BGP redistribution.
+      vrfs:
+        - vrf: default
+          address_families:
+            - afi_safi: ipv4Unicast
+              redistributed_routes:
+                - proto: Connected
+                  include_leaked: True
+                  route_map: RM-CONN-2-BGP
+                - proto: Static
+                  include_leaked: True
+                  route_map: RM-CONN-2-BGP
+            - afi_safi: IPv6 Unicast
+              redistributed_routes:
+                - proto: User # Converted to EOS SDK
+                  route_map: RM-CONN-2-BGP
+                - proto: Static
+                  include_leaked: True
+                  route_map: RM-CONN-2-BGP
   - VerifyBGPRouteECMP:
       # Verifies BGP IPv4 route ECMP paths.
       route_entries:
@@ -977,7 +997,7 @@ anta.tests.vxlan:
       source_interface: Loopback1
       udp_port: 4789
   - VerifyVxlan1Interface:
-      # Verifies the Vxlan1 interface status.
+      # Verifies if the Vxlan1 interface is configured and 'up/up'.
   - VerifyVxlanConfigSanity:
       # Verifies there are no VXLAN config-sanity inconsistencies.
   - VerifyVxlanVniBinding:
