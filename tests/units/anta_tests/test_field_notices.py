@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Test inputs for anta.tests.field_notices."""
@@ -45,7 +45,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": ["device is running incorrect version of aboot (4.0.1)"],
+            "messages": ["Device is running incorrect version of aboot 4.0.1"],
         },
     },
     {
@@ -65,7 +65,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": ["device is running incorrect version of aboot (4.1.0)"],
+            "messages": ["Device is running incorrect version of aboot 4.1.0"],
         },
     },
     {
@@ -85,7 +85,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": ["device is running incorrect version of aboot (6.0.1)"],
+            "messages": ["Device is running incorrect version of aboot 6.0.1"],
         },
     },
     {
@@ -105,7 +105,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": ["device is running incorrect version of aboot (6.1.1)"],
+            "messages": ["Device is running incorrect version of aboot 6.1.1"],
         },
     },
     {
@@ -125,7 +125,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "result": "skipped",
-            "messages": ["device is not impacted by FN044"],
+            "messages": ["Device is not impacted by FN044"],
         },
     },
     {

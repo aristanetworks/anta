@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Tests for anta.tests.connectivity.py."""
@@ -43,6 +43,46 @@ DATA: list[dict[str, Any]] = [
                 ],
             },
         ],
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-ipv6",
+        "test": VerifyReachability,
+        "eos_data": [
+            {
+                "messages": [
+                    """PING fd12:3456:789a:1::2(fd12:3456:789a:1::2) from fd12:3456:789a:1::1 : 52 data bytes
+                60 bytes from fd12:3456:789a:1::2: icmp_seq=1 ttl=64 time=0.097 ms
+                60 bytes from fd12:3456:789a:1::2: icmp_seq=2 ttl=64 time=0.033 ms
+
+                --- fd12:3456:789a:1::2 ping statistics ---
+                2 packets transmitted, 2 received, 0% packet loss, time 0ms
+                rtt min/avg/max/mdev = 0.033/0.065/0.097/0.032 ms, ipg/ewma 0.148/0.089 ms
+                """,
+                ],
+            },
+        ],
+        "inputs": {"hosts": [{"destination": "fd12:3456:789a:1::2", "source": "fd12:3456:789a:1::1"}]},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-ipv6-vlan",
+        "test": VerifyReachability,
+        "eos_data": [
+            {
+                "messages": [
+                    """PING fd12:3456:789a:1::2(fd12:3456:789a:1::2) 52 data bytes
+                60 bytes from fd12:3456:789a:1::2: icmp_seq=1 ttl=64 time=0.094 ms
+                60 bytes from fd12:3456:789a:1::2: icmp_seq=2 ttl=64 time=0.027 ms
+
+                --- fd12:3456:789a:1::2 ping statistics ---
+                2 packets transmitted, 2 received, 0% packet loss, time 0ms
+                rtt min/avg/max/mdev = 0.027/0.060/0.094/0.033 ms, ipg/ewma 0.152/0.085 ms
+                """,
+                ],
+            },
+        ],
+        "inputs": {"hosts": [{"destination": "fd12:3456:789a:1::2", "source": "vl110"}]},
         "expected": {"result": "success"},
     },
     {
@@ -153,7 +193,24 @@ DATA: list[dict[str, Any]] = [
                 ],
             },
         ],
-        "expected": {"result": "failure", "messages": ["Host 10.0.0.11 (src: 10.0.0.5, vrf: default, size: 100B, repeat: 2) - Unreachable"]},
+        "expected": {"result": "failure", "messages": ["Host: 10.0.0.11 Source: 10.0.0.5 VRF: default - Unreachable"]},
+    },
+    {
+        "name": "failure-ipv6",
+        "test": VerifyReachability,
+        "eos_data": [
+            {
+                "messages": [
+                    """PING fd12:3456:789a:1::2(fd12:3456:789a:1::2) from fd12:3456:789a:1::1 : 52 data bytes
+
+                    --- fd12:3456:789a:1::3 ping statistics ---
+                    2 packets transmitted, 0 received, 100% packet loss, time 10ms
+                """,
+                ],
+            },
+        ],
+        "inputs": {"hosts": [{"destination": "fd12:3456:789a:1::2", "source": "fd12:3456:789a:1::1"}]},
+        "expected": {"result": "failure", "messages": ["Host: fd12:3456:789a:1::2 Source: fd12:3456:789a:1::1 VRF: default - Unreachable"]},
     },
     {
         "name": "failure-interface",
@@ -187,7 +244,7 @@ DATA: list[dict[str, Any]] = [
                 ],
             },
         ],
-        "expected": {"result": "failure", "messages": ["Host 10.0.0.11 (src: Management0, vrf: default, size: 100B, repeat: 2) - Unreachable"]},
+        "expected": {"result": "failure", "messages": ["Host: 10.0.0.11 Source: Management0 VRF: default - Unreachable"]},
     },
     {
         "name": "failure-size",
@@ -209,17 +266,11 @@ DATA: list[dict[str, Any]] = [
                 ],
             },
         ],
-        "expected": {"result": "failure", "messages": ["Host 10.0.0.1 (src: Management0, vrf: default, size: 1501B, repeat: 5, df-bit: enabled) - Unreachable"]},
+        "expected": {"result": "failure", "messages": ["Host: 10.0.0.1 Source: Management0 VRF: default - Unreachable"]},
     },
     {
         "name": "success",
         "test": VerifyLLDPNeighbors,
-        "inputs": {
-            "neighbors": [
-                {"port": "Ethernet1", "neighbor_device": "DC1-SPINE1", "neighbor_port": "Ethernet1"},
-                {"port": "Ethernet2", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"},
-            ],
-        },
         "eos_data": [
             {
                 "lldpNeighbors": {
@@ -256,16 +307,17 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
+        "inputs": {
+            "neighbors": [
+                {"port": "Ethernet1", "neighbor_device": "DC1-SPINE1", "neighbor_port": "Ethernet1"},
+                {"port": "Ethernet2", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"},
+            ],
+        },
         "expected": {"result": "success"},
     },
     {
         "name": "success-multiple-neighbors",
         "test": VerifyLLDPNeighbors,
-        "inputs": {
-            "neighbors": [
-                {"port": "Ethernet1", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"},
-            ],
-        },
         "eos_data": [
             {
                 "lldpNeighbors": {
@@ -298,17 +350,16 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
+        "inputs": {
+            "neighbors": [
+                {"port": "Ethernet1", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"},
+            ],
+        },
         "expected": {"result": "success"},
     },
     {
         "name": "failure-port-not-configured",
         "test": VerifyLLDPNeighbors,
-        "inputs": {
-            "neighbors": [
-                {"port": "Ethernet1", "neighbor_device": "DC1-SPINE1", "neighbor_port": "Ethernet1"},
-                {"port": "Ethernet2", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"},
-            ],
-        },
         "eos_data": [
             {
                 "lldpNeighbors": {
@@ -330,17 +381,17 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "expected": {"result": "failure", "messages": ["Port(s) not configured:\n   Ethernet2"]},
-    },
-    {
-        "name": "failure-no-neighbor",
-        "test": VerifyLLDPNeighbors,
         "inputs": {
             "neighbors": [
                 {"port": "Ethernet1", "neighbor_device": "DC1-SPINE1", "neighbor_port": "Ethernet1"},
                 {"port": "Ethernet2", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"},
             ],
         },
+        "expected": {"result": "failure", "messages": ["Port: Ethernet2 Neighbor: DC1-SPINE2 Neighbor Port: Ethernet1 - Port not found"]},
+    },
+    {
+        "name": "failure-no-neighbor",
+        "test": VerifyLLDPNeighbors,
         "eos_data": [
             {
                 "lldpNeighbors": {
@@ -363,17 +414,17 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "expected": {"result": "failure", "messages": ["No LLDP neighbor(s) on port(s):\n   Ethernet2"]},
-    },
-    {
-        "name": "failure-wrong-neighbor",
-        "test": VerifyLLDPNeighbors,
         "inputs": {
             "neighbors": [
                 {"port": "Ethernet1", "neighbor_device": "DC1-SPINE1", "neighbor_port": "Ethernet1"},
                 {"port": "Ethernet2", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"},
             ],
         },
+        "expected": {"result": "failure", "messages": ["Port: Ethernet2 Neighbor: DC1-SPINE2 Neighbor Port: Ethernet1 - No LLDP neighbors"]},
+    },
+    {
+        "name": "failure-wrong-neighbor",
+        "test": VerifyLLDPNeighbors,
         "eos_data": [
             {
                 "lldpNeighbors": {
@@ -410,11 +461,42 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "expected": {"result": "failure", "messages": ["Wrong LLDP neighbor(s) on port(s):\n   Ethernet2\n      DC1-SPINE2_Ethernet2"]},
+        "inputs": {
+            "neighbors": [
+                {"port": "Ethernet1", "neighbor_device": "DC1-SPINE1", "neighbor_port": "Ethernet1"},
+                {"port": "Ethernet2", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"},
+            ],
+        },
+        "expected": {
+            "result": "failure",
+            "messages": ["Port: Ethernet2 Neighbor: DC1-SPINE2 Neighbor Port: Ethernet1 - Wrong LLDP neighbors: DC1-SPINE2/Ethernet2"],
+        },
     },
     {
         "name": "failure-multiple",
         "test": VerifyLLDPNeighbors,
+        "eos_data": [
+            {
+                "lldpNeighbors": {
+                    "Ethernet1": {
+                        "lldpNeighborInfo": [
+                            {
+                                "chassisIdType": "macAddress",
+                                "chassisId": "001c.73a0.fc18",
+                                "systemName": "DC1-SPINE1",
+                                "neighborInterfaceInfo": {
+                                    "interfaceIdType": "interfaceName",
+                                    "interfaceId": '"Ethernet2"',
+                                    "interfaceId_v2": "Ethernet2",
+                                    "interfaceDescription": "P2P_LINK_TO_DC1-LEAF1A_Ethernet1",
+                                },
+                            },
+                        ],
+                    },
+                    "Ethernet2": {"lldpNeighborInfo": []},
+                },
+            },
+        ],
         "inputs": {
             "neighbors": [
                 {"port": "Ethernet1", "neighbor_device": "DC1-SPINE1", "neighbor_port": "Ethernet1"},
@@ -422,45 +504,18 @@ DATA: list[dict[str, Any]] = [
                 {"port": "Ethernet3", "neighbor_device": "DC1-SPINE3", "neighbor_port": "Ethernet1"},
             ],
         },
-        "eos_data": [
-            {
-                "lldpNeighbors": {
-                    "Ethernet1": {
-                        "lldpNeighborInfo": [
-                            {
-                                "chassisIdType": "macAddress",
-                                "chassisId": "001c.73a0.fc18",
-                                "systemName": "DC1-SPINE1",
-                                "neighborInterfaceInfo": {
-                                    "interfaceIdType": "interfaceName",
-                                    "interfaceId": '"Ethernet2"',
-                                    "interfaceId_v2": "Ethernet2",
-                                    "interfaceDescription": "P2P_LINK_TO_DC1-LEAF1A_Ethernet1",
-                                },
-                            },
-                        ],
-                    },
-                    "Ethernet2": {"lldpNeighborInfo": []},
-                },
-            },
-        ],
         "expected": {
             "result": "failure",
             "messages": [
-                "Wrong LLDP neighbor(s) on port(s):\n   Ethernet1\n      DC1-SPINE1_Ethernet2\n"
-                "No LLDP neighbor(s) on port(s):\n   Ethernet2\n"
-                "Port(s) not configured:\n   Ethernet3"
+                "Port: Ethernet1 Neighbor: DC1-SPINE1 Neighbor Port: Ethernet1 - Wrong LLDP neighbors: DC1-SPINE1/Ethernet2",
+                "Port: Ethernet2 Neighbor: DC1-SPINE2 Neighbor Port: Ethernet1 - No LLDP neighbors",
+                "Port: Ethernet3 Neighbor: DC1-SPINE3 Neighbor Port: Ethernet1 - Port not found",
             ],
         },
     },
     {
         "name": "failure-multiple-neighbors",
         "test": VerifyLLDPNeighbors,
-        "inputs": {
-            "neighbors": [
-                {"port": "Ethernet1", "neighbor_device": "DC1-SPINE3", "neighbor_port": "Ethernet1"},
-            ],
-        },
         "eos_data": [
             {
                 "lldpNeighbors": {
@@ -493,6 +548,14 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "expected": {"result": "failure", "messages": ["Wrong LLDP neighbor(s) on port(s):\n   Ethernet1\n      DC1-SPINE1_Ethernet1\n      DC1-SPINE2_Ethernet1"]},
+        "inputs": {
+            "neighbors": [
+                {"port": "Ethernet1", "neighbor_device": "DC1-SPINE3", "neighbor_port": "Ethernet1"},
+            ],
+        },
+        "expected": {
+            "result": "failure",
+            "messages": ["Port: Ethernet1 Neighbor: DC1-SPINE3 Neighbor Port: Ethernet1 - Wrong LLDP neighbors: DC1-SPINE1/Ethernet1, DC1-SPINE2/Ethernet1"],
+        },
     },
 ]

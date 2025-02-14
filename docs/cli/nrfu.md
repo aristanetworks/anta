@@ -2,7 +2,7 @@
 anta_title: Execute Network Readiness For Use (NRFU) Testing
 ---
 <!--
-  ~ Copyright (c) 2023-2024 Arista Networks, Inc.
+  ~ Copyright (c) 2023-2025 Arista Networks, Inc.
   ~ Use of this source code is governed by the Apache License 2.0
   ~ that can be found in the LICENSE file.
   -->
@@ -26,8 +26,8 @@ ANTA provides a set of commands for performing NRFU tests on devices. These comm
 
 All commands under the `anta nrfu` namespace require a catalog yaml file specified with the `--catalog` option and a device inventory file specified with the `--inventory` option.
 
-!!! info
-    Issuing the command `anta nrfu` will run `anta nrfu table` without any option.
+> [!TIP]
+> Issuing the command `anta nrfu` will run `anta nrfu table` without any option.
 
 ### Tag management
 
@@ -231,7 +231,7 @@ The template `./custom_template.j2` is a simple Jinja2 template:
 {% endfor %}
 ```
 
-The Jinja2 template has access to all `TestResult` elements and their values, as described in this [documentation](../api/result_manager_models.md#anta.result_manager.models.TestResult).
+The Jinja2 template has access to all `TestResult` elements and their values, as described in this [documentation](../api/result.md#anta.result_manager.models.TestResult).
 
 You can also save the report result to a file using the `--output` option:
 

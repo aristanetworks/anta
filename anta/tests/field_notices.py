@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Module related to field notices tests."""
@@ -96,7 +96,7 @@ class VerifyFieldNotice44Resolution(AntaTest):
         for variant in variants:
             model = model.replace(variant, "")
         if model not in devices:
-            self.result.is_skipped("device is not impacted by FN044")
+            self.result.is_skipped("Device is not impacted by FN044")
             return
 
         for component in command_output["details"]["components"]:
@@ -109,19 +109,15 @@ class VerifyFieldNotice44Resolution(AntaTest):
 
         self.result.is_success()
         incorrect_aboot_version = (
-            aboot_version.startswith("4.0.")
-            and int(aboot_version.split(".")[2]) < 7
-            or aboot_version.startswith("4.1.")
-            and int(aboot_version.split(".")[2]) < 1
+            (aboot_version.startswith("4.0.") and int(aboot_version.split(".")[2]) < 7)
+            or (aboot_version.startswith("4.1.") and int(aboot_version.split(".")[2]) < 1)
             or (
-                aboot_version.startswith("6.0.")
-                and int(aboot_version.split(".")[2]) < 9
-                or aboot_version.startswith("6.1.")
-                and int(aboot_version.split(".")[2]) < 7
+                (aboot_version.startswith("6.0.") and int(aboot_version.split(".")[2]) < 9)
+                or (aboot_version.startswith("6.1.") and int(aboot_version.split(".")[2]) < 7)
             )
         )
         if incorrect_aboot_version:
-            self.result.is_failure(f"device is running incorrect version of aboot ({aboot_version})")
+            self.result.is_failure(f"Device is running incorrect version of aboot {aboot_version}")
 
 
 class VerifyFieldNotice72Resolution(AntaTest):

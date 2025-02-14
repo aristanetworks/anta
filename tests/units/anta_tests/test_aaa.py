@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Tests for anta.tests.aaa.py."""
@@ -128,7 +128,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"servers": ["10.22.10.91", "10.22.10.92"], "vrf": "MGMT"},
-        "expected": {"result": "failure", "messages": ["TACACS servers ['10.22.10.92'] are not configured in VRF MGMT"]},
+        "expected": {"result": "failure", "messages": ["TACACS servers 10.22.10.92 are not configured in VRF MGMT"]},
     },
     {
         "name": "failure-wrong-vrf",
@@ -145,7 +145,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"servers": ["10.22.10.91"], "vrf": "MGMT"},
-        "expected": {"result": "failure", "messages": ["TACACS servers ['10.22.10.91'] are not configured in VRF MGMT"]},
+        "expected": {"result": "failure", "messages": ["TACACS servers 10.22.10.91 are not configured in VRF MGMT"]},
     },
     {
         "name": "success",
@@ -192,7 +192,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"groups": ["GROUP1"]},
-        "expected": {"result": "failure", "messages": ["TACACS server group(s) ['GROUP1'] are not configured"]},
+        "expected": {"result": "failure", "messages": ["TACACS server group(s) GROUP1 are not configured"]},
     },
     {
         "name": "success-login-enable",
@@ -244,7 +244,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"methods": ["tacacs+", "local"], "types": ["login", "enable"]},
-        "expected": {"result": "failure", "messages": ["AAA authentication methods ['group tacacs+', 'local'] are not matching for login console"]},
+        "expected": {"result": "failure", "messages": ["AAA authentication methods group tacacs+, local are not matching for login console"]},
     },
     {
         "name": "failure-login-default",
@@ -257,7 +257,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"methods": ["tacacs+", "local"], "types": ["login", "enable"]},
-        "expected": {"result": "failure", "messages": ["AAA authentication methods ['group tacacs+', 'local'] are not matching for ['login']"]},
+        "expected": {"result": "failure", "messages": ["AAA authentication methods group tacacs+, local are not matching for login"]},
     },
     {
         "name": "success",
@@ -293,7 +293,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"methods": ["tacacs+", "local"], "types": ["commands", "exec"]},
-        "expected": {"result": "failure", "messages": ["AAA authorization methods ['group tacacs+', 'local'] are not matching for ['commands']"]},
+        "expected": {"result": "failure", "messages": ["AAA authorization methods group tacacs+, local are not matching for commands"]},
     },
     {
         "name": "failure-exec",
@@ -305,7 +305,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"methods": ["tacacs+", "local"], "types": ["commands", "exec"]},
-        "expected": {"result": "failure", "messages": ["AAA authorization methods ['group tacacs+', 'local'] are not matching for ['exec']"]},
+        "expected": {"result": "failure", "messages": ["AAA authorization methods group tacacs+, local are not matching for exec"]},
     },
     {
         "name": "success-commands-exec-system",
@@ -347,7 +347,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"methods": ["tacacs+", "logging"], "types": ["commands", "exec", "system"]},
-        "expected": {"result": "failure", "messages": ["AAA default accounting is not configured for ['commands']"]},
+        "expected": {"result": "failure", "messages": ["AAA default accounting is not configured for commands"]},
     },
     {
         "name": "failure-not-configured-empty",
@@ -361,7 +361,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"methods": ["tacacs+", "logging"], "types": ["commands", "exec", "system"]},
-        "expected": {"result": "failure", "messages": ["AAA default accounting is not configured for ['system', 'exec', 'commands']"]},
+        "expected": {"result": "failure", "messages": ["AAA default accounting is not configured for system, exec, commands"]},
     },
     {
         "name": "failure-not-matching",
@@ -375,7 +375,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"methods": ["tacacs+", "logging"], "types": ["commands", "exec", "system"]},
-        "expected": {"result": "failure", "messages": ["AAA accounting default methods ['group tacacs+', 'logging'] are not matching for ['commands']"]},
+        "expected": {"result": "failure", "messages": ["AAA accounting default methods group tacacs+, logging are not matching for commands"]},
     },
     {
         "name": "success-commands-exec-system",
@@ -476,7 +476,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"methods": ["tacacs+", "logging"], "types": ["commands", "exec", "system"]},
-        "expected": {"result": "failure", "messages": ["AAA console accounting is not configured for ['commands']"]},
+        "expected": {"result": "failure", "messages": ["AAA console accounting is not configured for commands"]},
     },
     {
         "name": "failure-not-configured-empty",
@@ -490,7 +490,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"methods": ["tacacs+", "logging"], "types": ["commands", "exec", "system"]},
-        "expected": {"result": "failure", "messages": ["AAA console accounting is not configured for ['system', 'exec', 'commands']"]},
+        "expected": {"result": "failure", "messages": ["AAA console accounting is not configured for system, exec, commands"]},
     },
     {
         "name": "failure-not-matching",
@@ -522,6 +522,6 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"methods": ["tacacs+", "logging"], "types": ["commands", "exec", "system"]},
-        "expected": {"result": "failure", "messages": ["AAA accounting console methods ['group tacacs+', 'logging'] are not matching for ['commands']"]},
+        "expected": {"result": "failure", "messages": ["AAA accounting console methods group tacacs+, logging are not matching for commands"]},
     },
 ]

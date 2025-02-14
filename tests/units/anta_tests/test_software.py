@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Test inputs for anta.tests.hardware."""
@@ -35,7 +35,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"versions": ["4.27.1F"]},
-        "expected": {"result": "failure", "messages": ["device is running version \"4.27.0F\" not in expected versions: ['4.27.1F']"]},
+        "expected": {"result": "failure", "messages": ["EOS version mismatch - Actual: 4.27.0F not in Expected: 4.27.1F"]},
     },
     {
         "name": "success",
@@ -77,9 +77,8 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"versions": ["v1.17.1", "v1.18.1"]},
-        "expected": {"result": "failure", "messages": ["device is running TerminAttr version v1.17.0 and is not in the allowed list: ['v1.17.1', 'v1.18.1']"]},
+        "expected": {"result": "failure", "messages": ["TerminAttr version mismatch - Actual: v1.17.0 not in Expected: v1.17.1, v1.18.1"]},
     },
-    # TODO: add a test with a real extension?
     {
         "name": "success-no-extensions",
         "test": VerifyEOSExtensions,
@@ -91,11 +90,30 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
-        "name": "success-empty-extension",
+        "name": "success-extensions",
         "test": VerifyEOSExtensions,
         "eos_data": [
-            {"extensions": {}, "extensionStoredDir": "flash:", "warnings": ["No extensions are available"]},
-            {"extensions": [""]},
+            {
+                "extensions": {
+                    "AristaCloudGateway-1.0.1-1.swix": {
+                        "version": "1.0.1",
+                        "release": "1",
+                        "presence": "present",
+                        "status": "installed",
+                        "boot": True,
+                        "numPackages": 1,
+                        "error": False,
+                        "vendor": "",
+                        "summary": "Arista Cloud Connect",
+                        "installedSize": 60532424,
+                        "packages": {"AristaCloudGateway-1.0.1-1.x86_64.rpm": {"version": "1.0.1", "release": "1"}},
+                        "description": "An extension for Arista Cloud Connect gateway",
+                        "affectedAgents": [],
+                        "agentsToRestart": [],
+                    },
+                }
+            },
+            {"extensions": ["AristaCloudGateway-1.0.1-1.swix"]},
         ],
         "inputs": None,
         "expected": {"result": "success"},
@@ -104,10 +122,80 @@ DATA: list[dict[str, Any]] = [
         "name": "failure",
         "test": VerifyEOSExtensions,
         "eos_data": [
-            {"extensions": {}, "extensionStoredDir": "flash:", "warnings": ["No extensions are available"]},
-            {"extensions": ["dummy"]},
+            {
+                "extensions": {
+                    "AristaCloudGateway-1.0.1-1.swix": {
+                        "version": "1.0.1",
+                        "release": "1",
+                        "presence": "present",
+                        "status": "installed",
+                        "boot": False,
+                        "numPackages": 1,
+                        "error": False,
+                        "vendor": "",
+                        "summary": "Arista Cloud Connect",
+                        "installedSize": 60532424,
+                        "packages": {"AristaCloudGateway-1.0.1-1.x86_64.rpm": {"version": "1.0.1", "release": "1"}},
+                        "description": "An extension for Arista Cloud Connect gateway",
+                        "affectedAgents": [],
+                        "agentsToRestart": [],
+                    },
+                }
+            },
+            {"extensions": []},
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Missing EOS extensions: installed [] / configured: ['dummy']"]},
+        "expected": {"result": "failure", "messages": ["EOS extensions mismatch - Installed: AristaCloudGateway-1.0.1-1.swix, Configured: Not found"]},
+    },
+    {
+        "name": "failure-multiple-extensions",
+        "test": VerifyEOSExtensions,
+        "eos_data": [
+            {
+                "extensions": {
+                    "AristaCloudGateway-1.0.1-1.swix": {
+                        "version": "1.0.1",
+                        "release": "1",
+                        "presence": "present",
+                        "status": "installed",
+                        "boot": False,
+                        "numPackages": 1,
+                        "error": False,
+                        "vendor": "",
+                        "summary": "Arista Cloud Connect",
+                        "installedSize": 60532424,
+                        "packages": {"AristaCloudGateway-1.0.1-1.x86_64.rpm": {"version": "1.0.1", "release": "1"}},
+                        "description": "An extension for Arista Cloud Connect gateway",
+                        "affectedAgents": [],
+                        "agentsToRestart": [],
+                    },
+                    "EOS-4.33.0F-NDRSensor.swix": {
+                        "version": "4.33.0",
+                        "release": "39050855.4330F",
+                        "presence": "present",
+                        "status": "notInstalled",
+                        "boot": True,
+                        "numPackages": 9,
+                        "error": False,
+                        "statusDetail": "No RPMs are compatible with current EOS version.",
+                        "vendor": "",
+                        "summary": "NDR sensor",
+                        "installedSize": 0,
+                        "packages": {},
+                        "description": "NDR sensor provides libraries to generate flow activity records using DPI\nmetadata and IPFIX flow records.",
+                        "affectedAgents": [],
+                        "agentsToRestart": [],
+                    },
+                }
+            },
+            {"extensions": ["AristaCloudGateway-1.0.1-1.swix", "EOS-4.33.0F-NDRSensor.swix"]},
+        ],
+        "inputs": None,
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "EOS extensions mismatch - Installed: AristaCloudGateway-1.0.1-1.swix, Configured: AristaCloudGateway-1.0.1-1.swix, EOS-4.33.0F-NDRSensor.swix"
+            ],
+        },
     },
 ]

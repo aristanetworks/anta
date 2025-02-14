@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2024 Arista Networks, Inc.
+# Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
 """Data for testing anta.tests.configuration."""
@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from anta.tests.configuration import VerifyManagementCVX, VerifyRunningConfigDiffs, VerifyRunningConfigLines, VerifyZeroTouch
+from anta.tests.configuration import VerifyRunningConfigDiffs, VerifyRunningConfigLines, VerifyZeroTouch
 from tests.units.anta_tests import test
 
 DATA: list[dict[str, Any]] = [
@@ -59,38 +59,5 @@ DATA: list[dict[str, Any]] = [
         "eos_data": ["enable password something\nsome other line"],
         "inputs": {"regex_patterns": ["bla", "bleh"]},
         "expected": {"result": "failure", "messages": ["Following patterns were not found: 'bla','bleh'"]},
-    },
-    {
-        "name": "success-enabled",
-        "test": VerifyManagementCVX,
-        "eos_data": [
-            {
-                "clusterStatus": {
-                    "enabled": True,
-                }
-            }
-        ],
-        "inputs": {"enabled": True},
-        "expected": {"result": "success"},
-    },
-    {
-        "name": "success-disabled",
-        "test": VerifyManagementCVX,
-        "eos_data": [
-            {
-                "clusterStatus": {
-                    "enabled": False,
-                }
-            }
-        ],
-        "inputs": {"enabled": False},
-        "expected": {"result": "success"},
-    },
-    {
-        "name": "failure",
-        "test": VerifyManagementCVX,
-        "eos_data": [{"clusterStatus": {}}],
-        "inputs": {"enabled": False},
-        "expected": {"result": "failure", "messages": ["Management CVX status is not valid: None"]},
     },
 ]
