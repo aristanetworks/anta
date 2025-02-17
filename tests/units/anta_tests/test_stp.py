@@ -37,7 +37,7 @@ DATA: list[dict[str, Any]] = [
             {"spanningTreeVlanInstances": {}},
         ],
         "inputs": {"mode": "rstp", "vlans": [10, 20]},
-        "expected": {"result": "failure", "messages": ["STP mode rstp not configured for the following VLAN(s): 10, 20"]},
+        "expected": {"result": "failure", "messages": ["VLAN: 10 STP mode: rstp - Not configured", "VLAN: 20 STP mode: rstp - Not configured"]},
     },
     {
         "name": "failure-wrong-mode",
@@ -47,7 +47,10 @@ DATA: list[dict[str, Any]] = [
             {"spanningTreeVlanInstances": {"20": {"spanningTreeVlanInstance": {"protocol": "mstp"}}}},
         ],
         "inputs": {"mode": "rstp", "vlans": [10, 20]},
-        "expected": {"result": "failure", "messages": ["Wrong STP mode configured for the following VLAN(s): 10, 20"]},
+        "expected": {
+            "result": "failure",
+            "messages": ["VLAN: 10 - Incorrect STP mode - Expected: rstp Actual: mstp", "VLAN: 20 - Incorrect STP mode - Expected: rstp Actual: mstp"],
+        },
     },
     {
         "name": "failure-both",
@@ -59,7 +62,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"mode": "rstp", "vlans": [10, 20]},
         "expected": {
             "result": "failure",
-            "messages": ["STP mode rstp not configured for the following VLAN(s): 10", "Wrong STP mode configured for the following VLAN(s): 20"],
+            "messages": ["VLAN: 10 STP mode: rstp - Not configured", "VLAN: 20 - Incorrect STP mode - Expected: rstp Actual: mstp"],
         },
     },
     {
@@ -74,7 +77,7 @@ DATA: list[dict[str, Any]] = [
         "test": VerifySTPBlockedPorts,
         "eos_data": [{"spanningTreeInstances": {"MST0": {"spanningTreeBlockedPorts": ["Ethernet10"]}, "MST10": {"spanningTreeBlockedPorts": ["Ethernet10"]}}}],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["STP Instance: MST0 blocked ports are: Ethernet10", "STP Instance: MST10 blocked ports are: Ethernet10"]},
+        "expected": {"result": "failure", "messages": ["STP Instance: MST0 - Blocked ports - Ethernet10", "STP Instance: MST10 - Blocked ports - Ethernet10"]},
     },
     {
         "name": "success",
@@ -84,18 +87,44 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
-        "name": "failure",
+        "name": "failure-bpdu-tagged-error-mismatch",
         "test": VerifySTPCounters,
         "eos_data": [
             {
                 "interfaces": {
                     "Ethernet10": {"bpduSent": 201, "bpduReceived": 0, "bpduTaggedError": 3, "bpduOtherError": 0, "bpduRateLimitCount": 0},
+                    "Ethernet11": {"bpduSent": 99, "bpduReceived": 0, "bpduTaggedError": 3, "bpduOtherError": 0, "bpduRateLimitCount": 0},
+                },
+            },
+        ],
+        "inputs": None,
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Interface Ethernet10 - STP BPDU packet tagged errors count mismatch - Expected: 0 Actual: 3",
+                "Interface Ethernet11 - STP BPDU packet tagged errors count mismatch - Expected: 0 Actual: 3",
+            ],
+        },
+    },
+    {
+        "name": "failure-bpdu-other-error-mismatch",
+        "test": VerifySTPCounters,
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet10": {"bpduSent": 201, "bpduReceived": 0, "bpduTaggedError": 0, "bpduOtherError": 3, "bpduRateLimitCount": 0},
                     "Ethernet11": {"bpduSent": 99, "bpduReceived": 0, "bpduTaggedError": 0, "bpduOtherError": 6, "bpduRateLimitCount": 0},
                 },
             },
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["The following interfaces have STP BPDU packet errors: Ethernet10, Ethernet11"]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Interface Ethernet10 - STP BPDU packet other errors count mismatch - Expected: 0 Actual: 3",
+                "Interface Ethernet11 - STP BPDU packet other errors count mismatch - Expected: 0 Actual: 6",
+            ],
+        },
     },
     {
         "name": "success",
@@ -153,8 +182,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "VLAN: 10 - Following interface(s) that are not in a forwarding state: Ethernet10",
-                "VLAN: 20 - Following interface(s) that are not in a forwarding state: Ethernet10",
+                "VLAN: 10 Interface: Ethernet10 - Invalid state - Expected: forwarding Actual: discarding",
+                "VLAN: 20 Interface: Ethernet10 - Invalid state - Expected: forwarding Actual: discarding",
             ],
         },
     },
@@ -265,6 +294,28 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
+        "name": "success-input-instance-none",
+        "test": VerifySTPRootPriority,
+        "eos_data": [
+            {
+                "instances": {
+                    "MST0": {
+                        "rootBridge": {
+                            "priority": 16384,
+                            "systemIdExtension": 0,
+                            "macAddress": "02:1c:73:8b:93:ac",
+                            "helloTime": 2.0,
+                            "maxAge": 20,
+                            "forwardDelay": 15,
+                        },
+                    },
+                },
+            },
+        ],
+        "inputs": {"priority": 16384},
+        "expected": {"result": "success"},
+    },
+    {
         "name": "failure-no-instances",
         "test": VerifySTPRootPriority,
         "eos_data": [
@@ -284,7 +335,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"priority": 32768, "instances": [0]},
-        "expected": {"result": "failure", "messages": ["Unsupported STP instance type: WRONG0"]},
+        "expected": {"result": "failure", "messages": ["STP Instance: WRONG0 - Unsupported STP instance type"]},
     },
     {
         "name": "failure-wrong-instance-type",
@@ -292,6 +343,28 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [{"instances": {}}],
         "inputs": {"priority": 32768, "instances": [10, 20]},
         "expected": {"result": "failure", "messages": ["No STP instances configured"]},
+    },
+    {
+        "name": "failure-instance-not-found",
+        "test": VerifySTPRootPriority,
+        "eos_data": [
+            {
+                "instances": {
+                    "VL10": {
+                        "rootBridge": {
+                            "priority": 32768,
+                            "systemIdExtension": 10,
+                            "macAddress": "00:1c:73:27:95:a2",
+                            "helloTime": 2.0,
+                            "maxAge": 20,
+                            "forwardDelay": 15,
+                        },
+                    }
+                }
+            }
+        ],
+        "inputs": {"priority": 32768, "instances": [11, 20]},
+        "expected": {"result": "failure", "messages": ["Instance: VL11 - Not found", "Instance: VL20 - Not found"]},
     },
     {
         "name": "failure-wrong-priority",
@@ -333,7 +406,13 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"priority": 32768, "instances": [10, 20, 30]},
-        "expected": {"result": "failure", "messages": ["The following instance(s) have the wrong STP root priority configured: VL20, VL30"]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Instance: VL20 - Incorrect STP root priority - Expected: 32768 Actual: 8196",
+                "Instance: VL30 - Incorrect STP root priority - Expected: 32768 Actual: 8196",
+            ],
+        },
     },
     {
         "name": "success-mstp",

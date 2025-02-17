@@ -55,8 +55,6 @@ class VerifySTPMode(AntaTest):
     def test(self) -> None:
         """Main test function for VerifySTPMode."""
         self.result.is_success()
-        not_configured = []
-        wrong_stp_mode = []
         for command in self.instance_commands:
             vlan_id = command.params.vlan
             if not (
@@ -65,13 +63,9 @@ class VerifySTPMode(AntaTest):
                     f"spanningTreeVlanInstances.{vlan_id}.spanningTreeVlanInstance.protocol",
                 )
             ):
-                not_configured.append(vlan_id)
+                self.result.is_failure(f"VLAN: {vlan_id} STP mode: {self.inputs.mode} - Not configured")
             elif stp_mode != self.inputs.mode:
-                wrong_stp_mode.append(vlan_id)
-        if not_configured:
-            self.result.is_failure(f"STP mode {self.inputs.mode} not configured for the following VLAN(s): {', '.join(map(str, not_configured))}")
-        if wrong_stp_mode:
-            self.result.is_failure(f"Wrong STP mode configured for the following VLAN(s): {', '.join(map(str, wrong_stp_mode))}")
+                self.result.is_failure(f"VLAN: {vlan_id} - Incorrect STP mode - Expected: {self.inputs.mode} Actual: {stp_mode}")
 
 
 class VerifySTPBlockedPorts(AntaTest):
@@ -97,11 +91,12 @@ class VerifySTPBlockedPorts(AntaTest):
     def test(self) -> None:
         """Main test function for VerifySTPBlockedPorts."""
         command_output = self.instance_commands[0].json_output
-        self.result.is_success()
-        for key, value in command_output["spanningTreeInstances"].items():
-            stp_block_ports = value.get("spanningTreeBlockedPorts")
-            if stp_block_ports:
-                self.result.is_failure(f"STP Instance: {key} blocked ports are: {', '.join(stp_block_ports)}")
+        if not (stp_instances := command_output["spanningTreeInstances"]):
+            self.result.is_success()
+        else:
+            for key, value in stp_instances.items():
+                stp_block_ports = value.get("spanningTreeBlockedPorts")
+                self.result.is_failure(f"STP Instance: {key} - Blocked ports - {', '.join(stp_block_ports)}")
 
 
 class VerifySTPCounters(AntaTest):
@@ -128,11 +123,12 @@ class VerifySTPCounters(AntaTest):
         """Main test function for VerifySTPCounters."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
-        interfaces_with_errors = [
-            interface for interface, counters in command_output["interfaces"].items() if counters["bpduTaggedError"] or counters["bpduOtherError"] != 0
-        ]
-        if interfaces_with_errors:
-            self.result.is_failure(f"The following interfaces have STP BPDU packet errors: {', '.join(interfaces_with_errors)}")
+
+        for interface, counters in command_output["interfaces"].items():
+            if counters["bpduTaggedError"] != 0:
+                self.result.is_failure(f"Interface {interface} - STP BPDU packet tagged errors count mismatch - Expected: 0 Actual: {counters['bpduTaggedError']}")
+            if counters["bpduOtherError"] != 0:
+                self.result.is_failure(f"Interface {interface} - STP BPDU packet other errors count mismatch - Expected: 0 Actual: {counters['bpduOtherError']}")
 
 
 class VerifySTPForwardingPorts(AntaTest):
@@ -172,17 +168,21 @@ class VerifySTPForwardingPorts(AntaTest):
     def test(self) -> None:
         """Main test function for VerifySTPForwardingPorts."""
         self.result.is_success()
+        interfaces_state = []
         for command in self.instance_commands:
             vlan_id = command.params.vlan
             if not (topologies := get_value(command.json_output, "topologies")):
                 self.result.is_failure(f"VLAN: {vlan_id} - STP instance is not configured")
                 continue
-            interfaces_not_forwarding = []
             for value in topologies.values():
                 if vlan_id and int(vlan_id) in value["vlans"]:
-                    interfaces_not_forwarding = [interface for interface, state in value["interfaces"].items() if state["state"] != "forwarding"]
-            if interfaces_not_forwarding:
-                self.result.is_failure(f"VLAN: {vlan_id} - Following interface(s) that are not in a forwarding state: {', '.join(interfaces_not_forwarding)}")
+                    interfaces_state = [
+                        (interface, actual_state) for interface, state in value["interfaces"].items() if (actual_state := state["state"]) != "forwarding"
+                    ]
+
+            if interfaces_state:
+                for interface, state in interfaces_state:
+                    self.result.is_failure(f"VLAN: {vlan_id} Interface: {interface} - Invalid state - Expected: forwarding Actual: {state}")
 
 
 class VerifySTPRootPriority(AntaTest):
@@ -231,14 +231,15 @@ class VerifySTPRootPriority(AntaTest):
         elif first_name.startswith("VL"):
             prefix = "VL"
         else:
-            self.result.is_failure(f"Unsupported STP instance type: {first_name}")
+            self.result.is_failure(f"STP Instance: {first_name} - Unsupported STP instance type")
             return
         check_instances = [f"{prefix}{instance_id}" for instance_id in self.inputs.instances] if self.inputs.instances else command_output["instances"].keys()
-        wrong_priority_instances = [
-            instance for instance in check_instances if get_value(command_output, f"instances.{instance}.rootBridge.priority") != self.inputs.priority
-        ]
-        if wrong_priority_instances:
-            self.result.is_failure(f"The following instance(s) have the wrong STP root priority configured: {', '.join(wrong_priority_instances)}")
+        for instance in check_instances:
+            if not (instance_details := get_value(command_output, f"instances.{instance}")):
+                self.result.is_failure(f"Instance: {instance} - Not found")
+                continue
+            if (priority := get_value(instance_details, "rootBridge.priority")) != self.inputs.priority:
+                self.result.is_failure(f"Instance: {instance} - Incorrect STP root priority - Expected: {self.inputs.priority} Actual: {priority}")
 
 
 class VerifyStpTopologyChanges(AntaTest):
