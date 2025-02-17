@@ -49,16 +49,16 @@ class VerifyMlagStatus(AntaTest):
             return
 
         # Verifies the localIntfStatus
-        if command_output.get("negStatus") != "connected":
-            self.result.is_failure("MLAG Negotiation status is not connected")
+        if (neg_status := command_output["negStatus"]) != "connected":
+            self.result.is_failure(f"MLAG Negotiation status mismatch - Expected: connected Actual: {neg_status}")
 
         # Verifies the negotiation status
-        if command_output.get("localIntfStatus") != "up":
-            self.result.is_failure("Operational state of the MLAG local interface is not up")
+        if (intf_state := command_output["localIntfStatus"]) != "up":
+            self.result.is_failure(f"Operational state of the MLAG local interface is not correct - Expected: up Actual: {intf_state}")
 
         # Verifies the peerLinkStatus
-        if command_output.get("peerLinkStatus") != "up":
-            self.result.is_failure("Operational state of the MLAG peer link is not up")
+        if (peer_link_state := command_output["peerLinkStatus"]) != "up":
+            self.result.is_failure(f"Operational state of the MLAG peer link is not correct - Expected: up Actual: {peer_link_state}")
 
 
 class VerifyMlagInterfaces(AntaTest):

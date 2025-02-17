@@ -32,11 +32,11 @@ DATA: list[dict[str, Any]] = [
     {
         "name": "failure-negotian-status",
         "test": VerifyMlagStatus,
-        "eos_data": [{"state": "active", "peerLinkStatus": "up", "localIntfStatus": "up"}],
+        "eos_data": [{"state": "active", "negStatus": "connecting", "peerLinkStatus": "up", "localIntfStatus": "up"}],
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": ["MLAG Negotiation status is not connected"],
+            "messages": ["MLAG Negotiation status mismatch - Expected: connected Actual: connecting"],
         },
     },
     {
@@ -46,7 +46,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": ["Operational state of the MLAG local interface is not up"],
+            "messages": ["Operational state of the MLAG local interface is not correct - Expected: up Actual: down"],
         },
     },
     {
@@ -56,7 +56,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": ["Operational state of the MLAG peer link is not up"],
+            "messages": ["Operational state of the MLAG peer link is not correct - Expected: up Actual: down"],
         },
     },
     {
