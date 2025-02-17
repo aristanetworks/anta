@@ -952,7 +952,7 @@ anta.tests.system:
   - VerifyMemoryUtilization:
       # Verifies whether the memory utilization is below 75%.
   - VerifyNTP:
-      # Verifies if NTP is synchronised.
+      # Verifies that the Network Time Protocol (NTP) is synchronized.
   - VerifyNTPAssociations:
       # Verifies the Network Time Protocol (NTP) associations.
       ntp_servers:
