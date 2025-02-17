@@ -45,7 +45,13 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"manufacturers": ["Arista"]},
-        "expected": {"result": "failure", "messages": ["Some transceivers are from unapproved manufacturers: {'1': 'Arista Networks', '2': 'Arista Networks'}"]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Interface: 1 - Transceivers are from unapproved manufacturers - Expected: Arista Actual: Arista Networks",
+                "Interface: 2 - Transceivers are from unapproved manufacturers - Expected: Arista Actual: Arista Networks",
+            ],
+        },
     },
     {
         "name": "success",
@@ -77,7 +83,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Device temperature exceeds acceptable limits. Current system status: 'temperatureKO'"]},
+        "expected": {"result": "failure", "messages": ["Device temperature exceeds acceptable limits - Expected: temperatureOk Actual: temperatureKO"]},
     },
     {
         "name": "success",
@@ -139,11 +145,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": [
-                "The following sensors are operating outside the acceptable temperature range or have raised alerts: "
-                "{'DomTemperatureSensor54': "
-                "{'hwStatus': 'ko', 'alertCount': 0}}",
-            ],
+            "messages": ["Sensor: DomTemperatureSensor54 - Invalid Hardware State - Expected: ok Actual: ko"],
         },
     },
     {
@@ -176,11 +178,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": [
-                "The following sensors are operating outside the acceptable temperature range or have raised alerts: "
-                "{'DomTemperatureSensor54': "
-                "{'hwStatus': 'ok', 'alertCount': 1}}",
-            ],
+            "messages": ["Sensor: DomTemperatureSensor54 - Alert count mismatch - Expected: 0 Actual: 1"],
         },
     },
     {
@@ -227,7 +225,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Device system cooling is not OK: 'coolingKo'"]},
+        "expected": {"result": "failure", "messages": ["Device system cooling is not OK - Actual: coolingKo"]},
     },
     {
         "name": "success",
@@ -242,24 +240,6 @@ DATA: list[dict[str, Any]] = [
                 "airflowDirection": "frontToBackAirflow",
                 "overrideFanSpeed": 0,
                 "powerSupplySlots": [
-                    {
-                        "status": "ok",
-                        "fans": [
-                            {
-                                "status": "ok",
-                                "uptime": 1682498937.0240965,
-                                "maxSpeed": 23000,
-                                "lastSpeedStableChangeTime": 1682499033.0403435,
-                                "configuredSpeed": 30,
-                                "actualSpeed": 33,
-                                "speedHwOverride": True,
-                                "speedStable": True,
-                                "label": "PowerSupply1/1",
-                            },
-                        ],
-                        "speed": 30,
-                        "label": "PowerSupply1",
-                    },
                     {
                         "status": "ok",
                         "fans": [
@@ -285,24 +265,6 @@ DATA: list[dict[str, Any]] = [
                         "fans": [
                             {
                                 "status": "ok",
-                                "uptime": 1682498923.9303148,
-                                "maxSpeed": 17500,
-                                "lastSpeedStableChangeTime": 1682498975.0139885,
-                                "configuredSpeed": 30,
-                                "actualSpeed": 29,
-                                "speedHwOverride": False,
-                                "speedStable": True,
-                                "label": "1/1",
-                            },
-                        ],
-                        "speed": 30,
-                        "label": "1",
-                    },
-                    {
-                        "status": "ok",
-                        "fans": [
-                            {
-                                "status": "ok",
                                 "uptime": 1682498923.9304729,
                                 "maxSpeed": 17500,
                                 "lastSpeedStableChangeTime": 1682498939.9329433,
@@ -315,43 +277,7 @@ DATA: list[dict[str, Any]] = [
                         ],
                         "speed": 30,
                         "label": "2",
-                    },
-                    {
-                        "status": "ok",
-                        "fans": [
-                            {
-                                "status": "ok",
-                                "uptime": 1682498923.9383528,
-                                "maxSpeed": 17500,
-                                "lastSpeedStableChangeTime": 1682498975.0140095,
-                                "configuredSpeed": 30,
-                                "actualSpeed": 30,
-                                "speedHwOverride": False,
-                                "speedStable": True,
-                                "label": "3/1",
-                            },
-                        ],
-                        "speed": 30,
-                        "label": "3",
-                    },
-                    {
-                        "status": "ok",
-                        "fans": [
-                            {
-                                "status": "ok",
-                                "uptime": 1682498923.9303904,
-                                "maxSpeed": 17500,
-                                "lastSpeedStableChangeTime": 1682498975.0140295,
-                                "configuredSpeed": 30,
-                                "actualSpeed": 30,
-                                "speedHwOverride": False,
-                                "speedStable": True,
-                                "label": "4/1",
-                            },
-                        ],
-                        "speed": 30,
-                        "label": "4",
-                    },
+                    }
                 ],
                 "minFanSpeed": 0,
                 "currentZones": 1,
@@ -375,24 +301,6 @@ DATA: list[dict[str, Any]] = [
                 "airflowDirection": "frontToBackAirflow",
                 "overrideFanSpeed": 0,
                 "powerSupplySlots": [
-                    {
-                        "status": "ok",
-                        "fans": [
-                            {
-                                "status": "ok",
-                                "uptime": 1682498937.0240965,
-                                "maxSpeed": 23000,
-                                "lastSpeedStableChangeTime": 1682499033.0403435,
-                                "configuredSpeed": 30,
-                                "actualSpeed": 33,
-                                "speedHwOverride": True,
-                                "speedStable": True,
-                                "label": "PowerSupply1/1",
-                            },
-                        ],
-                        "speed": 30,
-                        "label": "PowerSupply1",
-                    },
                     {
                         "status": "ok",
                         "fans": [
@@ -431,60 +339,6 @@ DATA: list[dict[str, Any]] = [
                         "speed": 30,
                         "label": "1",
                     },
-                    {
-                        "status": "ok",
-                        "fans": [
-                            {
-                                "status": "ok",
-                                "uptime": 1682498923.9304729,
-                                "maxSpeed": 17500,
-                                "lastSpeedStableChangeTime": 1682498939.9329433,
-                                "configuredSpeed": 30,
-                                "actualSpeed": 30,
-                                "speedHwOverride": False,
-                                "speedStable": True,
-                                "label": "2/1",
-                            },
-                        ],
-                        "speed": 30,
-                        "label": "2",
-                    },
-                    {
-                        "status": "ok",
-                        "fans": [
-                            {
-                                "status": "ok",
-                                "uptime": 1682498923.9383528,
-                                "maxSpeed": 17500,
-                                "lastSpeedStableChangeTime": 1682498975.0140095,
-                                "configuredSpeed": 30,
-                                "actualSpeed": 30,
-                                "speedHwOverride": False,
-                                "speedStable": True,
-                                "label": "3/1",
-                            },
-                        ],
-                        "speed": 30,
-                        "label": "3",
-                    },
-                    {
-                        "status": "ok",
-                        "fans": [
-                            {
-                                "status": "ok",
-                                "uptime": 1682498923.9303904,
-                                "maxSpeed": 17500,
-                                "lastSpeedStableChangeTime": 1682498975.0140295,
-                                "configuredSpeed": 30,
-                                "actualSpeed": 30,
-                                "speedHwOverride": False,
-                                "speedStable": True,
-                                "label": "4/1",
-                            },
-                        ],
-                        "speed": 30,
-                        "label": "4",
-                    },
                 ],
                 "minFanSpeed": 0,
                 "currentZones": 1,
@@ -508,24 +362,6 @@ DATA: list[dict[str, Any]] = [
                 "airflowDirection": "frontToBackAirflow",
                 "overrideFanSpeed": 0,
                 "powerSupplySlots": [
-                    {
-                        "status": "ok",
-                        "fans": [
-                            {
-                                "status": "ok",
-                                "uptime": 1682498937.0240965,
-                                "maxSpeed": 23000,
-                                "lastSpeedStableChangeTime": 1682499033.0403435,
-                                "configuredSpeed": 30,
-                                "actualSpeed": 33,
-                                "speedHwOverride": True,
-                                "speedStable": True,
-                                "label": "PowerSupply1/1",
-                            },
-                        ],
-                        "speed": 30,
-                        "label": "PowerSupply1",
-                    },
                     {
                         "status": "ok",
                         "fans": [
@@ -568,24 +404,6 @@ DATA: list[dict[str, Any]] = [
                         "status": "ok",
                         "fans": [
                             {
-                                "status": "ok",
-                                "uptime": 1682498923.9304729,
-                                "maxSpeed": 17500,
-                                "lastSpeedStableChangeTime": 1682498939.9329433,
-                                "configuredSpeed": 30,
-                                "actualSpeed": 30,
-                                "speedHwOverride": False,
-                                "speedStable": True,
-                                "label": "2/1",
-                            },
-                        ],
-                        "speed": 30,
-                        "label": "2",
-                    },
-                    {
-                        "status": "ok",
-                        "fans": [
-                            {
                                 "status": "Not Inserted",
                                 "uptime": 1682498923.9383528,
                                 "maxSpeed": 17500,
@@ -600,24 +418,6 @@ DATA: list[dict[str, Any]] = [
                         "speed": 30,
                         "label": "3",
                     },
-                    {
-                        "status": "ok",
-                        "fans": [
-                            {
-                                "status": "ok",
-                                "uptime": 1682498923.9303904,
-                                "maxSpeed": 17500,
-                                "lastSpeedStableChangeTime": 1682498975.0140295,
-                                "configuredSpeed": 30,
-                                "actualSpeed": 30,
-                                "speedHwOverride": False,
-                                "speedStable": True,
-                                "label": "4/1",
-                            },
-                        ],
-                        "speed": 30,
-                        "label": "4",
-                    },
                 ],
                 "minFanSpeed": 0,
                 "currentZones": 1,
@@ -626,7 +426,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"states": ["ok", "Not Inserted"]},
-        "expected": {"result": "failure", "messages": ["Fan 1/1 on Fan Tray 1 is: 'down'"]},
+        "expected": {"result": "failure", "messages": ["Fan Tray: 1 Fan: 1/1 - Invalid state - Expected: ok, Not Inserted Actual: down"]},
     },
     {
         "name": "failure-power-supply",
@@ -715,42 +515,6 @@ DATA: list[dict[str, Any]] = [
                         "speed": 30,
                         "label": "2",
                     },
-                    {
-                        "status": "ok",
-                        "fans": [
-                            {
-                                "status": "Not Inserted",
-                                "uptime": 1682498923.9383528,
-                                "maxSpeed": 17500,
-                                "lastSpeedStableChangeTime": 1682498975.0140095,
-                                "configuredSpeed": 30,
-                                "actualSpeed": 30,
-                                "speedHwOverride": False,
-                                "speedStable": True,
-                                "label": "3/1",
-                            },
-                        ],
-                        "speed": 30,
-                        "label": "3",
-                    },
-                    {
-                        "status": "ok",
-                        "fans": [
-                            {
-                                "status": "ok",
-                                "uptime": 1682498923.9303904,
-                                "maxSpeed": 17500,
-                                "lastSpeedStableChangeTime": 1682498975.0140295,
-                                "configuredSpeed": 30,
-                                "actualSpeed": 30,
-                                "speedHwOverride": False,
-                                "speedStable": True,
-                                "label": "4/1",
-                            },
-                        ],
-                        "speed": 30,
-                        "label": "4",
-                    },
                 ],
                 "minFanSpeed": 0,
                 "currentZones": 1,
@@ -759,7 +523,12 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"states": ["ok", "Not Inserted"]},
-        "expected": {"result": "failure", "messages": ["Fan PowerSupply1/1 on PowerSupply PowerSupply1 is: 'down'"]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "PowerSupply: PowerSupply1 Fan: PowerSupply1/1 - Invalid state - Expected: ok, Not Inserted Actual: down",
+            ],
+        },
     },
     {
         "name": "success",
@@ -900,7 +669,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"states": ["ok"]},
-        "expected": {"result": "failure", "messages": ["The following power supplies status are not in the accepted states list: {'1': {'state': 'powerLoss'}}"]},
+        "expected": {"result": "failure", "messages": ["Power Supply: 1 - Invalid power supplies state - Expected: ok Actual: powerLoss"]},
     },
     {
         "name": "success",
@@ -914,6 +683,6 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyAdverseDrops,
         "eos_data": [{"totalAdverseDrops": 10}],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Device totalAdverseDrops counter is: '10'"]},
+        "expected": {"result": "failure", "messages": ["Invalid totalAdverseDrops counter - Expected: 0 Actual: 10"]},
     },
 ]
