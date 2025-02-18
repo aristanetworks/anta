@@ -508,7 +508,10 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"threshold": 3.0},
         "expected": {
             "result": "failure",
-            "messages": ["The following interfaces have a usage > 3.0%: {'Ethernet1/1': {'inBpsRate': 10.0}, 'Port-Channel31': {'outBpsRate': 5.0}}"],
+            "messages": [
+                "Interface: Ethernet1/1 BPS Rate: inBpsRate - Greater threshold usage - Expected: 3.0% Actual: 10.0%",
+                "Interface: Port-Channel31 BPS Rate: outBpsRate - Greater threshold usage - Expected: 3.0% Actual: 5.0%",
+            ],
         },
     },
     {
@@ -653,7 +656,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"threshold": 70.0},
         "expected": {
             "result": "failure",
-            "messages": ["Interface Ethernet1/1 or one of its member interfaces is not Full-Duplex. VerifyInterfaceUtilization has not been implemented."],
+            "messages": ["Interface: Ethernet1/1 - Interface utilization has not been implemented"],
         },
     },
     {
@@ -787,7 +790,7 @@ DATA: list[dict[str, Any]] = [
                         },
                         "memberInterfaces": {
                             "Ethernet3/1": {"bandwidth": 1000000000, "duplex": "duplexHalf"},
-                            "Ethernet4/1": {"bandwidth": 1000000000, "duplex": "duplexFull"},
+                            "Ethernet4/1": {"bandwidth": 1000000000, "duplex": "duplexHalf"},
                         },
                         "fallbackEnabled": False,
                         "fallbackEnabledType": "fallbackNone",
@@ -798,7 +801,10 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"threshold": 70.0},
         "expected": {
             "result": "failure",
-            "messages": ["Interface Port-Channel31 or one of its member interfaces is not Full-Duplex. VerifyInterfaceUtilization has not been implemented."],
+            "messages": [
+                "Interface: Port-Channel31 MemberInterface: Ethernet3/1 - Not Full-Duplex - Actual: duplexHalf",
+                "Interface: Port-Channel31 MemberInterface: Ethernet4/1 - Not Full-Duplex - Actual: duplexHalf",
+            ],
         },
     },
     {
@@ -830,9 +836,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "The following interface(s) have non-zero error counters: [{'Ethernet1': {'inErrors': 42, 'frameTooLongs': 0, 'outErrors': 0, 'frameTooShorts': 0,"
-                " 'fcsErrors': 0, 'alignmentErrors': 0, 'symbolErrors': 0}}, {'Ethernet6': {'inErrors': 0, 'frameTooLongs': 0, 'outErrors': 0, 'frameTooShorts':"
-                " 0, 'fcsErrors': 0, 'alignmentErrors': 666, 'symbolErrors': 0}}]",
+                "Interface: Ethernet1 - Non-zero error counter(s) - inErrors: 42",
+                "Interface: Ethernet6 - Non-zero error counter(s) - alignmentErrors: 666",
             ],
         },
     },
@@ -851,9 +856,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "The following interface(s) have non-zero error counters: [{'Ethernet1': {'inErrors': 42, 'frameTooLongs': 0, 'outErrors': 10, 'frameTooShorts': 0,"
-                " 'fcsErrors': 0, 'alignmentErrors': 0, 'symbolErrors': 0}}, {'Ethernet6': {'inErrors': 0, 'frameTooLongs': 0, 'outErrors': 0, 'frameTooShorts':"
-                " 0, 'fcsErrors': 0, 'alignmentErrors': 6, 'symbolErrors': 10}}]",
+                "Interface: Ethernet1 - Non-zero error counter(s) - inErrors: 42, outErrors: 10",
+                "Interface: Ethernet6 - Non-zero error counter(s) - alignmentErrors: 6, symbolErrors: 10",
             ],
         },
     },
@@ -870,10 +874,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": [
-                "The following interface(s) have non-zero error counters: [{'Ethernet1': {'inErrors': 42, 'frameTooLongs': 0, 'outErrors': 2, 'frameTooShorts': 0,"
-                " 'fcsErrors': 0, 'alignmentErrors': 0, 'symbolErrors': 0}}]",
-            ],
+            "messages": ["Interface: Ethernet1 - Non-zero error counter(s) - inErrors: 42, outErrors: 2"],
         },
     },
     {
@@ -909,8 +910,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "The following interfaces have non 0 discard counter(s): [{'Ethernet2': {'outDiscards': 42, 'inDiscards': 0}},"
-                " {'Ethernet1': {'outDiscards': 0, 'inDiscards': 42}}]",
+                "Interface: Ethernet2 - Non-zero discard counter(s): outDiscards: 42",
+                "Interface: Ethernet1 - Non-zero discard counter(s): inDiscards: 42",
             ],
         },
     },
@@ -948,7 +949,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["The following interfaces are in error disabled state: ['Management1', 'Ethernet8']"]},
+        "expected": {"result": "failure", "messages": ["Interface: Management1 - Link status Error disabled", "Interface: Ethernet8 - Link status Error disabled"]},
     },
     {
         "name": "success",
@@ -1126,7 +1127,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"interfaces": [{"name": "Ethernet2", "status": "up"}, {"name": "Ethernet8", "status": "up"}, {"name": "Ethernet3", "status": "up"}]},
         "expected": {
             "result": "failure",
-            "messages": ["Ethernet8 - Expected: up/up, Actual: down/down"],
+            "messages": ["Ethernet8 - Status mismatch - Expected: up/up, Actual: down/down"],
         },
     },
     {
@@ -1150,7 +1151,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Ethernet8 - Expected: up/up, Actual: up/down"],
+            "messages": ["Ethernet8 - Status mismatch - Expected: up/up, Actual: up/down"],
         },
     },
     {
@@ -1166,7 +1167,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"interfaces": [{"name": "PortChannel100", "status": "up"}]},
         "expected": {
             "result": "failure",
-            "messages": ["Port-Channel100 - Expected: up/up, Actual: down/lowerLayerDown"],
+            "messages": ["Port-Channel100 - Status mismatch - Expected: up/up, Actual: down/lowerLayerDown"],
         },
     },
     {
@@ -1191,8 +1192,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Ethernet2 - Expected: up/down, Actual: up/unknown",
-                "Ethernet8 - Expected: up/up, Actual: up/down",
+                "Ethernet2 - Status mismatch - Expected: up/down, Actual: up/unknown",
+                "Ethernet8 - Status mismatch - Expected: up/up, Actual: up/down",
             ],
         },
     },
@@ -1218,9 +1219,9 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Ethernet2 - Expected: down, Actual: up",
-                "Ethernet8 - Expected: down, Actual: up",
-                "Ethernet3 - Expected: down, Actual: up",
+                "Ethernet2 - Status mismatch - Expected: down, Actual: up",
+                "Ethernet8 - Status mismatch - Expected: down, Actual: up",
+                "Ethernet3 - Status mismatch - Expected: down, Actual: up",
             ],
         },
     },
@@ -1260,7 +1261,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["The following interfaces have none 0 storm-control drop counters {'Ethernet1': {'broadcast': 666}}"]},
+        "expected": {"result": "failure", "messages": ["Interface: Ethernet1 - Non-zero storm-control drop counter(s) - broadcast: 666"]},
     },
     {
         "name": "success",
