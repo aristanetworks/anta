@@ -86,7 +86,7 @@ class VerifyTemperature(AntaTest):
         command_output = self.instance_commands[0].json_output
         temperature_status = command_output.get("systemStatus", "")
         if temperature_status != "temperatureOk":
-            self.result.is_failure(f"Device temperature exceeds acceptable limits - Expected: {'temperatureOk'} Actual: {temperature_status}")
+            self.result.is_failure(f"Device temperature exceeds acceptable limits - Expected: temperatureOk Actual: {temperature_status}")
 
 
 class VerifyTransceiversTemperature(AntaTest):
@@ -119,7 +119,7 @@ class VerifyTransceiversTemperature(AntaTest):
             if sensor["hwStatus"] != "ok":
                 self.result.is_failure(f"Sensor: {sensor['name']} - Invalid Hardware State - Expected: ok Actual: {sensor['hwStatus']}")
             if sensor["alertCount"] != 0:
-                self.result.is_failure(f"Sensor: {sensor['name']} - Alert count mismatch - Expected: 0 Actual: {sensor['alertCount']}")
+                self.result.is_failure(f"Sensor: {sensor['name']} - Non-zero alert-count - Actual: {sensor['alertCount']}")
 
 
 class VerifyEnvironmentSystemCooling(AntaTest):
@@ -190,7 +190,7 @@ class VerifyEnvironmentCooling(AntaTest):
             for fan in power_supply.get("fans", []):
                 if (state := fan["status"]) not in self.inputs.states:
                     self.result.is_failure(
-                        f"PowerSupply: {power_supply['label']} Fan: {fan['label']} - Invalid state - Expected: {', '.join(self.inputs.states)} Actual: {state}"
+                        f"Power Slot: {power_supply['label']} Fan: {fan['label']} - Invalid state - Expected: {', '.join(self.inputs.states)} Actual: {state}"
                     )
         # Then go through fan trays
         for fan_tray in command_output.get("fanTraySlots", []):
@@ -237,7 +237,7 @@ class VerifyEnvironmentPower(AntaTest):
         power_supplies = command_output.get("powerSupplies", "{}")
         for power_supply, value in dict(power_supplies).items():
             if (state := value["state"]) not in self.inputs.states:
-                self.result.is_failure(f"Power Supply: {power_supply} - Invalid power supplies state - Expected: {', '.join(self.inputs.states)} Actual: {state}")
+                self.result.is_failure(f"Power Slot: {power_supply} - Invalid power supplies state - Expected: {', '.join(self.inputs.states)} Actual: {state}")
 
 
 class VerifyAdverseDrops(AntaTest):
@@ -267,4 +267,4 @@ class VerifyAdverseDrops(AntaTest):
         command_output = self.instance_commands[0].json_output
         total_adverse_drop = command_output.get("totalAdverseDrops", "")
         if total_adverse_drop != 0:
-            self.result.is_failure(f"Invalid totalAdverseDrops counter - Expected: 0 Actual: {total_adverse_drop}")
+            self.result.is_failure(f"Non-zero totalAdverseDrops counter - Actual: {total_adverse_drop}")
