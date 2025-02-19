@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from ipaddress import IPv4Address
+from ipaddress import IPv4Address, IPv4Network
 from typing import Any, Literal
 from warnings import warn
 
@@ -118,6 +118,84 @@ class IsisInstance(ISISInstance):  # pragma: no cover
         """Initialize the IsisInstance class, emitting a deprecation warning."""
         warn(
             message="IsisInstance model is deprecated and will be removed in ANTA v2.0.0. Use the ISISInstance model instead.",
+            category=DeprecationWarning,
+            stacklevel=2,
+        )
+        super().__init__(**data)
+
+
+class Tunnel(BaseModel):
+    """Model for a IS-IS SR tunnel."""
+
+    model_config = ConfigDict(extra="forbid")
+    endpoint: IPv4Network
+    """Endpoint of the tunnel."""
+    vias: list[TunnelPath] | None = None
+    """Optional list of paths to reach the endpoint."""
+
+    def __str__(self) -> str:
+        """Return a human-readable string representation of the Tunnel for reporting."""
+        return f"Endpoint: {self.endpoint}"
+
+
+class TunnelPath(BaseModel):
+    """Model for a IS-IS tunnel path."""
+
+    model_config = ConfigDict(extra="forbid")
+    nexthop: IPv4Address | None = None
+    """Nexthop of the tunnel."""
+    type: Literal["ip", "tunnel"] | None = None
+    """Type of the tunnel."""
+    interface: Interface | None = None
+    """Interface of the tunnel."""
+    tunnel_id: Literal["TI-LFA", "ti-lfa", "unset"] | None = None
+    """Computation method of the tunnel."""
+
+    def __str__(self) -> str:
+        """Return a human-readable string representation of the TunnelPath for reporting."""
+        base_string = ""
+        if self.nexthop:
+            base_string += f" Next-hop: {self.nexthop}"
+        if self.type:
+            base_string += f" Type: {self.type}"
+        if self.interface:
+            base_string += f" Interface: {self.interface}"
+        if self.tunnel_id:
+            base_string += f" Tunnel ID: {self.tunnel_id}"
+
+        return base_string.lstrip()
+
+
+class Entry(Tunnel):  # pragma: no cover
+    """Alias for the Tunnel model to maintain backward compatibility.
+
+    When initialized, it will emit a deprecation warning and call the Tunnel model.
+
+    TODO: Remove this class in ANTA v2.0.0.
+    """
+
+    def __init__(self, **data: Any) -> None:  # noqa: ANN401
+        """Initialize the Entry class, emitting a deprecation warning."""
+        warn(
+            message="Entry model is deprecated and will be removed in ANTA v2.0.0. Use the Tunnel model instead.",
+            category=DeprecationWarning,
+            stacklevel=2,
+        )
+        super().__init__(**data)
+
+
+class Vias(TunnelPath):  # pragma: no cover
+    """Alias for the TunnelPath model to maintain backward compatibility.
+
+    When initialized, it will emit a deprecation warning and call the TunnelPath model.
+
+    TODO: Remove this class in ANTA v2.0.0.
+    """
+
+    def __init__(self, **data: Any) -> None:  # noqa: ANN401
+        """Initialize the Vias class, emitting a deprecation warning."""
+        warn(
+            message="Vias model is deprecated and will be removed in ANTA v2.0.0. Use the TunnelPath model instead.",
             category=DeprecationWarning,
             stacklevel=2,
         )
