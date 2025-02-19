@@ -2039,7 +2039,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"interfaces": ["Ethernet1", "Ethernet2"]},
-        "expected": {"result": "failure", "messages": ["The following interface(s) have Proxy-ARP disabled: ['Ethernet2']"]},
+        "expected": {"result": "failure", "messages": ["Interface: Ethernet2 - Proxy-ARP disabled"]},
     },
     {
         "name": "success",

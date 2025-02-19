@@ -503,7 +503,7 @@ class VerifyL3MTU(AntaTest):
 
 
 class VerifyIPProxyARP(AntaTest):
-    """Verifies if Proxy-ARP is enabled for the provided list of interface(s).
+    """Verifies if Proxy ARP is enabled.
 
     Expected Results
     ----------------
@@ -521,7 +521,6 @@ class VerifyIPProxyARP(AntaTest):
     ```
     """
 
-    description = "Verifies if Proxy ARP is enabled."
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show ip interface {intf}", revision=2)]
 
@@ -538,15 +537,11 @@ class VerifyIPProxyARP(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyIPProxyARP."""
-        disabled_intf = []
+        self.result.is_success()
         for command in self.instance_commands:
-            intf = command.params.intf
-            if not command.json_output["interfaces"][intf]["proxyArp"]:
-                disabled_intf.append(intf)
-        if disabled_intf:
-            self.result.is_failure(f"The following interface(s) have Proxy-ARP disabled: {disabled_intf}")
-        else:
-            self.result.is_success()
+            interface = command.params.intf
+            if not command.json_output["interfaces"][interface]["proxyArp"]:
+                self.result.is_failure(f"Interface: {interface} - Proxy-ARP disabled")
 
 
 class VerifyL2MTU(AntaTest):
