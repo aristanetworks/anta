@@ -2273,7 +2273,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Endpoint: 1.0.0.111/32 Type: tunnel TunnelID: ti-lfa - Tunnel is incorrect"],
+            "messages": ["Endpoint: 1.0.0.111/32 Type: tunnel Tunnel ID: ti-lfa - Tunnel is incorrect"],
         },
     },
     {

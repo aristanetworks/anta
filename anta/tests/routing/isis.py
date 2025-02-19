@@ -11,7 +11,7 @@ from typing import Any, ClassVar
 
 from pydantic import field_validator
 
-from anta.input_models.routing.isis import Entry, InterfaceCount, InterfaceState, ISISInstance, IsisInstance, ISISInterface, SRTunnelEntry, TunnelPath
+from anta.input_models.routing.isis import Entry, InterfaceCount, InterfaceState, ISISInstance, IsisInstance, ISISInterface, Tunnel, TunnelPath
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_item, get_value
 
@@ -389,15 +389,9 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyISISSegmentRoutingTunnels test."""
 
-        entries: list[SRTunnelEntry]
+        entries: list[Tunnel]
         """List of tunnels to check on device."""
         Entry: ClassVar[type[Entry]] = Entry
-
-    def _eos_entry_lookup(self, search_value: str, entries: dict[str, Any], search_key: str = "endpoint") -> dict[str, Any] | None:
-        return next(
-            (entry_value for entry_id, entry_value in entries.items() if str(entry_value[search_key]) == search_value),
-            None,
-        )
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -406,19 +400,20 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
         This method performs the main test logic for verifying ISIS Segment Routing tunnels.
         It checks the command output, initiates defaults, and performs various checks on the tunnels.
         """
-        command_output = self.instance_commands[0].json_output
         self.result.is_success()
 
+        command_output = self.instance_commands[0].json_output
         if len(command_output["entries"]) == 0:
             self.result.is_skipped("IS-IS-SR not configured")
             return
 
         for input_entry in self.inputs.entries:
-            eos_entry = self._eos_entry_lookup(search_value=str(input_entry.endpoint), entries=command_output["entries"])
-            if eos_entry is None:
+            entries = list(command_output["entries"].values())
+            if (eos_entry := get_item(entries, "endpoint", str(input_entry.endpoint))) is None:
                 self.result.is_failure(f"{input_entry} - Tunnel not found")
+                continue
 
-            elif input_entry.vias is not None:
+            if input_entry.vias is not None:
                 for via_input in input_entry.vias:
                     via_search_result = any(self._via_matches(via_input, eos_via) for eos_via in eos_entry["vias"])
                     if not via_search_result:

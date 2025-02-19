@@ -124,17 +124,17 @@ class IsisInstance(ISISInstance):  # pragma: no cover
         super().__init__(**data)
 
 
-class SRTunnelEntry(BaseModel):
+class Tunnel(BaseModel):
     """Model for a IS-IS SR tunnel."""
 
     model_config = ConfigDict(extra="forbid")
     endpoint: IPv4Network
     """Endpoint of the tunnel."""
     vias: list[TunnelPath] | None = None
-    """Optional list of path to reach endpoint."""
+    """Optional list of paths to reach the endpoint."""
 
     def __str__(self) -> str:
-        """Return a human-readable string representation of the SRTunnelEntry for reporting."""
+        """Return a human-readable string representation of the Tunnel for reporting."""
         return f"Endpoint: {self.endpoint}"
 
 
@@ -161,15 +161,15 @@ class TunnelPath(BaseModel):
         if self.interface:
             base_string += f" Interface: {self.interface}"
         if self.tunnel_id:
-            base_string += f" TunnelID: {self.tunnel_id}"
+            base_string += f" Tunnel ID: {self.tunnel_id}"
 
         return base_string.lstrip()
 
 
-class Entry(SRTunnelEntry):  # pragma: no cover
-    """Alias for the SRTunnelEntry model to maintain backward compatibility.
+class Entry(Tunnel):  # pragma: no cover
+    """Alias for the Tunnel model to maintain backward compatibility.
 
-    When initialized, it will emit a deprecation warning and call the SRTunnelEntry model.
+    When initialized, it will emit a deprecation warning and call the Tunnel model.
 
     TODO: Remove this class in ANTA v2.0.0.
     """
@@ -177,7 +177,25 @@ class Entry(SRTunnelEntry):  # pragma: no cover
     def __init__(self, **data: Any) -> None:  # noqa: ANN401
         """Initialize the Entry class, emitting a deprecation warning."""
         warn(
-            message="Entry model is deprecated and will be removed in ANTA v2.0.0. Use the SRTunnelEntry model instead.",
+            message="Entry model is deprecated and will be removed in ANTA v2.0.0. Use the Tunnel model instead.",
+            category=DeprecationWarning,
+            stacklevel=2,
+        )
+        super().__init__(**data)
+
+
+class Vias(TunnelPath):  # pragma: no cover
+    """Alias for the TunnelPath model to maintain backward compatibility.
+
+    When initialized, it will emit a deprecation warning and call the TunnelPath model.
+
+    TODO: Remove this class in ANTA v2.0.0.
+    """
+
+    def __init__(self, **data: Any) -> None:  # noqa: ANN401
+        """Initialize the Vias class, emitting a deprecation warning."""
+        warn(
+            message="Vias model is deprecated and will be removed in ANTA v2.0.0. Use the TunnelPath model instead.",
             category=DeprecationWarning,
             stacklevel=2,
         )
