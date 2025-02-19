@@ -36,14 +36,14 @@ DATA: list[dict[str, Any]] = [
         "test": VerifySnmpStatus,
         "eos_data": [{"vrfs": {"snmpVrfs": ["default"]}, "enabled": True}],
         "inputs": {"vrf": "MGMT"},
-        "expected": {"result": "failure", "messages": ["SNMP agent disabled in vrf MGMT"]},
+        "expected": {"result": "failure", "messages": ["VRF: MGMT - SNMP agent disabled"]},
     },
     {
         "name": "failure-disabled",
         "test": VerifySnmpStatus,
         "eos_data": [{"vrfs": {"snmpVrfs": ["default"]}, "enabled": False}],
         "inputs": {"vrf": "default"},
-        "expected": {"result": "failure", "messages": ["SNMP agent disabled in vrf default"]},
+        "expected": {"result": "failure", "messages": ["VRF: default - SNMP agent disabled"]},
     },
     {
         "name": "success",
@@ -57,14 +57,14 @@ DATA: list[dict[str, Any]] = [
         "test": VerifySnmpIPv4Acl,
         "eos_data": [{"ipAclList": {"aclList": []}}],
         "inputs": {"number": 1, "vrf": "MGMT"},
-        "expected": {"result": "failure", "messages": ["Expected 1 SNMP IPv4 ACL(s) in vrf MGMT but got 0"]},
+        "expected": {"result": "failure", "messages": ["VRF: MGMT - Incorrect SNMP IPv4 ACL(s) - Expected: 1 Actual: 0"]},
     },
     {
         "name": "failure-wrong-vrf",
         "test": VerifySnmpIPv4Acl,
         "eos_data": [{"ipAclList": {"aclList": [{"type": "Ip4Acl", "name": "ACL_IPV4_SNMP", "configuredVrfs": ["default"], "activeVrfs": ["default"]}]}}],
         "inputs": {"number": 1, "vrf": "MGMT"},
-        "expected": {"result": "failure", "messages": ["SNMP IPv4 ACL(s) not configured or active in vrf MGMT: ['ACL_IPV4_SNMP']"]},
+        "expected": {"result": "failure", "messages": ["VRF: MGMT - Following SNMP IPv4 ACL(s) not configured or active: ACL_IPV4_SNMP"]},
     },
     {
         "name": "success",
@@ -78,14 +78,14 @@ DATA: list[dict[str, Any]] = [
         "test": VerifySnmpIPv6Acl,
         "eos_data": [{"ipv6AclList": {"aclList": []}}],
         "inputs": {"number": 1, "vrf": "MGMT"},
-        "expected": {"result": "failure", "messages": ["Expected 1 SNMP IPv6 ACL(s) in vrf MGMT but got 0"]},
+        "expected": {"result": "failure", "messages": ["VRF: MGMT - Incorrect SNMP IPv6 ACL(s) - Expected: 1 Actual: 0"]},
     },
     {
         "name": "failure-wrong-vrf",
         "test": VerifySnmpIPv6Acl,
         "eos_data": [{"ipv6AclList": {"aclList": [{"type": "Ip6Acl", "name": "ACL_IPV6_SNMP", "configuredVrfs": ["default"], "activeVrfs": ["default"]}]}}],
         "inputs": {"number": 1, "vrf": "MGMT"},
-        "expected": {"result": "failure", "messages": ["SNMP IPv6 ACL(s) not configured or active in vrf MGMT: ['ACL_IPV6_SNMP']"]},
+        "expected": {"result": "failure", "messages": ["VRF: MGMT - Following SNMP IPv6 ACL(s) not configured or active: ACL_IPV6_SNMP"]},
     },
     {
         "name": "success",
@@ -109,7 +109,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"location": "New York"},
         "expected": {
             "result": "failure",
-            "messages": ["Expected `New York` as the location, but found `Europe` instead."],
+            "messages": ["Incorrect SNMP location - Expected: New York Actual: Europe"],
         },
     },
     {
@@ -148,7 +148,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"contact": "Bob@example.com"},
         "expected": {
             "result": "failure",
-            "messages": ["Expected `Bob@example.com` as the contact, but found `Jon@example.com` instead."],
+            "messages": ["Incorrect SNMP contact - Expected: Bob@example.com Actual: Jon@example.com"],
         },
     },
     {
@@ -227,7 +227,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {},
         "expected": {
             "result": "failure",
-            "messages": ["The following SNMP PDU counters are not found or have zero PDU counters:\n{'inGetPdus': 0, 'inSetPdus': 0}"],
+            "messages": ["The following SNMP PDU counters are not found or have zero PDU counters: inGetPdus, inSetPdus"],
         },
     },
     {
@@ -245,7 +245,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"pdus": ["inGetPdus", "outTrapPdus"]},
         "expected": {
             "result": "failure",
-            "messages": ["The following SNMP PDU counters are not found or have zero PDU counters:\n{'inGetPdus': 'Not Found', 'outTrapPdus': 'Not Found'}"],
+            "messages": ["The following SNMP PDU counters are not found or have zero PDU counters: inGetPdus, outTrapPdus"],
         },
     },
     {
@@ -319,9 +319,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {},
         "expected": {
             "result": "failure",
-            "messages": [
-                "The following SNMP error counters are not found or have non-zero error counters:\n{'inVersionErrs': 1, 'inParseErrs': 2, 'outBadValueErrs': 2}"
-            ],
+            "messages": ["The following SNMP error counters are not found or have non-zero error counters: inParseErrs, inVersionErrs, outBadValueErrs"],
         },
     },
     {
