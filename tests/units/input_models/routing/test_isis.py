@@ -84,8 +84,8 @@ class TestTunnelPath:
             pytest.param("1.1.1.1", None, None, None, "Next-hop: 1.1.1.1", id="nexthop"),
             pytest.param(None, "ip", None, None, "Type: ip", id="type"),
             pytest.param(None, None, "Et1", None, "Interface: Ethernet1", id="interface"),
-            pytest.param(None, None, None, "TI-LFA", "TunnelID: TI-LFA", id="tunnel_id"),
-            pytest.param("1.1.1.1", "ip", "Et1", "TI-LFA", "Next-hop: 1.1.1.1 Type: ip Interface: Ethernet1 TunnelID: TI-LFA", id="all"),
+            pytest.param(None, None, None, "TI-LFA", "Tunnel ID: TI-LFA", id="tunnel_id"),
+            pytest.param("1.1.1.1", "ip", "Et1", "TI-LFA", "Next-hop: 1.1.1.1 Type: ip Interface: Ethernet1 Tunnel ID: TI-LFA", id="all"),
             pytest.param(None, None, None, None, "", id="None"),
         ],
     )
