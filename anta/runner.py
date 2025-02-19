@@ -5,16 +5,16 @@
 
 from __future__ import annotations
 
-import asyncio
 import logging
 import os
-import sys
 from collections import defaultdict
 from typing import TYPE_CHECKING, Any
 
+from typing_extensions import deprecated
+
 from anta import GITHUB_SUGGESTION
+from anta._runner import AntaRunner, AntaRunnerScope
 from anta.logger import anta_log_exception, exc_to_str
-from anta.models import AntaTest
 from anta.tools import Catchtime, cprofile
 
 if TYPE_CHECKING:
@@ -31,6 +31,7 @@ if os.name == "posix":
 
     DEFAULT_NOFILE = 16384
 
+    @deprecated("This function is deprecated and will be removed in ANTA v2.0.0. Use AntaRunner class instead.", category=DeprecationWarning)
     def adjust_rlimit_nofile() -> tuple[int, int]:
         """Adjust the maximum number of open file descriptors for the ANTA process.
 
@@ -60,6 +61,7 @@ if os.name == "posix":
 logger = logging.getLogger(__name__)
 
 
+@deprecated("This function is deprecated and will be removed in ANTA v2.0.0. Use AntaRunner class instead.", category=DeprecationWarning)
 def log_cache_statistics(devices: list[AntaDevice]) -> None:
     """Log cache statistics for each device in the inventory.
 
@@ -80,6 +82,7 @@ def log_cache_statistics(devices: list[AntaDevice]) -> None:
             logger.info("Caching is not enabled on %s", device.name)
 
 
+@deprecated("This function is deprecated and will be removed in ANTA v2.0.0. Use AntaRunner class instead.", category=DeprecationWarning)
 async def setup_inventory(inventory: AntaInventory, tags: set[str] | None, devices: set[str] | None, *, established_only: bool) -> AntaInventory | None:
     """Set up the inventory for the ANTA run.
 
@@ -122,6 +125,7 @@ async def setup_inventory(inventory: AntaInventory, tags: set[str] | None, devic
     return selected_inventory
 
 
+@deprecated("This function is deprecated and will be removed in ANTA v2.0.0. Use AntaRunner class instead.", category=DeprecationWarning)
 def prepare_tests(
     inventory: AntaInventory, catalog: AntaCatalog, tests: set[str] | None, tags: set[str] | None
 ) -> defaultdict[AntaDevice, set[AntaTestDefinition]] | None:
@@ -178,6 +182,7 @@ def prepare_tests(
     return device_to_tests
 
 
+@deprecated("This function is deprecated and will be removed in ANTA v2.0.0. Use AntaRunner class instead.", category=DeprecationWarning)
 def get_coroutines(selected_tests: defaultdict[AntaDevice, set[AntaTestDefinition]], manager: ResultManager | None = None) -> list[Coroutine[Any, Any, TestResult]]:
     """Get the coroutines for the ANTA run.
 
@@ -250,62 +255,11 @@ async def main(
     dry_run
         Build the list of coroutine to run and stop before test execution.
     """
-    if not catalog.tests:
-        logger.info("The list of tests is empty, exiting")
-        return
-
-    with Catchtime(logger=logger, message="Preparing ANTA NRFU Run"):
-        # Setup the inventory
-        selected_inventory = inventory if dry_run else await setup_inventory(inventory, tags, devices, established_only=established_only)
-        if selected_inventory is None:
-            return
-
-        with Catchtime(logger=logger, message="Preparing the tests"):
-            selected_tests = prepare_tests(selected_inventory, catalog, tests, tags)
-            if selected_tests is None:
-                return
-            final_tests_count = sum(len(tests) for tests in selected_tests.values())
-
-        run_info = (
-            "--- ANTA NRFU Run Information ---\n"
-            f"Number of devices: {len(inventory)} ({len(selected_inventory)} established)\n"
-            f"Total number of selected tests: {final_tests_count}\n"
-        )
-
-        if os.name == "posix":
-            # Adjust the maximum number of open file descriptors for the ANTA process
-            limits = adjust_rlimit_nofile()
-            run_info += f"Maximum number of open file descriptors for the current ANTA process: {limits[0]}\n"
-        else:
-            # Running on non-Posix system, cannot manage the resource.
-            limits = (sys.maxsize, sys.maxsize)
-            run_info += "Running on a non-POSIX system, cannot adjust the maximum number of file descriptors.\n"
-
-        run_info += "---------------------------------"
-
-        logger.info(run_info)
-
-        if final_tests_count > limits[0]:
-            logger.warning(
-                "The number of concurrent tests is higher than the open file descriptors limit for this ANTA process.\n"
-                "Errors may occur while running the tests.\n"
-                "Please consult the ANTA FAQ."
-            )
-
-        coroutines = get_coroutines(selected_tests, manager if dry_run else None)
-
-    if dry_run:
-        logger.info("Dry-run mode, exiting before running the tests.")
-        for coro in coroutines:
-            coro.close()
-        return
-
-    if AntaTest.progress is not None:
-        AntaTest.nrfu_task = AntaTest.progress.add_task("Running NRFU Tests...", total=len(coroutines))
-
-    with Catchtime(logger=logger, message="Running ANTA tests"):
-        results = await asyncio.gather(*coroutines)
-        for result in results:
-            manager.add(result)
-
-    log_cache_statistics(selected_inventory.devices)
+    runner = AntaRunner(inventory=inventory, catalog=catalog, manager=manager)
+    scope = AntaRunnerScope(
+        devices=devices,
+        tests=tests,
+        tags=tags,
+        established_only=established_only,
+    )
+    await runner.run(scope, dry_run=dry_run)
