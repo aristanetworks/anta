@@ -1,7 +1,7 @@
 $ anta nrfu csv --help
 Usage: anta nrfu csv [OPTIONS]
 
-  ANTA command to check network states with CSV result.
+  ANTA command to check network state with CSV report.
 
 Options:
   --csv-output FILE  Path to save report as a CSV file  [env var:
