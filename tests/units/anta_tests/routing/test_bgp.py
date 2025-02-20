@@ -5948,8 +5948,9 @@ DATA: list[dict[str, Any]] = [
                 "vrfs": {
                     "default": {
                         "afiSafiConfig": {
-                            "v4m": {"redistributedRoutes": [{"proto": "AttachedHost", "routeMap": "RM-CONN-2-BGP"}, {"proto": "IS-IS", "routeMap": "RM-MLAG-PEER-IN"}
-                            ]}
+                            "v4m": {
+                                "redistributedRoutes": [{"proto": "AttachedHost", "routeMap": "RM-CONN-2-BGP"}, {"proto": "IS-IS", "routeMap": "RM-MLAG-PEER-IN"}]
+                            }
                         }
                     },
                     "test": {
