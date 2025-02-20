@@ -379,6 +379,7 @@ RedistributedProtocol = Annotated[
         "AttachedHost",
         "Bgp",
         "Connected",
+        "DHCP",
         "Dynamic",
         "IS-IS",
         "OSPF Internal",

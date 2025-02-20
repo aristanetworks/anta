@@ -1828,12 +1828,12 @@ class VerifyBGPRedistribution(AntaTest):
             vrfs:
               - vrf: default
                 address_families:
-                  - afi_safi: ipv4Unicast
+                  - afi_safi: ipv4multicast
                     redistributed_routes:
                       - proto: Connected
                         include_leaked: True
                         route_map: RM-CONN-2-BGP
-                      - proto: Static
+                      - proto: IS-IS
                         include_leaked: True
                         route_map: RM-CONN-2-BGP
                   - afi_safi: IPv6 Unicast

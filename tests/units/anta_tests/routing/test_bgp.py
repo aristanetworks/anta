@@ -5805,7 +5805,7 @@ DATA: list[dict[str, Any]] = [
                             },
                             "v6m": {
                                 "redistributedRoutes": [
-                                    {"proto": "Dynamic", "routeMap": "RM-CONN-2-BGP"},
+                                    {"proto": "OSPFv3 External", "routeMap": "RM-CONN-2-BGP"},
                                     {"proto": "IS-IS", "includeLeaked": True, "routeMap": "RM-CONN-2-BGP"},
                                 ]
                             },
@@ -5813,15 +5813,15 @@ DATA: list[dict[str, Any]] = [
                     },
                     "test": {
                         "afiSafiConfig": {
-                            "v4u": {
+                            "v4m": {
                                 "redistributedRoutes": [
-                                    {"proto": "EOS SDK", "routeMap": "RM-CONN-2-BGP"},
+                                    {"proto": "AttachedHost", "routeMap": "RM-CONN-2-BGP"},
                                     {"proto": "OSPF Internal", "includeLeaked": True, "routeMap": "RM-CONN-2-BGP"},
                                 ]
                             },
-                            "v6m": {
+                            "v6u": {
                                 "redistributedRoutes": [
-                                    {"proto": "RIP", "routeMap": "RM-CONN-2-BGP"},
+                                    {"proto": "DHCP", "routeMap": "RM-CONN-2-BGP"},
                                     {"proto": "Bgp", "includeLeaked": True, "routeMap": "RM-CONN-2-BGP"},
                                 ]
                             },
@@ -5845,7 +5845,7 @@ DATA: list[dict[str, Any]] = [
                         {
                             "afi_safi": "IPv6 multicast",
                             "redistributed_routes": [
-                                {"proto": "Dynamic", "route_map": "RM-CONN-2-BGP"},
+                                {"proto": "OSPFv3 External", "route_map": "RM-CONN-2-BGP"},
                                 {"proto": "IS-IS", "include_leaked": True, "route_map": "RM-CONN-2-BGP"},
                             ],
                         },
@@ -5855,16 +5855,16 @@ DATA: list[dict[str, Any]] = [
                     "vrf": "test",
                     "address_families": [
                         {
-                            "afi_safi": "ipv4 Unicast",
+                            "afi_safi": "ipv4 Multicast",
                             "redistributed_routes": [
-                                {"proto": "User", "route_map": "RM-CONN-2-BGP"},
+                                {"proto": "AttachedHost", "route_map": "RM-CONN-2-BGP"},
                                 {"proto": "OSPF Internal", "include_leaked": True, "route_map": "RM-CONN-2-BGP"},
                             ],
                         },
                         {
-                            "afi_safi": "IPv6Multicast",
+                            "afi_safi": "IPv6Unicast",
                             "redistributed_routes": [
-                                {"proto": "RIP", "route_map": "RM-CONN-2-BGP"},
+                                {"proto": "DHCP", "route_map": "RM-CONN-2-BGP"},
                                 {"proto": "Bgp", "include_leaked": True, "route_map": "RM-CONN-2-BGP"},
                             ],
                         },
@@ -5948,7 +5948,8 @@ DATA: list[dict[str, Any]] = [
                 "vrfs": {
                     "default": {
                         "afiSafiConfig": {
-                            "v4m": {"redistributedRoutes": [{"proto": "RIP", "routeMap": "RM-CONN-2-BGP"}, {"proto": "IS-IS", "routeMap": "RM-MLAG-PEER-IN"}]}
+                            "v4m": {"redistributedRoutes": [{"proto": "AttachedHost", "routeMap": "RM-CONN-2-BGP"}, {"proto": "IS-IS", "routeMap": "RM-MLAG-PEER-IN"}
+                            ]}
                         }
                     },
                     "test": {
@@ -5981,7 +5982,7 @@ DATA: list[dict[str, Any]] = [
                         {
                             "afi_safi": "IPv6Unicast",
                             "redistributed_routes": [
-                                {"proto": "RIP", "route_map": "RM-CONN-2-BGP"},
+                                {"proto": "DHCP", "route_map": "RM-CONN-2-BGP"},
                                 {"proto": "Bgp", "include_leaked": True, "route_map": "RM-CONN-2-BGP"},
                             ],
                         },
@@ -5994,7 +5995,7 @@ DATA: list[dict[str, Any]] = [
             "messages": [
                 "VRF: default, AFI-SAFI: IPv4 Multicast, Proto: OSPFv3 External - Not configured",
                 "VRF: default, AFI-SAFI: IPv4 Multicast, Proto: OSPFv3 Nssa-External - Not configured",
-                "VRF: test, AFI-SAFI: IPv6 Unicast, Proto: RIP - Not configured",
+                "VRF: test, AFI-SAFI: IPv6 Unicast, Proto: DHCP - Not configured",
                 "VRF: test, AFI-SAFI: IPv6 Unicast, Proto: Bgp - Not configured",
             ],
         },
@@ -6009,7 +6010,7 @@ DATA: list[dict[str, Any]] = [
                     "test": {
                         "afiSafiConfig": {
                             "v6u": {
-                                "redistributedRoutes": [{"proto": "EOS SDK", "routeMap": "RM-MLAG-PEER-IN"}, {"proto": "OSPF Internal"}],
+                                "redistributedRoutes": [{"proto": "EOS SDK", "routeMap": "RM-MLAG-PEER-IN"}, {"proto": "DHCP"}],
                             }
                         }
                     },
@@ -6037,7 +6038,7 @@ DATA: list[dict[str, Any]] = [
                             "afi_safi": "ipv6-Unicast",
                             "redistributed_routes": [
                                 {"proto": "User", "route_map": "RM-CONN-2-BGP"},
-                                {"proto": "OSPF Internal", "route_map": "RM-CONN-2-BGP"},
+                                {"proto": "DHCP", "route_map": "RM-CONN-2-BGP"},
                             ],
                         },
                     ],
@@ -6050,7 +6051,7 @@ DATA: list[dict[str, Any]] = [
                 "VRF: default, AFI-SAFI: IPv4 Unicast, Proto: Connected, Route Map: RM-CONN-2-BGP - Route map mismatch - Actual: RM-CONN-10-BGP",
                 "VRF: default, AFI-SAFI: IPv4 Unicast, Proto: Static, Route Map: RM-CONN-2-BGP - Route map mismatch - Actual: Not Found",
                 "VRF: test, AFI-SAFI: IPv6 Unicast, Proto: EOS SDK, Route Map: RM-CONN-2-BGP - Route map mismatch - Actual: RM-MLAG-PEER-IN",
-                "VRF: test, AFI-SAFI: IPv6 Unicast, Proto: OSPF Internal, Route Map: RM-CONN-2-BGP - Route map mismatch - Actual: Not Found",
+                "VRF: test, AFI-SAFI: IPv6 Unicast, Proto: DHCP, Route Map: RM-CONN-2-BGP - Route map mismatch - Actual: Not Found",
             ],
         },
     },
@@ -6064,7 +6065,7 @@ DATA: list[dict[str, Any]] = [
                         "afiSafiConfig": {
                             "v4m": {
                                 "redistributedRoutes": [
-                                    {"proto": "Dynamic", "routeMap": "RM-CONN-2-BGP"},
+                                    {"proto": "Connected", "routeMap": "RM-CONN-2-BGP"},
                                     {"proto": "IS-IS", "includeLeaked": False, "routeMap": "RM-CONN-2-BGP"},
                                 ]
                             },
@@ -6074,7 +6075,7 @@ DATA: list[dict[str, Any]] = [
                         "afiSafiConfig": {
                             "v6u": {
                                 "redistributedRoutes": [
-                                    {"proto": "RIP", "routeMap": "RM-CONN-2-BGP"},
+                                    {"proto": "Dynamic", "routeMap": "RM-CONN-2-BGP"},
                                     {"proto": "Bgp", "includeLeaked": True, "routeMap": "RM-CONN-2-BGP"},
                                 ]
                             },
@@ -6102,7 +6103,7 @@ DATA: list[dict[str, Any]] = [
                         {
                             "afi_safi": "IPv6_unicast",
                             "redistributed_routes": [
-                                {"proto": "RIP", "route_map": "RM-CONN-2-BGP"},
+                                {"proto": "Dynamic", "route_map": "RM-CONN-2-BGP"},
                                 {"proto": "Bgp", "include_leaked": False, "route_map": "RM-CONN-2-BGP"},
                             ],
                         },
