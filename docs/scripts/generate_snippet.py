@@ -28,6 +28,8 @@ from rich.logging import RichHandler
 from rich.markup import escape
 from rich.progress import Progress
 
+sys.path.insert(0, str(pathlib.Path(__file__).parents[2]))
+
 from anta.cli.console import console
 from anta.cli.nrfu.utils import anta_progress_bar
 
@@ -78,9 +80,6 @@ def main(args: list[str], output: Literal["svg", "txt"] = "svg") -> None:
     # possibly-used-before-assignment - prog / function_name -> not understanding sys.exit here...
     # pylint: disable=E0606
     sys.argv = [prog, *args[1:]]
-    from pathlib import Path
-
-    sys.path.insert(0, str(Path(__file__).parents[2]))
     module = import_module(module_path)
     function = getattr(module, function_name)
 
