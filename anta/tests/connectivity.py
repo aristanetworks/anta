@@ -47,6 +47,7 @@ class VerifyReachability(AntaTest):
               vrf: default
               df_bit: True
               size: 100
+              expected_unreachable: true
     ```
     """
 
@@ -89,8 +90,13 @@ class VerifyReachability(AntaTest):
         self.result.is_success()
 
         for command, host in zip(self.instance_commands, self.inputs.hosts):
-            if f"{host.repeat} received" not in command.json_output["messages"][0]:
+            # Verifies the network is reachable
+            if not host.expected_unreachable and f"{host.repeat} received" not in command.json_output["messages"][0]:
                 self.result.is_failure(f"{host} - Unreachable")
+
+            # Verifies the network is unreachable.
+            if host.expected_unreachable and "0 received" not in command.json_output["messages"][0]:
+                self.result.is_failure(f"{host} - Network is expected to be unreachable but found reachable.")
 
 
 class VerifyLLDPNeighbors(AntaTest):

@@ -46,6 +46,23 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
+        "name": "success-expected-unreachable",
+        "test": VerifyReachability,
+        "eos_data": [
+            {
+                "messages": [
+                    """PING 10.0.0.1 (10.0.0.1) from 10.0.0.5 : 72(100) bytes of data.
+
+                --- 10.0.0.1 ping statistics ---
+                2 packets transmitted, 0 received, 100% packet loss, time 10ms
+                """,
+                ],
+            },
+        ],
+        "inputs": {"hosts": [{"destination": "10.0.0.1", "source": "10.0.0.5", "expected_unreachable": True}]},
+        "expected": {"result": "success"},
+    },
+    {
         "name": "success-ipv6",
         "test": VerifyReachability,
         "eos_data": [
@@ -267,6 +284,27 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "expected": {"result": "failure", "messages": ["Host: 10.0.0.1 Source: Management0 VRF: default - Unreachable"]},
+    },
+    {
+        "name": "failure-expected-unreachable",
+        "test": VerifyReachability,
+        "eos_data": [
+            {
+                "messages": [
+                    """PING 10.0.0.1 (10.0.0.1) from 10.0.0.5 : 72(100) bytes of data.
+                80 bytes from 10.0.0.1: icmp_seq=1 ttl=64 time=0.247 ms
+                80 bytes from 10.0.0.1: icmp_seq=2 ttl=64 time=0.072 ms
+
+                --- 10.0.0.1 ping statistics ---
+                2 packets transmitted, 2 received, 0% packet loss, time 0ms
+                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms, ipg/ewma 0.370/0.225 ms
+
+                """,
+                ],
+            },
+        ],
+        "inputs": {"hosts": [{"destination": "10.0.0.1", "source": "10.0.0.5", "expected_unreachable": True}]},
+        "expected": {"result": "failure", "messages": ["Host: 10.0.0.1 Source: 10.0.0.5 VRF: default - Network is expected to be unreachable but found reachable."]},
     },
     {
         "name": "success",

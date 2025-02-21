@@ -140,6 +140,7 @@ anta.tests.connectivity:
           vrf: default
           df_bit: True
           size: 100
+          expected_unreachable: true
 anta.tests.cvx:
   - VerifyActiveCVXConnections:
       # Verifies the number of active CVX Connections.
