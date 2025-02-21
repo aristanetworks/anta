@@ -122,13 +122,13 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Some neighbors are not correctly configured: [{'vrf': 'default', 'instance': '666', 'neighbor': '7.7.7.7', 'state': '2-way'},"
-                " {'vrf': 'BLAH', 'instance': '777', 'neighbor': '8.8.8.8', 'state': 'down'}].",
+                "Instance: 666 VRF: default Interface: 7.7.7.7 - Incorrect adjacency state - Expected: Full Actual: 2-way",
+                "Instance: 777 VRF: BLAH Interface: 8.8.8.8 - Incorrect adjacency state - Expected: Full Actual: down",
             ],
         },
     },
     {
-        "name": "skipped",
+        "name": "skipped-ospf-not-configured",
         "test": VerifyOSPFNeighborState,
         "eos_data": [
             {
@@ -136,7 +136,33 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": None,
-        "expected": {"result": "skipped", "messages": ["no OSPF neighbor found"]},
+        "expected": {"result": "skipped", "messages": ["OSPF not configured"]},
+    },
+    {
+        "name": "skipped-neighbor-not-found",
+        "test": VerifyOSPFNeighborState,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "instList": {
+                            "666": {
+                                "ospfNeighborEntries": [],
+                            },
+                        },
+                    },
+                    "BLAH": {
+                        "instList": {
+                            "777": {
+                                "ospfNeighborEntries": [],
+                            },
+                        },
+                    },
+                },
+            },
+        ],
+        "inputs": None,
+        "expected": {"result": "skipped", "messages": ["No OSPF neighbor detected"]},
     },
     {
         "name": "success",
@@ -194,35 +220,6 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
-        "name": "failure-wrong-number",
-        "test": VerifyOSPFNeighborCount,
-        "eos_data": [
-            {
-                "vrfs": {
-                    "default": {
-                        "instList": {
-                            "666": {
-                                "ospfNeighborEntries": [
-                                    {
-                                        "routerId": "7.7.7.7",
-                                        "priority": 1,
-                                        "drState": "DR",
-                                        "interfaceName": "Ethernet1",
-                                        "adjacencyState": "full",
-                                        "inactivity": 1683298014.844345,
-                                        "interfaceAddress": "10.3.0.1",
-                                    },
-                                ],
-                            },
-                        },
-                    },
-                },
-            },
-        ],
-        "inputs": {"number": 3},
-        "expected": {"result": "failure", "messages": ["device has 1 neighbors (expected 3)"]},
-    },
-    {
         "name": "failure-good-number-wrong-state",
         "test": VerifyOSPFNeighborCount,
         "eos_data": [
@@ -277,14 +274,11 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"number": 3},
         "expected": {
             "result": "failure",
-            "messages": [
-                "Some neighbors are not correctly configured: [{'vrf': 'default', 'instance': '666', 'neighbor': '7.7.7.7', 'state': '2-way'},"
-                " {'vrf': 'BLAH', 'instance': '777', 'neighbor': '8.8.8.8', 'state': 'down'}].",
-            ],
+            "messages": ["Neighbor count mismatch - Expected: 3 Actual: 1"],
         },
     },
     {
-        "name": "skipped",
+        "name": "skipped-ospf-not-configured",
         "test": VerifyOSPFNeighborCount,
         "eos_data": [
             {
@@ -292,7 +286,38 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"number": 3},
-        "expected": {"result": "skipped", "messages": ["no OSPF neighbor found"]},
+        "expected": {"result": "skipped", "messages": ["OSPF not configured"]},
+    },
+    {
+        "name": "skipped-no-neighbor-detected",
+        "test": VerifyOSPFNeighborCount,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "instList": {
+                            "666": {
+                                "ospfNeighborEntries": [],
+                            },
+                        },
+                    },
+                    "BLAH": {
+                        "instList": {
+                            "777": {
+                                "ospfNeighborEntries": [],
+                            },
+                        },
+                    },
+                },
+            },
+        ],
+        "inputs": {"number": 3},
+        "expected": {
+            "result": "skipped",
+            "messages": [
+                "No OSPF neighbor detected",
+            ],
+        },
     },
     {
         "name": "success",
@@ -394,7 +419,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": ["OSPF Instances ['1', '10'] crossed the maximum LSA threshold."],
+            "messages": ["Following OSPF Instances crossed the maximum LSA threshold - 1, 10"],
         },
     },
     {
@@ -406,6 +431,6 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": None,
-        "expected": {"result": "skipped", "messages": ["No OSPF instance found."]},
+        "expected": {"result": "skipped", "messages": ["OSPF not configured"]},
     },
 ]
