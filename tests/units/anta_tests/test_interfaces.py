@@ -509,8 +509,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Interface: Ethernet1/1 BPS Rate: inBpsRate - Greater threshold usage - Expected: 3.0% Actual: 10.0%",
-                "Interface: Port-Channel31 BPS Rate: outBpsRate - Greater threshold usage - Expected: 3.0% Actual: 5.0%",
+                "Interface: Ethernet1/1 BPS Rate: inBpsRate - Usage exceeds the threshold - Expected: < 3.0% Actual: 10.0%",
+                "Interface: Port-Channel31 BPS Rate: outBpsRate - Usage exceeds the threshold - Expected: < 3.0% Actual: 5.0%",
             ],
         },
     },

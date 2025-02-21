@@ -75,8 +75,9 @@ class VerifyInterfaceUtilization(AntaTest):
                 continue
 
             # If any of the member-interface is not full-duplex, test fails.
-            if (members := interface.get("memberInterfaces", None)) is not None:
+            if (members := interface.get("memberInterfaces")) is not None:
                 interface_data = [(member_interface, state) for member_interface, stats in members.items() if (state := stats["duplex"]) != duplex_full]
+
             for member_interface in interface_data:
                 self.result.is_failure(f"Interface: {intf} MemberInterface: {member_interface[0]} - Not Full-Duplex - Actual: {member_interface[1]}")
 
@@ -88,7 +89,9 @@ class VerifyInterfaceUtilization(AntaTest):
             for bps_rate in ("inBpsRate", "outBpsRate"):
                 usage = rate[bps_rate] / bandwidth * 100
                 if usage > self.inputs.threshold:
-                    self.result.is_failure(f"Interface: {intf} BPS Rate: {bps_rate} - Greater threshold usage - Expected: {self.inputs.threshold}% Actual: {usage}%")
+                    self.result.is_failure(
+                        f"Interface: {intf} BPS Rate: {bps_rate} - Usage exceeds the threshold - Expected: < {self.inputs.threshold}% Actual: {usage}%"
+                    )
 
 
 class VerifyInterfaceErrors(AntaTest):
@@ -292,7 +295,8 @@ class VerifyStormControlDrops(AntaTest):
             for traffic_type, traffic_type_dict in interface_dict["trafficTypes"].items():
                 if "drop" in traffic_type_dict and traffic_type_dict["drop"] != 0:
                     storm_controlled_interfaces.append(f"{traffic_type}: {traffic_type_dict['drop']}")
-                    self.result.is_failure(f"Interface: {interface} - Non-zero storm-control drop counter(s) - {', '.join(storm_controlled_interfaces)}")
+            if storm_controlled_interfaces:
+                self.result.is_failure(f"Interface: {interface} - Non-zero storm-control drop counter(s) - {', '.join(storm_controlled_interfaces)}")
 
 
 class VerifyPortChannels(AntaTest):
