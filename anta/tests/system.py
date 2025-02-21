@@ -190,7 +190,7 @@ class VerifyCPUUtilization(AntaTest):
         command_output = self.instance_commands[0].json_output
         command_output_data = command_output["cpuInfo"]["%Cpu(s)"]["idle"]
         if command_output_data < CPU_IDLE_THRESHOLD:
-            self.result.is_failure(f"Device has reported a high CPU utilization -  Expected: {CPU_IDLE_THRESHOLD}% Actual: {100 - command_output_data}%")
+            self.result.is_failure(f"Device has reported a high CPU utilization -  Expected: < 75% Actual: {100 - command_output_data}%")
 
 
 class VerifyMemoryUtilization(AntaTest):
@@ -219,7 +219,7 @@ class VerifyMemoryUtilization(AntaTest):
         command_output = self.instance_commands[0].json_output
         memory_usage = command_output["memFree"] / command_output["memTotal"]
         if memory_usage < MEMORY_THRESHOLD:
-            self.result.is_failure(f"Device has reported a high memory usage - Expected: {MEMORY_THRESHOLD}% Actual: {(1 - memory_usage) * 100:.2f}%")
+            self.result.is_failure(f"Device has reported a high memory usage - Expected: < 75% Actual: {(1 - memory_usage) * 100:.2f}%")
 
 
 class VerifyFileSystemUtilization(AntaTest):
@@ -278,7 +278,7 @@ class VerifyNTP(AntaTest):
             self.result.is_success()
         else:
             data = command_output.split("\n")[0]
-            self.result.is_failure(f"Device not synchronized with configured NTP server(s) - Actual: {data}")
+            self.result.is_failure(f"NTP status mismatch - Expected: synchronised Actual: {data}")
 
 
 class VerifyNTPAssociations(AntaTest):

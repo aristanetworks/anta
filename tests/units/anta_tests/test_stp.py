@@ -37,7 +37,7 @@ DATA: list[dict[str, Any]] = [
             {"spanningTreeVlanInstances": {}},
         ],
         "inputs": {"mode": "rstp", "vlans": [10, 20]},
-        "expected": {"result": "failure", "messages": ["VLAN: 10 STP mode: rstp - Not configured", "VLAN: 20 STP mode: rstp - Not configured"]},
+        "expected": {"result": "failure", "messages": ["VLAN 10 STP mode: rstp - Not configured", "VLAN 20 STP mode: rstp - Not configured"]},
     },
     {
         "name": "failure-wrong-mode",
@@ -49,7 +49,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"mode": "rstp", "vlans": [10, 20]},
         "expected": {
             "result": "failure",
-            "messages": ["VLAN: 10 - Incorrect STP mode - Expected: rstp Actual: mstp", "VLAN: 20 - Incorrect STP mode - Expected: rstp Actual: mstp"],
+            "messages": ["VLAN 10 - Incorrect STP mode - Expected: rstp Actual: mstp", "VLAN 20 - Incorrect STP mode - Expected: rstp Actual: mstp"],
         },
     },
     {
@@ -62,7 +62,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"mode": "rstp", "vlans": [10, 20]},
         "expected": {
             "result": "failure",
-            "messages": ["VLAN: 10 STP mode: rstp - Not configured", "VLAN: 20 - Incorrect STP mode - Expected: rstp Actual: mstp"],
+            "messages": ["VLAN 10 STP mode: rstp - Not configured", "VLAN 20 - Incorrect STP mode - Expected: rstp Actual: mstp"],
         },
     },
     {
@@ -163,7 +163,7 @@ DATA: list[dict[str, Any]] = [
         "test": VerifySTPForwardingPorts,
         "eos_data": [{"unmappedVlans": [], "topologies": {}}, {"unmappedVlans": [], "topologies": {}}],
         "inputs": {"vlans": [10, 20]},
-        "expected": {"result": "failure", "messages": ["VLAN: 10 - STP instance is not configured", "VLAN: 20 - STP instance is not configured"]},
+        "expected": {"result": "failure", "messages": ["VLAN 10 - STP instance is not configured", "VLAN 20 - STP instance is not configured"]},
     },
     {
         "name": "failure",
@@ -182,8 +182,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "VLAN: 10 Interface: Ethernet10 - Invalid state - Expected: forwarding Actual: discarding",
-                "VLAN: 20 Interface: Ethernet10 - Invalid state - Expected: forwarding Actual: discarding",
+                "VLAN 10 Interface: Ethernet10 - Invalid state - Expected: forwarding Actual: discarding",
+                "VLAN 20 Interface: Ethernet10 - Invalid state - Expected: forwarding Actual: discarding",
             ],
         },
     },
@@ -364,7 +364,7 @@ DATA: list[dict[str, Any]] = [
             }
         ],
         "inputs": {"priority": 32768, "instances": [11, 20]},
-        "expected": {"result": "failure", "messages": ["Instance: VL11 - Not found", "Instance: VL20 - Not found"]},
+        "expected": {"result": "failure", "messages": ["Instance: VL11 - Not configured", "Instance: VL20 - Not configured"]},
     },
     {
         "name": "failure-wrong-priority",
@@ -409,8 +409,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Instance: VL20 - Incorrect STP root priority - Expected: 32768 Actual: 8196",
-                "Instance: VL30 - Incorrect STP root priority - Expected: 32768 Actual: 8196",
+                "STP Instance: VL20 - Incorrect root priority - Expected: 32768 Actual: 8196",
+                "STP Instance: VL30 - Incorrect root priority - Expected: 32768 Actual: 8196",
             ],
         },
     },

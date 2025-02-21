@@ -63,9 +63,9 @@ class VerifySTPMode(AntaTest):
                     f"spanningTreeVlanInstances.{vlan_id}.spanningTreeVlanInstance.protocol",
                 )
             ):
-                self.result.is_failure(f"VLAN: {vlan_id} STP mode: {self.inputs.mode} - Not configured")
+                self.result.is_failure(f"VLAN {vlan_id} STP mode: {self.inputs.mode} - Not configured")
             elif stp_mode != self.inputs.mode:
-                self.result.is_failure(f"VLAN: {vlan_id} - Incorrect STP mode - Expected: {self.inputs.mode} Actual: {stp_mode}")
+                self.result.is_failure(f"VLAN {vlan_id} - Incorrect STP mode - Expected: {self.inputs.mode} Actual: {stp_mode}")
 
 
 class VerifySTPBlockedPorts(AntaTest):
@@ -172,7 +172,7 @@ class VerifySTPForwardingPorts(AntaTest):
         for command in self.instance_commands:
             vlan_id = command.params.vlan
             if not (topologies := get_value(command.json_output, "topologies")):
-                self.result.is_failure(f"VLAN: {vlan_id} - STP instance is not configured")
+                self.result.is_failure(f"VLAN {vlan_id} - STP instance is not configured")
                 continue
             for value in topologies.values():
                 if vlan_id and int(vlan_id) in value["vlans"]:
@@ -182,7 +182,7 @@ class VerifySTPForwardingPorts(AntaTest):
 
             if interfaces_state:
                 for interface, state in interfaces_state:
-                    self.result.is_failure(f"VLAN: {vlan_id} Interface: {interface} - Invalid state - Expected: forwarding Actual: {state}")
+                    self.result.is_failure(f"VLAN {vlan_id} Interface: {interface} - Invalid state - Expected: forwarding Actual: {state}")
 
 
 class VerifySTPRootPriority(AntaTest):
@@ -236,10 +236,10 @@ class VerifySTPRootPriority(AntaTest):
         check_instances = [f"{prefix}{instance_id}" for instance_id in self.inputs.instances] if self.inputs.instances else command_output["instances"].keys()
         for instance in check_instances:
             if not (instance_details := get_value(command_output, f"instances.{instance}")):
-                self.result.is_failure(f"Instance: {instance} - Not found")
+                self.result.is_failure(f"Instance: {instance} - Not configured")
                 continue
             if (priority := get_value(instance_details, "rootBridge.priority")) != self.inputs.priority:
-                self.result.is_failure(f"Instance: {instance} - Incorrect STP root priority - Expected: {self.inputs.priority} Actual: {priority}")
+                self.result.is_failure(f"STP Instance: {instance} - Incorrect root priority - Expected: {self.inputs.priority} Actual: {priority}")
 
 
 class VerifyStpTopologyChanges(AntaTest):

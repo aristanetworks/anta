@@ -190,7 +190,7 @@ EntityManager::doBackoff waiting for remote sysdb version ...................ok
             },
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Device has reported a high CPU utilization -  Expected: 25% Actual: 75.2%"]},
+        "expected": {"result": "failure", "messages": ["Device has reported a high CPU utilization -  Expected: < 75% Actual: 75.2%"]},
     },
     {
         "name": "success",
@@ -222,7 +222,7 @@ EntityManager::doBackoff waiting for remote sysdb version ...................ok
             },
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Device has reported a high memory usage - Expected: 0.25% Actual: 95.56%"]},
+        "expected": {"result": "failure", "messages": ["Device has reported a high memory usage - Expected: < 75% Actual: 95.56%"]},
     },
     {
         "name": "success",
@@ -278,7 +278,7 @@ poll interval unknown
 """,
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Device not synchronized with configured NTP server(s) - Actual: unsynchronised"]},
+        "expected": {"result": "failure", "messages": ["NTP status mismatch - Expected: synchronised Actual: unsynchronised"]},
     },
     {
         "name": "success",
