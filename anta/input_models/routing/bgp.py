@@ -316,6 +316,47 @@ class AddressFamilyConfig(BaseModel):
     redistributed_routes: list[RedistributedRouteConfig]
     """List of redistributed route configuration."""
 
+    @model_validator(mode="after")
+    def validate_afi_safi_supported_routes(self) -> Self:
+        """Validate the each address family supported redistributed protocol."""
+        mappings = {"v4u": "IPv4 Unicast", "v4m": "IPv4 Multicast", "v6u": "IPv6 Unicast", "v6m": "IPv6 Multicast"}
+
+        for routes_data in self.redistributed_routes:
+            multicast_supported_proto = [
+                "AttachedHost",
+                "Connected",
+                "IS-IS",
+                "OSPF Internal",
+                "OSPF External",
+                "OSPF Nssa-External",
+                "OSPFv3 Internal",
+                "OSPFv3 External",
+                "OSPFv3 Nssa-External",
+                "Static",
+            ]
+            if all([self.afi_safi == "v4u", routes_data.proto == "DHCP"]):
+                msg = f"Redistributed protocol 'DHCP'  is not supported for address-family '{mappings[self.afi_safi]}'"
+                raise ValueError(msg)
+
+            if self.afi_safi == "v6u" and routes_data.proto == "RIP":
+                msg = f"Redistributed protocol 'RIP'  is not supported for address-family '{mappings[self.afi_safi]}'"
+                raise ValueError(msg)
+
+            if self.afi_safi == "v6u" and routes_data.proto in ["OSPF Internal", "OSPF External", "OSPF Nssa-External"]:
+                msg = f"Redistributed protocol '{routes_data.proto}'  is not supported for address-family '{mappings[self.afi_safi]}'"
+                raise ValueError(msg)
+
+            if self.afi_safi == "v4m" and routes_data.proto not in multicast_supported_proto:
+                msg = f"Redistributed protocol '{routes_data.proto}'  is not supported for address-family '{mappings[self.afi_safi]}'"
+                raise ValueError(msg)
+
+            multicast_supported_proto.remove("AttachedHost")
+            if self.afi_safi == "v6m" and routes_data.proto not in multicast_supported_proto:
+                msg = f"Redistributed protocol '{routes_data.proto}'  is not supported for address-family '{mappings[self.afi_safi]}'"
+                raise ValueError(msg)
+
+        return self
+
     def __str__(self) -> str:
         """Return a human-readable string representation of the AddressFamilyConfig for reporting.
 
