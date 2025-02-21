@@ -43,16 +43,16 @@ repos:
           - --allow-past-years
           - --fuzzy-match-generates-todo
           - --comment-style
-          - '<!--|  ~|  -->'
+          - "<!--|  ~|  -->"
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.9.6
     hooks:
-    - id: ruff
-      name: Run Ruff linter
-      args: [ --fix ]
-    - id: ruff-format
-      name: Run Ruff formatter
+      - id: ruff
+        name: Run Ruff linter
+        args: [--fix]
+      - id: ruff-format
+        name: Run Ruff formatter
 
   - repo: https://github.com/pycqa/pylint
     rev: "v3.3.4"
@@ -62,9 +62,9 @@ repos:
         description: This hook runs pylint.
         types: [python]
         args:
-          - -rn                      # Only display messages
-          - -sn                      # Don't display the score
-          - --rcfile=pyproject.toml  # Link to config file
+          - -rn # Only display messages
+          - -sn # Don't display the score
+          - --rcfile=pyproject.toml # Link to config file
         additional_dependencies:
           - anta[cli]
           - types-PyYAML
@@ -123,5 +123,14 @@ repos:
         pass_filenames: false
         additional_dependencies:
           - anta[cli]
-          # TODO: next can go once we have it added to anta properly
-          - numpydoc
+      - id: doc-snippets
+        name: Generate doc snippets
+        entry: >-
+          sh -c "docs/scripts/generate_doc_snippets.py"
+        language: python
+        types: [python]
+        files: anta/cli/
+        verbose: true
+        pass_filenames: false
+        additional_dependencies:
+          - anta[cli]
