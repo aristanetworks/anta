@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.5">
     
     
       
@@ -2970,7 +2970,8 @@
 <li><a href="#performing-nrfu-and-saving-results-in-a-markdown-file">Markdown report</a></li>
 </ul>
 <h3 id="nrfu-command-overview">NRFU Command overview<a class="headerlink" href="#nrfu-command-overview" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>Usage:<span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>COMMAND<span class="w"> </span><span class="o">[</span>ARGS<span class="o">]</span>...
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> </span>--help
+Usage:<span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>COMMAND<span class="w"> </span><span class="o">[</span>ARGS<span class="o">]</span>...
 
 <span class="w">  </span>Run<span class="w"> </span>ANTA<span class="w"> </span>tests<span class="w"> </span>on<span class="w"> </span>selected<span class="w"> </span>inventory<span class="w"> </span>devices.
 
@@ -3048,9 +3049,10 @@ Commands:
 <h3 id="performing-nrfu-with-text-rendering">Performing NRFU with text rendering<a class="headerlink" href="#performing-nrfu-with-text-rendering" title="Permanent link">&para;</a></h3>
 <p>The <code>text</code> subcommand provides a straightforward text report for each test executed on all devices in your inventory.</p>
 <h4 id="command-overview">Command overview<a class="headerlink" href="#command-overview" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code>Usage:<span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> </span>text<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> </span>text<span class="w"> </span>--help
+Usage:<span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> </span>text<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
 
-<span class="w">  </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>states<span class="w"> </span>with<span class="w"> </span>text<span class="w"> </span>result.
+<span class="w">  </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>state<span class="w"> </span>with<span class="w"> </span>text<span class="w"> </span>results.
 
 Options:
 <span class="w">  </span>--help<span class="w">  </span>Show<span class="w"> </span>this<span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span>exit.
@@ -3062,9 +3064,10 @@ Options:
 <h3 id="performing-nrfu-with-table-rendering">Performing NRFU with table rendering<a class="headerlink" href="#performing-nrfu-with-table-rendering" title="Permanent link">&para;</a></h3>
 <p>The <code>table</code> command under the <code>anta nrfu</code> namespace offers a clear and organized table view of the test results, suitable for filtering. It also has its own set of options for better control over the output.</p>
 <h4 id="command-overview_1">Command overview<a class="headerlink" href="#command-overview_1" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code>Usage:<span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> </span>table<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> </span>table<span class="w"> </span>--help
+Usage:<span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> </span>table<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
 
-<span class="w">  </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>states<span class="w"> </span>with<span class="w"> </span>table<span class="w"> </span>result.
+<span class="w">  </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>state<span class="w"> </span>with<span class="w"> </span>table<span class="w"> </span>results.
 
 Options:
 <span class="w">  </span>--group-by<span class="w"> </span><span class="o">[</span>device<span class="p">|</span>test<span class="o">]</span><span class="w">  </span>Group<span class="w"> </span>result<span class="w"> </span>by<span class="w"> </span><span class="nb">test</span><span class="w"> </span>or<span class="w"> </span>device.
@@ -3092,10 +3095,12 @@ Options:
 <h3 id="performing-nrfu-with-json-rendering">Performing NRFU with JSON rendering<a class="headerlink" href="#performing-nrfu-with-json-rendering" title="Permanent link">&para;</a></h3>
 <p>The JSON rendering command in NRFU testing will generate an output of all test results in JSON format.</p>
 <h4 id="command-overview_2">Command overview<a class="headerlink" href="#command-overview_2" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>json<span class="w"> </span>--help
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> </span>json<span class="w"> </span>--help
 Usage:<span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> </span>json<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
 
-<span class="w">  </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>state<span class="w"> </span>with<span class="w"> </span>JSON<span class="w"> </span>result.
+<span class="w">  </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>state<span class="w"> </span>with<span class="w"> </span>JSON<span class="w"> </span>results.
+
+<span class="w">  </span>If<span class="w"> </span>no<span class="w"> </span><span class="sb">`</span>--output<span class="sb">`</span><span class="w"> </span>is<span class="w"> </span>specified,<span class="w"> </span>the<span class="w"> </span>output<span class="w"> </span>is<span class="w"> </span>printed<span class="w"> </span>to<span class="w"> </span>stdout.
 
 Options:
 <span class="w">  </span>-o,<span class="w"> </span>--output<span class="w"> </span>FILE<span class="w">  </span>Path<span class="w"> </span>to<span class="w"> </span>save<span class="w"> </span>report<span class="w"> </span>as<span class="w"> </span>a<span class="w"> </span>JSON<span class="w"> </span>file<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:
@@ -3110,14 +3115,14 @@ Options:
 <h3 id="performing-nrfu-and-saving-results-in-a-csv-file">Performing NRFU and saving results in a CSV file<a class="headerlink" href="#performing-nrfu-and-saving-results-in-a-csv-file" title="Permanent link">&para;</a></h3>
 <p>The <code>csv</code> command in NRFU testing is useful for generating a CSV file with all tests result. This file can be easily analyzed and filtered by operator for reporting purposes.</p>
 <h4 id="command-overview_3">Command overview<a class="headerlink" href="#command-overview_3" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>csv<span class="w"> </span>--help
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> </span>csv<span class="w"> </span>--help
 Usage:<span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> </span>csv<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
 
-<span class="w">  </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>states<span class="w"> </span>with<span class="w"> </span>CSV<span class="w"> </span>result.
+<span class="w">  </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>state<span class="w"> </span>with<span class="w"> </span>CSV<span class="w"> </span>report.
 
 Options:
 <span class="w">  </span>--csv-output<span class="w"> </span>FILE<span class="w">  </span>Path<span class="w"> </span>to<span class="w"> </span>save<span class="w"> </span>report<span class="w"> </span>as<span class="w"> </span>a<span class="w"> </span>CSV<span class="w"> </span>file<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:
-<span class="w">                     </span>ANTA_NRFU_CSV_CSV_OUTPUT<span class="o">]</span>
+<span class="w">                     </span>ANTA_NRFU_CSV_CSV_OUTPUT<span class="p">;</span><span class="w"> </span>required<span class="o">]</span>
 <span class="w">  </span>--help<span class="w">             </span>Show<span class="w"> </span>this<span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span>exit.
 </code></pre></div>
 <h4 id="example_2">Example<a class="headerlink" href="#example_2" title="Permanent link">&para;</a></h4>
@@ -3125,8 +3130,7 @@ Options:
 <h3 id="performing-nrfu-and-saving-results-in-a-markdown-file">Performing NRFU and saving results in a Markdown file<a class="headerlink" href="#performing-nrfu-and-saving-results-in-a-markdown-file" title="Permanent link">&para;</a></h3>
 <p>The <code>md-report</code> command in NRFU testing generates a comprehensive Markdown report containing various sections, including detailed statistics for devices and test categories.</p>
 <h4 id="command-overview_4">Command overview<a class="headerlink" href="#command-overview_4" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>md-report<span class="w"> </span>--help
-
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> </span>md-report<span class="w"> </span>--help
 Usage:<span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> </span>md-report<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
 
 <span class="w">  </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>state<span class="w"> </span>with<span class="w"> </span>Markdown<span class="w"> </span>report.
@@ -3141,10 +3145,10 @@ Options:
 <h3 id="performing-nrfu-with-custom-reports">Performing NRFU with custom reports<a class="headerlink" href="#performing-nrfu-with-custom-reports" title="Permanent link">&para;</a></h3>
 <p>ANTA offers a CLI option for creating custom reports. This leverages the Jinja2 template system, allowing you to tailor reports to your specific needs.</p>
 <h4 id="command-overview_5">Command overview<a class="headerlink" href="#command-overview_5" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code>anta<span class="w"> </span>nrfu<span class="w"> </span>tpl-report<span class="w"> </span>--help
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> </span>tpl-report<span class="w"> </span>--help
 Usage:<span class="w"> </span>anta<span class="w"> </span>nrfu<span class="w"> </span>tpl-report<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
 
-<span class="w">  </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>state<span class="w"> </span>with<span class="w"> </span>templated<span class="w"> </span>report
+<span class="w">  </span>ANTA<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>check<span class="w"> </span>network<span class="w"> </span>state<span class="w"> </span>with<span class="w"> </span>templated<span class="w"> </span>report.
 
 Options:
 <span class="w">  </span>-tpl,<span class="w"> </span>--template<span class="w"> </span>FILE<span class="w">  </span>Path<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>template<span class="w"> </span>to<span class="w"> </span>use<span class="w"> </span><span class="k">for</span><span class="w"> </span>the<span class="w"> </span>report<span class="w">  </span><span class="o">[</span>env<span class="w"> </span>var:
@@ -3198,7 +3202,7 @@ Options:
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 29, 2025</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">February 21, 2025</span>
   </span>
 
     
