@@ -30,13 +30,13 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "skipped", "messages": ["MLAG is disabled"]},
     },
     {
-        "name": "failure-negotian-status",
+        "name": "failure-negotiation-status",
         "test": VerifyMlagStatus,
         "eos_data": [{"state": "active", "negStatus": "connecting", "peerLinkStatus": "up", "localIntfStatus": "up"}],
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": ["MLAG Negotiation status mismatch - Expected: connected Actual: connecting"],
+            "messages": ["MLAG negotiation status mismatch - Expected: connected Actual: connecting"],
         },
     },
     {
@@ -189,7 +189,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"reload_delay": 300, "reload_delay_non_mlag": 330},
         "expected": {
             "result": "failure",
-            "messages": ["MLAG reload delay mismatch - Expected: 300s Actual: 400s", "Delay for non MLAG ports mismatch - Expected: 330s Actual: 430s"],
+            "messages": ["MLAG reload-delay mismatch - Expected: 300s Actual: 400s", "Delay for non-MLAG ports mismatch - Expected: 330s Actual: 430s"],
         },
     },
     {
@@ -344,7 +344,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"primary_priority": 1},
         "expected": {
             "result": "failure",
-            "messages": ["The device is not set as MLAG primary.", "The primary priority mismatch - Expected: 1 Actual: 32767"],
+            "messages": ["The device is not set as MLAG primary.", "MLAG primary priority mismatch - Expected: 1 Actual: 32767"],
         },
     },
 ]

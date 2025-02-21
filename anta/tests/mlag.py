@@ -48,11 +48,11 @@ class VerifyMlagStatus(AntaTest):
             self.result.is_skipped("MLAG is disabled")
             return
 
-        # Verifies the localIntfStatus
-        if (neg_status := command_output["negStatus"]) != "connected":
-            self.result.is_failure(f"MLAG Negotiation status mismatch - Expected: connected Actual: {neg_status}")
-
         # Verifies the negotiation status
+        if (neg_status := command_output["negStatus"]) != "connected":
+            self.result.is_failure(f"MLAG negotiation status mismatch - Expected: connected Actual: {neg_status}")
+
+        # Verifies the local interface interface status
         if (intf_state := command_output["localIntfStatus"]) != "up":
             self.result.is_failure(f"Operational state of the MLAG local interface is not correct - Expected: up Actual: {intf_state}")
 
@@ -183,11 +183,11 @@ class VerifyMlagReloadDelay(AntaTest):
 
         # Verifies the reloadDelay
         if (reload_delay := get_value(command_output, "reloadDelay")) != self.inputs.reload_delay:
-            self.result.is_failure(f"MLAG reload delay mismatch - Expected: {self.inputs.reload_delay}s Actual: {reload_delay}s")
+            self.result.is_failure(f"MLAG reload-delay mismatch - Expected: {self.inputs.reload_delay}s Actual: {reload_delay}s")
 
         # Verifies the reloadDelayNonMlag
         if (non_mlag_reload_delay := get_value(command_output, "reloadDelayNonMlag")) != self.inputs.reload_delay_non_mlag:
-            self.result.is_failure(f"Delay for non MLAG ports mismatch - Expected: {self.inputs.reload_delay_non_mlag}s Actual: {non_mlag_reload_delay}s")
+            self.result.is_failure(f"Delay for non-MLAG ports mismatch - Expected: {self.inputs.reload_delay_non_mlag}s Actual: {non_mlag_reload_delay}s")
 
 
 class VerifyMlagDualPrimary(AntaTest):
@@ -310,4 +310,4 @@ class VerifyMlagPrimaryPriority(AntaTest):
 
         # Check primary priority
         if primary_priority != self.inputs.primary_priority:
-            self.result.is_failure(f"The primary priority mismatch - Expected: {self.inputs.primary_priority} Actual: {primary_priority}")
+            self.result.is_failure(f"MLAG primary priority mismatch - Expected: {self.inputs.primary_priority} Actual: {primary_priority}")
