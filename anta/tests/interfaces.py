@@ -402,7 +402,7 @@ class VerifyLoopbackCount(AntaTest):
                 loopback_count += 1
                 if not ((status := interface_details["lineProtocolStatus"]) == "up" and interface_details["interfaceStatus"] == "connected"):
                     self.result.is_failure(
-                        f"Interface: {interface} LineProtocolStatus: up, interfaceStatus: Connected - Not up - "
+                        f"Interface: {interface} LineProtocolStatus: up interfaceStatus: Connected - Not up - Actual: "
                         f"LineProtocolStatus: {status} InterfaceStatus: {interface_details['interfaceStatus']}"
                     )
 
@@ -437,7 +437,7 @@ class VerifySVI(AntaTest):
         for interface, int_data in command_output["interfaces"].items():
             if "Vlan" in interface and not ((status := int_data["lineProtocolStatus"]) == "up" and int_data["interfaceStatus"] == "connected"):
                 self.result.is_failure(
-                    f"SVI: {interface} LineProtocolStatus: up, interfaceStatus: Connected - Not up - "
+                    f"SVI: {interface} LineProtocolStatus: up interfaceStatus: Connected - Not up - Actual: "
                     f"LineProtocolStatus: {status} InterfaceStatus: {int_data['interfaceStatus']}"
                 )
 
@@ -494,9 +494,11 @@ class VerifyL3MTU(AntaTest):
         for interface, values in command_output["interfaces"].items():
             if re.findall(r"[a-z]+", interface, re.IGNORECASE)[0] not in self.inputs.ignored_interfaces and values["forwardingModel"] == "routed":
                 if interface in specific_interfaces:
-                    invalid_mtu = [values["mtu"] for custom_data in self.inputs.specific_mtu if values["mtu"] != (expected_mtu := custom_data[interface])]
+                    invalid_mtu = next(
+                        (values["mtu"] for custom_data in self.inputs.specific_mtu if values["mtu"] != (expected_mtu := custom_data[interface])), None
+                    )
                     if invalid_mtu:
-                        self.result.is_failure(f"Interface: {interface} - Incorrect MTU - Expected: {expected_mtu} Actual: {invalid_mtu[0]}")
+                        self.result.is_failure(f"Interface: {interface} - Incorrect MTU - Expected: {expected_mtu} Actual: {invalid_mtu}")
                 # Comparison with generic setting
                 elif values["mtu"] != self.inputs.mtu:
                     self.result.is_failure(f"Interface: {interface} - Incorrect MTU - Expected: {self.inputs.mtu} Actual: {values['mtu']}")

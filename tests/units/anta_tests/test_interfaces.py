@@ -1430,7 +1430,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Interface: Loopback666 LineProtocolStatus: up, interfaceStatus: Connected - Not up - LineProtocolStatus: down InterfaceStatus: notconnect"
+                "Interface: Loopback666 LineProtocolStatus: up interfaceStatus: Connected - Not up - Actual: LineProtocolStatus: down InterfaceStatus: notconnect"
             ],
         },
     },
@@ -1494,7 +1494,9 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": ["SVI: Vlan42 LineProtocolStatus: up, interfaceStatus: Connected - Not up - LineProtocolStatus: lowerLayerDown InterfaceStatus: notconnect"],
+            "messages": [
+                "SVI: Vlan42 LineProtocolStatus: up interfaceStatus: Connected - Not up - Actual: LineProtocolStatus: lowerLayerDown InterfaceStatus: notconnect"
+            ],
         },
     },
     {
