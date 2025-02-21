@@ -48,8 +48,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Interface: 1 - Transceivers are from unapproved manufacturers - Expected: Arista Actual: Arista Networks",
-                "Interface: 2 - Transceivers are from unapproved manufacturers - Expected: Arista Actual: Arista Networks",
+                "Interface: 1 - Transceiver is from unapproved manufacturers - Expected: Arista Actual: Arista Networks",
+                "Interface: 2 - Transceiver is from unapproved manufacturers - Expected: Arista Actual: Arista Networks",
             ],
         },
     },
@@ -178,7 +178,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": ["Sensor: DomTemperatureSensor54 - Non-zero alert-count - Actual: 1"],
+            "messages": ["Sensor: DomTemperatureSensor54 - Non-zero alert counter - Actual: 1"],
         },
     },
     {

@@ -54,7 +54,7 @@ class VerifyTransceiversManufacturers(AntaTest):
         for interface, value in command_output["xcvrSlots"].items():
             if value["mfgName"] not in self.inputs.manufacturers:
                 self.result.is_failure(
-                    f"Interface: {interface} - Transceivers are from unapproved manufacturers - Expected: {', '.join(self.inputs.manufacturers)}"
+                    f"Interface: {interface} - Transceiver is from unapproved manufacturers - Expected: {', '.join(self.inputs.manufacturers)}"
                     f" Actual: {value['mfgName']}"
                 )
 
@@ -119,7 +119,7 @@ class VerifyTransceiversTemperature(AntaTest):
             if sensor["hwStatus"] != "ok":
                 self.result.is_failure(f"Sensor: {sensor['name']} - Invalid Hardware State - Expected: ok Actual: {sensor['hwStatus']}")
             if sensor["alertCount"] != 0:
-                self.result.is_failure(f"Sensor: {sensor['name']} - Non-zero alert-count - Actual: {sensor['alertCount']}")
+                self.result.is_failure(f"Sensor: {sensor['name']} - Non-zero alert counter - Actual: {sensor['alertCount']}")
 
 
 class VerifyEnvironmentSystemCooling(AntaTest):
