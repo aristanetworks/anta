@@ -20,7 +20,6 @@ import httpx
 # -----------------------------------------------------------------------------
 # Private Imports
 # -----------------------------------------------------------------------------
-from .aio_portcheck import port_check_url
 from .config_session import SessionConfig
 from .errors import EapiCommandError
 
@@ -50,6 +49,7 @@ class Device(httpx.AsyncClient):
     """
 
     auth = None
+    EAPI_COMMAND_API_URL = "/command-api"
     EAPI_OFMT_OPTIONS = ("json", "text")
     EAPI_DEFAULT_OFMT = "json"
 
@@ -109,7 +109,7 @@ class Device(httpx.AsyncClient):
         self.headers["Content-Type"] = "application/json-rpc"
 
     async def check_connection(self) -> bool:
-        """Check the target device to ensure that the eAPI port is open and accepting connections.
+        """Check the target device eAPI HTTP endpoint with a HEAD request.
 
         It is recommended that a Caller checks the connection before involving cli commands,
         but this step is not required.
@@ -117,9 +117,12 @@ class Device(httpx.AsyncClient):
         Returns
         -------
         bool
-            True when the device eAPI is accessible, False otherwise.
+            True when the device eAPI HTTP endpoint is accessible (2xx status code),
+            otherwise an HTTPStatusError exception is raised.
         """
-        return await port_check_url(self.base_url)
+        response = await self.head(self.EAPI_COMMAND_API_URL, timeout=5)
+        response.raise_for_status()
+        return True
 
     async def cli(
         self,
@@ -278,7 +281,7 @@ class Device(httpx.AsyncClient):
             The list of command results; either dict or text depending on the
             JSON-RPC format parameter.
         """
-        res = await self.post("/command-api", json=jsonrpc)
+        res = await self.post(self.EAPI_COMMAND_API_URL, json=jsonrpc)
         res.raise_for_status()
         body = res.json()
 
