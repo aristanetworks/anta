@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 
 
 class VerifySnmpStatus(AntaTest):
-    """Verifies whether the SNMP agent is enabled in a specified VRF.
+    """Verifies if the SNMP agent is enabled.
 
     Expected Results
     ----------------
@@ -37,7 +37,6 @@ class VerifySnmpStatus(AntaTest):
     ```
     """
 
-    description = "Verifies if the SNMP agent is enabled."
     categories: ClassVar[list[str]] = ["snmp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show snmp", revision=1)]
 
@@ -50,15 +49,14 @@ class VerifySnmpStatus(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifySnmpStatus."""
+        self.result.is_success()
         command_output = self.instance_commands[0].json_output
-        if command_output["enabled"] and self.inputs.vrf in command_output["vrfs"]["snmpVrfs"]:
-            self.result.is_success()
-        else:
-            self.result.is_failure(f"SNMP agent disabled in vrf {self.inputs.vrf}")
+        if not (command_output["enabled"] and self.inputs.vrf in command_output["vrfs"]["snmpVrfs"]):
+            self.result.is_failure(f"VRF: {self.inputs.vrf} - SNMP agent disabled")
 
 
 class VerifySnmpIPv4Acl(AntaTest):
-    """Verifies if the SNMP agent has the right number IPv4 ACL(s) configured for a specified VRF.
+    """Verifies if the SNMP agent has IPv4 ACL(s) configured.
 
     Expected Results
     ----------------
@@ -75,7 +73,6 @@ class VerifySnmpIPv4Acl(AntaTest):
     ```
     """
 
-    description = "Verifies if the SNMP agent has IPv4 ACL(s) configured."
     categories: ClassVar[list[str]] = ["snmp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show snmp ipv4 access-list summary", revision=1)]
 
@@ -90,23 +87,22 @@ class VerifySnmpIPv4Acl(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifySnmpIPv4Acl."""
+        self.result.is_success()
         command_output = self.instance_commands[0].json_output
         ipv4_acl_list = command_output["ipAclList"]["aclList"]
         ipv4_acl_number = len(ipv4_acl_list)
         if ipv4_acl_number != self.inputs.number:
-            self.result.is_failure(f"Expected {self.inputs.number} SNMP IPv4 ACL(s) in vrf {self.inputs.vrf} but got {ipv4_acl_number}")
+            self.result.is_failure(f"VRF: {self.inputs.vrf} - Incorrect SNMP IPv4 ACL(s) - Expected: {self.inputs.number} Actual: {ipv4_acl_number}")
             return
 
         not_configured_acl = [acl["name"] for acl in ipv4_acl_list if self.inputs.vrf not in acl["configuredVrfs"] or self.inputs.vrf not in acl["activeVrfs"]]
 
         if not_configured_acl:
-            self.result.is_failure(f"SNMP IPv4 ACL(s) not configured or active in vrf {self.inputs.vrf}: {not_configured_acl}")
-        else:
-            self.result.is_success()
+            self.result.is_failure(f"VRF: {self.inputs.vrf} - Following SNMP IPv4 ACL(s) not configured or active: {', '.join(not_configured_acl)}")
 
 
 class VerifySnmpIPv6Acl(AntaTest):
-    """Verifies if the SNMP agent has the right number IPv6 ACL(s) configured for a specified VRF.
+    """Verifies if the SNMP agent has IPv6 ACL(s) configured.
 
     Expected Results
     ----------------
@@ -123,7 +119,6 @@ class VerifySnmpIPv6Acl(AntaTest):
     ```
     """
 
-    description = "Verifies if the SNMP agent has IPv6 ACL(s) configured."
     categories: ClassVar[list[str]] = ["snmp"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show snmp ipv6 access-list summary", revision=1)]
 
@@ -139,18 +134,17 @@ class VerifySnmpIPv6Acl(AntaTest):
     def test(self) -> None:
         """Main test function for VerifySnmpIPv6Acl."""
         command_output = self.instance_commands[0].json_output
+        self.result.is_success()
         ipv6_acl_list = command_output["ipv6AclList"]["aclList"]
         ipv6_acl_number = len(ipv6_acl_list)
         if ipv6_acl_number != self.inputs.number:
-            self.result.is_failure(f"Expected {self.inputs.number} SNMP IPv6 ACL(s) in vrf {self.inputs.vrf} but got {ipv6_acl_number}")
+            self.result.is_failure(f"VRF: {self.inputs.vrf} - Incorrect SNMP IPv6 ACL(s) - Expected: {self.inputs.number} Actual: {ipv6_acl_number}")
             return
 
         acl_not_configured = [acl["name"] for acl in ipv6_acl_list if self.inputs.vrf not in acl["configuredVrfs"] or self.inputs.vrf not in acl["activeVrfs"]]
 
         if acl_not_configured:
-            self.result.is_failure(f"SNMP IPv6 ACL(s) not configured or active in vrf {self.inputs.vrf}: {acl_not_configured}")
-        else:
-            self.result.is_success()
+            self.result.is_failure(f"VRF: {self.inputs.vrf} - Following SNMP IPv6 ACL(s) not configured or active: {', '.join(acl_not_configured)}")
 
 
 class VerifySnmpLocation(AntaTest):
@@ -182,6 +176,7 @@ class VerifySnmpLocation(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifySnmpLocation."""
+        self.result.is_success()
         # Verifies the SNMP location is configured.
         if not (location := get_value(self.instance_commands[0].json_output, "location.location")):
             self.result.is_failure("SNMP location is not configured.")
@@ -189,9 +184,7 @@ class VerifySnmpLocation(AntaTest):
 
         # Verifies the expected SNMP location.
         if location != self.inputs.location:
-            self.result.is_failure(f"Expected `{self.inputs.location}` as the location, but found `{location}` instead.")
-        else:
-            self.result.is_success()
+            self.result.is_failure(f"Incorrect SNMP location - Expected: {self.inputs.location} Actual: {location}")
 
 
 class VerifySnmpContact(AntaTest):
@@ -223,6 +216,7 @@ class VerifySnmpContact(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifySnmpContact."""
+        self.result.is_success()
         # Verifies the SNMP contact is configured.
         if not (contact := get_value(self.instance_commands[0].json_output, "contact.contact")):
             self.result.is_failure("SNMP contact is not configured.")
@@ -230,9 +224,7 @@ class VerifySnmpContact(AntaTest):
 
         # Verifies the expected SNMP contact.
         if contact != self.inputs.contact:
-            self.result.is_failure(f"Expected `{self.inputs.contact}` as the contact, but found `{contact}` instead.")
-        else:
-            self.result.is_success()
+            self.result.is_failure(f"Incorrect SNMP contact - Expected: {self.inputs.contact} Actual: {contact}")
 
 
 class VerifySnmpPDUCounters(AntaTest):
@@ -269,6 +261,7 @@ class VerifySnmpPDUCounters(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifySnmpPDUCounters."""
+        self.result.is_success()
         snmp_pdus = self.inputs.pdus
         command_output = self.instance_commands[0].json_output
 
@@ -281,13 +274,11 @@ class VerifySnmpPDUCounters(AntaTest):
         if not snmp_pdus:
             snmp_pdus = list(get_args(SnmpPdu))
 
-        failures = {pdu: value for pdu in snmp_pdus if (value := pdu_counters.get(pdu, "Not Found")) == "Not Found" or value == 0}
+        failures = {pdu for pdu in snmp_pdus if (value := pdu_counters.get(pdu, "Not Found")) == "Not Found" or value == 0}
 
         # Check if any failures
-        if not failures:
-            self.result.is_success()
-        else:
-            self.result.is_failure(f"The following SNMP PDU counters are not found or have zero PDU counters:\n{failures}")
+        if failures:
+            self.result.is_failure(f"The following SNMP PDU counters are not found or have zero PDU counters: {', '.join(sorted(failures))}")
 
 
 class VerifySnmpErrorCounters(AntaTest):
@@ -323,6 +314,7 @@ class VerifySnmpErrorCounters(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifySnmpErrorCounters."""
+        self.result.is_success()
         error_counters = self.inputs.error_counters
         command_output = self.instance_commands[0].json_output
 
@@ -335,13 +327,11 @@ class VerifySnmpErrorCounters(AntaTest):
         if not error_counters:
             error_counters = list(get_args(SnmpErrorCounter))
 
-        error_counters_not_ok = {counter: value for counter in error_counters if (value := snmp_counters.get(counter))}
+        error_counters_not_ok = {counter for counter in error_counters if snmp_counters.get(counter)}
 
         # Check if any failures
-        if not error_counters_not_ok:
-            self.result.is_success()
-        else:
-            self.result.is_failure(f"The following SNMP error counters are not found or have non-zero error counters:\n{error_counters_not_ok}")
+        if error_counters_not_ok:
+            self.result.is_failure(f"The following SNMP error counters are not found or have non-zero error counters: {', '.join(sorted(error_counters_not_ok))}")
 
 
 class VerifySnmpHostLogging(AntaTest):

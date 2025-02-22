@@ -33,6 +33,10 @@ logger = logging.getLogger(__name__)
 # https://github.com/pyca/cryptography/issues/7236#issuecomment-1131908472
 CLIENT_KEYS = asyncssh.public_key.load_default_keypairs()
 
+# Limit concurrency to 100 requests (HTTPX default) to avoid high-concurrency performance issues
+# See: https://github.com/encode/httpx/issues/3215
+MAX_CONCURRENT_REQUESTS = 100
+
 
 class AntaCache:
     """Class to be used as cache.
@@ -305,6 +309,7 @@ class AntaDevice(ABC):
         raise NotImplementedError(msg)
 
 
+# pylint: disable=too-many-instance-attributes
 class AsyncEOSDevice(AntaDevice):
     """Implementation of AntaDevice for EOS using the `asynceapi` library, which is built on HTTPX.
 
@@ -412,6 +417,10 @@ class AsyncEOSDevice(AntaDevice):
             ssh_settings["known_hosts"] = None
         self._ssh_opts: SSHClientConnectionOptions = SSHClientConnectionOptions(**ssh_settings)
 
+        # In Python 3.9, Semaphore must be created within a running event loop
+        # TODO: Once we drop Python 3.9 support, initialize the semaphore here
+        self._command_semaphore: asyncio.Semaphore | None = None
+
     def __rich_repr__(self) -> Generator[tuple[str, Any]]:
         """Implement Rich Repr Protocol.
 
@@ -464,6 +473,15 @@ class AsyncEOSDevice(AntaDevice):
         except AttributeError:
             return None
 
+    async def _get_semaphore(self) -> asyncio.Semaphore:
+        """Return the semaphore, initializing it if needed.
+
+        TODO: Remove this method once we drop Python 3.9 support.
+        """
+        if self._command_semaphore is None:
+            self._command_semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
+        return self._command_semaphore
+
     async def _collect(self, command: AntaCommand, *, collection_id: str | None = None) -> None:
         """Collect device command output from EOS using aio-eapi.
 
@@ -478,61 +496,63 @@ class AsyncEOSDevice(AntaDevice):
         collection_id
             An identifier used to build the eAPI request ID.
         """
-        commands: list[dict[str, str | int]] = []
-        if self.enable and self._enable_password is not None:
-            commands.append(
-                {
-                    "cmd": "enable",
-                    "input": str(self._enable_password),
-                },
-            )
-        elif self.enable:
-            # No password
-            commands.append({"cmd": "enable"})
-        commands += [{"cmd": command.command, "revision": command.revision}] if command.revision else [{"cmd": command.command}]
-        try:
-            response: list[dict[str, Any] | str] = await self._session.cli(
-                commands=commands,
-                ofmt=command.ofmt,
-                version=command.version,
-                req_id=f"ANTA-{collection_id}-{id(command)}" if collection_id else f"ANTA-{id(command)}",
-            )  # type: ignore[assignment] # multiple commands returns a list
-            # Do not keep response of 'enable' command
-            command.output = response[-1]
-        except asynceapi.EapiCommandError as e:
-            # This block catches exceptions related to EOS issuing an error.
-            self._log_eapi_command_error(command, e)
-        except TimeoutException as e:
-            # This block catches Timeout exceptions.
-            command.errors = [exc_to_str(e)]
-            timeouts = self._session.timeout.as_dict()
-            logger.error(
-                "%s occurred while sending a command to %s.\n"
-                "Current timeouts: Connect: %s | Read: %s | Write: %s | Pool: %s\n"
-                "You can either increase the global timeout or configure specific timeout behaviors. "
-                "See Scaling ANTA documentation for details: "
-                "https://anta.arista.com/stable/advanced_usages/scaling/",
-                exc_to_str(e),
-                self.name,
-                timeouts["connect"],
-                timeouts["read"],
-                timeouts["write"],
-                timeouts["pool"],
-            )
-        except (ConnectError, OSError) as e:
-            # This block catches OSError and socket issues related exceptions.
-            command.errors = [exc_to_str(e)]
-            if (isinstance(exc := e.__cause__, httpcore.ConnectError) and isinstance(os_error := exc.__context__, OSError)) or isinstance(os_error := e, OSError):  # pylint: disable=no-member
-                if isinstance(os_error.__cause__, OSError):
-                    os_error = os_error.__cause__
-                logger.error("A local OS error occurred while connecting to %s: %s.", self.name, os_error)
-            else:
+        semaphore = await self._get_semaphore()
+
+        async with semaphore:
+            commands: list[dict[str, str | int]] = []
+            if self.enable and self._enable_password is not None:
+                commands.append(
+                    {
+                        "cmd": "enable",
+                        "input": str(self._enable_password),
+                    },
+                )
+            elif self.enable:
+                # No password
+                commands.append({"cmd": "enable"})
+            commands += [{"cmd": command.command, "revision": command.revision}] if command.revision else [{"cmd": command.command}]
+            try:
+                response: list[dict[str, Any] | str] = await self._session.cli(
+                    commands=commands,
+                    ofmt=command.ofmt,
+                    version=command.version,
+                    req_id=f"ANTA-{collection_id}-{id(command)}" if collection_id else f"ANTA-{id(command)}",
+                )  # type: ignore[assignment] # multiple commands returns a list
+                # Do not keep response of 'enable' command
+                command.output = response[-1]
+            except asynceapi.EapiCommandError as e:
+                # This block catches exceptions related to EOS issuing an error.
+                self._log_eapi_command_error(command, e)
+            except TimeoutException as e:
+                # This block catches Timeout exceptions.
+                command.errors = [exc_to_str(e)]
+                timeouts = self._session.timeout.as_dict()
+                logger.error(
+                    "%s occurred while sending a command to %s. Consider increasing the timeout.\nCurrent timeouts: Connect: %s | Read: %s | Write: %s | Pool: %s",
+                    exc_to_str(e),
+                    self.name,
+                    timeouts["connect"],
+                    timeouts["read"],
+                    timeouts["write"],
+                    timeouts["pool"],
+                )
+            except (ConnectError, OSError) as e:
+                # This block catches OSError and socket issues related exceptions.
+                command.errors = [exc_to_str(e)]
+                # pylint: disable=no-member
+                if (isinstance(exc := e.__cause__, httpcore.ConnectError) and isinstance(os_error := exc.__context__, OSError)) or isinstance(
+                    os_error := e, OSError
+                ):
+                    if isinstance(os_error.__cause__, OSError):
+                        os_error = os_error.__cause__
+                    logger.error("A local OS error occurred while connecting to %s: %s.", self.name, os_error)
+                else:
+                    anta_log_exception(e, f"An error occurred while issuing an eAPI request to {self.name}", logger)
+            except HTTPError as e:
+                # This block catches most of the httpx Exceptions and logs a general message.
+                command.errors = [exc_to_str(e)]
                 anta_log_exception(e, f"An error occurred while issuing an eAPI request to {self.name}", logger)
-        except HTTPError as e:
-            # This block catches most of the httpx Exceptions and logs a general message.
-            command.errors = [exc_to_str(e)]
-            anta_log_exception(e, f"An error occurred while issuing an eAPI request to {self.name}", logger)
-        logger.debug("%s: %s", self.name, command)
+            logger.debug("%s: %s", self.name, command)
 
     def _log_eapi_command_error(self, command: AntaCommand, e: asynceapi.EapiCommandError) -> None:
         """Appropriately log the eapi command error."""
