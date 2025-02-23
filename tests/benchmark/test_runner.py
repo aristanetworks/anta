@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Any
 
 import pytest
 
-from anta._runner import AntaRunner, AntaRunnerScope
+from anta._runner import AntaRunner, AntaRunnerFilter
 from anta.result_manager import ResultManager
 from anta.runner import get_coroutines, prepare_tests
 
@@ -68,7 +68,7 @@ def test_setup_tests(benchmark: BenchmarkFixture, catalog: AntaCatalog, inventor
 
     def bench() -> bool:
         catalog.clear_indexes()
-        return runner._setup_tests(scope=AntaRunnerScope())
+        return runner._setup_tests(scope=AntaRunnerFilter())
 
     benchmark(bench)
 

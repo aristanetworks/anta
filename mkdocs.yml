@@ -185,10 +185,9 @@ nav:
       - Debug commands: cli/debug.md
       - Tag Management: cli/tag-management.md
   - Advanced Usages:
+    - Caching in ANTA: advanced_usages/caching.md
     - Developing ANTA tests: advanced_usages/custom-tests.md
     - ANTA as a Python Library: advanced_usages/as-python-lib.md
-    - Caching in ANTA: advanced_usages/caching.md
-    - Scaling ANTA: advanced_usages/scaling.md
   - Tests Documentation:
       - Overview: api/tests.md
       - AAA: api/tests/aaa.md

@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING, Any
 from typing_extensions import deprecated
 
 from anta import GITHUB_SUGGESTION
-from anta._runner import AntaRunner, AntaRunnerScope
+from anta._runner import AntaRunner, AntaRunnerFilter
 from anta.logger import anta_log_exception, exc_to_str
 from anta.tools import Catchtime, cprofile
 
@@ -256,7 +256,7 @@ async def main(
         Build the list of coroutine to run and stop before test execution.
     """
     runner = AntaRunner(inventory=inventory, catalog=catalog, manager=manager)
-    scope = AntaRunnerScope(
+    scope = AntaRunnerFilter(
         devices=devices,
         tests=tests,
         tags=tags,

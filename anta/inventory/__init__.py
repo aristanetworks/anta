@@ -9,7 +9,7 @@ import asyncio
 import logging
 from ipaddress import ip_address, ip_network
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import Any, ClassVar
 
 from pydantic import ValidationError
 from yaml import YAMLError, safe_load
@@ -18,9 +18,6 @@ from anta.device import AntaDevice, AsyncEOSDevice
 from anta.inventory.exceptions import InventoryIncorrectSchemaError, InventoryRootKeyError
 from anta.inventory.models import AntaInventoryInput
 from anta.logger import anta_log_exception
-
-if TYPE_CHECKING:
-    from httpx import Limits, Timeout
 
 logger = logging.getLogger(__name__)
 
@@ -180,8 +177,7 @@ class AntaInventory(dict[str, AntaDevice]):
         username: str,
         password: str,
         enable_password: str | None = None,
-        timeout: Timeout | float | None = None,
-        limits: Limits | None = None,
+        timeout: float | None = 30.0,
         *,
         enable: bool = False,
         insecure: bool = False,
@@ -203,9 +199,6 @@ class AntaInventory(dict[str, AntaDevice]):
             Enable password to use if required.
         timeout
             Global timeout value in seconds for outgoing eAPI calls. None means no timeout.
-            Can also provide an HTTPX Timeout object for fine-grained timeout configuration.
-        limits
-            HTTPX Limits object for connection pooling configuration.
         enable
             Whether or not the commands need to be run in enable mode towards the devices.
         insecure
@@ -228,7 +221,6 @@ class AntaInventory(dict[str, AntaDevice]):
             "enable": enable,
             "enable_password": enable_password,
             "timeout": timeout,
-            "limits": limits,
             "insecure": insecure,
             "disable_cache": disable_cache,
         }

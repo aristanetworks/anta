@@ -5,13 +5,12 @@
 
 from __future__ import annotations
 
-import asyncio
 import logging
 from collections import defaultdict
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, PrivateAttr
 
 from anta import GITHUB_SUGGESTION
 from anta.catalog import AntaCatalog, AntaTestDefinition
@@ -21,11 +20,10 @@ from anta.inventory import AntaInventory
 from anta.logger import anta_log_exception
 from anta.models import AntaTest
 from anta.result_manager import ResultManager
-from anta.settings import get_file_descriptor_limit, get_max_concurrency
-from anta.tools import Catchtime
+from anta.settings import AntaRunnerSettings
+from anta.tools import Catchtime, limit_concurrency
 
 if TYPE_CHECKING:
-    from asyncio import Task
     from collections.abc import AsyncGenerator, Coroutine
 
     from anta.result_manager.models import TestResult
@@ -35,7 +33,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass(frozen=True)
 class AntaRunnerInventoryStats:
-    """Store inventory filtering statistics for an ANTA run.
+    """Store inventory filtering statistics of an ANTA run.
 
     This class maintains counters for tracking how the device inventory is filtered
     during test setup.
@@ -59,26 +57,26 @@ class AntaRunnerInventoryStats:
     established: int
 
 
-class AntaRunnerScope(BaseModel):
-    """Define the scope of an ANTA test run.
+class AntaRunnerFilter(BaseModel):
+    """Define a filter for an ANTA run.
 
-    The scope determines which devices and tests to include in a run, and how to
-    filter them. This class is used with the AntaRunner.run() method.
+    The filter determines which devices and tests to include in a run, and how to
+    filter them with tags. This class is used with the `AntaRunner.run()` method.
 
     Attributes
     ----------
     devices : set[str] | None, optional
-        Set of device names to run tests on. If None, includes all devices in
+        Set of device names to run tests on. If `None`, includes all devices in
         the inventory. Commonly set via the NRFU CLI `--device/-d` option.
     tests : set[str] | None, optional
-        Set of test names to run. If None, runs all available tests in the
+        Set of test names to run. If `None`, runs all available tests in the
         catalog. Commonly set via the NRFU CLI `--test/-t` option.
     tags : set[str] | None, optional
         Set of tags used to filter both devices and tests. A device or test
         must match any of the provided tags to be included. Commonly set via
         the NRFU CLI `--tags` option.
     established_only : bool, default=True
-        When True, only includes devices with established connections in the
+        When `True`, only includes devices with established connections in the
         test run.
     """
 
@@ -102,17 +100,9 @@ class AntaRunner(BaseModel):
     catalog : AntaCatalog
         Catalog of available tests to run.
     manager : ResultManager | None, optional
-        Manager for collecting and storing test results. If None, a new manager
+        Manager for collecting and storing test results. If `None`, a new manager
         is returned for each run, otherwise the provided manager is used
         and results from subsequent runs are appended to it.
-    max_concurrency : int
-        Maximum number of tests that can run concurrently. Defaults from `get_max_concurrency()`.
-        See the `anta.settings` module for details on how this value is determined from
-        environment variables and system defaults.
-    file_descriptor_limit : int
-        System file descriptor limit for connections. Defaults from `get_file_descriptor_limit()`.
-        See the `anta.settings` module for details on how this value is determined from
-        environment variables and system defaults.
     _selected_inventory : AntaInventory | None
         Internal state of filtered inventory for current run.
     _selected_tests : defaultdict[AntaDevice, set[AntaTestDefinition]] | None
@@ -123,7 +113,10 @@ class AntaRunner(BaseModel):
         Total number of tests to run in current execution.
     _potential_connections : float | None
         Total potential concurrent connections needed for current run.
-        None if unknown, float('inf') if unlimited.
+        `None` if unknown, `float('inf')` if unlimited.
+    _settings : AntaRunnerSettings
+        Internal settings loaded from environment variables. See the class definition
+        in the `anta.settings` module for details.
 
     Notes
     -----
@@ -131,7 +124,7 @@ class AntaRunner(BaseModel):
     the `run()` method. This method manages the complete test lifecycle including setup,
     execution, and cleanup.
 
-    All internal methods and state (prefixed with _) are managed by the `run()` method
+    All internal methods and state (prefixed with `_`) are managed by the `run()` method
     and should not be called directly. The internal state is reset between runs to
     ensure clean execution.
 
@@ -141,7 +134,7 @@ class AntaRunner(BaseModel):
     ```python
     import asyncio
 
-    from anta._runner import AntaRunner, AntaRunnerScope
+    from anta._runner import AntaRunner, AntaRunnerFilter
     from anta.catalog import AntaCatalog
     from anta.inventory import AntaInventory
 
@@ -159,7 +152,7 @@ class AntaRunner(BaseModel):
     first_run_results = asyncio.run(runner.run())
 
     # Run with filters
-    second_run_results = asyncio.run(runner.run(scope=AntaRunnerScope(tags={"leaf"})))
+    second_run_results = asyncio.run(runner.run(scope=AntaRunnerFilter(tags={"leaf"})))
     ```
     """
 
@@ -167,15 +160,16 @@ class AntaRunner(BaseModel):
     inventory: AntaInventory
     catalog: AntaCatalog
     manager: ResultManager | None = None
-    max_concurrency: int = Field(default_factory=get_max_concurrency)
-    file_descriptor_limit: int = Field(default_factory=get_file_descriptor_limit)
 
     # Internal attributes set during setup phases before each run
-    _selected_inventory: AntaInventory | None = None
-    _selected_tests: defaultdict[AntaDevice, set[AntaTestDefinition]] | None = None
-    _inventory_stats: AntaRunnerInventoryStats | None = None
-    _total_tests: int = 0
-    _potential_connections: float | None = None
+    _selected_inventory: AntaInventory | None = PrivateAttr(default=None)
+    _selected_tests: defaultdict[AntaDevice, set[AntaTestDefinition]] | None = PrivateAttr(default=None)
+    _inventory_stats: AntaRunnerInventoryStats | None = PrivateAttr(default=None)
+    _total_tests: int = PrivateAttr(default=0)
+    _potential_connections: float | None = PrivateAttr(default=None)
+
+    # Internal settings loaded from environment variables
+    _settings: AntaRunnerSettings = PrivateAttr(default_factory=AntaRunnerSettings)
 
     def reset(self) -> None:
         """Reset the internal attributes of the ANTA runner."""
@@ -185,17 +179,17 @@ class AntaRunner(BaseModel):
         self._total_tests: int = 0
         self._potential_connections: float | None = None
 
-    async def run(self, scope: AntaRunnerScope | None = None, *, dry_run: bool = False) -> ResultManager:
+    async def run(self, filters: AntaRunnerFilter | None = None, *, dry_run: bool = False) -> ResultManager:
         """Run ANTA.
 
         Parameters
         ----------
-        scope
-            Scope of the ANTA run. If None, runs all tests on all devices.
+        filters
+            Filters for the ANTA run. If None, runs all tests on all devices.
         dry_run
             Dry-run mode flag. If True, runs all setup steps but does not execute tests.
         """
-        scope = scope or AntaRunnerScope()
+        filters = filters or AntaRunnerFilter()
 
         # Cleanup the instance before each run
         self.reset()
@@ -208,23 +202,23 @@ class AntaRunner(BaseModel):
 
         with Catchtime(logger=logger, message="Preparing ANTA NRFU Run"):
             # Set up inventory
-            if not await self._setup_inventory(scope, dry_run=dry_run):
+            if not await self._setup_inventory(filters, dry_run=dry_run):
                 return manager
 
             # Set up tests
             with Catchtime(logger=logger, message="Preparing Tests"):
-                if not self._setup_tests(scope):
+                if not self._setup_tests(filters):
                     return manager
 
-            # Set up test coroutines
-            generator = self._setup_coroutines(manager=manager if dry_run else None)
+            # Build the test generator
+            test_generator = self._test_generator(manager if dry_run else None)
 
             # Log run information
             self._log_run_information(dry_run=dry_run)
 
         if dry_run:
             logger.info("Dry-run mode, exiting before running the tests.")
-            async for test in generator:
+            async for test in test_generator:
                 test.close()
             return manager
 
@@ -232,13 +226,13 @@ class AntaRunner(BaseModel):
             AntaTest.nrfu_task = AntaTest.progress.add_task("Running NRFU Tests...", total=self._total_tests)
 
         with Catchtime(logger=logger, message="Running Tests"):
-            async for result in self._run(generator):
-                manager.add(result)
+            async for result in limit_concurrency(test_generator, limit=self._settings.max_concurrency):
+                manager.add(await result)
 
         self._log_cache_statistics()
         return manager
 
-    async def _setup_inventory(self, scope: AntaRunnerScope, *, dry_run: bool = False) -> bool:
+    async def _setup_inventory(self, filters: AntaRunnerFilter, *, dry_run: bool = False) -> bool:
         """Set up the inventory for the ANTA run."""
         total_devices = len(self.inventory)
 
@@ -254,7 +248,7 @@ class AntaRunner(BaseModel):
             return False
 
         # Filter the inventory based on the CLI provided tags and devices if any
-        filtered_inventory = self.inventory.get_inventory(tags=scope.tags, devices=scope.devices) if scope.tags or scope.devices else self.inventory
+        filtered_inventory = self.inventory.get_inventory(tags=filters.tags, devices=filters.devices) if filters.tags or filters.devices else self.inventory
         filtered_by_tags = total_devices - len(filtered_inventory)
 
         # Connect to devices
@@ -262,14 +256,14 @@ class AntaRunner(BaseModel):
             await filtered_inventory.connect_inventory()
 
         # Remove devices that are unreachable
-        self._selected_inventory = filtered_inventory.get_inventory(established_only=scope.established_only)
+        self._selected_inventory = filtered_inventory.get_inventory(established_only=filters.established_only)
         connection_failed = len(filtered_inventory) - len(self._selected_inventory)
 
         # If there are no devices in the inventory after filtering, exit
         if not self._selected_inventory.devices:
             # Build message parts
-            tag_msg = f"matching the tags {scope.tags} " if scope.tags else ""
-            device_msg = f" Selected devices: {scope.devices} " if scope.devices is not None else ""
+            tag_msg = f"matching the tags {filters.tags} " if filters.tags else ""
+            device_msg = f" Selected devices: {filters.devices} " if filters.devices is not None else ""
             logger.warning("No reachable device %swas found.%s", tag_msg, device_msg)
             return False
 
@@ -278,14 +272,14 @@ class AntaRunner(BaseModel):
         )
         return True
 
-    def _setup_tests(self, scope: AntaRunnerScope) -> bool:
+    def _setup_tests(self, filters: AntaRunnerFilter) -> bool:
         """Set up tests for the ANTA run."""
         if self._selected_inventory is None:
             msg = "The selected inventory is not available. ANTA must be executed through AntaRunner.run()"
             raise RuntimeError(msg)
 
-        # Build indexes for the catalog. If `tests` is set, filter the indexes based on these tests
-        self.catalog.build_indexes(filtered_tests=scope.tests)
+        # Build indexes for the catalog. If `filters.tests` is set, filter the indexes based on these tests
+        self.catalog.build_indexes(filtered_tests=filters.tests)
 
         # Using a set to avoid inserting duplicate tests
         device_to_tests: defaultdict[AntaDevice, set[AntaTestDefinition]] = defaultdict(set)
@@ -295,9 +289,9 @@ class AntaRunner(BaseModel):
 
         # Create the device to tests mapping from the tags and calculate connection stats
         for device in self._selected_inventory.devices:
-            if scope.tags:
+            if filters.tags:
                 # If there are CLI tags, execute tests with matching tags for this device
-                if not (matching_tags := scope.tags.intersection(device.tags)):
+                if not (matching_tags := filters.tags.intersection(device.tags)):
                     # The device does not have any selected tag, skipping
                     continue
                 device_to_tests[device].update(self.catalog.get_tests_by_tags(matching_tags))
@@ -317,7 +311,7 @@ class AntaRunner(BaseModel):
                 total_connections += device.max_connections
 
         if total_tests == 0:
-            tag_msg = f" matching the tags {scope.tags} " if scope.tags else " "
+            tag_msg = f" matching the tags {filters.tags} " if filters.tags else " "
             logger.warning(
                 "There are no tests%sto run in the current test catalog and device inventory, please verify your inputs.",
                 tag_msg,
@@ -329,53 +323,92 @@ class AntaRunner(BaseModel):
         self._potential_connections = None if not all_have_connections else total_connections
         return True
 
-    async def _setup_coroutines(self, *, manager: ResultManager | None = None) -> AsyncGenerator[Coroutine[Any, Any, TestResult], None]:
-        """Set up test coroutines from selected tests for the ANTA run.
-
-        It creates an async generator of coroutines which are created by the `test` method of the AntaTest instances.
-        Each coroutine is a test to run.
-
-        Parameters
-        ----------
-        manager
-            An optional ResultManager instance to pre-populate with the test results. Used in `dry_run` mode.
-
-        Yields
-        ------
-            The coroutine (test) to run.
-        """
+    async def _test_generator(self, manager: ResultManager | None = None) -> AsyncGenerator[Coroutine[Any, Any, TestResult], None]:
+        """Generate test coroutines for the ANTA run."""
         if self._selected_tests is None:
             msg = "The selected tests are not available. ANTA must be executed through AntaRunner.run()"
             raise RuntimeError(msg)
 
-        for device, test_definitions in self._selected_tests.items():
-            for test in test_definitions:
-                try:
-                    test_instance = test.test(device=device, inputs=test.inputs)
-                    if manager is not None:
-                        manager.add(test_instance.result)
-                    coroutine = test_instance.test()
-                except Exception as e:  # noqa: PERF203, BLE001
-                    # An AntaTest instance is potentially user-defined code.
-                    # We need to catch everything and exit gracefully with an error message.
-                    message = "\n".join(
-                        [
-                            f"There is an error when creating test {test.test.__module__}.{test.test.__name__}.",
-                            f"If this is not a custom test implementation: {GITHUB_SUGGESTION}",
-                        ],
-                    )
-                    anta_log_exception(e, message, logger)
-                else:
-                    yield coroutine
+        logger.debug("ANTA run scheduling strategy: %s", self._settings.scheduling_strategy)
+
+        device_to_tests: dict[AntaDevice, list[AntaTestDefinition]] = {
+            device: sorted(tests, key=lambda td: td.test.__name__) for device, tests in self._selected_tests.items()
+        }
+
+        if self._settings.scheduling_strategy == "device-by-device":
+            async for coro in self._generate_device_by_device(device_to_tests, manager):
+                yield coro
+        elif self._settings.scheduling_strategy == "device-by-count":
+            async for coro in self._generate_device_by_count(device_to_tests, self._settings.scheduling_tests_per_device, manager):
+                yield coro
+        else:
+            # Default to round-robin
+            async for coro in self._generate_round_robin(device_to_tests, manager):
+                yield coro
+
+    async def _generate_round_robin(
+        self, device_to_tests: dict[AntaDevice, list[AntaTestDefinition]], manager: ResultManager | None = None
+    ) -> AsyncGenerator[Coroutine[Any, Any, TestResult], None]:
+        """Yield one test per device in each round."""
+        while any(device_to_tests.values()):
+            for device, tests in device_to_tests.items():
+                if tests:
+                    test_def = tests.pop(0)
+                    coro = self._create_test_coroutine(test_def, device, manager)
+                    if coro is not None:
+                        yield coro
+
+    async def _generate_device_by_device(
+        self, device_to_tests: dict[AntaDevice, list[AntaTestDefinition]], manager: ResultManager | None = None
+    ) -> AsyncGenerator[Coroutine[Any, Any, TestResult], None]:
+        """Yield all tests for one device before moving to the next."""
+        for device, tests in device_to_tests.items():
+            while tests:
+                test_def = tests.pop(0)
+                coro = self._create_test_coroutine(test_def, device, manager)
+                if coro is not None:
+                    yield coro
+
+    async def _generate_device_by_count(
+        self,
+        device_to_tests: dict[AntaDevice, list[AntaTestDefinition]],
+        tests_per_device: int,
+        manager: ResultManager | None = None,
+    ) -> AsyncGenerator[Coroutine[Any, Any, TestResult], None]:
+        """In each round, yield up to `tests_per_device` tests for each device."""
+        while any(device_to_tests.values()):
+            for device, tests in device_to_tests.items():
+                count = min(tests_per_device, len(tests))
+                for _ in range(count):
+                    test_def = tests.pop(0)
+                    coro = self._create_test_coroutine(test_def, device, manager)
+                    if coro is not None:
+                        yield coro
+
+    def _create_test_coroutine(
+        self, test_def: AntaTestDefinition, device: AntaDevice, manager: ResultManager | None = None
+    ) -> Coroutine[Any, Any, TestResult] | None:
+        """Create a test coroutine from a test definition."""
+        try:
+            test_instance = test_def.test(device=device, inputs=test_def.inputs)
+            if manager is not None:
+                manager.add(test_instance.result)
+            coroutine = test_instance.test()
+        except Exception as e:  # noqa: BLE001
+            # An AntaTest instance is potentially user-defined code.
+            # We need to catch everything and exit gracefully with an error message.
+            message = "\n".join(
+                [
+                    f"There is an error when creating test {test_def.test.__module__}.{test_def.test.__name__}.",
+                    f"If this is not a custom test implementation: {GITHUB_SUGGESTION}",
+                ],
+            )
+            anta_log_exception(e, message, logger)
+            return None
+        return coroutine
 
     def _log_run_information(self, *, dry_run: bool = False) -> None:
-        """Log ANTA run information and potential resource limit warnings.
-
-        Parameters
-        ----------
-        dry_run
-            Dry-run mode flag.
-        """
+        """Log ANTA run information and potential resource limit warnings."""
         if self._inventory_stats is None:
             msg = "The inventory stats are not available. ANTA must be executed through AntaRunner.run()"
             raise RuntimeError(msg)
@@ -401,80 +434,26 @@ class AntaRunner(BaseModel):
             f"{chr(10).join(device_lines)}\n"
             f"Tests: {self._total_tests} total\n"
             f"Limits:\n"
-            f"  Max concurrent tests: {self.max_concurrency}\n"
+            f"  Max concurrent tests: {self._settings.max_concurrency}\n"
             f"{connections_line}"
-            f"  Max file descriptors: {self.file_descriptor_limit}\n"
+            f"  Max file descriptors: {self._settings.file_descriptor_limit}\n"
             f"{'':-^{width}}"
         )
         logger.info(run_info)
 
         # Log warnings for potential resource limits
-        if self._total_tests > self.max_concurrency:
+        if self._total_tests > self._settings.max_concurrency:
             logger.warning(
-                "Tests count (%s) exceeds concurrent limit (%s). Tests will be throttled. See Scaling ANTA documentation.", self._total_tests, self.max_concurrency
+                "Tests count (%s) exceeds concurrent limit (%s). Tests will be throttled. Please consult the ANTA FAQ.",
+                self._total_tests,
+                self._settings.max_concurrency,
             )
-        if self._potential_connections is not None and self._potential_connections > self.file_descriptor_limit:
+        if self._potential_connections is not None and self._potential_connections > self._settings.file_descriptor_limit:
             logger.warning(
-                "Potential connections (%s) exceeds file descriptor limit (%s). Connection errors may occur. See Scaling ANTA documentation.",
+                "Potential connections (%s) exceeds file descriptor limit (%s). Connection errors may occur. Please consult the ANTA FAQ.",
                 self._potential_connections,
-                self.file_descriptor_limit,
+                self._settings.file_descriptor_limit,
             )
-
-    async def _run(self, generator: AsyncGenerator[Coroutine[Any, Any, TestResult], None]) -> AsyncGenerator[TestResult, None]:
-        """Run tests with a concurrency limit.
-
-        This function takes an asynchronous generator of test coroutines and runs them
-        with a limit on the number of concurrent tests. It yields test results as each
-        test completes.
-
-        Inspired by: https://death.andgravity.com/limit-concurrency
-
-        Parameters
-        ----------
-        generator
-            An asynchronous generator that yields test coroutines.
-
-        Yields
-        ------
-            The result of each completed test.
-        """
-        if self.max_concurrency <= 0:
-            msg = "Concurrency limit must be greater than 0."
-            raise RuntimeError(msg)
-
-        # NOTE: The `aiter` built-in function is not available in Python 3.9
-        tests = generator.__aiter__()  # pylint: disable=unnecessary-dunder-call
-        tests_ended = False
-        tests_pending: set[Task[TestResult]] = set()
-
-        while tests_pending or not tests_ended:
-            # Add tests to the pending set until the limit is reached or no more tests are available
-            while len(tests_pending) < self.max_concurrency and not tests_ended:
-                try:
-                    # NOTE: The `anext` built-in function is not available in Python 3.9
-                    test = await tests.__anext__()  # pylint: disable=unnecessary-dunder-call
-                except StopAsyncIteration:  # noqa: PERF203
-                    tests_ended = True
-                    logger.debug("All tests have been added to the pending set.")
-                else:
-                    # Ensure the coroutine is scheduled to run and add it to the pending set
-                    tests_pending.add(asyncio.create_task(test))
-                    logger.debug("Added a test to the pending set: %s", test)
-
-            if len(tests_pending) >= self.max_concurrency:
-                logger.debug("Concurrency limit reached: %s tests running. Waiting for tests to complete.", self.max_concurrency)
-
-            if not tests_pending:
-                logger.debug("No pending tests and all tests have been processed. Exiting.")
-                return
-
-            # Wait for at least one of the pending tests to complete
-            tests_done, tests_pending = await asyncio.wait(tests_pending, return_when=asyncio.FIRST_COMPLETED)
-            logger.debug("Completed %s test(s). Pending count: %s", len(tests_done), len(tests_pending))
-
-            # Yield results of completed tests
-            while tests_done:
-                yield await tests_done.pop()
 
     def _log_cache_statistics(self) -> None:
         """Log cache statistics for each device in the inventory."""

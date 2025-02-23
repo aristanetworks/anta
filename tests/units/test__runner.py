@@ -14,7 +14,7 @@ import pytest
 from httpx import Limits
 from pydantic import ValidationError
 
-from anta._runner import AntaRunner, AntaRunnerScope
+from anta._runner import AntaRunner, AntaRunnerFilter
 from anta.result_manager import ResultManager
 
 # Import as Result to avoid PytestCollectionWarning
@@ -104,57 +104,57 @@ class TestAntaRunnerRun:
     @pytest.mark.parametrize(("anta_runner"), [{"inventory": "test_inventory_with_tags.yml", "catalog": "test_catalog_with_tags.yml"}], indirect=True)
     async def test_run_invalid_scope(self, anta_runner: AntaRunner) -> None:
         """Test AntaRunner.run method with invalid scope."""
-        with pytest.raises(ValidationError, match="1 validation error for AntaRunnerScope"):
-            await anta_runner.run(scope=AntaRunnerScope(devices="invalid", tests=None, tags=None), dry_run=True)  # type: ignore[arg-type]
+        with pytest.raises(ValidationError, match="1 validation error for AntaRunnerFilter"):
+            await anta_runner.run(scope=AntaRunnerFilter(devices="invalid", tests=None, tags=None), dry_run=True)  # type: ignore[arg-type]
 
     @pytest.mark.parametrize(
         ("anta_runner", "scope", "expected_devices", "expected_tests"),
         [
             pytest.param(
                 {"inventory": "test_inventory_with_tags.yml", "catalog": "test_catalog_with_tags.yml"},
-                AntaRunnerScope(devices=None, tests=None, tags=None),
+                AntaRunnerFilter(devices=None, tests=None, tags=None),
                 3,
                 27,
                 id="all-tests",
             ),
             pytest.param(
                 {"inventory": "test_inventory_with_tags.yml", "catalog": "test_catalog_with_tags.yml"},
-                AntaRunnerScope(devices=None, tests=None, tags={"leaf"}),
+                AntaRunnerFilter(devices=None, tests=None, tags={"leaf"}),
                 2,
                 6,
                 id="1-tag",
             ),
             pytest.param(
                 {"inventory": "test_inventory_with_tags.yml", "catalog": "test_catalog_with_tags.yml"},
-                AntaRunnerScope(devices=None, tests=None, tags={"leaf", "spine"}),
+                AntaRunnerFilter(devices=None, tests=None, tags={"leaf", "spine"}),
                 3,
                 9,
                 id="2-tags",
             ),
             pytest.param(
                 {"inventory": "test_inventory_with_tags.yml", "catalog": "test_catalog_with_tags.yml"},
-                AntaRunnerScope(devices=None, tests={"VerifyMlagStatus", "VerifyUptime"}, tags=None),
+                AntaRunnerFilter(devices=None, tests={"VerifyMlagStatus", "VerifyUptime"}, tags=None),
                 3,
                 5,
                 id="filtered-tests",
             ),
             pytest.param(
                 {"inventory": "test_inventory_with_tags.yml", "catalog": "test_catalog_with_tags.yml"},
-                AntaRunnerScope(devices=None, tests={"VerifyMlagStatus", "VerifyUptime"}, tags={"leaf"}),
+                AntaRunnerFilter(devices=None, tests={"VerifyMlagStatus", "VerifyUptime"}, tags={"leaf"}),
                 2,
                 4,
                 id="1-tag-filtered-tests",
             ),
             pytest.param(
                 {"inventory": "test_inventory_with_tags.yml", "catalog": "test_catalog_with_tags.yml"},
-                AntaRunnerScope(devices=None, tests=None, tags={"invalid"}),
+                AntaRunnerFilter(devices=None, tests=None, tags={"invalid"}),
                 0,
                 0,
                 id="invalid-tag",
             ),
             pytest.param(
                 {"inventory": "test_inventory_with_tags.yml", "catalog": "test_catalog_with_tags.yml"},
-                AntaRunnerScope(devices=None, tests=None, tags={"dc1"}),
+                AntaRunnerFilter(devices=None, tests=None, tags={"dc1"}),
                 0,
                 0,
                 id="device-tag-no-tests",
@@ -163,7 +163,7 @@ class TestAntaRunnerRun:
         indirect=["anta_runner"],
     )
     async def test_run_scope(
-        self, caplog: pytest.LogCaptureFixture, anta_runner: AntaRunner, scope: AntaRunnerScope, expected_devices: int, expected_tests: int
+        self, caplog: pytest.LogCaptureFixture, anta_runner: AntaRunner, scope: AntaRunnerFilter, expected_devices: int, expected_tests: int
     ) -> None:
         """Test AntaRunner.run method with different scopes."""
         caplog.set_level(logging.WARNING)

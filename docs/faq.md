@@ -26,31 +26,50 @@ anta_title: Frequently Asked Questions (FAQ)
 
 ???+ faq "A local OS error occurred while connecting to a device"
 
-    When running ANTA, you can receive `A local OS error occurred while connecting to <device>` errors. The underlying [`OSError`](https://docs.python.org/3/library/exceptions.html#OSError) exception can have various reasons:
+    When running ANTA, you can receive `A local OS error occurred while connecting to <device>` errors. The underlying [`OSError`](https://docs.python.org/3/library/exceptions.html#OSError) exception can have various reasons: `[Errno 24] Too many open files` or `[Errno 16] Device or resource busy`.
 
-      - `[Errno 24] Too many open files`
-      - `[Errno 16] Device or resource busy`
+    This usually means that the operating system refused to open a new file descriptor (or socket) for the ANTA process. This might be due to the hard limit for open file descriptors currently set for the ANTA process.
 
-    This usually means the operating system refused to open a new file descriptor (socket) for the ANTA process because it has reached its limit.
+    At startup, ANTA sets the soft limit of its process to the hard limit up to 16384. This is because the soft limit is usually 1024 and the hard limit is usually higher (depends on the system). If the hard limit of the ANTA process is still lower than the potential connections of all devices, the ANTA process may request to the operating system too many file descriptors and get an error, a WARNING is displayed at startup if this is the case.
 
     ### Solution
 
-    For immediate needs, on [POSIX systems*](#caveat-running-on-non-posix-platforms-eg-windows) you can raise the hard limit for the user running ANTA:
+    One solution could be to raise the hard limit for the user starting the ANTA process.
+    You can get the current hard limit for a user using the command `ulimit -n -H` while logged in.
+    Create the file `/etc/security/limits.d/10-anta.conf` with the following content:
+    ```
+    <user> hard nofile <value>
+    ```
+    The `user` is the one with which the ANTA process is started.
+    The `value` is the new hard limit. The maximum value depends on the system. A hard limit of 16384 should be sufficient for ANTA to run in most high scale scenarios. After creating this file, log out the current session and log in again.
 
-      1. Check current hard limit
+## Tests throttling WARNING in the logs
 
-        ```bash
-        ulimit -n -H
-        ```
-      2. Create/edit `/etc/security/limits.d/10-anta.conf` file
+???+ faq "Tests throttling `WARNING` in the logs"
 
-        ```bash
-        <user> hard nofile <value>
-        ```
-      3. Log out and log back in for changes to take effect
+    ANTA is designed to execute many tests concurrently while ensuring system stability. If the total test count exceeds the maximum concurrency limit, tests are throttled to avoid overwhelming the asyncio event loop and exhausting system resources. A `WARNING` message is logged at startup when this occurs.
 
-    !!! tip "Large Scale Deployments"
-        For detailed information about managing file descriptors and other resource limits in large scale deployments, please refer to the [Scaling ANTA](advanced_usages/scaling.md#resource-management) guide.
+    By default, ANTA schedules up to **10000** tests concurrently. This default is a balance between performance and stability, but it may not be optimal for every system. If the number of tests exceeds this value, ANTA schedules the first 10000 tests and waits for some tests to complete before scheduling more.
+
+    ### Solution
+
+    You can adjust the maximum concurrency limit using the `ANTA_MAX_CONCURRENCY` environment variable. The optimal value depends on your system's CPU usage, memory consumption, and file descriptor limits.
+
+    !!! warning
+
+        Increasing the maximum concurrency limit can lead to system instability if the system is not able to handle the increased load. Monitor system resources and adjust the limit accordingly.
+
+    !!! info "Device Connection Limits"
+
+        Each device is limited to a maximum of **100** concurrent connections. This means that, even if ANTA schedules a high number of tests, each device will only attempt to open up to 100 connections at a time. Furthermore, Arista EOS eAPI is inherently protected against overload and is designed to handle high connection volumes safely.
+
+    ANTA also offers several test scheduling strategies to optimize test execution, configurable via the `ANTA_SCHEDULING_STRATEGY` environment variable (default is `round-robin`), along with `ANTA_SCHEDULING_TESTS_PER_DEVICE` (default is **100**) for the `device-by-count` strategy:
+
+    - **Round-robin (`round-robin`)**: Distributes tests evenly across devices. This is generally suitable for small to medium-sized (around 200 devices) fabrics but can open many simultaneous connections.
+    - **Device-by-Device (`device-by-device`)**: Executes all tests for one device before moving on to the next, which may help reduce peak concurrent connections.
+    - **Device-by-Count (`device-by-count`)**: Limits the number of tests scheduled per device in each round. This provides finer control in larger environments where opening too many connections simultaneously might exceed system limits.
+
+    **Recommendation:** If you're running ANTA on a large fabric or encounter issues related to resource limits, considering tuning these settings. Test different configurations to find the optimal balance for your system.
 
 ## `Timeout` error in the logs
 
@@ -68,11 +87,7 @@ anta_title: Frequently Asked Questions (FAQ)
     anta nrfu --enable --username username --password arista --inventory inventory.yml -c nrfu.yml --timeout 50 text
     ```
 
-    The previous command set a couple of options for ANTA NRFU, one them being the `timeout` command, by default, when running ANTA from CLI, it is set to 30s.
-    The timeout is increased to 50s to allow ANTA to wait for API calls a little longer.
-
-    !!! tip "Advanced Timeout Configuration"
-        For comprehensive information about timeout configuration and optimization in large scale environments, see the [Timeouts Configuration](advanced_usages/scaling.md#timeouts-configuration) and [Performance Tuning](advanced_usages/scaling.md#performance-tuning) sections in the Scaling ANTA guide. The guide provides detailed explanations of different timeout types and recommended values for various deployment scenarios.
+    In this command, ANTA NRFU is configured with several options. Notably, the `--timeout` parameter is set to 50 seconds (instead of the default 30 seconds) to allow extra time for API calls to complete.
 
 ## `ImportError` related to `urllib3`
 

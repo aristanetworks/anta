@@ -16,7 +16,7 @@ from typing import TYPE_CHECKING, Any, Literal
 import asyncssh
 import httpcore
 from asyncssh import SSHClientConnection, SSHClientConnectionOptions
-from httpx import ConnectError, HTTPError, Limits, Timeout, TimeoutException
+from httpx import ConnectError, HTTPError, TimeoutException
 
 import asynceapi
 from anta import __DEBUG__
@@ -24,7 +24,7 @@ from anta.logger import anta_log_exception, exc_to_str
 from anta.models import AntaCommand
 
 if TYPE_CHECKING:
-    from collections.abc import Generator
+    from collections.abc import Iterator
     from pathlib import Path
 
 logger = logging.getLogger(__name__)
@@ -123,9 +123,9 @@ class AntaDevice(ABC):
         Dictionary mapping keys to asyncio locks to guarantee exclusive access to the cache if not disabled.
         Deprecated, will be removed in ANTA v2.0.0, use self.cache.locks instead.
     max_connections : int | None
-        For informational/logging purposes only. Some device implementations may expose their
-        maximum concurrent connection limit through this attribute. This does not affect the
-        actual device configuration. None if not available.
+        For informational/logging purposes only. Can be used by the runner to verify that
+        the total potential connections of a run do not exceed the system's file descriptor limit.
+        This does **not** affect the actual device configuration. None if not available.
     """
 
     def __init__(self, name: str, tags: set[str] | None = None, *, disable_cache: bool = False) -> None:
@@ -188,7 +188,7 @@ class AntaDevice(ABC):
             return {"total_commands_sent": stats["total"], "cache_hits": stats["hits"], "cache_hit_ratio": f"{ratio * 100:.2f}%"}
         return None
 
-    def __rich_repr__(self) -> Generator[tuple[str, Any]]:
+    def __rich_repr__(self) -> Iterator[tuple[str, Any]]:
         """Implement Rich Repr Protocol.
 
         https://rich.readthedocs.io/en/stable/pretty.html#rich-repr-protocol.
@@ -337,8 +337,7 @@ class AsyncEOSDevice(AntaDevice):
         port: int | None = None,
         ssh_port: int = 22,
         tags: set[str] | None = None,
-        timeout: Timeout | float | None = None,
-        limits: Limits | None = None,
+        timeout: float | None = 30.0,
         proto: Literal["http", "https"] = "https",
         *,
         enable: bool = False,
@@ -367,9 +366,6 @@ class AsyncEOSDevice(AntaDevice):
             Tags for this device.
         timeout
             Global timeout value in seconds for outgoing eAPI calls. None means no timeout.
-            Can also provide an HTTPX Timeout object for fine-grained timeout configuration.
-        limits
-            HTTPX Limits object for connection pooling configuration.
         proto
             eAPI protocol. Value can be 'http' or 'https'.
         enable
@@ -407,8 +403,6 @@ class AsyncEOSDevice(AntaDevice):
             "proto": proto,
             "timeout": timeout,
         }
-        if limits is not None:
-            session_settings["limits"] = limits
         self._session: asynceapi.Device = asynceapi.Device(**session_settings)
 
         # Build the SSH connection options
@@ -421,7 +415,7 @@ class AsyncEOSDevice(AntaDevice):
         # TODO: Once we drop Python 3.9 support, initialize the semaphore here
         self._command_semaphore: asyncio.Semaphore | None = None
 
-    def __rich_repr__(self) -> Generator[tuple[str, Any]]:
+    def __rich_repr__(self) -> Iterator[tuple[str, Any]]:
         """Implement Rich Repr Protocol.
 
         https://rich.readthedocs.io/en/stable/pretty.html#rich-repr-protocol.
