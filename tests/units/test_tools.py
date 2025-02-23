@@ -5,13 +5,20 @@
 
 from __future__ import annotations
 
+import asyncio
 from contextlib import AbstractContextManager
 from contextlib import nullcontext as does_not_raise
-from typing import Any
+from typing import TYPE_CHECKING, Any
+from unittest.mock import Mock
 
 import pytest
 
-from anta.tools import convert_categories, custom_division, format_data, get_dict_superset, get_failed_logs, get_item, get_value
+# Import as Result to avoid PytestCollectionWarning
+from anta.result_manager.models import TestResult as Result
+from anta.tools import convert_categories, custom_division, format_data, get_dict_superset, get_failed_logs, get_item, get_value, limit_concurrency
+
+if TYPE_CHECKING:
+    from collections.abc import AsyncGenerator, AsyncIterator, Coroutine, Sequence
 
 TEST_GET_FAILED_LOGS_DATA = [
     {"id": 1, "name": "Alice", "age": 30, "email": "alice@example.com"},
@@ -527,3 +534,78 @@ def test_convert_categories(test_input: list[str], expected_raise: AbstractConte
 def test_format_data(input_data: dict[str, bool], expected_output: str) -> None:
     """Test format_data."""
     assert format_data(input_data) == expected_output
+
+
+class TestLimitConcurrency:
+    """Test limit_concurrency function."""
+
+    # Helper classes and functions for testing limit_concurrency function
+    class _EmptyGenerator:
+        """Helper class to create an empty async generator."""
+
+        def __aiter__(self) -> AsyncIterator[Coroutine[Any, Any, Any]]:
+            """Make this class an async iterator."""
+            return self
+
+        async def __anext__(self) -> Coroutine[Any, Any, Any]:
+            """Raise StopAsyncIteration."""
+            raise StopAsyncIteration
+
+    async def _mock_test_coro(self, result: Result) -> Result:
+        """Mock coroutine simulating a test."""
+        # Simulate some work
+        await asyncio.sleep(0.1)
+        return result
+
+    async def _create_test_generator(self, results: Sequence[Result]) -> AsyncGenerator[Coroutine[Any, Any, Result], None]:
+        """Create a test generator yielding mock test coroutines."""
+        for result in results:
+            yield self._mock_test_coro(result)
+
+    # Unit tests
+    async def test_limit_concurrency_with_zero_limit(self) -> None:
+        """Test that limit_concurrency raises RuntimeError when limit is 0."""
+        mock_result = Mock(spec=Result)
+        generator = self._create_test_generator([mock_result])
+
+        with pytest.raises(RuntimeError, match="Concurrency limit must be greater than 0"):
+            await limit_concurrency(generator, limit=0).__anext__()  # pylint: disable=unnecessary-dunder-call
+
+    async def test_limit_concurrency_with_negative_limit(self) -> None:
+        """Test that limit_concurrency raises RuntimeError when limit is negative."""
+        mock_result = Mock(spec=Result)
+        generator = self._create_test_generator([mock_result])
+
+        with pytest.raises(RuntimeError, match="Concurrency limit must be greater than 0"):
+            await limit_concurrency(generator, limit=-1).__anext__()  # pylint: disable=unnecessary-dunder-call
+
+    async def test_limit_concurrency_with_empty_generator(self) -> None:
+        """Test limit_concurrency behavior with an empty generator."""
+        results = [await result async for result in limit_concurrency(self._EmptyGenerator(), limit=10)]
+        assert len(results) == 0
+
+    async def test_limit_concurrency_with_concurrent_limit(self) -> None:
+        """Test limit_concurrency enforces the maximum number of concurrently running tasks."""
+        max_concurrent = 0
+        current_concurrent = 0
+
+        async def instrumented_coro(result: int) -> int:
+            nonlocal current_concurrent, max_concurrent
+            current_concurrent += 1
+            max_concurrent = max(max_concurrent, current_concurrent)
+            # Simulate work
+            await asyncio.sleep(0.1)
+            current_concurrent -= 1
+            return result
+
+        async def test_generator() -> AsyncGenerator[Coroutine[Any, Any, int], None]:
+            for i in range(10):
+                yield instrumented_coro(i)
+
+        # Run with limit of 3 to test concurrency limit
+        completed_results = [await task async for task in limit_concurrency(test_generator(), limit=3)]
+
+        # Verify all results were returned
+        assert len(completed_results) == 10
+        # Verify that the maximum number of concurrently running tasks never exceeded the limit
+        assert max_concurrent <= 3

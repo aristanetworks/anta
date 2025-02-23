@@ -136,3 +136,4 @@ repos:
         pass_filenames: false
         additional_dependencies:
           - anta[cli]
+          - pydantic-settings

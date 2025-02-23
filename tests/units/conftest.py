@@ -102,12 +102,12 @@ def anta_runner(request: pytest.FixtureRequest) -> AntaRunner:
     Optional keys:
     - manager: ResultManager instance
     - max_concurrency: Maximum concurrency limit
-    - file_descriptor_limit: File descriptor limit
-    - limits: HTTPX Limits instance when creating the inventory
+    - nofile: File descriptor limit
     """
     # Import must be inside fixture to prevent circular dependency from breaking CLI tests:
     # anta.runner -> anta.cli.console -> anta.cli/* (not yet loaded) -> anta.cli.anta
     from anta._runner import AntaRunner
+    from anta.settings import AntaRunnerSettings
 
     if not hasattr(request, "param"):
         msg = "anta_runner fixture requires a parameter dictionary"
@@ -122,23 +122,27 @@ def anta_runner(request: pytest.FixtureRequest) -> AntaRunner:
         msg = f"runner_context fixture missing required parameters: {missing_params}"
         raise ValueError(msg)
 
-    # Build AntaRunner settings
-    settings = {
+    # Build AntaRunner fields
+    runner_fields = {
         "inventory": AntaInventory.parse(
             filename=DATA_DIR / params["inventory"],
             username="arista",
             password="arista",
-            limits=params.get("limits", None),
         ),
         "catalog": AntaCatalog.parse(DATA_DIR / params["catalog"]),
         "manager": params.get("manager", None),
     }
-    if "max_concurrency" in params:
-        settings["max_concurrency"] = params["max_concurrency"]
-    if "file_descriptor_limit" in params:
-        settings["file_descriptor_limit"] = params["file_descriptor_limit"]
 
-    return AntaRunner(**settings)
+    # Build AntaRunnerSettings fields
+    settings_fields = {}
+    if "max_concurrency" in params:
+        settings_fields["max_concurrency"] = params["max_concurrency"]
+    if "nofile" in params:
+        settings_fields["nofile"] = params["nofile"]
+
+    runner = AntaRunner(**runner_fields)
+    runner._settings = AntaRunnerSettings(**settings_fields)
+    return runner
 
 
 @pytest.fixture

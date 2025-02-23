@@ -68,7 +68,7 @@ def test_setup_tests(benchmark: BenchmarkFixture, catalog: AntaCatalog, inventor
 
     def bench() -> bool:
         catalog.clear_indexes()
-        return runner._setup_tests(scope=AntaRunnerFilter())
+        return runner._setup_tests(filters=AntaRunnerFilter())
 
     benchmark(bench)
 
