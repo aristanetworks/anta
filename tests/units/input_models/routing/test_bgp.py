@@ -454,8 +454,10 @@ class TestVerifyBGPAddressFamilyConfig:
         ("afi_safi", "redistributed_routes"),
         [
             pytest.param("ipv6_Unicast", [{"proto": "RIP", "route_map": "RM-CONN-2-BGP"}], id="invalid-proto-ipv6-unicast-rip"),
+            pytest.param("ipv6-Unicast", [{"proto": "OSPF Internal", "route_map": "RM-CONN-2-BGP"}], id="invalid-proto-ipv6-unicast-ospf-internal"),
             pytest.param("ipv4Unicast", [{"proto": "DHCP", "route_map": "RM-CONN-2-BGP"}], id="invalid-proto-ipv4-unicast-dhcp"),
-            pytest.param("ipv4-Multicast", [{"proto": "BGP", "route_map": "RM-CONN-2-BGP"}], id="invalid-proto-ipv4-multicast-bgp"),
+            pytest.param("ipv4-Multicast", [{"proto": "Bgp", "route_map": "RM-CONN-2-BGP"}], id="invalid-proto-ipv4-multicast-bgp"),
+            pytest.param("ipv4-Multicast", [{"proto": "RIP", "route_map": "RM-CONN-2-BGP"}], id="invalid-proto-ipv4-multicast-rip"),
             pytest.param("ipv6-Multicast", [{"proto": "Dynamic", "route_map": "RM-CONN-2-BGP"}], id="invalid-proto-ipv4-multicast-dynamic"),
             pytest.param("ipv6-Multicast", [{"proto": "AttachedHost", "route_map": "RM-CONN-2-BGP"}], id="invalid-proto-ipv6-multicast-attached-host"),
         ],

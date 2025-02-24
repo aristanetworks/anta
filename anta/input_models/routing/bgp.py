@@ -338,11 +338,7 @@ class AddressFamilyConfig(BaseModel):
                 msg = f"Redistributed protocol 'DHCP'  is not supported for address-family '{mappings[self.afi_safi]}'"
                 raise ValueError(msg)
 
-            if self.afi_safi == "v6u" and routes_data.proto == "RIP":
-                msg = f"Redistributed protocol 'RIP'  is not supported for address-family '{mappings[self.afi_safi]}'"
-                raise ValueError(msg)
-
-            if self.afi_safi == "v6u" and routes_data.proto in ["OSPF Internal", "OSPF External", "OSPF Nssa-External"]:
+            if self.afi_safi == "v6u" and routes_data.proto in ["OSPF Internal", "OSPF External", "OSPF Nssa-External", "RIP"]:
                 msg = f"Redistributed protocol '{routes_data.proto}'  is not supported for address-family '{mappings[self.afi_safi]}'"
                 raise ValueError(msg)
 
