@@ -203,7 +203,7 @@ def core_options(f: Callable[..., Any]) -> Callable[..., Any]:
         enable_password: str | None,
         enable: bool,
         prompt: bool,
-        timeout: float | None,
+        timeout: float,
         insecure: bool,
         disable_cache: bool,
         **kwargs: dict[str, Any],

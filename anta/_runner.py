@@ -113,7 +113,7 @@ class AntaRunner(BaseModel):
         Total number of tests to run in current execution.
     _potential_connections : float | None
         Total potential concurrent connections needed for current run.
-        `None` if unknown, `float('inf')` if unlimited.
+        `None` if unknown.
     _settings : AntaRunnerSettings
         Internal settings loaded from environment variables. See the class definition
         in the `anta.settings` module for details.
@@ -247,7 +247,7 @@ class AntaRunner(BaseModel):
             logger.info("The inventory is empty, exiting")
             return False
 
-        # Filter the inventory based on the CLI provided tags and devices if any
+        # Filter the inventory based on the provided filters any
         filtered_inventory = self.inventory.get_inventory(tags=filters.tags, devices=filters.devices) if filters.tags or filters.devices else self.inventory
         filtered_by_tags = total_devices - len(filtered_inventory)
 

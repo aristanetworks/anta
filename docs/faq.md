@@ -63,7 +63,7 @@ anta_title: Frequently Asked Questions (FAQ)
 
         Each device is limited to a maximum of **100** concurrent connections. This means that, even if ANTA schedules a high number of tests, each device will only attempt to open up to 100 connections at a time. Furthermore, Arista EOS eAPI is inherently protected against overload and is designed to handle high connection volumes safely.
 
-    ANTA also offers several test scheduling strategies to optimize test execution, configurable via the `ANTA_SCHEDULING_STRATEGY` environment variable (default is `round-robin`), along with `ANTA_SCHEDULING_TESTS_PER_DEVICE` (default is **100**) for the `device-by-count` strategy:
+    ANTA also offers several test scheduling strategies to optimize test execution, particularly relevant when the total number of tests exceeds the maximum concurrency limit. It is configurable via the `ANTA_SCHEDULING_STRATEGY` environment variable (default is `round-robin`), along with `ANTA_SCHEDULING_TESTS_PER_DEVICE` (default is **100**) for the `device-by-count` strategy:
 
     - **Round-robin (`round-robin`)**: Distributes tests evenly across devices. This is generally suitable for small to medium-sized (around 200 devices) fabrics but can open many simultaneous connections.
     - **Device-by-Device (`device-by-device`)**: Executes all tests for one device before moving on to the next, which may help reduce peak concurrent connections.
