@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import logging
+import os
 
 import pytest
 from pydantic import ValidationError
@@ -297,6 +298,7 @@ class TestAntaRunnerLogging:
         warning = "Tests count (27) exceeds concurrent limit (20). Tests will be throttled."
         assert warning in caplog.text
 
+    @pytest.mark.skipif(os.name != "posix", reason="Veriy unlikely to happen on non-POSIX systems due to sys.maxsize")
     @pytest.mark.parametrize(("anta_runner"), [{"inventory": "test_inventory_with_tags.yml", "catalog": "test_catalog_with_tags.yml", "nofile": 128}], indirect=True)
     async def test_log_run_information_file_descriptor_limit(self, caplog: pytest.LogCaptureFixture, anta_runner: AntaRunner) -> None:
         """Test _log_run_information with higher connections count than file descriptor limit."""

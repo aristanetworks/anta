@@ -413,7 +413,7 @@ class AntaRunner(BaseModel):
             msg = "The inventory stats are not available. ANTA must be executed through AntaRunner.run()"
             raise RuntimeError(msg)
 
-        width = min(int(console.width) - 34, len("  Total potential connections: Unlimited\n"))
+        width = min(int(console.width) - 34, len("  Total potential connections: 100000000\n"))
 
         # Build device information
         device_lines = [

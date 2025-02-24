@@ -191,6 +191,7 @@ async def test_check_runner_log_for_windows_fake(caplog: pytest.LogCaptureFixtur
         assert "Running on a non-POSIX system, cannot adjust the maximum number of file descriptors." in caplog.records[0].message
 
 
+# TODO: Remove this in ANTA v2.0.0
 @pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.parametrize(
     ("inventory", "tags", "tests", "devices_count", "tests_count"),

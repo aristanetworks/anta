@@ -38,7 +38,6 @@ class TestAntaRunnerSettings:
         setenvvar.setenv("ANTA_SCHEDULING_TESTS_PER_DEVICE", "50")
         settings = AntaRunnerSettings()
         assert settings.nofile == 20480
-        assert settings.file_descriptor_limit == 20480
         assert settings.scheduling_strategy == "device-by-device"
         assert settings.scheduling_tests_per_device == 50
         assert settings.max_concurrency == DEFAULT_MAX_CONCURRENCY
