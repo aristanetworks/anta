@@ -1,3 +1,4 @@
+$ anta nrfu --help
 Usage: anta nrfu [OPTIONS] COMMAND [ARGS]...
 
   Run ANTA tests on selected inventory devices.
