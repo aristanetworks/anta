@@ -41,7 +41,7 @@ class InterfaceState(BaseModel):
     primary_ip: IPv4Interface | None = None
     """Primary IPv4 address in CIDR notation. Required field in the `VerifyInterfaceIPv4` test."""
     secondary_ips: list[IPv4Interface] | None = None
-    """Optional list of secondary IPv4 addresses in CIDR notation."""
+    """List of secondary IPv4 addresses in CIDR notation. Can be provided in the `VerifyInterfaceIPv4` test."""
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the InterfaceState for reporting.
