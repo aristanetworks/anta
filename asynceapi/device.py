@@ -326,17 +326,18 @@ class Device(httpx.AsyncClient):
         list[str] | None
             Multiple commands, TEXT output, suppress_error=True
         """
-        if command and commands:
-            msg = "Cannot provide both 'command' and 'commands'"
-            raise RuntimeError(msg)
-
-        cmds = [command] if command else commands
-        if not cmds:
+        if not any((command, commands)):
             msg = "Required 'command' or 'commands'"
             raise RuntimeError(msg)
 
         jsonrpc = self._jsonrpc_command(
-            commands=cmds, ofmt=ofmt, version=version, auto_complete=auto_complete, expand_aliases=expand_aliases, timestamps=timestamps, req_id=req_id
+            commands=[command] if command else commands,
+            ofmt=ofmt,
+            version=version,
+            auto_complete=auto_complete,
+            expand_aliases=expand_aliases,
+            timestamps=timestamps,
+            req_id=req_id,
         )
 
         try:
