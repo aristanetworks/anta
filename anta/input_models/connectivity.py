@@ -31,7 +31,7 @@ class Host(BaseModel):
     df_bit: bool = False
     """Enable do not fragment bit in IP header."""
     reachable: bool = True
-    """Indicates whether the destination should be reachable. Set to True if the network should be accessible, False otherwise."""
+    """Indicates whether the destination should be reachable."""
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the Host for reporting.
