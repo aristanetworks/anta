@@ -9,6 +9,7 @@ import asyncio
 import logging
 from abc import ABC, abstractmethod
 from collections import OrderedDict, defaultdict
+from operator import attrgetter
 from time import monotonic
 from typing import TYPE_CHECKING, Any, Literal
 
@@ -112,16 +113,19 @@ class AntaDevice(ABC):
         True if the device IP is reachable and a port can be open.
     established : bool
         True if remote command execution succeeds.
-    hw_model : str
+    hw_model : str | None
         Hardware model of the device.
     tags : set[str]
         Tags for this device.
     cache : AntaCache | None
         In-memory cache for this device (None if cache is disabled).
-    cache_locks : dict
+    cache_locks : defaultdict[str, asyncio.Lock] | None
         Dictionary mapping keys to asyncio locks to guarantee exclusive access to the cache if not disabled.
         Deprecated, will be removed in ANTA v2.0.0, use self.cache.locks instead.
-
+    max_connections : int | None
+        For informational/logging purposes only. Can be used by the runner to verify that
+        the total potential connections of a run do not exceed the system's file descriptor limit.
+        This does **not** affect the actual device configuration. None if not available.
     """
 
     def __init__(self, name: str, tags: set[str] | None = None, *, disable_cache: bool = False) -> None:
@@ -156,6 +160,11 @@ class AntaDevice(ABC):
     @abstractmethod
     def _keys(self) -> tuple[Any, ...]:
         """Read-only property to implement hashing and equality for AntaDevice classes."""
+
+    @property
+    def max_connections(self) -> int | None:
+        """Maximum number of concurrent connections allowed by the device. Can be overridden by subclasses, returns None if not available."""
+        return None
 
     def __eq__(self, other: object) -> bool:
         """Implement equality for AntaDevice objects."""
@@ -302,7 +311,7 @@ class AntaDevice(ABC):
 
 # pylint: disable=too-many-instance-attributes
 class AsyncEOSDevice(AntaDevice):
-    """Implementation of AntaDevice for EOS using aio-eapi.
+    """Implementation of AntaDevice for EOS using the `asynceapi` library, which is built on HTTPX.
 
     Attributes
     ----------
@@ -316,7 +325,6 @@ class AsyncEOSDevice(AntaDevice):
         Hardware model of the device.
     tags : set[str]
         Tags for this device.
-
     """
 
     def __init__(  # noqa: PLR0913
@@ -327,9 +335,9 @@ class AsyncEOSDevice(AntaDevice):
         name: str | None = None,
         enable_password: str | None = None,
         port: int | None = None,
-        ssh_port: int | None = 22,
+        ssh_port: int = 22,
         tags: set[str] | None = None,
-        timeout: float | None = None,
+        timeout: float | None = 30.0,
         proto: Literal["http", "https"] = "https",
         *,
         enable: bool = False,
@@ -348,8 +356,6 @@ class AsyncEOSDevice(AntaDevice):
             Password to connect to eAPI and SSH.
         name
             Device name.
-        enable
-            Collect commands using privileged mode.
         enable_password
             Password used to gain privileged access on EOS.
         port
@@ -359,14 +365,15 @@ class AsyncEOSDevice(AntaDevice):
         tags
             Tags for this device.
         timeout
-            Timeout value in seconds for outgoing API calls.
-        insecure
-            Disable SSH Host Key validation.
+            Global timeout value in seconds for outgoing eAPI calls. None means no timeout.
         proto
             eAPI protocol. Value can be 'http' or 'https'.
+        enable
+            Collect commands using privileged mode.
+        insecure
+            Disable SSH Host Key validation.
         disable_cache
             Disable caching for all commands for this device.
-
         """
         if host is None:
             message = "'host' is required to create an AsyncEOSDevice"
@@ -383,15 +390,26 @@ class AsyncEOSDevice(AntaDevice):
             message = f"'password' is required to instantiate device '{self.name}'"
             logger.error(message)
             raise ValueError(message)
+
         self.enable = enable
         self._enable_password = enable_password
-        self._session: asynceapi.Device = asynceapi.Device(host=host, port=port, username=username, password=password, proto=proto, timeout=timeout)
-        ssh_params: dict[str, Any] = {}
+
+        # Build the session settings for the `asynceapi` client
+        session_settings: dict[str, Any] = {
+            "host": host,
+            "port": port,
+            "username": username,
+            "password": password,
+            "proto": proto,
+            "timeout": timeout,
+        }
+        self._session: asynceapi.Device = asynceapi.Device(**session_settings)
+
+        # Build the SSH connection options
+        ssh_settings = {"host": host, "port": ssh_port, "username": username, "password": password, "client_keys": CLIENT_KEYS}
         if insecure:
-            ssh_params["known_hosts"] = None
-        self._ssh_opts: SSHClientConnectionOptions = SSHClientConnectionOptions(
-            host=host, port=ssh_port, username=username, password=password, client_keys=CLIENT_KEYS, **ssh_params
-        )
+            ssh_settings["known_hosts"] = None
+        self._ssh_opts: SSHClientConnectionOptions = SSHClientConnectionOptions(**ssh_settings)
 
         # In Python 3.9, Semaphore must be created within a running event loop
         # TODO: Once we drop Python 3.9 support, initialize the semaphore here
@@ -415,6 +433,7 @@ class AsyncEOSDevice(AntaDevice):
             _ssh_opts["kwargs"]["password"] = removed_pw
             yield ("_session", vars(self._session))
             yield ("_ssh_opts", _ssh_opts)
+            yield ("max_connections", self.max_connections) if self.max_connections is not None else ("max_connections", "N/A")
 
     def __repr__(self) -> str:
         """Return a printable representation of an AsyncEOSDevice."""
@@ -439,6 +458,14 @@ class AsyncEOSDevice(AntaDevice):
         This covers the use case of port forwarding when the host is localhost and the devices have different ports.
         """
         return (self._session.host, self._session.port)
+
+    @property
+    def max_connections(self) -> int | None:
+        """Maximum number of concurrent connections allowed by the device. Returns None if not available."""
+        try:
+            return attrgetter("_transport._pool._max_connections")(self._session)
+        except AttributeError:
+            return None
 
     async def _get_semaphore(self) -> asyncio.Semaphore:
         """Return the semaphore, initializing it if needed.
