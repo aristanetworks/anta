@@ -130,6 +130,7 @@ anta.tests.connectivity:
           vrf: MGMT
           df_bit: True
           size: 100
+          reachable: true
         - source: Management0
           destination: 8.8.8.8
           vrf: MGMT
@@ -140,6 +141,7 @@ anta.tests.connectivity:
           vrf: default
           df_bit: True
           size: 100
+          reachable: false
 anta.tests.cvx:
   - VerifyActiveCVXConnections:
       # Verifies the number of active CVX Connections.
@@ -952,7 +954,7 @@ anta.tests.system:
   - VerifyMemoryUtilization:
       # Verifies whether the memory utilization is below 75%.
   - VerifyNTP:
-      # Verifies if NTP is synchronised.
+      # Verifies that the Network Time Protocol (NTP) is synchronized.
   - VerifyNTPAssociations:
       # Verifies the Network Time Protocol (NTP) associations.
       ntp_servers:

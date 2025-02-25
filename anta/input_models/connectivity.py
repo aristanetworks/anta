@@ -23,13 +23,15 @@ class Host(BaseModel):
     source: IPv4Address | IPv6Address | Interface
     """Source address IP or egress interface to use."""
     vrf: str = "default"
-    """VRF context. Defaults to `default`."""
+    """VRF context."""
     repeat: int = 2
-    """Number of ping repetition. Defaults to 2."""
+    """Number of ping repetition."""
     size: int = 100
-    """Specify datagram size. Defaults to 100."""
+    """Specify datagram size."""
     df_bit: bool = False
-    """Enable do not fragment bit in IP header. Defaults to False."""
+    """Enable do not fragment bit in IP header."""
+    reachable: bool = True
+    """Indicates whether the destination should be reachable."""
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the Host for reporting.
