@@ -37,6 +37,7 @@ class VerifyReachability(AntaTest):
               vrf: MGMT
               df_bit: True
               size: 100
+              reachable: true
             - source: Management0
               destination: 8.8.8.8
               vrf: MGMT
@@ -47,6 +48,7 @@ class VerifyReachability(AntaTest):
               vrf: default
               df_bit: True
               size: 100
+              reachable: false
     ```
     """
 
@@ -89,8 +91,13 @@ class VerifyReachability(AntaTest):
         self.result.is_success()
 
         for command, host in zip(self.instance_commands, self.inputs.hosts):
-            if f"{host.repeat} received" not in command.json_output["messages"][0]:
+            # Verifies the network is reachable
+            if host.reachable and f"{host.repeat} received" not in command.json_output["messages"][0]:
                 self.result.is_failure(f"{host} - Unreachable")
+
+            # Verifies the network is unreachable.
+            if not host.reachable and f"{host.repeat} received" in command.json_output["messages"][0]:
+                self.result.is_failure(f"{host} - Destination is expected to be unreachable but found reachable.")
 
 
 class VerifyLLDPNeighbors(AntaTest):

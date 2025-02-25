@@ -1812,7 +1812,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "skipped",
-            "messages": ["IS-IS-SR is not running on device."],
+            "messages": ["IS-IS-SR not configured"],
         },
     },
     {
@@ -1841,7 +1841,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Tunnel to 1.0.0.122/32 is not found."],
+            "messages": ["Endpoint: 1.0.0.122/32 - Tunnel not found"],
         },
     },
     {
@@ -1922,7 +1922,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Tunnel to 1.0.0.13/32 is incorrect."],
+            "messages": ["Endpoint: 1.0.0.13/32 Type: tunnel - Tunnel is incorrect"],
         },
     },
     {
@@ -2010,7 +2010,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Tunnel to 1.0.0.122/32 is incorrect."],
+            "messages": ["Endpoint: 1.0.0.122/32 Next-hop: 10.0.1.2 Type: ip Interface: Ethernet1 - Tunnel is incorrect"],
         },
     },
     {
@@ -2098,7 +2098,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Tunnel to 1.0.0.122/32 is incorrect."],
+            "messages": ["Endpoint: 1.0.0.122/32 Next-hop: 10.0.1.1 Type: ip Interface: Ethernet4 - Tunnel is incorrect"],
         },
     },
     {
@@ -2186,7 +2186,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Tunnel to 1.0.0.122/32 is incorrect."],
+            "messages": ["Endpoint: 1.0.0.122/32 Next-hop: 10.0.1.2 Type: ip Interface: Ethernet1 - Tunnel is incorrect"],
         },
     },
     {
@@ -2251,7 +2251,7 @@ DATA: list[dict[str, Any]] = [
                         "vias": [
                             {
                                 "type": "tunnel",
-                                "tunnelId": {"type": "TI-LFA", "index": 4},
+                                "tunnelId": {"type": "unset", "index": 4},
                                 "labels": ["3"],
                             }
                         ],
@@ -2266,14 +2266,14 @@ DATA: list[dict[str, Any]] = [
                 {
                     "endpoint": "1.0.0.111/32",
                     "vias": [
-                        {"type": "tunnel", "tunnel_id": "unset"},
+                        {"type": "tunnel", "tunnel_id": "ti-lfa"},
                     ],
                 },
             ]
         },
         "expected": {
             "result": "failure",
-            "messages": ["Tunnel to 1.0.0.111/32 is incorrect."],
+            "messages": ["Endpoint: 1.0.0.111/32 Type: tunnel Tunnel ID: ti-lfa - Tunnel is incorrect"],
         },
     },
     {
@@ -2294,7 +2294,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "skipped",
-            "messages": ["IS-IS-SR is not running on device."],
+            "messages": ["IS-IS-SR not configured"],
         },
     },
 ]

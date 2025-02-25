@@ -192,4 +192,4 @@ class VerifyAVTRole(AntaTest):
 
         # Check if the AVT role matches the expected role
         if self.inputs.role != command_output.get("role"):
-            self.result.is_failure(f"Expected AVT role as `{self.inputs.role}`, but found `{command_output.get('role')}` instead.")
+            self.result.is_failure(f"AVT role mismatch - Expected: {self.inputs.role}, Actual: {command_output.get('role')}")

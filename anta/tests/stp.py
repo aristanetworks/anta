@@ -7,7 +7,7 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from typing import Any, ClassVar, Literal
+from typing import ClassVar, Literal
 
 from pydantic import Field
 
@@ -54,8 +54,7 @@ class VerifySTPMode(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifySTPMode."""
-        not_configured = []
-        wrong_stp_mode = []
+        self.result.is_success()
         for command in self.instance_commands:
             vlan_id = command.params.vlan
             if not (
@@ -64,15 +63,9 @@ class VerifySTPMode(AntaTest):
                     f"spanningTreeVlanInstances.{vlan_id}.spanningTreeVlanInstance.protocol",
                 )
             ):
-                not_configured.append(vlan_id)
+                self.result.is_failure(f"VLAN {vlan_id} STP mode: {self.inputs.mode} - Not configured")
             elif stp_mode != self.inputs.mode:
-                wrong_stp_mode.append(vlan_id)
-        if not_configured:
-            self.result.is_failure(f"STP mode '{self.inputs.mode}' not configured for the following VLAN(s): {not_configured}")
-        if wrong_stp_mode:
-            self.result.is_failure(f"Wrong STP mode configured for the following VLAN(s): {wrong_stp_mode}")
-        if not not_configured and not wrong_stp_mode:
-            self.result.is_success()
+                self.result.is_failure(f"VLAN {vlan_id} - Incorrect STP mode - Expected: {self.inputs.mode} Actual: {stp_mode}")
 
 
 class VerifySTPBlockedPorts(AntaTest):
@@ -102,8 +95,8 @@ class VerifySTPBlockedPorts(AntaTest):
             self.result.is_success()
         else:
             for key, value in stp_instances.items():
-                stp_instances[key] = value.pop("spanningTreeBlockedPorts")
-            self.result.is_failure(f"The following ports are blocked by STP: {stp_instances}")
+                stp_block_ports = value.get("spanningTreeBlockedPorts")
+                self.result.is_failure(f"STP Instance: {key} - Blocked ports - {', '.join(stp_block_ports)}")
 
 
 class VerifySTPCounters(AntaTest):
@@ -128,14 +121,14 @@ class VerifySTPCounters(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifySTPCounters."""
+        self.result.is_success()
         command_output = self.instance_commands[0].json_output
-        interfaces_with_errors = [
-            interface for interface, counters in command_output["interfaces"].items() if counters["bpduTaggedError"] or counters["bpduOtherError"] != 0
-        ]
-        if interfaces_with_errors:
-            self.result.is_failure(f"The following interfaces have STP BPDU packet errors: {interfaces_with_errors}")
-        else:
-            self.result.is_success()
+
+        for interface, counters in command_output["interfaces"].items():
+            if counters["bpduTaggedError"] != 0:
+                self.result.is_failure(f"Interface {interface} - STP BPDU packet tagged errors count mismatch - Expected: 0 Actual: {counters['bpduTaggedError']}")
+            if counters["bpduOtherError"] != 0:
+                self.result.is_failure(f"Interface {interface} - STP BPDU packet other errors count mismatch - Expected: 0 Actual: {counters['bpduOtherError']}")
 
 
 class VerifySTPForwardingPorts(AntaTest):
@@ -174,25 +167,22 @@ class VerifySTPForwardingPorts(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifySTPForwardingPorts."""
-        not_configured = []
-        not_forwarding = []
+        self.result.is_success()
+        interfaces_state = []
         for command in self.instance_commands:
             vlan_id = command.params.vlan
             if not (topologies := get_value(command.json_output, "topologies")):
-                not_configured.append(vlan_id)
-            else:
-                interfaces_not_forwarding = []
-                for value in topologies.values():
-                    if vlan_id and int(vlan_id) in value["vlans"]:
-                        interfaces_not_forwarding = [interface for interface, state in value["interfaces"].items() if state["state"] != "forwarding"]
-                if interfaces_not_forwarding:
-                    not_forwarding.append({f"VLAN {vlan_id}": interfaces_not_forwarding})
-        if not_configured:
-            self.result.is_failure(f"STP instance is not configured for the following VLAN(s): {not_configured}")
-        if not_forwarding:
-            self.result.is_failure(f"The following VLAN(s) have interface(s) that are not in a forwarding state: {not_forwarding}")
-        if not not_configured and not interfaces_not_forwarding:
-            self.result.is_success()
+                self.result.is_failure(f"VLAN {vlan_id} - STP instance is not configured")
+                continue
+            for value in topologies.values():
+                if vlan_id and int(vlan_id) in value["vlans"]:
+                    interfaces_state = [
+                        (interface, actual_state) for interface, state in value["interfaces"].items() if (actual_state := state["state"]) != "forwarding"
+                    ]
+
+            if interfaces_state:
+                for interface, state in interfaces_state:
+                    self.result.is_failure(f"VLAN {vlan_id} Interface: {interface} - Invalid state - Expected: forwarding Actual: {state}")
 
 
 class VerifySTPRootPriority(AntaTest):
@@ -229,6 +219,7 @@ class VerifySTPRootPriority(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifySTPRootPriority."""
+        self.result.is_success()
         command_output = self.instance_commands[0].json_output
         if not (stp_instances := command_output["instances"]):
             self.result.is_failure("No STP instances configured")
@@ -240,16 +231,15 @@ class VerifySTPRootPriority(AntaTest):
         elif first_name.startswith("VL"):
             prefix = "VL"
         else:
-            self.result.is_failure(f"Unsupported STP instance type: {first_name}")
+            self.result.is_failure(f"STP Instance: {first_name} - Unsupported STP instance type")
             return
         check_instances = [f"{prefix}{instance_id}" for instance_id in self.inputs.instances] if self.inputs.instances else command_output["instances"].keys()
-        wrong_priority_instances = [
-            instance for instance in check_instances if get_value(command_output, f"instances.{instance}.rootBridge.priority") != self.inputs.priority
-        ]
-        if wrong_priority_instances:
-            self.result.is_failure(f"The following instance(s) have the wrong STP root priority configured: {wrong_priority_instances}")
-        else:
-            self.result.is_success()
+        for instance in check_instances:
+            if not (instance_details := get_value(command_output, f"instances.{instance}")):
+                self.result.is_failure(f"Instance: {instance} - Not configured")
+                continue
+            if (priority := get_value(instance_details, "rootBridge.priority")) != self.inputs.priority:
+                self.result.is_failure(f"STP Instance: {instance} - Incorrect root priority - Expected: {self.inputs.priority} Actual: {priority}")
 
 
 class VerifyStpTopologyChanges(AntaTest):
@@ -282,8 +272,7 @@ class VerifyStpTopologyChanges(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyStpTopologyChanges."""
-        failures: dict[str, Any] = {"topologies": {}}
-
+        self.result.is_success()
         command_output = self.instance_commands[0].json_output
         stp_topologies = command_output.get("topologies", {})
 
@@ -297,18 +286,12 @@ class VerifyStpTopologyChanges(AntaTest):
 
         # Verifies the number of changes across all interfaces
         for topology, topology_details in stp_topologies.items():
-            interfaces = {
-                interface: {"Number of changes": num_of_changes}
-                for interface, details in topology_details.get("interfaces", {}).items()
-                if (num_of_changes := details.get("numChanges")) > self.inputs.threshold
-            }
-            if interfaces:
-                failures["topologies"][topology] = interfaces
-
-        if failures["topologies"]:
-            self.result.is_failure(f"The following STP topologies are not configured or number of changes not within the threshold:\n{failures}")
-        else:
-            self.result.is_success()
+            for interface, details in topology_details.get("interfaces", {}).items():
+                if (num_of_changes := details.get("numChanges")) > self.inputs.threshold:
+                    self.result.is_failure(
+                        f"Topology: {topology} Interface: {interface} - Number of changes not within the threshold - Expected: "
+                        f"{self.inputs.threshold} Actual: {num_of_changes}"
+                    )
 
 
 class VerifySTPDisabledVlans(AntaTest):

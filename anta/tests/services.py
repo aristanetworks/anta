@@ -46,7 +46,7 @@ class VerifyHostname(AntaTest):
         hostname = self.instance_commands[0].json_output["hostname"]
 
         if hostname != self.inputs.hostname:
-            self.result.is_failure(f"Expected `{self.inputs.hostname}` as the hostname, but found `{hostname}` instead.")
+            self.result.is_failure(f"Incorrect Hostname - Expected: {self.inputs.hostname} Actual: {hostname}")
         else:
             self.result.is_success()
 

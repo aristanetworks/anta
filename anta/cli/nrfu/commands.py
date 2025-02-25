@@ -45,7 +45,10 @@ def table(ctx: click.Context, group_by: Literal["device", "test"] | None) -> Non
     help="Path to save report as a JSON file",
 )
 def json(ctx: click.Context, output: pathlib.Path | None) -> None:
-    """ANTA command to check network state with JSON results."""
+    """ANTA command to check network state with JSON results.
+
+    If no `--output` is specified, the output is printed to stdout.
+    """
     run_tests(ctx)
     print_json(ctx, output=output)
     exit_with_code(ctx)
@@ -72,11 +75,11 @@ def text(ctx: click.Context) -> None:
         path_type=pathlib.Path,
     ),
     show_envvar=True,
-    required=False,
+    required=True,
     help="Path to save report as a CSV file",
 )
 def csv(ctx: click.Context, csv_output: pathlib.Path) -> None:
-    """ANTA command to check network states with CSV result."""
+    """ANTA command to check network state with CSV report."""
     run_tests(ctx)
     save_to_csv(ctx, csv_file=csv_output)
     exit_with_code(ctx)
