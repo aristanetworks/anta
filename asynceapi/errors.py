@@ -6,13 +6,16 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING
 
 import httpx
 
+if TYPE_CHECKING:
+    from ._types import EapiComplexCommand, EapiJsonOutput, EapiSimpleCommand, EapiTextOutput
+
 
 class EapiCommandError(RuntimeError):
-    """Exception class for EAPI command errors.
+    """Exception class for eAPI command errors.
 
     Attributes
     ----------
@@ -23,7 +26,14 @@ class EapiCommandError(RuntimeError):
         not_exec: a list of commands that were not executed
     """
 
-    def __init__(self, failed: str, errors: list[str], errmsg: str, passed: list[str | dict[str, Any]], not_exec: list[dict[str, Any]]) -> None:
+    def __init__(
+        self,
+        failed: str,
+        errors: list[str],
+        errmsg: str,
+        passed: list[EapiJsonOutput] | list[EapiTextOutput],
+        not_exec: list[EapiSimpleCommand | EapiComplexCommand],
+    ) -> None:
         """Initialize for the EapiCommandError exception."""
         self.failed = failed
         self.errmsg = errmsg

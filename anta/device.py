@@ -26,6 +26,8 @@ if TYPE_CHECKING:
     from collections.abc import Iterator
     from pathlib import Path
 
+    from asynceapi._types import EapiComplexCommand, EapiSimpleCommand
+
 logger = logging.getLogger(__name__)
 
 # Do not load the default keypairs multiple times due to a performance issue introduced in cryptography 37.0
@@ -466,7 +468,7 @@ class AsyncEOSDevice(AntaDevice):
         semaphore = await self._get_semaphore()
 
         async with semaphore:
-            commands: list[dict[str, str | int]] = []
+            commands: list[EapiComplexCommand | EapiSimpleCommand] = []
             if self.enable and self._enable_password is not None:
                 commands.append(
                     {
@@ -479,12 +481,12 @@ class AsyncEOSDevice(AntaDevice):
                 commands.append({"cmd": "enable"})
             commands += [{"cmd": command.command, "revision": command.revision}] if command.revision else [{"cmd": command.command}]
             try:
-                response: list[dict[str, Any] | str] = await self._session.cli(
+                response = await self._session.cli(
                     commands=commands,
                     ofmt=command.ofmt,
                     version=command.version,
                     req_id=f"ANTA-{collection_id}-{id(command)}" if collection_id else f"ANTA-{id(command)}",
-                )  # type: ignore[assignment] # multiple commands returns a list
+                )
                 # Do not keep response of 'enable' command
                 command.output = response[-1]
             except asynceapi.EapiCommandError as e:
