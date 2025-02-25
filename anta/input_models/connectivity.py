@@ -30,8 +30,8 @@ class Host(BaseModel):
     """Specify datagram size."""
     df_bit: bool = False
     """Enable do not fragment bit in IP header."""
-    expected_unreachable: bool = False
-    """Indicates whether the expected network should be unreachable."""
+    reachable: bool = True
+    """Indicates whether the destination should be reachable. Set to True if the network should be accessible, False otherwise."""
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the Host for reporting.

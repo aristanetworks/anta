@@ -59,7 +59,7 @@ DATA: list[dict[str, Any]] = [
                 ],
             },
         ],
-        "inputs": {"hosts": [{"destination": "10.0.0.1", "source": "10.0.0.5", "expected_unreachable": True}]},
+        "inputs": {"hosts": [{"destination": "10.0.0.1", "source": "10.0.0.5", "reachable": False}]},
         "expected": {"result": "success"},
     },
     {
@@ -303,8 +303,11 @@ DATA: list[dict[str, Any]] = [
                 ],
             },
         ],
-        "inputs": {"hosts": [{"destination": "10.0.0.1", "source": "10.0.0.5", "expected_unreachable": True}]},
-        "expected": {"result": "failure", "messages": ["Host: 10.0.0.1 Source: 10.0.0.5 VRF: default - Network is expected to be unreachable but found reachable."]},
+        "inputs": {"hosts": [{"destination": "10.0.0.1", "source": "10.0.0.5", "reachable": False}]},
+        "expected": {
+            "result": "failure",
+            "messages": ["Host: 10.0.0.1 Source: 10.0.0.5 VRF: default - Destination is expected to be unreachable but found reachable."],
+        },
     },
     {
         "name": "success",
