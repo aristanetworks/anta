@@ -44,12 +44,31 @@ KNOWN_EOS_ERRORS = [
     r"IS-IS (.*) is disabled because: .*",
     r"No source interface .*",
 ]
-"""List of known EOS errors that should set a test status to 'failure' with the error message."""
+"""List of known EOS errors.
+
+!!! failure "Generic EOS Error Handling"
+    When catching these errors, **ANTA will fail the affected test** and reported the error message.
+"""
+
+EOS_BLACKLIST_CMDS = [
+    r"^reload.*",
+    r"^conf.*",
+    r"^wr.*",
+]
+"""List of blacklisted EOS commands.
+
+!!! success "Disruptive commands safeguard"
+    ANTA implements a mechanism to **prevent the execution of disruptive commands** such as `reload`, `write erase` or `configure terminal`.
+"""
 
 UNSUPPORTED_PLATFORM_ERRORS = [
     "not supported on this hardware platform",
     "Invalid input (at token 2: 'trident')",
 ]
-"""Error messages indicating platform or hardware unsupported commands.
-Will set the test status to 'skipped'. Includes both general hardware
-platform errors and specific ASIC family limitations."""
+"""Error messages indicating platform or hardware unsupported commands. Includes both general hardware
+platform errors and specific ASIC family limitations.
+
+!!! tip "Running EOS commands unsupported by hardware"
+    When catching these errors, ANTA will skip the affected test and raise a warning. The **test catalog must be updated** to remove execution of the affected test
+    on unsupported devices.
+"""

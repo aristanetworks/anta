@@ -12,7 +12,7 @@ from warnings import warn
 from pydantic import BaseModel, ConfigDict, Field, PositiveInt, model_validator
 from pydantic_extra_types.mac_address import MacAddress
 
-from anta.custom_types import Afi, BgpDropStats, BgpUpdateError, MultiProtocolCaps, Safi, Vni
+from anta.custom_types import Afi, BgpDropStats, BgpUpdateError, MultiProtocolCaps, RedistributedAfiSafi, RedistributedProtocol, Safi, Vni
 
 if TYPE_CHECKING:
     import sys
@@ -68,8 +68,7 @@ class BgpAddressFamily(BaseModel):
     check_peer_state: bool = False
     """Flag to check if the peers are established with negotiated AFI/SAFI. Defaults to `False`.
 
-    Can be enabled in the `VerifyBGPPeerCount` tests.
-    """
+    Can be enabled in the `VerifyBGPPeerCount` tests."""
 
     @model_validator(mode="after")
     def validate_inputs(self) -> Self:
@@ -224,8 +223,10 @@ class BgpRoute(BaseModel):
     """The IPv4 network address."""
     vrf: str = "default"
     """Optional VRF for the BGP peer. Defaults to `default`."""
-    paths: list[BgpRoutePath]
-    """A list of paths for the BGP route."""
+    paths: list[BgpRoutePath] | None = None
+    """A list of paths for the BGP route. Required field in the `VerifyBGPRoutePaths` test."""
+    ecmp_count: int | None = None
+    """The expected number of ECMP paths for the BGP route. Required field in the `VerifyBGPRouteECMP` test."""
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the BgpRoute for reporting.
@@ -254,3 +255,73 @@ class BgpRoutePath(BaseModel):
         - Next-hop: 192.168.66.101 Origin: Igp
         """
         return f"Next-hop: {self.nexthop} Origin: {self.origin}"
+
+
+class BgpVrf(BaseModel):
+    """Model representing a VRF in a BGP instance."""
+
+    vrf: str = "default"
+    """VRF context."""
+    address_families: list[AddressFamilyConfig]
+    """List of address family configuration."""
+
+    def __str__(self) -> str:
+        """Return a human-readable string representation of the BgpVrf for reporting.
+
+        Examples
+        --------
+        - VRF: default
+        """
+        return f"VRF: {self.vrf}"
+
+
+class RedistributedRouteConfig(BaseModel):
+    """Model representing a BGP redistributed route configuration."""
+
+    proto: RedistributedProtocol
+    """The redistributed protocol."""
+    include_leaked: bool = False
+    """Flag to include leaked routes of the redistributed protocol while redistributing."""
+    route_map: str | None = None
+    """Optional route map applied to the redistribution."""
+
+    @model_validator(mode="after")
+    def validate_inputs(self) -> Self:
+        """Validate that 'include_leaked' is not set when the redistributed protocol is AttachedHost, User, Dynamic, or RIP."""
+        if self.include_leaked and self.proto in ["AttachedHost", "EOS SDK", "Dynamic", "RIP"]:
+            msg = f"'include_leaked' field is not supported for redistributed protocol '{self.proto}'"
+            raise ValueError(msg)
+        return self
+
+    def __str__(self) -> str:
+        """Return a human-readable string representation of the RedistributedRouteConfig for reporting.
+
+        Examples
+        --------
+        - Proto: Connected, Include Leaked: True, Route Map: RM-CONN-2-BGP
+        """
+        base_string = f"Proto: {self.proto}"
+        if self.include_leaked:
+            base_string += f", Include Leaked: {self.include_leaked}"
+        if self.route_map:
+            base_string += f", Route Map: {self.route_map}"
+        return base_string
+
+
+class AddressFamilyConfig(BaseModel):
+    """Model representing a BGP address family configuration."""
+
+    afi_safi: RedistributedAfiSafi
+    """AFI/SAFI abbreviation per EOS."""
+    redistributed_routes: list[RedistributedRouteConfig]
+    """List of redistributed route configuration."""
+
+    def __str__(self) -> str:
+        """Return a human-readable string representation of the AddressFamilyConfig for reporting.
+
+        Examples
+        --------
+        - AFI-SAFI: IPv4 Unicast
+        """
+        mappings = {"v4u": "IPv4 Unicast", "v4m": "IPv4 Multicast", "v6u": "IPv6 Unicast", "v6m": "IPv6 Multicast"}
+        return f"AFI-SAFI: {mappings[self.afi_safi]}"
