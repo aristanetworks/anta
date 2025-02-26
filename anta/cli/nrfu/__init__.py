@@ -42,9 +42,10 @@ class IgnoreRequiredWithHelp(AliasedGroup):
             if "--help" not in args:
                 raise
 
-            # remove the required params so that help can display
+            # Fake presence of the required params so that help can display
             for param in self.params:
-                param.required = False
+                if param.required:
+                    param.value_is_missing = lambda value: False  # type: ignore[method-assign] # noqa: ARG005
 
             return super().parse_args(ctx, args)
 
