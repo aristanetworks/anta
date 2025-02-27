@@ -328,7 +328,7 @@ class VerifyPortChannels(AntaTest):
         for port_channel, port_channel_details in command_output["portChannels"].items():
             # Verify that the no inactive ports in all port channels.
             if inactive_ports := port_channel_details["inactivePorts"]:
-                self.result.is_failure(f"Port-Channel: {port_channel} - Inactive port(s) - {', '.join(inactive_ports.keys())}")
+                self.result.is_failure(f"{port_channel} - Inactive port(s) - {', '.join(inactive_ports.keys())}")
 
 
 class VerifyIllegalLACP(AntaTest):
@@ -359,7 +359,7 @@ class VerifyIllegalLACP(AntaTest):
             for interface, interface_details in port_channel_dict["interfaces"].items():
                 # Verify that the no illegal LACP packets in all port channels.
                 if interface_details["illegalRxCount"] != 0:
-                    self.result.is_failure(f"Port-Channel: {port_channel} Interface: {interface} - Illegal LACP packets found")
+                    self.result.is_failure(f"{port_channel} Interface: {interface} - Illegal LACP packets found")
 
 
 class VerifyLoopbackCount(AntaTest):
@@ -398,11 +398,11 @@ class VerifyLoopbackCount(AntaTest):
         for interface, interface_details in command_output["interfaces"].items():
             if "Loopback" in interface:
                 loopback_count += 1
-                if not ((status := interface_details["lineProtocolStatus"]) == "up" and interface_details["interfaceStatus"] == "connected"):
-                    self.result.is_failure(
-                        f"Interface: {interface} LineProtocolStatus: up interfaceStatus: Connected - Not up - Actual: "
-                        f"LineProtocolStatus: {status} InterfaceStatus: {interface_details['interfaceStatus']}"
-                    )
+                if (status := interface_details["lineProtocolStatus"]) != "up":
+                    self.result.is_failure(f"Interface: {interface} - Invalid line protocol status - Expected: up - Actual: {status}")
+
+                if (status := interface_details["interfaceStatus"]) != "connected":
+                    self.result.is_failure(f"Interface: {interface} - Invalid interface status - Expected: connected -  Actual: {status}")
 
         if loopback_count != self.inputs.number:
             self.result.is_failure(f"Loopback interface(s) count mismatch:  Expected {self.inputs.number} Actual: {loopback_count}")
@@ -433,11 +433,10 @@ class VerifySVI(AntaTest):
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
         for interface, int_data in command_output["interfaces"].items():
-            if "Vlan" in interface and not ((status := int_data["lineProtocolStatus"]) == "up" and int_data["interfaceStatus"] == "connected"):
-                self.result.is_failure(
-                    f"SVI: {interface} LineProtocolStatus: up interfaceStatus: Connected - Not up - Actual: "
-                    f"LineProtocolStatus: {status} InterfaceStatus: {int_data['interfaceStatus']}"
-                )
+            if "Vlan" in interface and (status := int_data["lineProtocolStatus"]) != "up":
+                self.result.is_failure(f"SVI: {interface} - Invalid line protocol status - Expected: up Actual: {status}")
+            if "Vlan" in interface and int_data["interfaceStatus"] != "connected":
+                self.result.is_failure(f"SVI: {interface} - Invalid interface status - Expected: connected Actual: {int_data['interfaceStatus']}")
 
 
 class VerifyL3MTU(AntaTest):

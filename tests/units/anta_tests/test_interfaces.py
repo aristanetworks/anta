@@ -1306,7 +1306,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Port-Channel: Port-Channel42 - Inactive port(s) - Ethernet8"]},
+        "expected": {"result": "failure", "messages": ["Port-Channel42 - Inactive port(s) - Ethernet8"]},
     },
     {
         "name": "success",
@@ -1362,7 +1362,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": ["Port-Channel: Port-Channel42 Interface: Ethernet8 - Illegal LACP packets found"],
+            "messages": ["Port-Channel42 Interface: Ethernet8 - Illegal LACP packets found"],
         },
     },
     {
@@ -1430,7 +1430,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Interface: Loopback666 LineProtocolStatus: up interfaceStatus: Connected - Not up - Actual: LineProtocolStatus: down InterfaceStatus: notconnect"
+                "Interface: Loopback666 - Invalid line protocol status - Expected: up - Actual: down",
+                "Interface: Loopback666 - Invalid interface status - Expected: connected -  Actual: notconnect",
             ],
         },
     },
@@ -1495,7 +1496,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "SVI: Vlan42 LineProtocolStatus: up interfaceStatus: Connected - Not up - Actual: LineProtocolStatus: lowerLayerDown InterfaceStatus: notconnect"
+                "SVI: Vlan42 - Invalid line protocol status - Expected: up Actual: lowerLayerDown",
+                "SVI: Vlan42 - Invalid interface status - Expected: connected Actual: notconnect",
             ],
         },
     },
