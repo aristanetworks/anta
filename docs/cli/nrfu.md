@@ -48,12 +48,7 @@ The `text` subcommand provides a straightforward text report for each test execu
 ### Command overview
 
 ```bash
-Usage: anta nrfu text [OPTIONS]
-
-  ANTA command to check network states with text result.
-
-Options:
-  --help  Show this message and exit.
+--8<-- "anta_nrfu_text_help.txt"
 ```
 
 ### Example
@@ -71,13 +66,7 @@ The `table` command under the `anta nrfu` namespace offers a clear and organized
 ### Command overview
 
 ```bash
-Usage: anta nrfu table [OPTIONS]
-
-  ANTA command to check network states with table result.
-
-Options:
-  --group-by [device|test]  Group result by test or device.
-  --help                    Show this message and exit.
+--8<-- "anta_nrfu_table_help.txt"
 ```
 
 The `--group-by` option show a summarized view of the test results per host or per test.
@@ -125,15 +114,7 @@ The JSON rendering command in NRFU testing will generate an output of all test r
 ### Command overview
 
 ```bash
-anta nrfu json --help
-Usage: anta nrfu json [OPTIONS]
-
-  ANTA command to check network state with JSON result.
-
-Options:
-  -o, --output FILE  Path to save report as a JSON file  [env var:
-                     ANTA_NRFU_JSON_OUTPUT]
-  --help             Show this message and exit.
+--8<-- "anta_nrfu_json_help.txt"
 ```
 
 The `--output` option allows you to save the JSON report as a file. If specified, no output will be displayed in the terminal. This is useful for further processing or integration with other tools.
@@ -153,15 +134,7 @@ The `csv` command in NRFU testing is useful for generating a CSV file with all t
 ### Command overview
 
 ```bash
-anta nrfu csv --help
-Usage: anta nrfu csv [OPTIONS]
-
-  ANTA command to check network states with CSV result.
-
-Options:
-  --csv-output FILE  Path to save report as a CSV file  [env var:
-                     ANTA_NRFU_CSV_CSV_OUTPUT]
-  --help             Show this message and exit.
+--8<-- "anta_nrfu_csv_help.txt"
 ```
 
 ### Example
@@ -175,16 +148,7 @@ The `md-report` command in NRFU testing generates a comprehensive Markdown repor
 ### Command overview
 
 ```bash
-anta nrfu md-report --help
-
-Usage: anta nrfu md-report [OPTIONS]
-
-  ANTA command to check network state with Markdown report.
-
-Options:
-  --md-output FILE  Path to save the report as a Markdown file  [env var:
-                    ANTA_NRFU_MD_REPORT_MD_OUTPUT; required]
-  --help            Show this message and exit.
+--8<-- "anta_nrfu_mdreport_help.txt"
 ```
 
 ### Example
@@ -198,17 +162,7 @@ ANTA offers a CLI option for creating custom reports. This leverages the Jinja2 
 ### Command overview
 
 ```bash
-anta nrfu tpl-report --help
-Usage: anta nrfu tpl-report [OPTIONS]
-
-  ANTA command to check network state with templated report
-
-Options:
-  -tpl, --template FILE  Path to the template to use for the report  [env var:
-                         ANTA_NRFU_TPL_REPORT_TEMPLATE; required]
-  -o, --output FILE      Path to save report as a file  [env var:
-                         ANTA_NRFU_TPL_REPORT_OUTPUT]
-  --help                 Show this message and exit.
+--8<-- "anta_nrfu_tplreport_help.txt"
 ```
 
 The `--template` option is used to specify the Jinja2 template file for generating the custom report.
