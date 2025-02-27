@@ -8,16 +8,14 @@
 from __future__ import annotations
 
 import re
-from ipaddress import IPv4Interface
 from typing import Any, ClassVar, TypeVar
 
 from pydantic import BaseModel, Field, field_validator
 from pydantic_extra_types.mac_address import MacAddress
 
-from anta import GITHUB_SUGGESTION
 from anta.custom_types import EthernetInterface, Interface, Percent, PositiveInteger
 from anta.decorators import skip_on_platforms
-from anta.input_models.interfaces import InterfaceState
+from anta.input_models.interfaces import InterfaceDetail, InterfaceState
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import custom_division, format_data, get_failed_logs, get_item, get_value
 
@@ -524,25 +522,26 @@ class VerifyIPProxyARP(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["interfaces"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show ip interface {intf}", revision=2)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip interface", revision=2)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyIPProxyARP test."""
 
-        interfaces: list[str]
+        interfaces: list[Interface]
         """List of interfaces to be tested."""
-
-    def render(self, template: AntaTemplate) -> list[AntaCommand]:
-        """Render the template for each interface in the input list."""
-        return [template.render(intf=intf) for intf in self.inputs.interfaces]
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyIPProxyARP."""
         self.result.is_success()
-        for command in self.instance_commands:
-            interface = command.params.intf
-            if not command.json_output["interfaces"][interface]["proxyArp"]:
+        command_output = self.instance_commands[0].json_output
+
+        for interface in self.inputs.interfaces:
+            if (interface_detail := get_value(command_output["interfaces"], f"{interface}", separator="..")) is None:
+                self.result.is_failure(f"Interface: {interface} - Not found")
+                continue
+
+            if not interface_detail["proxyArp"]:
                 self.result.is_failure(f"Interface: {interface} - Proxy-ARP disabled")
 
 
@@ -611,7 +610,7 @@ class VerifyL2MTU(AntaTest):
 
 
 class VerifyInterfaceIPv4(AntaTest):
-    """Verifies if an interface is configured with a correct primary and list of optional secondary IPv4 addresses.
+    """Verifies the interface IPv4 addresses.
 
     Expected Results
     ----------------
@@ -632,82 +631,60 @@ class VerifyInterfaceIPv4(AntaTest):
     ```
     """
 
-    description = "Verifies the interface IPv4 addresses."
     categories: ClassVar[list[str]] = ["interfaces"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show ip interface {interface}", revision=2)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip interface", revision=2)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyInterfaceIPv4 test."""
 
-        interfaces: list[InterfaceDetail]
+        interfaces: list[InterfaceState]
         """List of interfaces with their details."""
+        InterfaceDetail: ClassVar[type[InterfaceDetail]] = InterfaceDetail
 
-        class InterfaceDetail(BaseModel):
-            """Model for an interface detail."""
-
-            name: Interface
-            """Name of the interface."""
-            primary_ip: IPv4Interface
-            """Primary IPv4 address in CIDR notation."""
-            secondary_ips: list[IPv4Interface] | None = None
-            """Optional list of secondary IPv4 addresses in CIDR notation."""
-
-    def render(self, template: AntaTemplate) -> list[AntaCommand]:
-        """Render the template for each interface in the input list."""
-        return [template.render(interface=interface.name) for interface in self.inputs.interfaces]
+        @field_validator("interfaces")
+        @classmethod
+        def validate_interfaces(cls, interfaces: list[T]) -> list[T]:
+            """Validate that 'primary_ip' field is provided in each interface."""
+            for interface in interfaces:
+                if interface.primary_ip is None:
+                    msg = f"{interface} 'primary_ip' field missing in the input"
+                    raise ValueError(msg)
+            return interfaces
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyInterfaceIPv4."""
         self.result.is_success()
-        for command in self.instance_commands:
-            intf = command.params.interface
-            for interface in self.inputs.interfaces:
-                if interface.name == intf:
-                    input_interface_detail = interface
-                    break
-            else:
-                self.result.is_failure(f"Could not find `{intf}` in the input interfaces. {GITHUB_SUGGESTION}")
+        command_output = self.instance_commands[0].json_output
+
+        for interface in self.inputs.interfaces:
+            if (interface_detail := get_value(command_output["interfaces"], f"{interface.name}", separator="..")) is None:
+                self.result.is_failure(f"{interface} - Not found")
                 continue
 
-            input_primary_ip = str(input_interface_detail.primary_ip)
-            failed_messages = []
-
-            # Check if the interface has an IP address configured
-            if not (interface_output := get_value(command.json_output, f"interfaces.{intf}.interfaceAddress")):
-                self.result.is_failure(f"For interface `{intf}`, IP address is not configured.")
+            if (ip_address := get_value(interface_detail, "interfaceAddress.primaryIp")) is None:
+                self.result.is_failure(f"{interface} - IP address is not configured")
                 continue
-
-            primary_ip = get_value(interface_output, "primaryIp")
 
             # Combine IP address and subnet for primary IP
-            actual_primary_ip = f"{primary_ip['address']}/{primary_ip['maskLen']}"
+            actual_primary_ip = f"{ip_address['address']}/{ip_address['maskLen']}"
 
             # Check if the primary IP address matches the input
-            if actual_primary_ip != input_primary_ip:
-                failed_messages.append(f"The expected primary IP address is `{input_primary_ip}`, but the actual primary IP address is `{actual_primary_ip}`.")
+            if actual_primary_ip != str(interface.primary_ip):
+                self.result.is_failure(f"{interface} - IP address mismatch - Expected: {interface.primary_ip} Actual: {actual_primary_ip}")
 
-            if (param_secondary_ips := input_interface_detail.secondary_ips) is not None:
-                input_secondary_ips = sorted([str(network) for network in param_secondary_ips])
-                secondary_ips = get_value(interface_output, "secondaryIpsOrderedList")
+            if interface.secondary_ips:
+                if not (secondary_ips := get_value(interface_detail, "interfaceAddress.secondaryIpsOrderedList")):
+                    self.result.is_failure(f"{interface} - Secondary IP address is not configured")
+                    continue
 
-                # Combine IP address and subnet for secondary IPs
                 actual_secondary_ips = sorted([f"{secondary_ip['address']}/{secondary_ip['maskLen']}" for secondary_ip in secondary_ips])
+                input_secondary_ips = sorted([str(ip) for ip in interface.secondary_ips])
 
-                # Check if the secondary IP address is configured
-                if not actual_secondary_ips:
-                    failed_messages.append(
-                        f"The expected secondary IP addresses are `{input_secondary_ips}`, but the actual secondary IP address is not configured."
+                if actual_secondary_ips != input_secondary_ips:
+                    self.result.is_failure(
+                        f"{interface} - Secondary IP address mismatch - Expected: {', '.join(input_secondary_ips)} Actual: {', '.join(actual_secondary_ips)}"
                     )
-
-                # Check if the secondary IP addresses match the input
-                elif actual_secondary_ips != input_secondary_ips:
-                    failed_messages.append(
-                        f"The expected secondary IP addresses are `{input_secondary_ips}`, but the actual secondary IP addresses are `{actual_secondary_ips}`."
-                    )
-
-            if failed_messages:
-                self.result.is_failure(f"For interface `{intf}`, " + " ".join(failed_messages))
 
 
 class VerifyIpVirtualRouterMac(AntaTest):
