@@ -26,6 +26,7 @@ dependencies = [
   "Jinja2>=3.1.2",
   "pydantic>=2.7",
   "pydantic-extra-types>=2.3.0",
+  "pydantic-settings>=2.6.0",
   "PyYAML>=6.0",
   "requests>=2.31.0",
   "rich>=13.5.2,<14"
@@ -487,3 +488,5 @@ min-similarity-lines=10
 signature-mutators="click.decorators.option"
 load-plugins="pylint_pydantic"
 extension-pkg-whitelist="pydantic"
+# Pylint does not treat dataclasses differently: https://github.com/pylint-dev/pylint/issues/9058
+max-attributes=15

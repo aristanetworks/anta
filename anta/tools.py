@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import cProfile
 import os
 import pstats
@@ -19,6 +20,7 @@ from anta.logger import format_td
 
 if TYPE_CHECKING:
     import sys
+    from collections.abc import AsyncIterator, Coroutine
     from logging import Logger
     from types import TracebackType
 
@@ -28,6 +30,7 @@ if TYPE_CHECKING:
         from typing_extensions import Self
 
 F = TypeVar("F", bound=Callable[..., Any])
+T = TypeVar("T")
 
 
 def get_failed_logs(expected_output: dict[Any, Any], actual_output: dict[Any, Any]) -> str:
@@ -415,3 +418,45 @@ def format_data(data: dict[str, bool]) -> str:
     "Advertised: True, Received: True, Enabled: True"
     """
     return ", ".join(f"{k.capitalize()}: {v}" for k, v in data.items())
+
+
+async def limit_concurrency(coroutines: AsyncIterator[Coroutine[Any, Any, T]], limit: int) -> AsyncIterator[asyncio.Task[T]]:
+    """Schedule a limited number of coroutines concurrently.
+
+    Inspired by: https://death.andgravity.com/limit-concurrency
+
+    Parameters
+    ----------
+    coroutines
+        An async iterator of coroutines.
+    limit
+        The maximum number of coroutines to run concurrently.
+
+    Yields
+    ------
+        Each completed task.
+    """
+    if limit <= 0:
+        msg = "Concurrency limit must be greater than 0."
+        raise RuntimeError(msg)
+
+    coros_ended = False
+    pending: set[asyncio.Task[T]] = set()
+
+    while pending or not coros_ended:
+        while len(pending) < limit and not coros_ended:
+            try:
+                # NOTE: The `anext` built-in function is not available in Python 3.9
+                coro = await coroutines.__anext__()  # pylint: disable=unnecessary-dunder-call
+            except StopAsyncIteration:  # noqa: PERF203
+                coros_ended = True
+            else:
+                pending.add(asyncio.create_task(coro))
+
+        if not pending:
+            return
+
+        done, pending = await asyncio.wait(pending, return_when=asyncio.FIRST_COMPLETED)
+
+        while done:
+            yield done.pop()
