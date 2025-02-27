@@ -7,13 +7,11 @@
 # mypy: disable-error-code=attr-defined
 from __future__ import annotations
 
-from ipaddress import IPv4Address, IPv4Network
-from typing import Any, ClassVar, Literal
+from typing import Any, ClassVar
 
-from pydantic import BaseModel, field_validator
+from pydantic import field_validator
 
-from anta.custom_types import Interface
-from anta.input_models.routing.isis import InterfaceCount, InterfaceState, ISISInstance, IsisInstance, ISISInterface
+from anta.input_models.routing.isis import Entry, InterfaceCount, InterfaceState, ISISInstance, IsisInstance, ISISInterface, Tunnel, TunnelPath
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_item, get_value
 
@@ -391,34 +389,9 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyISISSegmentRoutingTunnels test."""
 
-        entries: list[Entry]
+        entries: list[Tunnel]
         """List of tunnels to check on device."""
-
-        class Entry(BaseModel):
-            """Definition of a tunnel entry."""
-
-            endpoint: IPv4Network
-            """Endpoint IP of the tunnel."""
-            vias: list[Vias] | None = None
-            """Optional list of path to reach endpoint."""
-
-            class Vias(BaseModel):
-                """Definition of a tunnel path."""
-
-                nexthop: IPv4Address | None = None
-                """Nexthop of the tunnel. If None, then it is not tested. Default: None"""
-                type: Literal["ip", "tunnel"] | None = None
-                """Type of the tunnel. If None, then it is not tested. Default: None"""
-                interface: Interface | None = None
-                """Interface of the tunnel. If None, then it is not tested. Default: None"""
-                tunnel_id: Literal["TI-LFA", "ti-lfa", "unset"] | None = None
-                """Computation method of the tunnel. If None, then it is not tested. Default: None"""
-
-    def _eos_entry_lookup(self, search_value: IPv4Network, entries: dict[str, Any], search_key: str = "endpoint") -> dict[str, Any] | None:
-        return next(
-            (entry_value for entry_id, entry_value in entries.items() if str(entry_value[search_key]) == str(search_value)),
-            None,
-        )
+        Entry: ClassVar[type[Entry]] = Entry
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -427,29 +400,31 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
         This method performs the main test logic for verifying ISIS Segment Routing tunnels.
         It checks the command output, initiates defaults, and performs various checks on the tunnels.
         """
-        command_output = self.instance_commands[0].json_output
         self.result.is_success()
 
+        command_output = self.instance_commands[0].json_output
         if len(command_output["entries"]) == 0:
-            self.result.is_skipped("IS-IS-SR is not running on device.")
+            self.result.is_skipped("IS-IS-SR not configured")
             return
 
         for input_entry in self.inputs.entries:
-            eos_entry = self._eos_entry_lookup(search_value=input_entry.endpoint, entries=command_output["entries"])
-            if eos_entry is None:
-                self.result.is_failure(f"Tunnel to {input_entry.endpoint!s} is not found.")
-            elif input_entry.vias is not None:
+            entries = list(command_output["entries"].values())
+            if (eos_entry := get_item(entries, "endpoint", str(input_entry.endpoint))) is None:
+                self.result.is_failure(f"{input_entry} - Tunnel not found")
+                continue
+
+            if input_entry.vias is not None:
                 for via_input in input_entry.vias:
                     via_search_result = any(self._via_matches(via_input, eos_via) for eos_via in eos_entry["vias"])
                     if not via_search_result:
-                        self.result.is_failure(f"Tunnel to {input_entry.endpoint!s} is incorrect.")
+                        self.result.is_failure(f"{input_entry} {via_input} - Tunnel is incorrect")
 
-    def _via_matches(self, via_input: VerifyISISSegmentRoutingTunnels.Input.Entry.Vias, eos_via: dict[str, Any]) -> bool:
+    def _via_matches(self, via_input: TunnelPath, eos_via: dict[str, Any]) -> bool:
         """Check if the via input matches the eos via.
 
         Parameters
         ----------
-        via_input : VerifyISISSegmentRoutingTunnels.Input.Entry.Vias
+        via_input : TunnelPath
             The input via to check.
         eos_via : dict[str, Any]
             The EOS via to compare against.

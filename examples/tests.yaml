@@ -130,6 +130,7 @@ anta.tests.connectivity:
           vrf: MGMT
           df_bit: True
           size: 100
+          reachable: true
         - source: Management0
           destination: 8.8.8.8
           vrf: MGMT
@@ -140,6 +141,7 @@ anta.tests.connectivity:
           vrf: default
           df_bit: True
           size: 100
+          reachable: false
 anta.tests.cvx:
   - VerifyActiveCVXConnections:
       # Verifies the number of active CVX Connections.
@@ -513,6 +515,26 @@ anta.tests.routing.bgp:
   - VerifyBGPPeersHealthRibd:
       # Verifies the health of all the BGP IPv4 peer(s).
       check_tcp_queues: True
+  - VerifyBGPRedistribution:
+      # Verifies BGP redistribution.
+      vrfs:
+        - vrf: default
+          address_families:
+            - afi_safi: ipv4Unicast
+              redistributed_routes:
+                - proto: Connected
+                  include_leaked: True
+                  route_map: RM-CONN-2-BGP
+                - proto: Static
+                  include_leaked: True
+                  route_map: RM-CONN-2-BGP
+            - afi_safi: IPv6 Unicast
+              redistributed_routes:
+                - proto: User # Converted to EOS SDK
+                  route_map: RM-CONN-2-BGP
+                - proto: Static
+                  include_leaked: True
+                  route_map: RM-CONN-2-BGP
   - VerifyBGPRouteECMP:
       # Verifies BGP IPv4 route ECMP paths.
       route_entries:
@@ -932,7 +954,7 @@ anta.tests.system:
   - VerifyMemoryUtilization:
       # Verifies whether the memory utilization is below 75%.
   - VerifyNTP:
-      # Verifies if NTP is synchronised.
+      # Verifies that the Network Time Protocol (NTP) is synchronized.
   - VerifyNTPAssociations:
       # Verifies the Network Time Protocol (NTP) associations.
       ntp_servers:
