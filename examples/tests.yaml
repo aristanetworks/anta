@@ -661,13 +661,12 @@ anta.tests.routing.isis:
               nexthop: 1.1.1.1
 anta.tests.routing.ospf:
   - VerifyOSPFMaxLSA:
-      # Verifies LSAs present in the OSPF link state database did not cross the maximum LSA Threshold.
+      # Verifies all OSPF instances did not cross the maximum LSA threshold.
   - VerifyOSPFNeighborCount:
       # Verifies the number of OSPF neighbors in FULL state is the one we expect.
       number: 3
   - VerifyOSPFNeighborState:
       # Verifies all OSPF neighbors are in FULL state.
-
 anta.tests.security:
   - VerifyAPIHttpStatus:
       # Verifies if eAPI HTTP server is disabled globally.

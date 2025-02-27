@@ -419,7 +419,10 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": ["Following OSPF Instances crossed the maximum LSA threshold - 1, 10"],
+            "messages": [
+                "Instance: 1 - Crossed the maximum LSA threshold - Expected: < 9000 Actual: 11500",
+                "Instance: 10 - Crossed the maximum LSA threshold - Expected: < 750 Actual: 1500",
+            ],
         },
     },
     {

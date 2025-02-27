@@ -60,7 +60,7 @@ class VerifyOSPFNeighborState(AntaTest):
                         f"Instance: {instance} VRF: {vrf} Interface: {interface[0]} - Incorrect adjacency state - Expected: Full Actual: {interface[1]}"
                     )
 
-        # If OSPF neighbors are not configured on device, test fails.
+        # If OSPF neighbors are not configured on device, test skipped.
         if no_neighbor:
             self.result.is_skipped("No OSPF neighbor detected")
 
@@ -112,7 +112,7 @@ class VerifyOSPFNeighborCount(AntaTest):
                 no_neighbor = False
                 interfaces.extend([neighbor["routerId"] for neighbor in neighbors if neighbor["adjacencyState"] == "full"])
 
-        # If OSPF neighbors are not configured on device, test fails.
+        # If OSPF neighbors are not configured on device, test skipped.
         if no_neighbor:
             self.result.is_skipped("No OSPF neighbor detected")
             return
@@ -123,7 +123,7 @@ class VerifyOSPFNeighborCount(AntaTest):
 
 
 class VerifyOSPFMaxLSA(AntaTest):
-    """Verifies LSAs present in the OSPF link state database did not cross the maximum LSA Threshold.
+    """Verifies all OSPF instances did not cross the maximum LSA threshold.
 
     Expected Results
     ----------------
@@ -153,13 +153,10 @@ class VerifyOSPFMaxLSA(AntaTest):
             self.result.is_skipped("OSPF not configured")
             return
 
-        exceeded_instances = []
         for vrf_data in command_output.values():
             for instance, instance_data in vrf_data.get("instList", {}).items():
-                max_lsa = instance_data.get("maxLsaInformation", {}).get("maxLsa")
-                max_lsa_threshold = instance_data.get("maxLsaInformation", {}).get("maxLsaThreshold")
-                num_lsa = instance_data.get("lsaInformation", {}).get("numLsa")
-                if num_lsa > max_lsa * (max_lsa_threshold / 100):
-                    exceeded_instances.append(instance)
-        if exceeded_instances:
-            self.result.is_failure(f"Following OSPF Instances crossed the maximum LSA threshold - {', '.join(exceeded_instances)}")
+                max_lsa = instance_data["maxLsaInformation"]["maxLsa"]
+                max_lsa_threshold = instance_data["maxLsaInformation"]["maxLsaThreshold"]
+                num_lsa = get_value(instance_data, "lsaInformation.numLsa")
+                if num_lsa > (max_lsa_threshold := round(max_lsa * (max_lsa_threshold / 100))):
+                    self.result.is_failure(f"Instance: {instance} - Crossed the maximum LSA threshold - Expected: < {max_lsa_threshold} Actual: {num_lsa}")
