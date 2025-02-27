@@ -64,15 +64,14 @@ Tags can be defined in the test catalog to restrict tests to tagged devices:
 anta.tests.system:
   - VerifyUptime:
       minimum: 10
-      filters:
-        tags: ['spine']
+      filters: tags: ["spine"]
   - VerifyUptime:
       minimum: 9
       filters:
-        tags: ['leaf']
+        tags: ["leaf"]
   - VerifyReloadCause:
       filters:
-        tags: ['spine', 'leaf']
+        tags: ["spine", "leaf"]
   - VerifyCoredump:
   - VerifyAgentLogs:
   - VerifyCPUUtilization:
@@ -83,13 +82,13 @@ anta.tests.system:
 anta.tests.mlag:
   - VerifyMlagStatus:
       filters:
-        tags: ['leaf']
+        tags: ["leaf"]
 
 anta.tests.interfaces:
   - VerifyL3MTU:
       mtu: 1500
       filters:
-        tags: ['spine']
+        tags: ["spine"]
 ```
 
 > [!TIP]

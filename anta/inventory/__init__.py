@@ -12,11 +12,11 @@ from pathlib import Path
 from typing import Any, ClassVar
 
 from pydantic import ValidationError
-from yaml import YAMLError, safe_load
+from yaml import YAMLError, safe_dump, safe_load
 
 from anta.device import AntaDevice, AsyncEOSDevice
 from anta.inventory.exceptions import InventoryIncorrectSchemaError, InventoryRootKeyError
-from anta.inventory.models import AntaInventoryInput
+from anta.inventory.models import AntaInventoryHost, AntaInventoryInput
 from anta.logger import anta_log_exception
 
 logger = logging.getLogger(__name__)
@@ -342,3 +342,33 @@ class AntaInventory(dict[str, AntaDevice]):
             if isinstance(r, Exception):
                 message = "Error when refreshing inventory"
                 anta_log_exception(r, message, logger)
+
+    def dump(self, path: Path) -> None:
+        """Dump the AntaInventory to path.
+
+        Parameters
+        ----------
+        path
+            The Path to dump the inventory to
+        """
+        hosts = [
+            AntaInventoryHost(
+                name=device.name,
+                host=device.host if hasattr(device, "host") else device.name,
+                port=device.port if hasattr(device, "port") else None,
+                tags=device.tags,
+                disable_cache=device.cache is None,
+            )
+            for device in self.devices
+        ]
+
+        try:
+            with path.open("w", encoding="UTF-8") as file:
+                safe_dump(
+                    {AntaInventory.INVENTORY_ROOT_KEY: {"hosts": [safe_load(host.model_dump_json(serialize_as_any=True, exclude_unset=True)) for host in hosts]}},
+                    file,
+                )
+        except (TypeError, YAMLError, OSError) as e:
+            message = f"Unable to dump ANTA Device Inventory to '{path}'"
+            anta_log_exception(e, message, logger)
+            raise

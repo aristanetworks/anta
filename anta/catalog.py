@@ -289,11 +289,7 @@ class AntaCatalog:
             self._tests = tests
         self._filename: Path | None = None
         if filename is not None:
-            if isinstance(filename, Path):
-                self._filename = filename
-            else:
-                self._filename = Path(filename)
-
+            self._filename = filename if isinstance(filename, Path) else Path(filename)
         self.indexes_built: bool
         self.tag_to_tests: defaultdict[str | None, set[AntaTestDefinition]]
         self._init_indexes()
