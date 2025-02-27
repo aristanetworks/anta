@@ -65,19 +65,14 @@ class VerifyInterfaceUtilization(AntaTest):
         duplex_full = "duplexFull"
         rates = self.instance_commands[0].json_output
         interfaces = self.instance_commands[1].json_output
-        interface_data = []
+
         for intf, rate in rates["interfaces"].items():
-            # If interface is not full-duplex, test fails.
-            if all([(duplex := (interface := interfaces["interfaces"][intf]).get("duplex", None)), duplex != duplex_full]):
-                self.result.is_failure(f"Interface: {intf} - Interface utilization has not been implemented")
-                continue
-
-            # If any of the member-interface is not full-duplex, test fails.
-            if (members := interface.get("memberInterfaces")) is not None:
-                interface_data = [(member_interface, state) for member_interface, stats in members.items() if (state := stats["duplex"]) != duplex_full]
-
-            for member_interface in interface_data:
-                self.result.is_failure(f"Interface: {intf} MemberInterface: {member_interface[0]} - Not Full-Duplex - Actual: {member_interface[1]}")
+            # The utilization logic has been implemented for full-duplex interfaces only
+            if ((duplex := (interface := interfaces["interfaces"][intf]).get("duplex", None)) is not None and duplex != duplex_full) or (
+                (members := interface.get("memberInterfaces", None)) is not None and any(stats["duplex"] != duplex_full for stats in members.values())
+            ):
+                self.result.is_failure(f"Interface {intf} or one of its member interfaces is not Full-Duplex. VerifyInterfaceUtilization has not been implemented.")
+                return
 
             if (bandwidth := interfaces["interfaces"][intf]["bandwidth"]) == 0:
                 self.logger.debug("Interface %s has been ignored due to null bandwidth value", intf)
