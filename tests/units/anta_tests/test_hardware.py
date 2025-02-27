@@ -145,7 +145,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": ["Sensor: DomTemperatureSensor54 - Invalid Hardware State - Expected: ok Actual: ko"],
+            "messages": ["Sensor: DomTemperatureSensor54 - Invalid hardware state - Expected: ok Actual: ko"],
         },
     },
     {
@@ -225,7 +225,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Device system cooling is not OK - Actual: coolingKo"]},
+        "expected": {"result": "failure", "messages": ["Device system cooling status invalid - Expected: coolingOk Actual: coolingKo"]},
     },
     {
         "name": "success",
@@ -917,6 +917,6 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyAdverseDrops,
         "eos_data": [{"totalAdverseDrops": 10}],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Non-zero totalAdverseDrops counter - Actual: 10"]},
+        "expected": {"result": "failure", "messages": ["Non-zero total adverse drops counter - Actual: 10"]},
     },
 ]

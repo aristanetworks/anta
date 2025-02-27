@@ -117,7 +117,7 @@ class VerifyTransceiversTemperature(AntaTest):
         sensors = command_output.get("tempSensors", "")
         for sensor in sensors:
             if sensor["hwStatus"] != "ok":
-                self.result.is_failure(f"Sensor: {sensor['name']} - Invalid Hardware State - Expected: ok Actual: {sensor['hwStatus']}")
+                self.result.is_failure(f"Sensor: {sensor['name']} - Invalid hardware state - Expected: ok Actual: {sensor['hwStatus']}")
             if sensor["alertCount"] != 0:
                 self.result.is_failure(f"Sensor: {sensor['name']} - Non-zero alert counter - Actual: {sensor['alertCount']}")
 
@@ -149,7 +149,7 @@ class VerifyEnvironmentSystemCooling(AntaTest):
         sys_status = command_output.get("systemStatus", "")
         self.result.is_success()
         if sys_status != "coolingOk":
-            self.result.is_failure(f"Device system cooling is not OK - Actual: {sys_status}")
+            self.result.is_failure(f"Device system cooling status invalid - Expected: coolingOk Actual: {sys_status}")
 
 
 class VerifyEnvironmentCooling(AntaTest):
@@ -267,4 +267,4 @@ class VerifyAdverseDrops(AntaTest):
         command_output = self.instance_commands[0].json_output
         total_adverse_drop = command_output.get("totalAdverseDrops", "")
         if total_adverse_drop != 0:
-            self.result.is_failure(f"Non-zero totalAdverseDrops counter - Actual: {total_adverse_drop}")
+            self.result.is_failure(f"Non-zero total adverse drops counter - Actual: {total_adverse_drop}")
