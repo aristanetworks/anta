@@ -177,7 +177,7 @@ class MDReportBase(ABC):
         if text is None:
             return ""
 
-        # Replace newlines with spaces to keep content on one line
+        # Replace newlines with <br> to preserve line breaks in HTML
         text = text.replace("\n", "<br>")
 
         # Replace backticks with single quotes
