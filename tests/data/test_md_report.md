@@ -15,65 +15,78 @@
 
 | Total Tests | Total Tests Success | Total Tests Skipped | Total Tests Failure | Total Tests Error |
 | ----------- | ------------------- | ------------------- | ------------------- | ------------------|
-| 30 | 7 | 2 | 19 | 2 |
+| 30 | 4 | 9 | 15 | 2 |
 
 ### Summary Totals Device Under Test
 
 | Device Under Test | Total Tests | Tests Success | Tests Skipped | Tests Failure | Tests Error | Categories Skipped | Categories Failed |
 | ------------------| ----------- | ------------- | ------------- | ------------- | ----------- | -------------------| ------------------|
-| DC1-LEAF1A | 15 | 5 | 0 | 9 | 1 | - | AAA, BFD, BGP, Connectivity, SNMP, STP, Services, Software, System |
-| DC1-SPINE1 | 15 | 2 | 2 | 10 | 1 | MLAG, VXLAN | AAA, BFD, BGP, Connectivity, Routing, SNMP, STP, Services, Software, System |
+| s1-spine1 | 30 | 4 | 9 | 15 | 2 | AVT, Field Notices, Hardware, ISIS, LANZ, OSPF, PTP, Path-Selection, Profiles | AAA, BFD, BGP, Connectivity, Cvx, Interfaces, Logging, MLAG, SNMP, STUN, Security, Services, Software, System, VLAN |
 
 ### Summary Totals Per Category
 
 | Test Category | Total Tests | Tests Success | Tests Skipped | Tests Failure | Tests Error |
 | ------------- | ----------- | ------------- | ------------- | ------------- | ----------- |
-| AAA | 2 | 0 | 0 | 2 | 0 |
-| BFD | 2 | 0 | 0 | 2 | 0 |
-| BGP | 2 | 0 | 0 | 2 | 0 |
-| Connectivity | 4 | 0 | 0 | 2 | 2 |
-| Interfaces | 2 | 2 | 0 | 0 | 0 |
-| MLAG | 2 | 1 | 1 | 0 | 0 |
-| Routing | 2 | 1 | 0 | 1 | 0 |
-| SNMP | 2 | 0 | 0 | 2 | 0 |
-| STP | 2 | 0 | 0 | 2 | 0 |
-| Security | 2 | 2 | 0 | 0 | 0 |
-| Services | 2 | 0 | 0 | 2 | 0 |
-| Software | 2 | 0 | 0 | 2 | 0 |
-| System | 2 | 0 | 0 | 2 | 0 |
-| VXLAN | 2 | 1 | 1 | 0 | 0 |
+| AAA | 1 | 0 | 0 | 1 | 0 |
+| AVT | 1 | 0 | 1 | 0 | 0 |
+| BFD | 1 | 0 | 0 | 1 | 0 |
+| BGP | 1 | 0 | 0 | 0 | 1 |
+| Configuration | 1 | 1 | 0 | 0 | 0 |
+| Connectivity | 1 | 0 | 0 | 1 | 0 |
+| Cvx | 1 | 0 | 0 | 0 | 1 |
+| Field Notices | 1 | 0 | 1 | 0 | 0 |
+| Hardware | 1 | 0 | 1 | 0 | 0 |
+| Interfaces | 1 | 0 | 0 | 1 | 0 |
+| ISIS | 1 | 0 | 1 | 0 | 0 |
+| LANZ | 1 | 0 | 1 | 0 | 0 |
+| Logging | 1 | 0 | 0 | 1 | 0 |
+| MLAG | 1 | 0 | 0 | 1 | 0 |
+| OSPF | 1 | 0 | 1 | 0 | 0 |
+| Path-Selection | 1 | 0 | 1 | 0 | 0 |
+| Profiles | 1 | 0 | 1 | 0 | 0 |
+| PTP | 1 | 0 | 1 | 0 | 0 |
+| Routing | 1 | 1 | 0 | 0 | 0 |
+| Security | 2 | 0 | 0 | 2 | 0 |
+| Services | 1 | 0 | 0 | 1 | 0 |
+| SNMP | 1 | 0 | 0 | 1 | 0 |
+| Software | 1 | 0 | 0 | 1 | 0 |
+| STP | 1 | 1 | 0 | 0 | 0 |
+| STUN | 2 | 0 | 0 | 2 | 0 |
+| System | 1 | 0 | 0 | 1 | 0 |
+| VLAN | 1 | 0 | 0 | 1 | 0 |
+| VXLAN | 1 | 1 | 0 | 0 | 0 |
 
 ## Test Results
 
 | Device Under Test | Categories | Test | Description | Custom Field | Result | Messages |
 | ----------------- | ---------- | ---- | ----------- | ------------ | ------ | -------- |
-| DC1-LEAF1A | AAA | VerifyTacacsSourceIntf | Verifies TACACS source-interface for a specified VRF. | - | failure | Source-interface Management0 is not configured in VRF default |
-| DC1-LEAF1A | BFD | VerifyBFDSpecificPeers | Verifies the IPv4 BFD peer's sessions and remote disc in the specified VRF. | - | failure | Following BFD peers are not configured, status is not up or remote disc is zero: {'192.0.255.8': {'default': 'Not Configured'}, '192.0.255.7': {'default': 'Not Configured'}} |
-| DC1-LEAF1A | BGP | VerifyBGPPeerCount | Verifies the count of BGP peers. | - | failure | Failures: [{'afi': 'ipv4', 'safi': 'unicast', 'vrfs': {'PROD': 'Expected: 2, Actual: 1'}}, {'afi': 'ipv4', 'safi': 'multicast', 'vrfs': {'DEV': 'Expected: 3, Actual: 0'}}] |
-| DC1-LEAF1A | Connectivity | VerifyLLDPNeighbors | Verifies that the provided LLDP neighbors are connected properly. | - | failure | Wrong LLDP neighbor(s) on port(s):    Ethernet1       DC1-SPINE1_Ethernet1    Ethernet2       DC1-SPINE2_Ethernet1 Port(s) not configured:    Ethernet7 |
-| DC1-LEAF1A | Connectivity | VerifyReachability | Test the network reachability to one or many destination IP(s). | - | error | ping vrf MGMT 1.1.1.1 source Management1 repeat 2 has failed: No source interface Management1 |
-| DC1-LEAF1A | Interfaces | VerifyInterfaceUtilization | Verifies that the utilization of interfaces is below a certain threshold. | - | success | - |
-| DC1-LEAF1A | MLAG | VerifyMlagStatus | Verifies the health status of the MLAG configuration. | - | success | - |
-| DC1-LEAF1A | Routing | VerifyRoutingTableEntry | Verifies that the provided routes are present in the routing table of a specified VRF. | - | success | - |
-| DC1-LEAF1A | SNMP | VerifySnmpStatus | Verifies if the SNMP agent is enabled. | - | failure | SNMP agent disabled in vrf default |
-| DC1-LEAF1A | STP | VerifySTPMode | Verifies the configured STP mode for a provided list of VLAN(s). | - | failure | Wrong STP mode configured for the following VLAN(s): [10, 20] |
-| DC1-LEAF1A | Security | VerifyTelnetStatus | Verifies if Telnet is disabled in the default VRF. | - | success | - |
-| DC1-LEAF1A | Services | VerifyHostname | Verifies the hostname of a device. | - | failure | Expected 's1-spine1' as the hostname, but found 'DC1-LEAF1A' instead. |
-| DC1-LEAF1A | Software | VerifyEOSVersion | Verifies the EOS version of the device. | - | failure | device is running version "4.31.1F-34554157.4311F (engineering build)" not in expected versions: ['4.25.4M', '4.26.1F'] |
-| DC1-LEAF1A | System | VerifyNTP | Verifies if NTP is synchronised. | - | failure | The device is not synchronized with the configured NTP server(s): 'NTP is disabled.' |
-| DC1-LEAF1A | VXLAN | VerifyVxlan1Interface | Verifies the Vxlan1 interface status. | - | success | - |
-| DC1-SPINE1 | AAA | VerifyTacacsSourceIntf | Verifies TACACS source-interface for a specified VRF. | - | failure | Source-interface Management0 is not configured in VRF default |
-| DC1-SPINE1 | BFD | VerifyBFDSpecificPeers | Verifies the IPv4 BFD peer's sessions and remote disc in the specified VRF. | - | failure | Following BFD peers are not configured, status is not up or remote disc is zero: {'192.0.255.8': {'default': 'Not Configured'}, '192.0.255.7': {'default': 'Not Configured'}} |
-| DC1-SPINE1 | BGP | VerifyBGPPeerCount | Verifies the count of BGP peers. | - | failure | Failures: [{'afi': 'ipv4', 'safi': 'unicast', 'vrfs': {'PROD': 'Not Configured', 'default': 'Expected: 3, Actual: 4'}}, {'afi': 'ipv4', 'safi': 'multicast', 'vrfs': {'DEV': 'Not Configured'}}, {'afi': 'evpn', 'vrfs': {'default': 'Expected: 2, Actual: 4'}}] |
-| DC1-SPINE1 | Connectivity | VerifyLLDPNeighbors | Verifies that the provided LLDP neighbors are connected properly. | - | failure | Wrong LLDP neighbor(s) on port(s):    Ethernet1       DC1-LEAF1A_Ethernet1    Ethernet2       DC1-LEAF1B_Ethernet1 Port(s) not configured:    Ethernet7 |
-| DC1-SPINE1 | Connectivity | VerifyReachability | Test the network reachability to one or many destination IP(s). | - | error | ping vrf MGMT 1.1.1.1 source Management1 repeat 2 has failed: No source interface Management1 |
-| DC1-SPINE1 | Interfaces | VerifyInterfaceUtilization | Verifies that the utilization of interfaces is below a certain threshold. | - | success | - |
-| DC1-SPINE1 | MLAG | VerifyMlagStatus | Verifies the health status of the MLAG configuration. | - | skipped | MLAG is disabled |
-| DC1-SPINE1 | Routing | VerifyRoutingTableEntry | Verifies that the provided routes are present in the routing table of a specified VRF. | - | failure | The following route(s) are missing from the routing table of VRF default: ['10.1.0.2'] |
-| DC1-SPINE1 | SNMP | VerifySnmpStatus | Verifies if the SNMP agent is enabled. | - | failure | SNMP agent disabled in vrf default |
-| DC1-SPINE1 | STP | VerifySTPMode | Verifies the configured STP mode for a provided list of VLAN(s). | - | failure | STP mode 'rapidPvst' not configured for the following VLAN(s): [10, 20] |
-| DC1-SPINE1 | Security | VerifyTelnetStatus | Verifies if Telnet is disabled in the default VRF. | - | success | - |
-| DC1-SPINE1 | Services | VerifyHostname | Verifies the hostname of a device. | - | failure | Expected 's1-spine1' as the hostname, but found 'DC1-SPINE1' instead. |
-| DC1-SPINE1 | Software | VerifyEOSVersion | Verifies the EOS version of the device. | - | failure | device is running version "4.31.1F-34554157.4311F (engineering build)" not in expected versions: ['4.25.4M', '4.26.1F'] |
-| DC1-SPINE1 | System | VerifyNTP | Verifies if NTP is synchronised. | - | failure | The device is not synchronized with the configured NTP server(s): 'NTP is disabled.' |
-| DC1-SPINE1 | VXLAN | VerifyVxlan1Interface | Verifies the Vxlan1 interface status. | - | skipped | Vxlan1 interface is not configured |
+| s1-spine1 | AAA | VerifyAcctConsoleMethods | Verifies the AAA accounting console method lists for different accounting types (system, exec, commands, dot1x). | - | failure | AAA console accounting is not configured for commands, exec, system, dot1x |
+| s1-spine1 | AVT | VerifyAVTPathHealth | Verifies the status of all AVT paths for all VRFs. | - | skipped | VerifyAVTPathHealth test is not supported on cEOSLab. |
+| s1-spine1 | BFD | VerifyBFDPeersHealth | Verifies the health of IPv4 BFD peers across all VRFs. | - | failure | No IPv4 BFD peers are configured for any VRF. |
+| s1-spine1 | BGP | VerifyBGPAdvCommunities | Verifies that advertised communities are standard, extended and large for BGP IPv4 peer(s). | - | error | show bgp neighbors vrf all has failed: The command is only supported in the multi-agent routing protocol model., The command is only supported in the multi-agent routing protocol model., The command is only supported in the multi-agent routing protocol model., The command is only supported in the multi-agent routing protocol model. |
+| s1-spine1 | Configuration | VerifyRunningConfigDiffs | Verifies there is no difference between the running-config and the startup-config. | - | success | - |
+| s1-spine1 | Connectivity | VerifyLLDPNeighbors | Verifies the connection status of the specified LLDP (Link Layer Discovery Protocol) neighbors. | - | failure | Port: Ethernet1 Neighbor: DC1-SPINE1 Neighbor Port: Ethernet1 - Wrong LLDP neighbors: spine1-dc1.fun.aristanetworks.com/Ethernet3<br>Port: Ethernet2 Neighbor: DC1-SPINE2 Neighbor Port: Ethernet1 - Wrong LLDP neighbors: spine2-dc1.fun.aristanetworks.com/Ethernet3 |
+| s1-spine1 | Cvx | VerifyActiveCVXConnections | Verifies the number of active CVX Connections. | - | error | show cvx connections brief has failed: Unavailable command (controller not ready) (at token 2: 'connections') |
+| s1-spine1 | Field Notices | VerifyFieldNotice44Resolution | Verifies that the device is using the correct Aboot version per FN0044. | - | skipped | VerifyFieldNotice44Resolution test is not supported on cEOSLab. |
+| s1-spine1 | Hardware | VerifyTemperature | Verifies if the device temperature is within acceptable limits. | - | skipped | VerifyTemperature test is not supported on cEOSLab. |
+| s1-spine1 | Interfaces | VerifyIPProxyARP | Verifies if Proxy ARP is enabled. | - | failure | Interface: Ethernet1 - Proxy-ARP disabled<br>Interface: Ethernet2 - Proxy-ARP disabled |
+| s1-spine1 | ISIS | VerifyISISNeighborState | Verifies the health of IS-IS neighbors. | - | skipped | IS-IS not configured |
+| s1-spine1 | LANZ | VerifyLANZ | Verifies if LANZ is enabled. | - | skipped | VerifyLANZ test is not supported on cEOSLab. |
+| s1-spine1 | Logging | VerifyLoggingHosts | Verifies logging hosts (syslog servers) for a specified VRF. | - | failure | Syslog servers 1.1.1.1, 2.2.2.2 are not configured in VRF default |
+| s1-spine1 | MLAG | VerifyMlagDualPrimary | Verifies the MLAG dual-primary detection parameters. | - | failure | Dual-primary detection is disabled |
+| s1-spine1 | OSPF | VerifyOSPFMaxLSA | Verifies all OSPF instances did not cross the maximum LSA threshold. | - | skipped | No OSPF instance found. |
+| s1-spine1 | Path-Selection | VerifyPathsHealth | Verifies the path and telemetry state of all paths under router path-selection. | - | skipped | VerifyPathsHealth test is not supported on cEOSLab. |
+| s1-spine1 | Profiles | VerifyTcamProfile | Verifies the device TCAM profile. | - | skipped | VerifyTcamProfile test is not supported on cEOSLab. |
+| s1-spine1 | PTP | VerifyPtpGMStatus | Verifies that the device is locked to a valid PTP Grandmaster. | - | skipped | VerifyPtpGMStatus test is not supported on cEOSLab. |
+| s1-spine1 | Routing | VerifyIPv4RouteNextHops | Verifies the next-hops of the IPv4 prefixes. | - | success | - |
+| s1-spine1 | Security | VerifyBannerLogin | Verifies the login banner of a device. | - | failure | Expected '# Copyright (c) 2023-2024 Arista Networks, Inc.<br># Use of this source code is governed by the Apache License 2.0<br># that can be found in the LICENSE file.<br>' as the login banner, but found '' instead. |
+| s1-spine1 | Security | VerifyBannerMotd | Verifies the motd banner of a device. | - | failure | Expected '# Copyright (c) 2023-2024 Arista Networks, Inc.<br># Use of this source code is governed by the Apache License 2.0<br># that can be found in the LICENSE file.<br>' as the motd banner, but found '' instead. |
+| s1-spine1 | Services | VerifyHostname | Verifies the hostname of a device. | - | failure | Incorrect Hostname - Expected: s1-spine1 Actual: leaf1-dc1 |
+| s1-spine1 | SNMP | VerifySnmpContact | Verifies the SNMP contact of a device. | - | failure | SNMP contact is not configured. |
+| s1-spine1 | Software | VerifyEOSVersion | Verifies the EOS version of the device. | - | failure | EOS version mismatch - Actual: 4.31.0F-33804048.4310F (engineering build) not in Expected: 4.25.4M, 4.26.1F |
+| s1-spine1 | STP | VerifySTPBlockedPorts | Verifies there is no STP blocked ports. | - | success | - |
+| s1-spine1 | STUN | VerifyStunClient | (Deprecated) Verifies the translation for a source address on a STUN client. | - | failure | Client 172.18.3.2 Port: 4500 - STUN client translation not found. |
+| s1-spine1 | STUN | VerifyStunClientTranslation | Verifies the translation for a source address on a STUN client. | - | failure | Client 172.18.3.2 Port: 4500 - STUN client translation not found.<br>Client 100.64.3.2 Port: 4500 - STUN client translation not found. |
+| s1-spine1 | System | VerifyNTPAssociations | Verifies the Network Time Protocol (NTP) associations. | - | failure | NTP Server: 1.1.1.1 Preferred: True Stratum: 1 - Not configured<br>NTP Server: 2.2.2.2 Preferred: False Stratum: 2 - Not configured<br>NTP Server: 3.3.3.3 Preferred: False Stratum: 2 - Not configured |
+| s1-spine1 | VLAN | VerifyDynamicVlanSource | Verifies dynamic VLAN allocation for specified VLAN sources. | - | failure | Dynamic VLAN source(s) exist but have no VLANs allocated: mlagsync |
+| s1-spine1 | VXLAN | VerifyVxlan1ConnSettings | Verifies the interface vxlan1 source interface and UDP port. | - | success | - |
