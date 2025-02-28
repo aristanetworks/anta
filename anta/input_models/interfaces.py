@@ -5,7 +5,9 @@
 
 from __future__ import annotations
 
-from typing import Literal
+from ipaddress import IPv4Interface
+from typing import Any, Literal
+from warnings import warn
 
 from pydantic import BaseModel, ConfigDict
 
@@ -13,7 +15,10 @@ from anta.custom_types import Interface, PortChannelInterface
 
 
 class InterfaceState(BaseModel):
-    """Model for an interface state."""
+    """Model for an interface state.
+
+    TODO: Need to review this class name in ANTA v2.0.0.
+    """
 
     model_config = ConfigDict(extra="forbid")
     name: Interface
@@ -33,6 +38,10 @@ class InterfaceState(BaseModel):
 
     Can be enabled in the `VerifyLACPInterfacesStatus` tests.
     """
+    primary_ip: IPv4Interface | None = None
+    """Primary IPv4 address in CIDR notation. Required field in the `VerifyInterfaceIPv4` test."""
+    secondary_ips: list[IPv4Interface] | None = None
+    """List of secondary IPv4 addresses in CIDR notation. Can be provided in the `VerifyInterfaceIPv4` test."""
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the InterfaceState for reporting.
@@ -46,3 +55,21 @@ class InterfaceState(BaseModel):
         if self.portchannel is not None:
             base_string += f" Port-Channel: {self.portchannel}"
         return base_string
+
+
+class InterfaceDetail(InterfaceState):  # pragma: no cover
+    """Alias for the InterfaceState model to maintain backward compatibility.
+
+    When initialized, it will emit a deprecation warning and call the InterfaceState model.
+
+    TODO: Remove this class in ANTA v2.0.0.
+    """
+
+    def __init__(self, **data: Any) -> None:  # noqa: ANN401
+        """Initialize the InterfaceState class, emitting a depreciation warning."""
+        warn(
+            message="InterfaceDetail model is deprecated and will be removed in ANTA v2.0.0. Use the InterfaceState model instead.",
+            category=DeprecationWarning,
+            stacklevel=2,
+        )
+        super().__init__(**data)
