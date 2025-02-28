@@ -20,6 +20,8 @@ import httpx
 # -----------------------------------------------------------------------------
 # Private Imports
 # -----------------------------------------------------------------------------
+from ._constants import EapiCommandFormat
+from ._models import EapiRequest, EapiResponse
 from .aio_portcheck import port_check_url
 from .config_session import SessionConfig
 from .errors import EapiCommandError
@@ -133,7 +135,6 @@ class Device(httpx.AsyncClient):
         suppress_error: Literal[False] = False,
         auto_complete: bool = False,
         expand_aliases: bool = False,
-        timestamps: bool = False,
         req_id: int | str | None = None,
     ) -> EapiJsonOutput: ...
 
@@ -149,7 +150,6 @@ class Device(httpx.AsyncClient):
         suppress_error: Literal[False] = False,
         auto_complete: bool = False,
         expand_aliases: bool = False,
-        timestamps: bool = False,
         req_id: int | str | None = None,
     ) -> list[EapiJsonOutput]: ...
 
@@ -165,7 +165,6 @@ class Device(httpx.AsyncClient):
         suppress_error: Literal[False] = False,
         auto_complete: bool = False,
         expand_aliases: bool = False,
-        timestamps: bool = False,
         req_id: int | str | None = None,
     ) -> EapiTextOutput: ...
 
@@ -181,7 +180,6 @@ class Device(httpx.AsyncClient):
         suppress_error: Literal[False] = False,
         auto_complete: bool = False,
         expand_aliases: bool = False,
-        timestamps: bool = False,
         req_id: int | str | None = None,
     ) -> list[EapiTextOutput]: ...
 
@@ -197,7 +195,6 @@ class Device(httpx.AsyncClient):
         suppress_error: Literal[True],
         auto_complete: bool = False,
         expand_aliases: bool = False,
-        timestamps: bool = False,
         req_id: int | str | None = None,
     ) -> EapiJsonOutput | None: ...
 
@@ -213,7 +210,6 @@ class Device(httpx.AsyncClient):
         suppress_error: Literal[True],
         auto_complete: bool = False,
         expand_aliases: bool = False,
-        timestamps: bool = False,
         req_id: int | str | None = None,
     ) -> list[EapiJsonOutput] | None: ...
 
@@ -229,7 +225,6 @@ class Device(httpx.AsyncClient):
         suppress_error: Literal[True],
         auto_complete: bool = False,
         expand_aliases: bool = False,
-        timestamps: bool = False,
         req_id: int | str | None = None,
     ) -> EapiTextOutput | None: ...
 
@@ -245,7 +240,6 @@ class Device(httpx.AsyncClient):
         suppress_error: Literal[True],
         auto_complete: bool = False,
         expand_aliases: bool = False,
-        timestamps: bool = False,
         req_id: int | str | None = None,
     ) -> list[EapiTextOutput] | None: ...
 
@@ -260,7 +254,6 @@ class Device(httpx.AsyncClient):
         suppress_error: bool = False,
         auto_complete: bool = False,
         expand_aliases: bool = False,
-        timestamps: bool = False,
         req_id: int | str | None = None,
     ) -> EapiJsonOutput | EapiTextOutput | list[EapiJsonOutput] | list[EapiTextOutput] | None:
         """Execute one or more CLI commands.
@@ -302,8 +295,6 @@ class Device(httpx.AsyncClient):
                 For example if an alias is configured as 'sv' for 'show version'
                 then an API call with sv and the expandAliases parameter will
                 return the output of show version.
-        timestamps
-            If True, return the per-command execution time.
         req_id
             A unique identifier that will be echoed back by the switch. May be a string or number.
 
@@ -336,7 +327,6 @@ class Device(httpx.AsyncClient):
             version=version,
             auto_complete=auto_complete,
             expand_aliases=expand_aliases,
-            timestamps=timestamps,
             req_id=req_id,
         )
 
@@ -356,7 +346,6 @@ class Device(httpx.AsyncClient):
         *,
         auto_complete: bool = False,
         expand_aliases: bool = False,
-        timestamps: bool = False,
         req_id: int | str | None = None,
     ) -> JsonRpc:
         """Create the JSON-RPC command dictionary object.
@@ -387,8 +376,6 @@ class Device(httpx.AsyncClient):
                 For example if an alias is configured as 'sv' for 'show version'
                 then an API call with sv and the expandAliases parameter will
                 return the output of show version.
-        timestamps
-            If True, return the per-command execution time.
         req_id
             A unique identifier that will be echoed back by the switch. May be a string or number.
 
@@ -404,10 +391,9 @@ class Device(httpx.AsyncClient):
             "params": {
                 "version": version,
                 "cmds": commands,
-                "format": ofmt,
+                "format": EapiCommandFormat(ofmt),
                 "autoComplete": auto_complete,
                 "expandAliases": expand_aliases,
-                "timestamps": timestamps,
             },
             "id": req_id or id(self),
         }
@@ -474,6 +460,31 @@ class Device(httpx.AsyncClient):
             errmsg=err_msg,
             not_exec=commands[err_at + 1 :],
         )
+
+    async def _execute(self, request: EapiRequest, *, raise_on_error: bool = False) -> EapiResponse:
+        """Execute an eAPI request.
+
+        Parameters
+        ----------
+        request
+            The eAPI request object.
+        raise_on_error
+            Raise an EapiReponseError if the response contains command errors.
+
+        Returns
+        -------
+        EapiResponse
+            The eAPI response object.
+
+        Raises
+        ------
+        EapiReponseError
+            If the response contains command errors and `raise_on_error` is True.
+        """
+        res = await self.post("/command-api", json=request.to_jsonrpc())
+        res.raise_for_status()
+        body = res.json()
+        return EapiResponse.from_jsonrpc(body, request, raise_on_error=raise_on_error)
 
     def config_session(self, name: str) -> SessionConfig:
         """Return a SessionConfig instance bound to this device with the given session name.

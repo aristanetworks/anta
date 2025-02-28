@@ -6,7 +6,10 @@
 from __future__ import annotations
 
 import sys
-from typing import Any, Literal
+from typing import TYPE_CHECKING, Any, Literal
+
+if TYPE_CHECKING:
+    from ._constants import EapiCommandFormat
 
 if sys.version_info >= (3, 11):
     from typing import NotRequired, TypedDict
@@ -43,7 +46,8 @@ class JsonRpcParams(TypedDict):
 
     version: NotRequired[int | Literal["latest"]]
     cmds: list[EapiSimpleCommand | EapiComplexCommand]
-    format: NotRequired[Literal["json", "text"]]
+    format: NotRequired[EapiCommandFormat]
     autoComplete: NotRequired[bool]
     expandAliases: NotRequired[bool]
     timestamps: NotRequired[bool]
+    stopOnError: NotRequired[bool]

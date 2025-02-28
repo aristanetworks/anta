@@ -270,12 +270,14 @@ commands =
   ruff format . --check
   pylint anta
   pylint tests
+  pylint asynceapi
 
 [testenv:type]
 description = Check typing
 commands =
   mypy --config-file=pyproject.toml anta
   mypy --config-file=pyproject.toml tests
+  mypy --config-file=pyproject.toml asynceapi
 
 [testenv:clean]
 description = Erase previous coverage reports
