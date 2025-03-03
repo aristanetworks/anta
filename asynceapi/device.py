@@ -469,7 +469,7 @@ class Device(httpx.AsyncClient):
         request
             The eAPI request object.
         raise_on_error
-            Raise an EapiReponseError if the response contains command errors.
+            Raise an EapiReponseError if the eAPI response contains errors.
 
         Returns
         -------
@@ -479,7 +479,7 @@ class Device(httpx.AsyncClient):
         Raises
         ------
         EapiReponseError
-            If the response contains command errors and `raise_on_error` is True.
+            If the eAPI response contains errors and `raise_on_error` is True.
         """
         res = await self.post("/command-api", json=request.to_jsonrpc())
         res.raise_for_status()
