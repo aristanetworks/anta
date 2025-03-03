@@ -1304,7 +1304,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["The following port-channels have inactive port(s): ['Port-Channel42']"]},
+        "expected": {"result": "failure", "messages": ["Port-Channel42 - Inactive port(s) - Ethernet8"]},
     },
     {
         "name": "success",
@@ -1360,7 +1360,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": ["The following port-channels have received illegal LACP packets on the following ports: [{'Port-Channel42': 'Ethernet8'}]"],
+            "messages": ["Port-Channel42 Interface: Ethernet8 - Illegal LACP packets found"],
         },
     },
     {
@@ -1415,7 +1415,7 @@ DATA: list[dict[str, Any]] = [
                     },
                     "Loopback666": {
                         "name": "Loopback666",
-                        "interfaceStatus": "connected",
+                        "interfaceStatus": "notconnect",
                         "interfaceAddress": {"ipAddr": {"maskLen": 32, "address": "6.6.6.6"}},
                         "ipv4Routable240": False,
                         "lineProtocolStatus": "down",
@@ -1425,7 +1425,13 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"number": 2},
-        "expected": {"result": "failure", "messages": ["The following Loopbacks are not up: ['Loopback666']"]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Interface: Loopback666 - Invalid line protocol status - Expected: up Actual: down",
+                "Interface: Loopback666 - Invalid interface status - Expected: connected Actual: notconnect",
+            ],
+        },
     },
     {
         "name": "failure-count-loopback",
@@ -1445,7 +1451,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"number": 2},
-        "expected": {"result": "failure", "messages": ["Found 1 Loopbacks when expecting 2"]},
+        "expected": {"result": "failure", "messages": ["Loopback interface(s) count mismatch: Expected 2 Actual: 1"]},
     },
     {
         "name": "success",
@@ -1485,7 +1491,13 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["The following SVIs are not up: ['Vlan42']"]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "SVI: Vlan42 - Invalid line protocol status - Expected: up Actual: lowerLayerDown",
+                "SVI: Vlan42 - Invalid interface status - Expected: connected Actual: notconnect",
+            ],
+        },
     },
     {
         "name": "success",
@@ -1701,7 +1713,79 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"mtu": 1500},
-        "expected": {"result": "failure", "messages": ["Some interfaces do not have correct MTU configured:\n[{'Ethernet2': 1600}]"]},
+        "expected": {"result": "failure", "messages": ["Interface: Ethernet2 - Incorrect MTU - Expected: 1500 Actual: 1600"]},
+    },
+    {
+        "name": "failure-specified-interface-mtu",
+        "test": VerifyL3MTU,
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet2": {
+                        "name": "Ethernet2",
+                        "forwardingModel": "routed",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "hardware": "ethernet",
+                        "mtu": 1500,
+                        "l3MtuConfigured": True,
+                        "l2Mru": 0,
+                    },
+                    "Ethernet10": {
+                        "name": "Ethernet10",
+                        "forwardingModel": "routed",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "hardware": "ethernet",
+                        "mtu": 1502,
+                        "l3MtuConfigured": False,
+                        "l2Mru": 0,
+                    },
+                    "Management0": {
+                        "name": "Management0",
+                        "forwardingModel": "routed",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "hardware": "ethernet",
+                        "mtu": 1500,
+                        "l3MtuConfigured": False,
+                        "l2Mru": 0,
+                    },
+                    "Port-Channel2": {
+                        "name": "Port-Channel2",
+                        "forwardingModel": "bridged",
+                        "lineProtocolStatus": "lowerLayerDown",
+                        "interfaceStatus": "notconnect",
+                        "hardware": "portChannel",
+                        "mtu": 1500,
+                        "l3MtuConfigured": False,
+                        "l2Mru": 0,
+                    },
+                    "Loopback0": {
+                        "name": "Loopback0",
+                        "forwardingModel": "routed",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "hardware": "loopback",
+                        "mtu": 65535,
+                        "l3MtuConfigured": False,
+                        "l2Mru": 0,
+                    },
+                    "Vxlan1": {
+                        "name": "Vxlan1",
+                        "forwardingModel": "bridged",
+                        "lineProtocolStatus": "down",
+                        "interfaceStatus": "notconnect",
+                        "hardware": "vxlan",
+                        "mtu": 0,
+                        "l3MtuConfigured": False,
+                        "l2Mru": 0,
+                    },
+                },
+            },
+        ],
+        "inputs": {"mtu": 1500, "ignored_interfaces": ["Loopback", "Port-Channel", "Management", "Vxlan"], "specific_mtu": [{"Ethernet10": 1501}]},
+        "expected": {"result": "failure", "messages": ["Interface: Ethernet10 - Incorrect MTU - Expected: 1501 Actual: 1502"]},
     },
     {
         "name": "success",

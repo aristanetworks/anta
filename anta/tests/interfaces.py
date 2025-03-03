@@ -314,15 +314,12 @@ class VerifyPortChannels(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyPortChannels."""
+        self.result.is_success()
         command_output = self.instance_commands[0].json_output
-        po_with_inactive_ports: list[dict[str, str]] = []
-        for portchannel, portchannel_dict in command_output["portChannels"].items():
-            if len(portchannel_dict["inactivePorts"]) != 0:
-                po_with_inactive_ports.extend({portchannel: portchannel_dict["inactivePorts"]})
-        if not po_with_inactive_ports:
-            self.result.is_success()
-        else:
-            self.result.is_failure(f"The following port-channels have inactive port(s): {po_with_inactive_ports}")
+        for port_channel, port_channel_details in command_output["portChannels"].items():
+            # Verify that the no inactive ports in all port channels.
+            if inactive_ports := port_channel_details["inactivePorts"]:
+                self.result.is_failure(f"{port_channel} - Inactive port(s) - {', '.join(inactive_ports.keys())}")
 
 
 class VerifyIllegalLACP(AntaTest):
@@ -347,16 +344,13 @@ class VerifyIllegalLACP(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyIllegalLACP."""
+        self.result.is_success()
         command_output = self.instance_commands[0].json_output
-        po_with_illegal_lacp: list[dict[str, dict[str, int]]] = []
-        for portchannel, portchannel_dict in command_output["portChannels"].items():
-            po_with_illegal_lacp.extend(
-                {portchannel: interface} for interface, interface_dict in portchannel_dict["interfaces"].items() if interface_dict["illegalRxCount"] != 0
-            )
-        if not po_with_illegal_lacp:
-            self.result.is_success()
-        else:
-            self.result.is_failure(f"The following port-channels have received illegal LACP packets on the following ports: {po_with_illegal_lacp}")
+        for port_channel, port_channel_dict in command_output["portChannels"].items():
+            for interface, interface_details in port_channel_dict["interfaces"].items():
+                # Verify that the no illegal LACP packets in all port channels.
+                if interface_details["illegalRxCount"] != 0:
+                    self.result.is_failure(f"{port_channel} Interface: {interface} - Illegal LACP packets found")
 
 
 class VerifyLoopbackCount(AntaTest):
@@ -389,23 +383,20 @@ class VerifyLoopbackCount(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyLoopbackCount."""
+        self.result.is_success()
         command_output = self.instance_commands[0].json_output
         loopback_count = 0
-        down_loopback_interfaces = []
-        for interface in command_output["interfaces"]:
-            interface_dict = command_output["interfaces"][interface]
+        for interface, interface_details in command_output["interfaces"].items():
             if "Loopback" in interface:
                 loopback_count += 1
-                if not (interface_dict["lineProtocolStatus"] == "up" and interface_dict["interfaceStatus"] == "connected"):
-                    down_loopback_interfaces.append(interface)
-        if loopback_count == self.inputs.number and len(down_loopback_interfaces) == 0:
-            self.result.is_success()
-        else:
-            self.result.is_failure()
-            if loopback_count != self.inputs.number:
-                self.result.is_failure(f"Found {loopback_count} Loopbacks when expecting {self.inputs.number}")
-            elif len(down_loopback_interfaces) != 0:  # pragma: no branch
-                self.result.is_failure(f"The following Loopbacks are not up: {down_loopback_interfaces}")
+                if (status := interface_details["lineProtocolStatus"]) != "up":
+                    self.result.is_failure(f"Interface: {interface} - Invalid line protocol status - Expected: up Actual: {status}")
+
+                if (status := interface_details["interfaceStatus"]) != "connected":
+                    self.result.is_failure(f"Interface: {interface} - Invalid interface status - Expected: connected Actual: {status}")
+
+        if loopback_count != self.inputs.number:
+            self.result.is_failure(f"Loopback interface(s) count mismatch: Expected {self.inputs.number} Actual: {loopback_count}")
 
 
 class VerifySVI(AntaTest):
@@ -430,16 +421,13 @@ class VerifySVI(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifySVI."""
+        self.result.is_success()
         command_output = self.instance_commands[0].json_output
-        down_svis = []
-        for interface in command_output["interfaces"]:
-            interface_dict = command_output["interfaces"][interface]
-            if "Vlan" in interface and not (interface_dict["lineProtocolStatus"] == "up" and interface_dict["interfaceStatus"] == "connected"):
-                down_svis.append(interface)
-        if len(down_svis) == 0:
-            self.result.is_success()
-        else:
-            self.result.is_failure(f"The following SVIs are not up: {down_svis}")
+        for interface, int_data in command_output["interfaces"].items():
+            if "Vlan" in interface and (status := int_data["lineProtocolStatus"]) != "up":
+                self.result.is_failure(f"SVI: {interface} - Invalid line protocol status - Expected: up Actual: {status}")
+            if "Vlan" in interface and int_data["interfaceStatus"] != "connected":
+                self.result.is_failure(f"SVI: {interface} - Invalid interface status - Expected: connected Actual: {int_data['interfaceStatus']}")
 
 
 class VerifyL3MTU(AntaTest):
@@ -484,8 +472,7 @@ class VerifyL3MTU(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyL3MTU."""
-        # Parameter to save incorrect interface settings
-        wrong_l3mtu_intf: list[dict[str, int]] = []
+        self.result.is_success()
         command_output = self.instance_commands[0].json_output
         # Set list of interfaces with specific settings
         specific_interfaces: list[str] = []
@@ -495,14 +482,14 @@ class VerifyL3MTU(AntaTest):
         for interface, values in command_output["interfaces"].items():
             if re.findall(r"[a-z]+", interface, re.IGNORECASE)[0] not in self.inputs.ignored_interfaces and values["forwardingModel"] == "routed":
                 if interface in specific_interfaces:
-                    wrong_l3mtu_intf.extend({interface: values["mtu"]} for custom_data in self.inputs.specific_mtu if values["mtu"] != custom_data[interface])
+                    invalid_mtu = next(
+                        (values["mtu"] for custom_data in self.inputs.specific_mtu if values["mtu"] != (expected_mtu := custom_data[interface])), None
+                    )
+                    if invalid_mtu:
+                        self.result.is_failure(f"Interface: {interface} - Incorrect MTU - Expected: {expected_mtu} Actual: {invalid_mtu}")
                 # Comparison with generic setting
                 elif values["mtu"] != self.inputs.mtu:
-                    wrong_l3mtu_intf.append({interface: values["mtu"]})
-        if wrong_l3mtu_intf:
-            self.result.is_failure(f"Some interfaces do not have correct MTU configured:\n{wrong_l3mtu_intf}")
-        else:
-            self.result.is_success()
+                    self.result.is_failure(f"Interface: {interface} - Incorrect MTU - Expected: {self.inputs.mtu} Actual: {values['mtu']}")
 
 
 class VerifyIPProxyARP(AntaTest):
