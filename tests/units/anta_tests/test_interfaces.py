@@ -1430,8 +1430,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Interface: Loopback666 - Invalid line protocol status - Expected: up - Actual: down",
-                "Interface: Loopback666 - Invalid interface status - Expected: connected -  Actual: notconnect",
+                "Interface: Loopback666 - Invalid line protocol status - Expected: up Actual: down",
+                "Interface: Loopback666 - Invalid interface status - Expected: connected Actual: notconnect",
             ],
         },
     },
@@ -1453,7 +1453,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"number": 2},
-        "expected": {"result": "failure", "messages": ["Loopback interface(s) count mismatch:  Expected 2 Actual: 1"]},
+        "expected": {"result": "failure", "messages": ["Loopback interface(s) count mismatch: Expected 2 Actual: 1"]},
     },
     {
         "name": "success",

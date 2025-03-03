@@ -399,13 +399,13 @@ class VerifyLoopbackCount(AntaTest):
             if "Loopback" in interface:
                 loopback_count += 1
                 if (status := interface_details["lineProtocolStatus"]) != "up":
-                    self.result.is_failure(f"Interface: {interface} - Invalid line protocol status - Expected: up - Actual: {status}")
+                    self.result.is_failure(f"Interface: {interface} - Invalid line protocol status - Expected: up Actual: {status}")
 
                 if (status := interface_details["interfaceStatus"]) != "connected":
-                    self.result.is_failure(f"Interface: {interface} - Invalid interface status - Expected: connected -  Actual: {status}")
+                    self.result.is_failure(f"Interface: {interface} - Invalid interface status - Expected: connected Actual: {status}")
 
         if loopback_count != self.inputs.number:
-            self.result.is_failure(f"Loopback interface(s) count mismatch:  Expected {self.inputs.number} Actual: {loopback_count}")
+            self.result.is_failure(f"Loopback interface(s) count mismatch: Expected {self.inputs.number} Actual: {loopback_count}")
 
 
 class VerifySVI(AntaTest):
