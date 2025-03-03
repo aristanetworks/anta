@@ -42,7 +42,7 @@ class VerifyOSPFNeighborState(AntaTest):
         """Main test function for VerifyOSPFNeighborState."""
         self.result.is_success()
 
-        # If OSPF is not configured on device, test fails.
+        # If OSPF is not configured on device, test skipped.
         if not (command_output := get_value(self.instance_commands[0].json_output, "vrfs")):
             self.result.is_skipped("OSPF not configured")
             return
@@ -97,7 +97,7 @@ class VerifyOSPFNeighborCount(AntaTest):
     def test(self) -> None:
         """Main test function for VerifyOSPFNeighborCount."""
         self.result.is_success()
-        # If OSPF is not configured on device, test fails.
+        # If OSPF is not configured on device, test skipped.
         if not (command_output := get_value(self.instance_commands[0].json_output, "vrfs")):
             self.result.is_skipped("OSPF not configured")
             return
@@ -148,7 +148,7 @@ class VerifyOSPFMaxLSA(AntaTest):
         """Main test function for VerifyOSPFMaxLSA."""
         self.result.is_success()
 
-        # If OSPF is not configured on device, test fails.
+        # If OSPF is not configured on device, test skipped.
         if not (command_output := get_value(self.instance_commands[0].json_output, "vrfs")):
             self.result.is_skipped("OSPF not configured")
             return
