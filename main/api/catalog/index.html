@@ -3036,7 +3036,14 @@
 
             <details class="quote">
               <summary>Source code in <code>anta/catalog.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">482</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">475</span>
+<span class="normal">476</span>
+<span class="normal">477</span>
+<span class="normal">478</span>
+<span class="normal">479</span>
+<span class="normal">480</span>
+<span class="normal">481</span>
+<span class="normal">482</span>
 <span class="normal">483</span>
 <span class="normal">484</span>
 <span class="normal">485</span>
@@ -3050,14 +3057,7 @@
 <span class="normal">493</span>
 <span class="normal">494</span>
 <span class="normal">495</span>
-<span class="normal">496</span>
-<span class="normal">497</span>
-<span class="normal">498</span>
-<span class="normal">499</span>
-<span class="normal">500</span>
-<span class="normal">501</span>
-<span class="normal">502</span>
-<span class="normal">503</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">build_indexes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filtered_tests</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">496</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">build_indexes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filtered_tests</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Indexes tests by their tags for quick access during filtering operations.</span>
 
 <span class="sd">    If a `filtered_tests` set is provided, only the tests in this set will be indexed.</span>
@@ -3102,9 +3102,9 @@
 
             <details class="quote">
               <summary>Source code in <code>anta/catalog.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">505</span>
-<span class="normal">506</span>
-<span class="normal">507</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">clear_indexes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">498</span>
+<span class="normal">499</span>
+<span class="normal">500</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">clear_indexes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Clear this AntaCatalog instance indexes.&quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_init_indexes</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
@@ -3153,19 +3153,19 @@
 
             <details class="quote">
               <summary>Source code in <code>anta/catalog.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">468</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">461</span>
+<span class="normal">462</span>
+<span class="normal">463</span>
+<span class="normal">464</span>
+<span class="normal">465</span>
+<span class="normal">466</span>
+<span class="normal">467</span>
+<span class="normal">468</span>
 <span class="normal">469</span>
 <span class="normal">470</span>
 <span class="normal">471</span>
 <span class="normal">472</span>
-<span class="normal">473</span>
-<span class="normal">474</span>
-<span class="normal">475</span>
-<span class="normal">476</span>
-<span class="normal">477</span>
-<span class="normal">478</span>
-<span class="normal">479</span>
-<span class="normal">480</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaCatalogFile</span><span class="p">:</span>
+<span class="normal">473</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaCatalogFile</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return an AntaCatalogFile instance from this AntaCatalog instance.</span>
 
 <span class="sd">    Returns</span>
@@ -3608,7 +3608,14 @@ If False, returns tests that contain any of the specified tags (union).</p>
 
             <details class="quote">
               <summary>Source code in <code>anta/catalog.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">509</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">502</span>
+<span class="normal">503</span>
+<span class="normal">504</span>
+<span class="normal">505</span>
+<span class="normal">506</span>
+<span class="normal">507</span>
+<span class="normal">508</span>
+<span class="normal">509</span>
 <span class="normal">510</span>
 <span class="normal">511</span>
 <span class="normal">512</span>
@@ -3634,14 +3641,7 @@ If False, returns tests that contain any of the specified tags (union).</p>
 <span class="normal">532</span>
 <span class="normal">533</span>
 <span class="normal">534</span>
-<span class="normal">535</span>
-<span class="normal">536</span>
-<span class="normal">537</span>
-<span class="normal">538</span>
-<span class="normal">539</span>
-<span class="normal">540</span>
-<span class="normal">541</span>
-<span class="normal">542</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_tests_by_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="n">AntaTestDefinition</span><span class="p">]:</span>
+<span class="normal">535</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_tests_by_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="n">AntaTestDefinition</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return all tests that match a given set of tags, according to the specified strictness.</span>
 
 <span class="sd">    Parameters</span>
@@ -3688,19 +3688,23 @@ If False, returns tests that contain any of the specified tags (union).</p>
 <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">merge</span>
 
 
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-deprecated"><code>deprecated</code></small>
+  </span>
+
 <a href="#anta.catalog.AntaCatalog.merge" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">merge</span><span class="p">(</span><span class="n">catalog</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="anta.catalog.AntaCatalog" href="#anta.catalog.AntaCatalog">AntaCatalog</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="anta.catalog.AntaCatalog" href="#anta.catalog.AntaCatalog">AntaCatalog</a></span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
-        <p>Merge two AntaCatalog instances.</p>
 
 
-<details class="warning" open>
-  <summary>Warning</summary>
-  <p>This method is deprecated and will be removed in ANTA v2.0. Use <code>AntaCatalog.merge_catalogs()</code> instead.</p>
-</details>
+<details class="danger" open>
+  <summary>Deprecated</summary>
+  <p>This method is deprecated, use <code>AntaCatalogs.merge_catalogs</code> class method instead. This will be removed in ANTA v2.0.0.</p>
+</details>        <p>Merge two AntaCatalog instances.</p>
+
 
 <p><span class="doc-section-title">Parameters:</span></p>
     <table>
@@ -3773,19 +3777,11 @@ If False, returns tests that contain any of the specified tags (union).</p>
 <span class="normal">456</span>
 <span class="normal">457</span>
 <span class="normal">458</span>
-<span class="normal">459</span>
-<span class="normal">460</span>
-<span class="normal">461</span>
-<span class="normal">462</span>
-<span class="normal">463</span>
-<span class="normal">464</span>
-<span class="normal">465</span>
-<span class="normal">466</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">merge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">catalog</span><span class="p">:</span> <span class="n">AntaCatalog</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaCatalog</span><span class="p">:</span>
+<span class="normal">459</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@deprecated</span><span class="p">(</span>
+    <span class="s2">&quot;This method is deprecated, use `AntaCatalogs.merge_catalogs` class method instead. This will be removed in ANTA v2.0.0.&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span>
+<span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">merge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">catalog</span><span class="p">:</span> <span class="n">AntaCatalog</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AntaCatalog</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Merge two AntaCatalog instances.</span>
-
-<span class="sd">    Warning</span>
-<span class="sd">    -------</span>
-<span class="sd">    This method is deprecated and will be removed in ANTA v2.0. Use `AntaCatalog.merge_catalogs()` instead.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -3797,12 +3793,6 @@ If False, returns tests that contain any of the specified tags (union).</p>
 <span class="sd">    AntaCatalog</span>
 <span class="sd">        A new AntaCatalog instance containing the tests of the two instances.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># TODO: Use a decorator to deprecate this method instead. See https://github.com/aristanetworks/anta/issues/754</span>
-    <span class="n">warn</span><span class="p">(</span>
-        <span class="n">message</span><span class="o">=</span><span class="s2">&quot;AntaCatalog.merge() is deprecated and will be removed in ANTA v2.0. Use AntaCatalog.merge_catalogs() instead.&quot;</span><span class="p">,</span>
-        <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
-        <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-    <span class="p">)</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">merge_catalogs</span><span class="p">([</span><span class="bp">self</span><span class="p">,</span> <span class="n">catalog</span><span class="p">])</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -4847,7 +4837,7 @@ with provided value to validate test inputs.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 29, 2025</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="January 29, 2025 14:42:02">January 29, 2025</span>
   </span>
 
     
