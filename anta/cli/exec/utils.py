@@ -23,6 +23,7 @@ from asynceapi import EapiCommandError
 
 if TYPE_CHECKING:
     from anta.inventory import AntaInventory
+    from asynceapi._types import EapiComplexCommand, EapiSimpleCommand
 
 EOS_SCHEDULED_TECH_SUPPORT = "/mnt/flash/schedule/tech-support"
 INVALID_CHAR = "`~!@#$/"
@@ -135,13 +136,13 @@ async def collect_show_tech(inv: AntaInventory, root_dir: Path, *, configure: bo
                 )
                 logger.warning(msg)
 
-                commands = []
                 # TODO: @mtache - add `config` field to `AntaCommand` object to handle this use case.
                 # Otherwise mypy complains about enable as it is only implemented for AsyncEOSDevice
                 # TODO: Should enable be also included in AntaDevice?
                 if not isinstance(device, AsyncEOSDevice):
                     msg = "anta exec collect-tech-support is only supported with AsyncEOSDevice for now."
                     raise UsageError(msg)
+                commands: list[EapiSimpleCommand | EapiComplexCommand] = []
                 if device.enable and device._enable_password is not None:
                     commands.append({"cmd": "enable", "input": device._enable_password})
                 elif device.enable:
