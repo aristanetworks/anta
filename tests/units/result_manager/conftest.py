@@ -34,12 +34,12 @@ def result_manager_factory(list_result_factory: Callable[[int], list[TestResult]
 def result_manager() -> ResultManager:
     """Return a ResultManager with 30 random tests loaded from a JSON file.
 
-    Devices: DC1-SPINE1, DC1-LEAF1A
+    Devices: s1-spine1
 
     - Total tests: 30
-    - Success: 7
-    - Skipped: 2
-    - Failure: 19
+    - Success: 4
+    - Skipped: 9
+    - Failure: 15
     - Error: 2
 
     See `tests/units/result_manager/test_md_report_results.json` for details.
