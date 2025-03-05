@@ -146,6 +146,7 @@ class VerifyBGPPeersHealth(AntaTest):
         - Confirms that the AFI/SAFI state is `negotiated`.
         - Checks that both input and output TCP message queues are empty.
           Can be disabled by setting `check_tcp_queues` to `False`.
+        - Ensures that the peer remains established for the specified minimum duration, given by minimum_established_time (in seconds), globally.
 
     Expected Results
     ----------------
@@ -156,6 +157,7 @@ class VerifyBGPPeersHealth(AntaTest):
         - Any BGP session is not in the `Established` state.
         - The AFI/SAFI state is not 'negotiated' for any peer.
         - Any TCP message queue (input or output) is not empty when `check_tcp_queues` is `True` (default).
+        - Any BGP session is not established for specified minimum duration.
 
     Examples
     --------
@@ -163,6 +165,7 @@ class VerifyBGPPeersHealth(AntaTest):
     anta.tests.routing:
       bgp:
         - VerifyBGPPeersHealth:
+            minimum_established_time: 10000
             address_families:
               - afi: "evpn"
               - afi: "ipv4"
@@ -181,6 +184,8 @@ class VerifyBGPPeersHealth(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPPeersHealth test."""
 
+        minimum_established_time: int | None = None
+        """Minimum established time(seconds) for all the neighbors."""
         address_families: list[BgpAddressFamily]
         """List of BGP address families."""
         BgpAfi: ClassVar[type[BgpAfi]] = BgpAfi
@@ -213,6 +218,10 @@ class VerifyBGPPeersHealth(AntaTest):
                     self.result.is_failure(f"{address_family} Peer: {peer['peerAddress']} - Session state is not established - State: {peer['state']}")
                     continue
 
+                if self.inputs.minimum_established_time and (act_time := peer["establishedTime"]) < self.inputs.minimum_established_time:
+                    msg = f"Session is not established for expected time - Expected: {self.inputs.minimum_established_time}s Actual: {act_time}s"
+                    self.result.is_failure(f"{address_family} Peer: {peer['peerAddress']} - {msg}")
+
                 # Check if the AFI/SAFI state is negotiated
                 capability_status = get_value(peer, f"neighborCapabilities.multiprotocolCaps.{address_family.eos_key}")
                 if not _check_bgp_neighbor_capability(capability_status):
@@ -238,6 +247,7 @@ class VerifyBGPSpecificPeers(AntaTest):
         - Confirms that the AFI/SAFI state is `negotiated`.
         - Ensures that both input and output TCP message queues are empty.
           Can be disabled by setting `check_tcp_queues` to `False`.
+        - Ensures that the peer remains established for the specified minimum duration, given by minimum_established_time (in seconds), globally.
 
     Expected Results
     ----------------
@@ -248,6 +258,7 @@ class VerifyBGPSpecificPeers(AntaTest):
         - The BGP session for a peer is not in the `Established` state.
         - The AFI/SAFI state is not `negotiated` for a peer.
         - Any TCP message queue (input or output) is not empty for a peer when `check_tcp_queues` is `True` (default).
+        - Any BGP session is not established for specified minimum duration.
 
     Examples
     --------
@@ -255,6 +266,7 @@ class VerifyBGPSpecificPeers(AntaTest):
     anta.tests.routing:
       bgp:
         - VerifyBGPSpecificPeers:
+            minimum_established_time: 10000
             address_families:
               - afi: "evpn"
                 peers:
@@ -276,6 +288,8 @@ class VerifyBGPSpecificPeers(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPSpecificPeers test."""
 
+        minimum_established_time: int | None = None
+        """Minimum established time(seconds) for all the neighbors."""
         address_families: list[BgpAddressFamily]
         """List of BGP address families."""
         BgpAfi: ClassVar[type[BgpAfi]] = BgpAfi
@@ -316,6 +330,10 @@ class VerifyBGPSpecificPeers(AntaTest):
                     self.result.is_failure(f"{address_family} Peer: {peer_ip} - Session state is not established - State: {peer_data['state']}")
                     continue
 
+                if self.inputs.minimum_established_time and (act_time := peer_data["establishedTime"]) < self.inputs.minimum_established_time:
+                    msg = f"Session is not established for expected time - Expected: {self.inputs.minimum_established_time}s Actual: {act_time}s"
+                    self.result.is_failure(f"{address_family} Peer: {peer_ip} - {msg}")
+
                 # Check if the AFI/SAFI state is negotiated
                 capability_status = get_value(peer_data, f"neighborCapabilities.multiprotocolCaps.{address_family.eos_key}")
                 if not capability_status:
@@ -325,11 +343,10 @@ class VerifyBGPSpecificPeers(AntaTest):
                     self.result.is_failure(f"{address_family} Peer: {peer_ip} - AFI/SAFI state is not negotiated - {format_data(capability_status)}")
 
                 # Check the TCP session message queues
-                if address_family.check_tcp_queues:
-                    inq = peer_data["peerTcpInfo"]["inputQueueLength"]
-                    outq = peer_data["peerTcpInfo"]["outputQueueLength"]
-                    if inq != 0 or outq != 0:
-                        self.result.is_failure(f"{address_family} Peer: {peer_ip} - Session has non-empty message queues - InQ: {inq}, OutQ: {outq}")
+                inq = peer_data["peerTcpInfo"]["inputQueueLength"]
+                outq = peer_data["peerTcpInfo"]["outputQueueLength"]
+                if address_family.check_tcp_queues and (inq != 0 or outq != 0):
+                    self.result.is_failure(f"{address_family} Peer: {peer_ip} - Session has non-empty message queues - InQ: {inq}, OutQ: {outq}")
 
 
 class VerifyBGPPeerSession(AntaTest):
@@ -341,6 +358,7 @@ class VerifyBGPPeerSession(AntaTest):
       2. Checks that the BGP session is in the `Established` state.
       3. Ensures that both input and output TCP message queues are empty.
       Can be disabled by setting `check_tcp_queues` global flag to `False`.
+      4. Ensures that the peer remains established for the specified minimum duration, given by minimum_established_time (in seconds), globally.
 
     Expected Results
     ----------------
@@ -348,10 +366,12 @@ class VerifyBGPPeerSession(AntaTest):
         - All specified peers are found in the BGP configuration.
         - All peers sessions state are `Established`.
         - All peers have empty TCP message queues if `check_tcp_queues` is `True` (default).
+        - All peers are established for specified minimum duration.
     * Failure: If any of the following occur:
         - A specified peer is not found in the BGP configuration.
         - A peer's session state is not `Established`.
         - A peer has non-empty TCP message queues (input or output) when `check_tcp_queues` is `True`.
+        - Any BGP session is not established for specified minimum duration.
 
     Examples
     --------
@@ -359,6 +379,7 @@ class VerifyBGPPeerSession(AntaTest):
     anta.tests.routing:
       bgp:
         - VerifyBGPPeerSession:
+            minimum_established_time: 10000
             check_tcp_queues: false
             bgp_peers:
               - peer_address: 10.1.0.1
@@ -378,6 +399,8 @@ class VerifyBGPPeerSession(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPPeerSession test."""
 
+        minimum_established_time: int | None = None
+        """Minimum established time(seconds) for all the neighbors."""
         check_tcp_queues: bool = True
         """Flag to check if the TCP session queues are empty for all BGP peers. Defaults to `True`."""
         bgp_peers: list[BgpPeer]
@@ -403,6 +426,11 @@ class VerifyBGPPeerSession(AntaTest):
             if peer_data["state"] != "Established":
                 self.result.is_failure(f"{peer} - Session state is not established - State: {peer_data['state']}")
                 continue
+
+            if self.inputs.minimum_established_time and (act_time := peer_data["establishedTime"]) < self.inputs.minimum_established_time:
+                self.result.is_failure(
+                    f"{peer} - Session is not established for expected time - Expected: {self.inputs.minimum_established_time}s Actual: {act_time}s"
+                )
 
             # Check the TCP session message queues
             if self.inputs.check_tcp_queues:
@@ -1427,6 +1455,7 @@ class VerifyBGPPeerSessionRibd(AntaTest):
       2. Checks that the BGP session is in the `Established` state.
       3. Ensures that both input and output TCP message queues are empty.
       Can be disabled by setting `check_tcp_queues` global flag to `False`.
+      4. Ensures that the peer remains established for the specified minimum duration, given by minimum_established_time (in seconds), globally.
 
     Expected Results
     ----------------
@@ -1434,10 +1463,12 @@ class VerifyBGPPeerSessionRibd(AntaTest):
         - All specified peers are found in the BGP configuration.
         - All peers sessions state are `Established`.
         - All peers have empty TCP message queues if `check_tcp_queues` is `True` (default).
+        - All peers are established for specified minimum duration.
     * Failure: If any of the following occur:
         - A specified peer is not found in the BGP configuration.
         - A peer's session state is not `Established`.
         - A peer has non-empty TCP message queues (input or output) when `check_tcp_queues` is `True`.
+        - Any BGP session is not established for specified minimum duration.
 
     Examples
     --------
@@ -1445,6 +1476,7 @@ class VerifyBGPPeerSessionRibd(AntaTest):
     anta.tests.routing:
       bgp:
         - VerifyBGPPeerSessionRibd:
+            minimum_established_time: 10000
             check_tcp_queues: false
             bgp_peers:
               - peer_address: 10.1.0.1
@@ -1464,6 +1496,8 @@ class VerifyBGPPeerSessionRibd(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPPeerSessionRibd test."""
 
+        minimum_established_time: int | None = None
+        """Minimum established time(seconds) for all the neighbors."""
         check_tcp_queues: bool = True
         """Flag to check if the TCP session queues are empty for all BGP peers. Defaults to `True`."""
         bgp_peers: list[BgpPeer]
@@ -1489,6 +1523,11 @@ class VerifyBGPPeerSessionRibd(AntaTest):
             if peer_data["state"] != "Established":
                 self.result.is_failure(f"{peer} - Session state is not established - State: {peer_data['state']}")
                 continue
+
+            if self.inputs.minimum_established_time and (act_time := peer_data["establishedTime"]) < self.inputs.minimum_established_time:
+                self.result.is_failure(
+                    f"{peer} - Session is not established for expected time - Expected: {self.inputs.minimum_established_time}s Actual: {act_time}s"
+                )
 
             # Check the TCP session message queues
             if self.inputs.check_tcp_queues:

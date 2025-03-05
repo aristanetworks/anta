@@ -474,6 +474,54 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
+        "name": "success-min-established-time",
+        "test": VerifyBGPPeersHealth,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.12",
+                                "state": "Established",
+                                "establishedTime": 169883,
+                                "neighborCapabilities": {"multiprotocolCaps": {"ipv4Unicast": {"advertised": True, "received": True, "enabled": True}}},
+                                "peerTcpInfo": {"state": "ESTABLISHED", "outputQueueLength": 0, "inputQueueLength": 0},
+                            },
+                            {
+                                "peerAddress": "10.100.0.13",
+                                "state": "Established",
+                                "establishedTime": 169883,
+                                "neighborCapabilities": {"multiprotocolCaps": {"l2VpnEvpn": {"advertised": True, "received": True, "enabled": True}}},
+                                "peerTcpInfo": {"state": "ESTABLISHED", "outputQueueLength": 0, "inputQueueLength": 0},
+                            },
+                        ]
+                    },
+                    "DEV": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.12",
+                                "state": "Established",
+                                "establishedTime": 169883,
+                                "neighborCapabilities": {"multiprotocolCaps": {"ipv4Unicast": {"advertised": True, "received": True, "enabled": True}}},
+                                "peerTcpInfo": {"state": "ESTABLISHED", "outputQueueLength": 0, "inputQueueLength": 0},
+                            },
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "minimum_established_time": 10000,
+            "address_families": [
+                {"afi": "evpn"},
+                {"afi": "ipv4", "safi": "unicast", "vrf": "default"},
+                {"afi": "ipv4", "safi": "unicast", "vrf": "DEV"},
+            ],
+        },
+        "expected": {"result": "success"},
+    },
+    {
         "name": "failure-vrf-not-configured",
         "test": VerifyBGPPeersHealth,
         "eos_data": [
@@ -695,6 +743,61 @@ DATA: list[dict[str, Any]] = [
         },
     },
     {
+        "name": "failure-min-established-time",
+        "test": VerifyBGPPeersHealth,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.12",
+                                "state": "Established",
+                                "establishedTime": 9883,
+                                "neighborCapabilities": {"multiprotocolCaps": {"ipv4Unicast": {"advertised": True, "received": True, "enabled": True}}},
+                                "peerTcpInfo": {"state": "ESTABLISHED", "outputQueueLength": 0, "inputQueueLength": 0},
+                            },
+                            {
+                                "peerAddress": "10.100.0.13",
+                                "state": "Established",
+                                "establishedTime": 9883,
+                                "neighborCapabilities": {"multiprotocolCaps": {"l2VpnEvpn": {"advertised": True, "received": True, "enabled": True}}},
+                                "peerTcpInfo": {"state": "ESTABLISHED", "outputQueueLength": 0, "inputQueueLength": 0},
+                            },
+                        ]
+                    },
+                    "DEV": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.12",
+                                "state": "Established",
+                                "establishedTime": 9883,
+                                "neighborCapabilities": {"multiprotocolCaps": {"ipv4Unicast": {"advertised": True, "received": True, "enabled": True}}},
+                                "peerTcpInfo": {"state": "ESTABLISHED", "outputQueueLength": 0, "inputQueueLength": 0},
+                            },
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "minimum_established_time": 10000,
+            "address_families": [
+                {"afi": "evpn"},
+                {"afi": "ipv4", "safi": "unicast", "vrf": "default"},
+                {"afi": "ipv4", "safi": "unicast", "vrf": "DEV"},
+            ],
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "AFI: evpn Peer: 10.100.0.13 - Session is not established for expected time - Expected: 10000s Actual: 9883s",
+                "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.12 - Session is not established for expected time - Expected: 10000s Actual: 9883s",
+                "AFI: ipv4 SAFI: unicast VRF: DEV Peer: 10.100.0.12 - Session is not established for expected time - Expected: 10000s Actual: 9883s",
+            ],
+        },
+    },
+    {
         "name": "success",
         "test": VerifyBGPSpecificPeers,
         "eos_data": [
@@ -735,6 +838,54 @@ DATA: list[dict[str, Any]] = [
                 {"afi": "evpn", "peers": ["10.100.0.13"]},
                 {"afi": "ipv4", "safi": "unicast", "vrf": "MGMT", "peers": ["10.100.0.14"]},
             ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-min-established-time",
+        "test": VerifyBGPSpecificPeers,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.12",
+                                "state": "Established",
+                                "establishedTime": 169883,
+                                "neighborCapabilities": {"multiprotocolCaps": {"ipv4Unicast": {"advertised": True, "received": True, "enabled": True}}},
+                                "peerTcpInfo": {"state": "ESTABLISHED", "outputQueueLength": 0, "inputQueueLength": 0},
+                            },
+                            {
+                                "peerAddress": "10.100.0.13",
+                                "state": "Established",
+                                "establishedTime": 169883,
+                                "neighborCapabilities": {"multiprotocolCaps": {"l2VpnEvpn": {"advertised": True, "received": True, "enabled": True}}},
+                                "peerTcpInfo": {"state": "ESTABLISHED", "outputQueueLength": 0, "inputQueueLength": 0},
+                            },
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.14",
+                                "state": "Established",
+                                "establishedTime": 169883,
+                                "neighborCapabilities": {"multiprotocolCaps": {"ipv4Unicast": {"advertised": True, "received": True, "enabled": True}}},
+                                "peerTcpInfo": {"state": "ESTABLISHED", "outputQueueLength": 0, "inputQueueLength": 0},
+                            },
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "minimum_established_time": 10000,
+            "address_families": [
+                {"afi": "ipv4", "safi": "unicast", "peers": ["10.100.0.12"]},
+                {"afi": "evpn", "peers": ["10.100.0.13"]},
+                {"afi": "ipv4", "safi": "unicast", "vrf": "MGMT", "peers": ["10.100.0.14"]},
+            ],
         },
         "expected": {"result": "success"},
     },
@@ -974,6 +1125,61 @@ DATA: list[dict[str, Any]] = [
             "messages": [
                 "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.12 - Session has non-empty message queues - InQ: 3, OutQ: 3",
                 "AFI: ipv4 SAFI: unicast VRF: MGMT Peer: 10.100.0.14 - Session has non-empty message queues - InQ: 2, OutQ: 2",
+            ],
+        },
+    },
+    {
+        "name": "failure-min-established-time",
+        "test": VerifyBGPSpecificPeers,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.12",
+                                "state": "Established",
+                                "establishedTime": 9883,
+                                "neighborCapabilities": {"multiprotocolCaps": {"ipv4Unicast": {"advertised": True, "received": True, "enabled": True}}},
+                                "peerTcpInfo": {"state": "ESTABLISHED", "outputQueueLength": 0, "inputQueueLength": 0},
+                            },
+                            {
+                                "peerAddress": "10.100.0.13",
+                                "state": "Established",
+                                "establishedTime": 9883,
+                                "neighborCapabilities": {"multiprotocolCaps": {"l2VpnEvpn": {"advertised": True, "received": True, "enabled": True}}},
+                                "peerTcpInfo": {"state": "ESTABLISHED", "outputQueueLength": 0, "inputQueueLength": 0},
+                            },
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.14",
+                                "state": "Established",
+                                "establishedTime": 9883,
+                                "neighborCapabilities": {"multiprotocolCaps": {"ipv4Unicast": {"advertised": True, "received": True, "enabled": True}}},
+                                "peerTcpInfo": {"state": "ESTABLISHED", "outputQueueLength": 0, "inputQueueLength": 0},
+                            },
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "minimum_established_time": 10000,
+            "address_families": [
+                {"afi": "ipv4", "safi": "unicast", "peers": ["10.100.0.12"]},
+                {"afi": "evpn", "peers": ["10.100.0.13"]},
+                {"afi": "ipv4", "safi": "unicast", "vrf": "MGMT", "peers": ["10.100.0.14"]},
+            ],
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.12 - Session is not established for expected time - Expected: 10000s Actual: 9883s",
+                "AFI: evpn Peer: 10.100.0.13 - Session is not established for expected time - Expected: 10000s Actual: 9883s",
+                "AFI: ipv4 SAFI: unicast VRF: MGMT Peer: 10.100.0.14 - Session is not established for expected time - Expected: 10000s Actual: 9883s",
             ],
         },
     },
@@ -4203,6 +4409,51 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
+        "name": "success-min-established-time",
+        "test": VerifyBGPPeerSession,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "state": "Established",
+                                "establishedTime": 169883,
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 0,
+                                    "inputQueueLength": 0,
+                                },
+                            }
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.9",
+                                "state": "Established",
+                                "establishedTime": 169883,
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 0,
+                                    "inputQueueLength": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "minimum_established_time": 10000,
+            "check_tcp_queues": True,
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default"},
+                {"peer_address": "10.100.0.9", "vrf": "MGMT"},
+            ],
+        },
+        "expected": {"result": "success"},
+    },
+    {
         "name": "failure-peer-not-found",
         "test": VerifyBGPPeerSession,
         "eos_data": [
@@ -4326,6 +4577,57 @@ DATA: list[dict[str, Any]] = [
             "result": "failure",
             "messages": [
                 "Peer: 10.100.0.8 VRF: default - Session has non-empty message queues - InQ: 5, OutQ: 10",
+            ],
+        },
+    },
+    {
+        "name": "failure-min-established-time",
+        "test": VerifyBGPPeerSession,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "state": "Established",
+                                "establishedTime": 9883,
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 0,
+                                    "inputQueueLength": 0,
+                                },
+                            }
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.9",
+                                "state": "Established",
+                                "establishedTime": 9883,
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 0,
+                                    "inputQueueLength": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "minimum_established_time": 10000,
+            "check_tcp_queues": True,
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default"},
+                {"peer_address": "10.100.0.9", "vrf": "MGMT"},
+            ],
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Peer: 10.100.0.8 VRF: default - Session is not established for expected time - Expected: 10000s Actual: 9883s",
+                "Peer: 10.100.0.9 VRF: MGMT - Session is not established for expected time - Expected: 10000s Actual: 9883s",
             ],
         },
     },
@@ -4570,6 +4872,51 @@ DATA: list[dict[str, Any]] = [
                             {
                                 "peerAddress": "10.100.0.8",
                                 "state": "Established",
+                                "establishedTime": 169883,
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 0,
+                                    "inputQueueLength": 0,
+                                },
+                            }
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.9",
+                                "state": "Established",
+                                "establishedTime": 169883,
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 0,
+                                    "inputQueueLength": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "minimum_established_time": 10000,
+            "check_tcp_queues": True,
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default"},
+                {"peer_address": "10.100.0.9", "vrf": "MGMT"},
+            ],
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-min-established-time",
+        "test": VerifyBGPPeerSessionRibd,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "state": "Established",
                                 "peerTcpInfo": {
                                     "outputQueueLength": 0,
                                     "inputQueueLength": 0,
@@ -4725,6 +5072,56 @@ DATA: list[dict[str, Any]] = [
             "result": "failure",
             "messages": [
                 "Peer: 10.100.0.8 VRF: default - Session has non-empty message queues - InQ: 5, OutQ: 10",
+            ],
+        },
+    },
+    {
+        "name": "failure-min-established-time",
+        "test": VerifyBGPPeerSessionRibd,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.8",
+                                "state": "Established",
+                                "establishedTime": 9883,
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 0,
+                                    "inputQueueLength": 0,
+                                },
+                            }
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.100.0.9",
+                                "state": "Established",
+                                "establishedTime": 9883,
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 0,
+                                    "inputQueueLength": 0,
+                                },
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "minimum_established_time": 10000,
+            "bgp_peers": [
+                {"peer_address": "10.100.0.8", "vrf": "default"},
+                {"peer_address": "10.100.0.9", "vrf": "MGMT"},
+            ],
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Peer: 10.100.0.8 VRF: default - Session is not established for expected time - Expected: 10000s Actual: 9883s",
+                "Peer: 10.100.0.9 VRF: MGMT - Session is not established for expected time - Expected: 10000s Actual: 9883s",
             ],
         },
     },
