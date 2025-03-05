@@ -177,7 +177,7 @@ class AntaInventory(dict[str, AntaDevice]):
         username: str,
         password: str,
         enable_password: str | None = None,
-        timeout: float | None = None,
+        timeout: float | None = 30.0,
         *,
         enable: bool = False,
         insecure: bool = False,
@@ -198,7 +198,7 @@ class AntaInventory(dict[str, AntaDevice]):
         enable_password
             Enable password to use if required.
         timeout
-            Timeout value in seconds for outgoing API calls.
+            Global timeout value in seconds for outgoing eAPI calls. None means no timeout.
         enable
             Whether or not the commands need to be run in enable mode towards the devices.
         insecure
