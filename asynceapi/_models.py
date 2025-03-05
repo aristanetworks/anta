@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from logging import getLogger
 from typing import TYPE_CHECKING, Any, Literal
 from uuid import uuid4
 
@@ -16,6 +17,8 @@ if TYPE_CHECKING:
     from collections.abc import Iterator
 
     from ._types import EapiComplexCommand, EapiJsonOutput, EapiSimpleCommand, EapiTextOutput, JsonRpc
+
+LOGGER = getLogger(__name__)
 
 
 # pylint: disable=too-many-instance-attributes
@@ -102,17 +105,16 @@ class EapiResponse:
 
     @property
     def results(self) -> list[EapiCommandResult]:
-        """Get all results as a list, ordered by command index."""
-        return [self._results[i] for i in sorted(self._results.keys())]
+        """Get all results as a list. Results are ordered by the command indices in the request."""
+        return list(self._results.values())
 
     def __len__(self) -> int:
         """Return the number of results."""
         return len(self._results)
 
     def __iter__(self) -> Iterator[EapiCommandResult]:
-        """Enable iteration over the results."""
-        for index in sorted(self._results.keys()):
-            yield self._results[index]
+        """Enable iteration over the results. Results are yielded in the same order as provided in the request."""
+        yield from self._results.values()
 
     @classmethod
     def from_jsonrpc(cls, response: dict[str, Any], request: EapiRequest, *, raise_on_error: bool = False) -> EapiResponse:
@@ -120,11 +122,11 @@ class EapiResponse:
 
         Parameters
         ----------
-        response : dict
+        response
             The JSON-RPC eAPI response dictionary.
-        request : EapiRequest
+        request
             The corresponding EapiRequest.
-        raise_on_error : bool, optional
+        raise_on_error
             Raise an EapiReponseError if the response contains errors, by default False.
 
         Returns
@@ -162,8 +164,8 @@ class EapiResponse:
                 # Add timestamps if available
                 if request.timestamps and "_meta" in data:
                     meta = data.pop("_meta")
-                    start_time = meta["execStartTime"]
-                    duration = meta["execDuration"]
+                    start_time = meta.get("execStartTime")
+                    duration = meta.get("execDuration")
 
             elif isinstance(data, str):
                 # Handle case where eAPI returns a JSON string response (serialized JSON) for certain commands
@@ -173,6 +175,7 @@ class EapiResponse:
                     output = loads(data)
                 except (JSONDecodeError, TypeError):
                     # If it's not valid JSON, store as is
+                    LOGGER.warning("Invalid JSON response for command: %s. Storing as text: %s", cmd_str, data)
                     output = data
 
             results[i] = EapiCommandResult(
@@ -189,9 +192,7 @@ class EapiResponse:
             for i in range(executed_count, len(request.commands)):
                 cmd = request.commands[i]
                 cmd_str = cmd["cmd"] if isinstance(cmd, dict) else cmd
-                results[i] = EapiCommandResult(
-                    command=cmd_str, output=None, errors=["Command not executed due to previous error"], success=False, was_executed=False
-                )
+                results[i] = EapiCommandResult(command=cmd_str, output=None, errors=["Command not executed due to previous error"], success=False, executed=False)
 
         response_obj = cls(
             request_id=response["id"],
@@ -220,7 +221,7 @@ class EapiCommandResult:
         A list of error messages, if any.
     success : bool
         True if the command was successful.
-    was_executed : bool
+    executed : bool
         True if the command was executed. When `stop_on_error` is True in the request, some commands may not be executed.
     start_time : float | None
         Command execution start time in seconds. Uses Unix epoch format. `timestamps` must be True in the request.
@@ -232,6 +233,6 @@ class EapiCommandResult:
     output: EapiJsonOutput | EapiTextOutput | None
     errors: list[str] = field(default_factory=list)
     success: bool = True
-    was_executed: bool = True
+    executed: bool = True
     start_time: float | None = None
     duration: float | None = None

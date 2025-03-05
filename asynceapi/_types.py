@@ -21,11 +21,11 @@ EapiJsonOutput = dict[str, Any]
 EapiTextOutput = str
 """Type definition of an eAPI text output response."""
 EapiSimpleCommand = str
-"""Type definition of an eAPI simple command."""
+"""Type definition of an eAPI simple command. A simple command is the CLI command to run as a string."""
 
 
 class EapiComplexCommand(TypedDict):
-    """Type definition of an eAPI complex command."""
+    """Type definition of an eAPI complex command. A complex command is a dictionary with the CLI command to run with additional parameters."""
 
     cmd: str
     input: NotRequired[str]

@@ -3,6 +3,7 @@
 # that can be found in the LICENSE file.
 """Unit tests for the asynceapi._models module."""
 
+import logging
 from typing import TYPE_CHECKING
 from uuid import UUID
 
@@ -174,19 +175,6 @@ class TestEapiResponse:
         assert len(iterated_results) == 3
         assert [r.command for r in iterated_results] == ["cmd1", "cmd2", "cmd3"]
 
-        # Test non-sequential indices
-        results = {
-            5: EapiCommandResult(command="cmd5", output="out5"),
-            2: EapiCommandResult(command="cmd2", output="out2"),
-            9: EapiCommandResult(command="cmd9", output="out9"),
-        }
-        response = EapiResponse(request_id="test-sorted", _results=results)
-
-        # Results should be ordered by index
-        iterated_results = list(response)
-        assert [r.command for r in iterated_results] == ["cmd2", "cmd5", "cmd9"]
-        assert [r.output for r in iterated_results] == ["out2", "out5", "out9"]
-
     def test_from_jsonrpc_success(self) -> None:
         """Test from_jsonrpc with successful response."""
         # Mock request
@@ -304,13 +292,13 @@ class TestEapiResponse:
         assert response.results[1].output is None
         assert response.results[1].success is False
         assert "Command not executed due to previous error" in response.results[1].errors
-        assert response.results[1].was_executed is False
+        assert response.results[1].executed is False
 
         assert response.results[2].command == "show hostname"
         assert response.results[2].output is None
         assert response.results[2].success is False
         assert "Command not executed due to previous error" in response.results[2].errors
-        assert response.results[2].was_executed is False
+        assert response.results[2].executed is False
 
     def test_from_jsonrpc_error_stop_on_error_false(self) -> None:
         """Test from_jsonrpc with error and stop_on_error=False."""
@@ -383,8 +371,10 @@ class TestEapiResponse:
         assert excinfo.value.response.error_code == 1002
         assert excinfo.value.response.error_message == "CLI command 1 of 1 'show bad command' failed: invalid command"
 
-    def test_from_jsonrpc_string_data(self) -> None:
+    def test_from_jsonrpc_string_data(self, caplog: pytest.LogCaptureFixture) -> None:
         """Test from_jsonrpc with string data response."""
+        caplog.set_level(logging.WARNING)
+
         # Mock request
         request = EapiRequest(commands=["show bgp ipv4 unicast summary", "show bad command"])
 
@@ -419,6 +409,9 @@ class TestEapiResponse:
         }
 
         response = EapiResponse.from_jsonrpc(jsonrpc_response, request)
+
+        # Verify WARNING log message
+        assert "Invalid JSON response for command: show bgp ipv4 unicast summary. Storing as text: This is not JSON" in caplog.text
 
         # Verify string is kept as is
         assert response.results[0].output == "This is not JSON"

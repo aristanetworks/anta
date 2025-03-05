@@ -21,7 +21,6 @@ import httpx
 # Private Imports
 # -----------------------------------------------------------------------------
 from ._constants import EapiCommandFormat
-from ._models import EapiRequest, EapiResponse
 from .aio_portcheck import port_check_url
 from .config_session import SessionConfig
 from .errors import EapiCommandError
@@ -460,31 +459,6 @@ class Device(httpx.AsyncClient):
             errmsg=err_msg,
             not_exec=commands[err_at + 1 :],
         )
-
-    async def _execute(self, request: EapiRequest, *, raise_on_error: bool = False) -> EapiResponse:
-        """Execute an eAPI request.
-
-        Parameters
-        ----------
-        request
-            The eAPI request object.
-        raise_on_error
-            Raise an EapiReponseError if the eAPI response contains errors.
-
-        Returns
-        -------
-        EapiResponse
-            The eAPI response object.
-
-        Raises
-        ------
-        EapiReponseError
-            If the eAPI response contains errors and `raise_on_error` is True.
-        """
-        res = await self.post("/command-api", json=request.to_jsonrpc())
-        res.raise_for_status()
-        body = res.json()
-        return EapiResponse.from_jsonrpc(body, request, raise_on_error=raise_on_error)
 
     def config_session(self, name: str) -> SessionConfig:
         """Return a SessionConfig instance bound to this device with the given session name.
