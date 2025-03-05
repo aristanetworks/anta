@@ -14,11 +14,11 @@ from itertools import chain
 from json import load as json_load
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal, Optional, Union
-from warnings import warn
 
 from pydantic import BaseModel, ConfigDict, RootModel, ValidationError, ValidationInfo, field_validator, model_serializer, model_validator
 from pydantic.types import ImportString
 from pydantic_core import PydanticCustomError
+from typing_extensions import deprecated
 from yaml import YAMLError, safe_dump, safe_load
 
 from anta.logger import anta_log_exception
@@ -440,12 +440,11 @@ class AntaCatalog:
         combined_tests = list(chain(*(catalog.tests for catalog in catalogs)))
         return cls(tests=combined_tests)
 
+    @deprecated(
+        "This method is deprecated, use `AntaCatalogs.merge_catalogs` class method instead. This will be removed in ANTA v2.0.0.", category=DeprecationWarning
+    )
     def merge(self, catalog: AntaCatalog) -> AntaCatalog:
         """Merge two AntaCatalog instances.
-
-        Warning
-        -------
-        This method is deprecated and will be removed in ANTA v2.0. Use `AntaCatalog.merge_catalogs()` instead.
 
         Parameters
         ----------
@@ -457,12 +456,6 @@ class AntaCatalog:
         AntaCatalog
             A new AntaCatalog instance containing the tests of the two instances.
         """
-        # TODO: Use a decorator to deprecate this method instead. See https://github.com/aristanetworks/anta/issues/754
-        warn(
-            message="AntaCatalog.merge() is deprecated and will be removed in ANTA v2.0. Use AntaCatalog.merge_catalogs() instead.",
-            category=DeprecationWarning,
-            stacklevel=2,
-        )
         return self.merge_catalogs([self, catalog])
 
     def dump(self) -> AntaCatalogFile:
