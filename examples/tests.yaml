@@ -626,6 +626,29 @@ anta.tests.routing.generic:
       minimum: 2
       maximum: 20
 anta.tests.routing.isis:
+  - VerifyISISInterfaceAuthMode:
+      # Verifies IS-IS interfaces are running in the correct authentication mode.
+      instances:
+        - name: instance-1
+          vrf: Test
+          interfaces:
+            - name: Loopback0
+              level: 1
+              authentication_mode: MD5
+            - name: Ethernet1
+              level: 2
+              authentication_mode: Text
+        - name: instance-2
+          vrf: MGMT
+          interfaces:
+            - name: Ethernet2
+              level: 1
+              authentication_mode: SHA
+              auth_key_id: 10
+            - name: Ethernet3
+              level: 1
+              authentication_mode: shared-secret
+              shared_secret_key_profile: secret
   - VerifyISISInterfaceMode:
       # Verifies IS-IS interfaces are running in the correct mode.
       interfaces:
