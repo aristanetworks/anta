@@ -5,15 +5,20 @@
 
 from __future__ import annotations
 
+import json
+from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 import pytest
 from pydantic import ValidationError
+from yaml import safe_load
 
-from anta.inventory.models import AntaInventoryHost, AntaInventoryNetwork, AntaInventoryRange
+from anta.inventory.models import AntaInventoryHost, AntaInventoryInput, AntaInventoryNetwork, AntaInventoryRange
 
 if TYPE_CHECKING:
     from _pytest.mark.structures import ParameterSet
+
+FILE_DIR: Path = Path(__file__).parents[2] / "data"
 
 INVENTORY_HOST_VALID_PARAMS: list[ParameterSet] = [
     pytest.param(None, "1.1.1.1", None, None, None, id="IPv4"),
@@ -164,3 +169,33 @@ class TestAntaInventoryRange:
         """Invalid model parameters."""
         with pytest.raises(ValidationError):
             AntaInventoryRange.model_validate({"start": start, "end": end, "tags": tags, "disable_cache": disable_cache})
+
+
+class TestAntaInventoryInputs:
+    """Test anta.inventory.models.AntaInventoryInputs."""
+
+    def test_dump_to_json(self):
+        """Load a YAML file, dump it to JSON and verify it works."""
+        input_yml_path = FILE_DIR / "test_inventory_with_tags.yml"
+        expected_json_path = FILE_DIR / "test_inventory_with_tags.json"
+        with input_yml_path.open("r") as f:
+            data = safe_load(f)
+        anta_inventory_input = AntaInventoryInput(**data["anta_inventory"])
+
+        with expected_json_path.open("r") as f:
+            expected_data = json.load(f)
+
+        assert json.loads(anta_inventory_input.to_json()) == expected_data["anta_inventory"]
+
+    def test_dump_to_yaml(self):
+        """Load a JSON file, dump it to YAML and verify it works."""
+        input_json_path = FILE_DIR / "test_inventory_medium.json"
+        expected_yml_path = FILE_DIR / "test_inventory_medium.yml"
+        with input_json_path.open("r") as f:
+            data = json.load(f)
+        anta_inventory_input = AntaInventoryInput(**data["anta_inventory"])
+
+        with expected_yml_path.open("r") as f:
+            expected_data = safe_load(f)
+
+        assert safe_load(anta_inventory_input.yaml()) == expected_data["anta_inventory"]

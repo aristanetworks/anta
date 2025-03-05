@@ -8,8 +8,9 @@ from __future__ import annotations
 import asyncio
 import logging
 from ipaddress import ip_address, ip_network
+from json import load as json_load
 from pathlib import Path
-from typing import Any, ClassVar
+from typing import Any, ClassVar, Literal
 
 from pydantic import ValidationError
 from yaml import YAMLError, safe_load
@@ -178,6 +179,7 @@ class AntaInventory(dict[str, AntaDevice]):
         password: str,
         enable_password: str | None = None,
         timeout: float | None = None,
+        file_format: Literal["yaml", "json"] = "yaml",
         *,
         enable: bool = False,
         insecure: bool = False,
@@ -199,6 +201,8 @@ class AntaInventory(dict[str, AntaDevice]):
             Enable password to use if required.
         timeout
             Timeout value in seconds for outgoing API calls.
+        file_format
+            Whether the inventory file is in JSON or YAML
         enable
             Whether or not the commands need to be run in enable mode towards the devices.
         insecure
@@ -214,6 +218,10 @@ class AntaInventory(dict[str, AntaDevice]):
             Inventory file is not following AntaInventory Schema.
 
         """
+        if file_format not in ["yaml", "json"]:
+            message = f"'{file_format}' is not a valid format for an AntaInventory file. Only 'yaml' and 'json' are supported."
+            raise ValueError(message)
+
         inventory = AntaInventory()
         kwargs: dict[str, Any] = {
             "username": username,
@@ -224,20 +232,12 @@ class AntaInventory(dict[str, AntaDevice]):
             "insecure": insecure,
             "disable_cache": disable_cache,
         }
-        if username is None:
-            message = "'username' is required to create an AntaInventory"
-            logger.error(message)
-            raise ValueError(message)
-        if password is None:
-            message = "'password' is required to create an AntaInventory"
-            logger.error(message)
-            raise ValueError(message)
 
         try:
             filename = Path(filename)
             with filename.open(encoding="UTF-8") as file:
-                data = safe_load(file)
-        except (TypeError, YAMLError, OSError) as e:
+                data = safe_load(file) if file_format == "yaml" else json_load(file)
+        except (TypeError, YAMLError, OSError, ValueError) as e:
             message = f"Unable to parse ANTA Device Inventory file '{filename}'"
             anta_log_exception(e, message, logger)
             raise

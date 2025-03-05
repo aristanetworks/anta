@@ -17,9 +17,6 @@ from anta.inventory.exceptions import InventoryIncorrectSchemaError, InventoryRo
 if TYPE_CHECKING:
     from _pytest.mark.structures import ParameterSet
 
-FILE_DIR: Path = Path(__file__).parent.parent.resolve() / "data" / "inventory"
-
-
 INIT_VALID_PARAMS: list[ParameterSet] = [
     pytest.param(
         {"anta_inventory": {"hosts": [{"host": "192.168.0.17"}, {"host": "192.168.0.2"}, {"host": "my.awesome.host.com"}]}},
