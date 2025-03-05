@@ -26,6 +26,10 @@ class ISISInstance(BaseModel):
     """Configured SR data-plane for the IS-IS instance."""
     segments: list[Segment] | None = None
     """List of IS-IS SR segments associated with the instance. Required field in the `VerifyISISSegmentRoutingAdjacencySegments` test."""
+    interfaces: list[ISISInterface] | None = None
+    """IS-IS interfaces detail. Required field in the `VerifyISISInterfaceAuthMode` test."""
+
+    # TODO: Need to review this in ANTA 2.0 as VRF is used in both ISISInterface model.
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the ISISInstance for reporting."""
@@ -64,6 +68,12 @@ class ISISInterface(BaseModel):
     """Expected number of IS-IS neighbors on this interface. Required field in the `VerifyISISNeighborCount` test."""
     mode: Literal["point-to-point", "broadcast", "passive"] | None = None
     """IS-IS network type of the interface. Required field in the `VerifyISISInterfaceMode` test."""
+    authentication_mode: Literal["MD5", "Text", "SHA", "shared-secret"] | None = None
+    """IS-IS authentication mode. Required field in the `VerifyISISInterfaceAuthMode` test."""
+    auth_key_id: int | None = None
+    """IS-IS authentication key id. Required field  if authentication mode is `SHA` in the `VerifyISISInterfaceAuthMode` test."""
+    shared_secret_key_profile: str | None = None
+    """IS-IS authentication shared secret key profile. Required field  if authentication mode is `shared-secret` in the `VerifyISISInterfaceAuthMode` test."""
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the ISISInterface for reporting."""

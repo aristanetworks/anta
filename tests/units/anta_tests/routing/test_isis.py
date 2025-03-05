@@ -12,6 +12,7 @@ from typing import Any
 import pytest
 
 from anta.tests.routing.isis import (
+    VerifyISISInterfaceAuthMode,
     VerifyISISInterfaceMode,
     VerifyISISNeighborCount,
     VerifyISISNeighborState,
@@ -2295,6 +2296,647 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "skipped",
             "messages": ["IS-IS-SR not configured"],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifyISISInterfaceAuthMode,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "isisInstances": {
+                            "100": {
+                                "interfaces": {
+                                    "Loopback0": {
+                                        "enabled": True,
+                                        "index": 2,
+                                        "snpa": "0:0:0:0:0:0",
+                                        "mtu": 65532,
+                                        "interfaceAddressFamily": "ipv4",
+                                        "interfaceType": "loopback",
+                                        "srNodeSegments": [],
+                                        "bfdIpv4Enabled": False,
+                                        "bfdIpv6Enabled": False,
+                                        "helloPaddingEnabled": True,
+                                        "intfLevels": {
+                                            "2": {
+                                                "ipv4Metric": 10,
+                                                "sharedSecretProfile": "",
+                                                "isisAdjacencies": [],
+                                                "passive": True,
+                                                "v4Protection": "disabled",
+                                                "v6Protection": "disabled",
+                                            }
+                                        },
+                                        "areaProxyBoundary": False,
+                                    },
+                                    "Ethernet1": {
+                                        "enabled": True,
+                                        "index": 133,
+                                        "snpa": "P2P",
+                                        "mtu": 1497,
+                                        "interfaceAddressFamily": "ipv4",
+                                        "interfaceType": "point-to-point",
+                                        "srNodeSegments": [],
+                                        "bfdIpv4Enabled": False,
+                                        "bfdIpv6Enabled": False,
+                                        "helloPaddingEnabled": True,
+                                        "intfLevels": {
+                                            "2": {
+                                                "ipv4Metric": 10,
+                                                "numAdjacencies": 0,
+                                                "linkId": "85",
+                                                "authenticationMode": "MD5",
+                                                "sharedSecretProfile": "",
+                                                "isisAdjacencies": [],
+                                                "passive": False,
+                                                "v4Protection": "disabled",
+                                                "v6Protection": "disabled",
+                                            }
+                                        },
+                                        "interfaceSpeed": 1000,
+                                        "areaProxyBoundary": False,
+                                    },
+                                    "Ethernet2": {
+                                        "enabled": True,
+                                        "index": 136,
+                                        "snpa": "P2P",
+                                        "mtu": 1497,
+                                        "interfaceAddressFamily": "ipv4",
+                                        "interfaceType": "point-to-point",
+                                        "srNodeSegments": [],
+                                        "bfdIpv4Enabled": False,
+                                        "bfdIpv6Enabled": False,
+                                        "helloPaddingEnabled": True,
+                                        "intfLevels": {
+                                            "2": {
+                                                "ipv4Metric": 10,
+                                                "numAdjacencies": 1,
+                                                "linkId": "88",
+                                                "sharedSecretProfile": "Secret",
+                                                "isisAdjacencies": [
+                                                    {
+                                                        "systemId": "1111.0000.0008",
+                                                        "hostname": "eos8",
+                                                        "level": "level2",
+                                                        "state": "up",
+                                                        "adjType": "l2",
+                                                        "addrFamily": "ipv4",
+                                                        "adjAddrFamilyMatch": True,
+                                                        "holdTime": 30,
+                                                        "ipv4IntfAddr": "10.6.8.8",
+                                                        "intfAreas": [{"areaId": "49"}],
+                                                    }
+                                                ],
+                                                "passive": False,
+                                                "v4Protection": "disabled",
+                                                "v6Protection": "disabled",
+                                            }
+                                        },
+                                        "interfaceSpeed": 1000,
+                                        "areaProxyBoundary": False,
+                                    },
+                                }
+                            },
+                            "101": {
+                                "interfaces": {
+                                    "Loopback0": {
+                                        "enabled": True,
+                                        "index": 2,
+                                        "snpa": "0:0:0:0:0:0",
+                                        "mtu": 65532,
+                                        "interfaceAddressFamily": "ipv4",
+                                        "interfaceType": "loopback",
+                                        "srNodeSegments": [],
+                                        "bfdIpv4Enabled": False,
+                                        "bfdIpv6Enabled": False,
+                                        "helloPaddingEnabled": True,
+                                        "intfLevels": {
+                                            "2": {
+                                                "ipv4Metric": 10,
+                                                "sharedSecretProfile": "",
+                                                "isisAdjacencies": [],
+                                                "passive": True,
+                                                "v4Protection": "disabled",
+                                                "v6Protection": "disabled",
+                                            }
+                                        },
+                                        "areaProxyBoundary": False,
+                                    },
+                                    "Ethernet3": {
+                                        "enabled": True,
+                                        "index": 101,
+                                        "snpa": "P2P",
+                                        "mtu": 1497,
+                                        "interfaceAddressFamily": "ipv4",
+                                        "interfaceType": "point-to-point",
+                                        "srNodeSegments": [],
+                                        "bfdIpv4Enabled": False,
+                                        "bfdIpv6Enabled": False,
+                                        "helloPaddingEnabled": True,
+                                        "intfLevels": {
+                                            "2": {
+                                                "ipv4Metric": 10,
+                                                "numAdjacencies": 0,
+                                                "linkId": "65",
+                                                "authenticationMode": "SHA",
+                                                "authenticationModeKeyId": 10,
+                                                "sharedSecretProfile": "",
+                                                "isisAdjacencies": [],
+                                                "passive": False,
+                                                "v4Protection": "disabled",
+                                                "v6Protection": "disabled",
+                                            }
+                                        },
+                                        "interfaceSpeed": 1000,
+                                        "areaProxyBoundary": False,
+                                    },
+                                    "Ethernet4": {
+                                        "enabled": True,
+                                        "index": 113,
+                                        "snpa": "P2P",
+                                        "mtu": 1497,
+                                        "interfaceAddressFamily": "ipv4",
+                                        "interfaceType": "point-to-point",
+                                        "srNodeSegments": [],
+                                        "bfdIpv4Enabled": False,
+                                        "bfdIpv6Enabled": False,
+                                        "helloPaddingEnabled": True,
+                                        "intfLevels": {
+                                            "2": {
+                                                "ipv4Metric": 10,
+                                                "numAdjacencies": 0,
+                                                "linkId": "71",
+                                                "authenticationMode": "Text",
+                                                "sharedSecretProfile": "",
+                                                "isisAdjacencies": [],
+                                                "passive": False,
+                                                "v4Protection": "disabled",
+                                                "v6Protection": "disabled",
+                                            }
+                                        },
+                                        "interfaceSpeed": 1000,
+                                        "areaProxyBoundary": False,
+                                    },
+                                }
+                            },
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {
+            "instances": [
+                {
+                    "name": "100",
+                    "interfaces": [
+                        {"name": "Ethernet1", "level": 2, "authentication_mode": "MD5"},
+                        {"name": "Ethernet2", "level": 2, "authentication_mode": "shared-secret", "shared_secret_key_profile": "Secret"},
+                    ],
+                },
+                {
+                    "name": "101",
+                    "interfaces": [
+                        {"name": "Ethernet3", "level": 2, "authentication_mode": "SHA", "auth_key_id": 10},
+                        {"name": "Ethernet4", "level": 2, "authentication_mode": "Text"},
+                    ],
+                },
+            ]
+        },
+        "expected": {
+            "result": "success",
+        },
+    },
+    {
+        "name": "failure-is-is-not-configured",
+        "test": VerifyISISInterfaceAuthMode,
+        "eos_data": [{"vrfs": {}}],
+        "inputs": {
+            "instances": [
+                {
+                    "name": "100",
+                    "interfaces": [
+                        {"name": "Ethernet1", "level": 2, "authentication_mode": "Text"},
+                        {"name": "Ethernet2", "level": 2, "authentication_mode": "shared-secret", "shared_secret_key_profile": "Secret1"},
+                    ],
+                },
+            ]
+        },
+        "expected": {
+            "result": "skipped",
+            "messages": ["IS-IS not configured"],
+        },
+    },
+    {
+        "name": "failure-interface-not-configured",
+        "test": VerifyISISInterfaceAuthMode,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "isisInstances": {
+                            "100": {
+                                "interfaces": {
+                                    "Loopback0": {
+                                        "enabled": True,
+                                        "index": 2,
+                                        "snpa": "0:0:0:0:0:0",
+                                        "mtu": 65532,
+                                        "interfaceAddressFamily": "ipv4",
+                                        "interfaceType": "loopback",
+                                        "intfLevels": {
+                                            "2": {
+                                                "ipv4Metric": 10,
+                                                "sharedSecretProfile": "",
+                                                "isisAdjacencies": [],
+                                                "passive": True,
+                                                "v4Protection": "disabled",
+                                                "v6Protection": "disabled",
+                                            }
+                                        },
+                                    },
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {
+            "instances": [
+                {
+                    "name": "100",
+                    "interfaces": [
+                        {
+                            "name": "Ethernet1",
+                            "level": 2,
+                            "authentication_mode": "MD5",
+                        },
+                    ],
+                },
+            ]
+        },
+        "expected": {"result": "failure", "messages": ["Instance: 100 VRF: default Interface: Ethernet1 Level: 2 - Not configured"]},
+    },
+    {
+        "name": "failure-auth-mode-not-configured",
+        "test": VerifyISISInterfaceAuthMode,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "isisInstances": {
+                            "100": {
+                                "interfaces": {
+                                    "Loopback0": {
+                                        "enabled": True,
+                                        "index": 2,
+                                        "snpa": "0:0:0:0:0:0",
+                                        "mtu": 65532,
+                                        "interfaceAddressFamily": "ipv4",
+                                        "interfaceType": "loopback",
+                                        "intfLevels": {
+                                            "2": {
+                                                "ipv4Metric": 10,
+                                                "sharedSecretProfile": "",
+                                                "isisAdjacencies": [],
+                                                "passive": True,
+                                                "v4Protection": "disabled",
+                                                "v6Protection": "disabled",
+                                            }
+                                        },
+                                    },
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {
+            "instances": [
+                {
+                    "name": "100",
+                    "interfaces": [
+                        {
+                            "name": "Loopback0",
+                            "level": 2,
+                            "authentication_mode": "MD5",
+                        },
+                    ],
+                },
+            ]
+        },
+        "expected": {"result": "failure", "messages": ["Instance: 100 VRF: default Interface: Loopback0 Level: 2 - Authentication mode not configured"]},
+    },
+    {
+        "name": "failure-incorrect-auth-mode",
+        "test": VerifyISISInterfaceAuthMode,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "isisInstances": {
+                            "100": {
+                                "interfaces": {
+                                    "Ethernet1": {
+                                        "enabled": True,
+                                        "index": 101,
+                                        "snpa": "P2P",
+                                        "mtu": 1497,
+                                        "interfaceAddressFamily": "ipv4",
+                                        "interfaceType": "point-to-point",
+                                        "srNodeSegments": [],
+                                        "bfdIpv4Enabled": False,
+                                        "bfdIpv6Enabled": False,
+                                        "helloPaddingEnabled": True,
+                                        "intfLevels": {
+                                            "2": {
+                                                "ipv4Metric": 10,
+                                                "numAdjacencies": 0,
+                                                "linkId": "65",
+                                                "authenticationMode": "SHA",
+                                                "authenticationModeKeyId": 10,
+                                                "sharedSecretProfile": "",
+                                                "isisAdjacencies": [],
+                                                "passive": False,
+                                                "v4Protection": "disabled",
+                                                "v6Protection": "disabled",
+                                            }
+                                        },
+                                        "interfaceSpeed": 1000,
+                                        "areaProxyBoundary": False,
+                                    },
+                                    "Ethernet2": {
+                                        "enabled": True,
+                                        "index": 113,
+                                        "snpa": "P2P",
+                                        "mtu": 1497,
+                                        "interfaceAddressFamily": "ipv4",
+                                        "interfaceType": "point-to-point",
+                                        "srNodeSegments": [],
+                                        "bfdIpv4Enabled": False,
+                                        "bfdIpv6Enabled": False,
+                                        "helloPaddingEnabled": True,
+                                        "intfLevels": {
+                                            "2": {
+                                                "ipv4Metric": 10,
+                                                "numAdjacencies": 0,
+                                                "linkId": "71",
+                                                "authenticationMode": "Text",
+                                                "sharedSecretProfile": "",
+                                                "isisAdjacencies": [],
+                                                "passive": False,
+                                                "v4Protection": "disabled",
+                                                "v6Protection": "disabled",
+                                            }
+                                        },
+                                        "interfaceSpeed": 1000,
+                                        "areaProxyBoundary": False,
+                                    },
+                                    "Ethernet3": {
+                                        "enabled": True,
+                                        "index": 133,
+                                        "snpa": "P2P",
+                                        "mtu": 1497,
+                                        "interfaceAddressFamily": "ipv4",
+                                        "interfaceType": "point-to-point",
+                                        "srNodeSegments": [],
+                                        "bfdIpv4Enabled": False,
+                                        "bfdIpv6Enabled": False,
+                                        "helloPaddingEnabled": True,
+                                        "intfLevels": {
+                                            "2": {
+                                                "ipv4Metric": 10,
+                                                "numAdjacencies": 0,
+                                                "linkId": "85",
+                                                "authenticationMode": "MD5",
+                                                "sharedSecretProfile": "",
+                                                "isisAdjacencies": [],
+                                                "passive": False,
+                                                "v4Protection": "disabled",
+                                                "v6Protection": "disabled",
+                                            }
+                                        },
+                                        "interfaceSpeed": 1000,
+                                        "areaProxyBoundary": False,
+                                    },
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {
+            "instances": [
+                {
+                    "name": "100",
+                    "interfaces": [
+                        {"name": "Ethernet1", "level": 2, "authentication_mode": "MD5"},
+                        {"name": "Ethernet2", "level": 2, "authentication_mode": "shared-secret", "shared_secret_key_profile": "Secret"},
+                        {"name": "Ethernet3", "level": 2, "authentication_mode": "Text"},
+                    ],
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Instance: 100 VRF: default Interface: Ethernet1 Level: 2 - Incorrect authentication mode - Expected: MD5 Actual: SHA",
+                "Instance: 100 VRF: default Interface: Ethernet2 Level: 2 - Incorrect authentication mode - Expected: shared-secret Actual: Text",
+                "Instance: 100 VRF: default Interface: Ethernet3 Level: 2 - Incorrect authentication mode - Expected: Text Actual: MD5",
+            ],
+        },
+    },
+    {
+        "name": "failure-incorrect-auth-key-id",
+        "test": VerifyISISInterfaceAuthMode,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "isisInstances": {
+                            "100": {
+                                "interfaces": {
+                                    "Ethernet1": {
+                                        "enabled": True,
+                                        "index": 101,
+                                        "snpa": "P2P",
+                                        "mtu": 1497,
+                                        "interfaceAddressFamily": "ipv4",
+                                        "interfaceType": "point-to-point",
+                                        "srNodeSegments": [],
+                                        "bfdIpv4Enabled": False,
+                                        "bfdIpv6Enabled": False,
+                                        "helloPaddingEnabled": True,
+                                        "intfLevels": {
+                                            "2": {
+                                                "ipv4Metric": 10,
+                                                "numAdjacencies": 0,
+                                                "linkId": "65",
+                                                "authenticationMode": "SHA",
+                                                "authenticationModeKeyId": 9,
+                                                "sharedSecretProfile": "",
+                                                "isisAdjacencies": [],
+                                                "passive": False,
+                                                "v4Protection": "disabled",
+                                                "v6Protection": "disabled",
+                                            }
+                                        },
+                                        "interfaceSpeed": 1000,
+                                        "areaProxyBoundary": False,
+                                    },
+                                    "Ethernet2": {
+                                        "enabled": True,
+                                        "index": 113,
+                                        "snpa": "P2P",
+                                        "mtu": 1497,
+                                        "interfaceAddressFamily": "ipv4",
+                                        "interfaceType": "point-to-point",
+                                        "srNodeSegments": [],
+                                        "bfdIpv4Enabled": False,
+                                        "bfdIpv6Enabled": False,
+                                        "helloPaddingEnabled": True,
+                                        "intfLevels": {
+                                            "2": {
+                                                "ipv4Metric": 10,
+                                                "numAdjacencies": 0,
+                                                "linkId": "71",
+                                                "authenticationMode": "Text",
+                                                "sharedSecretProfile": "",
+                                                "isisAdjacencies": [],
+                                                "passive": False,
+                                                "v4Protection": "disabled",
+                                                "v6Protection": "disabled",
+                                            }
+                                        },
+                                        "interfaceSpeed": 1000,
+                                        "areaProxyBoundary": False,
+                                    },
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {
+            "instances": [
+                {
+                    "name": "100",
+                    "interfaces": [
+                        {"name": "Ethernet1", "level": 2, "authentication_mode": "SHA", "auth_key_id": 10},
+                        {"name": "Ethernet2", "level": 2, "authentication_mode": "Text"},
+                    ],
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Instance: 100 VRF: default Interface: Ethernet1 Level: 2 - Incorrect authentication mode key id - Expected: 10 Actual: 9",
+            ],
+        },
+    },
+    {
+        "name": "failure-incorrect-shared-secret-profile",
+        "test": VerifyISISInterfaceAuthMode,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "isisInstances": {
+                            "100": {
+                                "interfaces": {
+                                    "Ethernet1": {
+                                        "enabled": True,
+                                        "index": 113,
+                                        "snpa": "P2P",
+                                        "mtu": 1497,
+                                        "interfaceAddressFamily": "ipv4",
+                                        "interfaceType": "point-to-point",
+                                        "srNodeSegments": [],
+                                        "bfdIpv4Enabled": False,
+                                        "bfdIpv6Enabled": False,
+                                        "helloPaddingEnabled": True,
+                                        "intfLevels": {
+                                            "2": {
+                                                "ipv4Metric": 10,
+                                                "numAdjacencies": 0,
+                                                "linkId": "71",
+                                                "authenticationMode": "Text",
+                                                "sharedSecretProfile": "",
+                                                "isisAdjacencies": [],
+                                                "passive": False,
+                                                "v4Protection": "disabled",
+                                                "v6Protection": "disabled",
+                                            }
+                                        },
+                                        "interfaceSpeed": 1000,
+                                        "areaProxyBoundary": False,
+                                    },
+                                    "Ethernet2": {
+                                        "enabled": True,
+                                        "index": 136,
+                                        "snpa": "P2P",
+                                        "mtu": 1497,
+                                        "interfaceAddressFamily": "ipv4",
+                                        "interfaceType": "point-to-point",
+                                        "srNodeSegments": [],
+                                        "bfdIpv4Enabled": False,
+                                        "bfdIpv6Enabled": False,
+                                        "helloPaddingEnabled": True,
+                                        "intfLevels": {
+                                            "2": {
+                                                "ipv4Metric": 10,
+                                                "numAdjacencies": 1,
+                                                "linkId": "88",
+                                                "sharedSecretProfile": "Secret",
+                                                "isisAdjacencies": [
+                                                    {
+                                                        "systemId": "1111.0000.0008",
+                                                        "hostname": "eos8",
+                                                        "level": "level2",
+                                                        "state": "up",
+                                                        "adjType": "l2",
+                                                        "addrFamily": "ipv4",
+                                                        "adjAddrFamilyMatch": True,
+                                                        "holdTime": 30,
+                                                        "ipv4IntfAddr": "10.6.8.8",
+                                                        "intfAreas": [{"areaId": "49"}],
+                                                    }
+                                                ],
+                                                "passive": False,
+                                                "v4Protection": "disabled",
+                                                "v6Protection": "disabled",
+                                            }
+                                        },
+                                        "interfaceSpeed": 1000,
+                                        "areaProxyBoundary": False,
+                                    },
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {
+            "instances": [
+                {
+                    "name": "100",
+                    "interfaces": [
+                        {"name": "Ethernet1", "level": 2, "authentication_mode": "Text"},
+                        {"name": "Ethernet2", "level": 2, "authentication_mode": "shared-secret", "shared_secret_key_profile": "Secret1"},
+                    ],
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": ["Instance: 100 VRF: default Interface: Ethernet2 Level: 2 - Incorrect shared secrete profile - Expected: Secret1 Actual: Secret"],
         },
     },
 ]
