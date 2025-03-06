@@ -636,7 +636,7 @@ poll interval unknown
         "expected": {
             "result": "failure",
             "messages": [
-                "Units under maintenance: 'mlag'. Units entering maintenance: 'System'. Possible causes: Quiesce is configured, Quiesce is configured",
+                "Units under maintenance: 'mlag'. Units entering maintenance: 'System'. Possible causes: Quiesce is configured",
             ],
         },
     },

@@ -386,11 +386,11 @@ class VerifyMaintenance(AntaTest):
                 elif info["state"] == "maintenanceModeEnter":
                     unitsenteringmaintenance.append(unit)
                     entering = True
-                if info["adminState"] == "underMaintenance":
+                if info["adminState"] == "underMaintenance" and "Quiesce is configured" not in causes:
                     causes.append("Quiesce is configured")
-                if info["onBootMaintenance"]:
+                if info["onBootMaintenance"] and "On-boot maintenance is configured" not in causes:
                     causes.append("On-boot maintenance is configured")
-                if info["intfsViolatingTrafficThreshold"]:
+                if info["intfsViolatingTrafficThreshold"] and "Interface traffic threshold violation" not in causes:
                     causes.append("Interface traffic threshold violation")
 
             # This can occur if maintenance is configured but no unit is configured with 'quiesce'.
