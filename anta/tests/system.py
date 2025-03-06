@@ -387,7 +387,7 @@ class VerifyMaintenance(AntaTest):
                     unitsenteringmaintenance.append(unit)
                     entering = True
                 if info["adminState"] == "underMaintenance":
-                    causes.append("quiesce is configured")
+                    causes.append("Quiesce is configured")
                 if info["onBootMaintenance"]:
                     causes.append("On-boot maintenance is configured")
                 if info["intfsViolatingTrafficThreshold"]:
@@ -400,10 +400,13 @@ class VerifyMaintenance(AntaTest):
             # Building the error message.
             else:
                 message = ""
+                unitsundermaintenance = ", ".join(unitsundermaintenance)
+                unitsenteringmaintenance = " ".join(unitsenteringmaintenance)
+                causes = ", ".join(causes)
                 if under:
                     message += f"Units under maintenance: '{unitsundermaintenance}'. "
                 if entering:
                     message += f"Units entering maintenance: '{unitsenteringmaintenance}'. "
                 if len(causes) > 0:
-                    message += f"Possible causes: '{causes}'"
+                    message += f"Possible causes: {causes}"
                 self.result.is_failure(message)

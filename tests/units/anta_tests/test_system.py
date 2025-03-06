@@ -508,6 +508,7 @@ poll interval unknown
                 "warnings": ["Maintenance Mode is disabled."],
             },
         ],
+        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -530,6 +531,7 @@ poll interval unknown
                 "vrfs": {},
             },
         ],
+        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -561,6 +563,7 @@ poll interval unknown
                 "vrfs": {},
             },
         ],
+        "inputs": None,
         "expected": {"result": "success"},
     },
     {
@@ -592,10 +595,11 @@ poll interval unknown
                 "vrfs": {},
             },
         ],
+        "inputs": None,
         "expected": {
             "result": "failure",
             "messages": [
-                "The following units are currently under maintenance: '['mlag']'. Possible causes: ['quiesce is configured']",
+                "Units under maintenance: 'mlag'. Possible causes: Quiesce is configured",
             ],
         },
     },
@@ -628,10 +632,11 @@ poll interval unknown
                 "vrfs": {},
             },
         ],
+        "inputs": None,
         "expected": {
             "result": "failure",
             "messages": [
-                "Units under maintenance: '['mlag']'. Units entering maintenance: '['System']' Possible causes: ['quiesce is configured','quiesce is configured']",
+                "Units under maintenance: 'mlag'. Units entering maintenance: 'System'. Possible causes: Quiesce is configured, Quiesce is configured",
             ],
         },
     },
@@ -655,10 +660,11 @@ poll interval unknown
                 "vrfs": {},
             },
         ],
+        "inputs": None,
         "expected": {
             "result": "failure",
             "messages": [
-                "Units under maintenance: '['System']'. Possible causes: ['On-boot maintenance is configured']",
+                "Units under maintenance: 'System'. Possible causes: Quiesce is configured, On-boot maintenance is configured",
             ],
         },
     },
@@ -682,10 +688,11 @@ poll interval unknown
                 "vrfs": {},
             },
         ],
+        "inputs": None,
         "expected": {
             "result": "failure",
             "messages": [
-                "Units entering maintenance: '['System']'. Possible causes: ['Interface traffic threshold violation']",
+                "Units entering maintenance: 'System'. Possible causes: Quiesce is configured, Interface traffic threshold violation",
             ],
         },
     },
