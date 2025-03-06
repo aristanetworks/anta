@@ -951,6 +951,8 @@ anta.tests.system:
       # Verifies there are no core dump files.
   - VerifyFileSystemUtilization:
       # Verifies that no partition is utilizing more than 75% of its disk space.
+  - VerifyMaintenance:
+      # Verifies that the device is not currently under maintenance.
   - VerifyMemoryUtilization:
       # Verifies whether the memory utilization is below 75%.
   - VerifyNTP:

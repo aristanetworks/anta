@@ -12,12 +12,12 @@ from anta.tests.system import (
     VerifyCoredump,
     VerifyCPUUtilization,
     VerifyFileSystemUtilization,
+    VerifyMaintenance,
     VerifyMemoryUtilization,
     VerifyNTP,
     VerifyNTPAssociations,
     VerifyReloadCause,
     VerifyUptime,
-    VerifyMaintenance
 )
 from tests.units.anta_tests import test
 
@@ -505,9 +505,7 @@ poll interval unknown
                 "units": {},
                 "interfaces": {},
                 "vrfs": {},
-                "warnings": [
-                    "Maintenance Mode is disabled."
-                ],
+                "warnings": ["Maintenance Mode is disabled."],
             },
         ],
         "expected": {"result": "success"},
@@ -525,7 +523,7 @@ poll interval unknown
                         "onBootMaintenance": False,
                         "intfsViolatingTrafficThreshold": False,
                         "aggInBpsRate": 0,
-                        "aggOutBpsRate": 0
+                        "aggOutBpsRate": 0,
                     }
                 },
                 "interfaces": {},
@@ -547,7 +545,7 @@ poll interval unknown
                         "onBootMaintenance": False,
                         "intfsViolatingTrafficThreshold": False,
                         "aggInBpsRate": 0,
-                        "aggOutBpsRate": 0
+                        "aggOutBpsRate": 0,
                     },
                     "System": {
                         "state": "active",
@@ -556,7 +554,7 @@ poll interval unknown
                         "onBootMaintenance": False,
                         "intfsViolatingTrafficThreshold": False,
                         "aggInBpsRate": 0,
-                        "aggOutBpsRate": 0
+                        "aggOutBpsRate": 0,
                     },
                 },
                 "interfaces": {},
@@ -578,7 +576,7 @@ poll interval unknown
                         "onBootMaintenance": False,
                         "intfsViolatingTrafficThreshold": False,
                         "aggInBpsRate": 0,
-                        "aggOutBpsRate": 0
+                        "aggOutBpsRate": 0,
                     },
                     "System": {
                         "state": "active",
@@ -587,8 +585,8 @@ poll interval unknown
                         "onBootMaintenance": False,
                         "intfsViolatingTrafficThreshold": False,
                         "aggInBpsRate": 0,
-                        "aggOutBpsRate": 0
-                    }
+                        "aggOutBpsRate": 0,
+                    },
                 },
                 "interfaces": {},
                 "vrfs": {},
@@ -597,7 +595,7 @@ poll interval unknown
         "expected": {
             "result": "failure",
             "messages": [
-                "Some units are under or entering maintenance.  The following units are currently under maintenance: '['mlag']'. Possible causes: ['quiesce is configured']",
+                "The following units are currently under maintenance: '['mlag']'. Possible causes: ['quiesce is configured']",
             ],
         },
     },
@@ -614,7 +612,7 @@ poll interval unknown
                         "onBootMaintenance": False,
                         "intfsViolatingTrafficThreshold": False,
                         "aggInBpsRate": 0,
-                        "aggOutBpsRate": 0
+                        "aggOutBpsRate": 0,
                     },
                     "System": {
                         "state": "maintenanceModeEnter",
@@ -623,8 +621,8 @@ poll interval unknown
                         "onBootMaintenance": False,
                         "intfsViolatingTrafficThreshold": False,
                         "aggInBpsRate": 0,
-                        "aggOutBpsRate": 0
-                    }
+                        "aggOutBpsRate": 0,
+                    },
                 },
                 "interfaces": {},
                 "vrfs": {},
@@ -633,7 +631,7 @@ poll interval unknown
         "expected": {
             "result": "failure",
             "messages": [
-                "Some units are under or entering maintenance.  The following units are currently under maintenance: '['mlag']'. The following units are currently entering maintenance: '['System']' Possible causes: ['quiesce is configured','quiesce is configured']",
+                "Units under maintenance: '['mlag']'. Units entering maintenance: '['System']' Possible causes: ['quiesce is configured','quiesce is configured']",
             ],
         },
     },
@@ -650,17 +648,17 @@ poll interval unknown
                         "onBootMaintenance": True,
                         "intfsViolatingTrafficThreshold": False,
                         "aggInBpsRate": 0,
-                        "aggOutBpsRate": 0
+                        "aggOutBpsRate": 0,
                     }
                 },
                 "interfaces": {},
-                "vrfs": {}
+                "vrfs": {},
             },
         ],
         "expected": {
             "result": "failure",
             "messages": [
-                "Some units are under or entering maintenance. The following units are currently under maintenance: '['System']'. Possible causes: ['On-boot maintenance is configured']",
+                "Units under maintenance: '['System']'. Possible causes: ['On-boot maintenance is configured']",
             ],
         },
     },
@@ -677,17 +675,17 @@ poll interval unknown
                         "onBootMaintenance": False,
                         "intfsViolatingTrafficThreshold": True,
                         "aggInBpsRate": 0,
-                        "aggOutBpsRate": 0
+                        "aggOutBpsRate": 0,
                     }
                 },
                 "interfaces": {},
-                "vrfs": {}
+                "vrfs": {},
             },
         ],
         "expected": {
             "result": "failure",
             "messages": [
-                "Some units are under or entering maintenance. The following units are currently entering maintenance: '['System']'. Possible causes: ['Interface traffic threshold violation']",
+                "Units entering maintenance: '['System']'. Possible causes: ['Interface traffic threshold violation']",
             ],
         },
     },

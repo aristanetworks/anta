@@ -372,7 +372,7 @@ class VerifyMaintenance(AntaTest):
         self.result.is_success()
 
         # If units is not empty we have to examine the output for details.
-        if (units := get_value(self.instance_commands[0].json_output, "units")):
+        if units := get_value(self.instance_commands[0].json_output, "units"):
             unitsundermaintenance = []
             unitsenteringmaintenance = []
             under = False
@@ -399,11 +399,11 @@ class VerifyMaintenance(AntaTest):
 
             # Building the error message.
             else:
-                message = "Some units are under or entering maintenance."
+                message = ""
                 if under:
-                    message += f" The following units are currently under maintenance: '{unitsundermaintenance}'."
+                    message += f"Units under maintenance: '{unitsundermaintenance}'. "
                 if entering:
-                    message += f" The following units are currently entering maintenance: '{unitsenteringmaintenance}'."
+                    message += f"Units entering maintenance: '{unitsenteringmaintenance}'. "
                 if len(causes) > 0:
-                    message += f" Possible causes: '{causes}'"
+                    message += f"Possible causes: '{causes}'"
                 self.result.is_failure(message)
