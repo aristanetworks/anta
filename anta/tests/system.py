@@ -348,7 +348,7 @@ class VerifyNTPAssociations(AntaTest):
 
 
 class VerifyMaintenance(AntaTest):
-    """Verifies that the device is not currently under maintenance.
+    """Verifies that the device is not currently under or entering maintenance.
 
     Expected Results
     ----------------

@@ -952,7 +952,7 @@ anta.tests.system:
   - VerifyFileSystemUtilization:
       # Verifies that no partition is utilizing more than 75% of its disk space.
   - VerifyMaintenance:
-      # Verifies that the device is not currently under maintenance.
+      # Verifies that the device is not currently under or entering maintenance.
   - VerifyMemoryUtilization:
       # Verifies whether the memory utilization is below 75%.
   - VerifyNTP:
