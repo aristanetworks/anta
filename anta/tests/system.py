@@ -345,3 +345,65 @@ class VerifyNTPAssociations(AntaTest):
 
             if act_condition != exp_condition or act_stratum != exp_stratum:
                 self.result.is_failure(f"{ntp_server} - Bad association - Condition: {act_condition}, Stratum: {act_stratum}")
+
+
+class VerifyMaintenance(AntaTest):
+    """Verifies that the device is not currently under maintenance.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the device is not under or entering maintenance.
+    * Failure: The test will fail if the device is under or entering maintenance.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.system:
+      - VerifyMaintenance:
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["Maintenance"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show maintenance", revision=1)]
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyMaintenance."""
+        self.result.is_success()
+
+        # If units is not empty we have to examine the output for details.
+        if (units := get_value(self.instance_commands[0].json_output, "units")):
+            unitsundermaintenance = []
+            unitsenteringmaintenance = []
+            under = False
+            entering = False
+            causes = []
+            # Iterate over units, check for units under or entering maintenance, and examine the causes.
+            for unit, info in units.items():
+                if info["state"] == "underMaintenance":
+                    unitsundermaintenance.append(unit)
+                    under = True
+                elif info["state"] == "maintenanceModeEnter":
+                    unitsenteringmaintenance.append(unit)
+                    entering = True
+                if info["adminState"] == "underMaintenance":
+                    causes.append("quiesce is configured")
+                if info["onBootMaintenance"]:
+                    causes.append("On-boot maintenance is configured")
+                if info["intfsViolatingTrafficThreshold"]:
+                    causes.append("Interface traffic threshold violation")
+
+            # This can occur if maintenance is configured but no unit is configured with 'quiesce'.
+            if not under and not entering and not causes:
+                self.result.is_success()
+
+            # Building the error message.
+            else:
+                message = "Some units are under or entering maintenance."
+                if under:
+                    message += f" The following units are currently under maintenance: '{unitsundermaintenance}'."
+                if entering:
+                    message += f" The following units are currently entering maintenance: '{unitsenteringmaintenance}'."
+                if len(causes) > 0:
+                    message += f" Possible causes: '{causes}'"
+                self.result.is_failure(message)

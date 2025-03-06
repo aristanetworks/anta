@@ -17,6 +17,7 @@ from anta.tests.system import (
     VerifyNTPAssociations,
     VerifyReloadCause,
     VerifyUptime,
+    VerifyMaintenance
 )
 from tests.units.anta_tests import test
 
@@ -493,6 +494,200 @@ poll interval unknown
                 "NTP Server: 1.1.1.1 Preferred: True Stratum: 1 - Bad association - Condition: candidate, Stratum: 1",
                 "NTP Server: 2.2.2.2 Preferred: False Stratum: 1 - Not configured",
                 "NTP Server: 3.3.3.3 Preferred: False Stratum: 1 - Not configured",
+            ],
+        },
+    },
+    {
+        "name": "success-no-maintenance-configured",
+        "test": VerifyMaintenance,
+        "eos_data": [
+            {
+                "units": {},
+                "interfaces": {},
+                "vrfs": {},
+                "warnings": [
+                    "Maintenance Mode is disabled."
+                ],
+            },
+        ],
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-maintenance-configured-but-not-enabled",
+        "test": VerifyMaintenance,
+        "eos_data": [
+            {
+                "units": {
+                    "System": {
+                        "state": "active",
+                        "adminState": "active",
+                        "stateChangeTime": 0.0,
+                        "onBootMaintenance": False,
+                        "intfsViolatingTrafficThreshold": False,
+                        "aggInBpsRate": 0,
+                        "aggOutBpsRate": 0
+                    }
+                },
+                "interfaces": {},
+                "vrfs": {},
+            },
+        ],
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-multiple-units-but-not-enabled",
+        "test": VerifyMaintenance,
+        "eos_data": [
+            {
+                "units": {
+                    "mlag": {
+                        "state": "active",
+                        "adminState": "active",
+                        "stateChangeTime": 0.0,
+                        "onBootMaintenance": False,
+                        "intfsViolatingTrafficThreshold": False,
+                        "aggInBpsRate": 0,
+                        "aggOutBpsRate": 0
+                    },
+                    "System": {
+                        "state": "active",
+                        "adminState": "active",
+                        "stateChangeTime": 0.0,
+                        "onBootMaintenance": False,
+                        "intfsViolatingTrafficThreshold": False,
+                        "aggInBpsRate": 0,
+                        "aggOutBpsRate": 0
+                    },
+                },
+                "interfaces": {},
+                "vrfs": {},
+            },
+        ],
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-maintenance-enabled",
+        "test": VerifyMaintenance,
+        "eos_data": [
+            {
+                "units": {
+                    "mlag": {
+                        "state": "underMaintenance",
+                        "adminState": "underMaintenance",
+                        "stateChangeTime": 1741257120.9532886,
+                        "onBootMaintenance": False,
+                        "intfsViolatingTrafficThreshold": False,
+                        "aggInBpsRate": 0,
+                        "aggOutBpsRate": 0
+                    },
+                    "System": {
+                        "state": "active",
+                        "adminState": "active",
+                        "stateChangeTime": 0.0,
+                        "onBootMaintenance": False,
+                        "intfsViolatingTrafficThreshold": False,
+                        "aggInBpsRate": 0,
+                        "aggOutBpsRate": 0
+                    }
+                },
+                "interfaces": {},
+                "vrfs": {},
+            },
+        ],
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Some units are under or entering maintenance.  The following units are currently under maintenance: '['mlag']'. Possible causes: ['quiesce is configured']",
+            ],
+        },
+    },
+    {
+        "name": "failure-multiple-reasons",
+        "test": VerifyMaintenance,
+        "eos_data": [
+            {
+                "units": {
+                    "mlag": {
+                        "state": "underMaintenance",
+                        "adminState": "underMaintenance",
+                        "stateChangeTime": 1741257120.9532895,
+                        "onBootMaintenance": False,
+                        "intfsViolatingTrafficThreshold": False,
+                        "aggInBpsRate": 0,
+                        "aggOutBpsRate": 0
+                    },
+                    "System": {
+                        "state": "maintenanceModeEnter",
+                        "adminState": "underMaintenance",
+                        "stateChangeTime": 1741257669.7231765,
+                        "onBootMaintenance": False,
+                        "intfsViolatingTrafficThreshold": False,
+                        "aggInBpsRate": 0,
+                        "aggOutBpsRate": 0
+                    }
+                },
+                "interfaces": {},
+                "vrfs": {},
+            },
+        ],
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Some units are under or entering maintenance.  The following units are currently under maintenance: '['mlag']'. The following units are currently entering maintenance: '['System']' Possible causes: ['quiesce is configured','quiesce is configured']",
+            ],
+        },
+    },
+    {
+        "name": "failure-onboot-maintenance",
+        "test": VerifyMaintenance,
+        "eos_data": [
+            {
+                "units": {
+                    "System": {
+                        "state": "underMaintenance",
+                        "adminState": "underMaintenance",
+                        "stateChangeTime": 1741258774.3756502,
+                        "onBootMaintenance": True,
+                        "intfsViolatingTrafficThreshold": False,
+                        "aggInBpsRate": 0,
+                        "aggOutBpsRate": 0
+                    }
+                },
+                "interfaces": {},
+                "vrfs": {}
+            },
+        ],
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Some units are under or entering maintenance. The following units are currently under maintenance: '['System']'. Possible causes: ['On-boot maintenance is configured']",
+            ],
+        },
+    },
+    {
+        "name": "failure-entering-maintenance-interface-violation",
+        "test": VerifyMaintenance,
+        "eos_data": [
+            {
+                "units": {
+                    "System": {
+                        "state": "maintenanceModeEnter",
+                        "adminState": "underMaintenance",
+                        "stateChangeTime": 1741257669.7231765,
+                        "onBootMaintenance": False,
+                        "intfsViolatingTrafficThreshold": True,
+                        "aggInBpsRate": 0,
+                        "aggOutBpsRate": 0
+                    }
+                },
+                "interfaces": {},
+                "vrfs": {}
+            },
+        ],
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Some units are under or entering maintenance. The following units are currently entering maintenance: '['System']'. Possible causes: ['Interface traffic threshold violation']",
             ],
         },
     },
