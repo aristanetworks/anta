@@ -8,16 +8,18 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING, ClassVar, Self
+from typing import TYPE_CHECKING, Any, ClassVar, Self
 
 from pydantic import model_validator
 
-from anta.custom_types import PositiveInteger
+from anta.custom_types import Hostname, PositiveInteger
 from anta.input_models.system import NTPPool, NTPServer
 from anta.models import AntaCommand, AntaTest
 from anta.tools import get_value
 
 if TYPE_CHECKING:
+    from ipaddress import IPv4Address
+
     from anta.models import AntaTemplate
 
 CPU_IDLE_THRESHOLD = 25
@@ -286,18 +288,28 @@ class VerifyNTP(AntaTest):
 class VerifyNTPAssociations(AntaTest):
     """Verifies the Network Time Protocol (NTP) associations.
 
+    This test performs the following checks:
+
+      1. For the NTP servers:
+        - The Primary NTP server (marked as preferred) has the condition 'sys.peer'.
+        - All other NTP servers have the condition 'candidate'.
+        - All the NTP servers have the expected stratum level.
+      2. For the NTP servers pool:
+        - All the NTP servers belongs to specified NTP pool.
+        - All the NTP servers have valid condition(sys.peer | candidate).
+        - All the NTP servers have the stratun level within the specified startum level.
+
     Expected Results
     ----------------
-    * Success: The test will pass if the Primary NTP server (marked as preferred) has the condition 'sys.peer' and
-    all other NTP servers have the condition 'candidate'.
-    * Failure: The test will fail if the Primary NTP server (marked as preferred) does not have the condition 'sys.peer' or
-    if any other NTP server does not have the condition 'candidate'.
+    * Success: The test will pass if all the NTP servers meet the expected state.
+    * Failure: The test will fail if any of the NTP server does not meet the expected state.
 
     Examples
     --------
     ```yaml
     anta.tests.system:
       - VerifyNTPAssociations:
+          ntp_pool: None
           ntp_servers:
             - server_address: 1.1.1.1
               preferred: True
@@ -333,7 +345,47 @@ class VerifyNTPAssociations(AntaTest):
             if self.ntp_servers and self.ntp_pool:
                 msg = "Either 'ntp_servers' or 'ntp_pool' provided at the same time"
                 raise ValueError(msg)
+
+            # Verifies the len of preferred_stratum_range in NTP Pool should be 2 as this is the range.
+            stratum_range = 2
+            if self.ntp_pool and len(self.ntp_pool.preferred_stratum_range) > stratum_range:
+                msg = "NTP Pool preferred_stratum_range list should have at most 2 items"
+                raise ValueError(msg)
             return self
+
+    def _validate_ntp_server(self, ntp_server: NTPServer, peers: dict[str, Any]) -> str | None:
+        """Validate the NTP server, condition and stratum level."""
+        server_address = str(ntp_server.server_address)
+
+        # We check `peerIpAddr` in the peer details - covering IPv4Address input, or the peer key - covering Hostname input.
+        matching_peer = next((peer for peer, peer_details in peers.items() if (server_address in {peer_details["peerIpAddr"], peer})), None)
+
+        if not matching_peer:
+            return f"{ntp_server} - Not configured"
+
+        # Collecting the expected/actual NTP peer details.
+        exp_condition = "sys.peer" if ntp_server.preferred else "candidate"
+        exp_stratum = ntp_server.stratum
+        act_condition = get_value(peers[matching_peer], "condition")
+        act_stratum = get_value(peers[matching_peer], "stratumLevel")
+
+        if act_condition != exp_condition or act_stratum != exp_stratum:
+            return f"{ntp_server} - Bad association - Condition: {act_condition}, Stratum: {act_stratum}"
+
+        return None
+
+    def _validate_ntp_pool(self, server_addresses: list[Hostname | IPv4Address], peer: str, stratum_range: list[int], peer_details: dict[Any, Any]) -> str | None:
+        """Validate the NTP server pool, condition and stratum level."""
+        # We check `peerIpAddr`n `peer` in the peer details - covering server_addresses input
+        if (peer_ip := peer_details["peerIpAddr"]) not in server_addresses and peer not in server_addresses:
+            return f"NTP Server: {peer_ip} - Not belong to specified NTP server pool"
+
+        act_condition = get_value(peer_details, "condition")
+        act_stratum = get_value(peer_details, "stratumLevel")
+        if act_condition not in ["sys.peer", "candidate"] or int(act_stratum) not in range(stratum_range[0], stratum_range[1] + 1):
+            return f"NTP Server: {peer_ip} - Bad association - Condition: {act_condition}, Stratum: {act_stratum}"
+
+        return None
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -347,33 +399,14 @@ class VerifyNTPAssociations(AntaTest):
         if self.inputs.ntp_servers:
             # Iterate over each NTP server.
             for ntp_server in self.inputs.ntp_servers:
-                server_address = str(ntp_server.server_address)
-
-                # We check `peerIpAddr` in the peer details - covering IPv4Address input, or the peer key - covering Hostname input.
-                matching_peer = next((peer for peer, peer_details in peers.items() if (server_address in {peer_details["peerIpAddr"], peer})), None)
-
-                if not matching_peer:
-                    self.result.is_failure(f"{ntp_server} - Not configured")
-                    continue
-
-                # Collecting the expected/actual NTP peer details.
-                exp_condition = "sys.peer" if ntp_server.preferred else "candidate"
-                exp_stratum = ntp_server.stratum
-                act_condition = get_value(peers[matching_peer], "condition")
-                act_stratum = get_value(peers[matching_peer], "stratumLevel")
-
-                if act_condition != exp_condition or act_stratum != exp_stratum:
-                    self.result.is_failure(f"{ntp_server} - Bad association - Condition: {act_condition}, Stratum: {act_stratum}")
+                failure_msg = self._validate_ntp_server(ntp_server, peers)
+                if failure_msg:
+                    self.result.is_failure(failure_msg)
 
         elif self.inputs.ntp_pool:
             server_addresses = self.inputs.ntp_pool.server_address
             exp_stratum_range = self.inputs.ntp_pool.preferred_stratum_range
             for peer, peer_details in peers.items():
-                if (peer_ip := peer_details["peerIpAddr"]) not in server_addresses and peer not in server_addresses:
-                    self.result.is_failure(f"NTP Server: {peer_ip} - Not belong to specified NTP server pool")
-                    continue
-
-                act_condition = get_value(peer_details, "condition")
-                act_stratum = get_value(peer_details, "stratumLevel")
-                if act_condition not in ["sys.peer", "candidate"] or int(act_stratum) not in range(exp_stratum_range[0], exp_stratum_range[1] + 1):
-                    self.result.is_failure(f"NTP Server: {peer_ip} - Bad association - Condition: {act_condition}, Stratum: {act_stratum}")
+                failure_msg = self._validate_ntp_pool(server_addresses, peer, exp_stratum_range, peer_details)
+                if failure_msg:
+                    self.result.is_failure(failure_msg)

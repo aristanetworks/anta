@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from ipaddress import IPv4Address
 
-from pydantic import BaseModel, ConfigDict, conlist
+from pydantic import BaseModel, ConfigDict
 
 from anta.custom_types import Hostname, NTPStratumLevel
 
@@ -37,5 +37,5 @@ class NTPPool(BaseModel):
     model_config = ConfigDict(extra="forbid")
     server_address: list[Hostname | IPv4Address]
     """The list of NTP server address as an IPv4 address or hostname."""
-    preferred_stratum_range: conlist(NTPStratumLevel, min_length=2, max_length=2)  # type: ignore[valid-type]
-    """Preferred NTP stratum level for the primary NTP server(sys.peer)."""
+    preferred_stratum_range: list[NTPStratumLevel]
+    """Preferred NTP stratum range for the NTP server pool. If the expected stratum range is 1 to 3 then preferred_stratum_range should be `[1,3]`."""
