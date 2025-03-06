@@ -347,6 +347,33 @@ poll interval unknown
         "expected": {"result": "success"},
     },
     {
+        "name": "success-ntp-pool-as-input",
+        "test": VerifyNTPAssociations,
+        "eos_data": [
+            {
+                "peers": {
+                    "1.1.1.1": {
+                        "condition": "sys.peer",
+                        "peerIpAddr": "1.1.1.1",
+                        "stratumLevel": 1,
+                    },
+                    "2.2.2.2": {
+                        "condition": "candidate",
+                        "peerIpAddr": "2.2.2.2",
+                        "stratumLevel": 2,
+                    },
+                    "3.3.3.3": {
+                        "condition": "candidate",
+                        "peerIpAddr": "3.3.3.3",
+                        "stratumLevel": 2,
+                    },
+                }
+            }
+        ],
+        "inputs": {"ntp_pool": {"server_address": ["1.1.1.1", "2.2.2.2", "3.3.3.3"], "preferred_stratum_range": [1, 2]}},
+        "expected": {"result": "success"},
+    },
+    {
         "name": "success-ip-dns",
         "test": VerifyNTPAssociations,
         "eos_data": [
@@ -494,6 +521,66 @@ poll interval unknown
                 "NTP Server: 2.2.2.2 Preferred: False Stratum: 1 - Not configured",
                 "NTP Server: 3.3.3.3 Preferred: False Stratum: 1 - Not configured",
             ],
+        },
+    },
+    {
+        "name": "failure-ntp-pool-as-input",
+        "test": VerifyNTPAssociations,
+        "eos_data": [
+            {
+                "peers": {
+                    "1.1.1.1": {
+                        "condition": "sys.peer",
+                        "peerIpAddr": "1.1.1.1",
+                        "stratumLevel": 1,
+                    },
+                    "2.2.2.2": {
+                        "condition": "candidate",
+                        "peerIpAddr": "2.2.2.2",
+                        "stratumLevel": 2,
+                    },
+                    "3.3.3.3": {
+                        "condition": "candidate",
+                        "peerIpAddr": "3.3.3.3",
+                        "stratumLevel": 2,
+                    },
+                }
+            }
+        ],
+        "inputs": {"ntp_pool": {"server_address": ["1.1.1.1", "2.2.2.2"], "preferred_stratum_range": [1, 2]}},
+        "expected": {
+            "result": "failure",
+            "messages": ["NTP Server: 3.3.3.3 - Not belong to specified NTP server pool"],
+        },
+    },
+    {
+        "name": "failure-ntp-pool-as-input-bad-association",
+        "test": VerifyNTPAssociations,
+        "eos_data": [
+            {
+                "peers": {
+                    "1.1.1.1": {
+                        "condition": "sys.peer",
+                        "peerIpAddr": "1.1.1.1",
+                        "stratumLevel": 1,
+                    },
+                    "2.2.2.2": {
+                        "condition": "candidate",
+                        "peerIpAddr": "2.2.2.2",
+                        "stratumLevel": 2,
+                    },
+                    "3.3.3.3": {
+                        "condition": "reject",
+                        "peerIpAddr": "3.3.3.3",
+                        "stratumLevel": 3,
+                    },
+                }
+            }
+        ],
+        "inputs": {"ntp_pool": {"server_address": ["1.1.1.1", "2.2.2.2", "3.3.3.3"], "preferred_stratum_range": [1, 2]}},
+        "expected": {
+            "result": "failure",
+            "messages": ["NTP Server: 3.3.3.3 - Bad association - Condition: reject, Stratum: 3"],
         },
     },
 ]
