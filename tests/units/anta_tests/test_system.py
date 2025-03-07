@@ -599,7 +599,8 @@ poll interval unknown
         "expected": {
             "result": "failure",
             "messages": [
-                "Units under maintenance: 'mlag'. Possible causes: Quiesce is configured",
+                "Units under maintenance: 'mlag'.",
+                "Possible causes: 'Quiesce is configured'.",
             ],
         },
     },
@@ -636,7 +637,9 @@ poll interval unknown
         "expected": {
             "result": "failure",
             "messages": [
-                "Units under maintenance: 'mlag'. Units entering maintenance: 'System'. Possible causes: Quiesce is configured",
+                "Units under maintenance: 'mlag'.",
+                "Units entering maintenance: 'System'.",
+                "Possible causes: 'Quiesce is configured'.",
             ],
         },
     },
@@ -664,7 +667,8 @@ poll interval unknown
         "expected": {
             "result": "failure",
             "messages": [
-                "Units under maintenance: 'System'. Possible causes: Quiesce is configured, On-boot maintenance is configured",
+                "Units under maintenance: 'System'.",
+                "Possible causes: 'Quiesce is configured, On-boot maintenance is configured'.",
             ],
         },
     },
@@ -692,7 +696,8 @@ poll interval unknown
         "expected": {
             "result": "failure",
             "messages": [
-                "Units entering maintenance: 'System'. Possible causes: Quiesce is configured, Interface traffic threshold violation",
+                "Units entering maintenance: 'System'.",
+                "Possible causes: 'Quiesce is configured, Interface traffic threshold violation'.",
             ],
         },
     },

@@ -373,19 +373,15 @@ class VerifyMaintenance(AntaTest):
 
         # If units is not empty we have to examine the output for details.
         if units := get_value(self.instance_commands[0].json_output, "units"):
-            unitsundermaintenance = []
-            unitsenteringmaintenance = []
-            under = False
-            entering = False
+            units_under_maintenance = []
+            units_entering_maintenance = []
             causes = []
             # Iterate over units, check for units under or entering maintenance, and examine the causes.
             for unit, info in units.items():
                 if info["state"] == "underMaintenance":
-                    unitsundermaintenance.append(unit)
-                    under = True
+                    units_under_maintenance.append(unit)
                 elif info["state"] == "maintenanceModeEnter":
-                    unitsenteringmaintenance.append(unit)
-                    entering = True
+                    units_entering_maintenance.append(unit)
                 if info["adminState"] == "underMaintenance" and "Quiesce is configured" not in causes:
                     causes.append("Quiesce is configured")
                 if info["onBootMaintenance"] and "On-boot maintenance is configured" not in causes:
@@ -393,20 +389,14 @@ class VerifyMaintenance(AntaTest):
                 if info["intfsViolatingTrafficThreshold"] and "Interface traffic threshold violation" not in causes:
                     causes.append("Interface traffic threshold violation")
 
-            # This can occur if maintenance is configured but no unit is configured with 'quiesce'.
-            if not under and not entering and not causes:
-                self.result.is_success()
+            # Declare success if maintenance is configured but no unit is configured with 'quiesce'.
+            if not units_under_maintenance and not units_entering_maintenance and not causes:
+                return
 
             # Building the error message.
-            else:
-                message = ""
-                unitsundermaintenance = ", ".join(unitsundermaintenance)
-                unitsenteringmaintenance = " ".join(unitsenteringmaintenance)
-                causes = ", ".join(causes)
-                if under:
-                    message += f"Units under maintenance: '{unitsundermaintenance}'. "
-                if entering:
-                    message += f"Units entering maintenance: '{unitsenteringmaintenance}'. "
-                if len(causes) > 0:
-                    message += f"Possible causes: {causes}"
-                self.result.is_failure(message)
+            if units_under_maintenance:
+                self.result.is_failure(f"Units under maintenance: '{', '.join(units_under_maintenance)}'.")
+            if units_entering_maintenance:
+                self.result.is_failure(f"Units entering maintenance: '{', '.join(units_entering_maintenance)}'.")
+            if causes:
+                self.result.is_failure(f"Possible causes: '{', '.join(causes)}'.")
