@@ -28,7 +28,8 @@ dependencies = [
   "pydantic-extra-types>=2.3.0",
   "PyYAML>=6.0",
   "requests>=2.31.0",
-  "rich>=13.5.2,<14"
+  "rich>=13.5.2,<14",
+  "typing_extensions>=4.12"  # required for deprecated before Python 3.13
 ]
 keywords = ["test", "anta", "Arista", "network", "automation", "networking", "devops", "netdevops"]
 classifiers = [
