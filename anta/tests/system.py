@@ -386,7 +386,6 @@ class VerifyMaintenance(AntaTest):
             if info["intfsViolatingTrafficThreshold"]:
                 causes.add("Interface traffic threshold violation")
 
-
         # Building the error message.
         if units_under_maintenance:
             self.result.is_failure(f"Units under maintenance: '{', '.join(units_under_maintenance)}'.")
