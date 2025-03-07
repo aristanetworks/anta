@@ -372,31 +372,28 @@ class VerifyMaintenance(AntaTest):
         self.result.is_success()
 
         # If units is not empty we have to examine the output for details.
-        if units := get_value(self.instance_commands[0].json_output, "units"):
-            units_under_maintenance = []
-            units_entering_maintenance = []
-            causes = []
-            # Iterate over units, check for units under or entering maintenance, and examine the causes.
-            for unit, info in units.items():
-                if info["state"] == "underMaintenance":
-                    units_under_maintenance.append(unit)
-                elif info["state"] == "maintenanceModeEnter":
-                    units_entering_maintenance.append(unit)
-                if info["adminState"] == "underMaintenance" and "Quiesce is configured" not in causes:
-                    causes.append("Quiesce is configured")
-                if info["onBootMaintenance"] and "On-boot maintenance is configured" not in causes:
-                    causes.append("On-boot maintenance is configured")
-                if info["intfsViolatingTrafficThreshold"] and "Interface traffic threshold violation" not in causes:
-                    causes.append("Interface traffic threshold violation")
+        if not (units := get_value(self.instance_commands[0].json_output, "units")):
+            return
+        units_under_maintenance = [unit for unit, info in units.items() if info["state"] == "underMaintenance"]
+        units_entering_maintenance = [unit for unit, info in units.items() if info["state"] == "maintenanceModeEnter"]
+        causes = set()
+        # Iterate over units, check for units under or entering maintenance, and examine the causes.
+        for info in units.values():
+            if info["adminState"] == "underMaintenance":
+                causes.add("Quiesce is configured")
+            if info["onBootMaintenance"]:
+                causes.add("On-boot maintenance is configured")
+            if info["intfsViolatingTrafficThreshold"]:
+                causes.add("Interface traffic threshold violation")
 
-            # Declare success if maintenance is configured but no unit is configured with 'quiesce'.
-            if not units_under_maintenance and not units_entering_maintenance and not causes:
-                return
+        # Declare success if maintenance is configured but no unit is configured with 'quiesce'.
+        if not units_under_maintenance and not units_entering_maintenance and not causes:
+            return
 
-            # Building the error message.
-            if units_under_maintenance:
-                self.result.is_failure(f"Units under maintenance: '{', '.join(units_under_maintenance)}'.")
-            if units_entering_maintenance:
-                self.result.is_failure(f"Units entering maintenance: '{', '.join(units_entering_maintenance)}'.")
-            if causes:
-                self.result.is_failure(f"Possible causes: '{', '.join(causes)}'.")
+        # Building the error message.
+        if units_under_maintenance:
+            self.result.is_failure(f"Units under maintenance: '{', '.join(units_under_maintenance)}'.")
+        if units_entering_maintenance:
+            self.result.is_failure(f"Units entering maintenance: '{', '.join(units_entering_maintenance)}'.")
+        if causes:
+            self.result.is_failure(f"Possible causes: '{', '.join(sorted(causes))}'.")

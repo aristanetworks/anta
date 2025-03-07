@@ -668,7 +668,7 @@ poll interval unknown
             "result": "failure",
             "messages": [
                 "Units under maintenance: 'System'.",
-                "Possible causes: 'Quiesce is configured, On-boot maintenance is configured'.",
+                "Possible causes: 'On-boot maintenance is configured, Quiesce is configured'.",
             ],
         },
     },
@@ -697,7 +697,7 @@ poll interval unknown
             "result": "failure",
             "messages": [
                 "Units entering maintenance: 'System'.",
-                "Possible causes: 'Quiesce is configured, Interface traffic threshold violation'.",
+                "Possible causes: 'Interface traffic threshold violation, Quiesce is configured'.",
             ],
         },
     },
