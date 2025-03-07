@@ -386,9 +386,6 @@ class VerifyMaintenance(AntaTest):
             if info["intfsViolatingTrafficThreshold"]:
                 causes.add("Interface traffic threshold violation")
 
-        # Declare success if maintenance is configured but no unit is configured with 'quiesce'.
-        if not units_under_maintenance and not units_entering_maintenance and not causes:
-            return
 
         # Building the error message.
         if units_under_maintenance:
