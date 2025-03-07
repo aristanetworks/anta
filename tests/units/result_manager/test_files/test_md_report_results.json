@@ -14,6 +14,19 @@
   },
   {
     "name": "s1-leaf1",
+    "test": "VerifyMcsServerMounts",
+    "categories": [
+      "cvx"
+    ],
+    "description": "Verify if all MCS server mounts are in a MountComplete state.",
+    "result": "error",
+    "messages": [
+      "show cvx mounts has failed: Unavailable command (controller not ready) (at token 2: 'mounts')"
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-leaf1",
     "test": "VerifyGreenTCounters",
     "categories": [
       "greent"
@@ -157,19 +170,7 @@
     "messages": [],
     "custom_field": null
   },
-  {
-    "name": "s1-leaf1",
-    "test": "VerifyMcsServerMounts",
-    "categories": [
-      "cvx"
-    ],
-    "description": "Verify if all MCS server mounts are in a MountComplete state.",
-    "result": "error",
-    "messages": [
-      "show cvx mounts has failed: Unavailable command (controller not ready) (at token 2: 'mounts')"
-    ],
-    "custom_field": null
-  },
+
   {
     "name": "s1-leaf1",
     "test": "VerifyLoggingHostname",
