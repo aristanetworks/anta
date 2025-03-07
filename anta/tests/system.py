@@ -8,7 +8,7 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING, Any, ClassVar, Self
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from pydantic import model_validator
 
@@ -18,9 +18,15 @@ from anta.models import AntaCommand, AntaTest
 from anta.tools import get_value
 
 if TYPE_CHECKING:
+    import sys
     from ipaddress import IPv4Address
 
     from anta.models import AntaTemplate
+
+    if sys.version_info >= (3, 11):
+        from typing import Self
+    else:
+        from typing_extensions import Self
 
 CPU_IDLE_THRESHOLD = 25
 MEMORY_THRESHOLD = 0.25
@@ -403,7 +409,7 @@ class VerifyNTPAssociations(AntaTest):
                 if failure_msg:
                     self.result.is_failure(failure_msg)
 
-        elif self.inputs.ntp_pool:
+        if self.inputs.ntp_pool:
             server_addresses = self.inputs.ntp_pool.server_address
             exp_stratum_range = self.inputs.ntp_pool.preferred_stratum_range
             for peer, peer_details in peers.items():
