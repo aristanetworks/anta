@@ -54,6 +54,7 @@ class MDReportGenerator:
                     SummaryTotals(mdfile, results),
                     SummaryTotalsDeviceUnderTest(mdfile, results),
                     SummaryTotalsPerCategory(mdfile, results),
+                    FailedTestResultsSummary(mdfile, results.filter(hide={AntaTestStatus.SUCCESS, AntaTestStatus.SKIPPED})),
                     TestResults(mdfile, results),
                 ]
                 for section in sections:
@@ -297,3 +298,31 @@ class TestResults(MDReportBase):
         """Generate the `## Test Results` section of the markdown report."""
         self.write_heading(heading_level=2)
         self.write_table(table_heading=self.TABLE_HEADING, last_table=True)
+
+
+class FailedTestResultsSummary(MDReportBase):
+    """Generate the `## Failed Test Results Summary` section of the markdown report."""
+
+    TABLE_HEADING: ClassVar[list[str]] = [
+        "| Device Under Test | Categories | Test | Description | Custom Field  | Result | Messages |",
+        "| ----------------- | ---------- | ---- | ----------- | --------------| -------| -------- |",
+    ]
+
+    def generate_rows(self) -> Generator[str, None, None]:
+        """Generate the rows of the failed test results table."""
+        for result in self.results.results:
+            messages = self.safe_markdown(result.messages[0]) if len(result.messages) == 1 else self.safe_markdown("<br>".join(result.messages))
+            categories = ", ".join(sorted(convert_categories(result.categories)))
+            yield (
+                f"| {result.name or '-'} | {categories or '-'} | {result.test or '-'} "
+                f"| {result.description or '-'} | {self.safe_markdown(result.custom_field) or '-'} | {result.result or '-'} | {messages or '-'} |\n"
+            )
+
+    def generate_section(self) -> None:
+        """Generate the `## Failed Test Results Summary` section of the markdown report."""
+        if self.results.results:
+            self.write_heading(heading_level=2)
+            self.write_table(table_heading=self.TABLE_HEADING)
+        else:
+            self.write_heading(heading_level=2)
+            self.mdfile.write("No failures detected in the test suite execution.\n\n")

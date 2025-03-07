@@ -195,12 +195,12 @@ class TestResultManager:
         """Test ResultManager.get_results."""
         # Check for single status
         success_results = result_manager.get_results(status={AntaTestStatus.SUCCESS})
-        assert len(success_results) == 4
+        assert len(success_results) == 10
         assert all(r.result == "success" for r in success_results)
 
         # Check for multiple statuses
         failure_results = result_manager.get_results(status={AntaTestStatus.FAILURE, AntaTestStatus.ERROR})
-        assert len(failure_results) == 17
+        assert len(failure_results) == 11
         assert all(r.result in {"failure", "error"} for r in failure_results)
 
         # Check all results
@@ -212,16 +212,16 @@ class TestResultManager:
         # Check all results with sort_by result
         all_results = result_manager.get_results(sort_by=["result"])
         assert len(all_results) == 30
-        assert [r.result for r in all_results] == ["error"] * 2 + ["failure"] * 15 + ["skipped"] * 9 + ["success"] * 4
+        assert [r.result for r in all_results] == ["error"] * 2 + ["failure"] * 9 + ["skipped"] * 9 + ["success"] * 10
 
         # Check all results with sort_by device (name)
         all_results = result_manager.get_results(sort_by=["name"])
         assert len(all_results) == 30
-        assert all_results[0].name == "s1-spine1"
+        assert all_results[0].name == "s1-leaf1"
 
         # Check multiple statuses with sort_by categories
         success_skipped_results = result_manager.get_results(status={AntaTestStatus.SUCCESS, AntaTestStatus.SKIPPED}, sort_by=["categories"])
-        assert len(success_skipped_results) == 13
+        assert len(success_skipped_results) == 19
         assert success_skipped_results[0].categories == ["avt"]
         assert success_skipped_results[-1].categories == ["vxlan"]
 
@@ -240,8 +240,8 @@ class TestResultManager:
         assert result_manager.get_total_results() == 30
 
         # Test single status
-        assert result_manager.get_total_results(status={AntaTestStatus.SUCCESS}) == 4
-        assert result_manager.get_total_results(status={AntaTestStatus.FAILURE}) == 15
+        assert result_manager.get_total_results(status={AntaTestStatus.SUCCESS}) == 10
+        assert result_manager.get_total_results(status={AntaTestStatus.FAILURE}) == 9
         assert result_manager.get_total_results(status={AntaTestStatus.ERROR}) == 2
         assert result_manager.get_total_results(status={AntaTestStatus.SKIPPED}) == 9
 

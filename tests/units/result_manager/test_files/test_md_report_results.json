@@ -1,136 +1,102 @@
 [
   {
-    "name": "s1-spine1",
-    "test": "VerifyMlagDualPrimary",
+    "name": "s1-leaf1",
+    "test": "VerifyMcsClientMounts",
+    "categories": [
+      "cvx"
+    ],
+    "description": "Verify if all MCS client mounts are in mountStateMountComplete.",
+    "result": "failure",
+    "messages": [
+      "MCS Client mount states are not present"
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-leaf1",
+    "test": "VerifyAdverseDrops",
+    "categories": [
+      "hardware"
+    ],
+    "description": "Verifies there are no adverse drops on DCS-7280 and DCS-7500 family switches.",
+    "result": "skipped",
+    "messages": [
+      "VerifyAdverseDrops test is not supported on cEOSLab."
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-leaf1",
+    "test": "VerifyLANZ",
+    "categories": [
+      "lanz"
+    ],
+    "description": "Verifies if LANZ is enabled.",
+    "result": "skipped",
+    "messages": [
+      "VerifyLANZ test is not supported on cEOSLab."
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-leaf1",
+    "test": "VerifyVlanInternalPolicy",
+    "categories": [
+      "vlan"
+    ],
+    "description": "Verifies the VLAN internal allocation policy and the range of VLANs.",
+    "result": "success",
+    "messages": [],
+    "custom_field": null
+  },
+  {
+    "name": "s1-leaf1",
+    "test": "VerifyInterfaceErrDisabled",
+    "categories": [
+      "interfaces"
+    ],
+    "description": "Verifies there are no interfaces in the errdisabled state.",
+    "result": "success",
+    "messages": [],
+    "custom_field": null
+  },
+  {
+    "name": "s1-leaf1",
+    "test": "VerifyMlagInterfaces",
     "categories": [
       "mlag"
     ],
-    "description": "Verifies the MLAG dual-primary detection parameters.",
+    "description": "Verifies there are no inactive or active-partial MLAG ports.",
+    "result": "success",
+    "messages": [],
+    "custom_field": null
+  },
+  {
+    "name": "s1-leaf1",
+    "test": "VerifyDynamicVlanSource",
+    "categories": [
+      "vlan"
+    ],
+    "description": "Verifies dynamic VLAN allocation for specified VLAN sources.",
     "result": "failure",
     "messages": [
-      "Dual-primary detection is disabled"
+      "Dynamic VLAN source(s) not found in configuration: mlagsync"
     ],
     "custom_field": null
   },
   {
-    "name": "s1-spine1",
-    "test": "VerifyHostname",
+    "name": "s1-leaf1",
+    "test": "VerifyMlagConfigSanity",
     "categories": [
-      "services"
+      "mlag"
     ],
-    "description": "Verifies the hostname of a device.",
-    "result": "failure",
-    "messages": [
-      "Incorrect Hostname - Expected: s1-spine1 Actual: leaf1-dc1"
-    ],
+    "description": "Verifies there are no MLAG config-sanity inconsistencies.",
+    "result": "success",
+    "messages": [],
     "custom_field": null
   },
   {
-    "name": "s1-spine1",
-    "test": "VerifyBGPAdvCommunities",
-    "categories": [
-      "bgp"
-    ],
-    "description": "Verifies that advertised communities are standard, extended and large for BGP IPv4 peer(s).",
-    "result": "error",
-    "messages": [
-      "show bgp neighbors vrf all has failed: The command is only supported in the multi-agent routing protocol model., The command is only supported in the multi-agent routing protocol model., The command is only supported in the multi-agent routing protocol model., The command is only supported in the multi-agent routing protocol model."
-    ],
-    "custom_field": null
-  },
-  {
-    "name": "s1-spine1",
-    "test": "VerifyStunClient",
-    "categories": [
-      "stun"
-    ],
-    "description": "(Deprecated) Verifies the translation for a source address on a STUN client.",
-    "result": "failure",
-    "messages": [
-      "Client 172.18.3.2 Port: 4500 - STUN client translation not found."
-    ],
-    "custom_field": null
-  },
-  {
-    "name": "s1-spine1",
-    "test": "VerifyBannerLogin",
-    "categories": [
-      "security"
-    ],
-    "description": "Verifies the login banner of a device.",
-    "result": "failure",
-    "messages": [
-      "Expected `# Copyright (c) 2023-2024 Arista Networks, Inc.\n# Use of this source code is governed by the Apache License 2.0\n# that can be found in the LICENSE file.\n` as the login banner, but found `` instead."
-    ],
-    "custom_field": null
-  },
-  {
-    "name": "s1-spine1",
-    "test": "VerifyISISNeighborState",
-    "categories": [
-      "isis"
-    ],
-    "description": "Verifies the health of IS-IS neighbors.",
-    "result": "skipped",
-    "messages": [
-      "IS-IS not configured"
-    ],
-    "custom_field": null
-  },
-  {
-    "name": "s1-spine1",
-    "test": "VerifyEOSVersion",
-    "categories": [
-      "software"
-    ],
-    "description": "Verifies the EOS version of the device.",
-    "result": "failure",
-    "messages": [
-      "EOS version mismatch - Actual: 4.31.0F-33804048.4310F (engineering build) not in Expected: 4.25.4M, 4.26.1F"
-    ],
-    "custom_field": null
-  },
-  {
-    "name": "s1-spine1",
-    "test": "VerifyTcamProfile",
-    "categories": [
-      "profiles"
-    ],
-    "description": "Verifies the device TCAM profile.",
-    "result": "skipped",
-    "messages": [
-      "VerifyTcamProfile test is not supported on cEOSLab."
-    ],
-    "custom_field": null
-  },
-  {
-    "name": "s1-spine1",
-    "test": "VerifyPathsHealth",
-    "categories": [
-      "path-selection"
-    ],
-    "description": "Verifies the path and telemetry state of all paths under router path-selection.",
-    "result": "skipped",
-    "messages": [
-      "VerifyPathsHealth test is not supported on cEOSLab."
-    ],
-    "custom_field": null
-  },
-  {
-    "name": "s1-spine1",
-    "test": "VerifyBannerMotd",
-    "categories": [
-      "security"
-    ],
-    "description": "Verifies the motd banner of a device.",
-    "result": "failure",
-    "messages": [
-      "Expected `# Copyright (c) 2023-2024 Arista Networks, Inc.\n# Use of this source code is governed by the Apache License 2.0\n# that can be found in the LICENSE file.\n` as the motd banner, but found `` instead."
-    ],
-    "custom_field": null
-  },
-  {
-    "name": "s1-spine1",
+    "name": "s1-leaf1",
     "test": "VerifyFieldNotice44Resolution",
     "categories": [
       "field notices"
@@ -143,123 +109,7 @@
     "custom_field": null
   },
   {
-    "name": "s1-spine1",
-    "test": "VerifyLoggingHosts",
-    "categories": [
-      "logging"
-    ],
-    "description": "Verifies logging hosts (syslog servers) for a specified VRF.",
-    "result": "failure",
-    "messages": [
-      "Syslog servers 1.1.1.1, 2.2.2.2 are not configured in VRF default"
-    ],
-    "custom_field": null
-  },
-  {
-    "name": "s1-spine1",
-    "test": "VerifyAVTPathHealth",
-    "categories": [
-      "avt"
-    ],
-    "description": "Verifies the status of all AVT paths for all VRFs.",
-    "result": "skipped",
-    "messages": [
-      "VerifyAVTPathHealth test is not supported on cEOSLab."
-    ],
-    "custom_field": null
-  },
-  {
-    "name": "s1-spine1",
-    "test": "VerifyTemperature",
-    "categories": [
-      "hardware"
-    ],
-    "description": "Verifies if the device temperature is within acceptable limits.",
-    "result": "skipped",
-    "messages": [
-      "VerifyTemperature test is not supported on cEOSLab."
-    ],
-    "custom_field": null
-  },
-  {
-    "name": "s1-spine1",
-    "test": "VerifyNTPAssociations",
-    "categories": [
-      "system"
-    ],
-    "description": "Verifies the Network Time Protocol (NTP) associations.",
-    "result": "failure",
-    "messages": [
-      "NTP Server: 1.1.1.1 Preferred: True Stratum: 1 - Not configured",
-      "NTP Server: 2.2.2.2 Preferred: False Stratum: 2 - Not configured",
-      "NTP Server: 3.3.3.3 Preferred: False Stratum: 2 - Not configured"
-    ],
-    "custom_field": null
-  },
-  {
-    "name": "s1-spine1",
-    "test": "VerifyDynamicVlanSource",
-    "categories": [
-      "vlan"
-    ],
-    "description": "Verifies dynamic VLAN allocation for specified VLAN sources.",
-    "result": "failure",
-    "messages": [
-      "Dynamic VLAN source(s) exist but have no VLANs allocated: mlagsync"
-    ],
-    "custom_field": null
-  },
-  {
-    "name": "s1-spine1",
-    "test": "VerifyActiveCVXConnections",
-    "categories": [
-      "cvx"
-    ],
-    "description": "Verifies the number of active CVX Connections.",
-    "result": "error",
-    "messages": [
-      "show cvx connections brief has failed: Unavailable command (controller not ready) (at token 2: 'connections')"
-    ],
-    "custom_field": null
-  },
-  {
-    "name": "s1-spine1",
-    "test": "VerifyIPv4RouteNextHops",
-    "categories": [
-      "routing"
-    ],
-    "description": "Verifies the next-hops of the IPv4 prefixes.",
-    "result": "success",
-    "messages": [],
-    "custom_field": null
-  },
-  {
-    "name": "s1-spine1",
-    "test": "VerifyVxlan1ConnSettings",
-    "categories": [
-      "vxlan"
-    ],
-    "description": "Verifies the interface vxlan1 source interface and UDP port.",
-    "result": "success",
-    "messages": [],
-    "custom_field": null
-  },
-  {
-    "name": "s1-spine1",
-    "test": "VerifyStunClientTranslation",
-    "categories": [
-      "stun"
-    ],
-    "description": "Verifies the translation for a source address on a STUN client.",
-    "result": "failure",
-    "messages": [
-      "Client 172.18.3.2 Port: 4500 - STUN client translation not found.",
-      "Client 100.64.3.2 Port: 4500 - STUN client translation not found."
-    ],
-    "custom_field": null
-  },
-  {
-    "name": "s1-spine1",
+    "name": "s1-leaf1",
     "test": "VerifyPtpGMStatus",
     "categories": [
       "ptp"
@@ -272,31 +122,217 @@
     "custom_field": null
   },
   {
-    "name": "s1-spine1",
-    "test": "VerifyRunningConfigDiffs",
+    "name": "s1-leaf1",
+    "test": "VerifyLoggingAccounting",
     "categories": [
-      "configuration"
+      "logging"
     ],
-    "description": "Verifies there is no difference between the running-config and the startup-config.",
+    "description": "Verifies if AAA accounting logs are generated.",
+    "result": "failure",
+    "messages": [
+      "AAA accounting logs are not generated"
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-leaf1",
+    "test": "VerifyAVTPathHealth",
+    "categories": [
+      "avt"
+    ],
+    "description": "Verifies the status of all AVT paths for all VRFs.",
+    "result": "skipped",
+    "messages": [
+      "VerifyAVTPathHealth test is not supported on cEOSLab."
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-leaf1",
+    "test": "VerifyVxlan1Interface",
+    "categories": [
+      "vxlan"
+    ],
+    "description": "Verifies if the Vxlan1 interface is configured and 'up/up'.",
+    "result": "skipped",
+    "messages": [
+      "Interface: Vxlan1 - Not configured"
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-leaf1",
+    "test": "VerifyIllegalLACP",
+    "categories": [
+      "interfaces"
+    ],
+    "description": "Verifies there are no illegal LACP packets in all port channels.",
     "result": "success",
     "messages": [],
     "custom_field": null
   },
   {
-    "name": "s1-spine1",
-    "test": "VerifyBFDPeersHealth",
+    "name": "s1-leaf1",
+    "test": "VerifyInterfaceIPv4",
     "categories": [
-      "bfd"
+      "interfaces"
     ],
-    "description": "Verifies the health of IPv4 BFD peers across all VRFs.",
+    "description": "Verifies the interface IPv4 addresses.",
     "result": "failure",
     "messages": [
-      "No IPv4 BFD peers are configured for any VRF."
+      "Interface: Ethernet2 - IP address mismatch - Expected: 172.30.11.1/31 Actual: 10.111.1.1/31",
+      "Interface: Ethernet2 - Secondary IP address is not configured"
     ],
     "custom_field": null
   },
   {
-    "name": "s1-spine1",
+    "name": "s1-leaf1",
+    "test": "VerifyInterfaceUtilization",
+    "categories": [
+      "interfaces"
+    ],
+    "description": "Verifies that the utilization of interfaces is below a certain threshold.",
+    "result": "success",
+    "messages": [],
+    "custom_field": null
+  },
+  {
+    "name": "s1-leaf1",
+    "test": "VerifyGreenTCounters",
+    "categories": [
+      "greent"
+    ],
+    "description": "Verifies if the GreenT counters are incremented.",
+    "result": "failure",
+    "messages": [
+      "GreenT counters are not incremented"
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-leaf1",
+    "test": "VerifyHardwareFlowTrackerStatus",
+    "categories": [
+      "flow tracking"
+    ],
+    "description": "Verifies the hardware flow tracking state.",
+    "result": "skipped",
+    "messages": [
+      "VerifyHardwareFlowTrackerStatus test is not supported on cEOSLab."
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-leaf1",
+    "test": "VerifyInterfaceDiscards",
+    "categories": [
+      "interfaces"
+    ],
+    "description": "Verifies that the interfaces packet discard counters are equal to zero.",
+    "result": "success",
+    "messages": [],
+    "custom_field": null
+  },
+  {
+    "name": "s1-leaf1",
+    "test": "VerifyAVTRole",
+    "categories": [
+      "avt"
+    ],
+    "description": "Verifies the AVT role of a device.",
+    "result": "skipped",
+    "messages": [
+      "VerifyAVTRole test is not supported on cEOSLab."
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-leaf1",
+    "test": "VerifyMcsServerMounts",
+    "categories": [
+      "cvx"
+    ],
+    "description": "Verify if all MCS server mounts are in a MountComplete state.",
+    "result": "error",
+    "messages": [
+      "show cvx mounts has failed: Unavailable command (controller not ready) (at token 2: 'mounts')"
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-leaf1",
+    "test": "VerifyLoggingHostname",
+    "categories": [
+      "logging"
+    ],
+    "description": "Verifies if logs are generated with the device FQDN.",
+    "result": "failure",
+    "messages": [
+      "Logs are not generated with the device FQDN"
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-leaf1",
+    "test": "VerifyLoggingErrors",
+    "categories": [
+      "logging"
+    ],
+    "description": "Verifies there are no syslog messages with a severity of ERRORS or higher.",
+    "result": "failure",
+    "messages": [
+      "Device has reported syslog messages with a severity of ERRORS or higher"
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-leaf1",
+    "test": "VerifyLoggingLogsGeneration",
+    "categories": [
+      "logging"
+    ],
+    "description": "Verifies if logs are generated.",
+    "result": "success",
+    "messages": [],
+    "custom_field": null
+  },
+  {
+    "name": "s1-leaf1",
+    "test": "VerifyVxlan1ConnSettings",
+    "categories": [
+      "vxlan"
+    ],
+    "description": "Verifies the interface vxlan1 source interface and UDP port.",
+    "result": "skipped",
+    "messages": [
+      "Vxlan1 interface is not configured."
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-leaf1",
+    "test": "VerifyBGPPeersHealthRibd",
+    "categories": [
+      "bgp"
+    ],
+    "description": "Verifies the health of all the BGP IPv4 peer(s).",
+    "result": "success",
+    "messages": [],
+    "custom_field": null
+  },
+  {
+    "name": "s1-leaf1",
+    "test": "VerifyInterfaceErrors",
+    "categories": [
+      "interfaces"
+    ],
+    "description": "Verifies that the interfaces error counters are equal to zero.",
+    "result": "success",
+    "messages": [],
+    "custom_field": null
+  },
+  {
+    "name": "s1-leaf1",
     "test": "VerifyIPProxyARP",
     "categories": [
       "interfaces"
@@ -304,85 +340,34 @@
     "description": "Verifies if Proxy ARP is enabled.",
     "result": "failure",
     "messages": [
-      "Interface: Ethernet1 - Proxy-ARP disabled",
+      "Interface: Ethernet1 - Not found",
       "Interface: Ethernet2 - Proxy-ARP disabled"
     ],
     "custom_field": null
   },
   {
-    "name": "s1-spine1",
-    "test": "VerifySnmpContact",
+    "name": "s1-leaf1",
+    "test": "VerifyActiveCVXConnections",
     "categories": [
-      "snmp"
+      "cvx"
     ],
-    "description": "Verifies the SNMP contact of a device.",
+    "description": "Verifies the number of active CVX Connections.",
+    "result": "error",
+    "messages": [
+      "show cvx connections brief has failed: Unavailable command (controller not ready) (at token 2: 'connections')"
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-leaf1",
+    "test": "VerifyGreenT",
+    "categories": [
+      "greent"
+    ],
+    "description": "Verifies if a GreenT policy other than the default is created.",
     "result": "failure",
     "messages": [
-      "SNMP contact is not configured."
-    ],
-    "custom_field": null
-  },
-  {
-    "name": "s1-spine1",
-    "test": "VerifyLLDPNeighbors",
-    "categories": [
-      "connectivity"
-    ],
-    "description": "Verifies the connection status of the specified LLDP (Link Layer Discovery Protocol) neighbors.",
-    "result": "failure",
-    "messages": [
-      "Port: Ethernet1 Neighbor: DC1-SPINE1 Neighbor Port: Ethernet1 - Wrong LLDP neighbors: spine1-dc1.fun.aristanetworks.com/Ethernet3",
-      "Port: Ethernet2 Neighbor: DC1-SPINE2 Neighbor Port: Ethernet1 - Wrong LLDP neighbors: spine2-dc1.fun.aristanetworks.com/Ethernet3"
-    ],
-    "custom_field": null
-  },
-  {
-    "name": "s1-spine1",
-    "test": "VerifyAcctConsoleMethods",
-    "categories": [
-      "aaa"
-    ],
-    "description": "Verifies the AAA accounting console method lists for different accounting types (system, exec, commands, dot1x).",
-    "result": "failure",
-    "messages": [
-      "AAA console accounting is not configured for commands, exec, system, dot1x"
-    ],
-    "custom_field": null
-  },
-  {
-    "name": "s1-spine1",
-    "test": "VerifyOSPFMaxLSA",
-    "categories": [
-      "ospf"
-    ],
-    "description": "Verifies all OSPF instances did not cross the maximum LSA threshold.",
-    "result": "skipped",
-    "messages": [
-      "No OSPF instance found."
-    ],
-    "custom_field": null
-  },
-  {
-    "name": "s1-spine1",
-    "test": "VerifySTPBlockedPorts",
-    "categories": [
-      "stp"
-    ],
-    "description": "Verifies there is no STP blocked ports.",
-    "result": "success",
-    "messages": [],
-    "custom_field": null
-  },
-  {
-    "name": "s1-spine1",
-    "test": "VerifyLANZ",
-    "categories": [
-      "lanz"
-    ],
-    "description": "Verifies if LANZ is enabled.",
-    "result": "skipped",
-    "messages": [
-      "VerifyLANZ test is not supported on cEOSLab."
+      "No GreenT policy is created"
     ],
     "custom_field": null
   }
