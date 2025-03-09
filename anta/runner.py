@@ -254,58 +254,63 @@ async def main(
         logger.info("The list of tests is empty, exiting")
         return
 
-    with Catchtime(logger=logger, message="Preparing ANTA NRFU Run"):
-        # Setup the inventory
-        selected_inventory = inventory if dry_run else await setup_inventory(inventory, tags, devices, established_only=established_only)
-        if selected_inventory is None:
-            return
-
-        with Catchtime(logger=logger, message="Preparing the tests"):
-            selected_tests = prepare_tests(selected_inventory, catalog, tests, tags)
-            if selected_tests is None:
+    try:
+        with Catchtime(logger=logger, message="Preparing ANTA NRFU Run"):
+            # Setup the inventory
+            selected_inventory = inventory if dry_run else await setup_inventory(inventory, tags, devices, established_only=established_only)
+            if selected_inventory is None:
                 return
-            final_tests_count = sum(len(tests) for tests in selected_tests.values())
 
-        run_info = (
-            "--- ANTA NRFU Run Information ---\n"
-            f"Number of devices: {len(inventory)} ({len(selected_inventory)} established)\n"
-            f"Total number of selected tests: {final_tests_count}\n"
-        )
+            with Catchtime(logger=logger, message="Preparing the tests"):
+                selected_tests = prepare_tests(selected_inventory, catalog, tests, tags)
+                if selected_tests is None:
+                    return
+                final_tests_count = sum(len(tests) for tests in selected_tests.values())
 
-        if os.name == "posix":
-            # Adjust the maximum number of open file descriptors for the ANTA process
-            limits = adjust_rlimit_nofile()
-            run_info += f"Maximum number of open file descriptors for the current ANTA process: {limits[0]}\n"
-        else:
-            # Running on non-Posix system, cannot manage the resource.
-            limits = (sys.maxsize, sys.maxsize)
-            run_info += "Running on a non-POSIX system, cannot adjust the maximum number of file descriptors.\n"
-
-        run_info += "---------------------------------"
-
-        logger.info(run_info)
-
-        if final_tests_count > limits[0]:
-            logger.warning(
-                "The number of concurrent tests is higher than the open file descriptors limit for this ANTA process.\n"
-                "Errors may occur while running the tests.\n"
-                "Please consult the ANTA FAQ."
+            run_info = (
+                "--- ANTA NRFU Run Information ---\n"
+                f"Number of devices: {len(inventory)} ({len(selected_inventory)} established)\n"
+                f"Total number of selected tests: {final_tests_count}\n"
             )
 
-        coroutines = get_coroutines(selected_tests, manager if dry_run else None)
+            if os.name == "posix":
+                # Adjust the maximum number of open file descriptors for the ANTA process
+                limits = adjust_rlimit_nofile()
+                run_info += f"Maximum number of open file descriptors for the current ANTA process: {limits[0]}\n"
+            else:
+                # Running on non-Posix system, cannot manage the resource.
+                limits = (sys.maxsize, sys.maxsize)
+                run_info += "Running on a non-POSIX system, cannot adjust the maximum number of file descriptors.\n"
 
-    if dry_run:
-        logger.info("Dry-run mode, exiting before running the tests.")
-        for coro in coroutines:
-            coro.close()
-        return
+            run_info += "---------------------------------"
 
-    if AntaTest.progress is not None:
-        AntaTest.nrfu_task = AntaTest.progress.add_task("Running NRFU Tests...", total=len(coroutines))
+            logger.info(run_info)
 
-    with Catchtime(logger=logger, message="Running ANTA tests"):
-        results = await asyncio.gather(*coroutines)
-        for result in results:
-            manager.add(result)
+            if final_tests_count > limits[0]:
+                logger.warning(
+                    "The number of concurrent tests is higher than the open file descriptors limit for this ANTA process.\n"
+                    "Errors may occur while running the tests.\n"
+                    "Please consult the ANTA FAQ."
+                )
 
-    log_cache_statistics(selected_inventory.devices)
+            coroutines = get_coroutines(selected_tests, manager if dry_run else None)
+
+        if dry_run:
+            logger.info("Dry-run mode, exiting before running the tests.")
+            for coro in coroutines:
+                coro.close()
+            return
+
+        if AntaTest.progress is not None:
+            AntaTest.nrfu_task = AntaTest.progress.add_task("Running NRFU Tests...", total=len(coroutines))
+
+        with Catchtime(logger=logger, message="Running ANTA tests"):
+            results = await asyncio.gather(*coroutines)
+            for result in results:
+                manager.add(result)
+
+        log_cache_statistics(selected_inventory.devices)
+
+    finally:
+        logger.info("Disconnecting the inventory...")
+        await inventory.disconnect_inventory()

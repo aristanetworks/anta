@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import os
 from ipaddress import ip_address, ip_network
 from pathlib import Path
 from typing import Any, ClassVar
@@ -20,6 +21,25 @@ from anta.inventory.models import AntaInventoryInput
 from anta.logger import anta_log_exception
 
 logger = logging.getLogger(__name__)
+
+
+# TODO: Move this to `anta.settings` when the settings module is implemented
+def _get_httpx_transport() -> str:
+    """Get the HTTPX transport backend to use for the ANTA run.
+
+    The selection is based on the environment variable `ANTA_HTTPX_TRANSPORT` and the
+    options are `httpcore` and `aiohttp`.
+
+    If the environment variable is not set or is invalid, `httpcore` is used, which is
+    the default transport used by HTTPX.
+    """
+    transport = str(os.environ.get("ANTA_HTTPX_TRANSPORT", "httpcore"))
+    if transport not in ("httpcore", "aiohttp"):
+        logger.warning("The ANTA_HTTPX_TRANSPORT environment variable value is invalid: %s\nDefault to httpcore.", transport)
+        transport = "httpcore"
+    if transport == "aiohttp":
+        logger.warning("aiohttp transport backend is experimental and not fully tested. Please consult the ANTA FAQ.")
+    return transport
 
 
 class AntaInventory(dict[str, AntaDevice]):
@@ -223,6 +243,7 @@ class AntaInventory(dict[str, AntaDevice]):
             "timeout": timeout,
             "insecure": insecure,
             "disable_cache": disable_cache,
+            "httpx_transport": _get_httpx_transport(),
         }
         if username is None:
             message = "'username' is required to create an AntaInventory"
@@ -341,4 +362,17 @@ class AntaInventory(dict[str, AntaDevice]):
         for r in results:
             if isinstance(r, Exception):
                 message = "Error when refreshing inventory"
+                anta_log_exception(r, message, logger)
+
+    async def disconnect_inventory(self) -> None:
+        """Try to disconnect all devices in the inventory using their `close()` coroutine if available."""
+        coros = [device.close() for device in self.values() if device.is_online and hasattr(device, "close")]
+        if not coros:
+            return
+
+        logger.debug("Disconnecting devices...")
+        results = await asyncio.gather(*coros, return_exceptions=True)
+        for r in results:
+            if isinstance(r, Exception):
+                message = "Error when disconnecting inventory"
                 anta_log_exception(r, message, logger)

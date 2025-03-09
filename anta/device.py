@@ -9,18 +9,20 @@ import asyncio
 import logging
 from abc import ABC, abstractmethod
 from collections import OrderedDict, defaultdict
+from socket import getservbyname
 from time import monotonic
 from typing import TYPE_CHECKING, Any, Literal
 
-import asyncssh
-import httpcore
-from asyncssh import SSHClientConnection, SSHClientConnectionOptions
+from asyncssh import SSHClientConnection, SSHClientConnectionOptions, connect, scp
+from asyncssh.public_key import load_default_keypairs
 from httpx import ConnectError, HTTPError, TimeoutException
 
-import asynceapi
 from anta import __DEBUG__
 from anta.logger import anta_log_exception, exc_to_str
 from anta.models import AntaCommand
+from anta.tools import find_deepest_os_error
+from asynceapi import Device, EapiCommandError
+from asynceapi._transports import build_aiohttp_transport
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -32,7 +34,7 @@ logger = logging.getLogger(__name__)
 
 # Do not load the default keypairs multiple times due to a performance issue introduced in cryptography 37.0
 # https://github.com/pyca/cryptography/issues/7236#issuecomment-1131908472
-CLIENT_KEYS = asyncssh.public_key.load_default_keypairs()
+CLIENT_KEYS = load_default_keypairs()
 
 # Limit concurrency to 100 requests (HTTPX default) to avoid high-concurrency performance issues
 # See: https://github.com/encode/httpx/issues/3215
@@ -333,6 +335,7 @@ class AsyncEOSDevice(AntaDevice):
         tags: set[str] | None = None,
         timeout: float | None = None,
         proto: Literal["http", "https"] = "https",
+        httpx_transport: Literal["httpcore", "aiohttp"] = "httpcore",
         *,
         enable: bool = False,
         insecure: bool = False,
@@ -366,6 +369,9 @@ class AsyncEOSDevice(AntaDevice):
             Disable SSH Host Key validation.
         proto
             eAPI protocol. Value can be 'http' or 'https'.
+        httpx_transport
+            HTTPX transport backend to use. Can be 'httpcore' or 'aiohttp'. Defaults to 'httpcore'.
+            **aiohttp transport is experimental.**
         disable_cache
             Disable caching for all commands for this device.
 
@@ -374,30 +380,36 @@ class AsyncEOSDevice(AntaDevice):
             message = "'host' is required to create an AsyncEOSDevice"
             logger.error(message)
             raise ValueError(message)
-        if name is None:
-            name = f"{host}{f':{port}' if port else ''}"
+
+        name = name if name is not None else f"{host}{f':{port}' if port else ''}"
+
+        if username is None or password is None:
+            message = f"'username' and 'password' are required to instantiate device '{name}'"
+            logger.error(message)
+            raise ValueError(message)
+
         super().__init__(name, tags, disable_cache=disable_cache)
-        if username is None:
-            message = f"'username' is required to instantiate device '{self.name}'"
-            logger.error(message)
-            raise ValueError(message)
-        if password is None:
-            message = f"'password' is required to instantiate device '{self.name}'"
-            logger.error(message)
-            raise ValueError(message)
+
         self.enable = enable
         self._enable_password = enable_password
-        self._session: asynceapi.Device = asynceapi.Device(host=host, port=port, username=username, password=password, proto=proto, timeout=timeout)
-        ssh_params: dict[str, Any] = {}
-        if insecure:
-            ssh_params["known_hosts"] = None
-        self._ssh_opts: SSHClientConnectionOptions = SSHClientConnectionOptions(
-            host=host, port=ssh_port, username=username, password=password, client_keys=CLIENT_KEYS, **ssh_params
-        )
 
-        # In Python 3.9, Semaphore must be created within a running event loop
-        # TODO: Once we drop Python 3.9 support, initialize the semaphore here
-        self._command_semaphore: asyncio.Semaphore | None = None
+        # Store required settings to build the eAPI/SSH clients
+        self._settings = {
+            "host": host,
+            "username": username,
+            "password": password,
+            "port": port or getservbyname(proto),
+            "ssh_port": ssh_port,
+            "timeout": timeout,
+            "httpx_transport": httpx_transport,
+            "client_keys": CLIENT_KEYS,
+            "known_hosts": None if insecure else (),
+        }
+
+        # Lazy initialization is required when we need a running event loop
+        self._session: Device | None = None
+        self._ssh_opts: SSHClientConnectionOptions | None = None
+        self._semaphore: asyncio.Semaphore | None = None
 
     def __rich_repr__(self) -> Iterator[tuple[str, Any]]:
         """Implement Rich Repr Protocol.
@@ -405,18 +417,20 @@ class AsyncEOSDevice(AntaDevice):
         https://rich.readthedocs.io/en/stable/pretty.html#rich-repr-protocol.
         """
         yield from super().__rich_repr__()
-        yield ("host", self._session.host)
-        yield ("eapi_port", self._session.port)
-        yield ("username", self._ssh_opts.username)
+        yield ("host", self._settings["host"])
+        yield ("eapi_port", self._settings["port"])
+        yield ("username", self._settings["username"])
         yield ("enable", self.enable)
-        yield ("insecure", self._ssh_opts.known_hosts is None)
+        yield ("insecure", self._settings["known_hosts"] is None)
         if __DEBUG__:
-            _ssh_opts = vars(self._ssh_opts).copy()
-            removed_pw = "<removed>"
-            _ssh_opts["password"] = removed_pw
-            _ssh_opts["kwargs"]["password"] = removed_pw
-            yield ("_session", vars(self._session))
-            yield ("_ssh_opts", _ssh_opts)
+            if self._session is not None:
+                yield ("_session", vars(self._session))
+            if self._ssh_opts is not None:
+                _ssh_opts = vars(self._ssh_opts).copy()
+                removed_pw = "<removed>"
+                _ssh_opts["password"] = removed_pw
+                _ssh_opts["kwargs"]["password"] = removed_pw
+                yield ("_ssh_opts", _ssh_opts)
 
     def __repr__(self) -> str:
         """Return a printable representation of an AsyncEOSDevice."""
@@ -427,11 +441,11 @@ class AsyncEOSDevice(AntaDevice):
             f"is_online={self.is_online!r}, "
             f"established={self.established!r}, "
             f"disable_cache={self.cache is None!r}, "
-            f"host={self._session.host!r}, "
-            f"eapi_port={self._session.port!r}, "
-            f"username={self._ssh_opts.username!r}, "
+            f"host={self._settings['host']!r}, "
+            f"eapi_port={self._settings['port']!r}, "
+            f"username={self._settings['username']!r}, "
             f"enable={self.enable!r}, "
-            f"insecure={self._ssh_opts.known_hosts is None!r})"
+            f"insecure={self._settings['known_hosts'] is None!r})"
         )
 
     @property
@@ -440,19 +454,46 @@ class AsyncEOSDevice(AntaDevice):
 
         This covers the use case of port forwarding when the host is localhost and the devices have different ports.
         """
-        return (self._session.host, self._session.port)
+        return (self._settings["host"], self._settings["port"])
+
+    async def _get_session(self) -> Device:
+        """Return the client session, initializing it with the selected HTTPX transport if needed."""
+        if self._session is None:
+            common_settings: dict[str, Any] = {
+                "host": self._settings["host"],
+                "username": self._settings["username"],
+                "password": self._settings["password"],
+                "port": self._settings["port"],
+                "timeout": self._settings["timeout"],
+            }
+            # Only add transport parameter for aiohttp transport
+            if self._settings["httpx_transport"] == "aiohttp":
+                common_settings["transport"] = await build_aiohttp_transport(verify_ssl=False)
+            self._session = Device(**common_settings)
+
+        return self._session
+
+    async def _get_ssh_opts(self) -> SSHClientConnectionOptions:
+        """Return the SSH connection options, initializing them if needed."""
+        if self._ssh_opts is None:
+            self._ssh_opts = SSHClientConnectionOptions(
+                host=self._settings["host"],
+                port=self._settings["ssh_port"],
+                username=self._settings["username"],
+                password=self._settings["password"],
+                client_keys=self._settings["client_keys"],
+                known_hosts=self._settings["known_hosts"],
+            )
+        return self._ssh_opts
 
     async def _get_semaphore(self) -> asyncio.Semaphore:
-        """Return the semaphore, initializing it if needed.
-
-        TODO: Remove this method once we drop Python 3.9 support.
-        """
-        if self._command_semaphore is None:
-            self._command_semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
-        return self._command_semaphore
+        """Return the semaphore, initializing it if needed."""
+        if self._semaphore is None:
+            self._semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
+        return self._semaphore
 
     async def _collect(self, command: AntaCommand, *, collection_id: str | None = None) -> None:
-        """Collect device command output from EOS using aio-eapi.
+        """Collect device command output from EOS using eAPI.
 
         Supports outformat `json` and `text` as output structure.
         Gain privileged access using the `enable_password` attribute
@@ -466,6 +507,7 @@ class AsyncEOSDevice(AntaDevice):
             An identifier used to build the eAPI request ID.
         """
         semaphore = await self._get_semaphore()
+        session = await self._get_session()
 
         async with semaphore:
             commands: list[EapiComplexCommand | EapiSimpleCommand] = []
@@ -481,7 +523,7 @@ class AsyncEOSDevice(AntaDevice):
                 commands.append({"cmd": "enable"})
             commands += [{"cmd": command.command, "revision": command.revision}] if command.revision else [{"cmd": command.command}]
             try:
-                response = await self._session.cli(
+                response = await session.cli(
                     commands=commands,
                     ofmt=command.ofmt,
                     version=command.version,
@@ -489,13 +531,13 @@ class AsyncEOSDevice(AntaDevice):
                 )
                 # Do not keep response of 'enable' command
                 command.output = response[-1]
-            except asynceapi.EapiCommandError as e:
+            except EapiCommandError as e:
                 # This block catches exceptions related to EOS issuing an error.
                 self._log_eapi_command_error(command, e)
             except TimeoutException as e:
                 # This block catches Timeout exceptions.
                 command.errors = [exc_to_str(e)]
-                timeouts = self._session.timeout.as_dict()
+                timeouts = session.timeout.as_dict()
                 logger.error(
                     "%s occurred while sending a command to %s. Consider increasing the timeout.\nCurrent timeouts: Connect: %s | Read: %s | Write: %s | Pool: %s",
                     exc_to_str(e),
@@ -508,12 +550,8 @@ class AsyncEOSDevice(AntaDevice):
             except (ConnectError, OSError) as e:
                 # This block catches OSError and socket issues related exceptions.
                 command.errors = [exc_to_str(e)]
-                # pylint: disable=no-member
-                if (isinstance(exc := e.__cause__, httpcore.ConnectError) and isinstance(os_error := exc.__context__, OSError)) or isinstance(
-                    os_error := e, OSError
-                ):
-                    if isinstance(os_error.__cause__, OSError):
-                        os_error = os_error.__cause__
+                os_error = find_deepest_os_error(e)
+                if os_error:
                     logger.error("A local OS error occurred while connecting to %s: %s.", self.name, os_error)
                 else:
                     anta_log_exception(e, f"An error occurred while issuing an eAPI request to {self.name}", logger)
@@ -523,8 +561,8 @@ class AsyncEOSDevice(AntaDevice):
                 anta_log_exception(e, f"An error occurred while issuing an eAPI request to {self.name}", logger)
             logger.debug("%s: %s", self.name, command)
 
-    def _log_eapi_command_error(self, command: AntaCommand, e: asynceapi.EapiCommandError) -> None:
-        """Appropriately log the eapi command error."""
+    def _log_eapi_command_error(self, command: AntaCommand, e: EapiCommandError) -> None:
+        """Appropriately log the eAPI command error."""
         command.errors = e.errors
         if command.requires_privileges:
             logger.error("Command '%s' requires privileged mode on %s. Verify user permissions and if the `enable` option is required.", command.command, self.name)
@@ -544,7 +582,8 @@ class AsyncEOSDevice(AntaDevice):
         - hw_model: The hardware model of the device
         """
         logger.debug("Refreshing device %s", self.name)
-        self.is_online = await self._session.check_connection()
+        session = await self._get_session()
+        self.is_online = await session.check_connection()
         if self.is_online:
             show_version = AntaCommand(command="show version")
             await self._collect(show_version)
@@ -555,13 +594,20 @@ class AsyncEOSDevice(AntaDevice):
                 if self.hw_model is None:
                     logger.critical("Cannot parse 'show version' returned by device %s", self.name)
                 # in some cases it is possible that 'modelName' comes back empty
-                # and it is nice to get a meaninfule error message
+                # and it is nice to get a meaningful error message
                 elif self.hw_model == "":
                     logger.critical("Got an empty 'modelName' in the 'show version' returned by device %s", self.name)
         else:
             logger.warning("Could not connect to device %s: cannot open eAPI port", self.name)
 
         self.established = bool(self.is_online and self.hw_model)
+
+    async def close(self) -> None:
+        """Close the client session and transport."""
+        if self._session is not None:
+            logger.debug("Closing session for device %s", self.name)
+            await self._session.aclose()
+            self._session = None
 
     async def copy(self, sources: list[Path], destination: Path, direction: Literal["to", "from"] = "from") -> None:
         """Copy files to and from the device using asyncssh.scp().
@@ -576,13 +622,14 @@ class AsyncEOSDevice(AntaDevice):
             Defines if this coroutine copies files to or from the device.
 
         """
-        async with asyncssh.connect(
-            host=self._ssh_opts.host,
-            port=self._ssh_opts.port,
-            tunnel=self._ssh_opts.tunnel,
-            family=self._ssh_opts.family,
-            local_addr=self._ssh_opts.local_addr,
-            options=self._ssh_opts,
+        ssh_opts = await self._get_ssh_opts()
+        async with connect(
+            host=ssh_opts.host,
+            port=ssh_opts.port,
+            tunnel=ssh_opts.tunnel,
+            family=ssh_opts.family,
+            local_addr=ssh_opts.local_addr,
+            options=ssh_opts,
         ) as conn:
             src: list[tuple[SSHClientConnection, Path]] | list[Path]
             dst: tuple[SSHClientConnection, Path] | Path
@@ -604,4 +651,4 @@ class AsyncEOSDevice(AntaDevice):
                 logger.critical("'direction' argument to copy() function is invalid: %s", direction)
 
                 return
-            await asyncssh.scp(src, dst)
+            await scp(src, dst)
