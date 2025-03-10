@@ -440,3 +440,124 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
             and (via_input.interface is None or via_input.interface == eos_via.get("interface"))
             and (via_input.tunnel_id is None or via_input.tunnel_id.upper() == get_value(eos_via, "tunnelId.type", default="").upper())
         )
+
+
+class VerifyISISInterfaceAuthMode(AntaTest):
+    """Verifies IS-IS interfaces are running in the correct authentication mode.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if all provided IS-IS interfaces are running in the correct authentication mode.
+    * Failure: The test will fail if any of the provided IS-IS interfaces are not configured or running in the incorrect authentication mode.
+    * Skipped: The test will be skipped if IS-IS is not configured.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      isis:
+        - VerifyISISInterfaceAuthMode:
+          instances:
+            - name: instance-1
+              vrf: Test
+              interfaces:
+                - name: Loopback0
+                  level: 1
+                  authentication_mode: MD5
+                - name: Ethernet1
+                  level: 2
+                  authentication_mode: Text
+            - name: instance-2
+              vrf: MGMT
+              interfaces:
+                - name: Ethernet2
+                  level: 1
+                  authentication_mode: SHA
+                  auth_key_id: 10
+                - name: Ethernet3
+                  level: 1
+                  authentication_mode: shared-secret
+                  shared_secret_key_profile: secret
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["isis"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show isis interface detail vrf all", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyISISInterfaceAuthMode test."""
+
+        instances: list[ISISInstance]
+        """List of IS-IS instances with their information."""
+
+        @field_validator("instances")
+        @classmethod
+        def _validate_instances(cls, instances: list[ISISInstance]) -> list[ISISInstance]:
+            """Validate required fields in each IS-IS instance."""
+            for instance in instances:
+                if not instance.interfaces:
+                    msg = f"{instance} `interfaces` field missing in the input."
+                    raise ValueError(msg)
+                for interface in instance.interfaces:
+                    if not interface.authentication_mode:
+                        msg = f"{interface} `authentication_mode` field missing in the input."
+                        raise ValueError(msg)
+                    if interface.authentication_mode == "SHA" and not interface.auth_key_id:
+                        msg = f"{interface} AuthenticationMode: SHA `auth_key_id` field missing in the input. "
+                        raise ValueError(msg)
+                    if interface.authentication_mode == "shared-secret" and not interface.shared_secret_key_profile:
+                        msg = f"{interface}  AuthenticationMode: shared-secret `shared_secret_key_profile` field missing in the input."
+                        raise ValueError(msg)
+            return instances
+
+    def _validate_isis_auth_mode(self, instance_data: str, act_interface_detail: dict[str, Any], interface_data: dict[str, Any]) -> str | None:
+        """Validate the authentication mode for a specified interface."""
+        auth_mode = act_interface_detail.get("authenticationMode") if act_interface_detail.get("authenticationMode") else "shared-secret"
+
+        # If authentication mode is not configured, test fails.
+        if not (act_interface_detail.get("authenticationMode") or act_interface_detail["sharedSecretProfile"]):
+            return f"{instance_data} Interface: {interface_data.name} Level: {interface_data.level} - Authentication mode not configured"
+
+        # If authentication mode is incorrect, test fails.
+        if auth_mode != interface_data.authentication_mode:
+            return (
+                f"{instance_data} Interface: {interface_data.name} Level: {interface_data.level} - Incorrect authentication mode - "
+                f"Expected: {interface_data.authentication_mode} Actual: {auth_mode}"
+            )
+
+        # If authentication mode is SHA and the key id is incorrect, test fails.
+        if auth_mode == "SHA" and (auth_key_id := act_interface_detail["authenticationModeKeyId"]) != interface_data.auth_key_id:
+            return (
+                f"{instance_data} Interface: {interface_data.name} Level: {interface_data.level} - Incorrect authentication mode key id - "
+                f"Expected: {interface_data.auth_key_id} Actual: {auth_key_id}"
+            )
+
+        # If authentication mode is shared-secret and the secret profile is incorrect, test fails.
+        if auth_mode == "shared-secret" and (secret_key_profile := act_interface_detail["sharedSecretProfile"]) != interface_data.shared_secret_key_profile:
+            return (
+                f"{instance_data} Interface: {interface_data.name} Level: {interface_data.level} - Incorrect shared secrete profile - "
+                f"Expected: {interface_data.shared_secret_key_profile} Actual: {secret_key_profile}"
+            )
+
+        return None
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyISISInterfaceAuthMode."""
+        self.result.is_success()
+
+        # Verify if IS-IS is configured
+        if not (command_output := self.instance_commands[0].json_output["vrfs"]):
+            self.result.is_skipped("IS-IS not configured")
+            return
+
+        for instance_data in self.inputs.instances:
+            vrf_instances = get_value(command_output, f"{instance_data.vrf}.isisInstances.{instance_data.name}")
+            for interface_data in instance_data.interfaces:
+                # If the specified interface is not configured, test fails.
+                if not (act_interface_detail := get_value(vrf_instances, f"interfaces.{interface_data.name}.intfLevels.{interface_data.level}")):
+                    self.result.is_failure(f"{instance_data} Interface: {interface_data.name} Level: {interface_data.level} - Not configured")
+                    continue
+                failure_msg = self._validate_isis_auth_mode(instance_data, act_interface_detail, interface_data)
+                if failure_msg:
+                    self.result.is_failure(failure_msg)
