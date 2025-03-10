@@ -587,7 +587,6 @@ class VerifyL2MTU(AntaTest):
                 if interface in specific_interfaces:
                     if (mtu := specific_interfaces[interface]) != (act_mtu := details["mtu"]):
                         self.result.is_failure(f"Interface: {interface} - Incorrect MTU configured - Expected: {mtu} Actual: {act_mtu}")
-                        continue
 
                 elif (act_mtu := details["mtu"]) != self.inputs.mtu:
                     self.result.is_failure(f"Interface: {interface} - Incorrect MTU configured - Expected: {self.inputs.mtu} Actual: {act_mtu}")
