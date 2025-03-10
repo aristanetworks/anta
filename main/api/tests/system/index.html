@@ -1684,6 +1684,20 @@
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#anta.tests.system.VerifyMaintenance" class="md-nav__link">
+      <span class="md-ellipsis">
+        VerifyMaintenance
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#anta.tests.system.VerifyMemoryUtilization" class="md-nav__link">
       <span class="md-ellipsis">
         VerifyMemoryUtilization
@@ -2524,6 +2538,20 @@
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#anta.tests.system.VerifyMaintenance" class="md-nav__link">
+      <span class="md-ellipsis">
+        VerifyMaintenance
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#anta.tests.system.VerifyMemoryUtilization" class="md-nav__link">
       <span class="md-ellipsis">
         VerifyMemoryUtilization
@@ -3207,6 +3235,160 @@
         <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">command_output</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]:</span>
             <span class="k">if</span> <span class="s2">&quot;loop&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">line</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span><span class="n">percentage</span> <span class="o">:=</span> <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;%&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)))</span> <span class="o">&gt;</span> <span class="n">DISK_SPACE_THRESHOLD</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mount point: </span><span class="si">{</span><span class="n">line</span><span class="si">}</span><span class="s2"> - Higher disk space utilization - Expected: </span><span class="si">{</span><span class="n">DISK_SPACE_THRESHOLD</span><span class="si">}</span><span class="s2">% Actual: </span><span class="si">{</span><span class="n">percentage</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+  </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="anta.tests.system.VerifyMaintenance" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">VerifyMaintenance</span>
+
+
+<a href="#anta.tests.system.VerifyMaintenance" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+
+        <p>Verifies that the device is not currently under or entering maintenance.</p>
+
+
+<details class="expected-results" open>
+  <summary>Expected Results</summary>
+  <ul>
+<li>Success: The test will pass if the device is not under or entering maintenance.</li>
+<li>Failure: The test will fail if the device is under or entering maintenance.</li>
+</ul>
+</details>
+
+
+<details class="example" open>
+  <summary>Examples</summary>
+        <div class="highlight"><pre><span></span><code><span class="nt">anta.tests.system</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyMaintenance</span><span class="p">:</span>
+</code></pre></div>
+</details>
+
+
+
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+  <details class="quote">
+  <summary>Source code in <code>anta/tests/system.py</code></summary>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">350</span>
+<span class="normal">351</span>
+<span class="normal">352</span>
+<span class="normal">353</span>
+<span class="normal">354</span>
+<span class="normal">355</span>
+<span class="normal">356</span>
+<span class="normal">357</span>
+<span class="normal">358</span>
+<span class="normal">359</span>
+<span class="normal">360</span>
+<span class="normal">361</span>
+<span class="normal">362</span>
+<span class="normal">363</span>
+<span class="normal">364</span>
+<span class="normal">365</span>
+<span class="normal">366</span>
+<span class="normal">367</span>
+<span class="normal">368</span>
+<span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span>
+<span class="normal">384</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span>
+<span class="normal">388</span>
+<span class="normal">389</span>
+<span class="normal">390</span>
+<span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span>
+<span class="normal">394</span>
+<span class="normal">395</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyMaintenance</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies that the device is not currently under or entering maintenance.</span>
+
+<span class="sd">    Expected Results</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    * Success: The test will pass if the device is not under or entering maintenance.</span>
+<span class="sd">    * Failure: The test will fail if the device is under or entering maintenance.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    ```yaml</span>
+<span class="sd">    anta.tests.system:</span>
+<span class="sd">      - VerifyMaintenance:</span>
+<span class="sd">    ```</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Maintenance&quot;</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show maintenance&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+
+    <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyMaintenance.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+
+        <span class="c1"># If units is not empty we have to examine the output for details.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">units</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">,</span> <span class="s2">&quot;units&quot;</span><span class="p">)):</span>
+            <span class="k">return</span>
+        <span class="n">units_under_maintenance</span> <span class="o">=</span> <span class="p">[</span><span class="n">unit</span> <span class="k">for</span> <span class="n">unit</span><span class="p">,</span> <span class="n">info</span> <span class="ow">in</span> <span class="n">units</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;underMaintenance&quot;</span><span class="p">]</span>
+        <span class="n">units_entering_maintenance</span> <span class="o">=</span> <span class="p">[</span><span class="n">unit</span> <span class="k">for</span> <span class="n">unit</span><span class="p">,</span> <span class="n">info</span> <span class="ow">in</span> <span class="n">units</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;maintenanceModeEnter&quot;</span><span class="p">]</span>
+        <span class="n">causes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="c1"># Iterate over units, check for units under or entering maintenance, and examine the causes.</span>
+        <span class="k">for</span> <span class="n">info</span> <span class="ow">in</span> <span class="n">units</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;adminState&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;underMaintenance&quot;</span><span class="p">:</span>
+                <span class="n">causes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Quiesce is configured&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;onBootMaintenance&quot;</span><span class="p">]:</span>
+                <span class="n">causes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;On-boot maintenance is configured&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;intfsViolatingTrafficThreshold&quot;</span><span class="p">]:</span>
+                <span class="n">causes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;Interface traffic threshold violation&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Building the error message.</span>
+        <span class="k">if</span> <span class="n">units_under_maintenance</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Units under maintenance: &#39;</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">units_under_maintenance</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">units_entering_maintenance</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Units entering maintenance: &#39;</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">units_entering_maintenance</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">causes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Possible causes: &#39;</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">causes</span><span class="p">))</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
