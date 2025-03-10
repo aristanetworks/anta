@@ -472,6 +472,7 @@ anta.tests.routing.bgp:
           vrf: default
   - VerifyBGPPeerSession:
       # Verifies the session state of BGP IPv4 peer(s).
+      minimum_established_time: 10000
       check_tcp_queues: false
       bgp_peers:
         - peer_address: 10.1.0.1
@@ -484,6 +485,7 @@ anta.tests.routing.bgp:
           vrf: DEV
   - VerifyBGPPeerSessionRibd:
       # Verifies the session state of BGP IPv4 peer(s).
+      minimum_established_time: 10000
       check_tcp_queues: false
       bgp_peers:
         - peer_address: 10.1.0.1
@@ -503,6 +505,7 @@ anta.tests.routing.bgp:
             - inUpdErrWithdraw
   - VerifyBGPPeersHealth:
       # Verifies the health of BGP peers for given address families.
+      minimum_established_time: 10000
       address_families:
         - afi: "evpn"
         - afi: "ipv4"
@@ -553,6 +556,7 @@ anta.tests.routing.bgp:
                 origin: Incomplete
   - VerifyBGPSpecificPeers:
       # Verifies the health of specific BGP peer(s) for given address families.
+      minimum_established_time: 10000
       address_families:
         - afi: "evpn"
           peers:
