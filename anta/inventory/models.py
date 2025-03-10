@@ -110,3 +110,12 @@ class AntaInventoryInput(BaseModel):
         # https://github.com/pydantic/pydantic/issues/1043
         # Explore if this worth using this: https://github.com/NowanIlfideme/pydantic-yaml
         return yaml.safe_dump(yaml.safe_load(self.model_dump_json(serialize_as_any=True, exclude_unset=True)), indent=2, width=math.inf)
+
+    def to_json(self) -> str:
+        """Return a JSON representation string of this model.
+
+        Returns
+        -------
+            The JSON representation string of this model.
+        """
+        return self.model_dump_json(serialize_as_any=True, exclude_unset=True, indent=2)

@@ -1,0 +1,207 @@
+{
+  "anta_inventory": {
+    {
+      "hosts": [
+        {
+          "name": "super-spine1",
+          "host": "localhost"
+        },
+        {
+          "name": "super-spine2",
+          "host": "localhost"
+        },
+        {
+          "name": "pod1-spine1",
+          "host": "localhost"
+        },
+        {
+          "name": "pod1-spine2",
+          "host": "localhost"
+        },
+        {
+          "name": "pod1-spine3",
+          "host": "localhost"
+        },
+        {
+          "name": "pod1-spine4",
+          "host": "localhost"
+        },
+        {
+          "name": "pod1-leaf1a",
+          "host": "localhost"
+        },
+        {
+          "name": "pod1-leaf1b",
+          "host": "localhost"
+        },
+        {
+          "name": "pod1-leaf2a",
+          "host": "localhost"
+        },
+        {
+          "name": "pod1-leaf2b",
+          "host": "localhost"
+        },
+        {
+          "name": "pod1-leaf3a",
+          "host": "localhost"
+        },
+        {
+          "name": "pod1-leaf3b",
+          "host": "localhost"
+        },
+        {
+          "name": "pod1-leaf4a",
+          "host": "localhost"
+        },
+        {
+          "name": "pod1-leaf4b",
+          "host": "localhost"
+        },
+        {
+          "name": "pod1-leaf5a",
+          "host": "localhost"
+        },
+        {
+          "name": "pod1-leaf5b",
+          "host": "localhost"
+        },
+        {
+          "name": "pod1-leaf6a",
+          "host": "localhost"
+        },
+        {
+          "name": "pod1-leaf6b",
+          "host": "localhost"
+        },
+        {
+          "name": "pod1-leaf7a",
+          "host": "localhost"
+        },
+        {
+          "name": "pod1-leaf7b",
+          "host": "localhost"
+        },
+        {
+          "name": "pod1-leaf8a",
+          "host": "localhost"
+        },
+        {
+          "name": "pod1-leaf8b",
+          "host": "localhost"
+        },
+        {
+          "name": "pod1-leaf9a",
+          "host": "localhost"
+        },
+        {
+          "name": "pod1-leaf9b",
+          "host": "localhost"
+        },
+        {
+          "name": "pod1-leaf10a",
+          "host": "localhost"
+        },
+        {
+          "name": "pod1-leaf10b",
+          "host": "localhost"
+        },
+        {
+          "name": "pod2-spine1",
+          "host": "localhost"
+        },
+        {
+          "name": "pod2-spine2",
+          "host": "localhost"
+        },
+        {
+          "name": "pod2-spine3",
+          "host": "localhost"
+        },
+        {
+          "name": "pod2-spine4",
+          "host": "localhost"
+        },
+        {
+          "name": "pod2-leaf1a",
+          "host": "localhost"
+        },
+        {
+          "name": "pod2-leaf1b",
+          "host": "localhost"
+        },
+        {
+          "name": "pod2-leaf2a",
+          "host": "localhost"
+        },
+        {
+          "name": "pod2-leaf2b",
+          "host": "localhost"
+        },
+        {
+          "name": "pod2-leaf3a",
+          "host": "localhost"
+        },
+        {
+          "name": "pod2-leaf3b",
+          "host": "localhost"
+        },
+        {
+          "name": "pod2-leaf4a",
+          "host": "localhost"
+        },
+        {
+          "name": "pod2-leaf4b",
+          "host": "localhost"
+        },
+        {
+          "name": "pod2-leaf5a",
+          "host": "localhost"
+        },
+        {
+          "name": "pod2-leaf5b",
+          "host": "localhost"
+        },
+        {
+          "name": "pod2-leaf6a",
+          "host": "localhost"
+        },
+        {
+          "name": "pod2-leaf6b",
+          "host": "localhost"
+        },
+        {
+          "name": "pod2-leaf7a",
+          "host": "localhost"
+        },
+        {
+          "name": "pod2-leaf7b",
+          "host": "localhost"
+        },
+        {
+          "name": "pod2-leaf8a",
+          "host": "localhost"
+        },
+        {
+          "name": "pod2-leaf8b",
+          "host": "localhost"
+        },
+        {
+          "name": "pod2-leaf9a",
+          "host": "localhost"
+        },
+        {
+          "name": "pod2-leaf9b",
+          "host": "localhost"
+        },
+        {
+          "name": "pod2-leaf10a",
+          "host": "localhost"
+        },
+        {
+          "name": "pod2-leaf10b",
+          "host": "localhost"
+        }
+      ]
+    }
+}
