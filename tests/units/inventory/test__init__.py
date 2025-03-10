@@ -5,7 +5,6 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
@@ -15,6 +14,8 @@ from anta.inventory import AntaInventory
 from anta.inventory.exceptions import InventoryIncorrectSchemaError, InventoryRootKeyError
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from _pytest.mark.structures import ParameterSet
 
 INIT_VALID_PARAMS: list[ParameterSet] = [

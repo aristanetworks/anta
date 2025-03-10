@@ -174,7 +174,7 @@ class TestAntaInventoryRange:
 class TestAntaInventoryInputs:
     """Test anta.inventory.models.AntaInventoryInputs."""
 
-    def test_dump_to_json(self):
+    def test_dump_to_json(self) -> None:
         """Load a YAML file, dump it to JSON and verify it works."""
         input_yml_path = FILE_DIR / "test_inventory_with_tags.yml"
         expected_json_path = FILE_DIR / "test_inventory_with_tags.json"
@@ -187,7 +187,7 @@ class TestAntaInventoryInputs:
 
         assert json.loads(anta_inventory_input.to_json()) == expected_data["anta_inventory"]
 
-    def test_dump_to_yaml(self):
+    def test_dump_to_yaml(self) -> None:
         """Load a JSON file, dump it to YAML and verify it works."""
         input_json_path = FILE_DIR / "test_inventory_medium.json"
         expected_yml_path = FILE_DIR / "test_inventory_medium.yml"
