@@ -82,9 +82,9 @@ def test_anta_nrfu_text_multiple_failures(click_runner: CliRunner) -> None:
     assert result.exit_code == ExitCode.TESTS_FAILED
     assert (
         """spine1 :: VerifyInterfacesSpeed :: FAILURE
-    Interface `Ethernet2` is not found.
-    Interface `Ethernet3` is not found.
-    Interface `Ethernet4` is not found."""
+    Interface: Ethernet2 - Not found
+    Interface: Ethernet3 - Not found
+    Interface: Ethernet4 - Not found"""
         in result.output
     )
 

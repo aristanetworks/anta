@@ -12,7 +12,7 @@ import pytest
 from pydantic import ValidationError
 
 from anta.input_models.interfaces import InterfaceState
-from anta.tests.interfaces import VerifyInterfaceIPv4, VerifyInterfacesStatus, VerifyLACPInterfacesStatus
+from anta.tests.interfaces import VerifyInterfaceIPv4, VerifyInterfacesSpeed, VerifyInterfacesStatus, VerifyLACPInterfacesStatus
 
 if TYPE_CHECKING:
     from anta.custom_types import Interface, PortChannelInterface
@@ -108,3 +108,28 @@ class TestVerifyInterfaceIPv4Input:
         """Test VerifyInterfaceIPv4.Input invalid inputs."""
         with pytest.raises(ValidationError):
             VerifyInterfaceIPv4.Input(interfaces=interfaces)
+
+
+class TestVerifyInterfacesSpeedInput:
+    """Test anta.tests.interfaces.VerifyInterfacesSpeed.Input."""
+
+    @pytest.mark.parametrize(
+        ("interfaces"),
+        [
+            pytest.param([{"name": "Ethernet1", "speed": 10}], id="valid-speed-is-given"),
+        ],
+    )
+    def test_valid(self, interfaces: list[InterfaceState]) -> None:
+        """Test VerifyInterfacesSpeed.Input valid inputs."""
+        VerifyInterfacesSpeed.Input(interfaces=interfaces)
+
+    @pytest.mark.parametrize(
+        ("interfaces"),
+        [
+            pytest.param([{"name": "Ethernet1"}], id="invalid-speed-is-not-given"),
+        ],
+    )
+    def test_invalid(self, interfaces: list[InterfaceState]) -> None:
+        """Test VerifyInterfacesSpeed.Input invalid inputs."""
+        with pytest.raises(ValidationError):
+            VerifyInterfacesSpeed.Input(interfaces=interfaces)

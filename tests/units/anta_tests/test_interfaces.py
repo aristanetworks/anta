@@ -2327,10 +2327,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "For interface Ethernet1:\nExpected `1Gbps` as the speed, but found `100Gbps` instead.",
-                "For interface Ethernet1/1/1:\nExpected `1Gbps` as the speed, but found `100Gbps` instead.",
-                "For interface Ethernet3:\nExpected `100Gbps` as the speed, but found `10Gbps` instead.",
-                "For interface Ethernet4:\nExpected `2.5Gbps` as the speed, but found `25Gbps` instead.",
+                "Interface: Ethernet1 - Bandiwidth mismatch - Expected: 1.0Gbps Actual: 100Gbps",
+                "Interface: Ethernet1/1/1 - Bandiwidth mismatch - Expected: 1.0Gbps Actual: 100Gbps",
+                "Interface: Ethernet3 - Bandiwidth mismatch - Expected: 100.0Gbps Actual: 10Gbps",
+                "Interface: Ethernet4 - Bandiwidth mismatch - Expected: 2.5Gbps Actual: 25Gbps",
             ],
         },
     },
@@ -2379,11 +2379,11 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "For interface Ethernet1:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.",
-                "For interface Ethernet1/2/2:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.",
-                "For interface Ethernet3:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.",
-                "For interface Ethernet3:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.",
-                "For interface Ethernet4:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.",
+                "Interface: Ethernet1 - Duplex mode mismatch - Expected: duplexFull Actual: duplexHalf",
+                "Interface: Ethernet1/2/2 - Duplex mode mismatch - Expected: duplexFull Actual: duplexHalf",
+                "Interface: Ethernet3 - Duplex mode mismatch - Expected: duplexFull Actual: duplexHalf",
+                "Interface: Ethernet3 - Duplex mode mismatch - Expected: duplexFull Actual: duplexHalf",
+                "Interface: Ethernet4 - Duplex mode mismatch - Expected: duplexFull Actual: duplexHalf",
             ],
         },
     },
@@ -2437,10 +2437,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "For interface Ethernet1:\nExpected `2` as the lanes, but found `4` instead.",
-                "For interface Ethernet3:\nExpected `8` as the lanes, but found `4` instead.",
-                "For interface Ethernet4:\nExpected `4` as the lanes, but found `6` instead.",
-                "For interface Ethernet4/1/1:\nExpected `4` as the lanes, but found `6` instead.",
+                "Interface: Ethernet1 - Communication lane count mismatch - Expected: 2 Actual: 4",
+                "Interface: Ethernet3 - Communication lane count mismatch - Expected: 8 Actual: 4",
+                "Interface: Ethernet4 - Communication lane count mismatch - Expected: 4 Actual: 6",
+                "Interface: Ethernet4/1/1 - Communication lane count mismatch - Expected: 4 Actual: 6",
             ],
         },
     },
@@ -2479,36 +2479,26 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "interfaces": [
-                {"name": "Ethernet1", "auto": False, "speed": 1},
                 {"name": "Ethernet1", "auto": False, "speed": 1, "lanes": 2},
                 {"name": "Ethernet2/1/2", "auto": False, "speed": 10},
-                {"name": "Ethernet3", "auto": True, "speed": 1},
                 {"name": "Ethernet3", "auto": True, "speed": 100, "lanes": 8},
-                {"name": "Ethernet3", "auto": True, "speed": 100},
                 {"name": "Ethernet4", "auto": False, "speed": 2.5},
             ]
         },
         "expected": {
             "result": "failure",
             "messages": [
-                "For interface Ethernet1:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.\n"
-                "Expected `1Gbps` as the speed, but found `10Gbps` instead.",
-                "For interface Ethernet1:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.\n"
-                "Expected `1Gbps` as the speed, but found `10Gbps` instead.\n"
-                "Expected `2` as the lanes, but found `4` instead.",
-                "For interface Ethernet2/1/2:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.\n"
-                "Expected `10Gbps` as the speed, but found `1Gbps` instead.",
-                "For interface Ethernet3:\nExpected `success` as the auto negotiation, but found `unknown` instead.\n"
-                "Expected `duplexFull` as the duplex mode, but found `duplexHalf` instead.",
-                "For interface Ethernet3:\nExpected `success` as the auto negotiation, but found `unknown` instead.\n"
-                "Expected `duplexFull` as the duplex mode, but found `duplexHalf` instead.\n"
-                "Expected `100Gbps` as the speed, but found `10Gbps` instead.\n"
-                "Expected `8` as the lanes, but found `6` instead.",
-                "For interface Ethernet3:\nExpected `success` as the auto negotiation, but found `unknown` instead.\n"
-                "Expected `duplexFull` as the duplex mode, but found `duplexHalf` instead.\n"
-                "Expected `100Gbps` as the speed, but found `10Gbps` instead.",
-                "For interface Ethernet4:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.\n"
-                "Expected `2.5Gbps` as the speed, but found `25Gbps` instead.",
+                "Interface: Ethernet1 - Bandiwidth mismatch - Expected: 1.0Gbps Actual: 10Gbps",
+                "Interface: Ethernet1 - Duplex mode mismatch - Expected: duplexFull Actual: duplexHalf",
+                "Interface: Ethernet1 - Communication lane count mismatch - Expected: 2 Actual: 4",
+                "Interface: Ethernet2/1/2 - Bandiwidth mismatch - Expected: 10.0Gbps Actual: 1Gbps",
+                "Interface: Ethernet2/1/2 - Duplex mode mismatch - Expected: duplexFull Actual: duplexHalf",
+                "Interface: Ethernet3 - Bandiwidth mismatch - Expected: 100.0Gbps Actual: 10Gbps",
+                "Interface: Ethernet3 - Duplex mode mismatch - Expected: duplexFull Actual: duplexHalf",
+                "Interface: Ethernet3 - auto-negotiation mismatch - Expected: success Actual: unknown",
+                "Interface: Ethernet3 - Communication lane count mismatch - Expected: 8 Actual: 6",
+                "Interface: Ethernet4 - Bandiwidth mismatch - Expected: 2.5Gbps Actual: 25Gbps",
+                "Interface: Ethernet4 - Duplex mode mismatch - Expected: duplexFull Actual: duplexHalf",
             ],
         },
     },
