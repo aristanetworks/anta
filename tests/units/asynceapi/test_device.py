@@ -1,7 +1,7 @@
 # Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""Unit tests the asynceapi.device module."""
+"""Unit tests for the asynceapi.device module."""
 
 from __future__ import annotations
 
@@ -63,13 +63,12 @@ async def test_jsonrpc_exec_eapi_command_error(
     jsonrpc_request = JSONRPC_REQUEST_TEMPLATE.copy()
     jsonrpc_request["params"]["cmds"] = cmds
 
-    error_eapi_response = ERROR_EAPI_RESPONSE.copy()
-    httpx_mock.add_response(json=error_eapi_response)
+    httpx_mock.add_response(json=ERROR_EAPI_RESPONSE)
 
     with pytest.raises(EapiCommandError) as exc_info:
         await asynceapi_device.jsonrpc_exec(jsonrpc=jsonrpc_request)
 
-    assert exc_info.value.passed == [error_eapi_response["error"]["data"][0]]
+    assert exc_info.value.passed == [ERROR_EAPI_RESPONSE["error"]["data"][0]]
     assert exc_info.value.failed == "bad command"
     assert exc_info.value.errors == ["Invalid input (at token 1: 'bad')"]
     assert exc_info.value.errmsg == "CLI command 2 of 3 'bad command' failed: invalid command"
