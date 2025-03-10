@@ -68,7 +68,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"minimum": 42, "maximum": 666},
-        "expected": {"result": "failure", "messages": ["Routing table has 1000 routes, outside the range of 42 to 666"]},
+        "expected": {"result": "failure", "messages": ["Routing table routes are outside the routes range - Expected: 42 <= to >= 666 Actual: 1000"]},
     },
     {
         "name": "success",
@@ -474,9 +474,9 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Prefix: 10.10.0.1/32 VRF: default - List of next-hops not matching - Expected: 10.100.0.10, 10.100.0.11, 10.100.0.8 - "
+                "Prefix: 10.10.0.1/32 VRF: default - List of next-hops not matching - Expected: 10.100.0.10, 10.100.0.11, 10.100.0.8 "
                 "Actual: 10.100.0.10, 10.100.0.8",
-                "Prefix: 10.100.0.128/31 VRF: MGMT - List of next-hops not matching - Expected: 10.100.0.10, 10.100.0.8 - Actual: 10.100.0.11, 10.100.0.8",
+                "Prefix: 10.100.0.128/31 VRF: MGMT - List of next-hops not matching - Expected: 10.100.0.10, 10.100.0.8 Actual: 10.100.0.11, 10.100.0.8",
             ],
         },
     },

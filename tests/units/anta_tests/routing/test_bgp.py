@@ -305,7 +305,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "AFI: vpn-ipv4 - Expected: 2, Actual: 0",
+                "AFI: vpn-ipv4 - Expected: 2 Actual: 0",
             ],
         },
     },
@@ -374,8 +374,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "AFI: evpn - Expected: 3, Actual: 2",
-                "AFI: ipv4 SAFI: unicast VRF: DEV - Expected: 2, Actual: 1",
+                "AFI: evpn - Expected: 3 Actual: 2",
+                "AFI: ipv4 SAFI: unicast VRF: DEV - Expected: 2 Actual: 1",
             ],
         },
     },
@@ -423,9 +423,9 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "AFI: evpn - Expected: 2, Actual: 1",
-                "AFI: ipv4 SAFI: unicast VRF: default - Expected: 2, Actual: 1",
-                "AFI: ipv4 SAFI: unicast VRF: DEV - Expected: 2, Actual: 1",
+                "AFI: evpn - Expected: 2 Actual: 1",
+                "AFI: ipv4 SAFI: unicast VRF: default - Expected: 2 Actual: 1",
+                "AFI: ipv4 SAFI: unicast VRF: DEV - Expected: 2 Actual: 1",
             ],
         },
     },
@@ -569,10 +569,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.12 - Session state is not established - State: Idle",
-                "AFI: ipv4 SAFI: sr-te VRF: MGMT Peer: 10.100.0.12 - Session state is not established - State: Active",
-                "AFI: path-selection Peer: 10.100.0.13 - Session state is not established - State: Idle",
-                "AFI: link-state Peer: 10.100.0.14 - Session state is not established - State: Active",
+                "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.12 - Incorrect session state - Expected: Established Actual: Idle",
+                "AFI: ipv4 SAFI: sr-te VRF: MGMT Peer: 10.100.0.12 - Incorrect session state - Expected: Established Actual: Active",
+                "AFI: path-selection Peer: 10.100.0.13 - Incorrect session state - Expected: Established Actual: Idle",
+                "AFI: link-state Peer: 10.100.0.14 - Incorrect session state - Expected: Established Actual: Active",
             ],
         },
     },
@@ -843,8 +843,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.12 - Session state is not established - State: Idle",
-                "AFI: ipv4 SAFI: unicast VRF: MGMT Peer: 10.100.0.14 - Session state is not established - State: Idle",
+                "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.12 - Incorrect session state - Expected: Established Actual: Idle",
+                "AFI: ipv4 SAFI: unicast VRF: MGMT Peer: 10.100.0.14 - Incorrect session state - Expected: Established Actual: Idle",
             ],
         },
     },
@@ -2561,8 +2561,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 172.30.11.1 VRF: default - Session state is not established - State: Idle",
-                "Peer: 172.30.11.10 VRF: MGMT - Session state is not established - State: Idle",
+                "Peer: 172.30.11.1 VRF: default - Incorrect session state - Expected: Established Actual: Idle",
+                "Peer: 172.30.11.10 VRF: MGMT - Incorrect session state - Expected: Established Actual: Idle",
             ],
         },
     },
@@ -3219,9 +3219,9 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 172.30.11.1 VRF: default - Hold time mismatch - Expected: 180, Actual: 160",
-                "Peer: 172.30.11.11 VRF: MGMT - Hold time mismatch - Expected: 180, Actual: 120",
-                "Peer: 172.30.11.11 VRF: MGMT - Keepalive time mismatch - Expected: 60, Actual: 40",
+                "Peer: 172.30.11.1 VRF: default - Hold time mismatch - Expected: 180 Actual: 160",
+                "Peer: 172.30.11.11 VRF: MGMT - Hold time mismatch - Expected: 180 Actual: 120",
+                "Peer: 172.30.11.11 VRF: MGMT - Keepalive time mismatch - Expected: 60 Actual: 40",
             ],
         },
     },
@@ -3831,10 +3831,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 10.100.0.8 VRF: default - Inbound route-map mismatch - Expected: RM-MLAG-PEER-IN, Actual: RM-MLAG-PEER",
-                "Peer: 10.100.0.8 VRF: default - Outbound route-map mismatch - Expected: RM-MLAG-PEER-OUT, Actual: RM-MLAG-PEER",
-                "Peer: 10.100.0.10 VRF: MGMT - Inbound route-map mismatch - Expected: RM-MLAG-PEER-IN, Actual: RM-MLAG-PEER",
-                "Peer: 10.100.0.10 VRF: MGMT - Outbound route-map mismatch - Expected: RM-MLAG-PEER-OUT, Actual: RM-MLAG-PEER",
+                "Peer: 10.100.0.8 VRF: default - Inbound route-map mismatch - Expected: RM-MLAG-PEER-IN Actual: RM-MLAG-PEER",
+                "Peer: 10.100.0.8 VRF: default - Outbound route-map mismatch - Expected: RM-MLAG-PEER-OUT Actual: RM-MLAG-PEER",
+                "Peer: 10.100.0.10 VRF: MGMT - Inbound route-map mismatch - Expected: RM-MLAG-PEER-IN Actual: RM-MLAG-PEER",
+                "Peer: 10.100.0.10 VRF: MGMT - Outbound route-map mismatch - Expected: RM-MLAG-PEER-OUT Actual: RM-MLAG-PEER",
             ],
         },
     },
@@ -3874,8 +3874,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 10.100.0.8 VRF: default - Inbound route-map mismatch - Expected: RM-MLAG-PEER-IN, Actual: RM-MLAG-PEER",
-                "Peer: 10.100.0.10 VRF: MGMT - Inbound route-map mismatch - Expected: RM-MLAG-PEER-IN, Actual: RM-MLAG-PEER",
+                "Peer: 10.100.0.8 VRF: default - Inbound route-map mismatch - Expected: RM-MLAG-PEER-IN Actual: RM-MLAG-PEER",
+                "Peer: 10.100.0.10 VRF: MGMT - Inbound route-map mismatch - Expected: RM-MLAG-PEER-IN Actual: RM-MLAG-PEER",
             ],
         },
     },
@@ -3911,10 +3911,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 10.100.0.8 VRF: default - Inbound route-map mismatch - Expected: RM-MLAG-PEER-IN, Actual: Not Configured",
-                "Peer: 10.100.0.8 VRF: default - Outbound route-map mismatch - Expected: RM-MLAG-PEER-OUT, Actual: Not Configured",
-                "Peer: 10.100.0.10 VRF: MGMT - Inbound route-map mismatch - Expected: RM-MLAG-PEER-IN, Actual: Not Configured",
-                "Peer: 10.100.0.10 VRF: MGMT - Outbound route-map mismatch - Expected: RM-MLAG-PEER-OUT, Actual: Not Configured",
+                "Peer: 10.100.0.8 VRF: default - Inbound route-map mismatch - Expected: RM-MLAG-PEER-IN Actual: Not Configured",
+                "Peer: 10.100.0.8 VRF: default - Outbound route-map mismatch - Expected: RM-MLAG-PEER-OUT Actual: Not Configured",
+                "Peer: 10.100.0.10 VRF: MGMT - Inbound route-map mismatch - Expected: RM-MLAG-PEER-IN Actual: Not Configured",
+                "Peer: 10.100.0.10 VRF: MGMT - Outbound route-map mismatch - Expected: RM-MLAG-PEER-OUT Actual: Not Configured",
             ],
         },
     },
@@ -4072,10 +4072,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 10.100.0.8 VRF: default - Maximum routes mismatch - Expected: 12000, Actual: 13000",
-                "Peer: 10.100.0.8 VRF: default - Maximum routes warning limit mismatch - Expected: 10000, Actual: 11000",
-                "Peer: 10.100.0.9 VRF: MGMT - Maximum routes mismatch - Expected: 10000, Actual: 11000",
-                "Peer: 10.100.0.9 VRF: MGMT - Maximum routes warning limit mismatch - Expected: 9000, Actual: 10000",
+                "Peer: 10.100.0.8 VRF: default - Maximum routes mismatch - Expected: 12000 Actual: 13000",
+                "Peer: 10.100.0.8 VRF: default - Maximum routes warning limit mismatch - Expected: 10000 Actual: 11000",
+                "Peer: 10.100.0.9 VRF: MGMT - Maximum routes mismatch - Expected: 10000 Actual: 11000",
+                "Peer: 10.100.0.9 VRF: MGMT - Maximum routes warning limit mismatch - Expected: 9000 Actual: 10000",
             ],
         },
     },
@@ -4113,8 +4113,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 10.100.0.8 VRF: default - Maximum routes warning limit mismatch - Expected: 10000, Actual: 0",
-                "Peer: 10.100.0.9 VRF: MGMT - Maximum routes warning limit mismatch - Expected: 9000, Actual: 0",
+                "Peer: 10.100.0.8 VRF: default - Maximum routes warning limit mismatch - Expected: 10000 Actual: 0",
+                "Peer: 10.100.0.9 VRF: MGMT - Maximum routes warning limit mismatch - Expected: 9000 Actual: 0",
             ],
         },
     },
@@ -4278,8 +4278,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 10.100.0.8 VRF: default - Session state is not established - State: Active",
-                "Peer: 10.100.0.9 VRF: MGMT - Session state is not established - State: Active",
+                "Peer: 10.100.0.8 VRF: default - Incorrect session state - Expected: Established Actual: Active",
+                "Peer: 10.100.0.9 VRF: MGMT - Incorrect session state - Expected: Established Actual: Active",
             ],
         },
     },
@@ -4677,8 +4677,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 10.100.0.8 VRF: default - Session state is not established - State: Active",
-                "Peer: 10.100.0.9 VRF: MGMT - Session state is not established - State: Active",
+                "Peer: 10.100.0.8 VRF: default - Incorrect session state - Expected: Established Actual: Active",
+                "Peer: 10.100.0.9 VRF: MGMT - Incorrect session state - Expected: Established Actual: Active",
             ],
         },
     },
@@ -4841,8 +4841,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 10.100.0.8 VRF: default - Session state is not established - State: Active",
-                "Peer: 10.100.0.9 VRF: MGMT - Session state is not established - State: Active",
+                "Peer: 10.100.0.8 VRF: default - Incorrect session state - Expected: Established Actual: Active",
+                "Peer: 10.100.0.9 VRF: MGMT - Incorrect session state - Expected: Established Actual: Active",
             ],
         },
     },
@@ -5145,10 +5145,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 10.100.0.8 VRF: default AFI/SAFI: ipv4Unicast - some NLRI were filtered or rejected - Accepted: 16 Received: 17",
-                "Peer: 10.100.0.8 VRF: default AFI/SAFI: l2VpnEvpn - some NLRI were filtered or rejected - Accepted: 56 Received: 58",
-                "Peer: 10.100.4.5 VRF: MGMT AFI/SAFI: ipv4Unicast - some NLRI were filtered or rejected - Accepted: 14 Received: 15",
-                "Peer: 10.100.4.5 VRF: MGMT AFI/SAFI: l2VpnEvpn - some NLRI were filtered or rejected - Accepted: 56 Received: 59",
+                "Peer: 10.100.0.8 VRF: default AFI/SAFI: ipv4Unicast - Some NLRI were filtered or rejected - Accepted: 16 Received: 17",
+                "Peer: 10.100.0.8 VRF: default AFI/SAFI: l2VpnEvpn - Some NLRI were filtered or rejected - Accepted: 56 Received: 58",
+                "Peer: 10.100.4.5 VRF: MGMT AFI/SAFI: ipv4Unicast - Some NLRI were filtered or rejected - Accepted: 14 Received: 15",
+                "Peer: 10.100.4.5 VRF: MGMT AFI/SAFI: l2VpnEvpn - Some NLRI were filtered or rejected - Accepted: 56 Received: 59",
             ],
         },
     },
@@ -5647,7 +5647,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"route_entries": [{"prefix": "10.111.134.0/24", "vrf": "default", "ecmp_count": 2}]},
-        "expected": {"result": "failure", "messages": ["Prefix: 10.111.134.0/24 VRF: default - ECMP count mismatch - Expected: 2, Actual: 1"]},
+        "expected": {"result": "failure", "messages": ["Prefix: 10.111.134.0/24 VRF: default - ECMP count mismatch - Expected: 2 Actual: 1"]},
     },
     {
         "name": "failure-prefix-not-found-routing-table",
