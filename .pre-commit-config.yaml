@@ -74,6 +74,7 @@ repos:
           - pytest
           - pytest-codspeed
           - respx
+          - pydantic-settings
 
   - repo: https://github.com/codespell-project/codespell
     rev: v2.4.1
@@ -123,6 +124,7 @@ repos:
         pass_filenames: false
         additional_dependencies:
           - anta[cli]
+          - pydantic-settings
       - id: doc-snippets
         name: Generate doc snippets
         entry: >-
@@ -134,3 +136,4 @@ repos:
         pass_filenames: false
         additional_dependencies:
           - anta[cli]
+          - pydantic-settings
