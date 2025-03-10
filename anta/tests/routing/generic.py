@@ -112,7 +112,9 @@ class VerifyRoutingTableSize(AntaTest):
         if self.inputs.minimum <= total_routes <= self.inputs.maximum:
             self.result.is_success()
         else:
-            self.result.is_failure(f"Routing table has {total_routes} routes, outside the range of {self.inputs.minimum} to {self.inputs.maximum}")
+            self.result.is_failure(
+                f"Routing table routes are outside the routes range - Expected: {self.inputs.minimum} <= to >= {self.inputs.maximum} Actual: {total_routes}"
+            )
 
 
 class VerifyRoutingTableEntry(AntaTest):
@@ -341,7 +343,7 @@ class VerifyIPv4RouteNextHops(AntaTest):
 
             if entry.strict and expected_nexthops != actual_nexthops:
                 exp_nexthops = ", ".join(expected_nexthops)
-                self.result.is_failure(f"{entry} - List of next-hops not matching - Expected: {exp_nexthops} - Actual: {', '.join(actual_nexthops)}")
+                self.result.is_failure(f"{entry} - List of next-hops not matching - Expected: {exp_nexthops} Actual: {', '.join(actual_nexthops)}")
                 continue
 
             for nexthop in entry.nexthops:
