@@ -45,7 +45,13 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"manufacturers": ["Arista"]},
-        "expected": {"result": "failure", "messages": ["Some transceivers are from unapproved manufacturers: {'1': 'Arista Networks', '2': 'Arista Networks'}"]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Interface: 1 - Transceiver is from unapproved manufacturers - Expected: Arista Actual: Arista Networks",
+                "Interface: 2 - Transceiver is from unapproved manufacturers - Expected: Arista Actual: Arista Networks",
+            ],
+        },
     },
     {
         "name": "success",
@@ -72,12 +78,12 @@ DATA: list[dict[str, Any]] = [
                 "ambientThreshold": 45,
                 "cardSlots": [],
                 "shutdownOnOverheat": "True",
-                "systemStatus": "temperatureKO",
+                "systemStatus": "temperatureCritical",
                 "recoveryModeOnOverheat": "recoveryModeNA",
             },
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Device temperature exceeds acceptable limits. Current system status: 'temperatureKO'"]},
+        "expected": {"result": "failure", "messages": ["Device temperature exceeds acceptable limits - Expected: temperatureOk Actual: temperatureCritical"]},
     },
     {
         "name": "success",
@@ -139,11 +145,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": [
-                "The following sensors are operating outside the acceptable temperature range or have raised alerts: "
-                "{'DomTemperatureSensor54': "
-                "{'hwStatus': 'ko', 'alertCount': 0}}",
-            ],
+            "messages": ["Sensor: DomTemperatureSensor54 - Invalid hardware state - Expected: ok Actual: ko"],
         },
     },
     {
@@ -176,11 +178,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": [
-                "The following sensors are operating outside the acceptable temperature range or have raised alerts: "
-                "{'DomTemperatureSensor54': "
-                "{'hwStatus': 'ok', 'alertCount': 1}}",
-            ],
+            "messages": ["Sensor: DomTemperatureSensor54 - Non-zero alert counter - Actual: 1"],
         },
     },
     {
@@ -227,7 +225,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Device system cooling is not OK: 'coolingKo'"]},
+        "expected": {"result": "failure", "messages": ["Device system cooling status invalid - Expected: coolingOk Actual: coolingKo"]},
     },
     {
         "name": "success",
@@ -626,7 +624,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"states": ["ok", "Not Inserted"]},
-        "expected": {"result": "failure", "messages": ["Fan 1/1 on Fan Tray 1 is: 'down'"]},
+        "expected": {"result": "failure", "messages": ["Fan Tray: 1 Fan: 1/1 - Invalid state - Expected: ok, Not Inserted Actual: down"]},
     },
     {
         "name": "failure-power-supply",
@@ -759,7 +757,12 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"states": ["ok", "Not Inserted"]},
-        "expected": {"result": "failure", "messages": ["Fan PowerSupply1/1 on PowerSupply PowerSupply1 is: 'down'"]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Power Slot: PowerSupply1 Fan: PowerSupply1/1 - Invalid state - Expected: ok, Not Inserted Actual: down",
+            ],
+        },
     },
     {
         "name": "success",
@@ -900,7 +903,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"states": ["ok"]},
-        "expected": {"result": "failure", "messages": ["The following power supplies status are not in the accepted states list: {'1': {'state': 'powerLoss'}}"]},
+        "expected": {"result": "failure", "messages": ["Power Slot: 1 - Invalid power supplies state - Expected: ok Actual: powerLoss"]},
     },
     {
         "name": "success",
@@ -914,6 +917,6 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyAdverseDrops,
         "eos_data": [{"totalAdverseDrops": 10}],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Device totalAdverseDrops counter is: '10'"]},
+        "expected": {"result": "failure", "messages": ["Non-zero total adverse drops counter - Actual: 10"]},
     },
 ]

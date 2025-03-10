@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 import pytest
 from httpx import HTTPStatusError
@@ -16,6 +16,8 @@ from .test_data import ERROR_EAPI_RESPONSE, JSONRPC_REQUEST_TEMPLATE, SUCCESS_EA
 
 if TYPE_CHECKING:
     from pytest_httpx import HTTPXMock
+
+    from asynceapi._types import EapiComplexCommand, EapiSimpleCommand
 
 
 @pytest.mark.parametrize(
@@ -30,10 +32,10 @@ if TYPE_CHECKING:
 async def test_jsonrpc_exec_success(
     asynceapi_device: Device,
     httpx_mock: HTTPXMock,
-    cmds: list[str | dict[str, Any]],
+    cmds: list[EapiSimpleCommand | EapiComplexCommand],
 ) -> None:
     """Test the Device.jsonrpc_exec method with a successful response. Simple and complex commands are tested."""
-    jsonrpc_request: dict[str, Any] = JSONRPC_REQUEST_TEMPLATE.copy()
+    jsonrpc_request = JSONRPC_REQUEST_TEMPLATE.copy()
     jsonrpc_request["params"]["cmds"] = cmds
 
     httpx_mock.add_response(json=SUCCESS_EAPI_RESPONSE)
@@ -55,13 +57,13 @@ async def test_jsonrpc_exec_success(
 async def test_jsonrpc_exec_eapi_command_error(
     asynceapi_device: Device,
     httpx_mock: HTTPXMock,
-    cmds: list[str | dict[str, Any]],
+    cmds: list[EapiSimpleCommand | EapiComplexCommand],
 ) -> None:
     """Test the Device.jsonrpc_exec method with an error response. Simple and complex commands are tested."""
-    jsonrpc_request: dict[str, Any] = JSONRPC_REQUEST_TEMPLATE.copy()
+    jsonrpc_request = JSONRPC_REQUEST_TEMPLATE.copy()
     jsonrpc_request["params"]["cmds"] = cmds
 
-    error_eapi_response: dict[str, Any] = ERROR_EAPI_RESPONSE.copy()
+    error_eapi_response = ERROR_EAPI_RESPONSE.copy()
     httpx_mock.add_response(json=error_eapi_response)
 
     with pytest.raises(EapiCommandError) as exc_info:
@@ -76,7 +78,7 @@ async def test_jsonrpc_exec_eapi_command_error(
 
 async def test_jsonrpc_exec_http_status_error(asynceapi_device: Device, httpx_mock: HTTPXMock) -> None:
     """Test the Device.jsonrpc_exec method with an HTTPStatusError."""
-    jsonrpc_request: dict[str, Any] = JSONRPC_REQUEST_TEMPLATE.copy()
+    jsonrpc_request = JSONRPC_REQUEST_TEMPLATE.copy()
     jsonrpc_request["params"]["cmds"] = ["show version"]
 
     httpx_mock.add_response(status_code=500, text="Internal Server Error")
