@@ -185,7 +185,8 @@ class TestAntaInventoryInputs:
         with expected_json_path.open("r") as f:
             expected_data = json.load(f)
 
-        assert json.loads(anta_inventory_input.to_json()) == expected_data["anta_inventory"]
+        # sorting is a pain
+        assert json.dumps(json.loads(anta_inventory_input.to_json()), sort_keys=True) == json.dumps(expected_data["anta_inventory"], sort_keys=True)
 
     def test_dump_to_yaml(self) -> None:
         """Load a JSON file, dump it to YAML and verify it works."""
