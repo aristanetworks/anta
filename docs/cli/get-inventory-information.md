@@ -11,7 +11,7 @@ The ANTA CLI offers multiple commands to access data from your local inventory.
 
 ## List devices in inventory
 
-This command will list all devices available in the inventory. Using the `--tags` option, you can filter this list to only include devices with specific tags (visit [this page](tag-management.md) to learn more about tags).  The `--connected` option allows to display only the devices where a connection has been established.
+This command will list all devices available in the inventory. Using the `--tags` option, you can filter this list to only include devices with specific tags (visit [this page](tag-management.md) to learn more about tags). The `--connected` option allows to display only the devices where a connection has been established.
 
 ### Command overview
 
