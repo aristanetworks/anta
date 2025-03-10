@@ -571,32 +571,26 @@ class VerifyL2MTU(AntaTest):
         """Default MTU we should have configured on all non-excluded interfaces. Defaults to 9214."""
         ignored_interfaces: list[str] = Field(default=["Management", "Loopback", "Vxlan", "Tunnel"])
         """A list of L2 interfaces to ignore. Defaults to ["Management", "Loopback", "Vxlan", "Tunnel"]"""
-        specific_mtu: list[dict[str, int]] = Field(default=[])
+        specific_mtu: list[dict[Interface, int]] = Field(default=[])
         """A list of dictionary of L2 interfaces with their specific MTU configured"""
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyL2MTU."""
-        # Parameter to save incorrect interface settings
-        wrong_l2mtu_intf: list[dict[str, int]] = []
-        command_output = self.instance_commands[0].json_output
-        # Set list of interfaces with specific settings
-        specific_interfaces: list[str] = []
-        if self.inputs.specific_mtu:
-            for d in self.inputs.specific_mtu:
-                specific_interfaces.extend(d)
-        for interface, values in command_output["interfaces"].items():
+        self.result.is_success()
+        interface_output = self.instance_commands[0].json_output["interfaces"]
+        specific_interfaces = {key: value for details in self.inputs.specific_mtu for key, value in details.items()}
+
+        for interface, details in interface_output.items():
             catch_interface = re.findall(r"^[e,p][a-zA-Z]+[-,a-zA-Z]*\d+\/*\d*", interface, re.IGNORECASE)
-            if len(catch_interface) and catch_interface[0] not in self.inputs.ignored_interfaces and values["forwardingModel"] == "bridged":
+            if catch_interface and catch_interface not in self.inputs.ignored_interfaces and details["forwardingModel"] == "bridged":
                 if interface in specific_interfaces:
-                    wrong_l2mtu_intf.extend({interface: values["mtu"]} for custom_data in self.inputs.specific_mtu if values["mtu"] != custom_data[interface])
-                # Comparison with generic setting
-                elif values["mtu"] != self.inputs.mtu:
-                    wrong_l2mtu_intf.append({interface: values["mtu"]})
-        if wrong_l2mtu_intf:
-            self.result.is_failure(f"Some L2 interfaces do not have correct MTU configured:\n{wrong_l2mtu_intf}")
-        else:
-            self.result.is_success()
+                    if (mtu := specific_interfaces[interface]) != (act_mtu := details["mtu"]):
+                        self.result.is_failure(f"Interface: {interface} - Incorrect MTU configured - Expected: {mtu} Actual: {act_mtu}")
+                        continue
+
+                elif (act_mtu := details["mtu"]) != self.inputs.mtu:
+                    self.result.is_failure(f"Interface: {interface} - Incorrect MTU configured - Expected: {self.inputs.mtu} Actual: {act_mtu}")
 
 
 class VerifyInterfaceIPv4(AntaTest):
@@ -706,13 +700,10 @@ class VerifyIpVirtualRouterMac(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyIpVirtualRouterMac."""
+        self.result.is_success()
         command_output = self.instance_commands[0].json_output["virtualMacs"]
-        mac_address_found = get_item(command_output, "macAddress", self.inputs.mac_address)
-
-        if mac_address_found is None:
-            self.result.is_failure(f"IP virtual router MAC address `{self.inputs.mac_address}` is not configured.")
-        else:
-            self.result.is_success()
+        if get_item(command_output, "macAddress", self.inputs.mac_address) is None:
+            self.result.is_failure(f"IP virtual MAC address: {self.inputs.mac_address} - Not configured")
 
 
 class VerifyInterfacesSpeed(AntaTest):
