@@ -8,25 +8,15 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import TYPE_CHECKING, ClassVar
 
-from pydantic import model_validator
-
-from anta.custom_types import Hostname, PositiveInteger
-from anta.input_models.system import NTPPool, NTPServer
+from anta.custom_types import PositiveInteger
+from anta.input_models.system import NTPServer
 from anta.models import AntaCommand, AntaTest
 from anta.tools import get_value
 
 if TYPE_CHECKING:
-    import sys
-    from ipaddress import IPv4Address
-
     from anta.models import AntaTemplate
-
-    if sys.version_info >= (3, 11):
-        from typing import Self
-    else:
-        from typing_extensions import Self
 
 CPU_IDLE_THRESHOLD = 25
 MEMORY_THRESHOLD = 0.25
@@ -289,6 +279,120 @@ class VerifyNTP(AntaTest):
         else:
             data = command_output.split("\n")[0]
             self.result.is_failure(f"NTP status mismatch - Expected: synchronised Actual: {data}")
+
+
+class VerifyNTPAssociations(AntaTest):
+    """Verifies the Network Time Protocol (NTP) associations.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the Primary NTP server (marked as preferred) has the condition 'sys.peer' and
+    all other NTP servers have the condition 'candidate'.
+    * Failure: The test will fail if the Primary NTP server (marked as preferred) does not have the condition 'sys.peer' or
+    if any other NTP server does not have the condition 'candidate'.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.system:
+      - VerifyNTPAssociations:
+          ntp_servers:
+            - server_address: 1.1.1.1
+              preferred: True
+              stratum: 1
+            - server_address: 2.2.2.2
+              stratum: 2
+            - server_address: 3.3.3.3
+              stratum: 2
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["system"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ntp associations")]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyNTPAssociations test."""
+
+        ntp_servers: list[NTPServer]
+        """List of NTP servers."""
+        NTPServer: ClassVar[type[NTPServer]] = NTPServer
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyNTPAssociations."""
+        self.result.is_success()
+
+        if not (peers := get_value(self.instance_commands[0].json_output, "peers")):
+            self.result.is_failure("No NTP peers configured")
+            return
+
+        # Iterate over each NTP server.
+        for ntp_server in self.inputs.ntp_servers:
+            server_address = str(ntp_server.server_address)
+
+            # We check `peerIpAddr` in the peer details - covering IPv4Address input, or the peer key - covering Hostname input.
+            matching_peer = next((peer for peer, peer_details in peers.items() if (server_address in {peer_details["peerIpAddr"], peer})), None)
+
+            if not matching_peer:
+                self.result.is_failure(f"{ntp_server} - Not configured")
+                continue
+
+            # Collecting the expected/actual NTP peer details.
+            exp_condition = "sys.peer" if ntp_server.preferred else "candidate"
+            exp_stratum = ntp_server.stratum
+            act_condition = get_value(peers[matching_peer], "condition")
+            act_stratum = get_value(peers[matching_peer], "stratumLevel")
+
+            if act_condition != exp_condition or act_stratum != exp_stratum:
+                self.result.is_failure(f"{ntp_server} - Bad association - Condition: {act_condition}, Stratum: {act_stratum}")
+
+
+class VerifyMaintenance(AntaTest):
+    """Verifies that the device is not currently under or entering maintenance.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the device is not under or entering maintenance.
+    * Failure: The test will fail if the device is under or entering maintenance.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.system:
+      - VerifyMaintenance:
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["Maintenance"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show maintenance", revision=1)]
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyMaintenance."""
+        self.result.is_success()
+
+        # If units is not empty we have to examine the output for details.
+        if not (units := get_value(self.instance_commands[0].json_output, "units")):
+            return
+        units_under_maintenance = [unit for unit, info in units.items() if info["state"] == "underMaintenance"]
+        units_entering_maintenance = [unit for unit, info in units.items() if info["state"] == "maintenanceModeEnter"]
+        causes = set()
+        # Iterate over units, check for units under or entering maintenance, and examine the causes.
+        for info in units.values():
+            if info["adminState"] == "underMaintenance":
+                causes.add("Quiesce is configured")
+            if info["onBootMaintenance"]:
+                causes.add("On-boot maintenance is configured")
+            if info["intfsViolatingTrafficThreshold"]:
+                causes.add("Interface traffic threshold violation")
+
+        # Building the error message.
+        if units_under_maintenance:
+            self.result.is_failure(f"Units under maintenance: '{', '.join(units_under_maintenance)}'.")
+        if units_entering_maintenance:
+            self.result.is_failure(f"Units entering maintenance: '{', '.join(units_entering_maintenance)}'.")
+        if causes:
+            self.result.is_failure(f"Possible causes: '{', '.join(sorted(causes))}'.")
 
 
 class VerifyNTPAssociations(AntaTest):
