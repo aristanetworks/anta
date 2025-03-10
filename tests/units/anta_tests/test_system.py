@@ -791,7 +791,39 @@ poll interval unknown
                 }
             }
         ],
-        "inputs": {"ntp_pool": {"server_address": ["1.1.1.1", "2.2.2.2", "3.3.3.3"], "preferred_stratum_range": [1, 2]}},
+        "inputs": {"ntp_pool": {"server_addresses": ["1.1.1.1", "2.2.2.2", "3.3.3.3"], "preferred_stratum_range": [1, 2]}},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-ntp-pool-hostname",
+        "test": VerifyNTPAssociations,
+        "eos_data": [
+            {
+                "peers": {
+                    "itsys-ntp010p.aristanetworks.com": {
+                        "condition": "sys.peer",
+                        "peerIpAddr": "1.1.1.1",
+                        "stratumLevel": 1,
+                    },
+                    "itsys-ntp011p.aristanetworks.com": {
+                        "condition": "candidate",
+                        "peerIpAddr": "2.2.2.2",
+                        "stratumLevel": 2,
+                    },
+                    "itsys-ntp012p.aristanetworks.com": {
+                        "condition": "candidate",
+                        "peerIpAddr": "3.3.3.3",
+                        "stratumLevel": 2,
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "ntp_pool": {
+                "server_addresses": ["itsys-ntp010p.aristanetworks.com", "itsys-ntp011p.aristanetworks.com", "itsys-ntp012p.aristanetworks.com"],
+                "preferred_stratum_range": [1, 2],
+            }
+        },
         "expected": {"result": "success"},
     },
     {
@@ -950,17 +982,17 @@ poll interval unknown
         "eos_data": [
             {
                 "peers": {
-                    "1.1.1.1": {
+                    "ntp1.pool": {
                         "condition": "sys.peer",
                         "peerIpAddr": "1.1.1.1",
                         "stratumLevel": 1,
                     },
-                    "2.2.2.2": {
+                    "ntp2.pool": {
                         "condition": "candidate",
                         "peerIpAddr": "2.2.2.2",
                         "stratumLevel": 2,
                     },
-                    "3.3.3.3": {
+                    "ntp3.pool": {
                         "condition": "candidate",
                         "peerIpAddr": "3.3.3.3",
                         "stratumLevel": 2,
@@ -968,10 +1000,10 @@ poll interval unknown
                 }
             }
         ],
-        "inputs": {"ntp_pool": {"server_address": ["1.1.1.1", "2.2.2.2"], "preferred_stratum_range": [1, 2]}},
+        "inputs": {"ntp_pool": {"server_addresses": ["1.1.1.1", "2.2.2.2"], "preferred_stratum_range": [1, 2]}},
         "expected": {
             "result": "failure",
-            "messages": ["NTP Server: 3.3.3.3 - Not belong to specified NTP server pool"],
+            "messages": ["NTP Server: 3.3.3.3 Hostname: ntp3.pool - Associated but not part of the provided NTP pool"],
         },
     },
     {
@@ -980,17 +1012,17 @@ poll interval unknown
         "eos_data": [
             {
                 "peers": {
-                    "1.1.1.1": {
+                    "ntp1.pool": {
                         "condition": "sys.peer",
                         "peerIpAddr": "1.1.1.1",
                         "stratumLevel": 1,
                     },
-                    "2.2.2.2": {
+                    "ntp2.pool": {
                         "condition": "candidate",
                         "peerIpAddr": "2.2.2.2",
                         "stratumLevel": 2,
                     },
-                    "3.3.3.3": {
+                    "ntp3.pool": {
                         "condition": "reject",
                         "peerIpAddr": "3.3.3.3",
                         "stratumLevel": 3,
@@ -998,10 +1030,44 @@ poll interval unknown
                 }
             }
         ],
-        "inputs": {"ntp_pool": {"server_address": ["1.1.1.1", "2.2.2.2", "3.3.3.3"], "preferred_stratum_range": [1, 2]}},
+        "inputs": {"ntp_pool": {"server_addresses": ["1.1.1.1", "2.2.2.2", "3.3.3.3"], "preferred_stratum_range": [1, 2]}},
         "expected": {
             "result": "failure",
-            "messages": ["NTP Server: 3.3.3.3 - Bad association - Condition: reject, Stratum: 3"],
+            "messages": ["NTP Server: 3.3.3.3 Hostname: ntp3.pool - Bad association - Condition: reject, Stratum: 3"],
+        },
+    },
+    {
+        "name": "failure-ntp-pool-hostname",
+        "test": VerifyNTPAssociations,
+        "eos_data": [
+            {
+                "peers": {
+                    "itsys-ntp010p.aristanetworks.com": {
+                        "condition": "sys.peer",
+                        "peerIpAddr": "1.1.1.1",
+                        "stratumLevel": 5,
+                    },
+                    "itsys-ntp011p.aristanetworks.com": {
+                        "condition": "reject",
+                        "peerIpAddr": "2.2.2.2",
+                        "stratumLevel": 4,
+                    },
+                    "itsys-ntp012p.aristanetworks.com": {
+                        "condition": "candidate",
+                        "peerIpAddr": "3.3.3.3",
+                        "stratumLevel": 2,
+                    },
+                }
+            }
+        ],
+        "inputs": {"ntp_pool": {"server_addresses": ["itsys-ntp010p.aristanetworks.com", "itsys-ntp011p.aristanetworks.com"], "preferred_stratum_range": [1, 2]}},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "NTP Server: 1.1.1.1 Hostname: itsys-ntp010p.aristanetworks.com - Bad association - Condition: sys.peer, Stratum: 5",
+                "NTP Server: 2.2.2.2 Hostname: itsys-ntp011p.aristanetworks.com - Bad association - Condition: reject, Stratum: 4",
+                "NTP Server: 3.3.3.3 Hostname: itsys-ntp012p.aristanetworks.com - Associated but not part of the provided NTP pool",
+            ],
         },
     },
 ]

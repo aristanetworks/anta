@@ -23,7 +23,7 @@ class TestVerifyNTPAssociationsInput:
         ("ntp_servers", "ntp_pool"),
         [
             pytest.param([{"server_address": "1.1.1.1", "preferred": True, "stratum": 1}], None, id="valid-ntp-server"),
-            pytest.param(None, {"server_address": ["1.1.1.1"], "preferred_stratum_range": [1, 3]}, id="valid-ntp-pool"),
+            pytest.param(None, {"server_addresses": ["1.1.1.1"], "preferred_stratum_range": [1, 3]}, id="valid-ntp-pool"),
         ],
     )
     def test_valid(self, ntp_servers: list[NTPServer], ntp_pool: NTPPool) -> None:
@@ -35,10 +35,10 @@ class TestVerifyNTPAssociationsInput:
         [
             pytest.param(
                 [{"server_address": "1.1.1.1", "preferred": True, "stratum": 1}],
-                {"server_address": ["1.1.1.1"], "preferred_stratum_range": [1, 3]},
+                {"server_addresses": ["1.1.1.1"], "preferred_stratum_range": [1, 3]},
                 id="invalid-both-server-pool",
             ),
-            pytest.param(None, {"server_address": ["1.1.1.1"], "preferred_stratum_range": [1, 3, 6]}, id="invalid-ntp-pool-stratum"),
+            pytest.param(None, {"server_addresses": ["1.1.1.1"], "preferred_stratum_range": [1, 3, 6]}, id="invalid-ntp-pool-stratum"),
             pytest.param(None, None, id="invalid-both-none"),
         ],
     )

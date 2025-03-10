@@ -35,7 +35,7 @@ class NTPPool(BaseModel):
     """Model for a NTP server pool."""
 
     model_config = ConfigDict(extra="forbid")
-    server_address: list[Hostname | IPv4Address]
-    """The list of NTP server address as an IPv4 address or hostname."""
+    server_addresses: list[Hostname | IPv4Address]
+    """The list of NTP server addresses as an IPv4 addresses or hostnames."""
     preferred_stratum_range: list[NTPStratumLevel]
     """Preferred NTP stratum range for the NTP server pool. If the expected stratum range is 1 to 3 then preferred_stratum_range should be `[1,3]`."""
