@@ -179,7 +179,7 @@ class VerifySnmpLocation(AntaTest):
         self.result.is_success()
         # Verifies the SNMP location is configured.
         if not (location := get_value(self.instance_commands[0].json_output, "location.location")):
-            self.result.is_failure("SNMP location is not configured.")
+            self.result.is_failure("SNMP location is not configured")
             return
 
         # Verifies the expected SNMP location.
@@ -219,7 +219,7 @@ class VerifySnmpContact(AntaTest):
         self.result.is_success()
         # Verifies the SNMP contact is configured.
         if not (contact := get_value(self.instance_commands[0].json_output, "contact.contact")):
-            self.result.is_failure("SNMP contact is not configured.")
+            self.result.is_failure("SNMP contact is not configured")
             return
 
         # Verifies the expected SNMP contact.
@@ -267,7 +267,7 @@ class VerifySnmpPDUCounters(AntaTest):
 
         # Verify SNMP PDU counters.
         if not (pdu_counters := get_value(command_output, "counters")):
-            self.result.is_failure("SNMP counters not found.")
+            self.result.is_failure("SNMP counters not found")
             return
 
         # In case SNMP PDUs not provided, It will check all the update error counters.
@@ -561,7 +561,7 @@ class VerifySnmpNotificationHost(AntaTest):
 
         # If SNMP is not configured, test fails.
         if not (snmp_hosts := get_value(self.instance_commands[0].json_output, "hosts")):
-            self.result.is_failure("No SNMP host is configured.")
+            self.result.is_failure("No SNMP host is configured")
             return
 
         for host in self.inputs.notification_hosts:
@@ -584,22 +584,22 @@ class VerifySnmpNotificationHost(AntaTest):
 
             # If actual notification type does not match the expected value, test fails.
             if notification_type != (actual_notification_type := get_value(host_details, "notificationType", default_value)):
-                self.result.is_failure(f"{host} - Incorrect notification type - Expected: {notification_type}, Actual: {actual_notification_type}")
+                self.result.is_failure(f"{host} - Incorrect notification type - Expected: {notification_type} Actual: {actual_notification_type}")
 
             # If actual UDP port does not match the expected value, test fails.
             if udp_port != (actual_udp_port := get_value(host_details, "port", default_value)):
-                self.result.is_failure(f"{host} - Incorrect UDP port - Expected: {udp_port}, Actual: {actual_udp_port}")
+                self.result.is_failure(f"{host} - Incorrect UDP port - Expected: {udp_port} Actual: {actual_udp_port}")
 
             user_found = user != (actual_user := get_value(host_details, "v3Params.user", default_value))
             version_user_check = (version == "v3", user_found)
 
             # If SNMP protocol version is v1 or v2c and actual community string does not match the expected value, test fails.
             if version in ["v1", "v2c"] and community_string != (actual_community_string := get_value(host_details, "v1v2cParams.communityString", default_value)):
-                self.result.is_failure(f"{host} Version: {version} - Incorrect community string - Expected: {community_string}, Actual: {actual_community_string}")
+                self.result.is_failure(f"{host} Version: {version} - Incorrect community string - Expected: {community_string} Actual: {actual_community_string}")
 
             # If SNMP protocol version is v3 and actual user does not match the expected value, test fails.
             elif all(version_user_check):
-                self.result.is_failure(f"{host} Version: {version} - Incorrect user - Expected: {user}, Actual: {actual_user}")
+                self.result.is_failure(f"{host} Version: {version} - Incorrect user - Expected: {user} Actual: {actual_user}")
 
 
 class VerifySnmpSourceInterface(AntaTest):
@@ -717,10 +717,10 @@ class VerifySnmpGroup(AntaTest):
                 if group_details.get(f"{view_type}View") == "":
                     self.result.is_failure(f"{group} View: {view_type} - Not configured")
                 elif (act_view := group_details.get(f"{view_type}View")) != expected_view:
-                    self.result.is_failure(f"{group} - Incorrect {view_type.title()} view - Expected: {expected_view}, Actual: {act_view}")
+                    self.result.is_failure(f"{group} - Incorrect {view_type.title()} view - Expected: {expected_view} Actual: {act_view}")
                 elif not group_details.get(f"{view_type}ViewConfig"):
-                    self.result.is_failure(f"{group}, {view_type.title()} View: {expected_view} - Not configured")
+                    self.result.is_failure(f"{group} {view_type.title()} View: {expected_view} - Not configured")
 
             # For version v3, verify that the security model aligns with the expected value.
             if group.version == "v3" and (actual_auth := group_details.get("secModel")) != group.authentication:
-                self.result.is_failure(f"{group} - Incorrect security model - Expected: {group.authentication}, Actual: {actual_auth}")
+                self.result.is_failure(f"{group} - Incorrect security model - Expected: {group.authentication} Actual: {actual_auth}")

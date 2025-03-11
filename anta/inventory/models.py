@@ -9,14 +9,26 @@ import logging
 import math
 
 import yaml
-from pydantic import BaseModel, ConfigDict, IPvAnyAddress, IPvAnyNetwork
+from pydantic import BaseModel, ConfigDict, FieldSerializationInfo, IPvAnyAddress, IPvAnyNetwork, field_serializer
 
 from anta.custom_types import Hostname, Port
 
 logger = logging.getLogger(__name__)
 
 
-class AntaInventoryHost(BaseModel):
+class AntaInventoryBaseModel(BaseModel):
+    """Pydantic BaseModel for AntaInventory objects."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    # Using check_fields as we plan to use this in the child classes
+    @field_serializer("tags", when_used="json", check_fields=False)
+    def serialize_tags(self, tags: set[str], _info: FieldSerializationInfo) -> list[str]:
+        """Make sure the tags are always dumped in the same order."""
+        return sorted(tags)
+
+
+class AntaInventoryHost(AntaInventoryBaseModel):
     """Host entry of AntaInventoryInput.
 
     Attributes
@@ -34,8 +46,6 @@ class AntaInventoryHost(BaseModel):
 
     """
 
-    model_config = ConfigDict(extra="forbid")
-
     name: str | None = None
     host: Hostname | IPvAnyAddress
     port: Port | None = None
@@ -43,7 +53,7 @@ class AntaInventoryHost(BaseModel):
     disable_cache: bool = False
 
 
-class AntaInventoryNetwork(BaseModel):
+class AntaInventoryNetwork(AntaInventoryBaseModel):
     """Network entry of AntaInventoryInput.
 
     Attributes
@@ -57,14 +67,12 @@ class AntaInventoryNetwork(BaseModel):
 
     """
 
-    model_config = ConfigDict(extra="forbid")
-
     network: IPvAnyNetwork
     tags: set[str] | None = None
     disable_cache: bool = False
 
 
-class AntaInventoryRange(BaseModel):
+class AntaInventoryRange(AntaInventoryBaseModel):
     """IP Range entry of AntaInventoryInput.
 
     Attributes
@@ -79,8 +87,6 @@ class AntaInventoryRange(BaseModel):
         Disable cache for all devices in this IP range.
 
     """
-
-    model_config = ConfigDict(extra="forbid")
 
     start: IPvAnyAddress
     end: IPvAnyAddress
@@ -109,4 +115,13 @@ class AntaInventoryInput(BaseModel):
         # This could be improved.
         # https://github.com/pydantic/pydantic/issues/1043
         # Explore if this worth using this: https://github.com/NowanIlfideme/pydantic-yaml
-        return yaml.safe_dump(yaml.safe_load(self.model_dump_json(serialize_as_any=True, exclude_unset=True)), indent=2, width=math.inf)
+        return yaml.safe_dump(yaml.safe_load(self.model_dump_json(serialize_as_any=True, exclude_unset=True)), width=math.inf)
+
+    def to_json(self) -> str:
+        """Return a JSON representation string of this model.
+
+        Returns
+        -------
+            The JSON representation string of this model.
+        """
+        return self.model_dump_json(serialize_as_any=True, exclude_unset=True, indent=2)
