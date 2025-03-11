@@ -34,7 +34,7 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyUptime,
         "eos_data": [{"upTime": 665.15, "loadAvg": [0.13, 0.12, 0.09], "users": 1, "currentTime": 1683186659.139859}],
         "inputs": {"minimum": 666},
-        "expected": {"result": "failure", "messages": ["Device uptime is incorrect - Expected: 666 Actual: 665.15 seconds"]},
+        "expected": {"result": "failure", "messages": ["Device uptime is incorrect - Expected: 666s Actual: 665.15s"]},
     },
     {
         "name": "success-no-reload",
