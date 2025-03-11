@@ -25,11 +25,19 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"policy": "ascending", "start_vlan_id": 1006, "end_vlan_id": 4094},
         "expected": {
             "result": "failure",
+            "messages": ["Incorrect VLAN internal allocation policy configured - Expected: ascending Actual: descending"],
+        },
+    },
+    {
+        "name": "failure-incorrect-start-end-id",
+        "test": VerifyVlanInternalPolicy,
+        "eos_data": [{"policy": "ascending", "startVlanId": 4094, "endVlanId": 1006}],
+        "inputs": {"policy": "ascending", "start_vlan_id": 1006, "end_vlan_id": 4094},
+        "expected": {
+            "result": "failure",
             "messages": [
-                "The VLAN internal allocation policy is not configured properly:\n"
-                "Expected `ascending` as the policy, but found `descending` instead.\n"
-                "Expected `1006` as the startVlanId, but found `4094` instead.\n"
-                "Expected `4094` as the endVlanId, but found `1006` instead."
+                "VLAN internal allocation policy: ascending - Incorrect start VLAN id configured - Expected: 1006 Actual: 4094",
+                "VLAN internal allocation policy: ascending - Incorrect end VLAN id configured - Expected: 4094 Actual: 1006",
             ],
         },
     },

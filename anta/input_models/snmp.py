@@ -124,4 +124,4 @@ class SnmpGroup(BaseModel):
         --------
         - Group: Test_Group Version: v2c
         """
-        return f"Group: {self.group_name}, Version: {self.version}"
+        return f"Group: {self.group_name} Version: {self.version}"
