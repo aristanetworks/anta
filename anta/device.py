@@ -35,8 +35,7 @@ logger = logging.getLogger(__name__)
 # https://github.com/pyca/cryptography/issues/7236#issuecomment-1131908472
 CLIENT_KEYS = load_default_keypairs()
 
-# Limit concurrency to 100 requests (HTTPX default) to avoid high-concurrency performance issues
-# See: https://github.com/encode/httpx/issues/3215
+# Maximum number of concurrent requests to EOS devices. This also matches the maximum connections setting of HTTPX and AIOHTTP.
 MAX_CONCURRENT_REQUESTS = 100
 
 
