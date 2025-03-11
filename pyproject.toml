@@ -261,6 +261,7 @@ description = Run pytest with {basepython}
 extras =
   dev
   cli
+  experimental
 # posargs allows to run only a specific test using
 # tox -e <env> -- path/to/my/test::test
 commands =
