@@ -64,8 +64,8 @@ Below are the environment variables usable with the `anta nrfu` command:
 | ANTA_TIMEOUT | The global timeout value for API calls. |  No  | 30.0 |
 | ANTA_INSECURE | Whether or not using insecure mode when connecting to the EOS devices HTTP API. |  No  | False |
 | ANTA_DISABLE_CACHE | A variable to disable caching for all ANTA tests (enabled by default). |  No  | False |
-| ANTA_INVENTORY_FORMAT | Format of the inventory file. 'json' or 'yaml'. |  No  | yaml |
-| ANTA_CATALOG_FORMAT | Format of the catalog file. 'json' or 'yaml'. |  No  | yaml |
+| ANTA_INVENTORY_FORMAT | Format of the inventory file. `json` or `yaml`. |  No  | `yaml` |
+| ANTA_CATALOG_FORMAT | Format of the catalog file. `json` or `yaml`. |  No  | `yaml` |
 | ANTA_TAGS | A list of tags to filter which tests to run on which devices. |  No  | - |
 | ANTA_NRFU_IGNORE_STATUS | Exit code will always be 0. |  No  | False |
 | ANTA_NRFU_IGNORE_ERROR | Exit code will be 0 if all tests succeeded or 1 if any test failed. |  No  | False |
