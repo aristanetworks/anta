@@ -1358,26 +1358,6 @@
 
     <!-- Table of contents list -->
     
-      <nav class="md-nav" aria-label="Inputs">
-        <ul class="md-nav__list">
-          
-          
-            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#anta.tests.interfaces.VerifyInterfacesSpeed-attributes" class="md-nav__link">
-      <span class="md-ellipsis">
-        InterfaceDetail
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-  </li>
-          
-          
-        </ul>
-      </nav>
-    
   </li>
           
           
@@ -2973,26 +2953,6 @@
     </a>
 
     <!-- Table of contents list -->
-    
-      <nav class="md-nav" aria-label="Inputs">
-        <ul class="md-nav__list">
-          
-          
-            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#anta.tests.interfaces.VerifyInterfacesSpeed-attributes" class="md-nav__link">
-      <span class="md-ellipsis">
-        InterfaceDetail
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-  </li>
-          
-          
-        </ul>
-      </nav>
     
   </li>
           
@@ -4590,11 +4550,11 @@ This test has been implemented for full-duplex interfaces only.</p>
               <tr>
                 <td><code>interfaces</code></td>
                 <td>
-                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<span title="anta.tests.interfaces.VerifyInterfacesSpeed.Input.InterfaceDetail">InterfaceDetail</span>]</code>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="InterfaceState (anta.input_models.interfaces.InterfaceState)" href="#anta.input_models.interfaces.InterfaceState">InterfaceState</a>]</code>
                 </td>
                 <td>
                   <div class="doc-md-description">
-                    List of interfaces to be tested
+                    List of interfaces with their expected state.
                   </div>
                 </td>
                 <td>
@@ -4603,85 +4563,6 @@ This test has been implemented for full-duplex interfaces only.</p>
               </tr>
           </tbody>
         </table>
-<h4 id="anta.tests.interfaces.VerifyInterfacesSpeed-attributes">InterfaceDetail<a href="#anta.tests.interfaces.VerifyInterfacesSpeed-attributes" class="headerlink" title="Permanent link">&para;</a></h4>          <div class="doc doc-children doc-contents">
-  
-
-  <div class="doc doc-children">
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Type</th>
-              <th>Description</th>
-              <th>Default</th>
-            </tr>
-          </thead>
-          <tbody>
-              <tr>
-                <td><code>name</code></td>
-                <td>
-                      <code><a class="autorefs autorefs-internal" title="            EthernetInterface
-
-
-  
-      module-attribute
-   (anta.custom_types.EthernetInterface)" href="../types/#anta.custom_types.EthernetInterface">EthernetInterface</a></code>
-                </td>
-                <td>
-                  <div class="doc-md-description">
-                    The name of the interface.
-                  </div>
-                </td>
-                <td>
-                    <em>-</em>
-                </td>
-              </tr>
-              <tr>
-                <td><code>auto</code></td>
-                <td>
-                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
-                </td>
-                <td>
-                  <div class="doc-md-description">
-                    The auto-negotiation status of the interface.
-                  </div>
-                </td>
-                <td>
-                    <em>-</em>
-                </td>
-              </tr>
-              <tr>
-                <td><code>speed</code></td>
-                <td>
-                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#float">float</a></code>
-                </td>
-                <td>
-                  <div class="doc-md-description">
-                    The speed of the interface in Gigabits per second. Valid range is 1 to 1000.
-                  </div>
-                </td>
-                <td>
-                      <code><span title="pydantic.Field">Field</span>(<span title="pydantic.Field(ge)">ge</span>=1, <span title="pydantic.Field(le)">le</span>=1000)</code>
-                </td>
-              </tr>
-              <tr>
-                <td><code>lanes</code></td>
-                <td>
-                      <code>None | <a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></code>
-                </td>
-                <td>
-                  <div class="doc-md-description">
-                    The number of lanes in the interface. Valid range is 1 to 8. This field is optional.
-                  </div>
-                </td>
-                <td>
-                      <code><span title="pydantic.Field">Field</span>(None, <span title="pydantic.Field(ge)">ge</span>=1, <span title="pydantic.Field(le)">le</span>=8)</code>
-                </td>
-              </tr>
-          </tbody>
-        </table>
-  </div>
-          </div>
   </div>
 
 
@@ -4769,21 +4650,7 @@ This test has been implemented for full-duplex interfaces only.</p>
 <span class="normal">783</span>
 <span class="normal">784</span>
 <span class="normal">785</span>
-<span class="normal">786</span>
-<span class="normal">787</span>
-<span class="normal">788</span>
-<span class="normal">789</span>
-<span class="normal">790</span>
-<span class="normal">791</span>
-<span class="normal">792</span>
-<span class="normal">793</span>
-<span class="normal">794</span>
-<span class="normal">795</span>
-<span class="normal">796</span>
-<span class="normal">797</span>
-<span class="normal">798</span>
-<span class="normal">799</span>
-<span class="normal">800</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyInterfacesSpeed</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">786</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyInterfacesSpeed</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the speed, lanes, auto-negotiation status, and mode as full duplex for interfaces.</span>
 
 <span class="sd">    - If the auto-negotiation status is set to True, verifies that auto-negotiation is successful, the mode is full duplex and the speed/lanes match the input.</span>
@@ -4819,20 +4686,19 @@ This test has been implemented for full-duplex interfaces only.</p>
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Inputs for the VerifyInterfacesSpeed test.&quot;&quot;&quot;</span>
 
-        <span class="n">interfaces</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">InterfaceDetail</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of interfaces to be tested&quot;&quot;&quot;</span>
+        <span class="n">interfaces</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">InterfaceState</span><span class="p">]</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of interfaces with their expected state.&quot;&quot;&quot;</span>
+        <span class="n">InterfaceDetail</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">InterfaceDetail</span><span class="p">]]</span> <span class="o">=</span> <span class="n">InterfaceDetail</span>
 
-        <span class="k">class</span><span class="w"> </span><span class="nc">InterfaceDetail</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;Detail of an interface.&quot;&quot;&quot;</span>
-
-            <span class="n">name</span><span class="p">:</span> <span class="n">EthernetInterface</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;The name of the interface.&quot;&quot;&quot;</span>
-            <span class="n">auto</span><span class="p">:</span> <span class="nb">bool</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;The auto-negotiation status of the interface.&quot;&quot;&quot;</span>
-            <span class="n">speed</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;The speed of the interface in Gigabits per second. Valid range is 1 to 1000.&quot;&quot;&quot;</span>
-            <span class="n">lanes</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;The number of lanes in the interface. Valid range is 1 to 8. This field is optional.&quot;&quot;&quot;</span>
+        <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;interfaces&quot;</span><span class="p">)</span>
+        <span class="nd">@classmethod</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">validate_interfaces</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">interfaces</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Validate that &#39;speed&#39; field is provided in each interface.&quot;&quot;&quot;</span>
+            <span class="k">for</span> <span class="n">interface</span> <span class="ow">in</span> <span class="n">interfaces</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">interface</span><span class="o">.</span><span class="n">speed</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="s2"> &#39;speed&#39; field missing in the input&quot;</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">interfaces</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -4842,40 +4708,27 @@ This test has been implemented for full-duplex interfaces only.</p>
 
         <span class="c1"># Iterate over all the interfaces</span>
         <span class="k">for</span> <span class="n">interface</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">interfaces</span><span class="p">:</span>
-            <span class="n">intf</span> <span class="o">=</span> <span class="n">interface</span><span class="o">.</span><span class="n">name</span>
-
-            <span class="c1"># Check if interface exists</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">interface_output</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;interfaces.</span><span class="si">{</span><span class="n">intf</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Interface `</span><span class="si">{</span><span class="n">intf</span><span class="si">}</span><span class="s2">` is not found.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">interface_detail</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;interfaces&quot;</span><span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">interface</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;..&quot;</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="s2"> - Not found&quot;</span><span class="p">)</span>
                 <span class="k">continue</span>
 
-            <span class="n">auto_negotiation</span> <span class="o">=</span> <span class="n">interface_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;autoNegotiate&quot;</span><span class="p">)</span>
-            <span class="n">actual_lanes</span> <span class="o">=</span> <span class="n">interface_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;lanes&quot;</span><span class="p">)</span>
+            <span class="c1"># Verifies the bandwidth</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">speed</span> <span class="o">:=</span> <span class="n">interface_detail</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;bandwidth&quot;</span><span class="p">))</span> <span class="o">!=</span> <span class="n">interface</span><span class="o">.</span><span class="n">speed</span> <span class="o">*</span> <span class="n">BPS_GBPS_CONVERSIONS</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="s2"> - Bandwidth mismatch - Expected: </span><span class="si">{</span><span class="n">interface</span><span class="o">.</span><span class="n">speed</span><span class="si">}</span><span class="s2">Gbps Actual: </span><span class="si">{</span><span class="n">custom_division</span><span class="p">(</span><span class="n">speed</span><span class="p">,</span><span class="w"> </span><span class="n">BPS_GBPS_CONVERSIONS</span><span class="p">)</span><span class="si">}</span><span class="s2">Gbps&quot;</span>
+                <span class="p">)</span>
 
-            <span class="c1"># Collecting actual interface details</span>
-            <span class="n">actual_interface_output</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s2">&quot;auto negotiation&quot;</span><span class="p">:</span> <span class="n">auto_negotiation</span> <span class="k">if</span> <span class="n">interface</span><span class="o">.</span><span class="n">auto</span> <span class="ow">is</span> <span class="kc">True</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
-                <span class="s2">&quot;duplex mode&quot;</span><span class="p">:</span> <span class="n">interface_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;duplex&quot;</span><span class="p">),</span>
-                <span class="s2">&quot;speed&quot;</span><span class="p">:</span> <span class="n">interface_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;bandwidth&quot;</span><span class="p">),</span>
-                <span class="s2">&quot;lanes&quot;</span><span class="p">:</span> <span class="n">actual_lanes</span> <span class="k">if</span> <span class="n">interface</span><span class="o">.</span><span class="n">lanes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="p">}</span>
+            <span class="c1"># Verifies the duplex mode</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">duplex</span> <span class="o">:=</span> <span class="n">interface_detail</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;duplex&quot;</span><span class="p">))</span> <span class="o">!=</span> <span class="s2">&quot;duplexFull&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="s2"> - Duplex mode mismatch - Expected: duplexFull Actual: </span><span class="si">{</span><span class="n">duplex</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-            <span class="c1"># Forming expected interface details</span>
-            <span class="n">expected_interface_output</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s2">&quot;auto negotiation&quot;</span><span class="p">:</span> <span class="s2">&quot;success&quot;</span> <span class="k">if</span> <span class="n">interface</span><span class="o">.</span><span class="n">auto</span> <span class="ow">is</span> <span class="kc">True</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
-                <span class="s2">&quot;duplex mode&quot;</span><span class="p">:</span> <span class="s2">&quot;duplexFull&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;speed&quot;</span><span class="p">:</span> <span class="n">interface</span><span class="o">.</span><span class="n">speed</span> <span class="o">*</span> <span class="n">BPS_GBPS_CONVERSIONS</span><span class="p">,</span>
-                <span class="s2">&quot;lanes&quot;</span><span class="p">:</span> <span class="n">interface</span><span class="o">.</span><span class="n">lanes</span><span class="p">,</span>
-            <span class="p">}</span>
+            <span class="c1"># Verifies the auto-negotiation as success if specified</span>
+            <span class="k">if</span> <span class="n">interface</span><span class="o">.</span><span class="n">auto</span> <span class="ow">and</span> <span class="p">(</span><span class="n">auto_negotiation</span> <span class="o">:=</span> <span class="n">interface_detail</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;autoNegotiate&quot;</span><span class="p">))</span> <span class="o">!=</span> <span class="s2">&quot;success&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="s2"> - Auto-negotiation mismatch - Expected: success Actual: </span><span class="si">{</span><span class="n">auto_negotiation</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-            <span class="c1"># Forming failure message</span>
-            <span class="k">if</span> <span class="n">actual_interface_output</span> <span class="o">!=</span> <span class="n">expected_interface_output</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">output</span> <span class="ow">in</span> <span class="p">[</span><span class="n">actual_interface_output</span><span class="p">,</span> <span class="n">expected_interface_output</span><span class="p">]:</span>
-                    <span class="c1"># Convert speed to Gbps for readability</span>
-                    <span class="k">if</span> <span class="n">output</span><span class="p">[</span><span class="s2">&quot;speed&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="n">output</span><span class="p">[</span><span class="s2">&quot;speed&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">custom_division</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="s1">&#39;speed&#39;</span><span class="p">],</span><span class="w"> </span><span class="n">BPS_GBPS_CONVERSIONS</span><span class="p">)</span><span class="si">}</span><span class="s2">Gbps&quot;</span>
-                <span class="n">failed_log</span> <span class="o">=</span> <span class="n">get_failed_logs</span><span class="p">(</span><span class="n">expected_interface_output</span><span class="p">,</span> <span class="n">actual_interface_output</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;For interface </span><span class="si">{</span><span class="n">intf</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">failed_log</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="c1"># Verifies the communication lanes if specified</span>
+            <span class="k">if</span> <span class="n">interface</span><span class="o">.</span><span class="n">lanes</span> <span class="ow">and</span> <span class="p">(</span><span class="n">lanes</span> <span class="o">:=</span> <span class="n">interface_detail</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;lanes&quot;</span><span class="p">))</span> <span class="o">!=</span> <span class="n">interface</span><span class="o">.</span><span class="n">lanes</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="s2"> - Data lanes count mismatch - Expected: </span><span class="si">{</span><span class="n">interface</span><span class="o">.</span><span class="n">lanes</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">lanes</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -5914,7 +5767,21 @@ You can define a global MTU to check and also an MTU per interface and also igno
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/interfaces.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">803</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">789</span>
+<span class="normal">790</span>
+<span class="normal">791</span>
+<span class="normal">792</span>
+<span class="normal">793</span>
+<span class="normal">794</span>
+<span class="normal">795</span>
+<span class="normal">796</span>
+<span class="normal">797</span>
+<span class="normal">798</span>
+<span class="normal">799</span>
+<span class="normal">800</span>
+<span class="normal">801</span>
+<span class="normal">802</span>
+<span class="normal">803</span>
 <span class="normal">804</span>
 <span class="normal">805</span>
 <span class="normal">806</span>
@@ -5995,21 +5862,7 @@ You can define a global MTU to check and also an MTU per interface and also igno
 <span class="normal">881</span>
 <span class="normal">882</span>
 <span class="normal">883</span>
-<span class="normal">884</span>
-<span class="normal">885</span>
-<span class="normal">886</span>
-<span class="normal">887</span>
-<span class="normal">888</span>
-<span class="normal">889</span>
-<span class="normal">890</span>
-<span class="normal">891</span>
-<span class="normal">892</span>
-<span class="normal">893</span>
-<span class="normal">894</span>
-<span class="normal">895</span>
-<span class="normal">896</span>
-<span class="normal">897</span>
-<span class="normal">898</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyLACPInterfacesStatus</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">884</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyLACPInterfacesStatus</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the Link Aggregation Control Protocol (LACP) status of the interface.</span>
 
 <span class="sd">    This test performs the following checks for each specified interface:</span>
@@ -6758,14 +6611,14 @@ You can define a global MTU to check and also an MTU per interface and also igno
 
             <details class="quote">
               <summary>Source code in <code>anta/input_models/interfaces.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: ANN401</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: ANN401</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize the InterfaceState class, emitting a depreciation warning.&quot;&quot;&quot;</span>
     <span class="n">warn</span><span class="p">(</span>
         <span class="n">message</span><span class="o">=</span><span class="s2">&quot;InterfaceDetail model is deprecated and will be removed in ANTA v2.0.0. Use the InterfaceState model instead.&quot;</span><span class="p">,</span>
@@ -6784,13 +6637,7 @@ You can define a global MTU to check and also an MTU per interface and also igno
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/input_models/interfaces.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">66</span>
 <span class="normal">67</span>
 <span class="normal">68</span>
 <span class="normal">69</span>
@@ -6799,7 +6646,13 @@ You can define a global MTU to check and also an MTU per interface and also igno
 <span class="normal">72</span>
 <span class="normal">73</span>
 <span class="normal">74</span>
-<span class="normal">75</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">InterfaceDetail</span><span class="p">(</span><span class="n">InterfaceState</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">InterfaceDetail</span><span class="p">(</span><span class="n">InterfaceState</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Alias for the InterfaceState model to maintain backward compatibility.</span>
 
 <span class="sd">    When initialized, it will emit a deprecation warning and call the InterfaceState model.</span>
@@ -6982,6 +6835,48 @@ Can be enabled in the `VerifyLACPInterfacesStatus` tests.
                       <code>None</code>
                 </td>
               </tr>
+              <tr>
+                <td><code>auto</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    The auto-negotiation status of the interface. Can be provided in the `VerifyInterfacesSpeed` test.
+                  </div>
+                </td>
+                <td>
+                      <code>False</code>
+                </td>
+              </tr>
+              <tr>
+                <td><code>speed</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#float">float</a> | None</code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    The speed of the interface in Gigabits per second. Valid range is 1 to 1000. Required field in the `VerifyInterfacesSpeed` test.
+                  </div>
+                </td>
+                <td>
+                      <code><span title="pydantic.Field">Field</span>(None, <span title="pydantic.Field(ge)">ge</span>=1, <span title="pydantic.Field(le)">le</span>=1000)</code>
+                </td>
+              </tr>
+              <tr>
+                <td><code>lanes</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a> | None</code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    The number of lanes in the interface. Valid range is 1 to 8. Can be provided in the `VerifyInterfacesSpeed` test.
+                  </div>
+                </td>
+                <td>
+                      <code><span title="pydantic.Field">Field</span>(None, <span title="pydantic.Field(ge)">ge</span>=1, <span title="pydantic.Field(le)">le</span>=8)</code>
+                </td>
+              </tr>
           </tbody>
         </table>
   </div>
@@ -7034,7 +6929,13 @@ Can be enabled in the `VerifyLACPInterfacesStatus` tests.
 <span class="normal">54</span>
 <span class="normal">55</span>
 <span class="normal">56</span>
-<span class="normal">57</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">InterfaceState</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">InterfaceState</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Model for an interface state.</span>
 
 <span class="sd">    TODO: Need to review this class name in ANTA v2.0.0.</span>
@@ -7062,6 +6963,12 @@ Can be enabled in the `VerifyLACPInterfacesStatus` tests.
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Primary IPv4 address in CIDR notation. Required field in the `VerifyInterfaceIPv4` test.&quot;&quot;&quot;</span>
     <span class="n">secondary_ips</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">IPv4Interface</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;List of secondary IPv4 addresses in CIDR notation. Can be provided in the `VerifyInterfaceIPv4` test.&quot;&quot;&quot;</span>
+    <span class="n">auto</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The auto-negotiation status of the interface. Can be provided in the `VerifyInterfacesSpeed` test.&quot;&quot;&quot;</span>
+    <span class="n">speed</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The speed of the interface in Gigabits per second. Valid range is 1 to 1000. Required field in the `VerifyInterfacesSpeed` test.&quot;&quot;&quot;</span>
+    <span class="n">lanes</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The number of lanes in the interface. Valid range is 1 to 8. Can be provided in the `VerifyInterfacesSpeed` test.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a human-readable string representation of the InterfaceState for reporting.</span>
