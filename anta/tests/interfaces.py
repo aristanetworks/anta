@@ -780,7 +780,7 @@ class VerifyInterfacesSpeed(AntaTest):
             # Verifies the bandwidth
             if (speed := interface_detail.get("bandwidth")) != interface.speed * BPS_GBPS_CONVERSIONS:
                 self.result.is_failure(
-                    f"{interface} - Bandiwidth mismatch - Expected: {interface.speed}Gbps Actual: {custom_division(speed, BPS_GBPS_CONVERSIONS)}Gbps"
+                    f"{interface} - Bandwidth mismatch - Expected: {interface.speed}Gbps Actual: {custom_division(speed, BPS_GBPS_CONVERSIONS)}Gbps"
                 )
 
             # Verifies the duplex mode
@@ -789,11 +789,11 @@ class VerifyInterfacesSpeed(AntaTest):
 
             # Verifies the auto-negotiation as success if specified
             if interface.auto and (auto_negotiation := interface_detail.get("autoNegotiate")) != "success":
-                self.result.is_failure(f"{interface} - auto-negotiation mismatch - Expected: success Actual: {auto_negotiation}")
+                self.result.is_failure(f"{interface} - Auto-negotiation mismatch - Expected: success Actual: {auto_negotiation}")
 
             # Verifies the communication lanes if specified
             if interface.lanes and (lanes := interface_detail.get("lanes")) != interface.lanes:
-                self.result.is_failure(f"{interface} - Communication lane count mismatch - Expected: {interface.lanes} Actual: {lanes}")
+                self.result.is_failure(f"{interface} - Data lanes count mismatch - Expected: {interface.lanes} Actual: {lanes}")
 
 
 class VerifyLACPInterfacesStatus(AntaTest):
