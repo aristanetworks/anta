@@ -2815,14 +2815,14 @@
                 <span class="n">act_interval</span> <span class="o">=</span> <span class="n">tracker_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;activeInterval&quot;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">([</span><span class="n">inactive_interval</span> <span class="o">==</span> <span class="n">act_inactive</span><span class="p">,</span> <span class="n">on_interval</span> <span class="o">==</span> <span class="n">act_interval</span><span class="p">]):</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tracker</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">tracker</span><span class="o">.</span><span class="n">record_export</span><span class="si">}</span><span class="s2"> - Incorrect timers - Inactive Timeout: </span><span class="si">{</span><span class="n">act_inactive</span><span class="si">}</span><span class="s2">, OnActive Interval: </span><span class="si">{</span><span class="n">act_interval</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tracker</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">tracker</span><span class="o">.</span><span class="n">record_export</span><span class="si">}</span><span class="s2"> - Incorrect timers - Inactive Timeout: </span><span class="si">{</span><span class="n">act_inactive</span><span class="si">}</span><span class="s2"> OnActive Interval: </span><span class="si">{</span><span class="n">act_interval</span><span class="si">}</span><span class="s2">&quot;</span>
                     <span class="p">)</span>
 
             <span class="c1"># Check the input hardware tracker exporters configuration</span>
             <span class="k">if</span> <span class="n">tracker</span><span class="o">.</span><span class="n">exporters</span><span class="p">:</span>
                 <span class="n">failure_messages</span> <span class="o">=</span> <span class="n">validate_exporters</span><span class="p">(</span><span class="n">tracker</span><span class="o">.</span><span class="n">exporters</span><span class="p">,</span> <span class="n">tracker_info</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="n">failure_messages</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tracker</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tracker</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -3275,7 +3275,7 @@
 <span class="sd">        Inactive Timeout: 60000, Active Interval: 300000</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Inactive Timeout: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">on_inactive_timeout</span><span class="si">}</span><span class="s2">, Active Interval: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">on_interval</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Inactive Timeout: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">on_inactive_timeout</span><span class="si">}</span><span class="s2"> Active Interval: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">on_interval</span><span class="si">}</span><span class="s2">&quot;</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
