@@ -318,7 +318,7 @@ class AddressFamilyConfig(BaseModel):
 
     @model_validator(mode="after")
     def validate_afi_safi_supported_routes(self) -> Self:
-        """Validate the each address family supported redistributed protocol."""
+        """Validate each address family supported redistributed protocol."""
         mappings = {"v4u": "IPv4 Unicast", "v4m": "IPv4 Multicast", "v6u": "IPv6 Unicast", "v6m": "IPv6 Multicast"}
 
         for routes_data in self.redistributed_routes:
