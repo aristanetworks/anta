@@ -202,7 +202,7 @@ class AntaInventory(dict[str, AntaDevice]):
         timeout
             Timeout value in seconds for outgoing API calls.
         file_format
-            Whether the inventory file is in JSON or YAML
+            Whether the inventory file is in JSON or YAML.
         enable
             Whether or not the commands need to be run in enable mode towards the devices.
         insecure
