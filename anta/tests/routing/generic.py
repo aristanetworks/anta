@@ -63,7 +63,7 @@ class VerifyRoutingProtocolModel(AntaTest):
         if configured_model == operating_model == self.inputs.model:
             self.result.is_success()
         else:
-            self.result.is_failure(f"routing model is misconfigured: configured: {configured_model} - operating: {operating_model} - expected: {self.inputs.model}")
+            self.result.is_failure(f"Routing model is misconfigured - Expected: {self.inputs.model} Actual: {operating_model}")
 
 
 class VerifyRoutingTableSize(AntaTest):
@@ -112,7 +112,9 @@ class VerifyRoutingTableSize(AntaTest):
         if self.inputs.minimum <= total_routes <= self.inputs.maximum:
             self.result.is_success()
         else:
-            self.result.is_failure(f"Routing table has {total_routes} routes, outside the range of {self.inputs.minimum} to {self.inputs.maximum}")
+            self.result.is_failure(
+                f"Routing table routes are outside the routes range - Expected: {self.inputs.minimum} <= to >= {self.inputs.maximum} Actual: {total_routes}"
+            )
 
 
 class VerifyRoutingTableEntry(AntaTest):
@@ -341,7 +343,7 @@ class VerifyIPv4RouteNextHops(AntaTest):
 
             if entry.strict and expected_nexthops != actual_nexthops:
                 exp_nexthops = ", ".join(expected_nexthops)
-                self.result.is_failure(f"{entry} - List of next-hops not matching - Expected: {exp_nexthops} - Actual: {', '.join(actual_nexthops)}")
+                self.result.is_failure(f"{entry} - List of next-hops not matching - Expected: {exp_nexthops} Actual: {', '.join(actual_nexthops)}")
                 continue
 
             for nexthop in entry.nexthops:
