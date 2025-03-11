@@ -47,7 +47,7 @@ class RecordExport(BaseModel):
         Inactive Timeout: 60000, Active Interval: 300000
 
         """
-        return f"Inactive Timeout: {self.on_inactive_timeout}, Active Interval: {self.on_interval}"
+        return f"Inactive Timeout: {self.on_inactive_timeout} Active Interval: {self.on_interval}"
 
 
 class Exporter(BaseModel):

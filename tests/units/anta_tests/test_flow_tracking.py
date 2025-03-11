@@ -184,9 +184,9 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Flow Tracker: FLOW-TRACKER, Inactive Timeout: 6000, Active Interval: 30000 - Incorrect timers - Inactive Timeout: 60000, OnActive Interval: 300000",
-                "Flow Tracker: HARDWARE-TRACKER, Inactive Timeout: 60000, Active Interval: 300000 - Incorrect timers - "
-                "Inactive Timeout: 6000, OnActive Interval: 30000",
+                "Flow Tracker: FLOW-TRACKER Inactive Timeout: 6000 Active Interval: 30000 - Incorrect timers - Inactive Timeout: 60000 OnActive Interval: 300000",
+                "Flow Tracker: HARDWARE-TRACKER Inactive Timeout: 60000 Active Interval: 300000 - Incorrect timers - "
+                "Inactive Timeout: 6000 OnActive Interval: 30000",
             ],
         },
     },
@@ -239,11 +239,11 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Flow Tracker: FLOW-TRACKER, Exporter: CVP-FLOW - Incorrect local interface - Expected: Loopback10, Actual: Loopback0",
-                "Flow Tracker: FLOW-TRACKER, Exporter: CVP-FLOW - Incorrect template interval - Expected: 3500000, Actual: 3600000",
-                "Flow Tracker: HARDWARE-TRACKER, Exporter: Hardware-flow - Incorrect local interface - Expected: Loopback99, Actual: Loopback10",
-                "Flow Tracker: HARDWARE-TRACKER, Exporter: Hardware-flow - Incorrect template interval - Expected: 3000000, Actual: 3600000",
-                "Flow Tracker: HARDWARE-TRACKER, Exporter: Reverse-flow - Not configured",
+                "Flow Tracker: FLOW-TRACKER Exporter: CVP-FLOW - Incorrect local interface - Expected: Loopback10 Actual: Loopback0",
+                "Flow Tracker: FLOW-TRACKER Exporter: CVP-FLOW - Incorrect template interval - Expected: 3500000 Actual: 3600000",
+                "Flow Tracker: HARDWARE-TRACKER Exporter: Hardware-flow - Incorrect local interface - Expected: Loopback99 Actual: Loopback10",
+                "Flow Tracker: HARDWARE-TRACKER Exporter: Hardware-flow - Incorrect template interval - Expected: 3000000 Actual: 3600000",
+                "Flow Tracker: HARDWARE-TRACKER Exporter: Reverse-flow - Not configured",
             ],
         },
     },
@@ -326,13 +326,12 @@ DATA: list[dict[str, Any]] = [
             "messages": [
                 "Flow Tracker: FLOW-Sample - Not found",
                 "Flow Tracker: FLOW-TRIGGER - Disabled",
-                "Flow Tracker: HARDWARE-FLOW, Inactive Timeout: 60000, Active Interval: 300000 - Incorrect timers - "
-                "Inactive Timeout: 6000, OnActive Interval: 30000",
-                "Flow Tracker: FLOW-TRACKER2, Exporter: CVP-FLOW - Incorrect local interface - Expected: Loopback10, Actual: Loopback0",
-                "Flow Tracker: FLOW-TRACKER2, Exporter: CVP-FLOW - Incorrect template interval - Expected: 3500000, Actual: 3600000",
-                "Flow Tracker: HARDWARE-TRACKER2, Exporter: Hardware-flow - Incorrect local interface - Expected: Loopback99, Actual: Loopback10",
-                "Flow Tracker: HARDWARE-TRACKER2, Exporter: Hardware-flow - Incorrect template interval - Expected: 3000000, Actual: 3600000",
-                "Flow Tracker: HARDWARE-TRACKER2, Exporter: Reverse-flow - Not configured",
+                "Flow Tracker: HARDWARE-FLOW Inactive Timeout: 60000 Active Interval: 300000 - Incorrect timers - Inactive Timeout: 6000 OnActive Interval: 30000",
+                "Flow Tracker: FLOW-TRACKER2 Exporter: CVP-FLOW - Incorrect local interface - Expected: Loopback10 Actual: Loopback0",
+                "Flow Tracker: FLOW-TRACKER2 Exporter: CVP-FLOW - Incorrect template interval - Expected: 3500000 Actual: 3600000",
+                "Flow Tracker: HARDWARE-TRACKER2 Exporter: Hardware-flow - Incorrect local interface - Expected: Loopback99 Actual: Loopback10",
+                "Flow Tracker: HARDWARE-TRACKER2 Exporter: Hardware-flow - Incorrect template interval - Expected: 3000000 Actual: 3600000",
+                "Flow Tracker: HARDWARE-TRACKER2 Exporter: Reverse-flow - Not configured",
             ],
         },
     },
