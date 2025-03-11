@@ -2897,7 +2897,7 @@
         <span class="c1"># Check if any IPv4 BFD peer is configured</span>
         <span class="n">ipv4_neighbors_exist</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">vrf_data</span><span class="p">[</span><span class="s2">&quot;ipv4Neighbors&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">vrf_data</span> <span class="ow">in</span> <span class="n">bfd_output</span><span class="p">[</span><span class="s2">&quot;vrfs&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">ipv4_neighbors_exist</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;No IPv4 BFD peers are configured for any VRF.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;No IPv4 BFD peers are configured for any VRF&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="c1"># Iterate over IPv4 BFD peers</span>
@@ -3233,7 +3233,7 @@
                 <span class="k">if</span> <span class="n">peer</span><span class="o">.</span><span class="n">multiplier</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">missing_fileds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;multiplier&quot;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">missing_fileds</span><span class="p">:</span>
-                    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">peer</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">missing_fileds</span><span class="p">)</span><span class="si">}</span><span class="s2"> field(s) are missing in the input.&quot;</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">peer</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">missing_fileds</span><span class="p">)</span><span class="si">}</span><span class="s2"> field(s) are missing in the input&quot;</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">bfd_peers</span>
 
@@ -3531,7 +3531,7 @@
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;Validate that &#39;protocols&#39; field is provided in each BFD peer.&quot;&quot;&quot;</span>
             <span class="k">for</span> <span class="n">peer</span> <span class="ow">in</span> <span class="n">bfd_peers</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">peer</span><span class="o">.</span><span class="n">protocols</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">peer</span><span class="si">}</span><span class="s2"> &#39;protocols&#39; field missing in the input.&quot;</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">peer</span><span class="si">}</span><span class="s2"> &#39;protocols&#39; field missing in the input&quot;</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">bfd_peers</span>
 
