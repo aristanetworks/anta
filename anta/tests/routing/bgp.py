@@ -1893,3 +1893,83 @@ class VerifyBGPRedistribution(AntaTest):
                     failure_msg = self._validate_redistribute_route(str(vrf_data), str(address_family), afi_safi_configs, route_info)
                     for msg in failure_msg:
                         self.result.is_failure(msg)
+
+
+class VerifyBGPPeerTtlMultiHops(AntaTest):
+    """Verifies BGP TTL and max-ttl-hops count for BGP IPv4 peer(s).
+
+    This test performs the following checks for each specified BGP peer:
+
+      1. Verifies the specified BGP peer exists in the BGP configuration.
+      2. Verifies the TTL and max-ttl-hops attribute matches the expected value.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if all specified peers exist with TTL and max-ttl-hops attributes matching the expected values.
+    * Failure: If any of the following occur:
+        - A specified BGP peer is not found.
+        - A TTL or max-ttl-hops attribute doesn't match the expected value for any peer.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      bgp:
+        - VerifyBGPPeerTtlMultiHops:
+            bgp_peers:
+                - peer_address: 172.30.11.1
+                  vrf: default
+                  ttl: 3
+                  max_ttl_hops: 3
+                - peer_address: 172.30.11.2
+                  vrf: test
+                  ttl: 30
+                  max_ttl_hops: 30
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["bgp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip bgp neighbors vrf all", revision=2)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyBGPPeerTtlMultiHops test."""
+
+        bgp_peers: list[BgpPeer]
+        """List of IPv4 peer(s)."""
+
+        @field_validator("bgp_peers")
+        @classmethod
+        def validate_bgp_peers(cls, bgp_peers: list[BgpPeer]) -> list[BgpPeer]:
+            """Validate that 'ttl' and 'max_ttl_hops' field is provided in each BGP peer."""
+            for peer in bgp_peers:
+                if peer.ttl is None:
+                    msg = f"{peer} 'ttl' field missing in the input"
+                    raise ValueError(msg)
+                if peer.max_ttl_hops is None:
+                    msg = f"{peer} 'max_ttl_hops' field missing in the input"
+                    raise ValueError(msg)
+
+            return bgp_peers
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyBGPPeerTtlMultiHops."""
+        self.result.is_success()
+        command_output = self.instance_commands[0].json_output
+
+        for peer in self.inputs.bgp_peers:
+            peer_ip = str(peer.peer_address)
+            peer_list = get_value(command_output, f"vrfs.{peer.vrf}.peerList", default=[])
+
+            # Check if the peer is found
+            if (peer_details := get_item(peer_list, "peerAddress", peer_ip)) is None:
+                self.result.is_failure(f"{peer} - Not found")
+                continue
+
+            # Verify if the TTL duration matches the expected value.
+            if peer_details.get("ttl") != peer.ttl:
+                self.result.is_failure(f"{peer} - TTL mismatch - Expected: {peer.ttl} Actual: {peer_details.get('ttl')}")
+
+            # Verify if the max-ttl-hops time matches the expected value.
+            if peer_details.get("maxTtlHops") != peer.max_ttl_hops:
+                self.result.is_failure(f"{peer} - Max TTL Hops mismatch - Expected: {peer.max_ttl_hops} Actual: {peer_details.get('maxTtlHops')}")

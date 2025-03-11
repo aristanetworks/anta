@@ -1,0 +1,30 @@
+{
+  "anta_inventory": {
+    "hosts": [
+      {
+        "name": "spine1",
+        "host": "localhost"
+      },
+      {
+        "name": "spine2",
+        "host": "localhost"
+      },
+      {
+        "name": "leaf1a",
+        "host": "localhost"
+      },
+      {
+        "name": "leaf1b",
+        "host": "localhost"
+      },
+      {
+        "name": "leaf2a",
+        "host": "localhost"
+      },
+      {
+        "name": "leaf2b",
+        "host": "localhost"
+      }
+    ]
+  }
+}

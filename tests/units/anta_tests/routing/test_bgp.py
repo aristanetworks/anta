@@ -27,6 +27,7 @@ from anta.tests.routing.bgp import (
     VerifyBGPPeerSessionRibd,
     VerifyBGPPeersHealth,
     VerifyBGPPeersHealthRibd,
+    VerifyBGPPeerTtlMultiHops,
     VerifyBGPPeerUpdateErrors,
     VerifyBGPRedistribution,
     VerifyBGPRouteECMP,
@@ -6115,6 +6116,206 @@ DATA: list[dict[str, Any]] = [
             "messages": [
                 "VRF: default, AFI-SAFI: IPv4 Multicast, Proto: IS-IS, Include Leaked: True, Route Map: RM-CONN-2-BGP - Include leaked mismatch - Actual: False",
                 "VRF: test, AFI-SAFI: IPv6 Unicast, Proto: Bgp, Route Map: RM-CONN-2-BGP - Include leaked mismatch - Actual: True",
+            ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifyBGPPeerTtlMultiHops,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.111.0.1",
+                                "ttl": 2,
+                                "maxTtlHops": 2,
+                            },
+                            {
+                                "peerAddress": "10.111.0.2",
+                                "ttl": 1,
+                                "maxTtlHops": 1,
+                            },
+                        ]
+                    },
+                    "Test": {"peerList": [{"peerAddress": "10.111.0.3", "ttl": 255, "maxTtlHops": 255}]},
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "10.111.0.1",
+                    "vrf": "default",
+                    "ttl": 2,
+                    "max_ttl_hops": 2,
+                },
+                {
+                    "peer_address": "10.111.0.2",
+                    "vrf": "default",
+                    "ttl": 1,
+                    "max_ttl_hops": 1,
+                },
+                {
+                    "peer_address": "10.111.0.3",
+                    "vrf": "Test",
+                    "ttl": 255,
+                    "max_ttl_hops": 255,
+                },
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-peer-not-found",
+        "test": VerifyBGPPeerTtlMultiHops,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.111.0.4",
+                                "ttl": 2,
+                                "maxTtlHops": 2,
+                            },
+                            {
+                                "peerAddress": "10.111.0.5",
+                                "ttl": 1,
+                                "maxTtlHops": 1,
+                            },
+                        ]
+                    },
+                    "Test": {"peerList": [{"peerAddress": "10.111.0.6", "ttl": 255, "maxTtlHops": 255}]},
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "10.111.0.1",
+                    "vrf": "default",
+                    "ttl": 2,
+                    "max_ttl_hops": 2,
+                },
+                {
+                    "peer_address": "10.111.0.2",
+                    "vrf": "Test",
+                    "ttl": 255,
+                    "max_ttl_hops": 255,
+                },
+            ]
+        },
+        "expected": {"result": "failure", "messages": ["Peer: 10.111.0.1 VRF: default - Not found", "Peer: 10.111.0.2 VRF: Test - Not found"]},
+    },
+    {
+        "name": "failure-ttl-time-mismatch",
+        "test": VerifyBGPPeerTtlMultiHops,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.111.0.1",
+                                "ttl": 12,
+                                "maxTtlHops": 2,
+                            },
+                            {
+                                "peerAddress": "10.111.0.2",
+                                "ttl": 120,
+                                "maxTtlHops": 1,
+                            },
+                        ]
+                    },
+                    "Test": {"peerList": [{"peerAddress": "10.111.0.3", "ttl": 205, "maxTtlHops": 255}]},
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "10.111.0.1",
+                    "vrf": "default",
+                    "ttl": 2,
+                    "max_ttl_hops": 2,
+                },
+                {
+                    "peer_address": "10.111.0.2",
+                    "vrf": "default",
+                    "ttl": 1,
+                    "max_ttl_hops": 1,
+                },
+                {
+                    "peer_address": "10.111.0.3",
+                    "vrf": "Test",
+                    "ttl": 255,
+                    "max_ttl_hops": 255,
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Peer: 10.111.0.1 VRF: default - TTL mismatch - Expected: 2 Actual: 12",
+                "Peer: 10.111.0.2 VRF: default - TTL mismatch - Expected: 1 Actual: 120",
+                "Peer: 10.111.0.3 VRF: Test - TTL mismatch - Expected: 255 Actual: 205",
+            ],
+        },
+    },
+    {
+        "name": "failure-max-ttl-hops-mismatch",
+        "test": VerifyBGPPeerTtlMultiHops,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.111.0.1",
+                                "ttl": 2,
+                                "maxTtlHops": 12,
+                            },
+                            {
+                                "peerAddress": "10.111.0.2",
+                                "ttl": 1,
+                                "maxTtlHops": 100,
+                            },
+                        ]
+                    },
+                    "Test": {"peerList": [{"peerAddress": "10.111.0.3", "ttl": 255, "maxTtlHops": 205}]},
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "10.111.0.1",
+                    "vrf": "default",
+                    "ttl": 2,
+                    "max_ttl_hops": 2,
+                },
+                {
+                    "peer_address": "10.111.0.2",
+                    "vrf": "default",
+                    "ttl": 1,
+                    "max_ttl_hops": 1,
+                },
+                {
+                    "peer_address": "10.111.0.3",
+                    "vrf": "Test",
+                    "ttl": 255,
+                    "max_ttl_hops": 255,
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Peer: 10.111.0.1 VRF: default - Max TTL Hops mismatch - Expected: 2 Actual: 12",
+                "Peer: 10.111.0.2 VRF: default - Max TTL Hops mismatch - Expected: 1 Actual: 100",
+                "Peer: 10.111.0.3 VRF: Test - Max TTL Hops mismatch - Expected: 255 Actual: 205",
             ],
         },
     },
