@@ -1968,8 +1968,8 @@ class VerifyBGPPeerTtlMultiHops(AntaTest):
 
             # Verify if the TTL duration matches the expected value.
             if peer_details.get("ttl") != peer.ttl:
-                self.result.is_failure(f"{peer} - TTL duration mismatch - Expected: {peer.ttl} Actual: {peer_details.get('ttl')}")
+                self.result.is_failure(f"{peer} - TTL mismatch - Expected: {peer.ttl} Actual: {peer_details.get('ttl')}")
 
             # Verify if the max-ttl-hops time matches the expected value.
             if peer_details.get("maxTtlHops") != peer.max_ttl_hops:
-                self.result.is_failure(f"{peer} - MaxTtlHops mismatch - Expected: {peer.max_ttl_hops} Actual: {peer_details.get('maxTtlHops')}")
+                self.result.is_failure(f"{peer} - Max TTL Hops mismatch - Expected: {peer.max_ttl_hops} Actual: {peer_details.get('maxTtlHops')}")

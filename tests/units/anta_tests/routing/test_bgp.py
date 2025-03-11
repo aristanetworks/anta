@@ -6258,9 +6258,9 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 10.111.0.1 VRF: default - TTL duration mismatch - Expected: 2 Actual: 12",
-                "Peer: 10.111.0.2 VRF: default - TTL duration mismatch - Expected: 1 Actual: 120",
-                "Peer: 10.111.0.3 VRF: Test - TTL duration mismatch - Expected: 255 Actual: 205",
+                "Peer: 10.111.0.1 VRF: default - TTL mismatch - Expected: 2 Actual: 12",
+                "Peer: 10.111.0.2 VRF: default - TTL mismatch - Expected: 1 Actual: 120",
+                "Peer: 10.111.0.3 VRF: Test - TTL mismatch - Expected: 255 Actual: 205",
             ],
         },
     },
@@ -6313,9 +6313,9 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 10.111.0.1 VRF: default - MaxTtlHops mismatch - Expected: 2 Actual: 12",
-                "Peer: 10.111.0.2 VRF: default - MaxTtlHops mismatch - Expected: 1 Actual: 100",
-                "Peer: 10.111.0.3 VRF: Test - MaxTtlHops mismatch - Expected: 255 Actual: 205",
+                "Peer: 10.111.0.1 VRF: default - Max TTL Hops mismatch - Expected: 2 Actual: 12",
+                "Peer: 10.111.0.2 VRF: default - Max TTL Hops mismatch - Expected: 1 Actual: 100",
+                "Peer: 10.111.0.3 VRF: Test - Max TTL Hops mismatch - Expected: 255 Actual: 205",
             ],
         },
     },

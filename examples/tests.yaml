@@ -495,7 +495,7 @@ anta.tests.routing.bgp:
         - peer_address: 10.1.255.4
           vrf: DEV
   - VerifyBGPPeerTtlMultiHops:
-      # Verifies BGP TTL, max-ttl-hops count for BGP IPv4 peer(s).
+      # Verifies BGP TTL and max-ttl-hops count for BGP IPv4 peer(s).
       bgp_peers:
           - peer_address: 172.30.11.1
             vrf: default
