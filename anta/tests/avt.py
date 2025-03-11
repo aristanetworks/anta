@@ -143,7 +143,7 @@ class VerifyAVTSpecificPath(AntaTest):
                         valid = get_value(path_data, "flags.valid")
                         active = get_value(path_data, "flags.active")
                         if not all([valid, active]):
-                            self.result.is_failure(f"{avt_path} - Incorrect path {path} - Valid: {valid}, Active: {active}")
+                            self.result.is_failure(f"{avt_path} - Incorrect path {path} - Valid: {valid} Active: {active}")
 
             # If no matching path found, mark the test as failed
             if not path_found:
@@ -192,4 +192,4 @@ class VerifyAVTRole(AntaTest):
 
         # Check if the AVT role matches the expected role
         if self.inputs.role != command_output.get("role"):
-            self.result.is_failure(f"AVT role mismatch - Expected: {self.inputs.role}, Actual: {command_output.get('role')}")
+            self.result.is_failure(f"AVT role mismatch - Expected: {self.inputs.role} Actual: {command_output.get('role')}")

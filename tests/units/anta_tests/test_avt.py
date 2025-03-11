@@ -647,11 +647,11 @@ DATA: list[dict[str, Any]] = [
             "result": "failure",
             "messages": [
                 "AVT: DEFAULT-AVT-POLICY-CONTROL-PLANE VRF: default Destination: 10.101.255.2 Next-hop: 10.101.255.1 - "
-                "Incorrect path multihop:3 - Valid: False, Active: True",
+                "Incorrect path multihop:3 - Valid: False Active: True",
                 "AVT: DATA-AVT-POLICY-CONTROL-PLANE VRF: data Destination: 10.101.255.1 Next-hop: 10.101.255.1 - "
-                "Incorrect path direct:10 - Valid: False, Active: True",
+                "Incorrect path direct:10 - Valid: False Active: True",
                 "AVT: DATA-AVT-POLICY-CONTROL-PLANE VRF: data Destination: 10.101.255.1 Next-hop: 10.101.255.1 - "
-                "Incorrect path direct:9 - Valid: True, Active: False",
+                "Incorrect path direct:9 - Valid: True Active: False",
             ],
         },
     },
@@ -667,6 +667,6 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyAVTRole,
         "eos_data": [{"role": "transit"}],
         "inputs": {"role": "edge"},
-        "expected": {"result": "failure", "messages": ["AVT role mismatch - Expected: edge, Actual: transit"]},
+        "expected": {"result": "failure", "messages": ["AVT role mismatch - Expected: edge Actual: transit"]},
     },
 ]
