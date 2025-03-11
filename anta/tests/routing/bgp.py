@@ -1896,7 +1896,7 @@ class VerifyBGPRedistribution(AntaTest):
 
 
 class VerifyBGPPeerTtlMultiHops(AntaTest):
-    """Verifies BGP TTL, max-ttl-hops count for BGP IPv4 peer(s).
+    """Verifies BGP TTL and max-ttl-hops count for BGP IPv4 peer(s).
 
     This test performs the following checks for each specified BGP peer:
 
