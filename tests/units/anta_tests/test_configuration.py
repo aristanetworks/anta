@@ -58,6 +58,6 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyRunningConfigLines,
         "eos_data": ["enable password something\nsome other line"],
         "inputs": {"regex_patterns": ["bla", "bleh"]},
-        "expected": {"result": "failure", "messages": ["Following patterns were not found: 'bla','bleh'"]},
+        "expected": {"result": "failure", "messages": ["Following patterns were not found: 'bla', 'bleh'"]},
     },
 ]
