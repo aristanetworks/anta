@@ -178,7 +178,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": ["Sensor: DomTemperatureSensor54 - Non-zero alert counter - Actual: 1"],
+            "messages": ["Sensor: DomTemperatureSensor54 - Incorrect alert counter - Expected: 0 Actual: 1"],
         },
     },
     {
@@ -917,6 +917,6 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyAdverseDrops,
         "eos_data": [{"totalAdverseDrops": 10}],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Non-zero total adverse drops counter - Actual: 10"]},
+        "expected": {"result": "failure", "messages": ["Incorrect total adverse drops counter - Expected: 0 Actual: 10"]},
     },
 ]

@@ -10,14 +10,14 @@ from __future__ import annotations
 import re
 from typing import ClassVar, TypeVar
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import Field, field_validator
 from pydantic_extra_types.mac_address import MacAddress
 
-from anta.custom_types import EthernetInterface, Interface, Percent, PositiveInteger
+from anta.custom_types import Interface, Percent, PositiveInteger
 from anta.decorators import skip_on_platforms
 from anta.input_models.interfaces import InterfaceDetail, InterfaceState
 from anta.models import AntaCommand, AntaTemplate, AntaTest
-from anta.tools import custom_division, format_data, get_failed_logs, get_item, get_value
+from anta.tools import custom_division, format_data, get_item, get_value
 
 BPS_GBPS_CONVERSIONS = 1000000000
 
@@ -571,32 +571,25 @@ class VerifyL2MTU(AntaTest):
         """Default MTU we should have configured on all non-excluded interfaces. Defaults to 9214."""
         ignored_interfaces: list[str] = Field(default=["Management", "Loopback", "Vxlan", "Tunnel"])
         """A list of L2 interfaces to ignore. Defaults to ["Management", "Loopback", "Vxlan", "Tunnel"]"""
-        specific_mtu: list[dict[str, int]] = Field(default=[])
+        specific_mtu: list[dict[Interface, int]] = Field(default=[])
         """A list of dictionary of L2 interfaces with their specific MTU configured"""
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyL2MTU."""
-        # Parameter to save incorrect interface settings
-        wrong_l2mtu_intf: list[dict[str, int]] = []
-        command_output = self.instance_commands[0].json_output
-        # Set list of interfaces with specific settings
-        specific_interfaces: list[str] = []
-        if self.inputs.specific_mtu:
-            for d in self.inputs.specific_mtu:
-                specific_interfaces.extend(d)
-        for interface, values in command_output["interfaces"].items():
+        self.result.is_success()
+        interface_output = self.instance_commands[0].json_output["interfaces"]
+        specific_interfaces = {key: value for details in self.inputs.specific_mtu for key, value in details.items()}
+
+        for interface, details in interface_output.items():
             catch_interface = re.findall(r"^[e,p][a-zA-Z]+[-,a-zA-Z]*\d+\/*\d*", interface, re.IGNORECASE)
-            if len(catch_interface) and catch_interface[0] not in self.inputs.ignored_interfaces and values["forwardingModel"] == "bridged":
+            if catch_interface and catch_interface not in self.inputs.ignored_interfaces and details["forwardingModel"] == "bridged":
                 if interface in specific_interfaces:
-                    wrong_l2mtu_intf.extend({interface: values["mtu"]} for custom_data in self.inputs.specific_mtu if values["mtu"] != custom_data[interface])
-                # Comparison with generic setting
-                elif values["mtu"] != self.inputs.mtu:
-                    wrong_l2mtu_intf.append({interface: values["mtu"]})
-        if wrong_l2mtu_intf:
-            self.result.is_failure(f"Some L2 interfaces do not have correct MTU configured:\n{wrong_l2mtu_intf}")
-        else:
-            self.result.is_success()
+                    if (mtu := specific_interfaces[interface]) != (act_mtu := details["mtu"]):
+                        self.result.is_failure(f"Interface: {interface} - Incorrect MTU configured - Expected: {mtu} Actual: {act_mtu}")
+
+                elif (act_mtu := details["mtu"]) != self.inputs.mtu:
+                    self.result.is_failure(f"Interface: {interface} - Incorrect MTU configured - Expected: {self.inputs.mtu} Actual: {act_mtu}")
 
 
 class VerifyInterfaceIPv4(AntaTest):
@@ -706,13 +699,10 @@ class VerifyIpVirtualRouterMac(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyIpVirtualRouterMac."""
+        self.result.is_success()
         command_output = self.instance_commands[0].json_output["virtualMacs"]
-        mac_address_found = get_item(command_output, "macAddress", self.inputs.mac_address)
-
-        if mac_address_found is None:
-            self.result.is_failure(f"IP virtual router MAC address `{self.inputs.mac_address}` is not configured.")
-        else:
-            self.result.is_success()
+        if get_item(command_output, "macAddress", self.inputs.mac_address) is None:
+            self.result.is_failure(f"IP virtual router MAC address: {self.inputs.mac_address} - Not configured")
 
 
 class VerifyInterfacesSpeed(AntaTest):
@@ -751,20 +741,19 @@ class VerifyInterfacesSpeed(AntaTest):
     class Input(AntaTest.Input):
         """Inputs for the VerifyInterfacesSpeed test."""
 
-        interfaces: list[InterfaceDetail]
-        """List of interfaces to be tested"""
+        interfaces: list[InterfaceState]
+        """List of interfaces with their expected state."""
+        InterfaceDetail: ClassVar[type[InterfaceDetail]] = InterfaceDetail
 
-        class InterfaceDetail(BaseModel):
-            """Detail of an interface."""
-
-            name: EthernetInterface
-            """The name of the interface."""
-            auto: bool
-            """The auto-negotiation status of the interface."""
-            speed: float = Field(ge=1, le=1000)
-            """The speed of the interface in Gigabits per second. Valid range is 1 to 1000."""
-            lanes: None | int = Field(None, ge=1, le=8)
-            """The number of lanes in the interface. Valid range is 1 to 8. This field is optional."""
+        @field_validator("interfaces")
+        @classmethod
+        def validate_interfaces(cls, interfaces: list[T]) -> list[T]:
+            """Validate that 'speed' field is provided in each interface."""
+            for interface in interfaces:
+                if interface.speed is None:
+                    msg = f"{interface} 'speed' field missing in the input"
+                    raise ValueError(msg)
+            return interfaces
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -774,40 +763,27 @@ class VerifyInterfacesSpeed(AntaTest):
 
         # Iterate over all the interfaces
         for interface in self.inputs.interfaces:
-            intf = interface.name
-
-            # Check if interface exists
-            if not (interface_output := get_value(command_output, f"interfaces.{intf}")):
-                self.result.is_failure(f"Interface `{intf}` is not found.")
+            if (interface_detail := get_value(command_output["interfaces"], f"{interface.name}", separator="..")) is None:
+                self.result.is_failure(f"{interface} - Not found")
                 continue
 
-            auto_negotiation = interface_output.get("autoNegotiate")
-            actual_lanes = interface_output.get("lanes")
+            # Verifies the bandwidth
+            if (speed := interface_detail.get("bandwidth")) != interface.speed * BPS_GBPS_CONVERSIONS:
+                self.result.is_failure(
+                    f"{interface} - Bandwidth mismatch - Expected: {interface.speed}Gbps Actual: {custom_division(speed, BPS_GBPS_CONVERSIONS)}Gbps"
+                )
 
-            # Collecting actual interface details
-            actual_interface_output = {
-                "auto negotiation": auto_negotiation if interface.auto is True else None,
-                "duplex mode": interface_output.get("duplex"),
-                "speed": interface_output.get("bandwidth"),
-                "lanes": actual_lanes if interface.lanes is not None else None,
-            }
+            # Verifies the duplex mode
+            if (duplex := interface_detail.get("duplex")) != "duplexFull":
+                self.result.is_failure(f"{interface} - Duplex mode mismatch - Expected: duplexFull Actual: {duplex}")
 
-            # Forming expected interface details
-            expected_interface_output = {
-                "auto negotiation": "success" if interface.auto is True else None,
-                "duplex mode": "duplexFull",
-                "speed": interface.speed * BPS_GBPS_CONVERSIONS,
-                "lanes": interface.lanes,
-            }
+            # Verifies the auto-negotiation as success if specified
+            if interface.auto and (auto_negotiation := interface_detail.get("autoNegotiate")) != "success":
+                self.result.is_failure(f"{interface} - Auto-negotiation mismatch - Expected: success Actual: {auto_negotiation}")
 
-            # Forming failure message
-            if actual_interface_output != expected_interface_output:
-                for output in [actual_interface_output, expected_interface_output]:
-                    # Convert speed to Gbps for readability
-                    if output["speed"] is not None:
-                        output["speed"] = f"{custom_division(output['speed'], BPS_GBPS_CONVERSIONS)}Gbps"
-                failed_log = get_failed_logs(expected_interface_output, actual_interface_output)
-                self.result.is_failure(f"For interface {intf}:{failed_log}\n")
+            # Verifies the communication lanes if specified
+            if interface.lanes and (lanes := interface_detail.get("lanes")) != interface.lanes:
+                self.result.is_failure(f"{interface} - Data lanes count mismatch - Expected: {interface.lanes} Actual: {lanes}")
 
 
 class VerifyLACPInterfacesStatus(AntaTest):

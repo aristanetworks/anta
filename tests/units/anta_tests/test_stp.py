@@ -574,7 +574,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"threshold": 10},
-        "expected": {"result": "failure", "messages": ["STP is not configured."]},
+        "expected": {"result": "failure", "messages": ["STP is not configured"]},
     },
     {
         "name": "success",
