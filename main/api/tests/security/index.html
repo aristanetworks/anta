@@ -3479,7 +3479,9 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/security.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">181</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
 <span class="normal">182</span>
 <span class="normal">183</span>
 <span class="normal">184</span>
@@ -3503,9 +3505,7 @@
 <span class="normal">202</span>
 <span class="normal">203</span>
 <span class="normal">204</span>
-<span class="normal">205</span>
-<span class="normal">206</span>
-<span class="normal">207</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyAPIHttpStatus</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">205</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyAPIHttpStatus</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies if eAPI HTTP server is disabled globally.</span>
 
 <span class="sd">    Expected Results</span>
@@ -3627,7 +3627,9 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/security.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">210</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
 <span class="normal">211</span>
 <span class="normal">212</span>
 <span class="normal">213</span>
@@ -3662,9 +3664,7 @@
 <span class="normal">242</span>
 <span class="normal">243</span>
 <span class="normal">244</span>
-<span class="normal">245</span>
-<span class="normal">246</span>
-<span class="normal">247</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyAPIHttpsSSL</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">245</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyAPIHttpsSSL</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies if eAPI HTTPS server SSL profile is configured and valid.</span>
 
 <span class="sd">    Expected Results</span>
@@ -3817,7 +3817,9 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/security.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">250</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
 <span class="normal">251</span>
 <span class="normal">252</span>
 <span class="normal">253</span>
@@ -3859,9 +3861,7 @@
 <span class="normal">289</span>
 <span class="normal">290</span>
 <span class="normal">291</span>
-<span class="normal">292</span>
-<span class="normal">293</span>
-<span class="normal">294</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyAPIIPv4Acl</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">292</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyAPIIPv4Acl</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies if eAPI has the right number IPv4 ACL(s) configured for a specified VRF.</span>
 
 <span class="sd">    Expected Results</span>
@@ -3897,13 +3897,13 @@
         <span class="n">ipv4_acl_list</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;ipAclList&quot;</span><span class="p">][</span><span class="s2">&quot;aclList&quot;</span><span class="p">]</span>
         <span class="n">ipv4_acl_number</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ipv4_acl_list</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">ipv4_acl_number</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">number</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2"> eAPI IPv4 ACL(s) in vrf </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> but got </span><span class="si">{</span><span class="n">ipv4_acl_number</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;VRF: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> - eAPI IPv4 ACL(s) count mismatch - Expected: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">ipv4_acl_number</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="n">not_configured_acl</span> <span class="o">=</span> <span class="p">[</span><span class="n">acl</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">acl</span> <span class="ow">in</span> <span class="n">ipv4_acl_list</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">acl</span><span class="p">[</span><span class="s2">&quot;configuredVrfs&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">acl</span><span class="p">[</span><span class="s2">&quot;activeVrfs&quot;</span><span class="p">]]</span>
 
         <span class="k">if</span> <span class="n">not_configured_acl</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;eAPI IPv4 ACL(s) not configured or active in vrf </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">not_configured_acl</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;VRF: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> - Following eAPI IPv4 ACL(s) not configured or active: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">not_configured_acl</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
@@ -4022,7 +4022,9 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/security.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">297</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
 <span class="normal">298</span>
 <span class="normal">299</span>
 <span class="normal">300</span>
@@ -4065,9 +4067,7 @@
 <span class="normal">337</span>
 <span class="normal">338</span>
 <span class="normal">339</span>
-<span class="normal">340</span>
-<span class="normal">341</span>
-<span class="normal">342</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyAPIIPv6Acl</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">340</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyAPIIPv6Acl</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies if eAPI has the right number IPv6 ACL(s) configured for a specified VRF.</span>
 
 <span class="sd">    Expected Results</span>
@@ -4104,13 +4104,13 @@
         <span class="n">ipv6_acl_list</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;ipv6AclList&quot;</span><span class="p">][</span><span class="s2">&quot;aclList&quot;</span><span class="p">]</span>
         <span class="n">ipv6_acl_number</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ipv6_acl_list</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">ipv6_acl_number</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">number</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2"> eAPI IPv6 ACL(s) in vrf </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> but got </span><span class="si">{</span><span class="n">ipv6_acl_number</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;VRF: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> - eAPI IPv6 ACL(s) count mismatch - Expected: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">ipv6_acl_number</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="n">not_configured_acl</span> <span class="o">=</span> <span class="p">[</span><span class="n">acl</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">acl</span> <span class="ow">in</span> <span class="n">ipv6_acl_list</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">acl</span><span class="p">[</span><span class="s2">&quot;configuredVrfs&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">acl</span><span class="p">[</span><span class="s2">&quot;activeVrfs&quot;</span><span class="p">]]</span>
 
         <span class="k">if</span> <span class="n">not_configured_acl</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;eAPI IPv6 ACL(s) not configured or active in vrf </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">not_configured_acl</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;VRF: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> - Following eAPI IPv6 ACL(s) not configured or active: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">not_configured_acl</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
@@ -4237,7 +4237,9 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/security.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">345</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">343</span>
+<span class="normal">344</span>
+<span class="normal">345</span>
 <span class="normal">346</span>
 <span class="normal">347</span>
 <span class="normal">348</span>
@@ -4332,9 +4334,7 @@
 <span class="normal">437</span>
 <span class="normal">438</span>
 <span class="normal">439</span>
-<span class="normal">440</span>
-<span class="normal">441</span>
-<span class="normal">442</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyAPISSLCertificate</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">440</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyAPISSLCertificate</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the eAPI SSL certificate.</span>
 
 <span class="sd">    This test performs the following checks for each certificate:</span>
@@ -4530,7 +4530,9 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/security.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">445</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">443</span>
+<span class="normal">444</span>
+<span class="normal">445</span>
 <span class="normal">446</span>
 <span class="normal">447</span>
 <span class="normal">448</span>
@@ -4568,8 +4570,7 @@
 <span class="normal">480</span>
 <span class="normal">481</span>
 <span class="normal">482</span>
-<span class="normal">483</span>
-<span class="normal">484</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBannerLogin</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">483</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBannerLogin</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the login banner of a device.</span>
 
 <span class="sd">    Expected Results</span>
@@ -4601,14 +4602,15 @@
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyBannerLogin.&quot;&quot;&quot;</span>
-        <span class="n">login_banner</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">&quot;loginBanner&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">login_banner</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">&quot;loginBanner&quot;</span><span class="p">]):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;Login banner is not configured&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
 
         <span class="c1"># Remove leading and trailing whitespaces from each line</span>
         <span class="n">cleaned_banner</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">login_banner</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">login_banner</span> <span class="o">!=</span> <span class="n">cleaned_banner</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected `</span><span class="si">{</span><span class="n">cleaned_banner</span><span class="si">}</span><span class="s2">` as the login banner, but found `</span><span class="si">{</span><span class="n">login_banner</span><span class="si">}</span><span class="s2">` instead.&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Incorrect login banner configured - Expected: </span><span class="si">{</span><span class="n">cleaned_banner</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">login_banner</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -4707,7 +4709,8 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/security.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">487</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">486</span>
+<span class="normal">487</span>
 <span class="normal">488</span>
 <span class="normal">489</span>
 <span class="normal">490</span>
@@ -4778,14 +4781,15 @@
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyBannerMotd.&quot;&quot;&quot;</span>
-        <span class="n">motd_banner</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">&quot;motd&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">motd_banner</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">&quot;motd&quot;</span><span class="p">]):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;MOTD banner is not configured&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
 
         <span class="c1"># Remove leading and trailing whitespaces from each line</span>
         <span class="n">cleaned_banner</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">motd_banner</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">motd_banner</span> <span class="o">!=</span> <span class="n">cleaned_banner</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected `</span><span class="si">{</span><span class="n">cleaned_banner</span><span class="si">}</span><span class="s2">` as the motd banner, but found `</span><span class="si">{</span><span class="n">motd_banner</span><span class="si">}</span><span class="s2">` instead.&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Incorrect MOTD banner configured - Expected: </span><span class="si">{</span><span class="n">cleaned_banner</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">motd_banner</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -4850,7 +4854,13 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/security.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">743</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">737</span>
+<span class="normal">738</span>
+<span class="normal">739</span>
+<span class="normal">740</span>
+<span class="normal">741</span>
+<span class="normal">742</span>
+<span class="normal">743</span>
 <span class="normal">744</span>
 <span class="normal">745</span>
 <span class="normal">746</span>
@@ -4872,13 +4882,7 @@
 <span class="normal">762</span>
 <span class="normal">763</span>
 <span class="normal">764</span>
-<span class="normal">765</span>
-<span class="normal">766</span>
-<span class="normal">767</span>
-<span class="normal">768</span>
-<span class="normal">769</span>
-<span class="normal">770</span>
-<span class="normal">771</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyHardwareEntropy</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">765</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyHardwareEntropy</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies hardware entropy generation is enabled on device.</span>
 
 <span class="sd">    Expected Results</span>
@@ -4904,7 +4908,7 @@
 
         <span class="c1"># Check if hardware entropy generation is enabled.</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">command_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;hardwareEntropyEnabled&quot;</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;Hardware entropy generation is disabled.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;Hardware entropy generation is disabled&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
@@ -5008,11 +5012,7 @@
 <span class="normal">638</span>
 <span class="normal">639</span>
 <span class="normal">640</span>
-<span class="normal">641</span>
-<span class="normal">642</span>
-<span class="normal">643</span>
-<span class="normal">644</span>
-<span class="normal">645</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyIPSecConnHealth</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">641</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyIPSecConnHealth</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies all IPv4 security connections.</span>
 
 <span class="sd">    Expected Results</span>
@@ -5035,12 +5035,11 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyIPSecConnHealth.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
-        <span class="n">failure_conn</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">&quot;connections&quot;</span><span class="p">]</span>
 
         <span class="c1"># Check if IP security connection is configured</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">command_output</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;No IPv4 security connection configured.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;No IPv4 security connection configured&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="c1"># Iterate over all ipsec connections</span>
@@ -5050,10 +5049,7 @@
                 <span class="n">source</span> <span class="o">=</span> <span class="n">conn_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;saddr&quot;</span><span class="p">)</span>
                 <span class="n">destination</span> <span class="o">=</span> <span class="n">conn_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;daddr&quot;</span><span class="p">)</span>
                 <span class="n">vrf</span> <span class="o">=</span> <span class="n">conn_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tunnelNs&quot;</span><span class="p">)</span>
-                <span class="n">failure_conn</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;source:</span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2"> destination:</span><span class="si">{</span><span class="n">destination</span><span class="si">}</span><span class="s2"> vrf:</span><span class="si">{</span><span class="n">vrf</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">failure_conn</span><span class="p">:</span>
-            <span class="n">failure_msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">failure_conn</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The following IPv4 security connections are not established:</span><span class="se">\n</span><span class="si">{</span><span class="n">failure_msg</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Source: </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2"> Destination: </span><span class="si">{</span><span class="n">destination</span><span class="si">}</span><span class="s2"> VRF: </span><span class="si">{</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> - IPv4 security connection not established&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -5495,8 +5491,7 @@
 <span class="normal"> 97</span>
 <span class="normal"> 98</span>
 <span class="normal"> 99</span>
-<span class="normal">100</span>
-<span class="normal">101</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySSHIPv4Acl</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">100</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySSHIPv4Acl</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies if the SSHD agent has the right number IPv4 ACL(s) configured for a specified VRF.</span>
 
 <span class="sd">    Expected Results</span>
@@ -5529,19 +5524,18 @@
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifySSHIPv4Acl.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
         <span class="n">ipv4_acl_list</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;ipAclList&quot;</span><span class="p">][</span><span class="s2">&quot;aclList&quot;</span><span class="p">]</span>
         <span class="n">ipv4_acl_number</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ipv4_acl_list</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">ipv4_acl_number</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">number</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2"> SSH IPv4 ACL(s) in vrf </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> but got </span><span class="si">{</span><span class="n">ipv4_acl_number</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;VRF: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> - SSH IPv4 ACL(s) count mismatch - Expected: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">ipv4_acl_number</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="n">not_configured_acl</span> <span class="o">=</span> <span class="p">[</span><span class="n">acl</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">acl</span> <span class="ow">in</span> <span class="n">ipv4_acl_list</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">acl</span><span class="p">[</span><span class="s2">&quot;configuredVrfs&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">acl</span><span class="p">[</span><span class="s2">&quot;activeVrfs&quot;</span><span class="p">]]</span>
 
         <span class="k">if</span> <span class="n">not_configured_acl</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SSH IPv4 ACL(s) not configured or active in vrf </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">not_configured_acl</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;VRF: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> - Following SSH IPv4 ACL(s) not configured or active: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">not_configured_acl</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -5657,7 +5651,8 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/security.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">104</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">103</span>
+<span class="normal">104</span>
 <span class="normal">105</span>
 <span class="normal">106</span>
 <span class="normal">107</span>
@@ -5700,9 +5695,7 @@
 <span class="normal">144</span>
 <span class="normal">145</span>
 <span class="normal">146</span>
-<span class="normal">147</span>
-<span class="normal">148</span>
-<span class="normal">149</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySSHIPv6Acl</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">147</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySSHIPv6Acl</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies if the SSHD agent has the right number IPv6 ACL(s) configured for a specified VRF.</span>
 
 <span class="sd">    Expected Results</span>
@@ -5735,19 +5728,18 @@
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifySSHIPv6Acl.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
         <span class="n">ipv6_acl_list</span> <span class="o">=</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;ipv6AclList&quot;</span><span class="p">][</span><span class="s2">&quot;aclList&quot;</span><span class="p">]</span>
         <span class="n">ipv6_acl_number</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ipv6_acl_list</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">ipv6_acl_number</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">number</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2"> SSH IPv6 ACL(s) in vrf </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> but got </span><span class="si">{</span><span class="n">ipv6_acl_number</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;VRF: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> - SSH IPv6 ACL(s) count mismatch - Expected: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">ipv6_acl_number</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="n">not_configured_acl</span> <span class="o">=</span> <span class="p">[</span><span class="n">acl</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">acl</span> <span class="ow">in</span> <span class="n">ipv6_acl_list</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">acl</span><span class="p">[</span><span class="s2">&quot;configuredVrfs&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">acl</span><span class="p">[</span><span class="s2">&quot;activeVrfs&quot;</span><span class="p">]]</span>
 
         <span class="k">if</span> <span class="n">not_configured_acl</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SSH IPv6 ACL(s) not configured or active in vrf </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">not_configured_acl</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;VRF: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">vrf</span><span class="si">}</span><span class="s2"> - Following SSH IPv6 ACL(s) not configured or active: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">not_configured_acl</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -5873,7 +5865,7 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">command_output</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;SSHD status&quot;</span><span class="p">))</span>
         <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;Could not find SSH status in returned output.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;Could not find SSH status in returned output&quot;</span><span class="p">)</span>
             <span class="k">return</span>
         <span class="n">status</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
@@ -6012,7 +6004,11 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/security.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">648</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">644</span>
+<span class="normal">645</span>
+<span class="normal">646</span>
+<span class="normal">647</span>
+<span class="normal">648</span>
 <span class="normal">649</span>
 <span class="normal">650</span>
 <span class="normal">651</span>
@@ -6098,13 +6094,7 @@
 <span class="normal">731</span>
 <span class="normal">732</span>
 <span class="normal">733</span>
-<span class="normal">734</span>
-<span class="normal">735</span>
-<span class="normal">736</span>
-<span class="normal">737</span>
-<span class="normal">738</span>
-<span class="normal">739</span>
-<span class="normal">740</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySpecificIPSecConn</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">734</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySpecificIPSecConn</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the IPv4 security connections.</span>
 
 <span class="sd">    This test performs the following checks for each peer:</span>
@@ -6176,9 +6166,7 @@
                     <span class="k">if</span> <span class="n">state</span> <span class="o">!=</span> <span class="s2">&quot;Established&quot;</span><span class="p">:</span>
                         <span class="n">source</span> <span class="o">=</span> <span class="n">conn_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;saddr&quot;</span><span class="p">)</span>
                         <span class="n">destination</span> <span class="o">=</span> <span class="n">conn_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;daddr&quot;</span><span class="p">)</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">input_peer</span><span class="si">}</span><span class="s2"> Source: </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2"> Destination: </span><span class="si">{</span><span class="n">destination</span><span class="si">}</span><span class="s2"> - Connection down - Expected: Established, Actual: </span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s2">&quot;</span>
-                        <span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">input_peer</span><span class="si">}</span><span class="s2"> Source: </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2"> Destination: </span><span class="si">{</span><span class="n">destination</span><span class="si">}</span><span class="s2"> - Connection down - Expected: Established Actual: </span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">continue</span>
 
             <span class="c1"># Create a dictionary of existing connections for faster lookup</span>
@@ -6193,7 +6181,7 @@
                 <span class="k">if</span> <span class="p">(</span><span class="n">source_input</span><span class="p">,</span> <span class="n">destination_input</span><span class="p">,</span> <span class="n">vrf</span><span class="p">)</span> <span class="ow">in</span> <span class="n">existing_connections</span><span class="p">:</span>
                     <span class="n">existing_state</span> <span class="o">=</span> <span class="n">existing_connections</span><span class="p">[(</span><span class="n">source_input</span><span class="p">,</span> <span class="n">destination_input</span><span class="p">,</span> <span class="n">vrf</span><span class="p">)]</span>
                     <span class="k">if</span> <span class="n">existing_state</span> <span class="o">!=</span> <span class="s2">&quot;Established&quot;</span><span class="p">:</span>
-                        <span class="n">failure</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Expected: Established, Actual: </span><span class="si">{</span><span class="n">existing_state</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="n">failure</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Expected: Established Actual: </span><span class="si">{</span><span class="n">existing_state</span><span class="si">}</span><span class="s2">&quot;</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">input_peer</span><span class="si">}</span><span class="s2"> Source: </span><span class="si">{</span><span class="n">source_input</span><span class="si">}</span><span class="s2"> Destination: </span><span class="si">{</span><span class="n">destination_input</span><span class="si">}</span><span class="s2"> - Connection down - </span><span class="si">{</span><span class="n">failure</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">input_peer</span><span class="si">}</span><span class="s2"> Source: </span><span class="si">{</span><span class="n">source_input</span><span class="si">}</span><span class="s2"> Destination: </span><span class="si">{</span><span class="n">destination_input</span><span class="si">}</span><span class="s2"> - Connection not found.&quot;</span><span class="p">)</span>
@@ -6261,7 +6249,9 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/security.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">152</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
 <span class="normal">153</span>
 <span class="normal">154</span>
 <span class="normal">155</span>
@@ -6285,9 +6275,7 @@
 <span class="normal">173</span>
 <span class="normal">174</span>
 <span class="normal">175</span>
-<span class="normal">176</span>
-<span class="normal">177</span>
-<span class="normal">178</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyTelnetStatus</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">176</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyTelnetStatus</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies if Telnet is disabled in the default VRF.</span>
 
 <span class="sd">    Expected Results</span>
