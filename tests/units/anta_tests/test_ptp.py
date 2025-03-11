@@ -99,7 +99,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "The device is locked to the following Grandmaster: '0x00:1c:73:ff:ff:0a:00:01', which differ from the expected one.",
+                "The device locked to the incorrect Grandmaster - Expected: 0xec:46:70:ff:fe:00:ff:a8 Actual: 0x00:1c:73:ff:ff:0a:00:01",
             ],
         },
     },
