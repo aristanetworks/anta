@@ -9,7 +9,7 @@ import enum
 import functools
 import logging
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any, Callable, Literal
 
 import click
 from yaml import YAMLError
@@ -191,6 +191,14 @@ def core_options(f: Callable[..., Any]) -> Callable[..., Any]:
         required=True,
         type=click.Path(file_okay=True, dir_okay=False, exists=True, readable=True, path_type=Path),
     )
+    @click.option(
+        "--inventory-format",
+        envvar="ANTA_INVENTORY_FORMAT",
+        show_envvar=True,
+        help="Format of the inventory file, either 'yaml' or 'json'",
+        default="yaml",
+        type=click.Choice(["yaml", "json"], case_sensitive=False),
+    )
     @click.pass_context
     @functools.wraps(f)
     def wrapper(
@@ -205,6 +213,7 @@ def core_options(f: Callable[..., Any]) -> Callable[..., Any]:
         timeout: float,
         insecure: bool,
         disable_cache: bool,
+        inventory_format: Literal["json", "yaml"],
         **kwargs: dict[str, Any],
     ) -> Any:
         # If help is invoke somewhere, do not parse inventory
@@ -242,6 +251,7 @@ def core_options(f: Callable[..., Any]) -> Callable[..., Any]:
                 timeout=timeout,
                 insecure=insecure,
                 disable_cache=disable_cache,
+                file_format=inventory_format,
             )
         except (TypeError, ValueError, YAMLError, OSError, InventoryIncorrectSchemaError, InventoryRootKeyError) as e:
             anta_log_exception(e, f"Failed to parse the inventory: {inventory}", logger)
