@@ -1,378 +1,389 @@
 [
-    {
-        "name": "DC1-SPINE1",
-        "test": "VerifyTacacsSourceIntf",
-        "categories": [
-            "AAA"
-        ],
-        "description": "Verifies TACACS source-interface for a specified VRF.",
-        "result": "failure",
-        "messages": [
-            "Source-interface Management0 is not configured in VRF default"
-        ],
-        "custom_field": null
-    },
-    {
-        "name": "DC1-SPINE1",
-        "test": "VerifyLLDPNeighbors",
-        "categories": [
-            "Connectivity"
-        ],
-        "description": "Verifies that the provided LLDP neighbors are connected properly.",
-        "result": "failure",
-        "messages": [
-            "Wrong LLDP neighbor(s) on port(s):\n   Ethernet1\n      DC1-LEAF1A_Ethernet1\n   Ethernet2\n      DC1-LEAF1B_Ethernet1\nPort(s) not configured:\n   Ethernet7"
-        ],
-        "custom_field": null
-    },
-    {
-        "name": "DC1-SPINE1",
-        "test": "VerifyBGPPeerCount",
-        "categories": [
-            "BGP"
-        ],
-        "description": "Verifies the count of BGP peers.",
-        "result": "failure",
-        "messages": [
-            "Failures: [{'afi': 'ipv4', 'safi': 'unicast', 'vrfs': {'PROD': 'Not Configured', 'default': 'Expected: 3, Actual: 4'}}, {'afi': 'ipv4', 'safi': 'multicast', 'vrfs': {'DEV': 'Not Configured'}}, {'afi': 'evpn', 'vrfs': {'default': 'Expected: 2, Actual: 4'}}]"
-        ],
-        "custom_field": null
-    },
-    {
-        "name": "DC1-SPINE1",
-        "test": "VerifySTPMode",
-        "categories": [
-            "STP"
-        ],
-        "description": "Verifies the configured STP mode for a provided list of VLAN(s).",
-        "result": "failure",
-        "messages": [
-            "STP mode 'rapidPvst' not configured for the following VLAN(s): [10, 20]"
-        ],
-        "custom_field": null
-    },
-    {
-        "name": "DC1-SPINE1",
-        "test": "VerifySnmpStatus",
-        "categories": [
-            "SNMP"
-        ],
-        "description": "Verifies if the SNMP agent is enabled.",
-        "result": "failure",
-        "messages": [
-            "SNMP agent disabled in vrf default"
-        ],
-        "custom_field": null
-    },
-    {
-        "name": "DC1-SPINE1",
-        "test": "VerifyRoutingTableEntry",
-        "categories": [
-            "Routing"
-        ],
-        "description": "Verifies that the provided routes are present in the routing table of a specified VRF.",
-        "result": "failure",
-        "messages": [
-            "The following route(s) are missing from the routing table of VRF default: ['10.1.0.2']"
-        ],
-        "custom_field": null
-    },
-    {
-        "name": "DC1-SPINE1",
-        "test": "VerifyInterfaceUtilization",
-        "categories": [
-            "Interfaces"
-        ],
-        "description": "Verifies that the utilization of interfaces is below a certain threshold.",
-        "result": "success",
-        "messages": [],
-        "custom_field": null
-    },
-    {
-        "name": "DC1-SPINE1",
-        "test": "VerifyMlagStatus",
-        "categories": [
-            "MLAG"
-        ],
-        "description": "Verifies the health status of the MLAG configuration.",
-        "result": "skipped",
-        "messages": [
-            "MLAG is disabled"
-        ],
-        "custom_field": null
-    },
-    {
-        "name": "DC1-SPINE1",
-        "test": "VerifyVxlan1Interface",
-        "categories": [
-            "VXLAN"
-        ],
-        "description": "Verifies the Vxlan1 interface status.",
-        "result": "skipped",
-        "messages": [
-            "Vxlan1 interface is not configured"
-        ],
-        "custom_field": null
-    },
-    {
-        "name": "DC1-SPINE1",
-        "test": "VerifyBFDSpecificPeers",
-        "categories": [
-            "BFD"
-        ],
-        "description": "Verifies the IPv4 BFD peer's sessions and remote disc in the specified VRF.",
-        "result": "failure",
-        "messages": [
-            "Following BFD peers are not configured, status is not up or remote disc is zero:\n{'192.0.255.8': {'default': 'Not Configured'}, '192.0.255.7': {'default': 'Not Configured'}}"
-        ],
-        "custom_field": null
-    },
-    {
-        "name": "DC1-SPINE1",
-        "test": "VerifyNTP",
-        "categories": [
-            "System"
-        ],
-        "description": "Verifies if NTP is synchronised.",
-        "result": "failure",
-        "messages": [
-            "The device is not synchronized with the configured NTP server(s): 'NTP is disabled.'"
-        ],
-        "custom_field": null
-    },
-    {
-        "name": "DC1-SPINE1",
-        "test": "VerifyReachability",
-        "categories": [
-            "Connectivity"
-        ],
-        "description": "Test the network reachability to one or many destination IP(s).",
-        "result": "error",
-        "messages": [
-            "ping vrf MGMT 1.1.1.1 source Management1 repeat 2 has failed: No source interface Management1"
-        ],
-        "custom_field": null
-    },
-    {
-        "name": "DC1-SPINE1",
-        "test": "VerifyTelnetStatus",
-        "categories": [
-            "Security"
-        ],
-        "description": "Verifies if Telnet is disabled in the default VRF.",
-        "result": "success",
-        "messages": [],
-        "custom_field": null
-    },
-    {
-        "name": "DC1-SPINE1",
-        "test": "VerifyEOSVersion",
-        "categories": [
-            "Software"
-        ],
-        "description": "Verifies the EOS version of the device.",
-        "result": "failure",
-        "messages": [
-            "device is running version \"4.31.1F-34554157.4311F (engineering build)\" not in expected versions: ['4.25.4M', '4.26.1F']"
-        ],
-        "custom_field": null
-    },
-    {
-        "name": "DC1-SPINE1",
-        "test": "VerifyHostname",
-        "categories": [
-            "Services"
-        ],
-        "description": "Verifies the hostname of a device.",
-        "result": "failure",
-        "messages": [
-            "Expected `s1-spine1` as the hostname, but found `DC1-SPINE1` instead."
-        ],
-        "custom_field": null
-    },
-    {
-        "name": "DC1-LEAF1A",
-        "test": "VerifyTacacsSourceIntf",
-        "categories": [
-            "AAA"
-        ],
-        "description": "Verifies TACACS source-interface for a specified VRF.",
-        "result": "failure",
-        "messages": [
-            "Source-interface Management0 is not configured in VRF default"
-        ],
-        "custom_field": null
-    },
-    {
-        "name": "DC1-LEAF1A",
-        "test": "VerifyLLDPNeighbors",
-        "categories": [
-            "Connectivity"
-        ],
-        "description": "Verifies that the provided LLDP neighbors are connected properly.",
-        "result": "failure",
-        "messages": [
-            "Wrong LLDP neighbor(s) on port(s):\n   Ethernet1\n      DC1-SPINE1_Ethernet1\n   Ethernet2\n      DC1-SPINE2_Ethernet1\nPort(s) not configured:\n   Ethernet7"
-        ],
-        "custom_field": null
-    },
-    {
-        "name": "DC1-LEAF1A",
-        "test": "VerifyBGPPeerCount",
-        "categories": [
-            "BGP"
-        ],
-        "description": "Verifies the count of BGP peers.",
-        "result": "failure",
-        "messages": [
-            "Failures: [{'afi': 'ipv4', 'safi': 'unicast', 'vrfs': {'PROD': 'Expected: 2, Actual: 1'}}, {'afi': 'ipv4', 'safi': 'multicast', 'vrfs': {'DEV': 'Expected: 3, Actual: 0'}}]"
-        ],
-        "custom_field": null
-    },
-    {
-        "name": "DC1-LEAF1A",
-        "test": "VerifySTPMode",
-        "categories": [
-            "STP"
-        ],
-        "description": "Verifies the configured STP mode for a provided list of VLAN(s).",
-        "result": "failure",
-        "messages": [
-            "Wrong STP mode configured for the following VLAN(s): [10, 20]"
-        ],
-        "custom_field": null
-    },
-    {
-        "name": "DC1-LEAF1A",
-        "test": "VerifySnmpStatus",
-        "categories": [
-            "SNMP"
-        ],
-        "description": "Verifies if the SNMP agent is enabled.",
-        "result": "failure",
-        "messages": [
-            "SNMP agent disabled in vrf default"
-        ],
-        "custom_field": null
-    },
-    {
-        "name": "DC1-LEAF1A",
-        "test": "VerifyRoutingTableEntry",
-        "categories": [
-            "Routing"
-        ],
-        "description": "Verifies that the provided routes are present in the routing table of a specified VRF.",
-        "result": "success",
-        "messages": [],
-        "custom_field": null
-    },
-    {
-        "name": "DC1-LEAF1A",
-        "test": "VerifyInterfaceUtilization",
-        "categories": [
-            "Interfaces"
-        ],
-        "description": "Verifies that the utilization of interfaces is below a certain threshold.",
-        "result": "success",
-        "messages": [],
-        "custom_field": null
-    },
-    {
-        "name": "DC1-LEAF1A",
-        "test": "VerifyMlagStatus",
-        "categories": [
-            "MLAG"
-        ],
-        "description": "Verifies the health status of the MLAG configuration.",
-        "result": "success",
-        "messages": [],
-        "custom_field": null
-    },
-    {
-        "name": "DC1-LEAF1A",
-        "test": "VerifyVxlan1Interface",
-        "categories": [
-            "VXLAN"
-        ],
-        "description": "Verifies the Vxlan1 interface status.",
-        "result": "success",
-        "messages": [],
-        "custom_field": null
-    },
-    {
-        "name": "DC1-LEAF1A",
-        "test": "VerifyBFDSpecificPeers",
-        "categories": [
-            "BFD"
-        ],
-        "description": "Verifies the IPv4 BFD peer's sessions and remote disc in the specified VRF.",
-        "result": "failure",
-        "messages": [
-            "Following BFD peers are not configured, status is not up or remote disc is zero:\n{'192.0.255.8': {'default': 'Not Configured'}, '192.0.255.7': {'default': 'Not Configured'}}"
-        ],
-        "custom_field": null
-    },
-    {
-        "name": "DC1-LEAF1A",
-        "test": "VerifyNTP",
-        "categories": [
-            "System"
-        ],
-        "description": "Verifies if NTP is synchronised.",
-        "result": "failure",
-        "messages": [
-            "The device is not synchronized with the configured NTP server(s): 'NTP is disabled.'"
-        ],
-        "custom_field": null
-    },
-    {
-        "name": "DC1-LEAF1A",
-        "test": "VerifyReachability",
-        "categories": [
-            "Connectivity"
-        ],
-        "description": "Test the network reachability to one or many destination IP(s).",
-        "result": "error",
-        "messages": [
-            "ping vrf MGMT 1.1.1.1 source Management1 repeat 2 has failed: No source interface Management1"
-        ],
-        "custom_field": null
-    },
-    {
-        "name": "DC1-LEAF1A",
-        "test": "VerifyTelnetStatus",
-        "categories": [
-            "Security"
-        ],
-        "description": "Verifies if Telnet is disabled in the default VRF.",
-        "result": "success",
-        "messages": [],
-        "custom_field": null
-    },
-    {
-        "name": "DC1-LEAF1A",
-        "test": "VerifyEOSVersion",
-        "categories": [
-            "Software"
-        ],
-        "description": "Verifies the EOS version of the device.",
-        "result": "failure",
-        "messages": [
-            "device is running version \"4.31.1F-34554157.4311F (engineering build)\" not in expected versions: ['4.25.4M', '4.26.1F']"
-        ],
-        "custom_field": null
-    },
-    {
-        "name": "DC1-LEAF1A",
-        "test": "VerifyHostname",
-        "categories": [
-            "Services"
-        ],
-        "description": "Verifies the hostname of a device.",
-        "result": "failure",
-        "messages": [
-            "Expected `s1-spine1` as the hostname, but found `DC1-LEAF1A` instead."
-        ],
-        "custom_field": null
-    }
+  {
+    "name": "s1-spine1",
+    "test": "VerifyMlagDualPrimary",
+    "categories": [
+      "mlag"
+    ],
+    "description": "Verifies the MLAG dual-primary detection parameters.",
+    "result": "failure",
+    "messages": [
+      "Dual-primary detection is disabled"
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-spine1",
+    "test": "VerifyHostname",
+    "categories": [
+      "services"
+    ],
+    "description": "Verifies the hostname of a device.",
+    "result": "failure",
+    "messages": [
+      "Incorrect Hostname - Expected: s1-spine1 Actual: leaf1-dc1"
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-spine1",
+    "test": "VerifyBGPAdvCommunities",
+    "categories": [
+      "bgp"
+    ],
+    "description": "Verifies that advertised communities are standard, extended and large for BGP IPv4 peer(s).",
+    "result": "error",
+    "messages": [
+      "show bgp neighbors vrf all has failed: The command is only supported in the multi-agent routing protocol model., The command is only supported in the multi-agent routing protocol model., The command is only supported in the multi-agent routing protocol model., The command is only supported in the multi-agent routing protocol model."
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-spine1",
+    "test": "VerifyStunClient",
+    "categories": [
+      "stun"
+    ],
+    "description": "(Deprecated) Verifies the translation for a source address on a STUN client.",
+    "result": "failure",
+    "messages": [
+      "Client 172.18.3.2 Port: 4500 - STUN client translation not found."
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-spine1",
+    "test": "VerifyBannerLogin",
+    "categories": [
+      "security"
+    ],
+    "description": "Verifies the login banner of a device.",
+    "result": "failure",
+    "messages": [
+      "Expected `# Copyright (c) 2023-2024 Arista Networks, Inc.\n# Use of this source code is governed by the Apache License 2.0\n# that can be found in the LICENSE file.\n` as the login banner, but found `` instead."
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-spine1",
+    "test": "VerifyISISNeighborState",
+    "categories": [
+      "isis"
+    ],
+    "description": "Verifies the health of IS-IS neighbors.",
+    "result": "skipped",
+    "messages": [
+      "IS-IS not configured"
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-spine1",
+    "test": "VerifyEOSVersion",
+    "categories": [
+      "software"
+    ],
+    "description": "Verifies the EOS version of the device.",
+    "result": "failure",
+    "messages": [
+      "EOS version mismatch - Actual: 4.31.0F-33804048.4310F (engineering build) not in Expected: 4.25.4M, 4.26.1F"
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-spine1",
+    "test": "VerifyTcamProfile",
+    "categories": [
+      "profiles"
+    ],
+    "description": "Verifies the device TCAM profile.",
+    "result": "skipped",
+    "messages": [
+      "VerifyTcamProfile test is not supported on cEOSLab."
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-spine1",
+    "test": "VerifyPathsHealth",
+    "categories": [
+      "path-selection"
+    ],
+    "description": "Verifies the path and telemetry state of all paths under router path-selection.",
+    "result": "skipped",
+    "messages": [
+      "VerifyPathsHealth test is not supported on cEOSLab."
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-spine1",
+    "test": "VerifyBannerMotd",
+    "categories": [
+      "security"
+    ],
+    "description": "Verifies the motd banner of a device.",
+    "result": "failure",
+    "messages": [
+      "Expected `# Copyright (c) 2023-2024 Arista Networks, Inc.\n# Use of this source code is governed by the Apache License 2.0\n# that can be found in the LICENSE file.\n` as the motd banner, but found `` instead."
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-spine1",
+    "test": "VerifyFieldNotice44Resolution",
+    "categories": [
+      "field notices"
+    ],
+    "description": "Verifies that the device is using the correct Aboot version per FN0044.",
+    "result": "skipped",
+    "messages": [
+      "VerifyFieldNotice44Resolution test is not supported on cEOSLab."
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-spine1",
+    "test": "VerifyLoggingHosts",
+    "categories": [
+      "logging"
+    ],
+    "description": "Verifies logging hosts (syslog servers) for a specified VRF.",
+    "result": "failure",
+    "messages": [
+      "Syslog servers 1.1.1.1, 2.2.2.2 are not configured in VRF default"
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-spine1",
+    "test": "VerifyAVTPathHealth",
+    "categories": [
+      "avt"
+    ],
+    "description": "Verifies the status of all AVT paths for all VRFs.",
+    "result": "skipped",
+    "messages": [
+      "VerifyAVTPathHealth test is not supported on cEOSLab."
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-spine1",
+    "test": "VerifyTemperature",
+    "categories": [
+      "hardware"
+    ],
+    "description": "Verifies if the device temperature is within acceptable limits.",
+    "result": "skipped",
+    "messages": [
+      "VerifyTemperature test is not supported on cEOSLab."
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-spine1",
+    "test": "VerifyNTPAssociations",
+    "categories": [
+      "system"
+    ],
+    "description": "Verifies the Network Time Protocol (NTP) associations.",
+    "result": "failure",
+    "messages": [
+      "NTP Server: 1.1.1.1 Preferred: True Stratum: 1 - Not configured",
+      "NTP Server: 2.2.2.2 Preferred: False Stratum: 2 - Not configured",
+      "NTP Server: 3.3.3.3 Preferred: False Stratum: 2 - Not configured"
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-spine1",
+    "test": "VerifyDynamicVlanSource",
+    "categories": [
+      "vlan"
+    ],
+    "description": "Verifies dynamic VLAN allocation for specified VLAN sources.",
+    "result": "failure",
+    "messages": [
+      "Dynamic VLAN source(s) exist but have no VLANs allocated: mlagsync"
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-spine1",
+    "test": "VerifyActiveCVXConnections",
+    "categories": [
+      "cvx"
+    ],
+    "description": "Verifies the number of active CVX Connections.",
+    "result": "error",
+    "messages": [
+      "show cvx connections brief has failed: Unavailable command (controller not ready) (at token 2: 'connections')"
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-spine1",
+    "test": "VerifyIPv4RouteNextHops",
+    "categories": [
+      "routing"
+    ],
+    "description": "Verifies the next-hops of the IPv4 prefixes.",
+    "result": "success",
+    "messages": [],
+    "custom_field": null
+  },
+  {
+    "name": "s1-spine1",
+    "test": "VerifyVxlan1ConnSettings",
+    "categories": [
+      "vxlan"
+    ],
+    "description": "Verifies the interface vxlan1 source interface and UDP port.",
+    "result": "success",
+    "messages": [],
+    "custom_field": null
+  },
+  {
+    "name": "s1-spine1",
+    "test": "VerifyStunClientTranslation",
+    "categories": [
+      "stun"
+    ],
+    "description": "Verifies the translation for a source address on a STUN client.",
+    "result": "failure",
+    "messages": [
+      "Client 172.18.3.2 Port: 4500 - STUN client translation not found.",
+      "Client 100.64.3.2 Port: 4500 - STUN client translation not found."
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-spine1",
+    "test": "VerifyPtpGMStatus",
+    "categories": [
+      "ptp"
+    ],
+    "description": "Verifies that the device is locked to a valid PTP Grandmaster.",
+    "result": "skipped",
+    "messages": [
+      "VerifyPtpGMStatus test is not supported on cEOSLab."
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-spine1",
+    "test": "VerifyRunningConfigDiffs",
+    "categories": [
+      "configuration"
+    ],
+    "description": "Verifies there is no difference between the running-config and the startup-config.",
+    "result": "success",
+    "messages": [],
+    "custom_field": null
+  },
+  {
+    "name": "s1-spine1",
+    "test": "VerifyBFDPeersHealth",
+    "categories": [
+      "bfd"
+    ],
+    "description": "Verifies the health of IPv4 BFD peers across all VRFs.",
+    "result": "failure",
+    "messages": [
+      "No IPv4 BFD peers are configured for any VRF."
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-spine1",
+    "test": "VerifyIPProxyARP",
+    "categories": [
+      "interfaces"
+    ],
+    "description": "Verifies if Proxy ARP is enabled.",
+    "result": "failure",
+    "messages": [
+      "Interface: Ethernet1 - Proxy-ARP disabled",
+      "Interface: Ethernet2 - Proxy-ARP disabled"
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-spine1",
+    "test": "VerifySnmpContact",
+    "categories": [
+      "snmp"
+    ],
+    "description": "Verifies the SNMP contact of a device.",
+    "result": "failure",
+    "messages": [
+      "SNMP contact is not configured."
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-spine1",
+    "test": "VerifyLLDPNeighbors",
+    "categories": [
+      "connectivity"
+    ],
+    "description": "Verifies the connection status of the specified LLDP (Link Layer Discovery Protocol) neighbors.",
+    "result": "failure",
+    "messages": [
+      "Port: Ethernet1 Neighbor: DC1-SPINE1 Neighbor Port: Ethernet1 - Wrong LLDP neighbors: spine1-dc1.fun.aristanetworks.com/Ethernet3",
+      "Port: Ethernet2 Neighbor: DC1-SPINE2 Neighbor Port: Ethernet1 - Wrong LLDP neighbors: spine2-dc1.fun.aristanetworks.com/Ethernet3"
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-spine1",
+    "test": "VerifyAcctConsoleMethods",
+    "categories": [
+      "aaa"
+    ],
+    "description": "Verifies the AAA accounting console method lists for different accounting types (system, exec, commands, dot1x).",
+    "result": "failure",
+    "messages": [
+      "AAA console accounting is not configured for commands, exec, system, dot1x"
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-spine1",
+    "test": "VerifyOSPFMaxLSA",
+    "categories": [
+      "ospf"
+    ],
+    "description": "Verifies all OSPF instances did not cross the maximum LSA threshold.",
+    "result": "skipped",
+    "messages": [
+      "No OSPF instance found."
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-spine1",
+    "test": "VerifySTPBlockedPorts",
+    "categories": [
+      "stp"
+    ],
+    "description": "Verifies there is no STP blocked ports.",
+    "result": "success",
+    "messages": [],
+    "custom_field": null
+  },
+  {
+    "name": "s1-spine1",
+    "test": "VerifyLANZ",
+    "categories": [
+      "lanz"
+    ],
+    "description": "Verifies if LANZ is enabled.",
+    "result": "skipped",
+    "messages": [
+      "VerifyLANZ test is not supported on cEOSLab."
+    ],
+    "custom_field": null
+  }
 ]

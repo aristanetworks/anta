@@ -46,7 +46,7 @@ repos:
           - "<!--|  ~|  -->"
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.9.7
+    rev: v0.9.10
     hooks:
       - id: ruff
         name: Run Ruff linter
@@ -55,7 +55,7 @@ repos:
         name: Run Ruff formatter
 
   - repo: https://github.com/pycqa/pylint
-    rev: "v3.3.4"
+    rev: "v3.3.5"
     hooks:
       - id: pylint
         name: Check code style with pylint
@@ -98,7 +98,7 @@ repos:
           - types-requests
           - types-pyOpenSSL
           - pytest
-        files: ^(anta|tests)/
+        files: ^(anta|tests|asynceapi)/
 
   - repo: https://github.com/igorshubovych/markdownlint-cli
     rev: v0.44.0
