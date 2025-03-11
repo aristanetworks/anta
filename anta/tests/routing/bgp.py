@@ -1900,15 +1900,15 @@ class VerifyBGPPeerTtlMultiHops(AntaTest):
 
     This test performs the following checks for each specified BGP peer:
 
-      1. Verifies the specified BGP peer exists in the bgp configuration.
+      1. Verifies the specified BGP peer exists in the BGP configuration.
       2. Verifies the TTL and max-ttl-hops attribute matches the expected value.
 
     Expected Results
     ----------------
-    * Success: The test will pass if all specified peer exist with TTL and max-ttl-hops attribute matching the expected values.
+    * Success: The test will pass if all specified peers exist with TTL and max-ttl-hops attributes matching the expected values.
     * Failure: If any of the following occur:
         - A specified BGP peer is not found.
-        - A TTL or max-ttl-hops attribute doesn't match the expected value.
+        - A TTL or max-ttl-hops attribute doesn't match the expected value for any peer.
 
     Examples
     --------
@@ -1919,11 +1919,11 @@ class VerifyBGPPeerTtlMultiHops(AntaTest):
             bgp_peers:
                 - peer_address: 172.30.11.1
                   vrf: default
-                  ttl_duration: 3
+                  ttl: 3
                   max_ttl_hops: 3
                 - peer_address: 172.30.11.2
                   vrf: test
-                  ttl_duration: 30
+                  ttl: 30
                   max_ttl_hops: 30
     ```
     """
@@ -1940,10 +1940,10 @@ class VerifyBGPPeerTtlMultiHops(AntaTest):
         @field_validator("bgp_peers")
         @classmethod
         def validate_bgp_peers(cls, bgp_peers: list[BgpPeer]) -> list[BgpPeer]:
-            """Validate that 'ttl_duration' and 'max_ttl_hops' field is provided in each BGP peer."""
+            """Validate that 'ttl' and 'max_ttl_hops' field is provided in each BGP peer."""
             for peer in bgp_peers:
-                if peer.ttl_duration is None:
-                    msg = f"{peer} 'ttl_duration' field missing in the input"
+                if peer.ttl is None:
+                    msg = f"{peer} 'ttl' field missing in the input"
                     raise ValueError(msg)
                 if peer.max_ttl_hops is None:
                     msg = f"{peer} 'max_ttl_hops' field missing in the input"
@@ -1967,9 +1967,9 @@ class VerifyBGPPeerTtlMultiHops(AntaTest):
                 continue
 
             # Verify if the TTL duration matches the expected value.
-            if peer_details.get("ttl") != peer.ttl_duration:
-                self.result.is_failure(f"{peer} - TTL duration mismatch - Expected: {peer.ttl_duration}, Actual: {peer_details.get('ttl')}")
+            if peer_details.get("ttl") != peer.ttl:
+                self.result.is_failure(f"{peer} - TTL duration mismatch - Expected: {peer.ttl} Actual: {peer_details.get('ttl')}")
 
             # Verify if the max-ttl-hops time matches the expected value.
             if peer_details.get("maxTtlHops") != peer.max_ttl_hops:
-                self.result.is_failure(f"{peer} - MaxTtlHops mismatch - Expected: {peer.max_ttl_hops}, Actual: {peer_details.get('maxTtlHops')}")
+                self.result.is_failure(f"{peer} - MaxTtlHops mismatch - Expected: {peer.max_ttl_hops} Actual: {peer_details.get('maxTtlHops')}")
