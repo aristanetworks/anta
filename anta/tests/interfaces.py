@@ -8,16 +8,14 @@
 from __future__ import annotations
 
 import re
-from ipaddress import IPv4Interface
-from typing import Any, ClassVar, TypeVar
+from typing import ClassVar, TypeVar
 
 from pydantic import BaseModel, Field, field_validator
 from pydantic_extra_types.mac_address import MacAddress
 
-from anta import GITHUB_SUGGESTION
 from anta.custom_types import EthernetInterface, Interface, Percent, PositiveInteger
 from anta.decorators import skip_on_platforms
-from anta.input_models.interfaces import InterfaceState
+from anta.input_models.interfaces import InterfaceDetail, InterfaceState
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import custom_division, format_data, get_failed_logs, get_item, get_value
 
@@ -63,8 +61,8 @@ class VerifyInterfaceUtilization(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyInterfaceUtilization."""
+        self.result.is_success()
         duplex_full = "duplexFull"
-        failed_interfaces: dict[str, dict[str, float]] = {}
         rates = self.instance_commands[0].json_output
         interfaces = self.instance_commands[1].json_output
 
@@ -80,15 +78,13 @@ class VerifyInterfaceUtilization(AntaTest):
                 self.logger.debug("Interface %s has been ignored due to null bandwidth value", intf)
                 continue
 
+            # If one or more interfaces have a usage above the threshold, test fails.
             for bps_rate in ("inBpsRate", "outBpsRate"):
                 usage = rate[bps_rate] / bandwidth * 100
                 if usage > self.inputs.threshold:
-                    failed_interfaces.setdefault(intf, {})[bps_rate] = usage
-
-        if not failed_interfaces:
-            self.result.is_success()
-        else:
-            self.result.is_failure(f"The following interfaces have a usage > {self.inputs.threshold}%: {failed_interfaces}")
+                    self.result.is_failure(
+                        f"Interface: {intf} BPS Rate: {bps_rate} - Usage exceeds the threshold - Expected: < {self.inputs.threshold}% Actual: {usage}%"
+                    )
 
 
 class VerifyInterfaceErrors(AntaTest):
@@ -113,15 +109,12 @@ class VerifyInterfaceErrors(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyInterfaceErrors."""
+        self.result.is_success()
         command_output = self.instance_commands[0].json_output
-        wrong_interfaces: list[dict[str, dict[str, int]]] = []
         for interface, counters in command_output["interfaceErrorCounters"].items():
-            if any(value > 0 for value in counters.values()) and all(interface not in wrong_interface for wrong_interface in wrong_interfaces):
-                wrong_interfaces.append({interface: counters})
-        if not wrong_interfaces:
-            self.result.is_success()
-        else:
-            self.result.is_failure(f"The following interface(s) have non-zero error counters: {wrong_interfaces}")
+            counters_data = [f"{counter}: {value}" for counter, value in counters.items() if value > 0]
+            if counters_data:
+                self.result.is_failure(f"Interface: {interface} - Non-zero error counter(s) - {', '.join(counters_data)}")
 
 
 class VerifyInterfaceDiscards(AntaTest):
@@ -146,14 +139,12 @@ class VerifyInterfaceDiscards(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyInterfaceDiscards."""
+        self.result.is_success()
         command_output = self.instance_commands[0].json_output
-        wrong_interfaces: list[dict[str, dict[str, int]]] = []
-        for interface, outer_v in command_output["interfaces"].items():
-            wrong_interfaces.extend({interface: outer_v} for value in outer_v.values() if value > 0)
-        if not wrong_interfaces:
-            self.result.is_success()
-        else:
-            self.result.is_failure(f"The following interfaces have non 0 discard counter(s): {wrong_interfaces}")
+        for interface, interface_data in command_output["interfaces"].items():
+            counters_data = [f"{counter}: {value}" for counter, value in interface_data.items() if value > 0]
+            if counters_data:
+                self.result.is_failure(f"Interface: {interface} - Non-zero discard counter(s): {', '.join(counters_data)}")
 
 
 class VerifyInterfaceErrDisabled(AntaTest):
@@ -178,12 +169,11 @@ class VerifyInterfaceErrDisabled(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyInterfaceErrDisabled."""
+        self.result.is_success()
         command_output = self.instance_commands[0].json_output
-        errdisabled_interfaces = [interface for interface, value in command_output["interfaceStatuses"].items() if value["linkStatus"] == "errdisabled"]
-        if errdisabled_interfaces:
-            self.result.is_failure(f"The following interfaces are in error disabled state: {errdisabled_interfaces}")
-        else:
-            self.result.is_success()
+        for interface, value in command_output["interfaceStatuses"].items():
+            if value["linkStatus"] == "errdisabled":
+                self.result.is_failure(f"Interface: {interface} - Link status Error disabled")
 
 
 class VerifyInterfacesStatus(AntaTest):
@@ -255,16 +245,16 @@ class VerifyInterfacesStatus(AntaTest):
 
             # If line protocol status is provided, prioritize checking against both status and line protocol status
             if interface.line_protocol_status:
-                if interface.status != status or interface.line_protocol_status != proto:
+                if any([interface.status != status, interface.line_protocol_status != proto]):
                     actual_state = f"Expected: {interface.status}/{interface.line_protocol_status}, Actual: {status}/{proto}"
-                    self.result.is_failure(f"{interface.name} - {actual_state}")
+                    self.result.is_failure(f"{interface.name} - Status mismatch - {actual_state}")
 
             # If line protocol status is not provided and interface status is "up", expect both status and proto to be "up"
             # If interface status is not "up", check only the interface status without considering line protocol status
-            elif interface.status == "up" and (status != "up" or proto != "up"):
-                self.result.is_failure(f"{interface.name} - Expected: up/up, Actual: {status}/{proto}")
+            elif all([interface.status == "up", status != "up" or proto != "up"]):
+                self.result.is_failure(f"{interface.name} - Status mismatch - Expected: up/up, Actual: {status}/{proto}")
             elif interface.status != status:
-                self.result.is_failure(f"{interface.name} - Expected: {interface.status}, Actual: {status}")
+                self.result.is_failure(f"{interface.name} - Status mismatch - Expected: {interface.status}, Actual: {status}")
 
 
 class VerifyStormControlDrops(AntaTest):
@@ -291,16 +281,15 @@ class VerifyStormControlDrops(AntaTest):
     def test(self) -> None:
         """Main test function for VerifyStormControlDrops."""
         command_output = self.instance_commands[0].json_output
-        storm_controlled_interfaces: dict[str, dict[str, Any]] = {}
+        storm_controlled_interfaces = []
+        self.result.is_success()
+
         for interface, interface_dict in command_output["interfaces"].items():
             for traffic_type, traffic_type_dict in interface_dict["trafficTypes"].items():
                 if "drop" in traffic_type_dict and traffic_type_dict["drop"] != 0:
-                    storm_controlled_interface_dict = storm_controlled_interfaces.setdefault(interface, {})
-                    storm_controlled_interface_dict.update({traffic_type: traffic_type_dict["drop"]})
-        if not storm_controlled_interfaces:
-            self.result.is_success()
-        else:
-            self.result.is_failure(f"The following interfaces have none 0 storm-control drop counters {storm_controlled_interfaces}")
+                    storm_controlled_interfaces.append(f"{traffic_type}: {traffic_type_dict['drop']}")
+            if storm_controlled_interfaces:
+                self.result.is_failure(f"Interface: {interface} - Non-zero storm-control drop counter(s) - {', '.join(storm_controlled_interfaces)}")
 
 
 class VerifyPortChannels(AntaTest):
@@ -325,15 +314,12 @@ class VerifyPortChannels(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyPortChannels."""
+        self.result.is_success()
         command_output = self.instance_commands[0].json_output
-        po_with_inactive_ports: list[dict[str, str]] = []
-        for portchannel, portchannel_dict in command_output["portChannels"].items():
-            if len(portchannel_dict["inactivePorts"]) != 0:
-                po_with_inactive_ports.extend({portchannel: portchannel_dict["inactivePorts"]})
-        if not po_with_inactive_ports:
-            self.result.is_success()
-        else:
-            self.result.is_failure(f"The following port-channels have inactive port(s): {po_with_inactive_ports}")
+        for port_channel, port_channel_details in command_output["portChannels"].items():
+            # Verify that the no inactive ports in all port channels.
+            if inactive_ports := port_channel_details["inactivePorts"]:
+                self.result.is_failure(f"{port_channel} - Inactive port(s) - {', '.join(inactive_ports.keys())}")
 
 
 class VerifyIllegalLACP(AntaTest):
@@ -358,16 +344,13 @@ class VerifyIllegalLACP(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyIllegalLACP."""
+        self.result.is_success()
         command_output = self.instance_commands[0].json_output
-        po_with_illegal_lacp: list[dict[str, dict[str, int]]] = []
-        for portchannel, portchannel_dict in command_output["portChannels"].items():
-            po_with_illegal_lacp.extend(
-                {portchannel: interface} for interface, interface_dict in portchannel_dict["interfaces"].items() if interface_dict["illegalRxCount"] != 0
-            )
-        if not po_with_illegal_lacp:
-            self.result.is_success()
-        else:
-            self.result.is_failure(f"The following port-channels have received illegal LACP packets on the following ports: {po_with_illegal_lacp}")
+        for port_channel, port_channel_dict in command_output["portChannels"].items():
+            for interface, interface_details in port_channel_dict["interfaces"].items():
+                # Verify that the no illegal LACP packets in all port channels.
+                if interface_details["illegalRxCount"] != 0:
+                    self.result.is_failure(f"{port_channel} Interface: {interface} - Illegal LACP packets found")
 
 
 class VerifyLoopbackCount(AntaTest):
@@ -400,23 +383,20 @@ class VerifyLoopbackCount(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyLoopbackCount."""
+        self.result.is_success()
         command_output = self.instance_commands[0].json_output
         loopback_count = 0
-        down_loopback_interfaces = []
-        for interface in command_output["interfaces"]:
-            interface_dict = command_output["interfaces"][interface]
+        for interface, interface_details in command_output["interfaces"].items():
             if "Loopback" in interface:
                 loopback_count += 1
-                if not (interface_dict["lineProtocolStatus"] == "up" and interface_dict["interfaceStatus"] == "connected"):
-                    down_loopback_interfaces.append(interface)
-        if loopback_count == self.inputs.number and len(down_loopback_interfaces) == 0:
-            self.result.is_success()
-        else:
-            self.result.is_failure()
-            if loopback_count != self.inputs.number:
-                self.result.is_failure(f"Found {loopback_count} Loopbacks when expecting {self.inputs.number}")
-            elif len(down_loopback_interfaces) != 0:  # pragma: no branch
-                self.result.is_failure(f"The following Loopbacks are not up: {down_loopback_interfaces}")
+                if (status := interface_details["lineProtocolStatus"]) != "up":
+                    self.result.is_failure(f"Interface: {interface} - Invalid line protocol status - Expected: up Actual: {status}")
+
+                if (status := interface_details["interfaceStatus"]) != "connected":
+                    self.result.is_failure(f"Interface: {interface} - Invalid interface status - Expected: connected Actual: {status}")
+
+        if loopback_count != self.inputs.number:
+            self.result.is_failure(f"Loopback interface(s) count mismatch: Expected {self.inputs.number} Actual: {loopback_count}")
 
 
 class VerifySVI(AntaTest):
@@ -441,16 +421,13 @@ class VerifySVI(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifySVI."""
+        self.result.is_success()
         command_output = self.instance_commands[0].json_output
-        down_svis = []
-        for interface in command_output["interfaces"]:
-            interface_dict = command_output["interfaces"][interface]
-            if "Vlan" in interface and not (interface_dict["lineProtocolStatus"] == "up" and interface_dict["interfaceStatus"] == "connected"):
-                down_svis.append(interface)
-        if len(down_svis) == 0:
-            self.result.is_success()
-        else:
-            self.result.is_failure(f"The following SVIs are not up: {down_svis}")
+        for interface, int_data in command_output["interfaces"].items():
+            if "Vlan" in interface and (status := int_data["lineProtocolStatus"]) != "up":
+                self.result.is_failure(f"SVI: {interface} - Invalid line protocol status - Expected: up Actual: {status}")
+            if "Vlan" in interface and int_data["interfaceStatus"] != "connected":
+                self.result.is_failure(f"SVI: {interface} - Invalid interface status - Expected: connected Actual: {int_data['interfaceStatus']}")
 
 
 class VerifyL3MTU(AntaTest):
@@ -495,8 +472,7 @@ class VerifyL3MTU(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyL3MTU."""
-        # Parameter to save incorrect interface settings
-        wrong_l3mtu_intf: list[dict[str, int]] = []
+        self.result.is_success()
         command_output = self.instance_commands[0].json_output
         # Set list of interfaces with specific settings
         specific_interfaces: list[str] = []
@@ -506,18 +482,18 @@ class VerifyL3MTU(AntaTest):
         for interface, values in command_output["interfaces"].items():
             if re.findall(r"[a-z]+", interface, re.IGNORECASE)[0] not in self.inputs.ignored_interfaces and values["forwardingModel"] == "routed":
                 if interface in specific_interfaces:
-                    wrong_l3mtu_intf.extend({interface: values["mtu"]} for custom_data in self.inputs.specific_mtu if values["mtu"] != custom_data[interface])
+                    invalid_mtu = next(
+                        (values["mtu"] for custom_data in self.inputs.specific_mtu if values["mtu"] != (expected_mtu := custom_data[interface])), None
+                    )
+                    if invalid_mtu:
+                        self.result.is_failure(f"Interface: {interface} - Incorrect MTU - Expected: {expected_mtu} Actual: {invalid_mtu}")
                 # Comparison with generic setting
                 elif values["mtu"] != self.inputs.mtu:
-                    wrong_l3mtu_intf.append({interface: values["mtu"]})
-        if wrong_l3mtu_intf:
-            self.result.is_failure(f"Some interfaces do not have correct MTU configured:\n{wrong_l3mtu_intf}")
-        else:
-            self.result.is_success()
+                    self.result.is_failure(f"Interface: {interface} - Incorrect MTU - Expected: {self.inputs.mtu} Actual: {values['mtu']}")
 
 
 class VerifyIPProxyARP(AntaTest):
-    """Verifies if Proxy-ARP is enabled for the provided list of interface(s).
+    """Verifies if Proxy ARP is enabled.
 
     Expected Results
     ----------------
@@ -535,32 +511,28 @@ class VerifyIPProxyARP(AntaTest):
     ```
     """
 
-    description = "Verifies if Proxy ARP is enabled."
     categories: ClassVar[list[str]] = ["interfaces"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show ip interface {intf}", revision=2)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip interface", revision=2)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyIPProxyARP test."""
 
-        interfaces: list[str]
+        interfaces: list[Interface]
         """List of interfaces to be tested."""
-
-    def render(self, template: AntaTemplate) -> list[AntaCommand]:
-        """Render the template for each interface in the input list."""
-        return [template.render(intf=intf) for intf in self.inputs.interfaces]
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyIPProxyARP."""
-        disabled_intf = []
-        for command in self.instance_commands:
-            intf = command.params.intf
-            if not command.json_output["interfaces"][intf]["proxyArp"]:
-                disabled_intf.append(intf)
-        if disabled_intf:
-            self.result.is_failure(f"The following interface(s) have Proxy-ARP disabled: {disabled_intf}")
-        else:
-            self.result.is_success()
+        self.result.is_success()
+        command_output = self.instance_commands[0].json_output
+
+        for interface in self.inputs.interfaces:
+            if (interface_detail := get_value(command_output["interfaces"], f"{interface}", separator="..")) is None:
+                self.result.is_failure(f"Interface: {interface} - Not found")
+                continue
+
+            if not interface_detail["proxyArp"]:
+                self.result.is_failure(f"Interface: {interface} - Proxy-ARP disabled")
 
 
 class VerifyL2MTU(AntaTest):
@@ -628,7 +600,7 @@ class VerifyL2MTU(AntaTest):
 
 
 class VerifyInterfaceIPv4(AntaTest):
-    """Verifies if an interface is configured with a correct primary and list of optional secondary IPv4 addresses.
+    """Verifies the interface IPv4 addresses.
 
     Expected Results
     ----------------
@@ -649,82 +621,60 @@ class VerifyInterfaceIPv4(AntaTest):
     ```
     """
 
-    description = "Verifies the interface IPv4 addresses."
     categories: ClassVar[list[str]] = ["interfaces"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show ip interface {interface}", revision=2)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip interface", revision=2)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyInterfaceIPv4 test."""
 
-        interfaces: list[InterfaceDetail]
+        interfaces: list[InterfaceState]
         """List of interfaces with their details."""
+        InterfaceDetail: ClassVar[type[InterfaceDetail]] = InterfaceDetail
 
-        class InterfaceDetail(BaseModel):
-            """Model for an interface detail."""
-
-            name: Interface
-            """Name of the interface."""
-            primary_ip: IPv4Interface
-            """Primary IPv4 address in CIDR notation."""
-            secondary_ips: list[IPv4Interface] | None = None
-            """Optional list of secondary IPv4 addresses in CIDR notation."""
-
-    def render(self, template: AntaTemplate) -> list[AntaCommand]:
-        """Render the template for each interface in the input list."""
-        return [template.render(interface=interface.name) for interface in self.inputs.interfaces]
+        @field_validator("interfaces")
+        @classmethod
+        def validate_interfaces(cls, interfaces: list[T]) -> list[T]:
+            """Validate that 'primary_ip' field is provided in each interface."""
+            for interface in interfaces:
+                if interface.primary_ip is None:
+                    msg = f"{interface} 'primary_ip' field missing in the input"
+                    raise ValueError(msg)
+            return interfaces
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyInterfaceIPv4."""
         self.result.is_success()
-        for command in self.instance_commands:
-            intf = command.params.interface
-            for interface in self.inputs.interfaces:
-                if interface.name == intf:
-                    input_interface_detail = interface
-                    break
-            else:
-                self.result.is_failure(f"Could not find `{intf}` in the input interfaces. {GITHUB_SUGGESTION}")
+        command_output = self.instance_commands[0].json_output
+
+        for interface in self.inputs.interfaces:
+            if (interface_detail := get_value(command_output["interfaces"], f"{interface.name}", separator="..")) is None:
+                self.result.is_failure(f"{interface} - Not found")
                 continue
 
-            input_primary_ip = str(input_interface_detail.primary_ip)
-            failed_messages = []
-
-            # Check if the interface has an IP address configured
-            if not (interface_output := get_value(command.json_output, f"interfaces.{intf}.interfaceAddress")):
-                self.result.is_failure(f"For interface `{intf}`, IP address is not configured.")
+            if (ip_address := get_value(interface_detail, "interfaceAddress.primaryIp")) is None:
+                self.result.is_failure(f"{interface} - IP address is not configured")
                 continue
-
-            primary_ip = get_value(interface_output, "primaryIp")
 
             # Combine IP address and subnet for primary IP
-            actual_primary_ip = f"{primary_ip['address']}/{primary_ip['maskLen']}"
+            actual_primary_ip = f"{ip_address['address']}/{ip_address['maskLen']}"
 
             # Check if the primary IP address matches the input
-            if actual_primary_ip != input_primary_ip:
-                failed_messages.append(f"The expected primary IP address is `{input_primary_ip}`, but the actual primary IP address is `{actual_primary_ip}`.")
+            if actual_primary_ip != str(interface.primary_ip):
+                self.result.is_failure(f"{interface} - IP address mismatch - Expected: {interface.primary_ip} Actual: {actual_primary_ip}")
 
-            if (param_secondary_ips := input_interface_detail.secondary_ips) is not None:
-                input_secondary_ips = sorted([str(network) for network in param_secondary_ips])
-                secondary_ips = get_value(interface_output, "secondaryIpsOrderedList")
+            if interface.secondary_ips:
+                if not (secondary_ips := get_value(interface_detail, "interfaceAddress.secondaryIpsOrderedList")):
+                    self.result.is_failure(f"{interface} - Secondary IP address is not configured")
+                    continue
 
-                # Combine IP address and subnet for secondary IPs
                 actual_secondary_ips = sorted([f"{secondary_ip['address']}/{secondary_ip['maskLen']}" for secondary_ip in secondary_ips])
+                input_secondary_ips = sorted([str(ip) for ip in interface.secondary_ips])
 
-                # Check if the secondary IP address is configured
-                if not actual_secondary_ips:
-                    failed_messages.append(
-                        f"The expected secondary IP addresses are `{input_secondary_ips}`, but the actual secondary IP address is not configured."
+                if actual_secondary_ips != input_secondary_ips:
+                    self.result.is_failure(
+                        f"{interface} - Secondary IP address mismatch - Expected: {', '.join(input_secondary_ips)} Actual: {', '.join(actual_secondary_ips)}"
                     )
-
-                # Check if the secondary IP addresses match the input
-                elif actual_secondary_ips != input_secondary_ips:
-                    failed_messages.append(
-                        f"The expected secondary IP addresses are `{input_secondary_ips}`, but the actual secondary IP addresses are `{actual_secondary_ips}`."
-                    )
-
-            if failed_messages:
-                self.result.is_failure(f"For interface `{intf}`, " + " ".join(failed_messages))
 
 
 class VerifyIpVirtualRouterMac(AntaTest):

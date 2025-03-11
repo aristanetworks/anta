@@ -13,6 +13,7 @@ import logging
 from pathlib import Path
 from typing import TYPE_CHECKING, Literal
 
+from asyncssh.misc import HostKeyNotVerifiable
 from click.exceptions import UsageError
 from httpx import ConnectError, HTTPError
 
@@ -23,6 +24,7 @@ from asynceapi import EapiCommandError
 
 if TYPE_CHECKING:
     from anta.inventory import AntaInventory
+    from asynceapi._types import EapiComplexCommand, EapiSimpleCommand
 
 EOS_SCHEDULED_TECH_SUPPORT = "/mnt/flash/schedule/tech-support"
 INVALID_CHAR = "`~!@#$/"
@@ -96,7 +98,7 @@ async def collect_commands(
             logger.error("Error when collecting commands: %s", str(r))
 
 
-async def collect_show_tech(inv: AntaInventory, root_dir: Path, *, configure: bool, tags: set[str] | None = None, latest: int | None = None) -> None:
+async def collect_show_tech(inv: AntaInventory, root_dir: Path, *, configure: bool, tags: set[str] | None = None, latest: int | None = None) -> None:  # noqa: C901
     """Collect scheduled show-tech on devices."""
 
     async def collect(device: AntaDevice) -> None:
@@ -135,13 +137,13 @@ async def collect_show_tech(inv: AntaInventory, root_dir: Path, *, configure: bo
                 )
                 logger.warning(msg)
 
-                commands = []
                 # TODO: @mtache - add `config` field to `AntaCommand` object to handle this use case.
                 # Otherwise mypy complains about enable as it is only implemented for AsyncEOSDevice
                 # TODO: Should enable be also included in AntaDevice?
                 if not isinstance(device, AsyncEOSDevice):
                     msg = "anta exec collect-tech-support is only supported with AsyncEOSDevice for now."
                     raise UsageError(msg)
+                commands: list[EapiSimpleCommand | EapiComplexCommand] = []
                 if device.enable and device._enable_password is not None:
                     commands.append({"cmd": "enable", "input": device._enable_password})
                 elif device.enable:
@@ -162,6 +164,11 @@ async def collect_show_tech(inv: AntaInventory, root_dir: Path, *, configure: bo
             await device.copy(sources=filenames, destination=outdir, direction="from")
             logger.info("Collected %s scheduled tech-support from %s", len(filenames), device.name)
 
+        except HostKeyNotVerifiable:
+            logger.error(
+                "Unable to collect tech-support on %s. The host SSH key could not be verified. Make sure it is part of the `known_hosts` file on your machine.",
+                device.name,
+            )
         except (EapiCommandError, HTTPError, ConnectError) as e:
             logger.error("Unable to collect tech-support on %s: %s", device.name, str(e))
 

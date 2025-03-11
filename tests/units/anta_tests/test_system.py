@@ -12,6 +12,7 @@ from anta.tests.system import (
     VerifyCoredump,
     VerifyCPUUtilization,
     VerifyFileSystemUtilization,
+    VerifyMaintenance,
     VerifyMemoryUtilization,
     VerifyNTP,
     VerifyNTPAssociations,
@@ -33,7 +34,7 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyUptime,
         "eos_data": [{"upTime": 665.15, "loadAvg": [0.13, 0.12, 0.09], "users": 1, "currentTime": 1683186659.139859}],
         "inputs": {"minimum": 666},
-        "expected": {"result": "failure", "messages": ["Device uptime is 665.15 seconds"]},
+        "expected": {"result": "failure", "messages": ["Device uptime is incorrect - Expected: 666 Actual: 665.15 seconds"]},
     },
     {
         "name": "success-no-reload",
@@ -74,7 +75,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Reload cause is: 'Reload after crash.'"]},
+        "expected": {"result": "failure", "messages": ["Reload cause is: Reload after crash."]},
     },
     {
         "name": "success-without-minidump",
@@ -95,14 +96,14 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyCoredump,
         "eos_data": [{"mode": "compressedDeferred", "coreFiles": ["core.2344.1584483862.Mlag.gz", "core.23101.1584483867.Mlag.gz"]}],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Core dump(s) have been found: ['core.2344.1584483862.Mlag.gz', 'core.23101.1584483867.Mlag.gz']"]},
+        "expected": {"result": "failure", "messages": ["Core dump(s) have been found: core.2344.1584483862.Mlag.gz, core.23101.1584483867.Mlag.gz"]},
     },
     {
         "name": "failure-with-minidump",
         "test": VerifyCoredump,
         "eos_data": [{"mode": "compressedDeferred", "coreFiles": ["minidump", "core.2344.1584483862.Mlag.gz", "core.23101.1584483867.Mlag.gz"]}],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Core dump(s) have been found: ['core.2344.1584483862.Mlag.gz', 'core.23101.1584483867.Mlag.gz']"]},
+        "expected": {"result": "failure", "messages": ["Core dump(s) have been found: core.2344.1584483862.Mlag.gz, core.23101.1584483867.Mlag.gz"]},
     },
     {
         "name": "success",
@@ -190,7 +191,7 @@ EntityManager::doBackoff waiting for remote sysdb version ...................ok
             },
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Device has reported a high CPU utilization: 75.2%"]},
+        "expected": {"result": "failure", "messages": ["Device has reported a high CPU utilization -  Expected: < 75% Actual: 75.2%"]},
     },
     {
         "name": "success",
@@ -222,7 +223,7 @@ EntityManager::doBackoff waiting for remote sysdb version ...................ok
             },
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Device has reported a high memory usage: 95.56%"]},
+        "expected": {"result": "failure", "messages": ["Device has reported a high memory usage - Expected: < 75% Actual: 95.56%"]},
     },
     {
         "name": "success",
@@ -253,8 +254,8 @@ none            294M   78M  217M  84% /.overlay
         "expected": {
             "result": "failure",
             "messages": [
-                "Mount point /dev/sda2       3.9G  988M  2.9G  84% /mnt/flash is higher than 75%: reported 84%",
-                "Mount point none            294M   78M  217M  84% /.overlay is higher than 75%: reported 84%",
+                "Mount point: /dev/sda2       3.9G  988M  2.9G  84% /mnt/flash - Higher disk space utilization - Expected: 75% Actual: 84%",
+                "Mount point: none            294M   78M  217M  84% /.overlay - Higher disk space utilization - Expected: 75% Actual: 84%",
             ],
         },
     },
@@ -278,7 +279,7 @@ poll interval unknown
 """,
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["The device is not synchronized with the configured NTP server(s): 'unsynchronised'"]},
+        "expected": {"result": "failure", "messages": ["NTP status mismatch - Expected: synchronised Actual: unsynchronised"]},
     },
     {
         "name": "success",
@@ -413,9 +414,9 @@ poll interval unknown
         "expected": {
             "result": "failure",
             "messages": [
-                "1.1.1.1 (Preferred: True, Stratum: 1) - Bad association - Condition: candidate, Stratum: 2",
-                "2.2.2.2 (Preferred: False, Stratum: 2) - Bad association - Condition: sys.peer, Stratum: 2",
-                "3.3.3.3 (Preferred: False, Stratum: 2) - Bad association - Condition: sys.peer, Stratum: 3",
+                "NTP Server: 1.1.1.1 Preferred: True Stratum: 1 - Bad association - Condition: candidate, Stratum: 2",
+                "NTP Server: 2.2.2.2 Preferred: False Stratum: 2 - Bad association - Condition: sys.peer, Stratum: 2",
+                "NTP Server: 3.3.3.3 Preferred: False Stratum: 2 - Bad association - Condition: sys.peer, Stratum: 3",
             ],
         },
     },
@@ -463,7 +464,7 @@ poll interval unknown
         },
         "expected": {
             "result": "failure",
-            "messages": ["3.3.3.3 (Preferred: False, Stratum: 1) - Not configured"],
+            "messages": ["NTP Server: 3.3.3.3 Preferred: False Stratum: 1 - Not configured"],
         },
     },
     {
@@ -490,9 +491,213 @@ poll interval unknown
         "expected": {
             "result": "failure",
             "messages": [
-                "1.1.1.1 (Preferred: True, Stratum: 1) - Bad association - Condition: candidate, Stratum: 1",
-                "2.2.2.2 (Preferred: False, Stratum: 1) - Not configured",
-                "3.3.3.3 (Preferred: False, Stratum: 1) - Not configured",
+                "NTP Server: 1.1.1.1 Preferred: True Stratum: 1 - Bad association - Condition: candidate, Stratum: 1",
+                "NTP Server: 2.2.2.2 Preferred: False Stratum: 1 - Not configured",
+                "NTP Server: 3.3.3.3 Preferred: False Stratum: 1 - Not configured",
+            ],
+        },
+    },
+    {
+        "name": "success-no-maintenance-configured",
+        "test": VerifyMaintenance,
+        "eos_data": [
+            {
+                "units": {},
+                "interfaces": {},
+                "vrfs": {},
+                "warnings": ["Maintenance Mode is disabled."],
+            },
+        ],
+        "inputs": None,
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-maintenance-configured-but-not-enabled",
+        "test": VerifyMaintenance,
+        "eos_data": [
+            {
+                "units": {
+                    "System": {
+                        "state": "active",
+                        "adminState": "active",
+                        "stateChangeTime": 0.0,
+                        "onBootMaintenance": False,
+                        "intfsViolatingTrafficThreshold": False,
+                        "aggInBpsRate": 0,
+                        "aggOutBpsRate": 0,
+                    }
+                },
+                "interfaces": {},
+                "vrfs": {},
+            },
+        ],
+        "inputs": None,
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-multiple-units-but-not-enabled",
+        "test": VerifyMaintenance,
+        "eos_data": [
+            {
+                "units": {
+                    "mlag": {
+                        "state": "active",
+                        "adminState": "active",
+                        "stateChangeTime": 0.0,
+                        "onBootMaintenance": False,
+                        "intfsViolatingTrafficThreshold": False,
+                        "aggInBpsRate": 0,
+                        "aggOutBpsRate": 0,
+                    },
+                    "System": {
+                        "state": "active",
+                        "adminState": "active",
+                        "stateChangeTime": 0.0,
+                        "onBootMaintenance": False,
+                        "intfsViolatingTrafficThreshold": False,
+                        "aggInBpsRate": 0,
+                        "aggOutBpsRate": 0,
+                    },
+                },
+                "interfaces": {},
+                "vrfs": {},
+            },
+        ],
+        "inputs": None,
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-maintenance-enabled",
+        "test": VerifyMaintenance,
+        "eos_data": [
+            {
+                "units": {
+                    "mlag": {
+                        "state": "underMaintenance",
+                        "adminState": "underMaintenance",
+                        "stateChangeTime": 1741257120.9532886,
+                        "onBootMaintenance": False,
+                        "intfsViolatingTrafficThreshold": False,
+                        "aggInBpsRate": 0,
+                        "aggOutBpsRate": 0,
+                    },
+                    "System": {
+                        "state": "active",
+                        "adminState": "active",
+                        "stateChangeTime": 0.0,
+                        "onBootMaintenance": False,
+                        "intfsViolatingTrafficThreshold": False,
+                        "aggInBpsRate": 0,
+                        "aggOutBpsRate": 0,
+                    },
+                },
+                "interfaces": {},
+                "vrfs": {},
+            },
+        ],
+        "inputs": None,
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Units under maintenance: 'mlag'.",
+                "Possible causes: 'Quiesce is configured'.",
+            ],
+        },
+    },
+    {
+        "name": "failure-multiple-reasons",
+        "test": VerifyMaintenance,
+        "eos_data": [
+            {
+                "units": {
+                    "mlag": {
+                        "state": "underMaintenance",
+                        "adminState": "underMaintenance",
+                        "stateChangeTime": 1741257120.9532895,
+                        "onBootMaintenance": False,
+                        "intfsViolatingTrafficThreshold": False,
+                        "aggInBpsRate": 0,
+                        "aggOutBpsRate": 0,
+                    },
+                    "System": {
+                        "state": "maintenanceModeEnter",
+                        "adminState": "underMaintenance",
+                        "stateChangeTime": 1741257669.7231765,
+                        "onBootMaintenance": False,
+                        "intfsViolatingTrafficThreshold": False,
+                        "aggInBpsRate": 0,
+                        "aggOutBpsRate": 0,
+                    },
+                },
+                "interfaces": {},
+                "vrfs": {},
+            },
+        ],
+        "inputs": None,
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Units under maintenance: 'mlag'.",
+                "Units entering maintenance: 'System'.",
+                "Possible causes: 'Quiesce is configured'.",
+            ],
+        },
+    },
+    {
+        "name": "failure-onboot-maintenance",
+        "test": VerifyMaintenance,
+        "eos_data": [
+            {
+                "units": {
+                    "System": {
+                        "state": "underMaintenance",
+                        "adminState": "underMaintenance",
+                        "stateChangeTime": 1741258774.3756502,
+                        "onBootMaintenance": True,
+                        "intfsViolatingTrafficThreshold": False,
+                        "aggInBpsRate": 0,
+                        "aggOutBpsRate": 0,
+                    }
+                },
+                "interfaces": {},
+                "vrfs": {},
+            },
+        ],
+        "inputs": None,
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Units under maintenance: 'System'.",
+                "Possible causes: 'On-boot maintenance is configured, Quiesce is configured'.",
+            ],
+        },
+    },
+    {
+        "name": "failure-entering-maintenance-interface-violation",
+        "test": VerifyMaintenance,
+        "eos_data": [
+            {
+                "units": {
+                    "System": {
+                        "state": "maintenanceModeEnter",
+                        "adminState": "underMaintenance",
+                        "stateChangeTime": 1741257669.7231765,
+                        "onBootMaintenance": False,
+                        "intfsViolatingTrafficThreshold": True,
+                        "aggInBpsRate": 0,
+                        "aggOutBpsRate": 0,
+                    }
+                },
+                "interfaces": {},
+                "vrfs": {},
+            },
+        ],
+        "inputs": None,
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Units entering maintenance: 'System'.",
+                "Possible causes: 'Interface traffic threshold violation, Quiesce is configured'.",
             ],
         },
     },

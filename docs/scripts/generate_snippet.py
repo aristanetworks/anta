@@ -1,11 +1,12 @@
+#!/usr/bin/env python
 # Copyright (c) 2023-2025 Arista Networks, Inc.
 # Use of this source code is governed by the Apache License 2.0
 # that can be found in the LICENSE file.
-"""A script to generate svg files from anta command.
+"""A script to generate svg or txt files from anta command.
 
 usage:
 
-python generate_svg.py anta ...
+python generate_snippet.py anta ...
 """
 # This script is not a package
 # ruff: noqa: INP001
@@ -20,11 +21,14 @@ import sys
 from contextlib import redirect_stdout, suppress
 from importlib import import_module
 from importlib.metadata import entry_points
+from typing import Literal
 from unittest.mock import patch
 
-from rich.console import Console
 from rich.logging import RichHandler
+from rich.markup import escape
 from rich.progress import Progress
+
+sys.path.insert(0, str(pathlib.Path(__file__).parents[2]))
 
 from anta.cli.console import console
 from anta.cli.nrfu.utils import anta_progress_bar
@@ -33,9 +37,6 @@ root = logging.getLogger()
 
 r = RichHandler(console=console)
 root.addHandler(r)
-
-
-OUTPUT_DIR = pathlib.Path(__file__).parent.parent / "imgs"
 
 
 def custom_progress_bar() -> Progress:
@@ -50,12 +51,14 @@ def custom_progress_bar() -> Progress:
     return progress
 
 
-if __name__ == "__main__":
+def main(args: list[str], output: Literal["svg", "txt"] = "svg") -> None:
+    """Execute the script."""
     # Sane rich size
     os.environ["COLUMNS"] = "120"
 
+    output_dir = pathlib.Path(__file__).parent.parent / "snippets" if output == "txt" else pathlib.Path(__file__).parent.parent / "imgs"
+
     # stolen from https://github.com/ewels/rich-click/blob/main/src/rich_click/cli.py
-    args = sys.argv[1:]
     script_name = args[0]
     console_scripts = entry_points(group="console_scripts")
     scripts = {script.name: script for script in console_scripts}
@@ -80,27 +83,32 @@ if __name__ == "__main__":
     module = import_module(module_path)
     function = getattr(module, function_name)
 
-    # Console to captur everything
-    new_console = Console(record=True)
-
     pipe = io.StringIO()
     console.record = True
     console.file = pipe
-    with redirect_stdout(io.StringIO()) as f:
-        # tweaks to record and redirect to a dummy file
-
-        console.print(f"ant@anthill$ {' '.join(sys.argv)}")
-
-        # Redirect stdout of the program towards another StringIO to capture help
-        # that is not part or anta rich console
-        # redirect potential progress bar output to console by patching
-        with patch("anta.cli.nrfu.utils.anta_progress_bar", custom_progress_bar), suppress(SystemExit):
-            function()
+    # Redirect stdout of the program towards another StringIO to capture help
+    # that is not part or anta rich console
+    # redirect potential progress bar output to console by patching
+    with redirect_stdout(io.StringIO()) as f, patch("anta.cli.nrfu.utils.anta_progress_bar", custom_progress_bar), suppress(SystemExit):
+        if output == "txt":
+            console.print(f"$ {' '.join(sys.argv)}")
+        function()
 
     if "--help" in args:
-        console.print(f.getvalue())
+        console.print(escape(f.getvalue()))
 
-    filename = f"{'_'.join(x.replace('/', '_').replace('-', '_').replace('.', '_') for x in args)}.svg"
-    filename = f"{OUTPUT_DIR}/{filename}"
+    filename = f"{'_'.join(x.replace('/', '_').replace('-', '').replace('.', '') for x in args)}.{output}"
+    filename = output_dir / filename
+    if output == "txt":
+        content = console.export_text()[:-1]
+        with filename.open("w") as fd:
+            fd.write(content)
+        # TODO: Not using this to avoid newline console.save_text(str(filename))
+    elif output == "svg":
+        console.save_svg(str(filename), title=" ".join(args))
+
     print(f"File saved at {filename}")
-    console.save_svg(filename, title=" ".join(args))
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:], "txt")

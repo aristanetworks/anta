@@ -23,28 +23,28 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyVxlan1Interface,
         "eos_data": [{"interfaceDescriptions": {"Loopback0": {"lineProtocolStatus": "up", "interfaceStatus": "up"}}}],
         "inputs": None,
-        "expected": {"result": "skipped", "messages": ["Vxlan1 interface is not configured"]},
+        "expected": {"result": "skipped", "messages": ["Interface: Vxlan1 - Not configured"]},
     },
     {
         "name": "failure-down-up",
         "test": VerifyVxlan1Interface,
         "eos_data": [{"interfaceDescriptions": {"Vxlan1": {"lineProtocolStatus": "down", "interfaceStatus": "up"}}}],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Vxlan1 interface is down/up"]},
+        "expected": {"result": "failure", "messages": ["Interface: Vxlan1 - Incorrect Line protocol status/Status - Expected: up/up Actual: down/up"]},
     },
     {
         "name": "failure-up-down",
         "test": VerifyVxlan1Interface,
         "eos_data": [{"interfaceDescriptions": {"Vxlan1": {"lineProtocolStatus": "up", "interfaceStatus": "down"}}}],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Vxlan1 interface is up/down"]},
+        "expected": {"result": "failure", "messages": ["Interface: Vxlan1 - Incorrect Line protocol status/Status - Expected: up/up Actual: up/down"]},
     },
     {
         "name": "failure-down-down",
         "test": VerifyVxlan1Interface,
         "eos_data": [{"interfaceDescriptions": {"Vxlan1": {"lineProtocolStatus": "down", "interfaceStatus": "down"}}}],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Vxlan1 interface is down/down"]},
+        "expected": {"result": "failure", "messages": ["Interface: Vxlan1 - Incorrect Line protocol status/Status - Expected: up/up Actual: down/down"]},
     },
     {
         "name": "success",
@@ -176,15 +176,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": [
-                "VXLAN config sanity check is not passing: {'localVtep': {'description': 'Local VTEP Configuration Check', "
-                "'allCheckPass': False, 'detail': '', 'hasWarning': True, 'items': [{'name': 'Loopback IP Address', 'checkPass': True, "
-                "'hasWarning': False, 'detail': ''}, {'name': 'VLAN-VNI Map', 'checkPass': False, 'hasWarning': False, 'detail': "
-                "'No VLAN-VNI mapping in Vxlan1'}, {'name': 'Flood List', 'checkPass': False, 'hasWarning': True, 'detail': "
-                "'No VXLAN VLANs in Vxlan1'}, {'name': 'Routing', 'checkPass': True, 'hasWarning': False, 'detail': ''}, {'name': "
-                "'VNI VRF ACL', 'checkPass': True, 'hasWarning': False, 'detail': ''}, {'name': 'VRF-VNI Dynamic VLAN', 'checkPass': True, "
-                "'hasWarning': False, 'detail': ''}, {'name': 'Decap VRF-VNI Map', 'checkPass': True, 'hasWarning': False, 'detail': ''}]}}",
-            ],
+            "messages": ["Vxlan Category: localVtep - Config sanity check is not passing"],
         },
     },
     {
@@ -228,7 +220,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"bindings": {10010: 10, 10020: 20, 500: 1199}},
-        "expected": {"result": "failure", "messages": ["The following VNI(s) have no binding: ['10010']"]},
+        "expected": {"result": "failure", "messages": ["Interface: Vxlan1 VNI: 10010 - Binding not found"]},
     },
     {
         "name": "failure-wrong-binding",
@@ -246,7 +238,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"bindings": {10020: 20, 500: 1199}},
-        "expected": {"result": "failure", "messages": ["The following VNI(s) have the wrong VLAN binding: [{'10020': 30}]"]},
+        "expected": {"result": "failure", "messages": ["Interface: Vxlan1 VNI: 10020 VLAN: 20 - Wrong VLAN binding - Actual: 30"]},
     },
     {
         "name": "failure-no-and-wrong-binding",
@@ -266,7 +258,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"bindings": {10010: 10, 10020: 20, 500: 1199}},
         "expected": {
             "result": "failure",
-            "messages": ["The following VNI(s) have no binding: ['10010']", "The following VNI(s) have the wrong VLAN binding: [{'10020': 30}]"],
+            "messages": ["Interface: Vxlan1 VNI: 10010 - Binding not found", "Interface: Vxlan1 VNI: 10020 VLAN: 20 - Wrong VLAN binding - Actual: 30"],
         },
     },
     {
@@ -288,21 +280,21 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyVxlanVtep,
         "eos_data": [{"vteps": {}, "interfaces": {"Vxlan1": {"vteps": ["10.1.1.5", "10.1.1.6"]}}}],
         "inputs": {"vteps": ["10.1.1.5", "10.1.1.6", "10.1.1.7"]},
-        "expected": {"result": "failure", "messages": ["The following VTEP peer(s) are missing from the Vxlan1 interface: ['10.1.1.7']"]},
+        "expected": {"result": "failure", "messages": ["The following VTEP peer(s) are missing from the Vxlan1 interface: 10.1.1.7"]},
     },
     {
         "name": "failure-no-vtep",
         "test": VerifyVxlanVtep,
         "eos_data": [{"vteps": {}, "interfaces": {"Vxlan1": {"vteps": []}}}],
         "inputs": {"vteps": ["10.1.1.5", "10.1.1.6"]},
-        "expected": {"result": "failure", "messages": ["The following VTEP peer(s) are missing from the Vxlan1 interface: ['10.1.1.5', '10.1.1.6']"]},
+        "expected": {"result": "failure", "messages": ["The following VTEP peer(s) are missing from the Vxlan1 interface: 10.1.1.5, 10.1.1.6"]},
     },
     {
         "name": "failure-no-input-vtep",
         "test": VerifyVxlanVtep,
         "eos_data": [{"vteps": {}, "interfaces": {"Vxlan1": {"vteps": ["10.1.1.5"]}}}],
         "inputs": {"vteps": []},
-        "expected": {"result": "failure", "messages": ["Unexpected VTEP peer(s) on Vxlan1 interface: ['10.1.1.5']"]},
+        "expected": {"result": "failure", "messages": ["Unexpected VTEP peer(s) on Vxlan1 interface: 10.1.1.5"]},
     },
     {
         "name": "failure-missmatch",
@@ -312,8 +304,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "The following VTEP peer(s) are missing from the Vxlan1 interface: ['10.1.1.5']",
-                "Unexpected VTEP peer(s) on Vxlan1 interface: ['10.1.1.7', '10.1.1.8']",
+                "The following VTEP peer(s) are missing from the Vxlan1 interface: 10.1.1.5",
+                "Unexpected VTEP peer(s) on Vxlan1 interface: 10.1.1.7, 10.1.1.8",
             ],
         },
     },
@@ -345,7 +337,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"source_interface": "lo1", "udp_port": 4789},
         "expected": {
             "result": "failure",
-            "messages": ["Source interface is not correct. Expected `Loopback1` as source interface but found `Loopback10` instead."],
+            "messages": ["Interface: Vxlan1 - Incorrect Source interface - Expected: Loopback1 Actual: Loopback10"],
         },
     },
     {
@@ -356,8 +348,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Source interface is not correct. Expected `Loopback1` as source interface but found `Loopback10` instead.",
-                "UDP port is not correct. Expected `4780` as UDP port but found `4789` instead.",
+                "Interface: Vxlan1 - Incorrect Source interface - Expected: Loopback1 Actual: Loopback10",
+                "Interface: Vxlan1 - Incorrect UDP port - Expected: 4780 Actual: 4789",
             ],
         },
     },

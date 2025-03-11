@@ -96,7 +96,7 @@ class VerifyFieldNotice44Resolution(AntaTest):
         for variant in variants:
             model = model.replace(variant, "")
         if model not in devices:
-            self.result.is_skipped("device is not impacted by FN044")
+            self.result.is_skipped("Device is not impacted by FN044")
             return
 
         for component in command_output["details"]["components"]:
@@ -117,7 +117,7 @@ class VerifyFieldNotice44Resolution(AntaTest):
             )
         )
         if incorrect_aboot_version:
-            self.result.is_failure(f"device is running incorrect version of aboot ({aboot_version})")
+            self.result.is_failure(f"Device is running incorrect version of aboot {aboot_version}")
 
 
 class VerifyFieldNotice72Resolution(AntaTest):

@@ -508,7 +508,10 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"threshold": 3.0},
         "expected": {
             "result": "failure",
-            "messages": ["The following interfaces have a usage > 3.0%: {'Ethernet1/1': {'inBpsRate': 10.0}, 'Port-Channel31': {'outBpsRate': 5.0}}"],
+            "messages": [
+                "Interface: Ethernet1/1 BPS Rate: inBpsRate - Usage exceeds the threshold - Expected: < 3.0% Actual: 10.0%",
+                "Interface: Port-Channel31 BPS Rate: outBpsRate - Usage exceeds the threshold - Expected: < 3.0% Actual: 5.0%",
+            ],
         },
     },
     {
@@ -653,7 +656,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"threshold": 70.0},
         "expected": {
             "result": "failure",
-            "messages": ["Interface Ethernet1/1 or one of its member interfaces is not Full-Duplex. VerifyInterfaceUtilization has not been implemented."],
+            "messages": ["Interface Ethernet1/1 or one of its member interfaces is not Full-Duplex. VerifyInterfaceUtilization has not been implemented"],
         },
     },
     {
@@ -787,7 +790,7 @@ DATA: list[dict[str, Any]] = [
                         },
                         "memberInterfaces": {
                             "Ethernet3/1": {"bandwidth": 1000000000, "duplex": "duplexHalf"},
-                            "Ethernet4/1": {"bandwidth": 1000000000, "duplex": "duplexFull"},
+                            "Ethernet4/1": {"bandwidth": 1000000000, "duplex": "duplexHalf"},
                         },
                         "fallbackEnabled": False,
                         "fallbackEnabledType": "fallbackNone",
@@ -798,7 +801,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"threshold": 70.0},
         "expected": {
             "result": "failure",
-            "messages": ["Interface Port-Channel31 or one of its member interfaces is not Full-Duplex. VerifyInterfaceUtilization has not been implemented."],
+            "messages": ["Interface Port-Channel31 or one of its member interfaces is not Full-Duplex. VerifyInterfaceUtilization has not been implemented"],
         },
     },
     {
@@ -830,9 +833,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "The following interface(s) have non-zero error counters: [{'Ethernet1': {'inErrors': 42, 'frameTooLongs': 0, 'outErrors': 0, 'frameTooShorts': 0,"
-                " 'fcsErrors': 0, 'alignmentErrors': 0, 'symbolErrors': 0}}, {'Ethernet6': {'inErrors': 0, 'frameTooLongs': 0, 'outErrors': 0, 'frameTooShorts':"
-                " 0, 'fcsErrors': 0, 'alignmentErrors': 666, 'symbolErrors': 0}}]",
+                "Interface: Ethernet1 - Non-zero error counter(s) - inErrors: 42",
+                "Interface: Ethernet6 - Non-zero error counter(s) - alignmentErrors: 666",
             ],
         },
     },
@@ -851,9 +853,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "The following interface(s) have non-zero error counters: [{'Ethernet1': {'inErrors': 42, 'frameTooLongs': 0, 'outErrors': 10, 'frameTooShorts': 0,"
-                " 'fcsErrors': 0, 'alignmentErrors': 0, 'symbolErrors': 0}}, {'Ethernet6': {'inErrors': 0, 'frameTooLongs': 0, 'outErrors': 0, 'frameTooShorts':"
-                " 0, 'fcsErrors': 0, 'alignmentErrors': 6, 'symbolErrors': 10}}]",
+                "Interface: Ethernet1 - Non-zero error counter(s) - inErrors: 42, outErrors: 10",
+                "Interface: Ethernet6 - Non-zero error counter(s) - alignmentErrors: 6, symbolErrors: 10",
             ],
         },
     },
@@ -870,10 +871,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": [
-                "The following interface(s) have non-zero error counters: [{'Ethernet1': {'inErrors': 42, 'frameTooLongs': 0, 'outErrors': 2, 'frameTooShorts': 0,"
-                " 'fcsErrors': 0, 'alignmentErrors': 0, 'symbolErrors': 0}}]",
-            ],
+            "messages": ["Interface: Ethernet1 - Non-zero error counter(s) - inErrors: 42, outErrors: 2"],
         },
     },
     {
@@ -909,8 +907,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "The following interfaces have non 0 discard counter(s): [{'Ethernet2': {'outDiscards': 42, 'inDiscards': 0}},"
-                " {'Ethernet1': {'outDiscards': 0, 'inDiscards': 42}}]",
+                "Interface: Ethernet2 - Non-zero discard counter(s): outDiscards: 42",
+                "Interface: Ethernet1 - Non-zero discard counter(s): inDiscards: 42",
             ],
         },
     },
@@ -948,7 +946,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["The following interfaces are in error disabled state: ['Management1', 'Ethernet8']"]},
+        "expected": {"result": "failure", "messages": ["Interface: Management1 - Link status Error disabled", "Interface: Ethernet8 - Link status Error disabled"]},
     },
     {
         "name": "success",
@@ -1126,7 +1124,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"interfaces": [{"name": "Ethernet2", "status": "up"}, {"name": "Ethernet8", "status": "up"}, {"name": "Ethernet3", "status": "up"}]},
         "expected": {
             "result": "failure",
-            "messages": ["Ethernet8 - Expected: up/up, Actual: down/down"],
+            "messages": ["Ethernet8 - Status mismatch - Expected: up/up, Actual: down/down"],
         },
     },
     {
@@ -1150,7 +1148,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Ethernet8 - Expected: up/up, Actual: up/down"],
+            "messages": ["Ethernet8 - Status mismatch - Expected: up/up, Actual: up/down"],
         },
     },
     {
@@ -1166,7 +1164,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"interfaces": [{"name": "PortChannel100", "status": "up"}]},
         "expected": {
             "result": "failure",
-            "messages": ["Port-Channel100 - Expected: up/up, Actual: down/lowerLayerDown"],
+            "messages": ["Port-Channel100 - Status mismatch - Expected: up/up, Actual: down/lowerLayerDown"],
         },
     },
     {
@@ -1191,8 +1189,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Ethernet2 - Expected: up/down, Actual: up/unknown",
-                "Ethernet8 - Expected: up/up, Actual: up/down",
+                "Ethernet2 - Status mismatch - Expected: up/down, Actual: up/unknown",
+                "Ethernet8 - Status mismatch - Expected: up/up, Actual: up/down",
             ],
         },
     },
@@ -1218,9 +1216,9 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Ethernet2 - Expected: down, Actual: up",
-                "Ethernet8 - Expected: down, Actual: up",
-                "Ethernet3 - Expected: down, Actual: up",
+                "Ethernet2 - Status mismatch - Expected: down, Actual: up",
+                "Ethernet8 - Status mismatch - Expected: down, Actual: up",
+                "Ethernet3 - Status mismatch - Expected: down, Actual: up",
             ],
         },
     },
@@ -1260,7 +1258,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["The following interfaces have none 0 storm-control drop counters {'Ethernet1': {'broadcast': 666}}"]},
+        "expected": {"result": "failure", "messages": ["Interface: Ethernet1 - Non-zero storm-control drop counter(s) - broadcast: 666"]},
     },
     {
         "name": "success",
@@ -1306,7 +1304,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["The following port-channels have inactive port(s): ['Port-Channel42']"]},
+        "expected": {"result": "failure", "messages": ["Port-Channel42 - Inactive port(s) - Ethernet8"]},
     },
     {
         "name": "success",
@@ -1362,7 +1360,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": ["The following port-channels have received illegal LACP packets on the following ports: [{'Port-Channel42': 'Ethernet8'}]"],
+            "messages": ["Port-Channel42 Interface: Ethernet8 - Illegal LACP packets found"],
         },
     },
     {
@@ -1417,7 +1415,7 @@ DATA: list[dict[str, Any]] = [
                     },
                     "Loopback666": {
                         "name": "Loopback666",
-                        "interfaceStatus": "connected",
+                        "interfaceStatus": "notconnect",
                         "interfaceAddress": {"ipAddr": {"maskLen": 32, "address": "6.6.6.6"}},
                         "ipv4Routable240": False,
                         "lineProtocolStatus": "down",
@@ -1427,7 +1425,13 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"number": 2},
-        "expected": {"result": "failure", "messages": ["The following Loopbacks are not up: ['Loopback666']"]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Interface: Loopback666 - Invalid line protocol status - Expected: up Actual: down",
+                "Interface: Loopback666 - Invalid interface status - Expected: connected Actual: notconnect",
+            ],
+        },
     },
     {
         "name": "failure-count-loopback",
@@ -1447,7 +1451,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"number": 2},
-        "expected": {"result": "failure", "messages": ["Found 1 Loopbacks when expecting 2"]},
+        "expected": {"result": "failure", "messages": ["Loopback interface(s) count mismatch: Expected 2 Actual: 1"]},
     },
     {
         "name": "success",
@@ -1487,7 +1491,13 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["The following SVIs are not up: ['Vlan42']"]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "SVI: Vlan42 - Invalid line protocol status - Expected: up Actual: lowerLayerDown",
+                "SVI: Vlan42 - Invalid interface status - Expected: connected Actual: notconnect",
+            ],
+        },
     },
     {
         "name": "success",
@@ -1703,7 +1713,79 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"mtu": 1500},
-        "expected": {"result": "failure", "messages": ["Some interfaces do not have correct MTU configured:\n[{'Ethernet2': 1600}]"]},
+        "expected": {"result": "failure", "messages": ["Interface: Ethernet2 - Incorrect MTU - Expected: 1500 Actual: 1600"]},
+    },
+    {
+        "name": "failure-specified-interface-mtu",
+        "test": VerifyL3MTU,
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet2": {
+                        "name": "Ethernet2",
+                        "forwardingModel": "routed",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "hardware": "ethernet",
+                        "mtu": 1500,
+                        "l3MtuConfigured": True,
+                        "l2Mru": 0,
+                    },
+                    "Ethernet10": {
+                        "name": "Ethernet10",
+                        "forwardingModel": "routed",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "hardware": "ethernet",
+                        "mtu": 1502,
+                        "l3MtuConfigured": False,
+                        "l2Mru": 0,
+                    },
+                    "Management0": {
+                        "name": "Management0",
+                        "forwardingModel": "routed",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "hardware": "ethernet",
+                        "mtu": 1500,
+                        "l3MtuConfigured": False,
+                        "l2Mru": 0,
+                    },
+                    "Port-Channel2": {
+                        "name": "Port-Channel2",
+                        "forwardingModel": "bridged",
+                        "lineProtocolStatus": "lowerLayerDown",
+                        "interfaceStatus": "notconnect",
+                        "hardware": "portChannel",
+                        "mtu": 1500,
+                        "l3MtuConfigured": False,
+                        "l2Mru": 0,
+                    },
+                    "Loopback0": {
+                        "name": "Loopback0",
+                        "forwardingModel": "routed",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "hardware": "loopback",
+                        "mtu": 65535,
+                        "l3MtuConfigured": False,
+                        "l2Mru": 0,
+                    },
+                    "Vxlan1": {
+                        "name": "Vxlan1",
+                        "forwardingModel": "bridged",
+                        "lineProtocolStatus": "down",
+                        "interfaceStatus": "notconnect",
+                        "hardware": "vxlan",
+                        "mtu": 0,
+                        "l3MtuConfigured": False,
+                        "l2Mru": 0,
+                    },
+                },
+            },
+        ],
+        "inputs": {"mtu": 1500, "ignored_interfaces": ["Loopback", "Port-Channel", "Management", "Vxlan"], "specific_mtu": [{"Ethernet10": 1501}]},
+        "expected": {"result": "failure", "messages": ["Interface: Ethernet10 - Incorrect MTU - Expected: 1501 Actual: 1502"]},
     },
     {
         "name": "success",
@@ -1859,51 +1941,37 @@ DATA: list[dict[str, Any]] = [
                         "name": "Ethernet1",
                         "lineProtocolStatus": "up",
                         "interfaceStatus": "connected",
-                        "mtu": 1500,
-                        "interfaceAddressBrief": {"ipAddr": {"address": "10.1.0.0", "maskLen": 31}},
-                        "ipv4Routable240": False,
-                        "ipv4Routable0": False,
-                        "enabled": True,
-                        "description": "P2P_LINK_TO_NW-CORE_Ethernet1",
                         "proxyArp": True,
-                        "localProxyArp": False,
-                        "gratuitousArp": False,
-                        "vrf": "default",
-                        "urpf": "disable",
-                        "addresslessForwarding": "isInvalid",
-                        "directedBroadcastEnabled": False,
-                        "maxMssIngress": 0,
-                        "maxMssEgress": 0,
                     },
-                },
-            },
-            {
-                "interfaces": {
                     "Ethernet2": {
                         "name": "Ethernet2",
                         "lineProtocolStatus": "up",
                         "interfaceStatus": "connected",
-                        "mtu": 1500,
-                        "interfaceAddressBrief": {"ipAddr": {"address": "10.1.0.2", "maskLen": 31}},
-                        "ipv4Routable240": False,
-                        "ipv4Routable0": False,
-                        "enabled": True,
-                        "description": "P2P_LINK_TO_SW-CORE_Ethernet1",
                         "proxyArp": True,
-                        "localProxyArp": False,
-                        "gratuitousArp": False,
-                        "vrf": "default",
-                        "urpf": "disable",
-                        "addresslessForwarding": "isInvalid",
-                        "directedBroadcastEnabled": False,
-                        "maxMssIngress": 0,
-                        "maxMssEgress": 0,
                     },
                 },
             },
         ],
         "inputs": {"interfaces": ["Ethernet1", "Ethernet2"]},
         "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-interface-not-found",
+        "test": VerifyIPProxyARP,
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet1": {
+                        "name": "Ethernet1",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "proxyArp": True,
+                    },
+                },
+            },
+        ],
+        "inputs": {"interfaces": ["Ethernet1", "Ethernet2"]},
+        "expected": {"result": "failure", "messages": ["Interface: Ethernet2 - Not found"]},
     },
     {
         "name": "failure",
@@ -1915,51 +1983,19 @@ DATA: list[dict[str, Any]] = [
                         "name": "Ethernet1",
                         "lineProtocolStatus": "up",
                         "interfaceStatus": "connected",
-                        "mtu": 1500,
-                        "interfaceAddressBrief": {"ipAddr": {"address": "10.1.0.0", "maskLen": 31}},
-                        "ipv4Routable240": False,
-                        "ipv4Routable0": False,
-                        "enabled": True,
-                        "description": "P2P_LINK_TO_NW-CORE_Ethernet1",
                         "proxyArp": True,
-                        "localProxyArp": False,
-                        "gratuitousArp": False,
-                        "vrf": "default",
-                        "urpf": "disable",
-                        "addresslessForwarding": "isInvalid",
-                        "directedBroadcastEnabled": False,
-                        "maxMssIngress": 0,
-                        "maxMssEgress": 0,
                     },
-                },
-            },
-            {
-                "interfaces": {
                     "Ethernet2": {
                         "name": "Ethernet2",
                         "lineProtocolStatus": "up",
                         "interfaceStatus": "connected",
-                        "mtu": 1500,
-                        "interfaceAddressBrief": {"ipAddr": {"address": "10.1.0.2", "maskLen": 31}},
-                        "ipv4Routable240": False,
-                        "ipv4Routable0": False,
-                        "enabled": True,
-                        "description": "P2P_LINK_TO_SW-CORE_Ethernet1",
                         "proxyArp": False,
-                        "localProxyArp": False,
-                        "gratuitousArp": False,
-                        "vrf": "default",
-                        "urpf": "disable",
-                        "addresslessForwarding": "isInvalid",
-                        "directedBroadcastEnabled": False,
-                        "maxMssIngress": 0,
-                        "maxMssEgress": 0,
                     },
                 },
             },
         ],
         "inputs": {"interfaces": ["Ethernet1", "Ethernet2"]},
-        "expected": {"result": "failure", "messages": ["The following interface(s) have Proxy-ARP disabled: ['Ethernet2']"]},
+        "expected": {"result": "failure", "messages": ["Interface: Ethernet2 - Proxy-ARP disabled"]},
     },
     {
         "name": "success",
@@ -1972,17 +2008,13 @@ DATA: list[dict[str, Any]] = [
                             "primaryIp": {"address": "172.30.11.1", "maskLen": 31},
                             "secondaryIpsOrderedList": [{"address": "10.10.10.1", "maskLen": 31}, {"address": "10.10.10.10", "maskLen": 31}],
                         }
-                    }
-                }
-            },
-            {
-                "interfaces": {
+                    },
                     "Ethernet12": {
                         "interfaceAddress": {
                             "primaryIp": {"address": "172.30.11.10", "maskLen": 31},
                             "secondaryIpsOrderedList": [{"address": "10.10.10.10", "maskLen": 31}, {"address": "10.10.10.20", "maskLen": 31}],
                         }
-                    }
+                    },
                 }
             },
         ],
@@ -2005,17 +2037,13 @@ DATA: list[dict[str, Any]] = [
                             "primaryIp": {"address": "172.30.11.0", "maskLen": 31},
                             "secondaryIpsOrderedList": [],
                         }
-                    }
-                }
-            },
-            {
-                "interfaces": {
+                    },
                     "Ethernet12": {
                         "interfaceAddress": {
                             "primaryIp": {"address": "172.30.11.10", "maskLen": 31},
                             "secondaryIpsOrderedList": [],
                         }
-                    }
+                    },
                 }
             },
         ],
@@ -2028,9 +2056,20 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
-        "name": "failure-not-l3-interface",
+        "name": "failure-interface-not-found",
         "test": VerifyInterfaceIPv4,
-        "eos_data": [{"interfaces": {"Ethernet2": {"interfaceAddress": {}}}}, {"interfaces": {"Ethernet12": {"interfaceAddress": {}}}}],
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet10": {
+                        "interfaceAddress": {
+                            "primaryIp": {"address": "172.30.11.0", "maskLen": 31},
+                            "secondaryIpsOrderedList": [],
+                        }
+                    }
+                }
+            }
+        ],
         "inputs": {
             "interfaces": [
                 {"name": "Ethernet2", "primary_ip": "172.30.11.0/31", "secondary_ips": ["10.10.10.0/31", "10.10.10.10/31"]},
@@ -2039,7 +2078,22 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["For interface `Ethernet2`, IP address is not configured.", "For interface `Ethernet12`, IP address is not configured."],
+            "messages": ["Interface: Ethernet2 - Not found", "Interface: Ethernet12 - Not found"],
+        },
+    },
+    {
+        "name": "failure-not-l3-interface",
+        "test": VerifyInterfaceIPv4,
+        "eos_data": [{"interfaces": {"Ethernet2": {"interfaceAddress": {}}, "Ethernet12": {"interfaceAddress": {}}}}],
+        "inputs": {
+            "interfaces": [
+                {"name": "Ethernet2", "primary_ip": "172.30.11.0/31", "secondary_ips": ["10.10.10.0/31", "10.10.10.10/31"]},
+                {"name": "Ethernet12", "primary_ip": "172.30.11.20/31", "secondary_ips": ["10.10.11.0/31", "10.10.11.10/31"]},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": ["Interface: Ethernet2 - IP address is not configured", "Interface: Ethernet12 - IP address is not configured"],
         },
     },
     {
@@ -2053,17 +2107,13 @@ DATA: list[dict[str, Any]] = [
                             "primaryIp": {"address": "0.0.0.0", "maskLen": 0},
                             "secondaryIpsOrderedList": [],
                         }
-                    }
-                }
-            },
-            {
-                "interfaces": {
+                    },
                     "Ethernet12": {
                         "interfaceAddress": {
                             "primaryIp": {"address": "0.0.0.0", "maskLen": 0},
                             "secondaryIpsOrderedList": [],
                         }
-                    }
+                    },
                 }
             },
         ],
@@ -2076,10 +2126,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "For interface `Ethernet2`, The expected primary IP address is `172.30.11.0/31`, but the actual primary IP address is `0.0.0.0/0`. "
-                "The expected secondary IP addresses are `['10.10.10.0/31', '10.10.10.10/31']`, but the actual secondary IP address is not configured.",
-                "For interface `Ethernet12`, The expected primary IP address is `172.30.11.10/31`, but the actual primary IP address is `0.0.0.0/0`. "
-                "The expected secondary IP addresses are `['10.10.11.0/31', '10.10.11.10/31']`, but the actual secondary IP address is not configured.",
+                "Interface: Ethernet2 - IP address mismatch - Expected: 172.30.11.0/31 Actual: 0.0.0.0/0",
+                "Interface: Ethernet2 - Secondary IP address is not configured",
+                "Interface: Ethernet12 - IP address mismatch - Expected: 172.30.11.10/31 Actual: 0.0.0.0/0",
+                "Interface: Ethernet12 - Secondary IP address is not configured",
             ],
         },
     },
@@ -2094,17 +2144,13 @@ DATA: list[dict[str, Any]] = [
                             "primaryIp": {"address": "172.30.11.0", "maskLen": 31},
                             "secondaryIpsOrderedList": [{"address": "10.10.10.0", "maskLen": 31}, {"address": "10.10.10.10", "maskLen": 31}],
                         }
-                    }
-                }
-            },
-            {
-                "interfaces": {
+                    },
                     "Ethernet3": {
                         "interfaceAddress": {
                             "primaryIp": {"address": "172.30.10.10", "maskLen": 31},
                             "secondaryIpsOrderedList": [{"address": "10.10.11.0", "maskLen": 31}, {"address": "10.11.11.10", "maskLen": 31}],
                         }
-                    }
+                    },
                 }
             },
         ],
@@ -2117,12 +2163,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "For interface `Ethernet2`, The expected primary IP address is `172.30.11.2/31`, but the actual primary IP address is `172.30.11.0/31`. "
-                "The expected secondary IP addresses are `['10.10.10.20/31', '10.10.10.30/31']`, but the actual secondary IP addresses are "
-                "`['10.10.10.0/31', '10.10.10.10/31']`.",
-                "For interface `Ethernet3`, The expected primary IP address is `172.30.10.2/31`, but the actual primary IP address is `172.30.10.10/31`. "
-                "The expected secondary IP addresses are `['10.10.11.0/31', '10.10.11.10/31']`, but the actual secondary IP addresses are "
-                "`['10.10.11.0/31', '10.11.11.10/31']`.",
+                "Interface: Ethernet2 - IP address mismatch - Expected: 172.30.11.2/31 Actual: 172.30.11.0/31",
+                "Interface: Ethernet2 - Secondary IP address mismatch - Expected: 10.10.10.20/31, 10.10.10.30/31 Actual: 10.10.10.0/31, 10.10.10.10/31",
+                "Interface: Ethernet3 - IP address mismatch - Expected: 172.30.10.2/31 Actual: 172.30.10.10/31",
+                "Interface: Ethernet3 - Secondary IP address mismatch - Expected: 10.10.11.0/31, 10.10.11.10/31 Actual: 10.10.11.0/31, 10.11.11.10/31",
             ],
         },
     },
@@ -2137,17 +2181,13 @@ DATA: list[dict[str, Any]] = [
                             "primaryIp": {"address": "172.30.11.0", "maskLen": 31},
                             "secondaryIpsOrderedList": [],
                         }
-                    }
-                }
-            },
-            {
-                "interfaces": {
+                    },
                     "Ethernet3": {
                         "interfaceAddress": {
                             "primaryIp": {"address": "172.30.10.10", "maskLen": 31},
                             "secondaryIpsOrderedList": [{"address": "10.10.11.0", "maskLen": 31}, {"address": "10.11.11.10", "maskLen": 31}],
                         }
-                    }
+                    },
                 }
             },
         ],
@@ -2160,11 +2200,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "For interface `Ethernet2`, The expected primary IP address is `172.30.11.2/31`, but the actual primary IP address is `172.30.11.0/31`. "
-                "The expected secondary IP addresses are `['10.10.10.20/31', '10.10.10.30/31']`, but the actual secondary IP address is not configured.",
-                "For interface `Ethernet3`, The expected primary IP address is `172.30.10.2/31`, but the actual primary IP address is `172.30.10.10/31`. "
-                "The expected secondary IP addresses are `['10.10.11.0/31', '10.10.11.10/31']`, but the actual secondary IP addresses are "
-                "`['10.10.11.0/31', '10.11.11.10/31']`.",
+                "Interface: Ethernet2 - IP address mismatch - Expected: 172.30.11.2/31 Actual: 172.30.11.0/31",
+                "Interface: Ethernet2 - Secondary IP address is not configured",
+                "Interface: Ethernet3 - IP address mismatch - Expected: 172.30.10.2/31 Actual: 172.30.10.10/31",
+                "Interface: Ethernet3 - Secondary IP address mismatch - Expected: 10.10.11.0/31, 10.10.11.10/31 Actual: 10.10.11.0/31, 10.11.11.10/31",
             ],
         },
     },

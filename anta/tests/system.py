@@ -24,7 +24,7 @@ DISK_SPACE_THRESHOLD = 75
 
 
 class VerifyUptime(AntaTest):
-    """Verifies if the device uptime is higher than the provided minimum uptime value.
+    """Verifies the device uptime.
 
     Expected Results
     ----------------
@@ -40,7 +40,6 @@ class VerifyUptime(AntaTest):
     ```
     """
 
-    description = "Verifies the device uptime."
     categories: ClassVar[list[str]] = ["system"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show uptime", revision=1)]
 
@@ -53,11 +52,10 @@ class VerifyUptime(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyUptime."""
+        self.result.is_success()
         command_output = self.instance_commands[0].json_output
-        if command_output["upTime"] > self.inputs.minimum:
-            self.result.is_success()
-        else:
-            self.result.is_failure(f"Device uptime is {command_output['upTime']} seconds")
+        if command_output["upTime"] < self.inputs.minimum:
+            self.result.is_failure(f"Device uptime is incorrect - Expected: {self.inputs.minimum} Actual: {command_output['upTime']} seconds")
 
 
 class VerifyReloadCause(AntaTest):
@@ -96,11 +94,11 @@ class VerifyReloadCause(AntaTest):
         ]:
             self.result.is_success()
         else:
-            self.result.is_failure(f"Reload cause is: '{command_output_data}'")
+            self.result.is_failure(f"Reload cause is: {command_output_data}")
 
 
 class VerifyCoredump(AntaTest):
-    """Verifies if there are core dump files in the /var/core directory.
+    """Verifies there are no core dump files.
 
     Expected Results
     ----------------
@@ -119,7 +117,6 @@ class VerifyCoredump(AntaTest):
     ```
     """
 
-    description = "Verifies there are no core dump files."
     categories: ClassVar[list[str]] = ["system"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show system coredump", revision=1)]
 
@@ -133,7 +130,7 @@ class VerifyCoredump(AntaTest):
         if not core_files:
             self.result.is_success()
         else:
-            self.result.is_failure(f"Core dump(s) have been found: {core_files}")
+            self.result.is_failure(f"Core dump(s) have been found: {', '.join(core_files)}")
 
 
 class VerifyAgentLogs(AntaTest):
@@ -189,12 +186,11 @@ class VerifyCPUUtilization(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyCPUUtilization."""
+        self.result.is_success()
         command_output = self.instance_commands[0].json_output
         command_output_data = command_output["cpuInfo"]["%Cpu(s)"]["idle"]
-        if command_output_data > CPU_IDLE_THRESHOLD:
-            self.result.is_success()
-        else:
-            self.result.is_failure(f"Device has reported a high CPU utilization: {100 - command_output_data}%")
+        if command_output_data < CPU_IDLE_THRESHOLD:
+            self.result.is_failure(f"Device has reported a high CPU utilization -  Expected: < 75% Actual: {100 - command_output_data}%")
 
 
 class VerifyMemoryUtilization(AntaTest):
@@ -219,12 +215,11 @@ class VerifyMemoryUtilization(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyMemoryUtilization."""
+        self.result.is_success()
         command_output = self.instance_commands[0].json_output
         memory_usage = command_output["memFree"] / command_output["memTotal"]
-        if memory_usage > MEMORY_THRESHOLD:
-            self.result.is_success()
-        else:
-            self.result.is_failure(f"Device has reported a high memory usage: {(1 - memory_usage) * 100:.2f}%")
+        if memory_usage < MEMORY_THRESHOLD:
+            self.result.is_failure(f"Device has reported a high memory usage - Expected: < 75% Actual: {(1 - memory_usage) * 100:.2f}%")
 
 
 class VerifyFileSystemUtilization(AntaTest):
@@ -253,7 +248,7 @@ class VerifyFileSystemUtilization(AntaTest):
         self.result.is_success()
         for line in command_output.split("\n")[1:]:
             if "loop" not in line and len(line) > 0 and (percentage := int(line.split()[4].replace("%", ""))) > DISK_SPACE_THRESHOLD:
-                self.result.is_failure(f"Mount point {line} is higher than 75%: reported {percentage}%")
+                self.result.is_failure(f"Mount point: {line} - Higher disk space utilization - Expected: {DISK_SPACE_THRESHOLD}% Actual: {percentage}%")
 
 
 class VerifyNTP(AntaTest):
@@ -272,7 +267,6 @@ class VerifyNTP(AntaTest):
     ```
     """
 
-    description = "Verifies if NTP is synchronised."
     categories: ClassVar[list[str]] = ["system"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ntp status", ofmt="text")]
 
@@ -284,7 +278,7 @@ class VerifyNTP(AntaTest):
             self.result.is_success()
         else:
             data = command_output.split("\n")[0]
-            self.result.is_failure(f"The device is not synchronized with the configured NTP server(s): '{data}'")
+            self.result.is_failure(f"NTP status mismatch - Expected: synchronised Actual: {data}")
 
 
 class VerifyNTPAssociations(AntaTest):
@@ -351,3 +345,51 @@ class VerifyNTPAssociations(AntaTest):
 
             if act_condition != exp_condition or act_stratum != exp_stratum:
                 self.result.is_failure(f"{ntp_server} - Bad association - Condition: {act_condition}, Stratum: {act_stratum}")
+
+
+class VerifyMaintenance(AntaTest):
+    """Verifies that the device is not currently under or entering maintenance.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the device is not under or entering maintenance.
+    * Failure: The test will fail if the device is under or entering maintenance.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.system:
+      - VerifyMaintenance:
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["Maintenance"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show maintenance", revision=1)]
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyMaintenance."""
+        self.result.is_success()
+
+        # If units is not empty we have to examine the output for details.
+        if not (units := get_value(self.instance_commands[0].json_output, "units")):
+            return
+        units_under_maintenance = [unit for unit, info in units.items() if info["state"] == "underMaintenance"]
+        units_entering_maintenance = [unit for unit, info in units.items() if info["state"] == "maintenanceModeEnter"]
+        causes = set()
+        # Iterate over units, check for units under or entering maintenance, and examine the causes.
+        for info in units.values():
+            if info["adminState"] == "underMaintenance":
+                causes.add("Quiesce is configured")
+            if info["onBootMaintenance"]:
+                causes.add("On-boot maintenance is configured")
+            if info["intfsViolatingTrafficThreshold"]:
+                causes.add("Interface traffic threshold violation")
+
+        # Building the error message.
+        if units_under_maintenance:
+            self.result.is_failure(f"Units under maintenance: '{', '.join(units_under_maintenance)}'.")
+        if units_entering_maintenance:
+            self.result.is_failure(f"Units entering maintenance: '{', '.join(units_entering_maintenance)}'.")
+        if causes:
+            self.result.is_failure(f"Possible causes: '{', '.join(sorted(causes))}'.")

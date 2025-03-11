@@ -45,7 +45,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": ["device is running incorrect version of aboot (4.0.1)"],
+            "messages": ["Device is running incorrect version of aboot 4.0.1"],
         },
     },
     {
@@ -65,7 +65,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": ["device is running incorrect version of aboot (4.1.0)"],
+            "messages": ["Device is running incorrect version of aboot 4.1.0"],
         },
     },
     {
@@ -85,7 +85,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": ["device is running incorrect version of aboot (6.0.1)"],
+            "messages": ["Device is running incorrect version of aboot 6.0.1"],
         },
     },
     {
@@ -105,7 +105,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": ["device is running incorrect version of aboot (6.1.1)"],
+            "messages": ["Device is running incorrect version of aboot 6.1.1"],
         },
     },
     {
@@ -125,7 +125,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "result": "skipped",
-            "messages": ["device is not impacted by FN044"],
+            "messages": ["Device is not impacted by FN044"],
         },
     },
     {

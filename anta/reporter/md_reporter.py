@@ -177,8 +177,8 @@ class MDReportBase(ABC):
         if text is None:
             return ""
 
-        # Replace newlines with spaces to keep content on one line
-        text = text.replace("\n", " ")
+        # Replace newlines with <br> to preserve line breaks in HTML
+        text = text.replace("\n", "<br>")
 
         # Replace backticks with single quotes
         return text.replace("`", "'")
@@ -286,7 +286,7 @@ class TestResults(MDReportBase):
     def generate_rows(self) -> Generator[str, None, None]:
         """Generate the rows of the all test results table."""
         for result in self.results.results:
-            messages = self.safe_markdown(", ".join(result.messages))
+            messages = self.safe_markdown(result.messages[0]) if len(result.messages) == 1 else self.safe_markdown("<br>".join(result.messages))
             categories = ", ".join(sorted(convert_categories(result.categories)))
             yield (
                 f"| {result.name or '-'} | {categories or '-'} | {result.test or '-'} "

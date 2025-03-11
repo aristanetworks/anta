@@ -1,3 +1,4 @@
+$ anta nrfu --help
 Usage: anta nrfu [OPTIONS] COMMAND [ARGS]...
 
   Run ANTA tests on selected inventory devices.
@@ -27,6 +28,8 @@ Options:
                                   ANTA_DISABLE_CACHE]
   -i, --inventory FILE            Path to the inventory YAML file.  [env var:
                                   ANTA_INVENTORY; required]
+  --inventory-format [yaml|json]  Format of the inventory file, either 'yaml'
+                                  or 'json'  [env var: ANTA_INVENTORY_FORMAT]
   --tags TEXT                     List of tags using comma as separator:
                                   tag1,tag2,tag3.  [env var: ANTA_TAGS]
   -c, --catalog FILE              Path to the test catalog file  [env var:

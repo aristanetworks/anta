@@ -86,11 +86,13 @@ This entrypoint has multiple options to manage test coverage and reporting.
 --8<-- "anta_help.txt"
 ```
 
+To run the NRFU, you need to select an output format amongst [`csv`, `json`, `md-report`, `table`, `text`, `tpl-report`].
+
+For a first usage, `table` is recommended.  By default all test results for all devices are rendered but it can be changed to a report per test case or per host
+
 ```bash
 --8<-- "anta_nrfu_help.txt"
 ```
-
-To run the NRFU, you need to select an output format amongst ["json", "table", "text", "tpl-report"]. For a first usage, `table` is recommended.  By default all test results for all devices are rendered but it can be changed to a report per test case or per host
 
 !!! Note
     The following examples shows how to pass all the CLI options.
