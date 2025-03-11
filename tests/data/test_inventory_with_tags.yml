@@ -3,10 +3,11 @@ anta_inventory:
   hosts:
     - name: leaf1
       host: leaf1.anta.arista.com
-      tags: ["leaf", "dc1"]
+      tags: ["dc1", "leaf"]
     - name: leaf2
       host: leaf2.anta.arista.com
       tags: ["leaf"]
     - name: spine1
       host: spine1.anta.arista.com
       tags: ["spine"]
+      disable_cache: true
