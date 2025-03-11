@@ -345,3 +345,51 @@ class VerifyNTPAssociations(AntaTest):
 
             if act_condition != exp_condition or act_stratum != exp_stratum:
                 self.result.is_failure(f"{ntp_server} - Bad association - Condition: {act_condition}, Stratum: {act_stratum}")
+
+
+class VerifyMaintenance(AntaTest):
+    """Verifies that the device is not currently under or entering maintenance.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the device is not under or entering maintenance.
+    * Failure: The test will fail if the device is under or entering maintenance.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.system:
+      - VerifyMaintenance:
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["Maintenance"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show maintenance", revision=1)]
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyMaintenance."""
+        self.result.is_success()
+
+        # If units is not empty we have to examine the output for details.
+        if not (units := get_value(self.instance_commands[0].json_output, "units")):
+            return
+        units_under_maintenance = [unit for unit, info in units.items() if info["state"] == "underMaintenance"]
+        units_entering_maintenance = [unit for unit, info in units.items() if info["state"] == "maintenanceModeEnter"]
+        causes = set()
+        # Iterate over units, check for units under or entering maintenance, and examine the causes.
+        for info in units.values():
+            if info["adminState"] == "underMaintenance":
+                causes.add("Quiesce is configured")
+            if info["onBootMaintenance"]:
+                causes.add("On-boot maintenance is configured")
+            if info["intfsViolatingTrafficThreshold"]:
+                causes.add("Interface traffic threshold violation")
+
+        # Building the error message.
+        if units_under_maintenance:
+            self.result.is_failure(f"Units under maintenance: '{', '.join(units_under_maintenance)}'.")
+        if units_entering_maintenance:
+            self.result.is_failure(f"Units entering maintenance: '{', '.join(units_entering_maintenance)}'.")
+        if causes:
+            self.result.is_failure(f"Possible causes: '{', '.join(sorted(causes))}'.")
