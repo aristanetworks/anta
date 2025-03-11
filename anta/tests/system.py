@@ -65,7 +65,7 @@ class VerifyUptime(AntaTest):
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
         if command_output["upTime"] < self.inputs.minimum:
-            self.result.is_failure(f"Device uptime is incorrect - Expected: {self.inputs.minimum} Actual: {command_output['upTime']} seconds")
+            self.result.is_failure(f"Device uptime is incorrect - Expected: {self.inputs.minimum}s Actual: {command_output['upTime']}s")
 
 
 class VerifyReloadCause(AntaTest):

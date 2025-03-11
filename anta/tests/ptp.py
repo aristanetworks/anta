@@ -85,18 +85,15 @@ class VerifyPtpGMStatus(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyPtpGMStatus."""
+        self.result.is_success()
         command_output = self.instance_commands[0].json_output
 
         if (ptp_clock_summary := command_output.get("ptpClockSummary")) is None:
             self.result.is_skipped("PTP is not configured")
             return
 
-        if ptp_clock_summary["gmClockIdentity"] != self.inputs.gmid:
-            self.result.is_failure(
-                f"The device is locked to the following Grandmaster: '{ptp_clock_summary['gmClockIdentity']}', which differ from the expected one.",
-            )
-        else:
-            self.result.is_success()
+        if (act_gmid := ptp_clock_summary["gmClockIdentity"]) != self.inputs.gmid:
+            self.result.is_failure(f"The device is locked to the incorrect Grandmaster - Expected: {self.inputs.gmid} Actual: {act_gmid}")
 
 
 class VerifyPtpLockStatus(AntaTest):

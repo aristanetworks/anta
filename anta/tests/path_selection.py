@@ -48,7 +48,7 @@ class VerifyPathsHealth(AntaTest):
 
         # If no paths are configured for router path-selection, the test fails
         if not command_output:
-            self.result.is_failure("No path configured for router path-selection.")
+            self.result.is_failure("No path configured for router path-selection")
             return
 
         # Check the state of each path
@@ -59,12 +59,13 @@ class VerifyPathsHealth(AntaTest):
                     session = path_data["dpsSessions"]["0"]["active"]
 
                     # If the path state of any path is not 'ipsecEstablished' or 'routeResolved', the test fails
-                    if path_state not in ["ipsecEstablished", "routeResolved"]:
-                        self.result.is_failure(f"Path state for peer {peer} in path-group {group} is `{path_state}`.")
+                    expected_state = ["ipsecEstablished", "routeResolved"]
+                    if path_state not in expected_state:
+                        self.result.is_failure(f"Peer: {peer} Path Group: {group} - Invalid path state - Expected: {', '.join(expected_state)} Actual: {path_state}")
 
                     # If the telemetry state of any path is inactive, the test fails
                     elif not session:
-                        self.result.is_failure(f"Telemetry state for peer {peer} in path-group {group} is `inactive`.")
+                        self.result.is_failure(f"Peer: {peer} Path Group {group} - Telemetry state inactive")
 
 
 class VerifySpecificPath(AntaTest):
@@ -138,7 +139,7 @@ class VerifySpecificPath(AntaTest):
             path_group_details = get_value(peer_details, f"dpsGroups..{path_group}..dpsPaths", separator="..")
             # If the expected path group is not found for the peer, the test fails.
             if not path_group_details:
-                self.result.is_failure(f"{dps_path} - No DPS path found for this peer and path group.")
+                self.result.is_failure(f"{dps_path} - No DPS path found for this peer and path group")
                 continue
 
             path_data = next((path for path in path_group_details.values() if (path.get("source") == source and path.get("destination") == destination)), None)
@@ -152,6 +153,6 @@ class VerifySpecificPath(AntaTest):
 
             # If the state of the path is not 'ipsecEstablished' or 'routeResolved', or the telemetry state is 'inactive', the test fails
             if path_state not in ["ipsecEstablished", "routeResolved"]:
-                self.result.is_failure(f"{dps_path} - State is not in ipsecEstablished, routeResolved. Actual: {path_state}")
+                self.result.is_failure(f"{dps_path} - Invalid state path - Expected: ipsecEstablished, routeResolved Actual: {path_state}")
             elif not session:
                 self.result.is_failure(f"{dps_path} - Telemetry state inactive for this path")

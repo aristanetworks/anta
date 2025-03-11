@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING, ClassVar, Literal
 
 from anta.custom_types import DynamicVlanSource, Vlan
 from anta.models import AntaCommand, AntaTest
-from anta.tools import get_failed_logs, get_value
+from anta.tools import get_value
 
 if TYPE_CHECKING:
     from anta.models import AntaTemplate
@@ -55,19 +55,22 @@ class VerifyVlanInternalPolicy(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyVlanInternalPolicy."""
+        self.result.is_success()
         command_output = self.instance_commands[0].json_output
 
-        keys_to_verify = ["policy", "startVlanId", "endVlanId"]
-        actual_policy_output = {key: get_value(command_output, key) for key in keys_to_verify}
-        expected_policy_output = {"policy": self.inputs.policy, "startVlanId": self.inputs.start_vlan_id, "endVlanId": self.inputs.end_vlan_id}
+        if (policy := self.inputs.policy) != (act_policy := get_value(command_output, "policy")):
+            self.result.is_failure(f"Incorrect VLAN internal allocation policy configured - Expected: {policy} Actual: {act_policy}")
+            return
 
-        # Check if the actual output matches the expected output
-        if actual_policy_output != expected_policy_output:
-            failed_log = "The VLAN internal allocation policy is not configured properly:"
-            failed_log += get_failed_logs(expected_policy_output, actual_policy_output)
-            self.result.is_failure(failed_log)
-        else:
-            self.result.is_success()
+        if (start_vlan_id := self.inputs.start_vlan_id) != (act_vlan_id := get_value(command_output, "startVlanId")):
+            self.result.is_failure(
+                f"VLAN internal allocation policy: {self.inputs.policy} - Incorrect start VLAN id configured - Expected: {start_vlan_id} Actual: {act_vlan_id}"
+            )
+
+        if (end_vlan_id := self.inputs.end_vlan_id) != (act_vlan_id := get_value(command_output, "endVlanId")):
+            self.result.is_failure(
+                f"VLAN internal allocation policy: {self.inputs.policy} - Incorrect end VLAN id configured - Expected: {end_vlan_id} Actual: {act_vlan_id}"
+            )
 
 
 class VerifyDynamicVlanSource(AntaTest):
