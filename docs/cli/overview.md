@@ -52,17 +52,24 @@ anta nrfu
 
 Below are the environment variables usable with the `anta nrfu` command:
 
-| Variable Name | Purpose | Required |
-| ------------- | ------- |----------|
-| ANTA_USERNAME | The username to use in the inventory to connect to devices. |  Yes  |
-| ANTA_PASSWORD | The password to use in the inventory to connect to devices. |  Yes  |
-| ANTA_INVENTORY | The path to the inventory file. |  Yes  |
-| ANTA_CATALOG | The path to the catalog file. |  Yes  |
-| ANTA_PROMPT | The value to pass to the prompt for password is password is not provided |  No  |
-| ANTA_INSECURE | Whether or not using insecure mode when connecting to the EOS devices HTTP API. |  No  |
-| ANTA_DISABLE_CACHE | A variable to disable caching for all ANTA tests (enabled by default). |  No  |
-| ANTA_ENABLE | Whether it is necessary to go to enable mode on devices. |  No  |
-| ANTA_ENABLE_PASSWORD | The optional enable password, when this variable is set, ANTA_ENABLE or `--enable` is required. |  No  |
+| Variable Name | Purpose | Required | Default |
+| ------------- | ------- |----------| ------- |
+| ANTA_USERNAME | The username to use in the inventory to connect to devices. |  Yes  | - |
+| ANTA_PASSWORD | The password to use in the inventory to connect to devices. |  Yes  | - |
+| ANTA_INVENTORY | The path to the inventory file. |  Yes  | - |
+| ANTA_CATALOG | The path to the catalog file. |  Yes  | - |
+| ANTA_ENABLE_PASSWORD | The optional enable password, when this variable is set, ANTA_ENABLE or `--enable` is required. |  No  | - |
+| ANTA_ENABLE | Whether it is necessary to go to enable mode on devices. |  No  | False |
+| ANTA_PROMPT | Prompt for passwords if they are not provided. |  No  | False |
+| ANTA_TIMEOUT | The global timeout value for API calls. |  No  | 30.0 |
+| ANTA_INSECURE | Whether or not using insecure mode when connecting to the EOS devices HTTP API. |  No  | False |
+| ANTA_DISABLE_CACHE | A variable to disable caching for all ANTA tests (enabled by default). |  No  | False |
+| ANTA_INVENTORY_FORMAT | Format of the inventory file. JSON or YAML. |  No  | yaml |
+| ANTA_CATALOG_FORMAT | Format of the catalog file. JSON or YAML. |  No  | yaml |
+| ANTA_TAGS | A list of tags to filter which tests to run on which devices. |  No  | - |
+| ANTA_NRFU_IGNORE_STATUS | Exit code will always be 0. |  No  | False |
+| ANTA_NRFU_IGNORE_ERROR | Exit code will be 0 if all tests succeeded or 1 if any test failed. |  No  | False |
+| ANTA_NRFU_DRY_RUN | Run `anta nrfu` command but stop before running the tests. |  No  | False |
 
 > [!NOTE]
 > Caching can be disabled with the global parameter `--disable-cache`. For more details about how caching is implemented in ANTA, please refer to [Caching in ANTA](../advanced_usages/caching.md).
