@@ -2492,6 +2492,7 @@
 
 
 
+
   <div class="doc doc-children">
 
 
@@ -2541,6 +2542,7 @@
           </tr>
       </tbody>
     </table>
+
 
             <details class="quote">
               <summary>Source code in <code>anta/runner.py</code></summary>
@@ -2607,10 +2609,10 @@
 <a href="#anta.runner.get_coroutines" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">get_coroutines</span><span class="p">(</span>
     <span class="n">selected_tests</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="collections.defaultdict" href="https://docs.python.org/3/library/collections.html#collections.defaultdict">defaultdict</a></span><span class="p">[</span>
-        <span class="n"><a class="autorefs autorefs-internal" title="anta.device.AntaDevice" href="../device/#anta.device.AntaDevice">AntaDevice</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#set">set</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="anta.catalog.AntaTestDefinition" href="../catalog/#anta.catalog.AntaTestDefinition">AntaTestDefinition</a></span><span class="p">]</span>
+        <span class="n"><a class="autorefs autorefs-internal" title="            AntaDevice (anta.device.AntaDevice)" href="../device/#anta.device.AntaDevice">AntaDevice</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#set">set</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="            AntaTestDefinition (anta.catalog.AntaTestDefinition)" href="../catalog/#anta.catalog.AntaTestDefinition">AntaTestDefinition</a></span><span class="p">]</span>
     <span class="p">],</span>
-    <span class="n">manager</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="anta.result_manager.ResultManager" href="../result/#anta.result_manager.ResultManager">ResultManager</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" title="collections.abc.Coroutine" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Coroutine">Coroutine</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" title="typing.Any" href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Any" href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="anta.result_manager.models.TestResult" href="../result/#anta.result_manager.models.TestResult">TestResult</a></span><span class="p">]]</span>
+    <span class="n">manager</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            ResultManager (anta.result_manager.ResultManager)" href="../result/#anta.result_manager.ResultManager">ResultManager</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" title="collections.abc.Coroutine" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Coroutine">Coroutine</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" title="typing.Any" href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Any" href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="            TestResult (anta.result_manager.models.TestResult)" href="../result/#anta.result_manager.models.TestResult">TestResult</a></span><span class="p">]]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2634,7 +2636,7 @@
                 <code>selected_tests</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-external" title="collections.defaultdict" href="https://docs.python.org/3/library/collections.html#collections.defaultdict">defaultdict</a>[<a class="autorefs autorefs-internal" title="anta.device.AntaDevice" href="../device/#anta.device.AntaDevice">AntaDevice</a>, <a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#set">set</a>[<a class="autorefs autorefs-internal" title="anta.catalog.AntaTestDefinition" href="../catalog/#anta.catalog.AntaTestDefinition">AntaTestDefinition</a>]]</code>
+                  <code><a class="autorefs autorefs-external" title="collections.defaultdict" href="https://docs.python.org/3/library/collections.html#collections.defaultdict">defaultdict</a>[<a class="autorefs autorefs-internal" title="            AntaDevice (anta.device.AntaDevice)" href="../device/#anta.device.AntaDevice">AntaDevice</a>, <a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#set">set</a>[<a class="autorefs autorefs-internal" title="            AntaTestDefinition (anta.catalog.AntaTestDefinition)" href="../catalog/#anta.catalog.AntaTestDefinition">AntaTestDefinition</a>]]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2650,7 +2652,7 @@
                 <code>manager</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="anta.result_manager.ResultManager" href="../result/#anta.result_manager.ResultManager">ResultManager</a> | None</code>
+                  <code><a class="autorefs autorefs-internal" title="            ResultManager (anta.result_manager.ResultManager)" href="../result/#anta.result_manager.ResultManager">ResultManager</a> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2676,7 +2678,7 @@
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-external" title="collections.abc.Coroutine" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Coroutine">Coroutine</a>[<a class="autorefs autorefs-external" title="typing.Any" href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>, <a class="autorefs autorefs-external" title="typing.Any" href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>, <a class="autorefs autorefs-internal" title="anta.result_manager.models.TestResult" href="../result/#anta.result_manager.models.TestResult">TestResult</a>]]</code>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-external" title="collections.abc.Coroutine" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Coroutine">Coroutine</a>[<a class="autorefs autorefs-external" title="typing.Any" href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>, <a class="autorefs autorefs-external" title="typing.Any" href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>, <a class="autorefs autorefs-internal" title="            TestResult (anta.result_manager.models.TestResult)" href="../result/#anta.result_manager.models.TestResult">TestResult</a>]]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2686,6 +2688,7 @@
           </tr>
       </tbody>
     </table>
+
 
             <details class="quote">
               <summary>Source code in <code>anta/runner.py</code></summary>
@@ -2770,7 +2773,7 @@
 
 
 <a href="#anta.runner.log_cache_statistics" class="headerlink" title="Permanent link">&para;</a></h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">log_cache_statistics</span><span class="p">(</span><span class="n">devices</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="anta.device.AntaDevice" href="../device/#anta.device.AntaDevice">AntaDevice</a></span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">log_cache_statistics</span><span class="p">(</span><span class="n">devices</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="            AntaDevice (anta.device.AntaDevice)" href="../device/#anta.device.AntaDevice">AntaDevice</a></span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2794,7 +2797,7 @@
                 <code>devices</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="anta.device.AntaDevice" href="../device/#anta.device.AntaDevice">AntaDevice</a>]</code>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="            AntaDevice (anta.device.AntaDevice)" href="../device/#anta.device.AntaDevice">AntaDevice</a>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2807,6 +2810,7 @@
           </tr>
       </tbody>
     </table>
+
 
             <details class="quote">
               <summary>Source code in <code>anta/runner.py</code></summary>
@@ -2864,9 +2868,9 @@
 
 <a href="#anta.runner.main" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">main</span><span class="p">(</span>
-    <span class="n">manager</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="anta.result_manager.ResultManager" href="../result/#anta.result_manager.ResultManager">ResultManager</a></span><span class="p">,</span>
-    <span class="n">inventory</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="anta.inventory.AntaInventory" href="../inventory/#anta.inventory.AntaInventory">AntaInventory</a></span><span class="p">,</span>
-    <span class="n">catalog</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="anta.catalog.AntaCatalog" href="../catalog/#anta.catalog.AntaCatalog">AntaCatalog</a></span><span class="p">,</span>
+    <span class="n">manager</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            ResultManager (anta.result_manager.ResultManager)" href="../result/#anta.result_manager.ResultManager">ResultManager</a></span><span class="p">,</span>
+    <span class="n">inventory</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            AntaInventory (anta.inventory.AntaInventory)" href="../inventory/#anta.inventory.AntaInventory">AntaInventory</a></span><span class="p">,</span>
+    <span class="n">catalog</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            AntaCatalog (anta.catalog.AntaCatalog)" href="../catalog/#anta.catalog.AntaCatalog">AntaCatalog</a></span><span class="p">,</span>
     <span class="n">devices</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#set">set</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">tests</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#set">set</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">tags</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#set">set</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -2899,7 +2903,7 @@ ResultManager object gets updated with the test results.</p>
                 <code>manager</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="anta.result_manager.ResultManager" href="../result/#anta.result_manager.ResultManager">ResultManager</a></code>
+                  <code><a class="autorefs autorefs-internal" title="            ResultManager (anta.result_manager.ResultManager)" href="../result/#anta.result_manager.ResultManager">ResultManager</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2915,7 +2919,7 @@ ResultManager object gets updated with the test results.</p>
                 <code>inventory</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="anta.inventory.AntaInventory" href="../inventory/#anta.inventory.AntaInventory">AntaInventory</a></code>
+                  <code><a class="autorefs autorefs-internal" title="            AntaInventory (anta.inventory.AntaInventory)" href="../inventory/#anta.inventory.AntaInventory">AntaInventory</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2931,7 +2935,7 @@ ResultManager object gets updated with the test results.</p>
                 <code>catalog</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="anta.catalog.AntaCatalog" href="../catalog/#anta.catalog.AntaCatalog">AntaCatalog</a></code>
+                  <code><a class="autorefs autorefs-internal" title="            AntaCatalog (anta.catalog.AntaCatalog)" href="../catalog/#anta.catalog.AntaCatalog">AntaCatalog</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -3024,6 +3028,7 @@ ResultManager object gets updated with the test results.</p>
           </tr>
       </tbody>
     </table>
+
 
             <details class="quote">
               <summary>Source code in <code>anta/runner.py</code></summary>
@@ -3231,12 +3236,12 @@ ResultManager object gets updated with the test results.</p>
 
 <a href="#anta.runner.prepare_tests" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">prepare_tests</span><span class="p">(</span>
-    <span class="n">inventory</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="anta.inventory.AntaInventory" href="../inventory/#anta.inventory.AntaInventory">AntaInventory</a></span><span class="p">,</span>
-    <span class="n">catalog</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="anta.catalog.AntaCatalog" href="../catalog/#anta.catalog.AntaCatalog">AntaCatalog</a></span><span class="p">,</span>
+    <span class="n">inventory</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            AntaInventory (anta.inventory.AntaInventory)" href="../inventory/#anta.inventory.AntaInventory">AntaInventory</a></span><span class="p">,</span>
+    <span class="n">catalog</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            AntaCatalog (anta.catalog.AntaCatalog)" href="../catalog/#anta.catalog.AntaCatalog">AntaCatalog</a></span><span class="p">,</span>
     <span class="n">tests</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#set">set</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">tags</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#set">set</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span>
-    <span class="n"><a class="autorefs autorefs-external" title="collections.defaultdict" href="https://docs.python.org/3/library/collections.html#collections.defaultdict">defaultdict</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="anta.device.AntaDevice" href="../device/#anta.device.AntaDevice">AntaDevice</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#set">set</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="anta.catalog.AntaTestDefinition" href="../catalog/#anta.catalog.AntaTestDefinition">AntaTestDefinition</a></span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span>
+    <span class="n"><a class="autorefs autorefs-external" title="collections.defaultdict" href="https://docs.python.org/3/library/collections.html#collections.defaultdict">defaultdict</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="            AntaDevice (anta.device.AntaDevice)" href="../device/#anta.device.AntaDevice">AntaDevice</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#set">set</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="            AntaTestDefinition (anta.catalog.AntaTestDefinition)" href="../catalog/#anta.catalog.AntaTestDefinition">AntaTestDefinition</a></span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span>
 <span class="p">)</span>
 </code></pre></div>
 
@@ -3261,7 +3266,7 @@ ResultManager object gets updated with the test results.</p>
                 <code>inventory</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="anta.inventory.AntaInventory" href="../inventory/#anta.inventory.AntaInventory">AntaInventory</a></code>
+                  <code><a class="autorefs autorefs-internal" title="            AntaInventory (anta.inventory.AntaInventory)" href="../inventory/#anta.inventory.AntaInventory">AntaInventory</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -3277,7 +3282,7 @@ ResultManager object gets updated with the test results.</p>
                 <code>catalog</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="anta.catalog.AntaCatalog" href="../catalog/#anta.catalog.AntaCatalog">AntaCatalog</a></code>
+                  <code><a class="autorefs autorefs-internal" title="            AntaCatalog (anta.catalog.AntaCatalog)" href="../catalog/#anta.catalog.AntaCatalog">AntaCatalog</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -3335,7 +3340,7 @@ ResultManager object gets updated with the test results.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code><a class="autorefs autorefs-external" title="collections.defaultdict" href="https://docs.python.org/3/library/collections.html#collections.defaultdict">defaultdict</a>[<a class="autorefs autorefs-internal" title="anta.device.AntaDevice" href="../device/#anta.device.AntaDevice">AntaDevice</a>, <a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#set">set</a>[<a class="autorefs autorefs-internal" title="anta.catalog.AntaTestDefinition" href="../catalog/#anta.catalog.AntaTestDefinition">AntaTestDefinition</a>]] | None</code>
+                  <code><a class="autorefs autorefs-external" title="collections.defaultdict" href="https://docs.python.org/3/library/collections.html#collections.defaultdict">defaultdict</a>[<a class="autorefs autorefs-internal" title="            AntaDevice (anta.device.AntaDevice)" href="../device/#anta.device.AntaDevice">AntaDevice</a>, <a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#set">set</a>[<a class="autorefs autorefs-internal" title="            AntaTestDefinition (anta.catalog.AntaTestDefinition)" href="../catalog/#anta.catalog.AntaTestDefinition">AntaTestDefinition</a>]] | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -3345,6 +3350,7 @@ ResultManager object gets updated with the test results.</p>
           </tr>
       </tbody>
     </table>
+
 
             <details class="quote">
               <summary>Source code in <code>anta/runner.py</code></summary>
@@ -3474,12 +3480,12 @@ ResultManager object gets updated with the test results.</p>
 
 <a href="#anta.runner.setup_inventory" class="headerlink" title="Permanent link">&para;</a></h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">setup_inventory</span><span class="p">(</span>
-    <span class="n">inventory</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="anta.inventory.AntaInventory" href="../inventory/#anta.inventory.AntaInventory">AntaInventory</a></span><span class="p">,</span>
+    <span class="n">inventory</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            AntaInventory (anta.inventory.AntaInventory)" href="../inventory/#anta.inventory.AntaInventory">AntaInventory</a></span><span class="p">,</span>
     <span class="n">tags</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#set">set</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">devices</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#set">set</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">established_only</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="anta.inventory.AntaInventory" href="../inventory/#anta.inventory.AntaInventory">AntaInventory</a></span> <span class="o">|</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="            AntaInventory (anta.inventory.AntaInventory)" href="../inventory/#anta.inventory.AntaInventory">AntaInventory</a></span> <span class="o">|</span> <span class="kc">None</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -3503,7 +3509,7 @@ ResultManager object gets updated with the test results.</p>
                 <code>inventory</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="anta.inventory.AntaInventory" href="../inventory/#anta.inventory.AntaInventory">AntaInventory</a></code>
+                  <code><a class="autorefs autorefs-internal" title="            AntaInventory (anta.inventory.AntaInventory)" href="../inventory/#anta.inventory.AntaInventory">AntaInventory</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -3577,7 +3583,7 @@ ResultManager object gets updated with the test results.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code><a class="autorefs autorefs-internal" title="anta.inventory.AntaInventory" href="../inventory/#anta.inventory.AntaInventory">AntaInventory</a> | None</code>
+                  <code><a class="autorefs autorefs-internal" title="            AntaInventory (anta.inventory.AntaInventory)" href="../inventory/#anta.inventory.AntaInventory">AntaInventory</a> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -3587,6 +3593,7 @@ ResultManager object gets updated with the test results.</p>
           </tr>
       </tbody>
     </table>
+
 
             <details class="quote">
               <summary>Source code in <code>anta/runner.py</code></summary>

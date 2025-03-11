@@ -3048,6 +3048,7 @@
 
 
 
+
   <div class="doc doc-children">
 
 
@@ -3066,17 +3067,18 @@
 
 
 <a href="#anta.reporter.md_reporter.ANTAReport" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">ANTAReport</span><span class="p">(</span><span class="n">mdfile</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.TextIO" href="https://docs.python.org/3/library/typing.html#typing.TextIO">TextIO</a></span><span class="p">,</span> <span class="n">results</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="anta.result_manager.ResultManager" href="../../result/#anta.result_manager.ResultManager">ResultManager</a></span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">ANTAReport</span><span class="p">(</span><span class="n">mdfile</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.TextIO" href="https://docs.python.org/3/library/typing.html#typing.TextIO">TextIO</a></span><span class="p">,</span> <span class="n">results</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            ResultManager (anta.result_manager.ResultManager)" href="../../result/#anta.result_manager.ResultManager">ResultManager</a></span><span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="anta.reporter.md_reporter.MDReportBase" href="#anta.reporter.md_reporter.MDReportBase">MDReportBase</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="            MDReportBase (anta.reporter.md_reporter.MDReportBase)" href="#anta.reporter.md_reporter.MDReportBase">MDReportBase</a></code></p>
 
 
 
 
         <p>Generate the <code># ANTA Report</code> section of the markdown report.</p>
+
 
 
 
@@ -3110,6 +3112,7 @@
     <div class="doc doc-contents ">
 
         <p>Generate the <code># ANTA Report</code> section of the markdown report.</p>
+
 
             <details class="quote">
               <summary>Source code in <code>anta/reporter/md_reporter.py</code></summary>
@@ -3146,7 +3149,7 @@
 
 
 <a href="#anta.reporter.md_reporter.MDReportBase" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">MDReportBase</span><span class="p">(</span><span class="n">mdfile</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.TextIO" href="https://docs.python.org/3/library/typing.html#typing.TextIO">TextIO</a></span><span class="p">,</span> <span class="n">results</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="anta.result_manager.ResultManager" href="../../result/#anta.result_manager.ResultManager">ResultManager</a></span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">MDReportBase</span><span class="p">(</span><span class="n">mdfile</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.TextIO" href="https://docs.python.org/3/library/typing.html#typing.TextIO">TextIO</a></span><span class="p">,</span> <span class="n">results</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            ResultManager (anta.result_manager.ResultManager)" href="../../result/#anta.result_manager.ResultManager">ResultManager</a></span><span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -3194,7 +3197,7 @@ to generate and write content to the provided markdown file.</p>
                 <code>results</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="anta.result_manager.ResultManager" href="../../result/#anta.result_manager.ResultManager">ResultManager</a></code>
+                  <code><a class="autorefs autorefs-internal" title="            ResultManager (anta.result_manager.ResultManager)" href="../../result/#anta.result_manager.ResultManager">ResultManager</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -3207,6 +3210,7 @@ to generate and write content to the provided markdown file.</p>
           </tr>
       </tbody>
     </table>
+
 
 
 
@@ -3272,6 +3276,7 @@ to generate and write content to the provided markdown file.</p>
 <li><code>TestResultsSummary</code> will become <code>Test Results Summary</code>.</li>
 </ul>
 </details>
+
             <details class="quote">
               <summary>Source code in <code>anta/reporter/md_reporter.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">104</span>
@@ -3339,6 +3344,7 @@ to generate and write content to the provided markdown file.</p>
         <p>Generate the rows of a markdown table for a specific report section.</p>
 <p>Subclasses can implement this method to generate the content of the table rows.</p>
 
+
             <details class="quote">
               <summary>Source code in <code>anta/reporter/md_reporter.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 96</span>
@@ -3379,6 +3385,7 @@ to generate and write content to the provided markdown file.</p>
 
         <p>Abstract method to generate a specific section of the markdown report.</p>
 <p>Must be implemented by subclasses.</p>
+
 
             <details class="quote">
               <summary>Source code in <code>anta/reporter/md_reporter.py</code></summary>
@@ -3471,6 +3478,7 @@ to generate and write content to the provided markdown file.</p>
           </tr>
       </tbody>
     </table>
+
 
             <details class="quote">
               <summary>Source code in <code>anta/reporter/md_reporter.py</code></summary>
@@ -3575,6 +3583,7 @@ to generate and write content to the provided markdown file.</p>
   <summary>Example</summary>
   <p><code>## Test Results Summary</code></p>
 </details>
+
             <details class="quote">
               <summary>Source code in <code>anta/reporter/md_reporter.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">143</span>
@@ -3684,6 +3693,7 @@ to generate and write content to the provided markdown file.</p>
       </tbody>
     </table>
 
+
             <details class="quote">
               <summary>Source code in <code>anta/reporter/md_reporter.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">127</span>
@@ -3758,6 +3768,7 @@ The final report will be generated in the same order as the <code>sections</code
 
 
 
+
   
 
   <div class="doc doc-children">
@@ -3782,7 +3793,7 @@ The final report will be generated in the same order as the <code>sections</code
   </span>
 
 <a href="#anta.reporter.md_reporter.MDReportGenerator.generate" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">generate</span><span class="p">(</span><span class="n">results</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="anta.result_manager.ResultManager" href="../../result/#anta.result_manager.ResultManager">ResultManager</a></span><span class="p">,</span> <span class="n">md_filename</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">generate</span><span class="p">(</span><span class="n">results</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            ResultManager (anta.result_manager.ResultManager)" href="../../result/#anta.result_manager.ResultManager">ResultManager</a></span><span class="p">,</span> <span class="n">md_filename</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -3806,7 +3817,7 @@ The final report will be generated in the same order as the <code>sections</code
                 <code>results</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="anta.result_manager.ResultManager" href="../../result/#anta.result_manager.ResultManager">ResultManager</a></code>
+                  <code><a class="autorefs autorefs-internal" title="            ResultManager (anta.result_manager.ResultManager)" href="../../result/#anta.result_manager.ResultManager">ResultManager</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -3835,6 +3846,7 @@ The final report will be generated in the same order as the <code>sections</code
           </tr>
       </tbody>
     </table>
+
 
             <details class="quote">
               <summary>Source code in <code>anta/reporter/md_reporter.py</code></summary>
@@ -3915,17 +3927,18 @@ The final report will be generated in the same order as the <code>sections</code
 
 
 <a href="#anta.reporter.md_reporter.SummaryTotals" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">SummaryTotals</span><span class="p">(</span><span class="n">mdfile</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.TextIO" href="https://docs.python.org/3/library/typing.html#typing.TextIO">TextIO</a></span><span class="p">,</span> <span class="n">results</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="anta.result_manager.ResultManager" href="../../result/#anta.result_manager.ResultManager">ResultManager</a></span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">SummaryTotals</span><span class="p">(</span><span class="n">mdfile</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.TextIO" href="https://docs.python.org/3/library/typing.html#typing.TextIO">TextIO</a></span><span class="p">,</span> <span class="n">results</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            ResultManager (anta.result_manager.ResultManager)" href="../../result/#anta.result_manager.ResultManager">ResultManager</a></span><span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="anta.reporter.md_reporter.MDReportBase" href="#anta.reporter.md_reporter.MDReportBase">MDReportBase</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="            MDReportBase (anta.reporter.md_reporter.MDReportBase)" href="#anta.reporter.md_reporter.MDReportBase">MDReportBase</a></code></p>
 
 
 
 
         <p>Generate the <code>### Summary Totals</code> section of the markdown report.</p>
+
 
 
 
@@ -3959,6 +3972,7 @@ The final report will be generated in the same order as the <code>sections</code
     <div class="doc doc-contents ">
 
         <p>Generate the rows of the summary totals table.</p>
+
 
             <details class="quote">
               <summary>Source code in <code>anta/reporter/md_reporter.py</code></summary>
@@ -4000,6 +4014,7 @@ The final report will be generated in the same order as the <code>sections</code
 
         <p>Generate the <code>### Summary Totals</code> section of the markdown report.</p>
 
+
             <details class="quote">
               <summary>Source code in <code>anta/reporter/md_reporter.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">223</span>
@@ -4034,18 +4049,19 @@ The final report will be generated in the same order as the <code>sections</code
 
 <a href="#anta.reporter.md_reporter.SummaryTotalsDeviceUnderTest" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">SummaryTotalsDeviceUnderTest</span><span class="p">(</span>
-    <span class="n">mdfile</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.TextIO" href="https://docs.python.org/3/library/typing.html#typing.TextIO">TextIO</a></span><span class="p">,</span> <span class="n">results</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="anta.result_manager.ResultManager" href="../../result/#anta.result_manager.ResultManager">ResultManager</a></span>
+    <span class="n">mdfile</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.TextIO" href="https://docs.python.org/3/library/typing.html#typing.TextIO">TextIO</a></span><span class="p">,</span> <span class="n">results</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            ResultManager (anta.result_manager.ResultManager)" href="../../result/#anta.result_manager.ResultManager">ResultManager</a></span>
 <span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="anta.reporter.md_reporter.MDReportBase" href="#anta.reporter.md_reporter.MDReportBase">MDReportBase</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="            MDReportBase (anta.reporter.md_reporter.MDReportBase)" href="#anta.reporter.md_reporter.MDReportBase">MDReportBase</a></code></p>
 
 
 
 
         <p>Generate the <code>### Summary Totals Devices Under Tests</code> section of the markdown report.</p>
+
 
 
 
@@ -4079,6 +4095,7 @@ The final report will be generated in the same order as the <code>sections</code
     <div class="doc doc-contents ">
 
         <p>Generate the rows of the summary totals device under test table.</p>
+
 
             <details class="quote">
               <summary>Source code in <code>anta/reporter/md_reporter.py</code></summary>
@@ -4122,6 +4139,7 @@ The final report will be generated in the same order as the <code>sections</code
 
         <p>Generate the <code>### Summary Totals Devices Under Tests</code> section of the markdown report.</p>
 
+
             <details class="quote">
               <summary>Source code in <code>anta/reporter/md_reporter.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">248</span>
@@ -4156,18 +4174,19 @@ The final report will be generated in the same order as the <code>sections</code
 
 <a href="#anta.reporter.md_reporter.SummaryTotalsPerCategory" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">SummaryTotalsPerCategory</span><span class="p">(</span>
-    <span class="n">mdfile</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.TextIO" href="https://docs.python.org/3/library/typing.html#typing.TextIO">TextIO</a></span><span class="p">,</span> <span class="n">results</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="anta.result_manager.ResultManager" href="../../result/#anta.result_manager.ResultManager">ResultManager</a></span>
+    <span class="n">mdfile</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.TextIO" href="https://docs.python.org/3/library/typing.html#typing.TextIO">TextIO</a></span><span class="p">,</span> <span class="n">results</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            ResultManager (anta.result_manager.ResultManager)" href="../../result/#anta.result_manager.ResultManager">ResultManager</a></span>
 <span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="anta.reporter.md_reporter.MDReportBase" href="#anta.reporter.md_reporter.MDReportBase">MDReportBase</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="            MDReportBase (anta.reporter.md_reporter.MDReportBase)" href="#anta.reporter.md_reporter.MDReportBase">MDReportBase</a></code></p>
 
 
 
 
         <p>Generate the <code>### Summary Totals Per Category</code> section of the markdown report.</p>
+
 
 
 
@@ -4201,6 +4220,7 @@ The final report will be generated in the same order as the <code>sections</code
     <div class="doc doc-contents ">
 
         <p>Generate the rows of the summary totals per category table.</p>
+
 
             <details class="quote">
               <summary>Source code in <code>anta/reporter/md_reporter.py</code></summary>
@@ -4242,6 +4262,7 @@ The final report will be generated in the same order as the <code>sections</code
 
         <p>Generate the <code>### Summary Totals Per Category</code> section of the markdown report.</p>
 
+
             <details class="quote">
               <summary>Source code in <code>anta/reporter/md_reporter.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">272</span>
@@ -4275,17 +4296,18 @@ The final report will be generated in the same order as the <code>sections</code
 
 
 <a href="#anta.reporter.md_reporter.TestResults" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">TestResults</span><span class="p">(</span><span class="n">mdfile</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.TextIO" href="https://docs.python.org/3/library/typing.html#typing.TextIO">TextIO</a></span><span class="p">,</span> <span class="n">results</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="anta.result_manager.ResultManager" href="../../result/#anta.result_manager.ResultManager">ResultManager</a></span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">TestResults</span><span class="p">(</span><span class="n">mdfile</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.TextIO" href="https://docs.python.org/3/library/typing.html#typing.TextIO">TextIO</a></span><span class="p">,</span> <span class="n">results</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            ResultManager (anta.result_manager.ResultManager)" href="../../result/#anta.result_manager.ResultManager">ResultManager</a></span><span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="anta.reporter.md_reporter.MDReportBase" href="#anta.reporter.md_reporter.MDReportBase">MDReportBase</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="            MDReportBase (anta.reporter.md_reporter.MDReportBase)" href="#anta.reporter.md_reporter.MDReportBase">MDReportBase</a></code></p>
 
 
 
 
         <p>Generates the <code>## Test Results</code> section of the markdown report.</p>
+
 
 
 
@@ -4319,6 +4341,7 @@ The final report will be generated in the same order as the <code>sections</code
     <div class="doc doc-contents ">
 
         <p>Generate the rows of the all test results table.</p>
+
 
             <details class="quote">
               <summary>Source code in <code>anta/reporter/md_reporter.py</code></summary>
@@ -4360,6 +4383,7 @@ The final report will be generated in the same order as the <code>sections</code
 
         <p>Generate the <code>## Test Results</code> section of the markdown report.</p>
 
+
             <details class="quote">
               <summary>Source code in <code>anta/reporter/md_reporter.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">296</span>
@@ -4393,17 +4417,18 @@ The final report will be generated in the same order as the <code>sections</code
 
 
 <a href="#anta.reporter.md_reporter.TestResultsSummary" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">TestResultsSummary</span><span class="p">(</span><span class="n">mdfile</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.TextIO" href="https://docs.python.org/3/library/typing.html#typing.TextIO">TextIO</a></span><span class="p">,</span> <span class="n">results</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="anta.result_manager.ResultManager" href="../../result/#anta.result_manager.ResultManager">ResultManager</a></span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">TestResultsSummary</span><span class="p">(</span><span class="n">mdfile</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.TextIO" href="https://docs.python.org/3/library/typing.html#typing.TextIO">TextIO</a></span><span class="p">,</span> <span class="n">results</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            ResultManager (anta.result_manager.ResultManager)" href="../../result/#anta.result_manager.ResultManager">ResultManager</a></span><span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="anta.reporter.md_reporter.MDReportBase" href="#anta.reporter.md_reporter.MDReportBase">MDReportBase</a></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="            MDReportBase (anta.reporter.md_reporter.MDReportBase)" href="#anta.reporter.md_reporter.MDReportBase">MDReportBase</a></code></p>
 
 
 
 
         <p>Generate the <code>## Test Results Summary</code> section of the markdown report.</p>
+
 
 
 
@@ -4437,6 +4462,7 @@ The final report will be generated in the same order as the <code>sections</code
     <div class="doc doc-contents ">
 
         <p>Generate the <code>## Test Results Summary</code> section of the markdown report.</p>
+
 
             <details class="quote">
               <summary>Source code in <code>anta/reporter/md_reporter.py</code></summary>
