@@ -2826,7 +2826,7 @@ When initialized, it will emit a deprecation warning and call the VerifyStunClie
 
             <span class="c1"># If no bindings are found for the STUN client, mark the test as a failure and continue with the next client</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">bindings</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">client_input</span><span class="si">}</span><span class="s2"> - STUN client translation not found.&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">client_input</span><span class="si">}</span><span class="s2"> - STUN client translation not found&quot;</span><span class="p">)</span>
                 <span class="k">continue</span>
 
             <span class="c1"># Extract the transaction ID from the bindings</span>
@@ -2963,11 +2963,11 @@ When initialized, it will emit a deprecation warning and call the VerifyStunClie
         <span class="n">not_running</span> <span class="o">=</span> <span class="n">command_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pid&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
 
         <span class="k">if</span> <span class="n">status_disabled</span> <span class="ow">and</span> <span class="n">not_running</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;STUN server status is disabled and not running.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;STUN server status is disabled and not running&quot;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">status_disabled</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;STUN server status is disabled.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;STUN server status is disabled&quot;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">not_running</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;STUN server is not running.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;STUN server is not running&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
