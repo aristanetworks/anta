@@ -22,7 +22,6 @@ from anta.logger import anta_log_exception, exc_to_str
 from anta.models import AntaCommand
 from anta.tools import find_deepest_os_error
 from asynceapi import Device, EapiCommandError
-from asynceapi._transports import build_aiohttp_transport
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -466,11 +465,21 @@ class AsyncEOSDevice(AntaDevice):
                 "port": self._settings["port"],
                 "timeout": self._settings["timeout"],
             }
+
             # Only add transport parameter for aiohttp transport
             if self._settings["httpx_transport"] == "aiohttp":
-                common_settings["transport"] = await build_aiohttp_transport(verify_ssl=False)
-            self._session = Device(**common_settings)
+                try:
+                    from asynceapi._transports import build_aiohttp_transport
 
+                    common_settings["transport"] = await build_aiohttp_transport(verify_ssl=False)
+                except ImportError:
+                    logger.error(
+                        "'aiohttp' transport was requested but required dependencies are not installed. Falling back to 'httpcore'.\n"
+                        "Please consult the 'Experimental Features' section of the 'Advanced Usages documentation' to install the required dependencies."
+                    )
+                    # Continue without setting transport, which will default to httpcore
+
+            self._session = Device(**common_settings)
         return self._session
 
     async def _get_ssh_opts(self) -> SSHClientConnectionOptions:

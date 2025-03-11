@@ -8,6 +8,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import os
+from importlib.util import find_spec
 from ipaddress import ip_address, ip_network
 from pathlib import Path
 from typing import Any, ClassVar
@@ -35,10 +36,22 @@ def _get_httpx_transport() -> str:
     """
     transport = str(os.environ.get("ANTA_HTTPX_TRANSPORT", "httpcore"))
     if transport not in ("httpcore", "aiohttp"):
-        logger.warning("The ANTA_HTTPX_TRANSPORT environment variable value is invalid: %s\nDefault to httpcore.", transport)
+        logger.warning("The 'ANTA_HTTPX_TRANSPORT' environment variable value is invalid: %s\nFalling back to 'httpcore'.", transport)
         transport = "httpcore"
+
     if transport == "aiohttp":
-        logger.warning("aiohttp transport backend is experimental and not fully tested. Please consult the ANTA FAQ.")
+        if find_spec("aiohttp") is None or find_spec("httpx_aiohttp") is None:
+            logger.error(
+                "'aiohttp' transport was requested but required dependencies are not installed. Falling back to 'httpcore'.\n"
+                "Please consult the 'Experimental Features' section of the 'Advanced Usages documentation' to install the required dependencies."
+            )
+            transport = "httpcore"
+        else:
+            logger.warning(
+                "'aiohttp' transport is experimental and not fully tested. "
+                "Please consult the 'Experimental Features' section of the 'Advanced Usages documentation'."
+            )
+
     return transport
 
 
