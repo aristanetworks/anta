@@ -49,13 +49,13 @@ INIT_PARAMS: list[ParameterSet] = [
     pytest.param(
         {"host": "42.42.42.42", "username": None, "password": "anta", "name": "test.anta.ninja"},
         None,
-        pytest.raises(ValueError, match="'username' is required to instantiate device 'test.anta.ninja'"),
+        pytest.raises(ValueError, match="'username' and 'password' are required to instantiate device 'test.anta.ninja'"),
         id="username is None",
     ),
     pytest.param(
         {"host": "42.42.42.42", "username": "anta", "password": None, "name": "test.anta.ninja"},
         None,
-        pytest.raises(ValueError, match="'password' is required to instantiate device 'test.anta.ninja'"),
+        pytest.raises(ValueError, match="'username' and 'password' are required to instantiate device 'test.anta.ninja'"),
         id="password is None",
     ),
 ]
@@ -653,8 +653,10 @@ class TestAsyncEOSDevice:
     )
     async def test_refresh(self, async_device: AsyncEOSDevice, patch_kwargs: list[dict[str, Any]], expected: dict[str, Any]) -> None:
         """Test AsyncEOSDevice.refresh()."""
+        await async_device._get_session()
         with patch.object(async_device._session, "check_connection", **patch_kwargs[0]), patch.object(async_device._session, "cli", **patch_kwargs[1]):
             await async_device.refresh()
+            assert async_device._session is not None
             async_device._session.check_connection.assert_called_once()  # type: ignore[attr-defined] # asynceapi.Device.check_connection is patched
             if expected["is_online"]:
                 async_device._session.cli.assert_called_once()  # type: ignore[attr-defined] # asynceapi.Device.cli is patched
@@ -670,6 +672,7 @@ class TestAsyncEOSDevice:
     async def test__collect(self, async_device: AsyncEOSDevice, command: dict[str, Any], expected: dict[str, Any]) -> None:
         """Test AsyncEOSDevice._collect()."""
         cmd = AntaCommand(command=command["command"], revision=command["revision"]) if "revision" in command else AntaCommand(command=command["command"])
+        await async_device._get_session()
         with patch.object(async_device._session, "cli", **command["patch_kwargs"]):
             collection_id = "pytest"
             await async_device.collect(cmd, collection_id=collection_id)
@@ -688,6 +691,7 @@ class TestAsyncEOSDevice:
                 commands.append({"cmd": cmd.command, "revision": cmd.revision})
             else:
                 commands.append({"cmd": cmd.command})
+            assert async_device._session is not None
             async_device._session.cli.assert_called_once_with(commands=commands, ofmt=cmd.ofmt, version=cmd.version, req_id=f"ANTA-{collection_id}-{id(cmd)}")  # type: ignore[attr-defined] # asynceapi.Device.cli is patched
             assert cmd.output == expected["output"]
             assert cmd.errors == expected["errors"]
@@ -700,9 +704,9 @@ class TestAsyncEOSDevice:
     async def test_copy(self, async_device: AsyncEOSDevice, copy: dict[str, Any]) -> None:
         """Test AsyncEOSDevice.copy()."""
         conn = SSHClientConnection(asyncio.get_event_loop(), SSHClientConnectionOptions())
-        with patch("asyncssh.connect") as connect_mock:
+        with patch("anta.device.connect") as connect_mock:
             connect_mock.return_value.__aenter__.return_value = conn
-            with patch("asyncssh.scp") as scp_mock:
+            with patch("anta.device.scp") as scp_mock:
                 await async_device.copy(copy["sources"], copy["destination"], copy["direction"])
                 if copy["direction"] == "from":
                     src = [(conn, file) for file in copy["sources"]]

@@ -66,7 +66,7 @@ repos:
           - -sn # Don't display the score
           - --rcfile=pyproject.toml # Link to config file
         additional_dependencies:
-          - anta[cli,experimental]
+          - anta[cli]
           - types-PyYAML
           - types-requests
           - types-pyOpenSSL
@@ -74,6 +74,8 @@ repos:
           - pytest
           - pytest-codspeed
           - respx
+          - aiohttp
+          - httpx-aiohttp
 
   - repo: https://github.com/codespell-project/codespell
     rev: v2.4.1
@@ -134,4 +136,3 @@ repos:
         pass_filenames: false
         additional_dependencies:
           - anta[cli,experimental]
-
