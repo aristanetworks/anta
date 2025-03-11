@@ -6,7 +6,10 @@
 from __future__ import annotations
 
 import sys
-from typing import Any, Literal
+from typing import TYPE_CHECKING, Any, Literal
+
+if TYPE_CHECKING:
+    from ._constants import EapiCommandFormat
 
 if sys.version_info >= (3, 11):
     from typing import NotRequired, TypedDict
@@ -18,11 +21,11 @@ EapiJsonOutput = dict[str, Any]
 EapiTextOutput = str
 """Type definition of an eAPI text output response."""
 EapiSimpleCommand = str
-"""Type definition of an eAPI simple command."""
+"""Type definition of an eAPI simple command. A simple command is the CLI command to run as a string."""
 
 
 class EapiComplexCommand(TypedDict):
-    """Type definition of an eAPI complex command."""
+    """Type definition of an eAPI complex command. A complex command is a dictionary with the CLI command to run with additional parameters."""
 
     cmd: str
     input: NotRequired[str]
@@ -43,7 +46,8 @@ class JsonRpcParams(TypedDict):
 
     version: NotRequired[int | Literal["latest"]]
     cmds: list[EapiSimpleCommand | EapiComplexCommand]
-    format: NotRequired[Literal["json", "text"]]
+    format: NotRequired[EapiCommandFormat]
     autoComplete: NotRequired[bool]
     expandAliases: NotRequired[bool]
     timestamps: NotRequired[bool]
+    stopOnError: NotRequired[bool]
