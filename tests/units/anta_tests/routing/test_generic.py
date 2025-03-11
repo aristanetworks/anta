@@ -27,14 +27,14 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyRoutingProtocolModel,
         "eos_data": [{"vrfs": {"default": {}}, "protoModelStatus": {"configuredProtoModel": "ribd", "operatingProtoModel": "ribd"}}],
         "inputs": {"model": "multi-agent"},
-        "expected": {"result": "failure", "messages": ["routing model is misconfigured: configured: ribd - operating: ribd - expected: multi-agent"]},
+        "expected": {"result": "failure", "messages": ["Routing model is misconfigured - Expected: multi-agent Actual: ribd"]},
     },
     {
         "name": "failure-mismatch-operating-model",
         "test": VerifyRoutingProtocolModel,
         "eos_data": [{"vrfs": {"default": {}}, "protoModelStatus": {"configuredProtoModel": "multi-agent", "operatingProtoModel": "ribd"}}],
         "inputs": {"model": "multi-agent"},
-        "expected": {"result": "failure", "messages": ["routing model is misconfigured: configured: multi-agent - operating: ribd - expected: multi-agent"]},
+        "expected": {"result": "failure", "messages": ["Routing model is misconfigured - Expected: multi-agent Actual: ribd"]},
     },
     {
         "name": "success",

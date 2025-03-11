@@ -305,7 +305,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "AFI: vpn-ipv4 - Expected: 2 Actual: 0",
+                "AFI: vpn-ipv4 - Peer count mismatch - Expected: 2 Actual: 0",
             ],
         },
     },
@@ -374,8 +374,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "AFI: evpn - Expected: 3 Actual: 2",
-                "AFI: ipv4 SAFI: unicast VRF: DEV - Expected: 2 Actual: 1",
+                "AFI: evpn - Peer count mismatch - Expected: 3 Actual: 2",
+                "AFI: ipv4 SAFI: unicast VRF: DEV - Peer count mismatch - Expected: 2 Actual: 1",
             ],
         },
     },
@@ -423,9 +423,9 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "AFI: evpn - Expected: 2 Actual: 1",
-                "AFI: ipv4 SAFI: unicast VRF: default - Expected: 2 Actual: 1",
-                "AFI: ipv4 SAFI: unicast VRF: DEV - Expected: 2 Actual: 1",
+                "AFI: evpn - Peer count mismatch - Expected: 2 Actual: 1",
+                "AFI: ipv4 SAFI: unicast VRF: default - Peer count mismatch - Expected: 2 Actual: 1",
+                "AFI: ipv4 SAFI: unicast VRF: DEV - Peer count mismatch - Expected: 2 Actual: 1",
             ],
         },
     },
@@ -687,10 +687,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.12 - Session has non-empty message queues - InQ: 2, OutQ: 4",
-                "AFI: ipv4 SAFI: sr-te VRF: MGMT Peer: 10.100.0.12 - Session has non-empty message queues - InQ: 5, OutQ: 1",
-                "AFI: path-selection Peer: 10.100.0.13 - Session has non-empty message queues - InQ: 1, OutQ: 1",
-                "AFI: link-state Peer: 10.100.0.14 - Session has non-empty message queues - InQ: 3, OutQ: 2",
+                "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.12 - Session has non-empty message queues - InQ: 2 OutQ: 4",
+                "AFI: ipv4 SAFI: sr-te VRF: MGMT Peer: 10.100.0.12 - Session has non-empty message queues - InQ: 5 OutQ: 1",
+                "AFI: path-selection Peer: 10.100.0.13 - Session has non-empty message queues - InQ: 1 OutQ: 1",
+                "AFI: link-state Peer: 10.100.0.14 - Session has non-empty message queues - InQ: 3 OutQ: 2",
             ],
         },
     },
@@ -972,8 +972,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.12 - Session has non-empty message queues - InQ: 3, OutQ: 3",
-                "AFI: ipv4 SAFI: unicast VRF: MGMT Peer: 10.100.0.14 - Session has non-empty message queues - InQ: 2, OutQ: 2",
+                "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.12 - Session has non-empty message queues - InQ: 3 OutQ: 3",
+                "AFI: ipv4 SAFI: unicast VRF: MGMT Peer: 10.100.0.14 - Session has non-empty message queues - InQ: 2 OutQ: 2",
             ],
         },
     },
@@ -1452,13 +1452,13 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 172.30.11.1 VRF: default Advertised route: 192.0.254.3/32 - Valid: False, Active: True",
+                "Peer: 172.30.11.1 VRF: default Advertised route: 192.0.254.3/32 - Valid: False Active: True",
                 "Peer: 172.30.11.1 VRF: default Advertised route: 192.0.254.51/32 - Not found",
                 "Peer: 172.30.11.1 VRF: default Received route: 192.0.254.31/32 - Not found",
-                "Peer: 172.30.11.1 VRF: default Received route: 192.0.255.4/32 - Valid: False, Active: False",
+                "Peer: 172.30.11.1 VRF: default Received route: 192.0.255.4/32 - Valid: False Active: False",
                 "Peer: 172.30.11.5 VRF: default Advertised route: 192.0.254.31/32 - Not found",
-                "Peer: 172.30.11.5 VRF: default Advertised route: 192.0.254.5/32 - Valid: False, Active: True",
-                "Peer: 172.30.11.5 VRF: default Received route: 192.0.254.3/32 - Valid: True, Active: False",
+                "Peer: 172.30.11.5 VRF: default Advertised route: 192.0.254.5/32 - Valid: False Active: True",
+                "Peer: 172.30.11.5 VRF: default Received route: 192.0.254.3/32 - Valid: True Active: False",
                 "Peer: 172.30.11.5 VRF: default Received route: 192.0.255.41/32 - Not found",
             ],
         },
@@ -1597,9 +1597,9 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 172.30.11.1 VRF: default Advertised route: 192.0.254.3/32 - Valid: False, Active: True",
+                "Peer: 172.30.11.1 VRF: default Advertised route: 192.0.254.3/32 - Valid: False Active: True",
                 "Peer: 172.30.11.1 VRF: default Advertised route: 192.0.254.51/32 - Not found",
-                "Peer: 172.30.11.5 VRF: default Received route: 192.0.254.3/32 - Valid: True, Active: False",
+                "Peer: 172.30.11.5 VRF: default Received route: 192.0.254.3/32 - Valid: True Active: False",
                 "Peer: 172.30.11.5 VRF: default Received route: 192.0.255.41/32 - Not found",
             ],
         },
@@ -4325,7 +4325,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 10.100.0.8 VRF: default - Session has non-empty message queues - InQ: 5, OutQ: 10",
+                "Peer: 10.100.0.8 VRF: default - Session has non-empty message queues - InQ: 5 OutQ: 10",
             ],
         },
     },
@@ -4724,7 +4724,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 10.100.0.8 VRF: default - Session has non-empty message queues - InQ: 5, OutQ: 10",
+                "Peer: 10.100.0.8 VRF: default - Session has non-empty message queues - InQ: 5 OutQ: 10",
             ],
         },
     },
@@ -4883,7 +4883,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 10.100.0.8 VRF: default - Session has non-empty message queues - InQ: 5, OutQ: 10",
+                "Peer: 10.100.0.8 VRF: default - Session has non-empty message queues - InQ: 5 OutQ: 10",
             ],
         },
     },
@@ -5344,10 +5344,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Prefix: 10.100.0.128/31 VRF: default Next-hop: 10.100.0.10 Origin: Incomplete - path not found",
-                "Prefix: 10.100.0.128/31 VRF: default Next-hop: 10.100.4.5 Origin: Igp - path not found",
-                "Prefix: 10.100.0.130/31 VRF: MGMT Next-hop: 10.100.0.8 Origin: Incomplete - path not found",
-                "Prefix: 10.100.0.130/31 VRF: MGMT Next-hop: 10.100.0.10 Origin: Incomplete - path not found",
+                "Prefix: 10.100.0.128/31 VRF: default Next-hop: 10.100.0.10 Origin: Incomplete - Path not found",
+                "Prefix: 10.100.0.128/31 VRF: default Next-hop: 10.100.4.5 Origin: Igp - Path not found",
+                "Prefix: 10.100.0.130/31 VRF: MGMT Next-hop: 10.100.0.8 Origin: Incomplete - Path not found",
+                "Prefix: 10.100.0.130/31 VRF: MGMT Next-hop: 10.100.0.10 Origin: Incomplete - Path not found",
             ],
         },
     },
@@ -5373,7 +5373,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Prefix: 10.100.0.128/31 VRF: default - prefix not found", "Prefix: 10.100.0.130/31 VRF: MGMT - prefix not found"],
+            "messages": ["Prefix: 10.100.0.128/31 VRF: default - Prefix not found", "Prefix: 10.100.0.130/31 VRF: MGMT - Prefix not found"],
         },
     },
     {
@@ -5507,7 +5507,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"route_entries": [{"prefix": "10.111.124.0/24", "vrf": "default", "ecmp_count": 2}]},
-        "expected": {"result": "failure", "messages": ["Prefix: 10.111.124.0/24 VRF: default - prefix not found in BGP table"]},
+        "expected": {"result": "failure", "messages": ["Prefix: 10.111.124.0/24 VRF: default - Prefix not found in BGP table"]},
     },
     {
         "name": "failure-valid-active-ecmp-head-not-found",
@@ -5577,7 +5577,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"route_entries": [{"prefix": "10.111.134.0/24", "vrf": "default", "ecmp_count": 2}]},
-        "expected": {"result": "failure", "messages": ["Prefix: 10.111.134.0/24 VRF: default - valid and active ECMP head not found"]},
+        "expected": {"result": "failure", "messages": ["Prefix: 10.111.134.0/24 VRF: default - Valid and active ECMP head not found"]},
     },
     {
         "name": "failure-ecmp-count-mismatch",
@@ -5717,7 +5717,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"route_entries": [{"prefix": "10.111.134.0/24", "vrf": "default", "ecmp_count": 2}]},
-        "expected": {"result": "failure", "messages": ["Prefix: 10.111.134.0/24 VRF: default - prefix not found in routing table"]},
+        "expected": {"result": "failure", "messages": ["Prefix: 10.111.134.0/24 VRF: default - Prefix not found in routing table"]},
     },
     {
         "name": "failure-nexthops-mismatch",
@@ -5787,7 +5787,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"route_entries": [{"prefix": "10.111.134.0/24", "vrf": "default", "ecmp_count": 2}]},
-        "expected": {"result": "failure", "messages": ["Prefix: 10.111.134.0/24 VRF: default - Nexthops count mismatch - BGP: 2, RIB: 1"]},
+        "expected": {"result": "failure", "messages": ["Prefix: 10.111.134.0/24 VRF: default - Nexthops count mismatch - BGP: 2 RIB: 1"]},
     },
     {
         "name": "success",

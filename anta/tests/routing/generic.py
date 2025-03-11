@@ -63,7 +63,7 @@ class VerifyRoutingProtocolModel(AntaTest):
         if configured_model == operating_model == self.inputs.model:
             self.result.is_success()
         else:
-            self.result.is_failure(f"routing model is misconfigured: configured: {configured_model} - operating: {operating_model} - expected: {self.inputs.model}")
+            self.result.is_failure(f"Routing model is misconfigured - Expected: {self.inputs.model} Actual: {operating_model}")
 
 
 class VerifyRoutingTableSize(AntaTest):

@@ -131,7 +131,7 @@ class VerifyBGPPeerCount(AntaTest):
 
             # Check if the count matches the expected count
             if address_family.num_peers != peer_count:
-                self.result.is_failure(f"{address_family} - Expected: {address_family.num_peers} Actual: {peer_count}")
+                self.result.is_failure(f"{address_family} - Peer count mismatch - Expected: {address_family.num_peers} Actual: {peer_count}")
 
 
 class VerifyBGPPeersHealth(AntaTest):
@@ -223,7 +223,7 @@ class VerifyBGPPeersHealth(AntaTest):
                     inq = peer["peerTcpInfo"]["inputQueueLength"]
                     outq = peer["peerTcpInfo"]["outputQueueLength"]
                     if inq != 0 or outq != 0:
-                        self.result.is_failure(f"{address_family} Peer: {peer['peerAddress']} - Session has non-empty message queues - InQ: {inq}, OutQ: {outq}")
+                        self.result.is_failure(f"{address_family} Peer: {peer['peerAddress']} - Session has non-empty message queues - InQ: {inq} OutQ: {outq}")
 
 
 class VerifyBGPSpecificPeers(AntaTest):
@@ -329,7 +329,7 @@ class VerifyBGPSpecificPeers(AntaTest):
                     inq = peer_data["peerTcpInfo"]["inputQueueLength"]
                     outq = peer_data["peerTcpInfo"]["outputQueueLength"]
                     if inq != 0 or outq != 0:
-                        self.result.is_failure(f"{address_family} Peer: {peer_ip} - Session has non-empty message queues - InQ: {inq}, OutQ: {outq}")
+                        self.result.is_failure(f"{address_family} Peer: {peer_ip} - Session has non-empty message queues - InQ: {inq} OutQ: {outq}")
 
 
 class VerifyBGPPeerSession(AntaTest):
@@ -409,7 +409,7 @@ class VerifyBGPPeerSession(AntaTest):
                 inq = peer_data["peerTcpInfo"]["inputQueueLength"]
                 outq = peer_data["peerTcpInfo"]["outputQueueLength"]
                 if inq != 0 or outq != 0:
-                    self.result.is_failure(f"{peer} - Session has non-empty message queues - InQ: {inq}, OutQ: {outq}")
+                    self.result.is_failure(f"{peer} - Session has non-empty message queues - InQ: {inq} OutQ: {outq}")
 
 
 class VerifyBGPExchangedRoutes(AntaTest):
@@ -487,7 +487,7 @@ class VerifyBGPExchangedRoutes(AntaTest):
             is_active = route_paths["active"]
             is_valid = route_paths["valid"]
             if not is_active or not is_valid:
-                return f"{peer} {route_type} route: {route} - Valid: {is_valid}, Active: {is_active}"
+                return f"{peer} {route_type} route: {route} - Valid: {is_valid} Active: {is_active}"
             return None
 
         return f"{peer} {route_type} route: {route} - Not found"
@@ -1495,7 +1495,7 @@ class VerifyBGPPeerSessionRibd(AntaTest):
                 inq_stat = peer_data["peerTcpInfo"]["inputQueueLength"]
                 outq_stat = peer_data["peerTcpInfo"]["outputQueueLength"]
                 if inq_stat != 0 or outq_stat != 0:
-                    self.result.is_failure(f"{peer} - Session has non-empty message queues - InQ: {inq_stat}, OutQ: {outq_stat}")
+                    self.result.is_failure(f"{peer} - Session has non-empty message queues - InQ: {inq_stat} OutQ: {outq_stat}")
 
 
 class VerifyBGPPeersHealthRibd(AntaTest):
@@ -1555,7 +1555,7 @@ class VerifyBGPPeersHealthRibd(AntaTest):
                 inq = peer["peerTcpInfo"]["inputQueueLength"]
                 outq = peer["peerTcpInfo"]["outputQueueLength"]
                 if self.inputs.check_tcp_queues and (inq != 0 or outq != 0):
-                    self.result.is_failure(f"Peer: {peer['peerAddress']} VRF: {vrf} - Session has non-empty message queues - InQ: {inq}, OutQ: {outq}")
+                    self.result.is_failure(f"Peer: {peer['peerAddress']} VRF: {vrf} - Session has non-empty message queues - InQ: {inq} OutQ: {outq}")
 
 
 class VerifyBGPNlriAcceptance(AntaTest):
@@ -1695,7 +1695,7 @@ class VerifyBGPRoutePaths(AntaTest):
         for route in self.inputs.route_entries:
             # Verify if the prefix exists in BGP table
             if not (bgp_routes := get_value(self.instance_commands[0].json_output, f"vrfs..{route.vrf}..bgpRouteEntries..{route.prefix}", separator="..")):
-                self.result.is_failure(f"{route} - prefix not found")
+                self.result.is_failure(f"{route} - Prefix not found")
                 continue
 
             # Iterating over each path.
@@ -1703,7 +1703,7 @@ class VerifyBGPRoutePaths(AntaTest):
                 nexthop = str(path.nexthop)
                 origin = path.origin
                 if not (route_path := get_item(bgp_routes["bgpRoutePaths"], "nextHop", nexthop)):
-                    self.result.is_failure(f"{route} {path} - path not found")
+                    self.result.is_failure(f"{route} {path} - Path not found")
                     continue
 
                 if (actual_origin := get_value(route_path, "routeType.origin")) != origin:
@@ -1773,14 +1773,14 @@ class VerifyBGPRouteECMP(AntaTest):
         for route in self.inputs.route_entries:
             # Verify if the prefix exists in BGP table.
             if not (bgp_route_entry := get_value(self.instance_commands[0].json_output, f"vrfs..{route.vrf}..bgpRouteEntries..{route.prefix}", separator="..")):
-                self.result.is_failure(f"{route} - prefix not found in BGP table")
+                self.result.is_failure(f"{route} - Prefix not found in BGP table")
                 continue
 
             route_paths = iter(bgp_route_entry["bgpRoutePaths"])
             head = next(route_paths, None)
             # Verify if the active ECMP head exists.
             if head is None or not all(head["routeType"][key] for key in ["valid", "active", "ecmpHead"]):
-                self.result.is_failure(f"{route} - valid and active ECMP head not found")
+                self.result.is_failure(f"{route} - Valid and active ECMP head not found")
                 continue
 
             bgp_nexthops = {head["nextHop"]}
@@ -1793,12 +1793,12 @@ class VerifyBGPRouteECMP(AntaTest):
 
             # Verify if the prefix exists in routing table.
             if not (route_entry := get_value(self.instance_commands[1].json_output, f"vrfs..{route.vrf}..routes..{route.prefix}", separator="..")):
-                self.result.is_failure(f"{route} - prefix not found in routing table")
+                self.result.is_failure(f"{route} - Prefix not found in routing table")
                 continue
 
             # Verify BGP and RIB nexthops are same.
             if len(bgp_nexthops) != len(route_entry["vias"]):
-                self.result.is_failure(f"{route} - Nexthops count mismatch - BGP: {len(bgp_nexthops)}, RIB: {len(route_entry['vias'])}")
+                self.result.is_failure(f"{route} - Nexthops count mismatch - BGP: {len(bgp_nexthops)} RIB: {len(route_entry['vias'])}")
 
 
 class VerifyBGPRedistribution(AntaTest):
