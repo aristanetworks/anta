@@ -7,12 +7,11 @@ from __future__ import annotations
 
 import runpy
 from pathlib import Path
-from typing import TYPE_CHECKING
 
 import pytest
+from yaml import safe_dump
 
-if TYPE_CHECKING:
-    from anta.inventory import AntaInventory
+from anta.inventory import AntaInventory
 
 DATA = Path(__file__).parent / "data"
 PARSE_ANTA_INVENTORY_FILE_PATH = Path(__file__).parents[2] / "examples/parse_anta_inventory_file.py"
@@ -22,8 +21,11 @@ PARSE_ANTA_INVENTORY_FILE_PATH = Path(__file__).parents[2] / "examples/parse_ant
 def test_parse_anta_inventory_file(capsys: pytest.CaptureFixture[str], inventory: AntaInventory) -> None:
     """Test parse_anta_inventory_file script."""
     # Create the inventory.yaml file expected by the script
-    inventory_path = Path(__file__).parent / "inventory.yaml"
-    inventory.dump(inventory_path)
+    # TODO: 2.0.0 this is horrendous - need to align how to dump things properly
+    inventory_path = Path.cwd() / "inventory.yaml"
+    yaml_data = {AntaInventory.INVENTORY_ROOT_KEY: inventory.dump().model_dump()}
+    with inventory_path.open("w") as f:
+        safe_dump(yaml_data, f)
 
     try:
         # Run the script

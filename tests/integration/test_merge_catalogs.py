@@ -17,7 +17,7 @@ MERGE_CATALOGS_PATH = Path(__file__).parents[2] / "examples/merge_catalogs.py"
 def test_merge_catalogs() -> None:
     """Test merge_catalogs script."""
     # Adding symlink to match the script data
-    intended_path = Path(__file__).parent / "intended"
+    intended_path = Path.cwd() / "intended"
     intended_path.mkdir(exist_ok=True)
     intended_catalogs_path = intended_path / "test_catalogs/"
     intended_catalogs_path.symlink_to(DATA, target_is_directory=True)

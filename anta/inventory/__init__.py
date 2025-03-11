@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Any, ClassVar, Literal
 
 from pydantic import ValidationError
-from yaml import YAMLError, safe_dump, safe_load
+from yaml import YAMLError, safe_load
 
 from anta.device import AntaDevice, AsyncEOSDevice
 from anta.inventory.exceptions import InventoryIncorrectSchemaError, InventoryRootKeyError
@@ -27,7 +27,7 @@ class AntaInventory(dict[str, AntaDevice]):
     """Inventory abstraction for ANTA framework."""
 
     # Root key of inventory part of the inventory file
-    INVENTORY_ROOT_KEY = "anta_inventory"
+    INVENTORY_ROOT_KEY: str = "anta_inventory"
     # Supported Output format
     INVENTORY_OUTPUT_FORMAT: ClassVar[list[str]] = ["native", "json"]
 
@@ -343,13 +343,10 @@ class AntaInventory(dict[str, AntaDevice]):
                 message = "Error when refreshing inventory"
                 anta_log_exception(r, message, logger)
 
-    def dump(self, path: Path) -> None:
-        """Dump the AntaInventory to path.
+    def dump(self) -> AntaInventoryInput:
+        """Dump the AntaInventory to an AntaInventoryInput.
 
-        Parameters
-        ----------
-        path
-            The Path to dump the inventory to
+        Each hosts is dumped individually.
         """
         hosts = [
             AntaInventoryHost(
@@ -361,14 +358,4 @@ class AntaInventory(dict[str, AntaDevice]):
             )
             for device in self.devices
         ]
-
-        try:
-            with path.open("w", encoding="UTF-8") as file:
-                safe_dump(
-                    {AntaInventory.INVENTORY_ROOT_KEY: {"hosts": [safe_load(host.model_dump_json(serialize_as_any=True, exclude_unset=True)) for host in hosts]}},
-                    file,
-                )
-        except (TypeError, YAMLError, OSError) as e:
-            message = f"Unable to dump ANTA Device Inventory to '{path}'"
-            anta_log_exception(e, message, logger)
-            raise
+        return AntaInventoryInput(hosts=hosts)
