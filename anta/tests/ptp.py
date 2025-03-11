@@ -93,7 +93,7 @@ class VerifyPtpGMStatus(AntaTest):
             return
 
         if (act_gmid := ptp_clock_summary["gmClockIdentity"]) != self.inputs.gmid:
-            self.result.is_failure(f"The device locked to the incorrect Grandmaster - Expected: {self.inputs.gmid} Actual: {act_gmid}")
+            self.result.is_failure(f"The device is locked to the incorrect Grandmaster - Expected: {self.inputs.gmid} Actual: {act_gmid}")
 
 
 class VerifyPtpLockStatus(AntaTest):
