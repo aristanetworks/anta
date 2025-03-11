@@ -47,7 +47,7 @@ class VerifyAVTPathHealth(AntaTest):
 
         # Check if AVT is configured
         if not command_output:
-            self.result.is_failure("Adaptive virtual topology paths are not configured.")
+            self.result.is_failure("Adaptive virtual topology paths are not configured")
             return
 
         # Iterate over each VRF
@@ -61,11 +61,11 @@ class VerifyAVTPathHealth(AntaTest):
 
                     # Check the status of the AVT path
                     if not valid and not active:
-                        self.result.is_failure(f"AVT path {path} for profile {profile} in VRF {vrf} is invalid and not active.")
+                        self.result.is_failure(f"VRF: {vrf} Profile: {profile} AVT path: {path}  -  Invalid and not active")
                     elif not valid:
-                        self.result.is_failure(f"AVT path {path} for profile {profile} in VRF {vrf} is invalid.")
+                        self.result.is_failure(f"VRF: {vrf} Profile: {profile} AVT path: {path} -  Invalid")
                     elif not active:
-                        self.result.is_failure(f"AVT path {path} for profile {profile} in VRF {vrf} is not active.")
+                        self.result.is_failure(f"VRF: {vrf} Profile: {profile} AVT path: {path} - Not active")
 
 
 class VerifyAVTSpecificPath(AntaTest):

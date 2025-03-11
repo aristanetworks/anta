@@ -51,10 +51,10 @@ class VerifyTacacsSourceIntf(AntaTest):
         """Main test function for VerifyTacacsSourceIntf."""
         command_output = self.instance_commands[0].json_output
         try:
-            if command_output["srcIntf"][self.inputs.vrf] == self.inputs.intf:
+            if (sr_interface := command_output["srcIntf"][self.inputs.vrf]) == self.inputs.intf:
                 self.result.is_success()
             else:
-                self.result.is_failure(f"Wrong source-interface configured in VRF {self.inputs.vrf}")
+                self.result.is_failure(f"Wrong source-interface configured in VRF {self.inputs.vrf} - Expected: {self.inputs.intf} Actual: {sr_interface}")
         except KeyError:
             self.result.is_failure(f"Source-interface {self.inputs.intf} is not configured in VRF {self.inputs.vrf}")
 

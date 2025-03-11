@@ -49,7 +49,7 @@ class VerifyMcsClientMounts(AntaTest):
                 continue
             mcs_mount_state_detected = True
             if (state := mount_state["state"]) != "mountStateMountComplete":
-                self.result.is_failure(f"MCS Client mount states are not valid: {state}")
+                self.result.is_failure(f"MCS Client mount states are not valid - Expected: mountStateMountComplete Actual: {state}")
 
         if not mcs_mount_state_detected:
             self.result.is_failure("MCS Client mount states are not present")
@@ -88,7 +88,12 @@ class VerifyManagementCVX(AntaTest):
         command_output = self.instance_commands[0].json_output
         self.result.is_success()
         if (cluster_state := get_value(command_output, "clusterStatus.enabled")) != self.inputs.enabled:
-            self.result.is_failure(f"Management CVX status is not valid: {cluster_state}")
+            if cluster_state is None:
+                self.result.is_failure("Management CVX status - Not configured")
+            else:
+                cluster_state = "enabled" if cluster_state else "disabled"
+                self.inputs.enabled = "enabled" if self.inputs.enabled else "disabled"
+                self.result.is_failure(f"Management CVX status is not valid: Expected: {self.inputs.enabled} Actual: {cluster_state}")
 
 
 class VerifyMcsServerMounts(AntaTest):
@@ -126,13 +131,15 @@ class VerifyMcsServerMounts(AntaTest):
         mount_states = mount["mountStates"][0]
 
         if (num_path_states := len(mount_states["pathStates"])) != (expected_num := len(self.mcs_path_types)):
-            self.result.is_failure(f"Incorrect number of mount path states for {hostname} - Expected: {expected_num}, Actual: {num_path_states}")
+            self.result.is_failure(f"Host: {hostname} - Incorrect number of mount path states - Expected: {expected_num} Actual: {num_path_states}")
 
         for path in mount_states["pathStates"]:
             if (path_type := path.get("type")) not in self.mcs_path_types:
-                self.result.is_failure(f"Unexpected MCS path type for {hostname}: '{path_type}'.")
+                self.result.is_failure(f"Host: {hostname} - Unexpected MCS path type - Expected: in {', '.join(self.mcs_path_types)} Actual: {path_type}")
             if (path_state := path.get("state")) != "mountStateMountComplete":
-                self.result.is_failure(f"MCS server mount state for path '{path_type}' is not valid is for {hostname}: '{path_state}'.")
+                self.result.is_failure(
+                    f"Host: {hostname} Path Type: {path_type} - MCS server mount state is not valid - Expected: mountStateMountComplete Actual:{path_state}"
+                )
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -152,18 +159,18 @@ class VerifyMcsServerMounts(AntaTest):
             mcs_mounts = [mount for mount in mounts if mount["service"] == "Mcs"]
 
             if not mounts:
-                self.result.is_failure(f"No mount status for {hostname}")
+                self.result.is_failure(f"Host: {hostname} - No mount status found")
                 continue
 
             if not mcs_mounts:
-                self.result.is_failure(f"MCS mount state not detected for {hostname}")
+                self.result.is_failure(f"Host: {hostname} - MCS mount state not detected")
             else:
                 for mount in mcs_mounts:
                     self.validate_mount_states(mount, hostname)
                     active_count += 1
 
         if active_count != self.inputs.connections_count:
-            self.result.is_failure(f"Incorrect CVX successful connections count. Expected: {self.inputs.connections_count}, Actual : {active_count}")
+            self.result.is_failure(f"Incorrect CVX successful connections count - Expected: {self.inputs.connections_count} Actual: {active_count}")
 
 
 class VerifyActiveCVXConnections(AntaTest):
@@ -200,13 +207,13 @@ class VerifyActiveCVXConnections(AntaTest):
         self.result.is_success()
 
         if not (connections := command_output.get("connections")):
-            self.result.is_failure("CVX connections are not available.")
+            self.result.is_failure("CVX connections are not available")
             return
 
         active_count = len([connection for connection in connections if connection.get("oobConnectionActive")])
 
         if self.inputs.connections_count != active_count:
-            self.result.is_failure(f"CVX active connections count. Expected: {self.inputs.connections_count}, Actual : {active_count}")
+            self.result.is_failure(f"Incorrect CVX active connections count - Expected: {self.inputs.connections_count} Actual: {active_count}")
 
 
 class VerifyCVXClusterStatus(AntaTest):
@@ -261,7 +268,7 @@ class VerifyCVXClusterStatus(AntaTest):
 
         # Check cluster role
         if (cluster_role := cluster_status.get("role")) != self.inputs.role:
-            self.result.is_failure(f"CVX Role is not valid: {cluster_role}")
+            self.result.is_failure(f"CVX Role is not valid: Expected: {self.inputs.role} Actual: {cluster_role}")
             return
 
         # Validate peer status
@@ -269,15 +276,15 @@ class VerifyCVXClusterStatus(AntaTest):
 
         # Check peer count
         if (num_of_peers := len(peer_cluster)) != (expected_num_of_peers := len(self.inputs.peer_status)):
-            self.result.is_failure(f"Unexpected number of peers {num_of_peers} vs {expected_num_of_peers}")
+            self.result.is_failure(f"Unexpected number of peers - Expected: {expected_num_of_peers} Actual: {num_of_peers}")
 
         # Check each peer
         for peer in self.inputs.peer_status:
             # Retrieve the peer status from the peer cluster
             if (eos_peer_status := get_value(peer_cluster, peer.peer_name, separator="..")) is None:
-                self.result.is_failure(f"{peer.peer_name} is not present")
+                self.result.is_failure(f"{peer.peer_name} - Not present")
                 continue
 
             # Validate the registration state of the peer
             if (peer_reg_state := eos_peer_status.get("registrationState")) != peer.registration_state:
-                self.result.is_failure(f"{peer.peer_name} registration state is not complete: {peer_reg_state}")
+                self.result.is_failure(f"{peer.peer_name} - Invalid registration state - Expected: {peer.registration_state} Actual: {peer_reg_state}")

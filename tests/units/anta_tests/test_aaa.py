@@ -64,7 +64,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"intf": "Management0", "vrf": "MGMT"},
-        "expected": {"result": "failure", "messages": ["Wrong source-interface configured in VRF MGMT"]},
+        "expected": {"result": "failure", "messages": ["Wrong source-interface configured in VRF MGMT - Expected: Management0 Actual: Management1"]},
     },
     {
         "name": "failure-wrong-vrf",
