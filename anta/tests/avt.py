@@ -61,9 +61,9 @@ class VerifyAVTPathHealth(AntaTest):
 
                     # Check the status of the AVT path
                     if not valid and not active:
-                        self.result.is_failure(f"VRF: {vrf} Profile: {profile} AVT path: {path}  -  Invalid and not active")
+                        self.result.is_failure(f"VRF: {vrf} Profile: {profile} AVT path: {path} - Invalid and not active")
                     elif not valid:
-                        self.result.is_failure(f"VRF: {vrf} Profile: {profile} AVT path: {path} -  Invalid")
+                        self.result.is_failure(f"VRF: {vrf} Profile: {profile} AVT path: {path} - Invalid")
                     elif not active:
                         self.result.is_failure(f"VRF: {vrf} Profile: {profile} AVT path: {path} - Not active")
 

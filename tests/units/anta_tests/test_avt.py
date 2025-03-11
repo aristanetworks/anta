@@ -257,10 +257,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "VRF: data Profile: DATA-AVT-POLICY-DEFAULT AVT path: direct:10 -  Invalid",
-                "VRF: guest Profile: GUEST-AVT-POLICY-DEFAULT AVT path: direct:8 -  Invalid",
-                "VRF: default Profile: CONTROL-PLANE-PROFILE AVT path: direct:10 -  Invalid",
-                "VRF: default Profile: DEFAULT-AVT-POLICY-DEFAULT AVT path: direct:8 -  Invalid",
+                "VRF: data Profile: DATA-AVT-POLICY-DEFAULT AVT path: direct:10 - Invalid",
+                "VRF: guest Profile: GUEST-AVT-POLICY-DEFAULT AVT path: direct:8 - Invalid",
+                "VRF: default Profile: CONTROL-PLANE-PROFILE AVT path: direct:10 - Invalid",
+                "VRF: default Profile: DEFAULT-AVT-POLICY-DEFAULT AVT path: direct:8 - Invalid",
             ],
         },
     },
@@ -341,13 +341,13 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "VRF: data Profile: DATA-AVT-POLICY-DEFAULT AVT path: direct:10  -  Invalid and not active",
+                "VRF: data Profile: DATA-AVT-POLICY-DEFAULT AVT path: direct:10 - Invalid and not active",
                 "VRF: data Profile: DATA-AVT-POLICY-DEFAULT AVT path: direct:1 - Not active",
-                "VRF: guest Profile: GUEST-AVT-POLICY-DEFAULT AVT path: direct:10 -  Invalid",
-                "VRF: guest Profile: GUEST-AVT-POLICY-DEFAULT AVT path: direct:8  -  Invalid and not active",
-                "VRF: default Profile: CONTROL-PLANE-PROFILE AVT path: direct:10  -  Invalid and not active",
+                "VRF: guest Profile: GUEST-AVT-POLICY-DEFAULT AVT path: direct:10 - Invalid",
+                "VRF: guest Profile: GUEST-AVT-POLICY-DEFAULT AVT path: direct:8 - Invalid and not active",
+                "VRF: default Profile: CONTROL-PLANE-PROFILE AVT path: direct:10 - Invalid and not active",
                 "VRF: default Profile: DEFAULT-AVT-POLICY-DEFAULT AVT path: direct:10 - Not active",
-                "VRF: default Profile: DEFAULT-AVT-POLICY-DEFAULT AVT path: direct:8  -  Invalid and not active",
+                "VRF: default Profile: DEFAULT-AVT-POLICY-DEFAULT AVT path: direct:8 - Invalid and not active",
             ],
         },
     },

@@ -135,7 +135,7 @@ class VerifyMcsServerMounts(AntaTest):
 
         for path in mount_states["pathStates"]:
             if (path_type := path.get("type")) not in self.mcs_path_types:
-                self.result.is_failure(f"Host: {hostname} - Unexpected MCS path type - Expected: in {', '.join(self.mcs_path_types)} Actual: {path_type}")
+                self.result.is_failure(f"Host: {hostname} - Unexpected MCS path type - Expected: {', '.join(self.mcs_path_types)} Actual: {path_type}")
             if (path_state := path.get("state")) != "mountStateMountComplete":
                 self.result.is_failure(
                     f"Host: {hostname} Path Type: {path_type} - MCS server mount state is not valid - Expected: mountStateMountComplete Actual:{path_state}"

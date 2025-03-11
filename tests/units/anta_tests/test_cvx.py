@@ -247,7 +247,7 @@ DATA: list[dict[str, Any]] = [
             "result": "failure",
             "messages": [
                 "Host: media-leaf-1 - Incorrect number of mount path states - Expected: 3 Actual: 2",
-                "Host: media-leaf-1 - Unexpected MCS path type - Expected: in Mcs::ApiConfigRedundancyStatus, Mcs::ActiveFlows, "
+                "Host: media-leaf-1 - Unexpected MCS path type - Expected: Mcs::ApiConfigRedundancyStatus, Mcs::ActiveFlows, "
                 "Mcs::Client::Status Actual: Mcs::ApiStatus",
             ],
         },
@@ -282,7 +282,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Host: media-leaf-1 - Unexpected MCS path type - Expected: in Mcs::ApiConfigRedundancyStatus, Mcs::ActiveFlows, Mcs::Client::Status"
+                "Host: media-leaf-1 - Unexpected MCS path type - Expected: Mcs::ApiConfigRedundancyStatus, Mcs::ActiveFlows, Mcs::Client::Status"
                 " Actual: Mcs::ApiStatus"
             ],
         },
