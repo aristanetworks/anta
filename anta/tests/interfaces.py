@@ -702,7 +702,7 @@ class VerifyIpVirtualRouterMac(AntaTest):
         self.result.is_success()
         command_output = self.instance_commands[0].json_output["virtualMacs"]
         if get_item(command_output, "macAddress", self.inputs.mac_address) is None:
-            self.result.is_failure(f"IP virtual MAC address: {self.inputs.mac_address} - Not configured")
+            self.result.is_failure(f"IP virtual router MAC address: {self.inputs.mac_address} - Not configured")
 
 
 class VerifyInterfacesSpeed(AntaTest):

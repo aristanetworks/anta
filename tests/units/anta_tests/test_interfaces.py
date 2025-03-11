@@ -2313,7 +2313,7 @@ DATA: list[dict[str, Any]] = [
             }
         ],
         "inputs": {"mac_address": "00:1c:73:00:dc:01"},
-        "expected": {"result": "failure", "messages": ["IP virtual MAC address: 00:1c:73:00:dc:01 - Not configured"]},
+        "expected": {"result": "failure", "messages": ["IP virtual router MAC address: 00:1c:73:00:dc:01 - Not configured"]},
     },
     {
         "name": "success",
