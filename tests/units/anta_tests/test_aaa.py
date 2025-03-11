@@ -47,7 +47,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"intf": "Management0", "vrf": "MGMT"},
-        "expected": {"result": "failure", "messages": ["Source-interface Management0 is not configured in VRF MGMT"]},
+        "expected": {"result": "failure", "messages": ["VRF: MGMT Source Interface: Management0 - Not configured"]},
     },
     {
         "name": "failure-wrong-intf",
@@ -64,7 +64,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"intf": "Management0", "vrf": "MGMT"},
-        "expected": {"result": "failure", "messages": ["Wrong source-interface configured in VRF MGMT"]},
+        "expected": {"result": "failure", "messages": ["VRF: MGMT - Source interface mismatch - Expected: Management0 Actual: Management1"]},
     },
     {
         "name": "failure-wrong-vrf",
@@ -81,7 +81,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"intf": "Management0", "vrf": "MGMT"},
-        "expected": {"result": "failure", "messages": ["Source-interface Management0 is not configured in VRF MGMT"]},
+        "expected": {"result": "failure", "messages": ["VRF: MGMT Source Interface: Management0 - Not configured"]},
     },
     {
         "name": "success",
