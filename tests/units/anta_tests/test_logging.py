@@ -97,7 +97,7 @@ DATA: list[dict[str, Any]] = [
                 """,
         ],
         "inputs": {"interface": "Management0", "vrf": "MGMT"},
-        "expected": {"result": "failure", "messages": ["Source-interface 'Management0' is not configured in VRF MGMT"]},
+        "expected": {"result": "failure", "messages": ["Source-interface: Management0 VRF: MGMT - Not configured"]},
     },
     {
         "name": "failure-vrf",
@@ -112,7 +112,7 @@ DATA: list[dict[str, Any]] = [
                 """,
         ],
         "inputs": {"interface": "Management0", "vrf": "MGMT"},
-        "expected": {"result": "failure", "messages": ["Source-interface 'Management0' is not configured in VRF MGMT"]},
+        "expected": {"result": "failure", "messages": ["Source-interface: Management0 VRF: MGMT - Not configured"]},
     },
     {
         "name": "success",
@@ -317,6 +317,6 @@ DATA: list[dict[str, Any]] = [
             accounting                 debugging           debugging""",
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Syslog logging is disabled."]},
+        "expected": {"result": "failure", "messages": ["Syslog logging is disabled"]},
     },
 ]

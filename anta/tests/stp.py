@@ -281,7 +281,7 @@ class VerifyStpTopologyChanges(AntaTest):
 
         # Verify the STP topology(s).
         if not stp_topologies:
-            self.result.is_failure("STP is not configured.")
+            self.result.is_failure("STP is not configured")
             return
 
         # Verifies the number of changes across all interfaces

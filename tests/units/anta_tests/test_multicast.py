@@ -104,7 +104,10 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"vlans": {1: False, 42: False}},
-        "expected": {"result": "failure", "messages": ["IGMP state for vlan 1 is enabled", "Supplied vlan 42 is not present on the device."]},
+        "expected": {
+            "result": "failure",
+            "messages": ["VLAN1 - Incorrect IGMP state - Expected: disabled Actual: enabled", "Supplied vlan 42 is not present on the device"],
+        },
     },
     {
         "name": "failure-wrong-state",
@@ -132,7 +135,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"vlans": {1: True}},
-        "expected": {"result": "failure", "messages": ["IGMP state for vlan 1 is disabled"]},
+        "expected": {"result": "failure", "messages": ["VLAN1 - Incorrect IGMP state - Expected: enabled Actual: disabled"]},
     },
     {
         "name": "success-enabled",
@@ -171,6 +174,6 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"enabled": True},
-        "expected": {"result": "failure", "messages": ["IGMP state is not valid: disabled"]},
+        "expected": {"result": "failure", "messages": ["IGMP state is not valid - Expected: enabled Actual: disabled"]},
     },
 ]

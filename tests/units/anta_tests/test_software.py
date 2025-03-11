@@ -145,7 +145,7 @@ DATA: list[dict[str, Any]] = [
             {"extensions": []},
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["EOS extensions mismatch - Installed: AristaCloudGateway-1.0.1-1.swix, Configured: Not found"]},
+        "expected": {"result": "failure", "messages": ["EOS extensions mismatch - Installed: AristaCloudGateway-1.0.1-1.swix Configured: Not found"]},
     },
     {
         "name": "failure-multiple-extensions",
@@ -194,7 +194,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "EOS extensions mismatch - Installed: AristaCloudGateway-1.0.1-1.swix, Configured: AristaCloudGateway-1.0.1-1.swix, EOS-4.33.0F-NDRSensor.swix"
+                "EOS extensions mismatch - Installed: AristaCloudGateway-1.0.1-1.swix Configured: AristaCloudGateway-1.0.1-1.swix, EOS-4.33.0F-NDRSensor.swix"
             ],
         },
     },
