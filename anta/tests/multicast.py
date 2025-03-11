@@ -51,12 +51,12 @@ class VerifyIGMPSnoopingVlans(AntaTest):
         self.result.is_success()
         for vlan, enabled in self.inputs.vlans.items():
             if str(vlan) not in command_output["vlans"]:
-                self.result.is_failure(f"Supplied vlan {vlan} is not present on the device.")
+                self.result.is_failure(f"Supplied vlan {vlan} is not present on the device")
                 continue
-
+            expected_state = "enabled" if enabled else "disabled"
             igmp_state = command_output["vlans"][str(vlan)]["igmpSnoopingState"]
-            if igmp_state != "enabled" if enabled else igmp_state != "disabled":
-                self.result.is_failure(f"IGMP state for vlan {vlan} is {igmp_state}")
+            if igmp_state != expected_state:
+                self.result.is_failure(f"VLAN{vlan} - Incorrect IGMP state - Expected: {expected_state} Actual: {igmp_state}")
 
 
 class VerifyIGMPSnoopingGlobal(AntaTest):
@@ -91,5 +91,6 @@ class VerifyIGMPSnoopingGlobal(AntaTest):
         command_output = self.instance_commands[0].json_output
         self.result.is_success()
         igmp_state = command_output["igmpSnoopingState"]
-        if igmp_state != "enabled" if self.inputs.enabled else igmp_state != "disabled":
-            self.result.is_failure(f"IGMP state is not valid: {igmp_state}")
+        expected_state = "enabled" if self.inputs.enabled else "disabled"
+        if igmp_state != expected_state:
+            self.result.is_failure(f"IGMP state is not valid - Expected: {expected_state} Actual: {igmp_state}")
