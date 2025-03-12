@@ -440,7 +440,7 @@ poll interval unknown
         "expected": {"result": "success"},
     },
     {
-        "name": "failure",
+        "name": "failure-ntp-server",
         "test": VerifyNTPAssociations,
         "eos_data": [
             {
