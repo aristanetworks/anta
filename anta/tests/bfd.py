@@ -159,7 +159,7 @@ class VerifyBFDPeersIntervals(AntaTest):
                 if peer.multiplier is None:
                     missing_fileds.append("multiplier")
                 if missing_fileds:
-                    msg = f"{peer} {', '.join(missing_fileds)} field(s) are missing in the input."
+                    msg = f"{peer} {', '.join(missing_fileds)} field(s) are missing in the input"
                     raise ValueError(msg)
             return bfd_peers
 
@@ -260,7 +260,7 @@ class VerifyBFDPeersHealth(AntaTest):
         # Check if any IPv4 BFD peer is configured
         ipv4_neighbors_exist = any(vrf_data["ipv4Neighbors"] for vrf_data in bfd_output["vrfs"].values())
         if not ipv4_neighbors_exist:
-            self.result.is_failure("No IPv4 BFD peers are configured for any VRF.")
+            self.result.is_failure("No IPv4 BFD peers are configured for any VRF")
             return
 
         # Iterate over IPv4 BFD peers
@@ -334,7 +334,7 @@ class VerifyBFDPeersRegProtocols(AntaTest):
             """Validate that 'protocols' field is provided in each BFD peer."""
             for peer in bfd_peers:
                 if peer.protocols is None:
-                    msg = f"{peer} 'protocols' field missing in the input."
+                    msg = f"{peer} 'protocols' field missing in the input"
                     raise ValueError(msg)
             return bfd_peers
 

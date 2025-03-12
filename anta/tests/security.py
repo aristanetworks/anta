@@ -43,7 +43,7 @@ class VerifySSHStatus(AntaTest):
         try:
             line = next(line for line in command_output.split("\n") if line.startswith("SSHD status"))
         except StopIteration:
-            self.result.is_failure("Could not find SSH status in returned output.")
+            self.result.is_failure("Could not find SSH status in returned output")
             return
         status = line.split()[-1]
 
@@ -86,19 +86,18 @@ class VerifySSHIPv4Acl(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifySSHIPv4Acl."""
+        self.result.is_success()
         command_output = self.instance_commands[0].json_output
         ipv4_acl_list = command_output["ipAclList"]["aclList"]
         ipv4_acl_number = len(ipv4_acl_list)
         if ipv4_acl_number != self.inputs.number:
-            self.result.is_failure(f"Expected {self.inputs.number} SSH IPv4 ACL(s) in vrf {self.inputs.vrf} but got {ipv4_acl_number}")
+            self.result.is_failure(f"VRF: {self.inputs.vrf} - SSH IPv4 ACL(s) count mismatch - Expected: {self.inputs.number} Actual: {ipv4_acl_number}")
             return
 
         not_configured_acl = [acl["name"] for acl in ipv4_acl_list if self.inputs.vrf not in acl["configuredVrfs"] or self.inputs.vrf not in acl["activeVrfs"]]
 
         if not_configured_acl:
-            self.result.is_failure(f"SSH IPv4 ACL(s) not configured or active in vrf {self.inputs.vrf}: {', '.join(not_configured_acl)}")
-        else:
-            self.result.is_success()
+            self.result.is_failure(f"VRF: {self.inputs.vrf} - Following SSH IPv4 ACL(s) not configured or active: {', '.join(not_configured_acl)}")
 
 
 class VerifySSHIPv6Acl(AntaTest):
@@ -134,19 +133,18 @@ class VerifySSHIPv6Acl(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifySSHIPv6Acl."""
+        self.result.is_success()
         command_output = self.instance_commands[0].json_output
         ipv6_acl_list = command_output["ipv6AclList"]["aclList"]
         ipv6_acl_number = len(ipv6_acl_list)
         if ipv6_acl_number != self.inputs.number:
-            self.result.is_failure(f"Expected {self.inputs.number} SSH IPv6 ACL(s) in vrf {self.inputs.vrf} but got {ipv6_acl_number}")
+            self.result.is_failure(f"VRF: {self.inputs.vrf} - SSH IPv6 ACL(s) count mismatch - Expected: {self.inputs.number} Actual: {ipv6_acl_number}")
             return
 
         not_configured_acl = [acl["name"] for acl in ipv6_acl_list if self.inputs.vrf not in acl["configuredVrfs"] or self.inputs.vrf not in acl["activeVrfs"]]
 
         if not_configured_acl:
-            self.result.is_failure(f"SSH IPv6 ACL(s) not configured or active in vrf {self.inputs.vrf}: {', '.join(not_configured_acl)}")
-        else:
-            self.result.is_success()
+            self.result.is_failure(f"VRF: {self.inputs.vrf} - Following SSH IPv6 ACL(s) not configured or active: {', '.join(not_configured_acl)}")
 
 
 class VerifyTelnetStatus(AntaTest):
@@ -283,13 +281,13 @@ class VerifyAPIIPv4Acl(AntaTest):
         ipv4_acl_list = command_output["ipAclList"]["aclList"]
         ipv4_acl_number = len(ipv4_acl_list)
         if ipv4_acl_number != self.inputs.number:
-            self.result.is_failure(f"Expected {self.inputs.number} eAPI IPv4 ACL(s) in vrf {self.inputs.vrf} but got {ipv4_acl_number}")
+            self.result.is_failure(f"VRF: {self.inputs.vrf} - eAPI IPv4 ACL(s) count mismatch - Expected: {self.inputs.number} Actual: {ipv4_acl_number}")
             return
 
         not_configured_acl = [acl["name"] for acl in ipv4_acl_list if self.inputs.vrf not in acl["configuredVrfs"] or self.inputs.vrf not in acl["activeVrfs"]]
 
         if not_configured_acl:
-            self.result.is_failure(f"eAPI IPv4 ACL(s) not configured or active in vrf {self.inputs.vrf}: {', '.join(not_configured_acl)}")
+            self.result.is_failure(f"VRF: {self.inputs.vrf} - Following eAPI IPv4 ACL(s) not configured or active: {', '.join(not_configured_acl)}")
         else:
             self.result.is_success()
 
@@ -331,13 +329,13 @@ class VerifyAPIIPv6Acl(AntaTest):
         ipv6_acl_list = command_output["ipv6AclList"]["aclList"]
         ipv6_acl_number = len(ipv6_acl_list)
         if ipv6_acl_number != self.inputs.number:
-            self.result.is_failure(f"Expected {self.inputs.number} eAPI IPv6 ACL(s) in vrf {self.inputs.vrf} but got {ipv6_acl_number}")
+            self.result.is_failure(f"VRF: {self.inputs.vrf} - eAPI IPv6 ACL(s) count mismatch - Expected: {self.inputs.number} Actual: {ipv6_acl_number}")
             return
 
         not_configured_acl = [acl["name"] for acl in ipv6_acl_list if self.inputs.vrf not in acl["configuredVrfs"] or self.inputs.vrf not in acl["activeVrfs"]]
 
         if not_configured_acl:
-            self.result.is_failure(f"eAPI IPv6 ACL(s) not configured or active in vrf {self.inputs.vrf}: {', '.join(not_configured_acl)}")
+            self.result.is_failure(f"VRF: {self.inputs.vrf} - Following eAPI IPv6 ACL(s) not configured or active: {', '.join(not_configured_acl)}")
         else:
             self.result.is_success()
 
@@ -474,14 +472,15 @@ class VerifyBannerLogin(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyBannerLogin."""
-        login_banner = self.instance_commands[0].json_output["loginBanner"]
+        self.result.is_success()
+        if not (login_banner := self.instance_commands[0].json_output["loginBanner"]):
+            self.result.is_failure("Login banner is not configured")
+            return
 
         # Remove leading and trailing whitespaces from each line
         cleaned_banner = "\n".join(line.strip() for line in self.inputs.login_banner.split("\n"))
         if login_banner != cleaned_banner:
-            self.result.is_failure(f"Expected `{cleaned_banner}` as the login banner, but found `{login_banner}` instead.")
-        else:
-            self.result.is_success()
+            self.result.is_failure(f"Incorrect login banner configured - Expected: {cleaned_banner} Actual: {login_banner}")
 
 
 class VerifyBannerMotd(AntaTest):
@@ -516,14 +515,15 @@ class VerifyBannerMotd(AntaTest):
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyBannerMotd."""
-        motd_banner = self.instance_commands[0].json_output["motd"]
+        self.result.is_success()
+        if not (motd_banner := self.instance_commands[0].json_output["motd"]):
+            self.result.is_failure("MOTD banner is not configured")
+            return
 
         # Remove leading and trailing whitespaces from each line
         cleaned_banner = "\n".join(line.strip() for line in self.inputs.motd_banner.split("\n"))
         if motd_banner != cleaned_banner:
-            self.result.is_failure(f"Expected `{cleaned_banner}` as the motd banner, but found `{motd_banner}` instead.")
-        else:
-            self.result.is_success()
+            self.result.is_failure(f"Incorrect MOTD banner configured - Expected: {cleaned_banner} Actual: {motd_banner}")
 
 
 class VerifyIPv4ACL(AntaTest):
@@ -624,12 +624,11 @@ class VerifyIPSecConnHealth(AntaTest):
     def test(self) -> None:
         """Main test function for VerifyIPSecConnHealth."""
         self.result.is_success()
-        failure_conn = []
         command_output = self.instance_commands[0].json_output["connections"]
 
         # Check if IP security connection is configured
         if not command_output:
-            self.result.is_failure("No IPv4 security connection configured.")
+            self.result.is_failure("No IPv4 security connection configured")
             return
 
         # Iterate over all ipsec connections
@@ -639,10 +638,7 @@ class VerifyIPSecConnHealth(AntaTest):
                 source = conn_data.get("saddr")
                 destination = conn_data.get("daddr")
                 vrf = conn_data.get("tunnelNs")
-                failure_conn.append(f"source:{source} destination:{destination} vrf:{vrf}")
-        if failure_conn:
-            failure_msg = "\n".join(failure_conn)
-            self.result.is_failure(f"The following IPv4 security connections are not established:\n{failure_msg}.")
+                self.result.is_failure(f"Source: {source} Destination: {destination} VRF: {vrf} - IPv4 security connection not established")
 
 
 class VerifySpecificIPSecConn(AntaTest):
@@ -717,9 +713,7 @@ class VerifySpecificIPSecConn(AntaTest):
                     if state != "Established":
                         source = conn_data.get("saddr")
                         destination = conn_data.get("daddr")
-                        self.result.is_failure(
-                            f"{input_peer} Source: {source} Destination: {destination} - Connection down - Expected: Established, Actual: {state}"
-                        )
+                        self.result.is_failure(f"{input_peer} Source: {source} Destination: {destination} - Connection down - Expected: Established Actual: {state}")
                 continue
 
             # Create a dictionary of existing connections for faster lookup
@@ -734,7 +728,7 @@ class VerifySpecificIPSecConn(AntaTest):
                 if (source_input, destination_input, vrf) in existing_connections:
                     existing_state = existing_connections[(source_input, destination_input, vrf)]
                     if existing_state != "Established":
-                        failure = f"Expected: Established, Actual: {existing_state}"
+                        failure = f"Expected: Established Actual: {existing_state}"
                         self.result.is_failure(f"{input_peer} Source: {source_input} Destination: {destination_input} - Connection down - {failure}")
                 else:
                     self.result.is_failure(f"{input_peer} Source: {source_input} Destination: {destination_input} - Connection not found.")
@@ -766,6 +760,6 @@ class VerifyHardwareEntropy(AntaTest):
 
         # Check if hardware entropy generation is enabled.
         if not command_output.get("hardwareEntropyEnabled"):
-            self.result.is_failure("Hardware entropy generation is disabled.")
+            self.result.is_failure("Hardware entropy generation is disabled")
         else:
             self.result.is_success()

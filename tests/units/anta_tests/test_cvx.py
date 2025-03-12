@@ -60,7 +60,10 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyMcsClientMounts,
         "eos_data": [{"mountStates": [{"path": "mcs/v1/toSwitch/28-99-3a-8f-93-7b", "type": "Mcs::DeviceConfigV1", "state": "mountStatePreservedUnmounted"}]}],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["MCS Client mount states are not valid: mountStatePreservedUnmounted"]},
+        "expected": {
+            "result": "failure",
+            "messages": ["MCS Client mount states are not valid - Expected: mountStateMountComplete Actual: mountStatePreservedUnmounted"],
+        },
     },
     {
         "name": "failure-partial-haclient",
@@ -74,7 +77,10 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["MCS Client mount states are not valid: mountStatePreservedUnmounted"]},
+        "expected": {
+            "result": "failure",
+            "messages": ["MCS Client mount states are not valid - Expected: mountStateMountComplete Actual: mountStatePreservedUnmounted"],
+        },
     },
     {
         "name": "failure-full-haclient",
@@ -88,7 +94,10 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["MCS Client mount states are not valid: mountStatePreservedUnmounted"]},
+        "expected": {
+            "result": "failure",
+            "messages": ["MCS Client mount states are not valid - Expected: mountStateMountComplete Actual: mountStatePreservedUnmounted"],
+        },
     },
     {
         "name": "failure-non-mcs-client",
@@ -111,7 +120,10 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["MCS Client mount states are not valid: mountStatePreservedUnmounted"]},
+        "expected": {
+            "result": "failure",
+            "messages": ["MCS Client mount states are not valid - Expected: mountStateMountComplete Actual: mountStatePreservedUnmounted"],
+        },
     },
     {
         "name": "success-enabled",
@@ -140,18 +152,31 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
-        "name": "failure - no enabled state",
+        "name": "failure-invalid-state",
+        "test": VerifyManagementCVX,
+        "eos_data": [
+            {
+                "clusterStatus": {
+                    "enabled": False,
+                }
+            }
+        ],
+        "inputs": {"enabled": True},
+        "expected": {"result": "failure", "messages": ["Management CVX status is not valid: Expected: enabled Actual: disabled"]},
+    },
+    {
+        "name": "failure-no-enabled state",
         "test": VerifyManagementCVX,
         "eos_data": [{"clusterStatus": {}}],
         "inputs": {"enabled": False},
-        "expected": {"result": "failure", "messages": ["Management CVX status is not valid: None"]},
+        "expected": {"result": "failure", "messages": ["Management CVX status - Not configured"]},
     },
     {
         "name": "failure - no clusterStatus",
         "test": VerifyManagementCVX,
         "eos_data": [{}],
         "inputs": {"enabled": False},
-        "expected": {"result": "failure", "messages": ["Management CVX status is not valid: None"]},
+        "expected": {"result": "failure", "messages": ["Management CVX status - Not configured"]},
     },
     {
         "name": "success",
@@ -189,7 +214,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"connections_count": 1},
         "expected": {
             "result": "failure",
-            "messages": ["No mount status for media-leaf-1", "Incorrect CVX successful connections count. Expected: 1, Actual : 0"],
+            "messages": ["Host: media-leaf-1 - No mount status found", "Incorrect CVX successful connections count - Expected: 1 Actual: 0"],
         },
     },
     {
@@ -221,8 +246,9 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Incorrect number of mount path states for media-leaf-1 - Expected: 3, Actual: 2",
-                "Unexpected MCS path type for media-leaf-1: 'Mcs::ApiStatus'.",
+                "Host: media-leaf-1 - Incorrect number of mount path states - Expected: 3 Actual: 2",
+                "Host: media-leaf-1 - Unexpected MCS path type - Expected: Mcs::ApiConfigRedundancyStatus, Mcs::ActiveFlows, "
+                "Mcs::Client::Status Actual: Mcs::ApiStatus",
             ],
         },
     },
@@ -253,7 +279,13 @@ DATA: list[dict[str, Any]] = [
             }
         ],
         "inputs": {"connections_count": 1},
-        "expected": {"result": "failure", "messages": ["Unexpected MCS path type for media-leaf-1: 'Mcs::ApiStatus'"]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Host: media-leaf-1 - Unexpected MCS path type - Expected: Mcs::ApiConfigRedundancyStatus, Mcs::ActiveFlows, Mcs::Client::Status"
+                " Actual: Mcs::ApiStatus"
+            ],
+        },
     },
     {
         "name": "failure-invalid-mount-state",
@@ -284,7 +316,10 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"connections_count": 1},
         "expected": {
             "result": "failure",
-            "messages": ["MCS server mount state for path 'Mcs::ApiConfigRedundancyStatus' is not valid is for media-leaf-1: 'mountStateMountFailed'"],
+            "messages": [
+                "Host: media-leaf-1 Path Type: Mcs::ApiConfigRedundancyStatus - MCS server mount state is not valid - Expected: mountStateMountComplete"
+                " Actual:mountStateMountFailed"
+            ],
         },
     },
     {
@@ -306,14 +341,14 @@ DATA: list[dict[str, Any]] = [
             }
         ],
         "inputs": {"connections_count": 1},
-        "expected": {"result": "failure", "messages": ["MCS mount state not detected", "Incorrect CVX successful connections count. Expected: 1, Actual : 0"]},
+        "expected": {"result": "failure", "messages": ["MCS mount state not detected", "Incorrect CVX successful connections count - Expected: 1 Actual: 0"]},
     },
     {
         "name": "failure-connections",
         "test": VerifyMcsServerMounts,
         "eos_data": [{}],
         "inputs": {"connections_count": 1},
-        "expected": {"result": "failure", "messages": ["CVX connections are not available."]},
+        "expected": {"result": "failure", "messages": ["CVX connections are not available"]},
     },
     {
         "name": "success",
@@ -357,7 +392,7 @@ DATA: list[dict[str, Any]] = [
             }
         ],
         "inputs": {"connections_count": 2},
-        "expected": {"result": "failure", "messages": ["CVX active connections count. Expected: 2, Actual : 1"]},
+        "expected": {"result": "failure", "messages": ["CVX active connections count - Expected: 2 Actual: 1"]},
     },
     {
         "name": "failure-no-connections",
@@ -414,7 +449,7 @@ DATA: list[dict[str, Any]] = [
                 {"peer_name": "cvx-red-3", "registrationState": "Registration complete"},
             ],
         },
-        "expected": {"result": "failure", "messages": ["CVX Role is not valid: Standby"]},
+        "expected": {"result": "failure", "messages": ["CVX Role is not valid: Expected: Master Actual: Standby"]},
     },
     {
         "name": "failure-cvx-enabled",
@@ -473,7 +508,7 @@ DATA: list[dict[str, Any]] = [
                 {"peer_name": "cvx-red-3", "registrationState": "Registration complete"},
             ],
         },
-        "expected": {"result": "failure", "messages": ["Unexpected number of peers 1 vs 2", "cvx-red-3 is not present"]},
+        "expected": {"result": "failure", "messages": ["Unexpected number of peers - Expected: 2 Actual: 1", "cvx-red-3 - Not present"]},
     },
     {
         "name": "failure-invalid-peers",
@@ -495,7 +530,7 @@ DATA: list[dict[str, Any]] = [
                 {"peer_name": "cvx-red-3", "registrationState": "Registration complete"},
             ],
         },
-        "expected": {"result": "failure", "messages": ["Unexpected number of peers 0 vs 2", "cvx-red-2 is not present", "cvx-red-3 is not present"]},
+        "expected": {"result": "failure", "messages": ["Unexpected number of peers - Expected: 2 Actual: 0", "cvx-red-2 - Not present", "cvx-red-3 - Not present"]},
     },
     {
         "name": "failure-registration-error",
@@ -520,6 +555,6 @@ DATA: list[dict[str, Any]] = [
                 {"peer_name": "cvx-red-3", "registrationState": "Registration complete"},
             ],
         },
-        "expected": {"result": "failure", "messages": ["cvx-red-2 registration state is not complete: Registration error"]},
+        "expected": {"result": "failure", "messages": ["cvx-red-2 - Invalid registration state - Expected: Registration complete Actual: Registration error"]},
     },
 ]

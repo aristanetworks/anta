@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import Any, ClassVar, TypeVar
 
-from pydantic import field_validator
+from pydantic import PositiveInt, field_validator
 
 from anta.input_models.routing.bgp import BgpAddressFamily, BgpAfi, BgpNeighbor, BgpPeer, BgpRoute, BgpVrf, VxlanEndpoint
 from anta.models import AntaCommand, AntaTemplate, AntaTest
@@ -131,7 +131,7 @@ class VerifyBGPPeerCount(AntaTest):
 
             # Check if the count matches the expected count
             if address_family.num_peers != peer_count:
-                self.result.is_failure(f"{address_family} - Expected: {address_family.num_peers}, Actual: {peer_count}")
+                self.result.is_failure(f"{address_family} - Peer count mismatch - Expected: {address_family.num_peers} Actual: {peer_count}")
 
 
 class VerifyBGPPeersHealth(AntaTest):
@@ -142,7 +142,7 @@ class VerifyBGPPeersHealth(AntaTest):
       1. Validates that the VRF is configured.
       2. Checks if there are any peers for the given AFI/SAFI.
       3. For each relevant peer:
-        - Verifies that the BGP session is in the `Established` state.
+        - Verifies that the BGP session is `Established` and, if specified, has remained established for at least the duration given by `minimum_established_time`.
         - Confirms that the AFI/SAFI state is `negotiated`.
         - Checks that both input and output TCP message queues are empty.
           Can be disabled by setting `check_tcp_queues` to `False`.
@@ -153,7 +153,8 @@ class VerifyBGPPeersHealth(AntaTest):
     * Failure: If any of the following occur:
         - The specified VRF is not configured.
         - No peers are found for a given AFI/SAFI.
-        - Any BGP session is not in the `Established` state.
+        - A peer's session state is not `Established` or if specified, has not remained established for at least the duration specified by
+        the `minimum_established_time`.
         - The AFI/SAFI state is not 'negotiated' for any peer.
         - Any TCP message queue (input or output) is not empty when `check_tcp_queues` is `True` (default).
 
@@ -163,6 +164,7 @@ class VerifyBGPPeersHealth(AntaTest):
     anta.tests.routing:
       bgp:
         - VerifyBGPPeersHealth:
+            minimum_established_time: 10000
             address_families:
               - afi: "evpn"
               - afi: "ipv4"
@@ -181,6 +183,8 @@ class VerifyBGPPeersHealth(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPPeersHealth test."""
 
+        minimum_established_time: PositiveInt | None = None
+        """Minimum established time (seconds) for all the BGP sessions."""
         address_families: list[BgpAddressFamily]
         """List of BGP address families."""
         BgpAfi: ClassVar[type[BgpAfi]] = BgpAfi
@@ -210,8 +214,12 @@ class VerifyBGPPeersHealth(AntaTest):
             for peer in relevant_peers:
                 # Check if the BGP session is established
                 if peer["state"] != "Established":
-                    self.result.is_failure(f"{address_family} Peer: {peer['peerAddress']} - Session state is not established - State: {peer['state']}")
+                    self.result.is_failure(f"{address_family} Peer: {peer['peerAddress']} - Incorrect session state - Expected: Established Actual: {peer['state']}")
                     continue
+
+                if self.inputs.minimum_established_time and (act_time := peer["establishedTime"]) < self.inputs.minimum_established_time:
+                    msg = f"BGP session not established for the minimum required duration - Expected: {self.inputs.minimum_established_time}s Actual: {act_time}s"
+                    self.result.is_failure(f"{address_family} Peer: {peer['peerAddress']} - {msg}")
 
                 # Check if the AFI/SAFI state is negotiated
                 capability_status = get_value(peer, f"neighborCapabilities.multiprotocolCaps.{address_family.eos_key}")
@@ -223,7 +231,7 @@ class VerifyBGPPeersHealth(AntaTest):
                     inq = peer["peerTcpInfo"]["inputQueueLength"]
                     outq = peer["peerTcpInfo"]["outputQueueLength"]
                     if inq != 0 or outq != 0:
-                        self.result.is_failure(f"{address_family} Peer: {peer['peerAddress']} - Session has non-empty message queues - InQ: {inq}, OutQ: {outq}")
+                        self.result.is_failure(f"{address_family} Peer: {peer['peerAddress']} - Session has non-empty message queues - InQ: {inq} OutQ: {outq}")
 
 
 class VerifyBGPSpecificPeers(AntaTest):
@@ -234,7 +242,7 @@ class VerifyBGPSpecificPeers(AntaTest):
       1. Confirms that the specified VRF is configured.
       2. For each specified peer:
         - Verifies that the peer is found in the BGP configuration.
-        - Checks that the BGP session is in the `Established` state.
+        - Verifies that the BGP session is `Established` and, if specified, has remained established for at least the duration given by `minimum_established_time`.
         - Confirms that the AFI/SAFI state is `negotiated`.
         - Ensures that both input and output TCP message queues are empty.
           Can be disabled by setting `check_tcp_queues` to `False`.
@@ -245,7 +253,8 @@ class VerifyBGPSpecificPeers(AntaTest):
     * Failure: If any of the following occur:
         - The specified VRF is not configured.
         - A specified peer is not found in the BGP configuration.
-        - The BGP session for a peer is not in the `Established` state.
+        - A peer's session state is not `Established` or if specified, has not remained established for at least the duration specified by
+        the `minimum_established_time`.
         - The AFI/SAFI state is not `negotiated` for a peer.
         - Any TCP message queue (input or output) is not empty for a peer when `check_tcp_queues` is `True` (default).
 
@@ -255,6 +264,7 @@ class VerifyBGPSpecificPeers(AntaTest):
     anta.tests.routing:
       bgp:
         - VerifyBGPSpecificPeers:
+            minimum_established_time: 10000
             address_families:
               - afi: "evpn"
                 peers:
@@ -276,6 +286,8 @@ class VerifyBGPSpecificPeers(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPSpecificPeers test."""
 
+        minimum_established_time: PositiveInt | None = None
+        """Minimum established time (seconds) for all the BGP sessions."""
         address_families: list[BgpAddressFamily]
         """List of BGP address families."""
         BgpAfi: ClassVar[type[BgpAfi]] = BgpAfi
@@ -313,8 +325,12 @@ class VerifyBGPSpecificPeers(AntaTest):
 
                 # Check if the BGP session is established
                 if peer_data["state"] != "Established":
-                    self.result.is_failure(f"{address_family} Peer: {peer_ip} - Session state is not established - State: {peer_data['state']}")
+                    self.result.is_failure(f"{address_family} Peer: {peer_ip} - Incorrect session state - Expected: Established Actual: {peer_data['state']}")
                     continue
+
+                if self.inputs.minimum_established_time and (act_time := peer_data["establishedTime"]) < self.inputs.minimum_established_time:
+                    msg = f"BGP session not established for the minimum required duration - Expected: {self.inputs.minimum_established_time}s Actual: {act_time}s"
+                    self.result.is_failure(f"{address_family} Peer: {peer_ip} - {msg}")
 
                 # Check if the AFI/SAFI state is negotiated
                 capability_status = get_value(peer_data, f"neighborCapabilities.multiprotocolCaps.{address_family.eos_key}")
@@ -325,11 +341,10 @@ class VerifyBGPSpecificPeers(AntaTest):
                     self.result.is_failure(f"{address_family} Peer: {peer_ip} - AFI/SAFI state is not negotiated - {format_data(capability_status)}")
 
                 # Check the TCP session message queues
-                if address_family.check_tcp_queues:
-                    inq = peer_data["peerTcpInfo"]["inputQueueLength"]
-                    outq = peer_data["peerTcpInfo"]["outputQueueLength"]
-                    if inq != 0 or outq != 0:
-                        self.result.is_failure(f"{address_family} Peer: {peer_ip} - Session has non-empty message queues - InQ: {inq}, OutQ: {outq}")
+                inq = peer_data["peerTcpInfo"]["inputQueueLength"]
+                outq = peer_data["peerTcpInfo"]["outputQueueLength"]
+                if address_family.check_tcp_queues and (inq != 0 or outq != 0):
+                    self.result.is_failure(f"{address_family} Peer: {peer_ip} - Session has non-empty message queues - InQ: {inq} OutQ: {outq}")
 
 
 class VerifyBGPPeerSession(AntaTest):
@@ -338,7 +353,7 @@ class VerifyBGPPeerSession(AntaTest):
     This test performs the following checks for each specified peer:
 
       1. Verifies that the peer is found in its VRF in the BGP configuration.
-      2. Checks that the BGP session is in the `Established` state.
+      2. Verifies that the BGP session is `Established` and, if specified, has remained established for at least the duration given by `minimum_established_time`.
       3. Ensures that both input and output TCP message queues are empty.
       Can be disabled by setting `check_tcp_queues` global flag to `False`.
 
@@ -346,11 +361,13 @@ class VerifyBGPPeerSession(AntaTest):
     ----------------
     * Success: If all of the following conditions are met:
         - All specified peers are found in the BGP configuration.
-        - All peers sessions state are `Established`.
+        - All peers sessions state are `Established` and, if specified, has remained established for at least the duration given by `minimum_established_time`.
         - All peers have empty TCP message queues if `check_tcp_queues` is `True` (default).
+        - All peers are established for specified minimum duration.
     * Failure: If any of the following occur:
         - A specified peer is not found in the BGP configuration.
-        - A peer's session state is not `Established`.
+        - A peer's session state is not `Established` or if specified, has not remained established for at least the duration specified by
+        the `minimum_established_time`.
         - A peer has non-empty TCP message queues (input or output) when `check_tcp_queues` is `True`.
 
     Examples
@@ -359,6 +376,7 @@ class VerifyBGPPeerSession(AntaTest):
     anta.tests.routing:
       bgp:
         - VerifyBGPPeerSession:
+            minimum_established_time: 10000
             check_tcp_queues: false
             bgp_peers:
               - peer_address: 10.1.0.1
@@ -378,6 +396,8 @@ class VerifyBGPPeerSession(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPPeerSession test."""
 
+        minimum_established_time: PositiveInt | None = None
+        """Minimum established time (seconds) for all the BGP sessions."""
         check_tcp_queues: bool = True
         """Flag to check if the TCP session queues are empty for all BGP peers. Defaults to `True`."""
         bgp_peers: list[BgpPeer]
@@ -401,15 +421,20 @@ class VerifyBGPPeerSession(AntaTest):
 
             # Check if the BGP session is established
             if peer_data["state"] != "Established":
-                self.result.is_failure(f"{peer} - Session state is not established - State: {peer_data['state']}")
+                self.result.is_failure(f"{peer} - Incorrect session state - Expected: Established Actual: {peer_data['state']}")
                 continue
+
+            if self.inputs.minimum_established_time and (act_time := peer_data["establishedTime"]) < self.inputs.minimum_established_time:
+                self.result.is_failure(
+                    f"{peer} - BGP session not established for the minimum required duration - Expected: {self.inputs.minimum_established_time}s Actual: {act_time}s"
+                )
 
             # Check the TCP session message queues
             if self.inputs.check_tcp_queues:
                 inq = peer_data["peerTcpInfo"]["inputQueueLength"]
                 outq = peer_data["peerTcpInfo"]["outputQueueLength"]
                 if inq != 0 or outq != 0:
-                    self.result.is_failure(f"{peer} - Session has non-empty message queues - InQ: {inq}, OutQ: {outq}")
+                    self.result.is_failure(f"{peer} - Session has non-empty message queues - InQ: {inq} OutQ: {outq}")
 
 
 class VerifyBGPExchangedRoutes(AntaTest):
@@ -487,7 +512,7 @@ class VerifyBGPExchangedRoutes(AntaTest):
             is_active = route_paths["active"]
             is_valid = route_paths["valid"]
             if not is_active or not is_valid:
-                return f"{peer} {route_type} route: {route} - Valid: {is_valid}, Active: {is_active}"
+                return f"{peer} {route_type} route: {route} - Valid: {is_valid} Active: {is_active}"
             return None
 
         return f"{peer} {route_type} route: {route} - Not found"
@@ -821,7 +846,7 @@ class VerifyBGPPeerMD5Auth(AntaTest):
             state = peer_data.get("state")
             md5_auth_enabled = peer_data.get("md5AuthEnabled")
             if state != "Established":
-                self.result.is_failure(f"{peer} - Session state is not established - State: {state}")
+                self.result.is_failure(f"{peer} - Incorrect session state - Expected: Established Actual: {state}")
             if not md5_auth_enabled:
                 self.result.is_failure(f"{peer} - Session does not have MD5 authentication enabled")
 
@@ -1033,9 +1058,9 @@ class VerifyBGPTimers(AntaTest):
 
             # Check BGP peer timers
             if peer_data["holdTime"] != peer.hold_time:
-                self.result.is_failure(f"{peer} - Hold time mismatch - Expected: {peer.hold_time}, Actual: {peer_data['holdTime']}")
+                self.result.is_failure(f"{peer} - Hold time mismatch - Expected: {peer.hold_time} Actual: {peer_data['holdTime']}")
             if peer_data["keepaliveTime"] != peer.keep_alive_time:
-                self.result.is_failure(f"{peer} - Keepalive time mismatch - Expected: {peer.keep_alive_time}, Actual: {peer_data['keepaliveTime']}")
+                self.result.is_failure(f"{peer} - Keepalive time mismatch - Expected: {peer.keep_alive_time} Actual: {peer_data['keepaliveTime']}")
 
 
 class VerifyBGPPeerDropStats(AntaTest):
@@ -1262,11 +1287,11 @@ class VerifyBgpRouteMaps(AntaTest):
 
             # Verify Inbound route-map
             if inbound_route_map and (inbound_map := peer_data.get("routeMapInbound", "Not Configured")) != inbound_route_map:
-                self.result.is_failure(f"{peer} - Inbound route-map mismatch - Expected: {inbound_route_map}, Actual: {inbound_map}")
+                self.result.is_failure(f"{peer} - Inbound route-map mismatch - Expected: {inbound_route_map} Actual: {inbound_map}")
 
             # Verify Outbound route-map
             if outbound_route_map and (outbound_map := peer_data.get("routeMapOutbound", "Not Configured")) != outbound_route_map:
-                self.result.is_failure(f"{peer} - Outbound route-map mismatch - Expected: {outbound_route_map}, Actual: {outbound_map}")
+                self.result.is_failure(f"{peer} - Outbound route-map mismatch - Expected: {outbound_route_map} Actual: {outbound_map}")
 
 
 class VerifyBGPPeerRouteLimit(AntaTest):
@@ -1340,11 +1365,11 @@ class VerifyBGPPeerRouteLimit(AntaTest):
 
             # Verify maximum routes
             if (actual_maximum_routes := peer_data.get("maxTotalRoutes", "Not Found")) != maximum_routes:
-                self.result.is_failure(f"{peer} - Maximum routes mismatch - Expected: {maximum_routes}, Actual: {actual_maximum_routes}")
+                self.result.is_failure(f"{peer} - Maximum routes mismatch - Expected: {maximum_routes} Actual: {actual_maximum_routes}")
 
             # Verify warning limit if provided. By default, EOS does not have a warning limit and `totalRoutesWarnLimit` is not present in the output.
             if warning_limit is not None and (actual_warning_limit := peer_data.get("totalRoutesWarnLimit", 0)) != warning_limit:
-                self.result.is_failure(f"{peer} - Maximum routes warning limit mismatch - Expected: {warning_limit}, Actual: {actual_warning_limit}")
+                self.result.is_failure(f"{peer} - Maximum routes warning limit mismatch - Expected: {warning_limit} Actual: {actual_warning_limit}")
 
 
 class VerifyBGPPeerGroup(AntaTest):
@@ -1424,7 +1449,7 @@ class VerifyBGPPeerSessionRibd(AntaTest):
     This test performs the following checks for each specified peer:
 
       1. Verifies that the peer is found in its VRF in the BGP configuration.
-      2. Checks that the BGP session is in the `Established` state.
+      2. Verifies that the BGP session is `Established` and, if specified, has remained established for at least the duration given by `minimum_established_time`.
       3. Ensures that both input and output TCP message queues are empty.
       Can be disabled by setting `check_tcp_queues` global flag to `False`.
 
@@ -1432,11 +1457,13 @@ class VerifyBGPPeerSessionRibd(AntaTest):
     ----------------
     * Success: If all of the following conditions are met:
         - All specified peers are found in the BGP configuration.
-        - All peers sessions state are `Established`.
+        - All peers sessions state are `Established` and, if specified, has remained established for at least the duration given by `minimum_established_time`.
         - All peers have empty TCP message queues if `check_tcp_queues` is `True` (default).
+        - All peers are established for specified minimum duration.
     * Failure: If any of the following occur:
         - A specified peer is not found in the BGP configuration.
-        - A peer's session state is not `Established`.
+        - A peer's session state is not `Established` or if specified, has not remained established for at least the duration specified by
+        the `minimum_established_time`.
         - A peer has non-empty TCP message queues (input or output) when `check_tcp_queues` is `True`.
 
     Examples
@@ -1445,6 +1472,7 @@ class VerifyBGPPeerSessionRibd(AntaTest):
     anta.tests.routing:
       bgp:
         - VerifyBGPPeerSessionRibd:
+            minimum_established_time: 10000
             check_tcp_queues: false
             bgp_peers:
               - peer_address: 10.1.0.1
@@ -1464,6 +1492,8 @@ class VerifyBGPPeerSessionRibd(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPPeerSessionRibd test."""
 
+        minimum_established_time: PositiveInt | None = None
+        """Minimum established time (seconds) for all the BGP sessions."""
         check_tcp_queues: bool = True
         """Flag to check if the TCP session queues are empty for all BGP peers. Defaults to `True`."""
         bgp_peers: list[BgpPeer]
@@ -1487,15 +1517,20 @@ class VerifyBGPPeerSessionRibd(AntaTest):
 
             # Check if the BGP session is established
             if peer_data["state"] != "Established":
-                self.result.is_failure(f"{peer} - Session state is not established - State: {peer_data['state']}")
+                self.result.is_failure(f"{peer} - Incorrect session state - Expected: Established Actual: {peer_data['state']}")
                 continue
+
+            if self.inputs.minimum_established_time and (act_time := peer_data["establishedTime"]) < self.inputs.minimum_established_time:
+                self.result.is_failure(
+                    f"{peer} - BGP session not established for the minimum required duration - Expected: {self.inputs.minimum_established_time}s Actual: {act_time}s"
+                )
 
             # Check the TCP session message queues
             if self.inputs.check_tcp_queues:
                 inq_stat = peer_data["peerTcpInfo"]["inputQueueLength"]
                 outq_stat = peer_data["peerTcpInfo"]["outputQueueLength"]
                 if inq_stat != 0 or outq_stat != 0:
-                    self.result.is_failure(f"{peer} - Session has non-empty message queues - InQ: {inq_stat}, OutQ: {outq_stat}")
+                    self.result.is_failure(f"{peer} - Session has non-empty message queues - InQ: {inq_stat} OutQ: {outq_stat}")
 
 
 class VerifyBGPPeersHealthRibd(AntaTest):
@@ -1548,14 +1583,14 @@ class VerifyBGPPeersHealthRibd(AntaTest):
             for peer in peer_list:
                 # Check if the BGP session is established
                 if peer["state"] != "Established":
-                    self.result.is_failure(f"Peer: {peer['peerAddress']} VRF: {vrf} - Session state is not established - State: {peer['state']}")
+                    self.result.is_failure(f"Peer: {peer['peerAddress']} VRF: {vrf} - Incorrect session state - Expected: Established Actual: {peer['state']}")
                     continue
 
                 # Check the TCP session message queues
                 inq = peer["peerTcpInfo"]["inputQueueLength"]
                 outq = peer["peerTcpInfo"]["outputQueueLength"]
                 if self.inputs.check_tcp_queues and (inq != 0 or outq != 0):
-                    self.result.is_failure(f"Peer: {peer['peerAddress']} VRF: {vrf} - Session has non-empty message queues - InQ: {inq}, OutQ: {outq}")
+                    self.result.is_failure(f"Peer: {peer['peerAddress']} VRF: {vrf} - Session has non-empty message queues - InQ: {inq} OutQ: {outq}")
 
 
 class VerifyBGPNlriAcceptance(AntaTest):
@@ -1630,7 +1665,7 @@ class VerifyBGPNlriAcceptance(AntaTest):
                     self.result.is_failure(f"{peer} - {capability} not negotiated")
 
                 if (received := capability_status.get("nlrisReceived")) != (accepted := capability_status.get("nlrisAccepted")):
-                    self.result.is_failure(f"{peer} AFI/SAFI: {capability} - some NLRI were filtered or rejected - Accepted: {accepted} Received: {received}")
+                    self.result.is_failure(f"{peer} AFI/SAFI: {capability} - Some NLRI were filtered or rejected - Accepted: {accepted} Received: {received}")
 
 
 class VerifyBGPRoutePaths(AntaTest):
@@ -1695,7 +1730,7 @@ class VerifyBGPRoutePaths(AntaTest):
         for route in self.inputs.route_entries:
             # Verify if the prefix exists in BGP table
             if not (bgp_routes := get_value(self.instance_commands[0].json_output, f"vrfs..{route.vrf}..bgpRouteEntries..{route.prefix}", separator="..")):
-                self.result.is_failure(f"{route} - prefix not found")
+                self.result.is_failure(f"{route} - Prefix not found")
                 continue
 
             # Iterating over each path.
@@ -1703,7 +1738,7 @@ class VerifyBGPRoutePaths(AntaTest):
                 nexthop = str(path.nexthop)
                 origin = path.origin
                 if not (route_path := get_item(bgp_routes["bgpRoutePaths"], "nextHop", nexthop)):
-                    self.result.is_failure(f"{route} {path} - path not found")
+                    self.result.is_failure(f"{route} {path} - Path not found")
                     continue
 
                 if (actual_origin := get_value(route_path, "routeType.origin")) != origin:
@@ -1773,14 +1808,14 @@ class VerifyBGPRouteECMP(AntaTest):
         for route in self.inputs.route_entries:
             # Verify if the prefix exists in BGP table.
             if not (bgp_route_entry := get_value(self.instance_commands[0].json_output, f"vrfs..{route.vrf}..bgpRouteEntries..{route.prefix}", separator="..")):
-                self.result.is_failure(f"{route} - prefix not found in BGP table")
+                self.result.is_failure(f"{route} - Prefix not found in BGP table")
                 continue
 
             route_paths = iter(bgp_route_entry["bgpRoutePaths"])
             head = next(route_paths, None)
             # Verify if the active ECMP head exists.
             if head is None or not all(head["routeType"][key] for key in ["valid", "active", "ecmpHead"]):
-                self.result.is_failure(f"{route} - valid and active ECMP head not found")
+                self.result.is_failure(f"{route} - Valid and active ECMP head not found")
                 continue
 
             bgp_nexthops = {head["nextHop"]}
@@ -1788,17 +1823,17 @@ class VerifyBGPRouteECMP(AntaTest):
 
             # Verify ECMP count is correct.
             if len(bgp_nexthops) != route.ecmp_count:
-                self.result.is_failure(f"{route} - ECMP count mismatch - Expected: {route.ecmp_count}, Actual: {len(bgp_nexthops)}")
+                self.result.is_failure(f"{route} - ECMP count mismatch - Expected: {route.ecmp_count} Actual: {len(bgp_nexthops)}")
                 continue
 
             # Verify if the prefix exists in routing table.
             if not (route_entry := get_value(self.instance_commands[1].json_output, f"vrfs..{route.vrf}..routes..{route.prefix}", separator="..")):
-                self.result.is_failure(f"{route} - prefix not found in routing table")
+                self.result.is_failure(f"{route} - Prefix not found in routing table")
                 continue
 
             # Verify BGP and RIB nexthops are same.
             if len(bgp_nexthops) != len(route_entry["vias"]):
-                self.result.is_failure(f"{route} - Nexthops count mismatch - BGP: {len(bgp_nexthops)}, RIB: {len(route_entry['vias'])}")
+                self.result.is_failure(f"{route} - Nexthops count mismatch - BGP: {len(bgp_nexthops)} RIB: {len(route_entry['vias'])}")
 
 
 class VerifyBGPRedistribution(AntaTest):
@@ -1893,3 +1928,83 @@ class VerifyBGPRedistribution(AntaTest):
                     failure_msg = self._validate_redistribute_route(str(vrf_data), str(address_family), afi_safi_configs, route_info)
                     for msg in failure_msg:
                         self.result.is_failure(msg)
+
+
+class VerifyBGPPeerTtlMultiHops(AntaTest):
+    """Verifies BGP TTL and max-ttl-hops count for BGP IPv4 peer(s).
+
+    This test performs the following checks for each specified BGP peer:
+
+      1. Verifies the specified BGP peer exists in the BGP configuration.
+      2. Verifies the TTL and max-ttl-hops attribute matches the expected value.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if all specified peers exist with TTL and max-ttl-hops attributes matching the expected values.
+    * Failure: If any of the following occur:
+        - A specified BGP peer is not found.
+        - A TTL or max-ttl-hops attribute doesn't match the expected value for any peer.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      bgp:
+        - VerifyBGPPeerTtlMultiHops:
+            bgp_peers:
+                - peer_address: 172.30.11.1
+                  vrf: default
+                  ttl: 3
+                  max_ttl_hops: 3
+                - peer_address: 172.30.11.2
+                  vrf: test
+                  ttl: 30
+                  max_ttl_hops: 30
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["bgp"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip bgp neighbors vrf all", revision=2)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyBGPPeerTtlMultiHops test."""
+
+        bgp_peers: list[BgpPeer]
+        """List of IPv4 peer(s)."""
+
+        @field_validator("bgp_peers")
+        @classmethod
+        def validate_bgp_peers(cls, bgp_peers: list[BgpPeer]) -> list[BgpPeer]:
+            """Validate that 'ttl' and 'max_ttl_hops' field is provided in each BGP peer."""
+            for peer in bgp_peers:
+                if peer.ttl is None:
+                    msg = f"{peer} 'ttl' field missing in the input"
+                    raise ValueError(msg)
+                if peer.max_ttl_hops is None:
+                    msg = f"{peer} 'max_ttl_hops' field missing in the input"
+                    raise ValueError(msg)
+
+            return bgp_peers
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyBGPPeerTtlMultiHops."""
+        self.result.is_success()
+        command_output = self.instance_commands[0].json_output
+
+        for peer in self.inputs.bgp_peers:
+            peer_ip = str(peer.peer_address)
+            peer_list = get_value(command_output, f"vrfs.{peer.vrf}.peerList", default=[])
+
+            # Check if the peer is found
+            if (peer_details := get_item(peer_list, "peerAddress", peer_ip)) is None:
+                self.result.is_failure(f"{peer} - Not found")
+                continue
+
+            # Verify if the TTL duration matches the expected value.
+            if peer_details.get("ttl") != peer.ttl:
+                self.result.is_failure(f"{peer} - TTL mismatch - Expected: {peer.ttl} Actual: {peer_details.get('ttl')}")
+
+            # Verify if the max-ttl-hops time matches the expected value.
+            if peer_details.get("maxTtlHops") != peer.max_ttl_hops:
+                self.result.is_failure(f"{peer} - Max TTL Hops mismatch - Expected: {peer.max_ttl_hops} Actual: {peer_details.get('maxTtlHops')}")
