@@ -41,10 +41,10 @@ def validate_exporters(exporters: list[dict[str, str]], tracker_info: dict[str, 
         template_interval = actual_exporter_info["templateInterval"]
 
         if local_interface != exporter.local_interface:
-            failure_messages.append(f"{exporter} - Incorrect local interface - Expected: {exporter.local_interface}, Actual: {local_interface}")
+            failure_messages.append(f"{exporter} - Incorrect local interface - Expected: {exporter.local_interface} Actual: {local_interface}")
 
         if template_interval != exporter.template_interval:
-            failure_messages.append(f"{exporter} - Incorrect template interval - Expected: {exporter.template_interval}, Actual: {template_interval}")
+            failure_messages.append(f"{exporter} - Incorrect template interval - Expected: {exporter.template_interval} Actual: {template_interval}")
     return failure_messages
 
 
@@ -131,11 +131,11 @@ class VerifyHardwareFlowTrackerStatus(AntaTest):
                 act_interval = tracker_info.get("activeInterval")
                 if not all([inactive_interval == act_inactive, on_interval == act_interval]):
                     self.result.is_failure(
-                        f"{tracker}, {tracker.record_export} - Incorrect timers - Inactive Timeout: {act_inactive}, OnActive Interval: {act_interval}"
+                        f"{tracker} {tracker.record_export} - Incorrect timers - Inactive Timeout: {act_inactive} OnActive Interval: {act_interval}"
                     )
 
             # Check the input hardware tracker exporters configuration
             if tracker.exporters:
                 failure_messages = validate_exporters(tracker.exporters, tracker_info)
                 for message in failure_messages:
-                    self.result.is_failure(f"{tracker}, {message}")
+                    self.result.is_failure(f"{tracker} {message}")

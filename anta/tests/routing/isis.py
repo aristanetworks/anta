@@ -65,9 +65,11 @@ class VerifyISISNeighborState(AntaTest):
                 if not neighbors:
                     continue
                 no_neighbor = False
-                interfaces = [adj["interfaceName"] for neighbor in neighbors.values() for adj in neighbor["adjacencies"] if adj["state"] != "up"]
+                interfaces = [(adj["interfaceName"], adj["state"]) for neighbor in neighbors.values() for adj in neighbor["adjacencies"] if adj["state"] != "up"]
                 for interface in interfaces:
-                    self.result.is_failure(f"Instance: {isis_instance} VRF: {vrf} Interface: {interface} - Adjacency down")
+                    self.result.is_failure(
+                        f"Instance: {isis_instance} VRF: {vrf} Interface: {interface[0]} - Incorrect adjacency state - Expected: up Actual: {interface[1]}"
+                    )
 
         if no_neighbor:
             self.result.is_skipped("No IS-IS neighbor detected")

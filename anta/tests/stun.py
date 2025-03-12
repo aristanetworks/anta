@@ -76,7 +76,7 @@ class VerifyStunClientTranslation(AntaTest):
 
             # If no bindings are found for the STUN client, mark the test as a failure and continue with the next client
             if not bindings:
-                self.result.is_failure(f"{client_input} - STUN client translation not found.")
+                self.result.is_failure(f"{client_input} - STUN client translation not found")
                 continue
 
             # Extract the transaction ID from the bindings
@@ -145,10 +145,10 @@ class VerifyStunServer(AntaTest):
         not_running = command_output.get("pid") == 0
 
         if status_disabled and not_running:
-            self.result.is_failure("STUN server status is disabled and not running.")
+            self.result.is_failure("STUN server status is disabled and not running")
         elif status_disabled:
-            self.result.is_failure("STUN server status is disabled.")
+            self.result.is_failure("STUN server status is disabled")
         elif not_running:
-            self.result.is_failure("STUN server is not running.")
+            self.result.is_failure("STUN server is not running")
         else:
             self.result.is_success()

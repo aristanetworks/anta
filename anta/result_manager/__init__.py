@@ -316,6 +316,7 @@ class ResultManager:
         manager.results = self.get_results(possible_statuses - hide)
         return manager
 
+    @deprecated("This method is deprecated. This will be removed in ANTA v2.0.0.", category=DeprecationWarning)
     def filter_by_tests(self, tests: set[str]) -> ResultManager:
         """Get a filtered ResultManager that only contains specific tests.
 
@@ -333,6 +334,7 @@ class ResultManager:
         manager.results = [result for result in self._result_entries if result.test in tests]
         return manager
 
+    @deprecated("This method is deprecated. This will be removed in ANTA v2.0.0.", category=DeprecationWarning)
     def filter_by_devices(self, devices: set[str]) -> ResultManager:
         """Get a filtered ResultManager that only contains specific devices.
 
@@ -350,6 +352,7 @@ class ResultManager:
         manager.results = [result for result in self._result_entries if result.name in devices]
         return manager
 
+    @deprecated("This method is deprecated. This will be removed in ANTA v2.0.0.", category=DeprecationWarning)
     def get_tests(self) -> set[str]:
         """Get the set of all the test names.
 
@@ -360,6 +363,7 @@ class ResultManager:
         """
         return {str(result.test) for result in self._result_entries}
 
+    @deprecated("This method is deprecated. This will be removed in ANTA v2.0.0.", category=DeprecationWarning)
     def get_devices(self) -> set[str]:
         """Get the set of all the device names.
 
