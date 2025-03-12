@@ -415,3 +415,35 @@ def format_data(data: dict[str, bool]) -> str:
     "Advertised: True, Received: True, Enabled: True"
     """
     return ", ".join(f"{k.capitalize()}: {v}" for k, v in data.items())
+
+
+def find_deepest_os_error(exc: BaseException) -> OSError | None:
+    """Find the most specific/deepest OSError in the chain of exceptions.
+
+    Parameters
+    ----------
+    exc
+        The exception to search through.
+
+    Returns
+    -------
+    OSError | None
+        The deepest OSError found in the chain of exceptions or None if no OSError is found.
+    """
+    deepest = None
+    if isinstance(exc, OSError):
+        deepest = exc
+
+    # Continue searching through __cause__ chain
+    if hasattr(exc, "__cause__") and exc.__cause__ is not None:
+        deeper = find_deepest_os_error(exc.__cause__)
+        if deeper and isinstance(deeper, OSError):
+            deepest = deeper
+
+    # Continue searching through __context__ chain
+    if hasattr(exc, "__context__") and exc.__context__ is not None:
+        deeper = find_deepest_os_error(exc.__context__)
+        if deeper and isinstance(deeper, OSError):
+            deepest = deeper
+
+    return deepest

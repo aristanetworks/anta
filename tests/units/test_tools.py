@@ -5,13 +5,14 @@
 
 from __future__ import annotations
 
+import errno
 from contextlib import AbstractContextManager
 from contextlib import nullcontext as does_not_raise
 from typing import Any
 
 import pytest
 
-from anta.tools import convert_categories, custom_division, format_data, get_dict_superset, get_failed_logs, get_item, get_value
+from anta.tools import convert_categories, custom_division, find_deepest_os_error, format_data, get_dict_superset, get_failed_logs, get_item, get_value
 
 TEST_GET_FAILED_LOGS_DATA = [
     {"id": 1, "name": "Alice", "age": 30, "email": "alice@example.com"},
@@ -527,3 +528,42 @@ def test_convert_categories(test_input: list[str], expected_raise: AbstractConte
 def test_format_data(input_data: dict[str, bool], expected_output: str) -> None:
     """Test format_data."""
     assert format_data(input_data) == expected_output
+
+
+def test_find_deepest_os_error() -> None:
+    """Test the find_deepest_os_error function can find OSErrors in exception chains."""
+    # Test with a simple OSError
+    simple_error = OSError("Simple OS error")
+    assert find_deepest_os_error(simple_error) is simple_error
+
+    # Test with a non-OSError
+    value_error = ValueError("Not an OS error")
+    assert find_deepest_os_error(value_error) is None
+
+    # Test with OSError as __cause__
+    os_error_cause = OSError("OS error in cause")
+    error_with_cause = ValueError("Wrapper error")
+    error_with_cause.__cause__ = os_error_cause
+    assert find_deepest_os_error(error_with_cause) is os_error_cause
+
+    # Test with OSError as __context__
+    os_error_context = OSError("OS error in context")
+    error_with_context = RuntimeError("Another wrapper")
+    error_with_context.__context__ = os_error_context
+    assert find_deepest_os_error(error_with_context) is os_error_context
+
+    # Test with "Too many open files" error (Errno 24)
+    too_many_files = OSError(errno.EMFILE, "Too many open files")
+    assert find_deepest_os_error(too_many_files) is too_many_files
+    assert too_many_files.errno == errno.EMFILE
+
+    # Test with deeply nested "Too many open files" error
+    deep_too_many_files = OSError(errno.EMFILE, "Too many open files")
+    middle_error = ConnectionError("Connection failed")
+    middle_error.__cause__ = deep_too_many_files
+    outer_error = RuntimeError("Operation failed")
+    outer_error.__context__ = middle_error
+
+    result = find_deepest_os_error(outer_error)
+    assert result is deep_too_many_files
+    assert result.errno == errno.EMFILE

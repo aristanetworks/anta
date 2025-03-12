@@ -188,6 +188,7 @@ nav:
       - Caching in ANTA: advanced_usages/caching.md
       - Developing ANTA tests: advanced_usages/custom-tests.md
       - ANTA as a Python Library: advanced_usages/as-python-lib.md
+      - Experimental Features: advanced_usages/experimental-features.md
   - Tests Documentation:
       - Overview: api/tests.md
       - AAA: api/tests/aaa.md

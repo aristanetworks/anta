@@ -7,11 +7,12 @@ from __future__ import annotations
 
 import logging
 from typing import TYPE_CHECKING
+from unittest.mock import patch
 
 import pytest
 from pydantic import ValidationError
 
-from anta.inventory import AntaInventory
+from anta.inventory import AntaInventory, _get_httpx_transport
 from anta.inventory.exceptions import InventoryIncorrectSchemaError, InventoryRootKeyError
 
 if TYPE_CHECKING:
@@ -87,3 +88,55 @@ class TestAntaInventory:
         with pytest.raises(OSError, match="No such file or directory"):
             _ = AntaInventory.parse(filename="dummy.yml", username="arista", password="arista123")
         assert "Unable to parse ANTA Device Inventory file" in caplog.records[0].message
+
+
+def test__get_httpx_transport_with_dependencies(caplog: pytest.LogCaptureFixture, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test when ANTA_HTTPX_TRANSPORT is set to 'aiohttp' and dependencies are installed."""
+    monkeypatch.setenv("ANTA_HTTPX_TRANSPORT", "aiohttp")
+
+    # Mock find_spec to simulate installed dependencies
+    def mock_find_spec(_name: str) -> bool:
+        return True  # Return a truthy value for any package
+
+    with patch("anta.inventory.find_spec", mock_find_spec):
+        with caplog.at_level(logging.WARNING):
+            result = _get_httpx_transport()
+
+        # Should return "aiohttp" since dependencies are found
+        assert result == "aiohttp"
+
+        # Should log a warning about experimental features
+        assert "'aiohttp' transport is experimental" in caplog.text
+
+
+def test__get_httpx_transport_missing_dependencies(caplog: pytest.LogCaptureFixture, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test when ANTA_HTTPX_TRANSPORT is set to 'aiohttp' but dependencies are missing."""
+    monkeypatch.setenv("ANTA_HTTPX_TRANSPORT", "aiohttp")
+
+    # Mock find_spec to simulate missing dependencies
+    def mock_find_spec(_name: str) -> None:
+        return None
+
+    with patch("anta.inventory.find_spec", mock_find_spec):
+        with caplog.at_level(logging.ERROR):
+            result = _get_httpx_transport()
+
+        # Should fall back to "httpcore"
+        assert result == "httpcore"
+
+        # Should log an error about missing dependencies
+        assert "'aiohttp' transport was requested but required dependencies are not installed" in caplog.text
+
+
+def test__get_httpx_transport_invalid_transport(caplog: pytest.LogCaptureFixture, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test when ANTA_HTTPX_TRANSPORT is set to an invalid value."""
+    monkeypatch.setenv("ANTA_HTTPX_TRANSPORT", "invalid_transport")
+
+    with caplog.at_level(logging.WARNING):
+        result = _get_httpx_transport()
+
+    # Should fall back to "httpcore"
+    assert result == "httpcore"
+
+    # Should log a warning about invalid value
+    assert "The 'ANTA_HTTPX_TRANSPORT' environment variable value is invalid" in caplog.text

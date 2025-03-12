@@ -45,7 +45,7 @@ async def test_empty_inventory(caplog: pytest.LogCaptureFixture) -> None:
     caplog.set_level(logging.INFO)
     manager = ResultManager()
     await main(manager, AntaInventory(), FAKE_CATALOG)
-    assert len(caplog.record_tuples) == 3
+    assert len(caplog.record_tuples) == 4
     assert "The inventory is empty, exiting" in caplog.records[1].message
 
 
@@ -145,7 +145,7 @@ async def test_check_runner_log_for_windows(caplog: pytest.LogCaptureFixture, in
     manager = ResultManager()
     # Using dry-run to shorten the test
     await main(manager, inventory, FAKE_CATALOG, dry_run=True)
-    assert "Running on a non-POSIX system, cannot adjust the maximum number of file descriptors." in caplog.records[-3].message
+    assert "Running on a non-POSIX system, cannot adjust the maximum number of file descriptors." in caplog.records[-4].message
 
 
 # We could instead merge multiple coverage report together but that requires more work than just this.
@@ -160,7 +160,7 @@ async def test_check_runner_log_for_windows_fake(caplog: pytest.LogCaptureFixtur
         manager = ResultManager()
         # Using dry-run to shorten the test
         await main(manager, inventory, FAKE_CATALOG, dry_run=True)
-        assert "Running on a non-POSIX system, cannot adjust the maximum number of file descriptors." in caplog.records[-3].message
+        assert "Running on a non-POSIX system, cannot adjust the maximum number of file descriptors." in caplog.records[-4].message
 
 
 @pytest.mark.parametrize(
@@ -197,7 +197,7 @@ async def test_dry_run(caplog: pytest.LogCaptureFixture, inventory: AntaInventor
     caplog.set_level(logging.INFO)
     manager = ResultManager()
     await main(manager, inventory, FAKE_CATALOG, dry_run=True)
-    assert "Dry-run mode, exiting before running the tests." in caplog.records[-1].message
+    assert "Dry-run mode, exiting before running the tests." in caplog.records[-2].message
 
 
 async def test_cannot_create_test(caplog: pytest.LogCaptureFixture, inventory: AntaInventory) -> None:

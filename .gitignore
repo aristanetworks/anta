@@ -57,6 +57,7 @@ coverage.xml
 .hypothesis/
 cover/
 report.html
+.codspeed/
 
 # Sphinx documentation
 docs/_build/

@@ -6,6 +6,8 @@
 from __future__ import annotations
 
 import asyncio
+import builtins
+import logging
 from contextlib import AbstractContextManager
 from contextlib import nullcontext as does_not_raise
 from pathlib import Path
@@ -14,7 +16,8 @@ from unittest.mock import patch
 
 import pytest
 from asyncssh import SSHClientConnection, SSHClientConnectionOptions
-from httpx import ConnectError, HTTPError, TimeoutException
+from httpx import AsyncHTTPTransport, ConnectError, HTTPError, TimeoutException
+from httpx_aiohttp import AiohttpTransport
 from rich import print as rprint
 
 from anta.device import AntaDevice, AsyncEOSDevice
@@ -49,13 +52,13 @@ INIT_PARAMS: list[ParameterSet] = [
     pytest.param(
         {"host": "42.42.42.42", "username": None, "password": "anta", "name": "test.anta.ninja"},
         None,
-        pytest.raises(ValueError, match="'username' is required to instantiate device 'test.anta.ninja'"),
+        pytest.raises(ValueError, match="'username' and 'password' are required to instantiate device 'test.anta.ninja'"),
         id="username is None",
     ),
     pytest.param(
         {"host": "42.42.42.42", "username": "anta", "password": None, "name": "test.anta.ninja"},
         None,
-        pytest.raises(ValueError, match="'password' is required to instantiate device 'test.anta.ninja'"),
+        pytest.raises(ValueError, match="'username' and 'password' are required to instantiate device 'test.anta.ninja'"),
         id="password is None",
     ),
 ]
@@ -646,6 +649,55 @@ class TestAsyncEOSDevice:
         else:
             assert dev1 != dev2
 
+    def test___rich_repr__(self, async_device: AsyncEOSDevice) -> None:
+        """Test the Rich repr protocol implementation."""
+        # Collect the yields into a dictionary for easy verification
+        rich_repr_items: dict[str, Any] = dict(async_device.__rich_repr__())
+
+        # Verify the basic items are present
+        assert "host" in rich_repr_items
+        assert rich_repr_items["host"] == "42.42.42.42"
+        assert rich_repr_items["eapi_port"] == async_device._settings["port"]
+        assert rich_repr_items["username"] == "anta"
+        assert rich_repr_items["enable"] is False
+        assert rich_repr_items["insecure"] == (async_device._settings["known_hosts"] is None)
+
+        # Debug items should not be present by default
+        assert "_session" not in rich_repr_items
+        assert "_ssh_opts" not in rich_repr_items
+
+    def test___rich_repr___debug_mode(self, async_device: AsyncEOSDevice, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Test the Rich repr protocol implementation in debug mode."""
+        # Mock __DEBUG__ to be True
+        monkeypatch.setattr("anta.device.__DEBUG__", True)
+
+        # Initialize the session and ssh_opts with placeholders to test their representation
+        async_device._session = object()  # type: ignore[assignment]
+        async_device._ssh_opts = object()  # type: ignore[assignment]
+
+        # Mock the vars function to return a controlled dictionary for testing
+        def mock_vars(obj: object) -> dict[str, Any]:
+            if obj is async_device._session:
+                return {"some_session_attr": "value"}
+            if obj is async_device._ssh_opts:
+                return {"password": "secret", "kwargs": {"password": "secret", "other": "value"}}
+            # Fall back to regular vars for other objects
+            return vars(obj)
+
+        monkeypatch.setattr(builtins, "vars", mock_vars)
+
+        # Collect the yields into a dictionary
+        rich_repr_items: dict[str, Any] = dict(async_device.__rich_repr__())
+
+        # Verify debug items are present
+        assert "_session" in rich_repr_items
+        assert rich_repr_items["_session"] == {"some_session_attr": "value"}
+
+        assert "_ssh_opts" in rich_repr_items
+        assert rich_repr_items["_ssh_opts"]["password"] == "<removed>"
+        assert rich_repr_items["_ssh_opts"]["kwargs"]["password"] == "<removed>"
+        assert rich_repr_items["_ssh_opts"]["kwargs"]["other"] == "value"
+
     @pytest.mark.parametrize(
         ("async_device", "patch_kwargs", "expected"),
         REFRESH_PARAMS,
@@ -653,8 +705,10 @@ class TestAsyncEOSDevice:
     )
     async def test_refresh(self, async_device: AsyncEOSDevice, patch_kwargs: list[dict[str, Any]], expected: dict[str, Any]) -> None:
         """Test AsyncEOSDevice.refresh()."""
+        await async_device._get_session()
         with patch.object(async_device._session, "check_connection", **patch_kwargs[0]), patch.object(async_device._session, "cli", **patch_kwargs[1]):
             await async_device.refresh()
+            assert async_device._session is not None
             async_device._session.check_connection.assert_called_once()  # type: ignore[attr-defined] # asynceapi.Device.check_connection is patched
             if expected["is_online"]:
                 async_device._session.cli.assert_called_once()  # type: ignore[attr-defined] # asynceapi.Device.cli is patched
@@ -670,6 +724,7 @@ class TestAsyncEOSDevice:
     async def test__collect(self, async_device: AsyncEOSDevice, command: dict[str, Any], expected: dict[str, Any]) -> None:
         """Test AsyncEOSDevice._collect()."""
         cmd = AntaCommand(command=command["command"], revision=command["revision"]) if "revision" in command else AntaCommand(command=command["command"])
+        await async_device._get_session()
         with patch.object(async_device._session, "cli", **command["patch_kwargs"]):
             collection_id = "pytest"
             await async_device.collect(cmd, collection_id=collection_id)
@@ -688,6 +743,7 @@ class TestAsyncEOSDevice:
                 commands.append({"cmd": cmd.command, "revision": cmd.revision})
             else:
                 commands.append({"cmd": cmd.command})
+            assert async_device._session is not None
             async_device._session.cli.assert_called_once_with(commands=commands, ofmt=cmd.ofmt, version=cmd.version, req_id=f"ANTA-{collection_id}-{id(cmd)}")  # type: ignore[attr-defined] # asynceapi.Device.cli is patched
             assert cmd.output == expected["output"]
             assert cmd.errors == expected["errors"]
@@ -700,9 +756,9 @@ class TestAsyncEOSDevice:
     async def test_copy(self, async_device: AsyncEOSDevice, copy: dict[str, Any]) -> None:
         """Test AsyncEOSDevice.copy()."""
         conn = SSHClientConnection(asyncio.get_event_loop(), SSHClientConnectionOptions())
-        with patch("asyncssh.connect") as connect_mock:
+        with patch("anta.device.connect") as connect_mock:
             connect_mock.return_value.__aenter__.return_value = conn
-            with patch("asyncssh.scp") as scp_mock:
+            with patch("anta.device.scp") as scp_mock:
                 await async_device.copy(copy["sources"], copy["destination"], copy["direction"])
                 if copy["direction"] == "from":
                     src = [(conn, file) for file in copy["sources"]]
@@ -714,3 +770,46 @@ class TestAsyncEOSDevice:
                     scp_mock.assert_not_awaited()
                     return
                 scp_mock.assert_awaited_once_with(src, dst)
+
+    @pytest.mark.parametrize(
+        "async_device",
+        [
+            {"httpx_transport": "httpcore"},
+            {"httpx_transport": "aiohttp"},
+        ],
+        indirect=["async_device"],
+    )
+    async def test__get_session(self, async_device: AsyncEOSDevice) -> None:
+        """Test AsyncEOSDevice._get_session()."""
+        assert async_device._settings["httpx_transport"] in ["httpcore", "aiohttp"]
+        await async_device._get_session()
+        assert async_device._session is not None
+
+        if async_device._settings["httpx_transport"] == "aiohttp":
+            assert isinstance(async_device._session._transport, AiohttpTransport)
+        else:
+            assert isinstance(async_device._session._transport, AsyncHTTPTransport)
+
+    async def test__get_session_reuse(self, async_device: AsyncEOSDevice) -> None:
+        """Test that _get_session reuses the existing session."""
+        session1 = await async_device._get_session()
+        session2 = await async_device._get_session()
+        assert session1 is session2
+
+    @pytest.mark.parametrize(
+        "async_device",
+        [{"httpx_transport": "aiohttp"}],
+        indirect=["async_device"],
+    )
+    async def test__get_session_import_error(self, caplog: pytest.LogCaptureFixture, async_device: AsyncEOSDevice) -> None:
+        """Test fallback to httpcore when aiohttp import fails."""
+        with patch("asynceapi._transports.build_aiohttp_transport", side_effect=ImportError("No module named 'aiohttp'")):
+            with caplog.at_level(logging.ERROR):
+                await async_device._get_session()
+
+            # Check log message
+            assert "aiohttp' transport was requested but required dependencies are not installed" in caplog.text
+
+            # Should fall back to httpcore
+            assert async_device._session is not None
+            assert isinstance(async_device._session._transport, AsyncHTTPTransport)

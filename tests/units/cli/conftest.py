@@ -125,10 +125,8 @@ def click_runner(capsys: pytest.CaptureFixture[str], anta_env: dict[str, str]) -
     with (
         patch("asynceapi.device.Device.check_connection", return_value=True),
         patch("asynceapi.device.Device.cli", side_effect=cli),
-        patch("asyncssh.connect"),
-        patch(
-            "asyncssh.scp",
-        ),
+        patch("anta.device.connect"),
+        patch("anta.device.scp"),
     ):
         console._color_system = None
         yield AntaCliRunner()

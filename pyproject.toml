@@ -101,6 +101,11 @@ doc = [
   "black>=24.10.0",
   "mkdocs-github-admonitions-plugin>=0.0.3"
 ]
+# Dependencies for experimental features
+experimental = [
+  "aiohttp>=3.11.0",
+  "httpx-aiohttp==0.1.1",
+]
 
 [project.urls]
 Homepage = "https://anta.arista.com"
@@ -256,6 +261,7 @@ description = Run pytest with {basepython}
 extras =
   dev
   cli
+  experimental
 # posargs allows to run only a specific test using
 # tox -e <env> -- path/to/my/test::test
 commands =
