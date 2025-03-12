@@ -315,7 +315,6 @@ class VerifyNTPAssociations(AntaTest):
     ```yaml
     anta.tests.system:
       - VerifyNTPAssociations:
-          ntp_pool: None
           ntp_servers:
             - server_address: 1.1.1.1
               preferred: True
@@ -359,9 +358,9 @@ class VerifyNTPAssociations(AntaTest):
                 raise ValueError(msg)
             return self
 
-    def _validate_ntp_server(self, ntp_server: NTPServer, peers: dict[str, Any]) -> list[Any]:
+    def _validate_ntp_server(self, ntp_server: NTPServer, peers: dict[str, Any]) -> list[str]:
         """Validate the NTP server, condition and stratum level."""
-        failure_msgs: list[Any] = []
+        failure_msgs: list[str] = []
         server_address = str(ntp_server.server_address)
 
         # We check `peerIpAddr` in the peer details - covering IPv4Address input, or the peer key - covering Hostname input.
@@ -385,9 +384,9 @@ class VerifyNTPAssociations(AntaTest):
 
         return failure_msgs
 
-    def _validate_ntp_pool(self, server_addresses: list[Hostname | IPv4Address], peer: str, stratum_range: list[int], peer_details: dict[Any, Any]) -> list[Any]:
+    def _validate_ntp_pool(self, server_addresses: list[Hostname | IPv4Address], peer: str, stratum_range: list[int], peer_details: dict[str, Any]) -> list[str]:
         """Validate the NTP server pool, condition and stratum level."""
-        failure_msgs: list[Any] = []
+        failure_msgs: list[str] = []
 
         # We check `peerIpAddr` and `peer` in the peer details - covering server_addresses input
         if (peer_ip := peer_details["peerIpAddr"]) not in server_addresses and peer not in server_addresses:

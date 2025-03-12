@@ -970,7 +970,6 @@ anta.tests.system:
       # Verifies that the Network Time Protocol (NTP) is synchronized.
   - VerifyNTPAssociations:
       # Verifies the Network Time Protocol (NTP) associations.
-      ntp_pool: None
       ntp_servers:
         - server_address: 1.1.1.1
           preferred: True
