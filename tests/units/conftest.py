@@ -105,7 +105,7 @@ def anta_runner(request: pytest.FixtureRequest) -> AntaRunner:
     - nofile: File descriptor limit
     """
     # Import must be inside fixture to prevent circular dependency from breaking CLI tests:
-    # anta.runner -> anta.cli.console -> anta.cli/* (not yet loaded) -> anta.cli.anta
+    # anta._runner -> anta.cli.console -> anta.cli/* (not yet loaded) -> anta.cli.anta
     from anta._runner import AntaRunner
     from anta.settings import AntaRunnerSettings
 

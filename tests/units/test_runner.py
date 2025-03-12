@@ -228,7 +228,7 @@ async def test_dry_run(caplog: pytest.LogCaptureFixture, inventory: AntaInventor
     caplog.set_level(logging.INFO)
     manager = ResultManager()
     await main(manager, inventory, FAKE_CATALOG, dry_run=True)
-    assert "Dry-run mode, exiting before running the tests." in caplog.records[-1].message
+    assert "Dry-run mode, exiting before running the tests." in caplog.records[-2].message
 
 
 # TODO: Move this to AntaRunner tests in ANTA v2.0.0

@@ -23,7 +23,8 @@ DEFAULT_MAX_CONCURRENCY = 10000
 DEFAULT_NOFILE = 16384
 
 # Default value for the test scheduling strategy
-DEFAULT_SCHEDULING_STRATEGY = "round-robin"
+# Using `device-by-device` strategy to follow the current anta=<1.2.0 behavior in `anta.runner.get_coroutines()`
+DEFAULT_SCHEDULING_STRATEGY = "device-by-device"
 
 # Default value for the number of tests to schedule per device when using the DEVICE_BY_COUNT scheduling strategy
 DEFAULT_SCHEDULING_TESTS_PER_DEVICE = 100

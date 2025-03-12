@@ -7,13 +7,22 @@ from __future__ import annotations
 
 import logging
 import os
+from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
+import respx
 from pydantic import ValidationError
 
 from anta._runner import AntaRunner, AntaRunnerFilter
+from anta.catalog import AntaCatalog
 from anta.result_manager import ResultManager
 from anta.settings import AntaRunnerSchedulingStrategy
+
+if TYPE_CHECKING:
+    from anta.inventory import AntaInventory
+
+DATA_DIR: Path = Path(__file__).parent.parent.resolve() / "data"
 
 
 class TestAntaRunnerBasic:
@@ -38,7 +47,7 @@ class TestAntaRunnerBasic:
 
         # Check default settings
         assert anta_runner._settings.max_concurrency == 10000
-        assert anta_runner._settings.scheduling_strategy == "round-robin"
+        assert anta_runner._settings.scheduling_strategy == "device-by-device"
         assert anta_runner._settings.scheduling_tests_per_device == 100
 
     @pytest.mark.parametrize(("anta_runner"), [{"inventory": "test_inventory_with_tags.yml", "catalog": "test_catalog_with_tags.yml"}], indirect=True)
@@ -81,7 +90,7 @@ class TestAntaRunnerRun:
         assert anta_runner._inventory_stats is not None
         assert anta_runner._inventory_stats.total == len(anta_runner.inventory)
 
-        assert "Dry-run mode, exiting before running the tests." in caplog.records[-1].message
+        assert "Dry-run mode, exiting before running the tests." in caplog.records[-2].message
 
     @pytest.mark.parametrize(("anta_runner"), [{"inventory": "test_inventory_with_tags.yml", "catalog": "test_catalog_with_tags.yml"}], indirect=True)
     async def test_run_invalid_filters(self, anta_runner: AntaRunner) -> None:
@@ -193,64 +202,100 @@ class TestAntaRunnerRun:
         assert len(second_run_manager.results) == 54
         assert first_run_manager.results == second_run_manager.results
 
-    @pytest.mark.parametrize(("anta_runner"), [{"inventory": "test_inventory_with_tags.yml", "catalog": "test_catalog_with_tags.yml"}], indirect=True)
-    async def test_run_device_by_device_strategy(self, anta_runner: AntaRunner) -> None:
-        """Test AntaRunner.run method with device-by-device scheduling strategy."""
+    @pytest.mark.parametrize(("inventory"), [{"count": 3}], indirect=True)
+    @respx.mock
+    async def test_run_device_by_device_strategy(self, inventory: AntaInventory) -> None:
+        """Test AntaRunner with device-by-device scheduling strategy."""
+        # Mock the eAPI requests
+        respx.post(path="/command-api", headers={"Content-Type": "application/json-rpc"}, json__params__cmds__0__cmd="show ip route vrf default").respond(
+            json={"result": [{"vrfs": {"default": {"routes": {}}}}]}
+        )
+
+        # Setup the objects required for the test
         manager = ResultManager()
-        anta_runner._selected_inventory = anta_runner.inventory
-        anta_runner._setup_tests(filters=AntaRunnerFilter())
-        anta_runner._settings.scheduling_strategy = AntaRunnerSchedulingStrategy.DEVICE_BY_DEVICE
+        catalog: AntaCatalog = AntaCatalog.parse(filename=DATA_DIR / "test_catalog_routing.yml")
+        runner = AntaRunner(inventory=inventory, catalog=catalog)
+        runner._settings.scheduling_strategy = AntaRunnerSchedulingStrategy.DEVICE_BY_DEVICE
+        runner._settings.scheduling_tests_per_device = 2
+        filters = AntaRunnerFilter()
+        await runner._setup_inventory(filters)
+        runner._setup_tests(filters)
+        generator = runner._test_generator()
 
-        # Exhaust the generator and close the coroutines
-        async for coro in anta_runner._test_generator(manager):
-            coro.close()
+        # Run the tests
+        async for result in generator:
+            manager.add(await result)
 
-        # Check that indices 0-8 all have name "leaf1"
-        assert all(result.name == "leaf1" for result in manager.results[0:9])
+        # Check that indices 0-4 all have name "device-0"
+        assert all(result.name == "device-0" for result in manager.results[0:4])
 
-        # Check that indices 9-17 all have name "leaf2"
-        assert all(result.name == "leaf2" for result in manager.results[9:18])
+        # Check that indices 5-9 all have name "device-1"
+        assert all(result.name == "device-1" for result in manager.results[5:9])
 
-        # Check that indices 18-26 all have name "spine1"
-        assert all(result.name == "spine1" for result in manager.results[18:26])
+        # Check that indices 10-14 all have name "device-2"
+        assert all(result.name == "device-2" for result in manager.results[10:14])
 
-    @pytest.mark.parametrize(("anta_runner"), [{"inventory": "test_inventory_with_tags.yml", "catalog": "test_catalog_with_tags.yml"}], indirect=True)
-    async def test_run_device_by_count_strategy(self, anta_runner: AntaRunner) -> None:
-        """Test AntaRunner.run method with device-by-count scheduling strategy."""
+    @pytest.mark.parametrize(("inventory"), [{"count": 3}], indirect=True)
+    @respx.mock
+    async def test_device_by_count_strategy(self, inventory: AntaInventory) -> None:
+        """Test AntaRunner with device-by-count scheduling strategy."""
+        # Mock the eAPI requests
+        respx.post(path="/command-api", headers={"Content-Type": "application/json-rpc"}, json__params__cmds__0__cmd="show ip route vrf default").respond(
+            json={"result": [{"vrfs": {"default": {"routes": {}}}}]}
+        )
+
+        # Setup the objects required for the test
         manager = ResultManager()
-        anta_runner._selected_inventory = anta_runner.inventory
-        anta_runner._setup_tests(filters=AntaRunnerFilter())
-        anta_runner._settings.scheduling_strategy = AntaRunnerSchedulingStrategy.DEVICE_BY_COUNT
-        anta_runner._settings.scheduling_tests_per_device = 2
+        catalog: AntaCatalog = AntaCatalog.parse(filename=DATA_DIR / "test_catalog_routing.yml")
+        runner = AntaRunner(inventory=inventory, catalog=catalog)
+        runner._settings.scheduling_strategy = AntaRunnerSchedulingStrategy.DEVICE_BY_COUNT
+        runner._settings.scheduling_tests_per_device = 2
+        filters = AntaRunnerFilter()
+        await runner._setup_inventory(filters)
+        runner._setup_tests(filters)
+        generator = runner._test_generator()
 
-        # Exhaust the generator and close the coroutines
-        async for coro in anta_runner._test_generator(manager):
-            coro.close()
+        # Run the tests
+        async for result in generator:
+            manager.add(await result)
 
-        device_names = ["leaf1", "leaf2", "spine1"]
-        for index, result in enumerate(manager.results[:-3]):
-            assert result.name == device_names[(index % 6) // 2]
+        # Check that indices 0-1 all have name "device-0", 2-3 all have name "device-1", and 4-5 all have name "device-2"
+        device_names = ["device-0", "device-1", "device-2"]
+        for index, res in enumerate(manager.results[:-3]):
+            assert res.name == device_names[(index % 6) // 2]
 
-        # The last 3 results should be "leaf1", "leaf2", "spine1" since there is no more tests to run
+        # The last 3 results should be "device-0", "device-1", "device-2" since there is no more tests to run
         for index, name in enumerate(device_names):
             assert manager.results[-3 + index].name == name
 
-    @pytest.mark.parametrize(("anta_runner"), [{"inventory": "test_inventory_with_tags.yml", "catalog": "test_catalog_with_tags.yml"}], indirect=True)
-    async def test_run_round_robin_strategy(self, anta_runner: AntaRunner) -> None:
-        """Test AntaRunner.run method with round-robin scheduling strategy."""
-        manager = ResultManager()
-        anta_runner._selected_inventory = anta_runner.inventory
-        anta_runner._setup_tests(filters=AntaRunnerFilter())
-        anta_runner._settings.scheduling_strategy = AntaRunnerSchedulingStrategy.ROUND_ROBIN
+    @pytest.mark.parametrize(("inventory"), [{"count": 3}], indirect=True)
+    @respx.mock
+    async def test_round_robin_strategy(self, inventory: AntaInventory) -> None:
+        """Test AntaRunner with round-robin scheduling strategy."""
+        # Mock the eAPI requests
+        respx.post(path="/command-api", headers={"Content-Type": "application/json-rpc"}, json__params__cmds__0__cmd="show ip route vrf default").respond(
+            json={"result": [{"vrfs": {"default": {"routes": {}}}}]}
+        )
 
-        # Exhaust the generator and close the coroutines
-        async for coro in anta_runner._test_generator(manager):
-            coro.close()
+        # Setup the objects required for the test
+        manager = ResultManager()
+        catalog: AntaCatalog = AntaCatalog.parse(filename=DATA_DIR / "test_catalog_routing.yml")
+        runner = AntaRunner(inventory=inventory, catalog=catalog)
+        runner._settings.scheduling_strategy = AntaRunnerSchedulingStrategy.ROUND_ROBIN
+        runner._settings.scheduling_tests_per_device = 2
+        filters = AntaRunnerFilter()
+        await runner._setup_inventory(filters)
+        runner._setup_tests(filters)
+        generator = runner._test_generator()
+
+        # Run the tests
+        async for result in generator:
+            manager.add(await result)
 
         # Round-robin between devices
-        device_names = ["leaf1", "leaf2", "spine1"]
-        for index, result in enumerate(manager.results):
-            assert result.name == device_names[index % 3]
+        device_names = ["device-0", "device-1", "device-2"]
+        for index, res in enumerate(manager.results):
+            assert res.name == device_names[index % 3]
 
 
 class TestAntaRunnerLogging:

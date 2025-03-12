@@ -9,7 +9,6 @@ import asyncio
 import logging
 from abc import ABC, abstractmethod
 from collections import OrderedDict, defaultdict
-from operator import attrgetter
 from time import monotonic
 from typing import TYPE_CHECKING, Any, Literal
 
@@ -339,7 +338,7 @@ class AsyncEOSDevice(AntaDevice):
         port: int | None = None,
         ssh_port: int = 22,
         tags: set[str] | None = None,
-        timeout: float | None = 30.0,
+        timeout: float | None = None,
         proto: Literal["http", "https"] = "https",
         *,
         enable: bool = False,
@@ -392,26 +391,15 @@ class AsyncEOSDevice(AntaDevice):
             message = f"'password' is required to instantiate device '{self.name}'"
             logger.error(message)
             raise ValueError(message)
-
         self.enable = enable
         self._enable_password = enable_password
-
-        # Build the session settings for the `asynceapi` client
-        session_settings: dict[str, Any] = {
-            "host": host,
-            "port": port,
-            "username": username,
-            "password": password,
-            "proto": proto,
-            "timeout": timeout,
-        }
-        self._session: asynceapi.Device = asynceapi.Device(**session_settings)
-
-        # Build the SSH connection options
-        ssh_settings = {"host": host, "port": ssh_port, "username": username, "password": password, "client_keys": CLIENT_KEYS}
+        self._session: asynceapi.Device = asynceapi.Device(host=host, port=port, username=username, password=password, proto=proto, timeout=timeout)
+        ssh_params: dict[str, Any] = {}
         if insecure:
-            ssh_settings["known_hosts"] = None
-        self._ssh_opts: SSHClientConnectionOptions = SSHClientConnectionOptions(**ssh_settings)
+            ssh_params["known_hosts"] = None
+        self._ssh_opts: SSHClientConnectionOptions = SSHClientConnectionOptions(
+            host=host, port=ssh_port, username=username, password=password, client_keys=CLIENT_KEYS, **ssh_params
+        )
 
         # In Python 3.9, Semaphore must be created within a running event loop
         # TODO: Once we drop Python 3.9 support, initialize the semaphore here
@@ -465,7 +453,7 @@ class AsyncEOSDevice(AntaDevice):
     def max_connections(self) -> int | None:
         """Maximum number of concurrent connections allowed by the device. Returns None if not available."""
         try:
-            return attrgetter("_transport._pool._max_connections")(self._session)
+            return self._session._transport._pool._max_connections  # type: ignore[attr-defined]  # noqa: SLF001
         except AttributeError:
             return None
 

@@ -210,17 +210,19 @@ class AntaRunner(BaseModel):
                 if not self._setup_tests(filters):
                     return manager
 
-            # Build the test generator
-            test_generator = self._test_generator(manager if dry_run else None)
-
             # Log run information
             self._log_run_information(dry_run=dry_run)
 
-        if dry_run:
-            logger.info("Dry-run mode, exiting before running the tests.")
-            async for test in test_generator:
-                test.close()
-            return manager
+            # In dry-run, add all test results to the manager and exit directly
+            if dry_run and self._selected_tests is not None:
+                logger.info("Dry-run mode, exiting before running the tests.")
+                for device, tests in self._selected_tests.items():
+                    for test_def in tests:
+                        manager.add(test_def.test(device=device, inputs=test_def.inputs).result)
+                return manager
+
+            # Build the test generator
+            test_generator = self._test_generator()
 
         if AntaTest.progress is not None:
             AntaTest.nrfu_task = AntaTest.progress.add_task("Running NRFU Tests...", total=self._total_tests)
@@ -323,7 +325,7 @@ class AntaRunner(BaseModel):
         self._potential_connections = None if not all_have_connections else total_connections
         return True
 
-    async def _test_generator(self, manager: ResultManager | None = None) -> AsyncGenerator[Coroutine[Any, Any, TestResult], None]:
+    async def _test_generator(self) -> AsyncGenerator[Coroutine[Any, Any, TestResult], None]:
         """Generate test coroutines for the ANTA run."""
         if self._selected_tests is None:
             msg = "The selected tests are not available. ANTA must be executed through AntaRunner.run()"
@@ -336,36 +338,32 @@ class AntaRunner(BaseModel):
         }
 
         if self._settings.scheduling_strategy == "device-by-device":
-            async for coro in self._generate_device_by_device(device_to_tests, manager):
+            async for coro in self._generate_device_by_device(device_to_tests):
                 yield coro
         elif self._settings.scheduling_strategy == "device-by-count":
-            async for coro in self._generate_device_by_count(device_to_tests, self._settings.scheduling_tests_per_device, manager):
+            async for coro in self._generate_device_by_count(device_to_tests, self._settings.scheduling_tests_per_device):
                 yield coro
         else:
             # Default to round-robin
-            async for coro in self._generate_round_robin(device_to_tests, manager):
+            async for coro in self._generate_round_robin(device_to_tests):
                 yield coro
 
-    async def _generate_round_robin(
-        self, device_to_tests: dict[AntaDevice, list[AntaTestDefinition]], manager: ResultManager | None = None
-    ) -> AsyncGenerator[Coroutine[Any, Any, TestResult], None]:
+    async def _generate_round_robin(self, device_to_tests: dict[AntaDevice, list[AntaTestDefinition]]) -> AsyncGenerator[Coroutine[Any, Any, TestResult], None]:
         """Yield one test per device in each round."""
         while any(device_to_tests.values()):
             for device, tests in device_to_tests.items():
                 if tests:
                     test_def = tests.pop(0)
-                    coro = self._create_test_coroutine(test_def, device, manager)
+                    coro = self._create_test_coroutine(test_def, device)
                     if coro is not None:
                         yield coro
 
-    async def _generate_device_by_device(
-        self, device_to_tests: dict[AntaDevice, list[AntaTestDefinition]], manager: ResultManager | None = None
-    ) -> AsyncGenerator[Coroutine[Any, Any, TestResult], None]:
+    async def _generate_device_by_device(self, device_to_tests: dict[AntaDevice, list[AntaTestDefinition]]) -> AsyncGenerator[Coroutine[Any, Any, TestResult], None]:
         """Yield all tests for one device before moving to the next."""
         for device, tests in device_to_tests.items():
             while tests:
                 test_def = tests.pop(0)
-                coro = self._create_test_coroutine(test_def, device, manager)
+                coro = self._create_test_coroutine(test_def, device)
                 if coro is not None:
                     yield coro
 
@@ -373,7 +371,6 @@ class AntaRunner(BaseModel):
         self,
         device_to_tests: dict[AntaDevice, list[AntaTestDefinition]],
         tests_per_device: int,
-        manager: ResultManager | None = None,
     ) -> AsyncGenerator[Coroutine[Any, Any, TestResult], None]:
         """In each round, yield up to `tests_per_device` tests for each device."""
         while any(device_to_tests.values()):
@@ -381,19 +378,14 @@ class AntaRunner(BaseModel):
                 count = min(tests_per_device, len(tests))
                 for _ in range(count):
                     test_def = tests.pop(0)
-                    coro = self._create_test_coroutine(test_def, device, manager)
+                    coro = self._create_test_coroutine(test_def, device)
                     if coro is not None:
                         yield coro
 
-    def _create_test_coroutine(
-        self, test_def: AntaTestDefinition, device: AntaDevice, manager: ResultManager | None = None
-    ) -> Coroutine[Any, Any, TestResult] | None:
+    def _create_test_coroutine(self, test_def: AntaTestDefinition, device: AntaDevice) -> Coroutine[Any, Any, TestResult] | None:
         """Create a test coroutine from a test definition."""
         try:
-            test_instance = test_def.test(device=device, inputs=test_def.inputs)
-            if manager is not None:
-                manager.add(test_instance.result)
-            coroutine = test_instance.test()
+            coroutine = test_def.test(device=device, inputs=test_def.inputs).test()
         except Exception as e:  # noqa: BLE001
             # An AntaTest instance is potentially user-defined code.
             # We need to catch everything and exit gracefully with an error message.
