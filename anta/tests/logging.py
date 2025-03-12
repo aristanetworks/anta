@@ -14,7 +14,7 @@ import re
 from ipaddress import IPv4Address
 from typing import TYPE_CHECKING, ClassVar
 
-from pydantic import ConfigDict, PositiveInt
+from pydantic import PositiveInt
 
 from anta.custom_types import LogSeverityLevel, RegexString
 from anta.models import AntaCommand, AntaTemplate, AntaTest
@@ -451,25 +451,24 @@ class VerifySyslogSearchEntries(AntaTest):
     anta.tests.logging:
       - VerifySyslogSearchEntries:
           regex_match: ".ACCOUNTING-5-EXEC: cvpadmin ssh."
-          previous_entries: 30
+          last_entries: 30
     ```
     """
 
     categories: ClassVar[list[str]] = ["logging"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show logging {previous_entries}", ofmt="text", use_cache=False)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show logging {last_entries}", ofmt="text", use_cache=False)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifySyslogSearchEntries test."""
 
-        model_config = ConfigDict(extra="forbid")
         regex_match: RegexString
         """Log regex pattern to be searched in last log entries."""
-        previous_entries: PositiveInt
-        """Number of previous log entries."""
+        last_entries: PositiveInt
+        """Last number of messages to check in the logging buffers."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for log severity level in the input."""
-        return [template.render(previous_entries=self.inputs.previous_entries)]
+        return [template.render(last_entries=self.inputs.last_entries)]
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -477,4 +476,4 @@ class VerifySyslogSearchEntries(AntaTest):
         self.result.is_success()
         output = self.instance_commands[0].text_output
         if not re.search(self.inputs.regex_match, output):
-            self.result.is_failure(f"Pattern: {self.inputs.regex_match} - Not found in last {self.inputs.previous_entries} log entries")
+            self.result.is_failure(f"Pattern: {self.inputs.regex_match} - Not found in last {self.inputs.last_entries} log entries")

@@ -322,7 +322,7 @@ anta.tests.logging:
   - VerifySyslogSearchEntries:
       # Verifies that the expected log string is present in the specified log entries.
       regex_match: ".ACCOUNTING-5-EXEC: cvpadmin ssh."
-      previous_entries: 30
+      last_entries: 30
 anta.tests.mlag:
   - VerifyMlagConfigSanity:
       # Verifies there are no MLAG config-sanity inconsistencies.
