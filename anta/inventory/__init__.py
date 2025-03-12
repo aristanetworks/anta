@@ -178,7 +178,7 @@ class AntaInventory(dict[str, AntaDevice]):
         username: str,
         password: str,
         enable_password: str | None = None,
-        timeout: float | None = 30.0,
+        timeout: float | None = None,
         file_format: Literal["yaml", "json"] = "yaml",
         *,
         enable: bool = False,
