@@ -39,6 +39,23 @@ AFI_SAFI_EOS_KEY = {
     ("link-state", None): "linkState",
 }
 """Dictionary mapping AFI/SAFI to EOS key representation."""
+AFI_SAFI_MAPPINGS = {"v4u": "IPv4 Unicast", "v4m": "IPv4 Multicast", "v6u": "IPv6 Unicast", "v6m": "IPv6 Multicast"}
+"""Dictionary mapping AFI/SAFI to EOS key representation for BGP redistributed route protocol."""
+IPV4_MULTICAST_SUPPORTED_PROTO = [
+    "AttachedHost",
+    "Connected",
+    "IS-IS",
+    "OSPF Internal",
+    "OSPF External",
+    "OSPF Nssa-External",
+    "OSPFv3 Internal",
+    "OSPFv3 External",
+    "OSPFv3 Nssa-External",
+    "Static",
+]
+"""List of BGP redistributed route protocol, supported for IPv4 multicast address family."""
+IPV6_MULTICAST_SUPPORTED_PROTO = [proto for proto in IPV4_MULTICAST_SUPPORTED_PROTO if proto != "AttachedHost"]
+"""List of BGP redistributed route protocol, supported for IPv6 multicast address family."""
 
 
 class BgpAddressFamily(BaseModel):
@@ -320,6 +337,48 @@ class AddressFamilyConfig(BaseModel):
     redistributed_routes: list[RedistributedRouteConfig]
     """List of redistributed route configuration."""
 
+    @model_validator(mode="after")
+    def validate_afi_safi_supported_routes(self) -> Self:
+        """Validate each address family supported redistributed protocol.
+
+        Following table shows the supported redistributed routes for each address family.
+
+        |    IPv4 Unicast         |    IPv6 Unicast         |   IPv4 Multicast       |   IPv6 Multicast       |
+        | ------------------------|-------------------------|------------------------|------------------------|
+        |    AttachedHost         |    AttachedHost         |   AttachedHost         |   Connected            |
+        |    Bgp                  |    Bgp                  |   Connected            |   IS-IS                |
+        |    Connected            |    Connected            |   IS-IS                |   OSPF Internal        |
+        |    Dynamic              |    DHCP                 |   OSPF Internal        |   OSPF External        |
+        |    IS-IS                |    Dynamic              |   OSPF External        |   OSPF Nssa-External   |
+        |    OSPF Internal        |    IS-IS                |   OSPF Nssa-External   |   OSPFv3 Internal      |
+        |    OSPF External        |    OSPFv3 Internal      |   OSPFv3 Internal      |   OSPFv3 External      |
+        |    OSPF Nssa-External   |    OSPFv3 External      |   OSPFv3 External      |   OSPFv3 Nssa-External |
+        |    OSPFv3 Internal      |    OSPFv3 Nssa-External |   OSPFv3 Nssa-External |   Static               |
+        |    OSPFv3 External      |    Static               |   Static               |                        |
+        |    OSPFv3 Nssa-External |    User                 |                        |                        |
+        |    RIP                  |                         |                        |                        |
+        |    Static               |                         |                        |                        |
+        |    User                 |                         |                        |                        |
+        """
+        for routes_data in self.redistributed_routes:
+            if all([self.afi_safi == "v4u", routes_data.proto == "DHCP"]):
+                msg = f"Redistributed protocol 'DHCP' is not supported for address-family '{AFI_SAFI_MAPPINGS[self.afi_safi]}'"
+                raise ValueError(msg)
+
+            if self.afi_safi == "v6u" and routes_data.proto in ["OSPF Internal", "OSPF External", "OSPF Nssa-External", "RIP"]:
+                msg = f"Redistributed protocol '{routes_data.proto}' is not supported for address-family '{AFI_SAFI_MAPPINGS[self.afi_safi]}'"
+                raise ValueError(msg)
+
+            if self.afi_safi == "v4m" and routes_data.proto not in IPV4_MULTICAST_SUPPORTED_PROTO:
+                msg = f"Redistributed protocol '{routes_data.proto}' is not supported for address-family '{AFI_SAFI_MAPPINGS[self.afi_safi]}'"
+                raise ValueError(msg)
+
+            if self.afi_safi == "v6m" and routes_data.proto not in IPV6_MULTICAST_SUPPORTED_PROTO:
+                msg = f"Redistributed protocol '{routes_data.proto}' is not supported for address-family '{AFI_SAFI_MAPPINGS[self.afi_safi]}'"
+                raise ValueError(msg)
+
+        return self
+
     def __str__(self) -> str:
         """Return a human-readable string representation of the AddressFamilyConfig for reporting.
 
@@ -327,5 +386,4 @@ class AddressFamilyConfig(BaseModel):
         --------
         - AFI-SAFI: IPv4 Unicast
         """
-        mappings = {"v4u": "IPv4 Unicast", "v4m": "IPv4 Multicast", "v6u": "IPv6 Unicast", "v6m": "IPv6 Multicast"}
-        return f"AFI-SAFI: {mappings[self.afi_safi]}"
+        return f"AFI-SAFI: {AFI_SAFI_MAPPINGS[self.afi_safi]}"
