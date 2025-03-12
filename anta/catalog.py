@@ -250,7 +250,7 @@ class AntaCatalogFile(RootModel[dict[ImportString[Any], list[AntaTestDefinition]
         # This could be improved.
         # https://github.com/pydantic/pydantic/issues/1043
         # Explore if this worth using this: https://github.com/NowanIlfideme/pydantic-yaml
-        return safe_dump(safe_load(self.model_dump_json(serialize_as_any=True, exclude_unset=True)), indent=2, width=math.inf)
+        return safe_dump(safe_load(self.model_dump_json(serialize_as_any=True, exclude_unset=True)), width=math.inf)
 
     def to_json(self) -> str:
         """Return a JSON representation string of this model.
@@ -289,11 +289,7 @@ class AntaCatalog:
             self._tests = tests
         self._filename: Path | None = None
         if filename is not None:
-            if isinstance(filename, Path):
-                self._filename = filename
-            else:
-                self._filename = Path(filename)
-
+            self._filename = filename if isinstance(filename, Path) else Path(filename)
         self.indexes_built: bool
         self.tag_to_tests: defaultdict[str | None, set[AntaTestDefinition]]
         self._init_indexes()

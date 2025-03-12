@@ -262,7 +262,7 @@ class VerifyFileSystemUtilization(AntaTest):
 
 
 class VerifyNTP(AntaTest):
-    """Verifies that the Network Time Protocol (NTP) is synchronized.
+    """Verifies if NTP is synchronised.
 
     Expected Results
     ----------------
