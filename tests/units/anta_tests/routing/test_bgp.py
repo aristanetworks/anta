@@ -792,9 +792,11 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "AFI: evpn Peer: 10.100.0.13 - Session is not established for expected time - Expected: 10000s Actual: 9883s",
-                "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.12 - Session is not established for expected time - Expected: 10000s Actual: 9883s",
-                "AFI: ipv4 SAFI: unicast VRF: DEV Peer: 10.100.0.12 - Session is not established for expected time - Expected: 10000s Actual: 9883s",
+                "AFI: evpn Peer: 10.100.0.13 - BGP session not established for the minimum required duration - Expected: 10000s Actual: 9883s",
+                "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.12 - BGP session not established for the minimum required duration - "
+                "Expected: 10000s Actual: 9883s",
+                "AFI: ipv4 SAFI: unicast VRF: DEV Peer: 10.100.0.12 - BGP session not established for the minimum required duration - "
+                "Expected: 10000s Actual: 9883s",
             ],
         },
     },
@@ -1178,9 +1180,11 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.12 - Session is not established for expected time - Expected: 10000s Actual: 9883s",
-                "AFI: evpn Peer: 10.100.0.13 - Session is not established for expected time - Expected: 10000s Actual: 9883s",
-                "AFI: ipv4 SAFI: unicast VRF: MGMT Peer: 10.100.0.14 - Session is not established for expected time - Expected: 10000s Actual: 9883s",
+                "AFI: ipv4 SAFI: unicast VRF: default Peer: 10.100.0.12 - BGP session not established for the minimum required duration - "
+                "Expected: 10000s Actual: 9883s",
+                "AFI: evpn Peer: 10.100.0.13 - BGP session not established for the minimum required duration - Expected: 10000s Actual: 9883s",
+                "AFI: ipv4 SAFI: unicast VRF: MGMT Peer: 10.100.0.14 - BGP session not established for the minimum required duration - "
+                "Expected: 10000s Actual: 9883s",
             ],
         },
     },
@@ -4627,8 +4631,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 10.100.0.8 VRF: default - Session is not established for expected time - Expected: 10000s Actual: 9883s",
-                "Peer: 10.100.0.9 VRF: MGMT - Session is not established for expected time - Expected: 10000s Actual: 9883s",
+                "Peer: 10.100.0.8 VRF: default - BGP session not established for the minimum required duration - Expected: 10000s Actual: 9883s",
+                "Peer: 10.100.0.9 VRF: MGMT - BGP session not established for the minimum required duration - Expected: 10000s Actual: 9883s",
             ],
         },
     },
@@ -5121,8 +5125,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 10.100.0.8 VRF: default - Session is not established for expected time - Expected: 10000s Actual: 9883s",
-                "Peer: 10.100.0.9 VRF: MGMT - Session is not established for expected time - Expected: 10000s Actual: 9883s",
+                "Peer: 10.100.0.8 VRF: default - BGP session not established for the minimum required duration - Expected: 10000s Actual: 9883s",
+                "Peer: 10.100.0.9 VRF: MGMT - BGP session not established for the minimum required duration - Expected: 10000s Actual: 9883s",
             ],
         },
     },
