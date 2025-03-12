@@ -448,6 +448,7 @@ async def limit_concurrency(coroutines: AsyncIterator[Coroutine[Any, Any, T]], l
             try:
                 # NOTE: The `anext` built-in function is not available in Python 3.9
                 coro = await coroutines.__anext__()  # pylint: disable=unnecessary-dunder-call
+            # NOTE: Ignoring `try-except-in-loop` since we don't want to break the loop in case of `StopAsyncIteration`
             except StopAsyncIteration:  # noqa: PERF203
                 coros_ended = True
             else:

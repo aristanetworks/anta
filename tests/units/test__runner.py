@@ -227,19 +227,13 @@ class TestAntaRunnerRun:
         async for coro in anta_runner._test_generator(manager):
             coro.close()
 
-        # Check that indices 0-1 all have name "leaf1"
-        assert all(result.name == "leaf1" for result in manager.results[0:2])
-
-        # Check that indices 2-3 all have name "leaf2"
-        assert all(result.name == "leaf2" for result in manager.results[2:4])
-
-        # Check that indices 4-5 all have name "spine1"
-        assert all(result.name == "spine1" for result in manager.results[4:6])
+        device_names = ["leaf1", "leaf2", "spine1"]
+        for index, result in enumerate(manager.results[:-3]):
+            assert result.name == device_names[(index % 6) // 2]
 
         # The last 3 results should be "leaf1", "leaf2", "spine1" since there is no more tests to run
-        assert manager.results[-3].name == "leaf1"
-        assert manager.results[-2].name == "leaf2"
-        assert manager.results[-1].name == "spine1"
+        for index, name in enumerate(device_names):
+            assert manager.results[-3 + index].name == name
 
     @pytest.mark.parametrize(("anta_runner"), [{"inventory": "test_inventory_with_tags.yml", "catalog": "test_catalog_with_tags.yml"}], indirect=True)
     async def test_run_round_robin_strategy(self, anta_runner: AntaRunner) -> None:
@@ -254,12 +248,9 @@ class TestAntaRunnerRun:
             coro.close()
 
         # Round-robin between devices
-        assert manager.results[0].name == "leaf1"
-        assert manager.results[1].name == "leaf2"
-        assert manager.results[2].name == "spine1"
-        assert manager.results[3].name == "leaf1"
-        assert manager.results[4].name == "leaf2"
-        assert manager.results[5].name == "spine1"
+        device_names = ["leaf1", "leaf2", "spine1"]
+        for index, result in enumerate(manager.results):
+            assert result.name == device_names[index % 3]
 
 
 class TestAntaRunnerLogging:
