@@ -123,7 +123,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"location": "New York"},
         "expected": {
             "result": "failure",
-            "messages": ["SNMP location is not configured."],
+            "messages": ["SNMP location is not configured"],
         },
     },
     {
@@ -162,7 +162,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"contact": "Bob@example.com"},
         "expected": {
             "result": "failure",
-            "messages": ["SNMP contact is not configured."],
+            "messages": ["SNMP contact is not configured"],
         },
     },
     {
@@ -208,7 +208,7 @@ DATA: list[dict[str, Any]] = [
             }
         ],
         "inputs": {},
-        "expected": {"result": "failure", "messages": ["SNMP counters not found."]},
+        "expected": {"result": "failure", "messages": ["SNMP counters not found"]},
     },
     {
         "name": "failure-incorrect-counters",
@@ -297,7 +297,7 @@ DATA: list[dict[str, Any]] = [
             }
         ],
         "inputs": {},
-        "expected": {"result": "failure", "messages": ["SNMP counters not found."]},
+        "expected": {"result": "failure", "messages": ["SNMP counters not found"]},
     },
     {
         "name": "failure-incorrect-counters",
@@ -580,7 +580,7 @@ DATA: list[dict[str, Any]] = [
                 {"hostname": "192.168.1.101", "vrf": "default", "notification_type": "trap", "version": "v2c", "udp_port": 162, "community_string": "public"},
             ]
         },
-        "expected": {"result": "failure", "messages": ["No SNMP host is configured."]},
+        "expected": {"result": "failure", "messages": ["No SNMP host is configured"]},
     },
     {
         "name": "failure-details-host-not-found",
@@ -641,8 +641,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Host: 192.168.1.100 VRF: default - Incorrect notification type - Expected: inform, Actual: trap",
-                "Host: 192.168.1.101 VRF: default - Incorrect notification type - Expected: trap, Actual: inform",
+                "Host: 192.168.1.100 VRF: default - Incorrect notification type - Expected: inform Actual: trap",
+                "Host: 192.168.1.101 VRF: default - Incorrect notification type - Expected: trap Actual: inform",
             ],
         },
     },
@@ -680,8 +680,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Host: 192.168.1.100 VRF: default - Incorrect UDP port - Expected: 162, Actual: 163",
-                "Host: 192.168.1.101 VRF: default - Incorrect UDP port - Expected: 162, Actual: 164",
+                "Host: 192.168.1.100 VRF: default - Incorrect UDP port - Expected: 162 Actual: 163",
+                "Host: 192.168.1.101 VRF: default - Incorrect UDP port - Expected: 162 Actual: 164",
             ],
         },
     },
@@ -719,8 +719,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Host: 192.168.1.100 VRF: default Version: v1 - Incorrect community string - Expected: public, Actual: private",
-                "Host: 192.168.1.101 VRF: default Version: v2c - Incorrect community string - Expected: public, Actual: private",
+                "Host: 192.168.1.100 VRF: default Version: v1 - Incorrect community string - Expected: public Actual: private",
+                "Host: 192.168.1.101 VRF: default Version: v2c - Incorrect community string - Expected: public Actual: private",
             ],
         },
     },
@@ -746,7 +746,7 @@ DATA: list[dict[str, Any]] = [
                 {"hostname": "192.168.1.100", "vrf": "default", "notification_type": "trap", "version": "v3", "udp_port": 162, "user": "public"},
             ]
         },
-        "expected": {"result": "failure", "messages": ["Host: 192.168.1.100 VRF: default Version: v3 - Incorrect user - Expected: public, Actual: private"]},
+        "expected": {"result": "failure", "messages": ["Host: 192.168.1.100 VRF: default Version: v3 - Incorrect user - Expected: public Actual: private"]},
     },
     {
         "name": "success",
@@ -920,14 +920,14 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Group: Group1, Version: v1 - Incorrect Read view - Expected: group_read_1, Actual: group_read",
-                "Group: Group1, Version: v1 - Incorrect Write view - Expected: group_write_1, Actual: group_write",
-                "Group: Group1, Version: v1 - Incorrect Notify view - Expected: group_notify_1, Actual: group_notify",
-                "Group: Group2, Version: v2c - Incorrect Read view - Expected: group_read_2, Actual: group_read",
-                "Group: Group2, Version: v2c - Incorrect Notify view - Expected: group_notify_2, Actual: group_notify",
-                "Group: Group3, Version: v3 - Incorrect Read view - Expected: group_read_3, Actual: group_read",
-                "Group: Group3, Version: v3 - Incorrect Write view - Expected: group_write_3, Actual: group_write",
-                "Group: Group3, Version: v3 - Incorrect Notify view - Expected: group_notify_3, Actual: group_notify",
+                "Group: Group1 Version: v1 - Incorrect Read view - Expected: group_read_1 Actual: group_read",
+                "Group: Group1 Version: v1 - Incorrect Write view - Expected: group_write_1 Actual: group_write",
+                "Group: Group1 Version: v1 - Incorrect Notify view - Expected: group_notify_1 Actual: group_notify",
+                "Group: Group2 Version: v2c - Incorrect Read view - Expected: group_read_2 Actual: group_read",
+                "Group: Group2 Version: v2c - Incorrect Notify view - Expected: group_notify_2 Actual: group_notify",
+                "Group: Group3 Version: v3 - Incorrect Read view - Expected: group_read_3 Actual: group_read",
+                "Group: Group3 Version: v3 - Incorrect Write view - Expected: group_write_3 Actual: group_write",
+                "Group: Group3 Version: v3 - Incorrect Notify view - Expected: group_notify_3 Actual: group_notify",
             ],
         },
     },
@@ -995,14 +995,14 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Group: Group1, Version: v1, Read View: group_read - Not configured",
-                "Group: Group1, Version: v1, Write View: group_write - Not configured",
-                "Group: Group1, Version: v1, Notify View: group_notify - Not configured",
-                "Group: Group2, Version: v2c, Read View: group_read - Not configured",
-                "Group: Group2, Version: v2c, Write View: group_write - Not configured",
-                "Group: Group2, Version: v2c, Notify View: group_notify - Not configured",
-                "Group: Group3, Version: v3, Write View: group_write - Not configured",
-                "Group: Group3, Version: v3, Notify View: group_notify - Not configured",
+                "Group: Group1 Version: v1 Read View: group_read - Not configured",
+                "Group: Group1 Version: v1 Write View: group_write - Not configured",
+                "Group: Group1 Version: v1 Notify View: group_notify - Not configured",
+                "Group: Group2 Version: v2c Read View: group_read - Not configured",
+                "Group: Group2 Version: v2c Write View: group_write - Not configured",
+                "Group: Group2 Version: v2c Notify View: group_notify - Not configured",
+                "Group: Group3 Version: v3 Write View: group_write - Not configured",
+                "Group: Group3 Version: v3 Notify View: group_notify - Not configured",
             ],
         },
     },
@@ -1035,9 +1035,9 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Group: Group1, Version: v1 - Not configured",
-                "Group: Group2, Version: v2c - Not configured",
-                "Group: Group3, Version: v3 - Not configured",
+                "Group: Group1 Version: v1 - Not configured",
+                "Group: Group2 Version: v2c - Not configured",
+                "Group: Group3 Version: v3 - Not configured",
             ],
         },
     },
@@ -1078,7 +1078,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Group: Group3, Version: v3 - Incorrect security model - Expected: v3Priv, Actual: v3Auth",
+                "Group: Group3 Version: v3 - Incorrect security model - Expected: v3Priv Actual: v3Auth",
             ],
         },
     },
@@ -1106,7 +1106,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Group: Group3, Version: v3 View: write - Not configured",
+                "Group: Group3 Version: v3 View: write - Not configured",
             ],
         },
     },

@@ -68,7 +68,7 @@ class VerifySyslogLogging(AntaTest):
         log_output = self.instance_commands[0].text_output
 
         if "Syslog logging: enabled" not in _get_logging_states(self.logger, log_output):
-            self.result.is_failure("Syslog logging is disabled.")
+            self.result.is_failure("Syslog logging is disabled")
 
 
 class VerifyLoggingPersistent(AntaTest):
@@ -145,7 +145,7 @@ class VerifyLoggingSourceIntf(AntaTest):
         if re.search(pattern, _get_logging_states(self.logger, output)):
             self.result.is_success()
         else:
-            self.result.is_failure(f"Source-interface '{self.inputs.interface}' is not configured in VRF {self.inputs.vrf}")
+            self.result.is_failure(f"Source-interface: {self.inputs.interface} VRF: {self.inputs.vrf} - Not configured")
 
 
 class VerifyLoggingHosts(AntaTest):

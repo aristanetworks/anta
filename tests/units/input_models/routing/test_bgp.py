@@ -19,6 +19,7 @@ from anta.tests.routing.bgp import (
     VerifyBGPPeerGroup,
     VerifyBGPPeerMPCaps,
     VerifyBGPPeerRouteLimit,
+    VerifyBGPPeerTtlMultiHops,
     VerifyBGPRouteECMP,
     VerifyBgpRouteMaps,
     VerifyBGPRoutePaths,
@@ -435,3 +436,29 @@ class TestVerifyBGPAddressFamilyConfig:
     def test_valid_str(self, afi_safi: RedistributedAfiSafi, redistributed_routes: list[Any], expected: str) -> None:
         """Test AddressFamilyConfig __str__."""
         assert str(AddressFamilyConfig(afi_safi=afi_safi, redistributed_routes=redistributed_routes)) == expected
+
+
+class TestVerifyBGPPeerTtlMultiHopsInput:
+    """Test anta.tests.routing.bgp.VerifyBGPPeerTtlMultiHops.Input."""
+
+    @pytest.mark.parametrize(
+        ("bgp_peers"),
+        [
+            pytest.param([{"peer_address": "172.30.255.5", "vrf": "default", "ttl": 3, "max_ttl_hops": 3}], id="valid"),
+        ],
+    )
+    def test_valid(self, bgp_peers: list[BgpPeer]) -> None:
+        """Test VerifyBGPPeerTtlMultiHops.Input valid inputs."""
+        VerifyBGPPeerTtlMultiHops.Input(bgp_peers=bgp_peers)
+
+    @pytest.mark.parametrize(
+        ("bgp_peers"),
+        [
+            pytest.param([{"peer_address": "172.30.255.5", "vrf": "default", "ttl": None, "max_ttl_hops": 3}], id="invalid-ttl-time"),
+            pytest.param([{"peer_address": "172.30.255.6", "vrf": "default", "ttl": 3, "max_ttl_hops": None}], id="invalid-max-ttl-hops"),
+        ],
+    )
+    def test_invalid(self, bgp_peers: list[BgpPeer]) -> None:
+        """Test VerifyBGPPeerTtlMultiHops.Input invalid inputs."""
+        with pytest.raises(ValidationError):
+            VerifyBGPPeerTtlMultiHops.Input(bgp_peers=bgp_peers)

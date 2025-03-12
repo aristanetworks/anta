@@ -125,4 +125,4 @@ class VerifyRunningConfigLines(AntaTest):
         if not failure_msgs:
             self.result.is_success()
         else:
-            self.result.is_failure("Following patterns were not found: " + ",".join(failure_msgs))
+            self.result.is_failure("Following patterns were not found: " + ", ".join(failure_msgs))

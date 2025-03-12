@@ -496,6 +496,17 @@ anta.tests.routing.bgp:
           vrf: DEV
         - peer_address: 10.1.255.4
           vrf: DEV
+  - VerifyBGPPeerTtlMultiHops:
+      # Verifies BGP TTL and max-ttl-hops count for BGP IPv4 peer(s).
+      bgp_peers:
+          - peer_address: 172.30.11.1
+            vrf: default
+            ttl: 3
+            max_ttl_hops: 3
+          - peer_address: 172.30.11.2
+            vrf: test
+            ttl: 30
+            max_ttl_hops: 30
   - VerifyBGPPeerUpdateErrors:
       # Verifies BGP update error counters for the provided BGP IPv4 peer(s).
       bgp_peers:
@@ -955,6 +966,8 @@ anta.tests.system:
       # Verifies there are no core dump files.
   - VerifyFileSystemUtilization:
       # Verifies that no partition is utilizing more than 75% of its disk space.
+  - VerifyMaintenance:
+      # Verifies that the device is not currently under or entering maintenance.
   - VerifyMemoryUtilization:
       # Verifies whether the memory utilization is below 75%.
   - VerifyNTP:

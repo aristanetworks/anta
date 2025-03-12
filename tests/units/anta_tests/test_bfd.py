@@ -471,7 +471,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": ["No IPv4 BFD peers are configured for any VRF."],
+            "messages": ["No IPv4 BFD peers are configured for any VRF"],
         },
     },
     {
