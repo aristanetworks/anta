@@ -319,6 +319,10 @@ anta.tests.logging:
       severity_level: informational
   - VerifySyslogLogging:
       # Verifies if syslog logging is enabled.
+  - VerifySyslogSearchEntries:
+      # Verifies that the specified log string is present in the last specified log entries.
+      regex_pattern: ".ACCOUNTING-5-EXEC: cvpadmin ssh."
+      previous_entries: 30
 anta.tests.mlag:
   - VerifyMlagConfigSanity:
       # Verifies there are no MLAG config-sanity inconsistencies.

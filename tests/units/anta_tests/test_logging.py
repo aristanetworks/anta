@@ -17,6 +17,7 @@ from anta.tests.logging import (
     VerifyLoggingSourceIntf,
     VerifyLoggingTimestamp,
     VerifySyslogLogging,
+    VerifySyslogSearchEntries,
 )
 from tests.units.anta_tests import test
 
@@ -318,5 +319,26 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["Syslog logging is disabled"]},
+    },
+    {
+        "name": "success",
+        "test": VerifySyslogSearchEntries,
+        "eos_data": [
+            """Mar 12 04:34:01 s1-leaf1 ProcMgr: %PROCMGR-6-TERMINATE_RUNNING_PROCESS: Terminating deconfigured/reconfigured process 'SystemInitMonitor' (PID=867)
+Mar 12 04:34:01 s1-leaf1 ProcMgr: %PROCMGR-7-WORKER_WARMSTART_DONE: ProcMgr worker warm start done. (PID=559)
+Mar 12 04:34:01 s1-leaf1 ProcMgr: %PROCMGR-6-PROCESS_TERMINATED: 'SystemInitMonitor' (PID=867, status=9) has terminated.""",
+        ],
+        "inputs": {"regex_pattern": ".*PROCMGR-6-PROCESS_TERMINATED:.*", "previous_entries": 5},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-log-str-not-found",
+        "test": VerifySyslogSearchEntries,
+        "eos_data": [
+            """Mar 12 04:34:01 s1-leaf1 ProcMgr: %PROCMGR-7-WORKER_WARMSTART_DONE: ProcMgr worker warm start done. (PID=559)
+Mar 12 04:34:01 s1-leaf1 ProcMgr: %PROCMGR-6-PROCESS_TERMINATED: 'SystemInitMonitor' (PID=867, status=9) has terminated.""",
+        ],
+        "inputs": {"regex_pattern": ".*ACCOUNTING-5-EXEC: cvpadmin ssh.*", "previous_entries": 5},
+        "expected": {"result": "failure", "messages": ["Pattern: .*ACCOUNTING-5-EXEC: cvpadmin ssh.* - Not found in last 5 log entries"]},
     },
 ]
