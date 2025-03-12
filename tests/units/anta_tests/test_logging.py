@@ -328,7 +328,7 @@ DATA: list[dict[str, Any]] = [
 Mar 12 04:34:01 s1-leaf1 ProcMgr: %PROCMGR-7-WORKER_WARMSTART_DONE: ProcMgr worker warm start done. (PID=559)
 Mar 12 04:34:01 s1-leaf1 ProcMgr: %PROCMGR-6-PROCESS_TERMINATED: 'SystemInitMonitor' (PID=867, status=9) has terminated.""",
         ],
-        "inputs": {"regex_pattern": ".*PROCMGR-6-PROCESS_TERMINATED:.*", "previous_entries": 5},
+        "inputs": {"regex_match": ".*PROCMGR-6-PROCESS_TERMINATED:.*", "previous_entries": 5},
         "expected": {"result": "success"},
     },
     {
@@ -338,7 +338,7 @@ Mar 12 04:34:01 s1-leaf1 ProcMgr: %PROCMGR-6-PROCESS_TERMINATED: 'SystemInitMoni
             """Mar 12 04:34:01 s1-leaf1 ProcMgr: %PROCMGR-7-WORKER_WARMSTART_DONE: ProcMgr worker warm start done. (PID=559)
 Mar 12 04:34:01 s1-leaf1 ProcMgr: %PROCMGR-6-PROCESS_TERMINATED: 'SystemInitMonitor' (PID=867, status=9) has terminated.""",
         ],
-        "inputs": {"regex_pattern": ".*ACCOUNTING-5-EXEC: cvpadmin ssh.*", "previous_entries": 5},
+        "inputs": {"regex_match": ".*ACCOUNTING-5-EXEC: cvpadmin ssh.*", "previous_entries": 5},
         "expected": {"result": "failure", "messages": ["Pattern: .*ACCOUNTING-5-EXEC: cvpadmin ssh.* - Not found in last 5 log entries"]},
     },
 ]

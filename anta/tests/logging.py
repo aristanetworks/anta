@@ -14,7 +14,7 @@ import re
 from ipaddress import IPv4Address
 from typing import TYPE_CHECKING, ClassVar
 
-from pydantic import ConfigDict
+from pydantic import ConfigDict, PositiveInt
 
 from anta.custom_types import LogSeverityLevel, RegexString
 from anta.models import AntaCommand, AntaTemplate, AntaTest
@@ -438,7 +438,7 @@ class VerifyLoggingErrors(AntaTest):
 
 
 class VerifySyslogSearchEntries(AntaTest):
-    """Verifies that the specified log string is present in the last specified log entries.
+    """Verifies that the expected log string is present in the specified log entries.
 
     Expected Results
     ----------------
@@ -450,7 +450,7 @@ class VerifySyslogSearchEntries(AntaTest):
     ```yaml
     anta.tests.logging:
       - VerifySyslogSearchEntries:
-          regex_pattern: ".ACCOUNTING-5-EXEC: cvpadmin ssh."
+          regex_match: ".ACCOUNTING-5-EXEC: cvpadmin ssh."
           previous_entries: 30
     ```
     """
@@ -462,9 +462,9 @@ class VerifySyslogSearchEntries(AntaTest):
         """Input model for the VerifySyslogSearchEntries test."""
 
         model_config = ConfigDict(extra="forbid")
-        regex_pattern: RegexString
+        regex_match: RegexString
         """Log regex pattern to be searched in last log entries."""
-        previous_entries: int
+        previous_entries: PositiveInt
         """Number of previous log entries."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
@@ -476,5 +476,5 @@ class VerifySyslogSearchEntries(AntaTest):
         """Main test function for VerifySyslogSearchEntries."""
         self.result.is_success()
         output = self.instance_commands[0].text_output
-        if not re.search(self.inputs.regex_pattern, output):
-            self.result.is_failure(f"Pattern: {self.inputs.regex_pattern} - Not found in last {self.inputs.previous_entries} log entries")
+        if not re.search(self.inputs.regex_match, output):
+            self.result.is_failure(f"Pattern: {self.inputs.regex_match} - Not found in last {self.inputs.previous_entries} log entries")

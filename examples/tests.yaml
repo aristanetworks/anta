@@ -320,8 +320,8 @@ anta.tests.logging:
   - VerifySyslogLogging:
       # Verifies if syslog logging is enabled.
   - VerifySyslogSearchEntries:
-      # Verifies that the specified log string is present in the last specified log entries.
-      regex_pattern: ".ACCOUNTING-5-EXEC: cvpadmin ssh."
+      # Verifies that the expected log string is present in the specified log entries.
+      regex_match: ".ACCOUNTING-5-EXEC: cvpadmin ssh."
       previous_entries: 30
 anta.tests.mlag:
   - VerifyMlagConfigSanity:
