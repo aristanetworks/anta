@@ -343,7 +343,7 @@ class AddressFamilyConfig(BaseModel):
 
         Following table shows the supported redistributed routes for each address family.
 
-        |    Ipv4 unicast         |    Ipv6 unicast         |   Ipv4 Multicast       |   Ipv6 Multicast       |
+        |    IPv4 Unicast         |    IPv6 Unicast         |   IPv4 Multicast       |   IPv6 Multicast       |
         | ------------------------|-------------------------|------------------------|------------------------|
         |    AttachedHost         |    AttachedHost         |   AttachedHost         |   Connected            |
         |    Bgp                  |    Bgp                  |   Connected            |   IS-IS                |
