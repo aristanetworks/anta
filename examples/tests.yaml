@@ -708,7 +708,7 @@ anta.tests.security:
   - VerifyAPIHttpStatus:
       # Verifies if eAPI HTTP server is disabled globally.
   - VerifyAPIHttpsSSL:
-      # Verifies if eAPI HTTPS server SSL profile is configured and valid.
+      # Verifies if the eAPI has a valid SSL profile.
       profile: default
   - VerifyAPIIPv4Acl:
       # Verifies if eAPI has the right number IPv4 ACL(s) configured for a specified VRF.
@@ -719,7 +719,7 @@ anta.tests.security:
       number: 3
       vrf: default
   - VerifyAPISSLCertificate:
-      # Verifies the eAPI SSL certificate.
+      # Verifies the eAPI SSL certificate expiry, common subject name, encryption algorithm and key size.
       certificates:
         - certificate_name: ARISTA_SIGNING_CA.crt
           expiry_threshold: 30
@@ -748,7 +748,7 @@ anta.tests.security:
   - VerifyIPSecConnHealth:
       # Verifies all IPv4 security connections.
   - VerifyIPv4ACL:
-      # Verifies the IPv4 ACLs.
+      # Verifies the configuration of IPv4 ACLs.
       ipv4_access_lists:
         - name: default-control-plane-acl
           entries:
@@ -971,7 +971,7 @@ anta.tests.system:
   - VerifyMemoryUtilization:
       # Verifies whether the memory utilization is below 75%.
   - VerifyNTP:
-      # Verifies that the Network Time Protocol (NTP) is synchronized.
+      # Verifies if NTP is synchronised.
   - VerifyNTPAssociations:
       # Verifies the Network Time Protocol (NTP) associations.
       ntp_servers:
@@ -1005,7 +1005,7 @@ anta.tests.vxlan:
       source_interface: Loopback1
       udp_port: 4789
   - VerifyVxlan1Interface:
-      # Verifies if the Vxlan1 interface is configured and 'up/up'.
+      # Verifies the Vxlan1 interface status.
   - VerifyVxlanConfigSanity:
       # Verifies there are no VXLAN config-sanity inconsistencies.
   - VerifyVxlanVniBinding:
