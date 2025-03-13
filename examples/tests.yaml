@@ -294,6 +294,15 @@ anta.tests.lanz:
 anta.tests.logging:
   - VerifyLoggingAccounting:
       # Verifies if AAA accounting logs are generated.
+  - VerifyLoggingEntries:
+      # Verifies that the expected log string present in the last specified log messages.
+      logging_entries:
+        - regex_match: ".ACCOUNTING-5-EXEC: cvpadmin ssh."
+          last_number_messages: 30
+          severity_level: alerts
+        - regex_match: ".SPANTREE-6-INTERFACE_ADD:."
+          last_number_messages: 10
+          severity_level: critical
   - VerifyLoggingErrors:
       # Verifies there are no syslog messages with a severity of ERRORS or higher.
   - VerifyLoggingHostname:
@@ -319,10 +328,6 @@ anta.tests.logging:
       severity_level: informational
   - VerifySyslogLogging:
       # Verifies if syslog logging is enabled.
-  - VerifySyslogSearchEntries:
-      # Verifies that the expected log string is present in the specified log entries.
-      regex_match: ".ACCOUNTING-5-EXEC: cvpadmin ssh."
-      last_entries: 30
 anta.tests.mlag:
   - VerifyMlagConfigSanity:
       # Verifies there are no MLAG config-sanity inconsistencies.

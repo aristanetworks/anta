@@ -14,9 +14,8 @@ import re
 from ipaddress import IPv4Address
 from typing import TYPE_CHECKING, ClassVar
 
-from pydantic import PositiveInt
-
-from anta.custom_types import LogSeverityLevel, RegexString
+from anta.custom_types import LogSeverityLevel
+from anta.input_models.logging import LoggingQuery
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 
 if TYPE_CHECKING:
@@ -437,43 +436,49 @@ class VerifyLoggingErrors(AntaTest):
             self.result.is_failure("Device has reported syslog messages with a severity of ERRORS or higher")
 
 
-class VerifySyslogSearchEntries(AntaTest):
-    """Verifies that the expected log string is present in the specified log entries.
+class VerifyLoggingEntries(AntaTest):
+    """Verifies that the expected log string present in the last specified log messages.
 
     Expected Results
     ----------------
-    * Success: The test will pass if specified log string is present in the last specified log entries.
-    * Failure: The test will fail if specified log string is not present in the last specified log entries.
+    * Success: The test will pass if expected log string for the mentioned severity level is present in the last specified log messages.
+    * Failure: The test will fail if specified log string is not present in the last specified log messages.
 
     Examples
     --------
     ```yaml
     anta.tests.logging:
-      - VerifySyslogSearchEntries:
-          regex_match: ".ACCOUNTING-5-EXEC: cvpadmin ssh."
-          last_entries: 30
+      - VerifyLoggingEntries:
+          logging_entries:
+            - regex_match: ".ACCOUNTING-5-EXEC: cvpadmin ssh."
+              last_number_messages: 30
+              severity_level: alerts
+            - regex_match: ".SPANTREE-6-INTERFACE_ADD:."
+              last_number_messages: 10
+              severity_level: critical
     ```
     """
 
     categories: ClassVar[list[str]] = ["logging"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show logging {last_entries}", ofmt="text", use_cache=False)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
+        AntaTemplate(template="show logging {last_number_messages} {severity_level}", ofmt="text", use_cache=False)
+    ]
 
     class Input(AntaTest.Input):
-        """Input model for the VerifySyslogSearchEntries test."""
+        """Input model for the VerifyLoggingEntries test."""
 
-        regex_match: RegexString
-        """Log regex pattern to be searched in last log entries."""
-        last_entries: PositiveInt
-        """Last number of messages to check in the logging buffers."""
+        logging_entries: list[LoggingQuery]
+        """List of logging entries and regex match"""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
-        """Render the template for log severity level in the input."""
-        return [template.render(last_entries=self.inputs.last_entries)]
+        """Render the template for last log entries and log severity level in the input."""
+        return [template.render(last_number_messages=entry.last_number_messages, severity_level=entry.severity_level) for entry in self.inputs.logging_entries]
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """Main test function for VerifySyslogSearchEntries."""
+        """Main test function for VerifyLoggingEntries."""
         self.result.is_success()
-        output = self.instance_commands[0].text_output
-        if not re.search(self.inputs.regex_match, output):
-            self.result.is_failure(f"Pattern: {self.inputs.regex_match} - Not found in last {self.inputs.last_entries} log entries")
+        for command_output, logging_entry in zip(self.instance_commands, self.inputs.logging_entries):
+            output = command_output.text_output
+            if not re.search(logging_entry.regex_match, output):
+                self.result.is_failure(f"Pattern: {logging_entry.regex_match} - Not found in last {logging_entry.last_number_messages} log entries")
