@@ -3332,11 +3332,7 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/system.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">434</span>
-<span class="normal">435</span>
-<span class="normal">436</span>
-<span class="normal">437</span>
-<span class="normal">438</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">438</span>
 <span class="normal">439</span>
 <span class="normal">440</span>
 <span class="normal">441</span>
@@ -3377,7 +3373,11 @@
 <span class="normal">476</span>
 <span class="normal">477</span>
 <span class="normal">478</span>
-<span class="normal">479</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyMaintenance</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">479</span>
+<span class="normal">480</span>
+<span class="normal">481</span>
+<span class="normal">482</span>
+<span class="normal">483</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyMaintenance</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies that the device is not currently under or entering maintenance.</span>
 
 <span class="sd">    Expected Results</span>
@@ -3720,6 +3720,10 @@
 <span class="w">          </span><span class="nt">stratum</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">server_address</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3.3.3.3</span>
 <span class="w">          </span><span class="nt">stratum</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyNTPAssociations</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">ntp_pool</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">server_addresses</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">1.1.1.1</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">2.2.2.2</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="nt">preferred_stratum_range</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="nv">3</span><span class="p p-Indicator">]</span>
 </code></pre></div>
 </details>
 
@@ -3927,7 +3931,11 @@
 <span class="normal">428</span>
 <span class="normal">429</span>
 <span class="normal">430</span>
-<span class="normal">431</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyNTPAssociations</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">431</span>
+<span class="normal">432</span>
+<span class="normal">433</span>
+<span class="normal">434</span>
+<span class="normal">435</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyNTPAssociations</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the Network Time Protocol (NTP) associations.</span>
 
 <span class="sd">    This test performs the following checks:</span>
@@ -3959,6 +3967,10 @@
 <span class="sd">              stratum: 2</span>
 <span class="sd">            - server_address: 3.3.3.3</span>
 <span class="sd">              stratum: 2</span>
+<span class="sd">      - VerifyNTPAssociations:</span>
+<span class="sd">          ntp_pool:</span>
+<span class="sd">            server_addresses: [1.1.1.1, 2.2.2.2]</span>
+<span class="sd">            preferred_stratum_range: [1,3]</span>
 <span class="sd">    ```</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
