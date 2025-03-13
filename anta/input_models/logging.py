@@ -19,4 +19,3 @@ class LoggingQuery(BaseModel):
     """Last number of messages to check in the logging buffers."""
     severity_level: LogSeverityLevel = "informational"
     """Log severity level. Defaults to informational."""
-
