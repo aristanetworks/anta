@@ -355,8 +355,8 @@ Mar 12 04:34:01 s1-leaf1 ProcMgr: %PROCMGR-6-PROCESS_TERMINATED: 'SystemInitMoni
         "expected": {
             "result": "failure",
             "messages": [
-                "Pattern: .ACCOUNTING-5-EXEC: cvpadmin ssh. - Not found in last 3 log entries",
-                "Pattern: .*ProcMgr worker warm start.* - Not found in last 10 log entries",
+                "Pattern: .ACCOUNTING-5-EXEC: cvpadmin ssh. - Not found in last 3 informational log entries",
+                "Pattern: .*ProcMgr worker warm start.* - Not found in last debugging 10 log entries",
             ],
         },
     },

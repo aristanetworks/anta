@@ -437,12 +437,12 @@ class VerifyLoggingErrors(AntaTest):
 
 
 class VerifyLoggingEntries(AntaTest):
-    """Verifies that the expected log string present in the last specified log messages.
+    """Verifies that the expected log string is present in the last specified log messages.
 
     Expected Results
     ----------------
-    * Success: The test will pass if expected log string for the mentioned severity level is present in the last specified log messages.
-    * Failure: The test will fail if specified log string is not present in the last specified log messages.
+    * Success: The test will pass if the expected log string for the mentioned severity level is present in the last specified log messages.
+    * Failure: The test will fail if the specified log string is not present in the last specified log messages.
 
     Examples
     --------
@@ -468,10 +468,10 @@ class VerifyLoggingEntries(AntaTest):
         """Input model for the VerifyLoggingEntries test."""
 
         logging_entries: list[LoggingQuery]
-        """List of logging entries and regex match"""
+        """List of logging entries and regex match."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
-        """Render the template for last log entries and log severity level in the input."""
+        """Render the template for last number messages and log severity level in the input."""
         return [template.render(last_number_messages=entry.last_number_messages, severity_level=entry.severity_level) for entry in self.inputs.logging_entries]
 
     @AntaTest.anta_test
@@ -481,4 +481,4 @@ class VerifyLoggingEntries(AntaTest):
         for command_output, logging_entry in zip(self.instance_commands, self.inputs.logging_entries):
             output = command_output.text_output
             if not re.search(logging_entry.regex_match, output):
-                self.result.is_failure(f"Pattern: {logging_entry.regex_match} - Not found in last {logging_entry.last_number_messages} log entries")
+                self.result.is_failure(f"Pattern: {logging_entry.regex_match} - Not found in last {logging_entry.last_number_messages} {logging_entry.severity_level} log entries")
