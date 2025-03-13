@@ -206,7 +206,7 @@ class VerifyAPIHttpStatus(AntaTest):
 
 
 class VerifyAPIHttpsSSL(AntaTest):
-    """Verifies if eAPI HTTPS server SSL profile is configured and valid.
+    """Verifies if the eAPI has a valid SSL profile.
 
     Expected Results
     ----------------
@@ -341,7 +341,7 @@ class VerifyAPIIPv6Acl(AntaTest):
 
 
 class VerifyAPISSLCertificate(AntaTest):
-    """Verifies the eAPI SSL certificate.
+    """Verifies the eAPI SSL certificate expiry, common subject name, encryption algorithm and key size.
 
     This test performs the following checks for each certificate:
 
@@ -527,7 +527,7 @@ class VerifyBannerMotd(AntaTest):
 
 
 class VerifyIPv4ACL(AntaTest):
-    """Verifies the IPv4 ACLs.
+    """Verifies the configuration of IPv4 ACLs.
 
     This test performs the following checks for each IPv4 ACL:
 

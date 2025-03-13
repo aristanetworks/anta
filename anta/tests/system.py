@@ -8,15 +8,25 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
 
-from anta.custom_types import PositiveInteger
-from anta.input_models.system import NTPServer
+from pydantic import model_validator
+
+from anta.custom_types import Hostname, PositiveInteger
+from anta.input_models.system import NTPPool, NTPServer
 from anta.models import AntaCommand, AntaTest
 from anta.tools import get_value
 
 if TYPE_CHECKING:
+    import sys
+    from ipaddress import IPv4Address
+
     from anta.models import AntaTemplate
+
+    if sys.version_info >= (3, 11):
+        from typing import Self
+    else:
+        from typing_extensions import Self
 
 CPU_IDLE_THRESHOLD = 25
 MEMORY_THRESHOLD = 0.25
@@ -252,7 +262,7 @@ class VerifyFileSystemUtilization(AntaTest):
 
 
 class VerifyNTP(AntaTest):
-    """Verifies that the Network Time Protocol (NTP) is synchronized.
+    """Verifies if NTP is synchronised.
 
     Expected Results
     ----------------
@@ -284,12 +294,21 @@ class VerifyNTP(AntaTest):
 class VerifyNTPAssociations(AntaTest):
     """Verifies the Network Time Protocol (NTP) associations.
 
+    This test performs the following checks:
+
+      1. For the NTP servers:
+        - The primary NTP server (marked as preferred) has the condition 'sys.peer'.
+        - All other NTP servers have the condition 'candidate'.
+        - All the NTP servers have the expected stratum level.
+      2. For the NTP servers pool:
+        - All the NTP servers belong to the specified NTP pool.
+        - All the NTP servers have valid condition (sys.peer | candidate).
+        - All the NTP servers have the stratum level within the specified startum level.
+
     Expected Results
     ----------------
-    * Success: The test will pass if the Primary NTP server (marked as preferred) has the condition 'sys.peer' and
-    all other NTP servers have the condition 'candidate'.
-    * Failure: The test will fail if the Primary NTP server (marked as preferred) does not have the condition 'sys.peer' or
-    if any other NTP server does not have the condition 'candidate'.
+    * Success: The test will pass if all the NTP servers meet the expected state.
+    * Failure: The test will fail if any of the NTP server does not meet the expected state.
 
     Examples
     --------
@@ -313,9 +332,78 @@ class VerifyNTPAssociations(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyNTPAssociations test."""
 
-        ntp_servers: list[NTPServer]
+        ntp_servers: list[NTPServer] | None = None
         """List of NTP servers."""
+        ntp_pool: NTPPool | None = None
+        """NTP servers pool."""
         NTPServer: ClassVar[type[NTPServer]] = NTPServer
+
+        @model_validator(mode="after")
+        def validate_inputs(self) -> Self:
+            """Validate the inputs provided to the VerifyNTPAssociations test.
+
+            Either `ntp_servers` or `ntp_pool` can be provided at the same time.
+            """
+            if not self.ntp_servers and not self.ntp_pool:
+                msg = "'ntp_servers' or 'ntp_pool' must be provided"
+                raise ValueError(msg)
+            if self.ntp_servers and self.ntp_pool:
+                msg = "Either 'ntp_servers' or 'ntp_pool' can be provided at the same time"
+                raise ValueError(msg)
+
+            # Verifies the len of preferred_stratum_range in NTP Pool should be 2 as this is the range.
+            stratum_range = 2
+            if self.ntp_pool and len(self.ntp_pool.preferred_stratum_range) > stratum_range:
+                msg = "'preferred_stratum_range' list should have at most 2 items"
+                raise ValueError(msg)
+            return self
+
+    def _validate_ntp_server(self, ntp_server: NTPServer, peers: dict[str, Any]) -> list[str]:
+        """Validate the NTP server, condition and stratum level."""
+        failure_msgs: list[str] = []
+        server_address = str(ntp_server.server_address)
+
+        # We check `peerIpAddr` in the peer details - covering IPv4Address input, or the peer key - covering Hostname input.
+        matching_peer = next((peer for peer, peer_details in peers.items() if (server_address in {peer_details["peerIpAddr"], peer})), None)
+
+        if not matching_peer:
+            failure_msgs.append(f"{ntp_server} - Not configured")
+            return failure_msgs
+
+        # Collecting the expected/actual NTP peer details.
+        exp_condition = "sys.peer" if ntp_server.preferred else "candidate"
+        exp_stratum = ntp_server.stratum
+        act_condition = get_value(peers[matching_peer], "condition")
+        act_stratum = get_value(peers[matching_peer], "stratumLevel")
+
+        if act_condition != exp_condition:
+            failure_msgs.append(f"{ntp_server} - Incorrect condition - Expected: {exp_condition} Actual: {act_condition}")
+
+        if act_stratum != exp_stratum:
+            failure_msgs.append(f"{ntp_server} - Incorrect stratum level - Expected: {exp_stratum} Actual: {act_stratum}")
+
+        return failure_msgs
+
+    def _validate_ntp_pool(self, server_addresses: list[Hostname | IPv4Address], peer: str, stratum_range: list[int], peer_details: dict[str, Any]) -> list[str]:
+        """Validate the NTP server pool, condition and stratum level."""
+        failure_msgs: list[str] = []
+
+        # We check `peerIpAddr` and `peer` in the peer details - covering server_addresses input
+        if (peer_ip := peer_details["peerIpAddr"]) not in server_addresses and peer not in server_addresses:
+            failure_msgs.append(f"NTP Server: {peer_ip} Hostname: {peer} - Associated but not part of the provided NTP pool")
+            return failure_msgs
+
+        act_condition = get_value(peer_details, "condition")
+        act_stratum = get_value(peer_details, "stratumLevel")
+
+        if act_condition not in ["sys.peer", "candidate"]:
+            failure_msgs.append(f"NTP Server: {peer_ip} Hostname: {peer} - Incorrect condition  - Expected: sys.peer, candidate Actual: {act_condition}")
+
+        if int(act_stratum) not in range(stratum_range[0], stratum_range[1] + 1):
+            msg = f"Expected Stratum Range: {stratum_range[0]} to {stratum_range[1]} Actual: {act_stratum}"
+            failure_msgs.append(f"NTP Server: {peer_ip} Hostname: {peer} - Incorrect stratum level - {msg}")
+
+        return failure_msgs
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -326,25 +414,21 @@ class VerifyNTPAssociations(AntaTest):
             self.result.is_failure("No NTP peers configured")
             return
 
-        # Iterate over each NTP server.
-        for ntp_server in self.inputs.ntp_servers:
-            server_address = str(ntp_server.server_address)
+        if self.inputs.ntp_servers:
+            # Iterate over each NTP server.
+            for ntp_server in self.inputs.ntp_servers:
+                failure_msgs = self._validate_ntp_server(ntp_server, peers)
+                for msg in failure_msgs:
+                    self.result.is_failure(msg)
+            return
 
-            # We check `peerIpAddr` in the peer details - covering IPv4Address input, or the peer key - covering Hostname input.
-            matching_peer = next((peer for peer, peer_details in peers.items() if (server_address in {peer_details["peerIpAddr"], peer})), None)
-
-            if not matching_peer:
-                self.result.is_failure(f"{ntp_server} - Not configured")
-                continue
-
-            # Collecting the expected/actual NTP peer details.
-            exp_condition = "sys.peer" if ntp_server.preferred else "candidate"
-            exp_stratum = ntp_server.stratum
-            act_condition = get_value(peers[matching_peer], "condition")
-            act_stratum = get_value(peers[matching_peer], "stratumLevel")
-
-            if act_condition != exp_condition or act_stratum != exp_stratum:
-                self.result.is_failure(f"{ntp_server} - Bad association - Condition: {act_condition}, Stratum: {act_stratum}")
+        # Verifies the NTP pool details
+        server_addresses = self.inputs.ntp_pool.server_addresses
+        exp_stratum_range = self.inputs.ntp_pool.preferred_stratum_range
+        for peer, peer_details in peers.items():
+            failure_msgs = self._validate_ntp_pool(server_addresses, peer, exp_stratum_range, peer_details)
+            for msg in failure_msgs:
+                self.result.is_failure(msg)
 
 
 class VerifyMaintenance(AntaTest):
