@@ -481,4 +481,6 @@ class VerifyLoggingEntries(AntaTest):
         for command_output, logging_entry in zip(self.instance_commands, self.inputs.logging_entries):
             output = command_output.text_output
             if not re.search(logging_entry.regex_match, output):
-                self.result.is_failure(f"Pattern: {logging_entry.regex_match} - Not found in last {logging_entry.last_number_messages} {logging_entry.severity_level} log entries")
+                self.result.is_failure(
+                    f"Pattern: {logging_entry.regex_match} - Not found in last {logging_entry.last_number_messages} {logging_entry.severity_level} log entries"
+                )

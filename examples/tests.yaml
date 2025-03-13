@@ -295,7 +295,7 @@ anta.tests.logging:
   - VerifyLoggingAccounting:
       # Verifies if AAA accounting logs are generated.
   - VerifyLoggingEntries:
-      # Verifies that the expected log string present in the last specified log messages.
+      # Verifies that the expected log string is present in the last specified log messages.
       logging_entries:
         - regex_match: ".ACCOUNTING-5-EXEC: cvpadmin ssh."
           last_number_messages: 30
