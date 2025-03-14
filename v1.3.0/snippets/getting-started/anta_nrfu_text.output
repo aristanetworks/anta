@@ -1,0 +1,30 @@
+╭────────────────────── Settings ──────────────────────╮
+│ - ANTA Inventory contains 5 devices (AsyncEOSDevice) │
+│ - Tests catalog contains 9 tests                     │
+╰──────────────────────────────────────────────────────╯
+
+[10:52:39] INFO     Preparing ANTA NRFU Run ...                                                                                                     tools.py:294
+           INFO     Connecting to devices ...                                                                                                       tools.py:294
+           INFO     Connecting to devices completed in: 0:00:00.057.                                                                                tools.py:302
+           INFO     Preparing the tests ...                                                                                                         tools.py:294
+           INFO     Preparing the tests completed in: 0:00:00.001.                                                                                  tools.py:302
+           INFO     --- ANTA NRFU Run Information ---                                                                                              runner.py:276
+                    Number of devices: 5 (5 established)
+                    Total number of selected tests: 45
+                    Maximum number of open file descriptors for the current ANTA process: 16384
+                    ---------------------------------
+           INFO     Preparing ANTA NRFU Run completed in: 0:00:00.068.                                                                              tools.py:302
+           INFO     Running ANTA tests ...                                                                                                          tools.py:294
+[10:52:40] INFO     Running ANTA tests completed in: 0:00:00.863.                                                                                   tools.py:302
+           INFO     Cache statistics for 's1-spine1': 1 hits / 9 command(s) (11.11%)                                                                runner.py:75
+           INFO     Cache statistics for 's1-spine2': 1 hits / 9 command(s) (11.11%)                                                                runner.py:75
+           INFO     Cache statistics for 's1-leaf1': 1 hits / 9 command(s) (11.11%)                                                                 runner.py:75
+           INFO     Cache statistics for 's1-leaf2': 1 hits / 9 command(s) (11.11%)                                                                 runner.py:75
+           INFO     Cache statistics for 's1-leaf3': 1 hits / 9 command(s) (11.11%)                                                                 runner.py:75
+  • Running NRFU Tests...100% ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 45/45 • 0:00:00 • 0:00:00
+
+s1-spine1 :: VerifyEOSVersion :: FAILURE(device is running version "4.32.2F-38195967.4322F (engineering build)" not in expected versions: ['4.25.4M', '4.26.1F',
+'4.28.3M-28837868.4283M (engineering build)'])
+s1-spine1 :: VerifyTerminAttrVersion :: FAILURE(device is running TerminAttr version v1.34.0 and is not in the allowed list: ['v1.22.1'])
+s1-spine1 :: VerifyZeroTouch :: SUCCESS()
+s1-spine1 :: VerifyMlagConfigSanity :: SKIPPED(MLAG is disabled)
