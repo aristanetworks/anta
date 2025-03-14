@@ -353,7 +353,7 @@ def cprofile(sort_by: str = "cumtime") -> Callable[[F], F]:
 
             return result
 
-        return cast(F, wrapper)
+        return cast("F", wrapper)
 
     return decorator
 
