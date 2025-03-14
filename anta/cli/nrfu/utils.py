@@ -50,6 +50,7 @@ def run_tests(ctx: click.Context) -> None:
 
     print_settings(inventory, catalog)
     with anta_progress_bar() as AntaTest.progress:
+        # TODO: Use AntaRunner directly in ANTA v2.0.0
         asyncio.run(
             main(
                 ctx.obj["result_manager"],
@@ -61,6 +62,9 @@ def run_tests(ctx: click.Context) -> None:
                 dry_run=dry_run,
             )
         )
+        # AntaRunner returns test results as they finish, not necessarily in order
+        # TODO: Add CLI option to choose sorting order
+        ctx.obj["result_manager"].sort(sort_by=["name", "test", "result", "custom_field"])
     if dry_run:
         ctx.exit()
 
