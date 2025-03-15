@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import logging
+from asyncio import Semaphore, gather
 from collections import defaultdict
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
@@ -21,10 +22,10 @@ from anta.logger import anta_log_exception
 from anta.models import AntaTest
 from anta.result_manager import ResultManager
 from anta.settings import AntaRunnerSettings
-from anta.tools import Catchtime, limit_concurrency
+from anta.tools import Catchtime
 
 if TYPE_CHECKING:
-    from collections.abc import AsyncGenerator, Coroutine
+    from collections.abc import Coroutine
 
     from anta.result_manager.models import TestResult
 
@@ -213,23 +214,22 @@ class AntaRunner(BaseModel):
             # Log run information
             self._log_run_information(dry_run=dry_run)
 
-            # In dry-run, add all test results to the manager and exit directly
-            if dry_run and self._selected_tests is not None:
-                logger.info("Dry-run mode, exiting before running the tests.")
-                for device, tests in self._selected_tests.items():
-                    for test_def in tests:
-                        manager.add(test_def.test(device=device, inputs=test_def.inputs).result)
-                return manager
+            # Build test coroutines
+            test_coroutines = self._get_test_coroutines(manager if dry_run else None)
 
-            # Build the test generator
-            test_generator = self._test_generator()
+        if dry_run:
+            logger.info("Dry-run mode, exiting before running the tests.")
+            for coro in test_coroutines:
+                coro.close()
+            return manager
 
         if AntaTest.progress is not None:
             AntaTest.nrfu_task = AntaTest.progress.add_task("Running NRFU Tests...", total=self._total_tests)
 
         with Catchtime(logger=logger, message="Running Tests"):
-            async for result in limit_concurrency(test_generator, limit=self._settings.max_concurrency):
-                manager.add(await result)
+            results = await gather(*test_coroutines)
+            for res in results:
+                manager.add(res)
 
         self._log_cache_statistics()
         return manager
@@ -325,79 +325,38 @@ class AntaRunner(BaseModel):
         self._potential_connections = None if not all_have_connections else total_connections
         return True
 
-    async def _test_generator(self) -> AsyncGenerator[Coroutine[Any, Any, TestResult], None]:
-        """Generate test coroutines for the ANTA run."""
+    def _get_test_coroutines(self, manager: ResultManager | None) -> list[Coroutine[Any, Any, TestResult]]:
+        """Get the test coroutines for the ANTA run with semaphore control."""
         if self._selected_tests is None:
             msg = "The selected tests are not available. ANTA must be executed through AntaRunner.run()"
             raise RuntimeError(msg)
 
-        logger.debug("ANTA run scheduling strategy: %s", self._settings.scheduling_strategy)
+        sem = Semaphore(self._settings.max_concurrency)
+        coros = []
+        for device, test_definitions in self._selected_tests.items():
+            for test_def in test_definitions:
+                try:
+                    test_instance = test_def.test(device=device, inputs=test_def.inputs)
+                    if manager is not None:
+                        manager.add(test_instance.result)
 
-        device_to_tests: dict[AntaDevice, list[AntaTestDefinition]] = {
-            device: sorted(tests, key=lambda td: td.test.__name__) for device, tests in self._selected_tests.items()
-        }
+                    # Create a semaphore-controlled test coroutine
+                    async def run_with_semaphore(test_coro: Coroutine[Any, Any, TestResult]) -> TestResult:
+                        async with sem:
+                            return await test_coro
 
-        if self._settings.scheduling_strategy == "device-by-device":
-            async for coro in self._generate_device_by_device(device_to_tests):
-                yield coro
-        elif self._settings.scheduling_strategy == "device-by-count":
-            async for coro in self._generate_device_by_count(device_to_tests, self._settings.scheduling_tests_per_device):
-                yield coro
-        else:
-            # Default to round-robin
-            async for coro in self._generate_round_robin(device_to_tests):
-                yield coro
-
-    async def _generate_round_robin(self, device_to_tests: dict[AntaDevice, list[AntaTestDefinition]]) -> AsyncGenerator[Coroutine[Any, Any, TestResult], None]:
-        """Yield one test per device in each round."""
-        while any(device_to_tests.values()):
-            for device, tests in device_to_tests.items():
-                if tests:
-                    test_def = tests.pop(0)
-                    coro = self._create_test_coroutine(test_def, device)
-                    if coro is not None:
-                        yield coro
-
-    async def _generate_device_by_device(self, device_to_tests: dict[AntaDevice, list[AntaTestDefinition]]) -> AsyncGenerator[Coroutine[Any, Any, TestResult], None]:
-        """Yield all tests for one device before moving to the next."""
-        for device, tests in device_to_tests.items():
-            while tests:
-                test_def = tests.pop(0)
-                coro = self._create_test_coroutine(test_def, device)
-                if coro is not None:
-                    yield coro
-
-    async def _generate_device_by_count(
-        self,
-        device_to_tests: dict[AntaDevice, list[AntaTestDefinition]],
-        tests_per_device: int,
-    ) -> AsyncGenerator[Coroutine[Any, Any, TestResult], None]:
-        """In each round, yield up to `tests_per_device` tests for each device."""
-        while any(device_to_tests.values()):
-            for device, tests in device_to_tests.items():
-                count = min(tests_per_device, len(tests))
-                for _ in range(count):
-                    test_def = tests.pop(0)
-                    coro = self._create_test_coroutine(test_def, device)
-                    if coro is not None:
-                        yield coro
-
-    def _create_test_coroutine(self, test_def: AntaTestDefinition, device: AntaDevice) -> Coroutine[Any, Any, TestResult] | None:
-        """Create a test coroutine from a test definition."""
-        try:
-            coroutine = test_def.test(device=device, inputs=test_def.inputs).test()
-        except Exception as e:  # noqa: BLE001
-            # An AntaTest instance is potentially user-defined code.
-            # We need to catch everything and exit gracefully with an error message.
-            message = "\n".join(
-                [
-                    f"There is an error when creating test {test_def.test.__module__}.{test_def.test.__name__}.",
-                    f"If this is not a custom test implementation: {GITHUB_SUGGESTION}",
-                ],
-            )
-            anta_log_exception(e, message, logger)
-            return None
-        return coroutine
+                    coros.append(run_with_semaphore(test_instance.test()))
+                except Exception as exc:  # noqa: BLE001, PERF203
+                    # An AntaTest instance is potentially user-defined code.
+                    # We need to catch everything and exit gracefully with an error message.
+                    message = "\n".join(
+                        [
+                            f"There is an error when creating test {test_def.test.__module__}.{test_def.test.__name__}.",
+                            f"If this is not a custom test implementation: {GITHUB_SUGGESTION}",
+                        ],
+                    )
+                    anta_log_exception(exc, message, logger)
+        return coros
 
     def _log_run_information(self, *, dry_run: bool = False) -> None:
         """Log ANTA run information and potential resource limit warnings."""

@@ -8,7 +8,6 @@ from __future__ import annotations
 import logging
 import os
 import sys
-from enum import Enum
 from typing import Any
 
 from pydantic import Field, PositiveInt
@@ -17,36 +16,10 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 logger = logging.getLogger(__name__)
 
 # Default value for the maximum number of concurrent tests in the event loop
-DEFAULT_MAX_CONCURRENCY = 10000
+DEFAULT_MAX_CONCURRENCY = 50000
 
 # Default value for the maximum number of open file descriptors for the ANTA process
 DEFAULT_NOFILE = 16384
-
-# Default value for the test scheduling strategy
-# Using `device-by-device` strategy to follow the current anta=<1.2.0 behavior in `anta.runner.get_coroutines()`
-DEFAULT_SCHEDULING_STRATEGY = "device-by-device"
-
-# Default value for the number of tests to schedule per device when using the DEVICE_BY_COUNT scheduling strategy
-DEFAULT_SCHEDULING_TESTS_PER_DEVICE = 100
-
-
-class AntaRunnerSchedulingStrategy(str, Enum):
-    """Enum for the test scheduling strategies available in the ANTA runner.
-
-    * ROUND_ROBIN: Distribute tests across devices in a round-robin fashion.
-    * DEVICE_BY_DEVICE: Run all tests on a single device before moving to the next.
-    * DEVICE_BY_COUNT: Run all tests on a single device for a specified count before moving to the next.
-
-    NOTE: This could be updated to StrEnum when Python 3.11 is the minimum supported version in ANTA.
-    """
-
-    ROUND_ROBIN = "round-robin"
-    DEVICE_BY_DEVICE = "device-by-device"
-    DEVICE_BY_COUNT = "device-by-count"
-
-    def __str__(self) -> str:
-        """Override the __str__ method to return the value of the Enum, mimicking the behavior of StrEnum."""
-        return self.value
 
 
 class AntaRunnerSettings(BaseSettings):
@@ -71,25 +44,13 @@ class AntaRunnerSettings(BaseSettings):
     max_concurrency : PositiveInt
         Environment variable: ANTA_MAX_CONCURRENCY
 
-        The maximum number of concurrent tests that can run in the event loop. Defaults to 10000.
-
-    scheduling_strategy : AntaRunnerSchedulingStrategy
-        Environment variable: ANTA_SCHEDULING_STRATEGY
-
-        The test scheduling strategy to use when running tests. Defaults to "round-robin".
-
-    scheduling_tests_per_device : PositiveInt
-        Environment variable: ANTA_SCHEDULING_TESTS_PER_DEVICE
-
-        The number of tests to schedule per device when using the `DEVICE_BY_COUNT` scheduling strategy. Defaults to 100.
+        The maximum number of concurrent tests that can run in the event loop. Defaults to 50000.
     """
 
     model_config = SettingsConfigDict(env_prefix="ANTA_")
 
     nofile: PositiveInt = Field(default=DEFAULT_NOFILE)
     max_concurrency: PositiveInt = Field(default=DEFAULT_MAX_CONCURRENCY)
-    scheduling_strategy: AntaRunnerSchedulingStrategy = Field(default=AntaRunnerSchedulingStrategy(DEFAULT_SCHEDULING_STRATEGY))
-    scheduling_tests_per_device: PositiveInt = Field(default=DEFAULT_SCHEDULING_TESTS_PER_DEVICE)
 
     # Computed in post-init
     _file_descriptor_limit: PositiveInt
