@@ -310,7 +310,6 @@ class AntaDevice(ABC):
         raise NotImplementedError(msg)
 
 
-# pylint: disable=too-many-instance-attributes
 class AsyncEOSDevice(AntaDevice):
     """Implementation of AntaDevice for EOS using the `asynceapi` library, which is built on HTTPX.
 

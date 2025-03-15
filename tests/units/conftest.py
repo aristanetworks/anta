@@ -14,14 +14,11 @@ from unittest.mock import patch
 import pytest
 import yaml
 
-from anta.catalog import AntaCatalog
 from anta.device import AntaDevice, AsyncEOSDevice
-from anta.inventory import AntaInventory
 
 if TYPE_CHECKING:
     from collections.abc import Generator, Iterator
 
-    from anta._runner import AntaRunner
     from anta.models import AntaCommand
 
 DATA_DIR: Path = Path(__file__).parent.parent.resolve() / "data"
@@ -89,60 +86,6 @@ def yaml_file(request: pytest.FixtureRequest, tmp_path: Path) -> Path:
     content: dict[str, Any] = request.param
     file.write_text(yaml.dump(content, allow_unicode=True))
     return file
-
-
-@pytest.fixture
-def anta_runner(request: pytest.FixtureRequest) -> AntaRunner:
-    """AntaRunner fixture.
-
-    Must be parametrized with a dictionary containing the following keys:
-    - inventory: Inventory file name from the data directory
-    - catalog: Catalog file name from the data directory
-
-    Optional keys:
-    - manager: ResultManager instance
-    - max_concurrency: Maximum concurrency limit
-    - nofile: File descriptor limit
-    """
-    # Import must be inside fixture to prevent circular dependency from breaking CLI tests:
-    # anta._runner -> anta.cli.console -> anta.cli/* (not yet loaded) -> anta.cli.anta
-    from anta._runner import AntaRunner
-    from anta.settings import AntaRunnerSettings
-
-    if not hasattr(request, "param"):
-        msg = "anta_runner fixture requires a parameter dictionary"
-        raise ValueError(msg)
-
-    params = request.param
-
-    # Check required parameters
-    required_params = {"inventory", "catalog"}
-    missing_params = required_params - params.keys()
-    if missing_params:
-        msg = f"runner_context fixture missing required parameters: {missing_params}"
-        raise ValueError(msg)
-
-    # Build AntaRunner fields
-    runner_fields = {
-        "inventory": AntaInventory.parse(
-            filename=DATA_DIR / params["inventory"],
-            username="arista",
-            password="arista",
-        ),
-        "catalog": AntaCatalog.parse(DATA_DIR / params["catalog"]),
-        "manager": params.get("manager", None),
-    }
-
-    # Build AntaRunnerSettings fields
-    settings_fields = {}
-    if "max_concurrency" in params:
-        settings_fields["max_concurrency"] = params["max_concurrency"]
-    if "nofile" in params:
-        settings_fields["nofile"] = params["nofile"]
-
-    runner = AntaRunner(**runner_fields)
-    runner._settings = AntaRunnerSettings(**settings_fields)
-    return runner
 
 
 @pytest.fixture

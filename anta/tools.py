@@ -28,7 +28,6 @@ if TYPE_CHECKING:
         from typing_extensions import Self
 
 F = TypeVar("F", bound=Callable[..., Any])
-T = TypeVar("T")
 
 
 def get_failed_logs(expected_output: dict[Any, Any], actual_output: dict[Any, Any]) -> str:

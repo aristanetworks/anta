@@ -13,7 +13,7 @@ from unittest.mock import patch
 import pytest
 from pydantic import ValidationError
 
-from anta.settings import DEFAULT_MAX_CONCURRENCY, DEFAULT_NOFILE, DEFAULT_SCHEDULING_STRATEGY, DEFAULT_SCHEDULING_TESTS_PER_DEVICE, AntaRunnerSettings
+from anta.settings import DEFAULT_MAX_CONCURRENCY, DEFAULT_NOFILE, AntaRunnerSettings
 
 if os.name == "posix":
     # The function is not defined on non-POSIX system
@@ -21,25 +21,19 @@ if os.name == "posix":
 
 
 class TestAntaRunnerSettings:
-    """Tests for the FileDescriptiorSettings class."""
+    """Tests for the AntaRunnerSettings class."""
 
     def test_defaults(self, setenvvar: pytest.MonkeyPatch) -> None:
         """Test defaults for ANTA runner settings."""
         settings = AntaRunnerSettings()
         assert settings.nofile == DEFAULT_NOFILE
         assert settings.max_concurrency == DEFAULT_MAX_CONCURRENCY
-        assert settings.scheduling_strategy == DEFAULT_SCHEDULING_STRATEGY
-        assert settings.scheduling_tests_per_device == DEFAULT_SCHEDULING_TESTS_PER_DEVICE
 
     def test_env_var(self, setenvvar: pytest.MonkeyPatch) -> None:
         """Test setting different ANTA runner settings."""
         setenvvar.setenv("ANTA_NOFILE", "20480")
-        setenvvar.setenv("ANTA_SCHEDULING_STRATEGY", "device-by-device")
-        setenvvar.setenv("ANTA_SCHEDULING_TESTS_PER_DEVICE", "50")
         settings = AntaRunnerSettings()
         assert settings.nofile == 20480
-        assert settings.scheduling_strategy == "device-by-device"
-        assert settings.scheduling_tests_per_device == 50
         assert settings.max_concurrency == DEFAULT_MAX_CONCURRENCY
 
     def test_validation(self, setenvvar: pytest.MonkeyPatch) -> None:
@@ -49,14 +43,6 @@ class TestAntaRunnerSettings:
             AntaRunnerSettings()
 
         setenvvar.setenv("ANTA_MAX_CONCURRENCY", "0")
-        with pytest.raises(ValidationError):
-            AntaRunnerSettings()
-
-        setenvvar.setenv("ANTA_SCHEDULING_TESTS_PER_DEVICE", "unlimited")
-        with pytest.raises(ValidationError):
-            AntaRunnerSettings()
-
-        setenvvar.setenv("ANTA_SCHEDULING_STRATEGY", "unlimited")
         with pytest.raises(ValidationError):
             AntaRunnerSettings()
 

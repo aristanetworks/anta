@@ -9,6 +9,7 @@ import logging
 from asyncio import Semaphore, gather
 from collections import defaultdict
 from dataclasses import dataclass
+from inspect import getcoroutinelocals
 from typing import TYPE_CHECKING, Any
 
 from pydantic import BaseModel, ConfigDict, PrivateAttr
@@ -215,11 +216,18 @@ class AntaRunner(BaseModel):
             self._log_run_information(dry_run=dry_run)
 
             # Build test coroutines
-            test_coroutines = self._get_test_coroutines(manager if dry_run else None)
+            test_coroutines = self._get_test_coroutines()
 
         if dry_run:
             logger.info("Dry-run mode, exiting before running the tests.")
             for coro in test_coroutines:
+                # Get the AntaTest instance from the coroutine locals, can be in `args` when decorated
+                coro_locals = getcoroutinelocals(coro)
+                test = coro_locals.get("self") or coro_locals.get("args", (None))[0]
+                if isinstance(test, AntaTest):
+                    manager.add(test.result)
+                else:
+                    logger.error("Coroutine %s does not have an AntaTest instance.", coro)
                 coro.close()
             return manager
 
@@ -227,7 +235,14 @@ class AntaRunner(BaseModel):
             AntaTest.nrfu_task = AntaTest.progress.add_task("Running NRFU Tests...", total=self._total_tests)
 
         with Catchtime(logger=logger, message="Running Tests"):
-            results = await gather(*test_coroutines)
+            sem = Semaphore(self._settings.max_concurrency)
+
+            async def run_with_sem(test_coro: Coroutine[Any, Any, TestResult]) -> TestResult:
+                """Wrap the test coroutine with semaphore control."""
+                async with sem:
+                    return await test_coro
+
+            results = await gather(*[run_with_sem(coro) for coro in test_coroutines])
             for res in results:
                 manager.add(res)
 
@@ -325,27 +340,17 @@ class AntaRunner(BaseModel):
         self._potential_connections = None if not all_have_connections else total_connections
         return True
 
-    def _get_test_coroutines(self, manager: ResultManager | None) -> list[Coroutine[Any, Any, TestResult]]:
+    def _get_test_coroutines(self) -> list[Coroutine[Any, Any, TestResult]]:
         """Get the test coroutines for the ANTA run with semaphore control."""
         if self._selected_tests is None:
             msg = "The selected tests are not available. ANTA must be executed through AntaRunner.run()"
             raise RuntimeError(msg)
 
-        sem = Semaphore(self._settings.max_concurrency)
         coros = []
         for device, test_definitions in self._selected_tests.items():
             for test_def in test_definitions:
                 try:
-                    test_instance = test_def.test(device=device, inputs=test_def.inputs)
-                    if manager is not None:
-                        manager.add(test_instance.result)
-
-                    # Create a semaphore-controlled test coroutine
-                    async def run_with_semaphore(test_coro: Coroutine[Any, Any, TestResult]) -> TestResult:
-                        async with sem:
-                            return await test_coro
-
-                    coros.append(run_with_semaphore(test_instance.test()))
+                    coros.append(test_def.test(device=device, inputs=test_def.inputs).test())
                 except Exception as exc:  # noqa: BLE001, PERF203
                     # An AntaTest instance is potentially user-defined code.
                     # We need to catch everything and exit gracefully with an error message.

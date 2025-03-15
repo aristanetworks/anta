@@ -61,7 +61,7 @@ def test_get_coroutines(benchmark: BenchmarkFixture, catalog: AntaCatalog, inven
     assert count == len(coroutines)
 
 
-def test_setup_tests(benchmark: BenchmarkFixture, catalog: AntaCatalog, inventory: AntaInventory) -> None:
+def test__setup_tests(benchmark: BenchmarkFixture, catalog: AntaCatalog, inventory: AntaInventory) -> None:
     """Benchmark `anta._runner.AntaRunner._setup_tests`."""
     runner = AntaRunner(inventory=inventory, catalog=catalog)
     runner._selected_inventory = inventory
@@ -75,3 +75,23 @@ def test_setup_tests(benchmark: BenchmarkFixture, catalog: AntaCatalog, inventor
     assert runner._selected_tests is not None
     assert len(runner._selected_tests) == len(inventory)
     assert sum(len(tests) for tests in runner._selected_tests.values()) == len(inventory) * len(catalog.tests)
+
+
+def test__get_test_coroutines(benchmark: BenchmarkFixture, catalog: AntaCatalog, inventory: AntaInventory) -> None:
+    """Benchmark `anta._runner.AntaRunner._get_test_coroutines`."""
+    runner = AntaRunner(inventory=inventory, catalog=catalog)
+    runner._selected_inventory = inventory
+    runner._setup_tests(filters=AntaRunnerFilter())
+
+    assert runner._selected_tests is not None
+
+    def bench() -> list[Coroutine[Any, Any, TestResult]]:
+        coros = runner._get_test_coroutines()
+        for c in coros:
+            c.close()
+        return coros
+
+    coroutines = benchmark(bench)
+
+    count = sum(len(tests) for tests in runner._selected_tests.values())
+    assert count == len(coroutines)
