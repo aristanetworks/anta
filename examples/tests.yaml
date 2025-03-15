@@ -294,6 +294,15 @@ anta.tests.lanz:
 anta.tests.logging:
   - VerifyLoggingAccounting:
       # Verifies if AAA accounting logs are generated.
+  - VerifyLoggingEntries:
+      # Verifies that the expected log string is present in the last specified log messages.
+      logging_entries:
+        - regex_match: ".ACCOUNTING-5-EXEC: cvpadmin ssh."
+          last_number_messages: 30
+          severity_level: alerts
+        - regex_match: ".SPANTREE-6-INTERFACE_ADD:."
+          last_number_messages: 10
+          severity_level: critical
   - VerifyLoggingErrors:
       # Verifies there are no syslog messages with a severity of ERRORS or higher.
   - VerifyLoggingHostname:
@@ -982,6 +991,10 @@ anta.tests.system:
           stratum: 2
         - server_address: 3.3.3.3
           stratum: 2
+  - VerifyNTPAssociations:
+      ntp_pool:
+        server_addresses: [1.1.1.1, 2.2.2.2]
+        preferred_stratum_range: [1,3]
   - VerifyReloadCause:
       # Verifies the last reload cause of the device.
   - VerifyUptime:

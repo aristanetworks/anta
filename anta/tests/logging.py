@@ -15,6 +15,7 @@ from ipaddress import IPv4Address
 from typing import TYPE_CHECKING, ClassVar
 
 from anta.custom_types import LogSeverityLevel
+from anta.input_models.logging import LoggingQuery
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 
 if TYPE_CHECKING:
@@ -433,3 +434,53 @@ class VerifyLoggingErrors(AntaTest):
             self.result.is_success()
         else:
             self.result.is_failure("Device has reported syslog messages with a severity of ERRORS or higher")
+
+
+class VerifyLoggingEntries(AntaTest):
+    """Verifies that the expected log string is present in the last specified log messages.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if the expected log string for the mentioned severity level is present in the last specified log messages.
+    * Failure: The test will fail if the specified log string is not present in the last specified log messages.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.logging:
+      - VerifyLoggingEntries:
+          logging_entries:
+            - regex_match: ".ACCOUNTING-5-EXEC: cvpadmin ssh."
+              last_number_messages: 30
+              severity_level: alerts
+            - regex_match: ".SPANTREE-6-INTERFACE_ADD:."
+              last_number_messages: 10
+              severity_level: critical
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["logging"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
+        AntaTemplate(template="show logging {last_number_messages} {severity_level}", ofmt="text", use_cache=False)
+    ]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyLoggingEntries test."""
+
+        logging_entries: list[LoggingQuery]
+        """List of logging entries and regex match."""
+
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        """Render the template for last number messages and log severity level in the input."""
+        return [template.render(last_number_messages=entry.last_number_messages, severity_level=entry.severity_level) for entry in self.inputs.logging_entries]
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyLoggingEntries."""
+        self.result.is_success()
+        for command_output, logging_entry in zip(self.instance_commands, self.inputs.logging_entries):
+            output = command_output.text_output
+            if not re.search(logging_entry.regex_match, output):
+                self.result.is_failure(
+                    f"Pattern: {logging_entry.regex_match} - Not found in last {logging_entry.last_number_messages} {logging_entry.severity_level} log entries"
+                )

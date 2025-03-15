@@ -323,6 +323,10 @@ class VerifyNTPAssociations(AntaTest):
               stratum: 2
             - server_address: 3.3.3.3
               stratum: 2
+      - VerifyNTPAssociations:
+          ntp_pool:
+            server_addresses: [1.1.1.1, 2.2.2.2]
+            preferred_stratum_range: [1,3]
     ```
     """
 

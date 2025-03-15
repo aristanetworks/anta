@@ -350,17 +350,18 @@ def print_test(test: type[AntaTest], *, short: bool = False) -> None:
     # Need to handle the fact that we nest the routing modules in Examples.
     # This is a bit fragile.
     inputs = example.split("\n")
-    try:
-        test_name_line = next((i for i, input_entry in enumerate(inputs) if test.name in input_entry))
-    except StopIteration as e:
+    test_name_lines = [i for i, input_entry in enumerate(inputs) if test.name in input_entry]
+    if not test_name_lines:
         msg = f"Could not find the name of the test '{test.name}' in the Example section in the docstring."
-        raise ValueError(msg) from e
-    # TODO: handle not found
-    console.print(f"  {inputs[test_name_line].strip()}")
-    # Injecting the description
-    console.print(f"      # {test.description}", soft_wrap=True)
-    if not short and len(inputs) > test_name_line + 2:  # There are params
-        console.print(textwrap.indent(textwrap.dedent("\n".join(inputs[test_name_line + 1 : -1])), " " * 6))
+        raise ValueError(msg)
+    for list_index, line_index in enumerate(test_name_lines):
+        end = test_name_lines[list_index + 1] if list_index + 1 < len(test_name_lines) else -1
+        console.print(f"  {inputs[line_index].strip()}")
+        # Injecting the description for the first example
+        if list_index == 0:
+            console.print(f"      # {test.description}", soft_wrap=True)
+        if not short and len(inputs) > line_index + 2:  # There are params
+            console.print(textwrap.indent(textwrap.dedent("\n".join(inputs[line_index + 1 : end])), " " * 6))
 
 
 def extract_examples(docstring: str) -> str | None:
