@@ -58,7 +58,7 @@ def deprecated_test(new_tests: list[str] | None = None) -> Callable[[F], F]:  # 
                 logger.warning("%s test is deprecated.", anta_test.name)
             return await function(*args, **kwargs)
 
-        return cast(F, wrapper)
+        return cast("F", wrapper)
 
     return decorator
 
@@ -167,6 +167,6 @@ def skip_on_platforms(platforms: list[str]) -> Callable[[F], F]:
 
             return await function(*args, **kwargs)
 
-        return cast(F, wrapper)
+        return cast("F", wrapper)
 
     return decorator

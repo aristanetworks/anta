@@ -508,7 +508,10 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"threshold": 3.0},
         "expected": {
             "result": "failure",
-            "messages": ["The following interfaces have a usage > 3.0%: {'Ethernet1/1': {'inBpsRate': 10.0}, 'Port-Channel31': {'outBpsRate': 5.0}}"],
+            "messages": [
+                "Interface: Ethernet1/1 BPS Rate: inBpsRate - Usage exceeds the threshold - Expected: < 3.0% Actual: 10.0%",
+                "Interface: Port-Channel31 BPS Rate: outBpsRate - Usage exceeds the threshold - Expected: < 3.0% Actual: 5.0%",
+            ],
         },
     },
     {
@@ -653,7 +656,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"threshold": 70.0},
         "expected": {
             "result": "failure",
-            "messages": ["Interface Ethernet1/1 or one of its member interfaces is not Full-Duplex. VerifyInterfaceUtilization has not been implemented."],
+            "messages": ["Interface Ethernet1/1 or one of its member interfaces is not Full-Duplex. VerifyInterfaceUtilization has not been implemented"],
         },
     },
     {
@@ -787,7 +790,7 @@ DATA: list[dict[str, Any]] = [
                         },
                         "memberInterfaces": {
                             "Ethernet3/1": {"bandwidth": 1000000000, "duplex": "duplexHalf"},
-                            "Ethernet4/1": {"bandwidth": 1000000000, "duplex": "duplexFull"},
+                            "Ethernet4/1": {"bandwidth": 1000000000, "duplex": "duplexHalf"},
                         },
                         "fallbackEnabled": False,
                         "fallbackEnabledType": "fallbackNone",
@@ -798,7 +801,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"threshold": 70.0},
         "expected": {
             "result": "failure",
-            "messages": ["Interface Port-Channel31 or one of its member interfaces is not Full-Duplex. VerifyInterfaceUtilization has not been implemented."],
+            "messages": ["Interface Port-Channel31 or one of its member interfaces is not Full-Duplex. VerifyInterfaceUtilization has not been implemented"],
         },
     },
     {
@@ -830,9 +833,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "The following interface(s) have non-zero error counters: [{'Ethernet1': {'inErrors': 42, 'frameTooLongs': 0, 'outErrors': 0, 'frameTooShorts': 0,"
-                " 'fcsErrors': 0, 'alignmentErrors': 0, 'symbolErrors': 0}}, {'Ethernet6': {'inErrors': 0, 'frameTooLongs': 0, 'outErrors': 0, 'frameTooShorts':"
-                " 0, 'fcsErrors': 0, 'alignmentErrors': 666, 'symbolErrors': 0}}]",
+                "Interface: Ethernet1 - Non-zero error counter(s) - inErrors: 42",
+                "Interface: Ethernet6 - Non-zero error counter(s) - alignmentErrors: 666",
             ],
         },
     },
@@ -851,9 +853,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "The following interface(s) have non-zero error counters: [{'Ethernet1': {'inErrors': 42, 'frameTooLongs': 0, 'outErrors': 10, 'frameTooShorts': 0,"
-                " 'fcsErrors': 0, 'alignmentErrors': 0, 'symbolErrors': 0}}, {'Ethernet6': {'inErrors': 0, 'frameTooLongs': 0, 'outErrors': 0, 'frameTooShorts':"
-                " 0, 'fcsErrors': 0, 'alignmentErrors': 6, 'symbolErrors': 10}}]",
+                "Interface: Ethernet1 - Non-zero error counter(s) - inErrors: 42, outErrors: 10",
+                "Interface: Ethernet6 - Non-zero error counter(s) - alignmentErrors: 6, symbolErrors: 10",
             ],
         },
     },
@@ -870,10 +871,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": [
-                "The following interface(s) have non-zero error counters: [{'Ethernet1': {'inErrors': 42, 'frameTooLongs': 0, 'outErrors': 2, 'frameTooShorts': 0,"
-                " 'fcsErrors': 0, 'alignmentErrors': 0, 'symbolErrors': 0}}]",
-            ],
+            "messages": ["Interface: Ethernet1 - Non-zero error counter(s) - inErrors: 42, outErrors: 2"],
         },
     },
     {
@@ -909,8 +907,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "The following interfaces have non 0 discard counter(s): [{'Ethernet2': {'outDiscards': 42, 'inDiscards': 0}},"
-                " {'Ethernet1': {'outDiscards': 0, 'inDiscards': 42}}]",
+                "Interface: Ethernet2 - Non-zero discard counter(s): outDiscards: 42",
+                "Interface: Ethernet1 - Non-zero discard counter(s): inDiscards: 42",
             ],
         },
     },
@@ -948,7 +946,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["The following interfaces are in error disabled state: ['Management1', 'Ethernet8']"]},
+        "expected": {"result": "failure", "messages": ["Interface: Management1 - Link status Error disabled", "Interface: Ethernet8 - Link status Error disabled"]},
     },
     {
         "name": "success",
@@ -1126,7 +1124,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"interfaces": [{"name": "Ethernet2", "status": "up"}, {"name": "Ethernet8", "status": "up"}, {"name": "Ethernet3", "status": "up"}]},
         "expected": {
             "result": "failure",
-            "messages": ["Ethernet8 - Expected: up/up, Actual: down/down"],
+            "messages": ["Ethernet8 - Status mismatch - Expected: up/up, Actual: down/down"],
         },
     },
     {
@@ -1150,7 +1148,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": ["Ethernet8 - Expected: up/up, Actual: up/down"],
+            "messages": ["Ethernet8 - Status mismatch - Expected: up/up, Actual: up/down"],
         },
     },
     {
@@ -1166,7 +1164,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"interfaces": [{"name": "PortChannel100", "status": "up"}]},
         "expected": {
             "result": "failure",
-            "messages": ["Port-Channel100 - Expected: up/up, Actual: down/lowerLayerDown"],
+            "messages": ["Port-Channel100 - Status mismatch - Expected: up/up, Actual: down/lowerLayerDown"],
         },
     },
     {
@@ -1191,8 +1189,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Ethernet2 - Expected: up/down, Actual: up/unknown",
-                "Ethernet8 - Expected: up/up, Actual: up/down",
+                "Ethernet2 - Status mismatch - Expected: up/down, Actual: up/unknown",
+                "Ethernet8 - Status mismatch - Expected: up/up, Actual: up/down",
             ],
         },
     },
@@ -1218,9 +1216,9 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Ethernet2 - Expected: down, Actual: up",
-                "Ethernet8 - Expected: down, Actual: up",
-                "Ethernet3 - Expected: down, Actual: up",
+                "Ethernet2 - Status mismatch - Expected: down, Actual: up",
+                "Ethernet8 - Status mismatch - Expected: down, Actual: up",
+                "Ethernet3 - Status mismatch - Expected: down, Actual: up",
             ],
         },
     },
@@ -1260,7 +1258,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["The following interfaces have none 0 storm-control drop counters {'Ethernet1': {'broadcast': 666}}"]},
+        "expected": {"result": "failure", "messages": ["Interface: Ethernet1 - Non-zero storm-control drop counter(s) - broadcast: 666"]},
     },
     {
         "name": "success",
@@ -1306,7 +1304,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["The following port-channels have inactive port(s): ['Port-Channel42']"]},
+        "expected": {"result": "failure", "messages": ["Port-Channel42 - Inactive port(s) - Ethernet8"]},
     },
     {
         "name": "success",
@@ -1362,7 +1360,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": ["The following port-channels have received illegal LACP packets on the following ports: [{'Port-Channel42': 'Ethernet8'}]"],
+            "messages": ["Port-Channel42 Interface: Ethernet8 - Illegal LACP packets found"],
         },
     },
     {
@@ -1417,7 +1415,7 @@ DATA: list[dict[str, Any]] = [
                     },
                     "Loopback666": {
                         "name": "Loopback666",
-                        "interfaceStatus": "connected",
+                        "interfaceStatus": "notconnect",
                         "interfaceAddress": {"ipAddr": {"maskLen": 32, "address": "6.6.6.6"}},
                         "ipv4Routable240": False,
                         "lineProtocolStatus": "down",
@@ -1427,7 +1425,13 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"number": 2},
-        "expected": {"result": "failure", "messages": ["The following Loopbacks are not up: ['Loopback666']"]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Interface: Loopback666 - Invalid line protocol status - Expected: up Actual: down",
+                "Interface: Loopback666 - Invalid interface status - Expected: connected Actual: notconnect",
+            ],
+        },
     },
     {
         "name": "failure-count-loopback",
@@ -1447,7 +1451,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"number": 2},
-        "expected": {"result": "failure", "messages": ["Found 1 Loopbacks when expecting 2"]},
+        "expected": {"result": "failure", "messages": ["Loopback interface(s) count mismatch: Expected 2 Actual: 1"]},
     },
     {
         "name": "success",
@@ -1487,7 +1491,13 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["The following SVIs are not up: ['Vlan42']"]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "SVI: Vlan42 - Invalid line protocol status - Expected: up Actual: lowerLayerDown",
+                "SVI: Vlan42 - Invalid interface status - Expected: connected Actual: notconnect",
+            ],
+        },
     },
     {
         "name": "success",
@@ -1703,7 +1713,79 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"mtu": 1500},
-        "expected": {"result": "failure", "messages": ["Some interfaces do not have correct MTU configured:\n[{'Ethernet2': 1600}]"]},
+        "expected": {"result": "failure", "messages": ["Interface: Ethernet2 - Incorrect MTU - Expected: 1500 Actual: 1600"]},
+    },
+    {
+        "name": "failure-specified-interface-mtu",
+        "test": VerifyL3MTU,
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet2": {
+                        "name": "Ethernet2",
+                        "forwardingModel": "routed",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "hardware": "ethernet",
+                        "mtu": 1500,
+                        "l3MtuConfigured": True,
+                        "l2Mru": 0,
+                    },
+                    "Ethernet10": {
+                        "name": "Ethernet10",
+                        "forwardingModel": "routed",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "hardware": "ethernet",
+                        "mtu": 1502,
+                        "l3MtuConfigured": False,
+                        "l2Mru": 0,
+                    },
+                    "Management0": {
+                        "name": "Management0",
+                        "forwardingModel": "routed",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "hardware": "ethernet",
+                        "mtu": 1500,
+                        "l3MtuConfigured": False,
+                        "l2Mru": 0,
+                    },
+                    "Port-Channel2": {
+                        "name": "Port-Channel2",
+                        "forwardingModel": "bridged",
+                        "lineProtocolStatus": "lowerLayerDown",
+                        "interfaceStatus": "notconnect",
+                        "hardware": "portChannel",
+                        "mtu": 1500,
+                        "l3MtuConfigured": False,
+                        "l2Mru": 0,
+                    },
+                    "Loopback0": {
+                        "name": "Loopback0",
+                        "forwardingModel": "routed",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "hardware": "loopback",
+                        "mtu": 65535,
+                        "l3MtuConfigured": False,
+                        "l2Mru": 0,
+                    },
+                    "Vxlan1": {
+                        "name": "Vxlan1",
+                        "forwardingModel": "bridged",
+                        "lineProtocolStatus": "down",
+                        "interfaceStatus": "notconnect",
+                        "hardware": "vxlan",
+                        "mtu": 0,
+                        "l3MtuConfigured": False,
+                        "l2Mru": 0,
+                    },
+                },
+            },
+        ],
+        "inputs": {"mtu": 1500, "ignored_interfaces": ["Loopback", "Port-Channel", "Management", "Vxlan"], "specific_mtu": [{"Ethernet10": 1501}]},
+        "expected": {"result": "failure", "messages": ["Interface: Ethernet10 - Incorrect MTU - Expected: 1501 Actual: 1502"]},
     },
     {
         "name": "success",
@@ -1847,7 +1929,85 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"mtu": 1500},
-        "expected": {"result": "failure", "messages": ["Some L2 interfaces do not have correct MTU configured:\n[{'Ethernet10': 9214}, {'Port-Channel2': 9214}]"]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Interface: Ethernet10 - Incorrect MTU configured - Expected: 1500 Actual: 9214",
+                "Interface: Port-Channel2 - Incorrect MTU configured - Expected: 1500 Actual: 9214",
+            ],
+        },
+    },
+    {
+        "name": "failure-specific-interface",
+        "test": VerifyL2MTU,
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet2": {
+                        "name": "Ethernet2",
+                        "forwardingModel": "routed",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "hardware": "ethernet",
+                        "mtu": 1600,
+                        "l3MtuConfigured": True,
+                        "l2Mru": 0,
+                    },
+                    "Ethernet10": {
+                        "name": "Ethernet10",
+                        "forwardingModel": "bridged",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "hardware": "ethernet",
+                        "mtu": 9214,
+                        "l3MtuConfigured": False,
+                        "l2Mru": 0,
+                    },
+                    "Management0": {
+                        "name": "Management0",
+                        "forwardingModel": "routed",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "hardware": "ethernet",
+                        "mtu": 1500,
+                        "l3MtuConfigured": False,
+                        "l2Mru": 0,
+                    },
+                    "Port-Channel2": {
+                        "name": "Port-Channel2",
+                        "forwardingModel": "bridged",
+                        "lineProtocolStatus": "lowerLayerDown",
+                        "interfaceStatus": "notconnect",
+                        "hardware": "portChannel",
+                        "mtu": 9214,
+                        "l3MtuConfigured": False,
+                        "l2Mru": 0,
+                    },
+                    "Loopback0": {
+                        "name": "Loopback0",
+                        "forwardingModel": "routed",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "hardware": "loopback",
+                        "mtu": 65535,
+                        "l3MtuConfigured": False,
+                        "l2Mru": 0,
+                    },
+                    "Vxlan1": {
+                        "name": "Vxlan1",
+                        "forwardingModel": "bridged",
+                        "lineProtocolStatus": "down",
+                        "interfaceStatus": "notconnect",
+                        "hardware": "vxlan",
+                        "mtu": 0,
+                        "l3MtuConfigured": False,
+                        "l2Mru": 0,
+                    },
+                },
+            },
+        ],
+        "inputs": {"specific_mtu": [{"Et10": 9214}, {"Port-Channel2": 10000}]},
+        "expected": {"result": "failure", "messages": ["Interface: Port-Channel2 - Incorrect MTU configured - Expected: 10000 Actual: 9214"]},
     },
     {
         "name": "success",
@@ -2153,7 +2313,7 @@ DATA: list[dict[str, Any]] = [
             }
         ],
         "inputs": {"mac_address": "00:1c:73:00:dc:01"},
-        "expected": {"result": "failure", "messages": ["IP virtual router MAC address `00:1c:73:00:dc:01` is not configured."]},
+        "expected": {"result": "failure", "messages": ["IP virtual router MAC address: 00:1c:73:00:dc:01 - Not configured"]},
     },
     {
         "name": "success",
@@ -2245,10 +2405,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "For interface Ethernet1:\nExpected `1Gbps` as the speed, but found `100Gbps` instead.",
-                "For interface Ethernet1/1/1:\nExpected `1Gbps` as the speed, but found `100Gbps` instead.",
-                "For interface Ethernet3:\nExpected `100Gbps` as the speed, but found `10Gbps` instead.",
-                "For interface Ethernet4:\nExpected `2.5Gbps` as the speed, but found `25Gbps` instead.",
+                "Interface: Ethernet1 - Bandwidth mismatch - Expected: 1.0Gbps Actual: 100Gbps",
+                "Interface: Ethernet1/1/1 - Bandwidth mismatch - Expected: 1.0Gbps Actual: 100Gbps",
+                "Interface: Ethernet3 - Bandwidth mismatch - Expected: 100.0Gbps Actual: 10Gbps",
+                "Interface: Ethernet4 - Bandwidth mismatch - Expected: 2.5Gbps Actual: 25Gbps",
             ],
         },
     },
@@ -2297,11 +2457,11 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "For interface Ethernet1:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.",
-                "For interface Ethernet1/2/2:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.",
-                "For interface Ethernet3:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.",
-                "For interface Ethernet3:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.",
-                "For interface Ethernet4:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.",
+                "Interface: Ethernet1 - Duplex mode mismatch - Expected: duplexFull Actual: duplexHalf",
+                "Interface: Ethernet1/2/2 - Duplex mode mismatch - Expected: duplexFull Actual: duplexHalf",
+                "Interface: Ethernet3 - Duplex mode mismatch - Expected: duplexFull Actual: duplexHalf",
+                "Interface: Ethernet3 - Duplex mode mismatch - Expected: duplexFull Actual: duplexHalf",
+                "Interface: Ethernet4 - Duplex mode mismatch - Expected: duplexFull Actual: duplexHalf",
             ],
         },
     },
@@ -2355,10 +2515,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "For interface Ethernet1:\nExpected `2` as the lanes, but found `4` instead.",
-                "For interface Ethernet3:\nExpected `8` as the lanes, but found `4` instead.",
-                "For interface Ethernet4:\nExpected `4` as the lanes, but found `6` instead.",
-                "For interface Ethernet4/1/1:\nExpected `4` as the lanes, but found `6` instead.",
+                "Interface: Ethernet1 - Data lanes count mismatch - Expected: 2 Actual: 4",
+                "Interface: Ethernet3 - Data lanes count mismatch - Expected: 8 Actual: 4",
+                "Interface: Ethernet4 - Data lanes count mismatch - Expected: 4 Actual: 6",
+                "Interface: Ethernet4/1/1 - Data lanes count mismatch - Expected: 4 Actual: 6",
             ],
         },
     },
@@ -2397,36 +2557,26 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "interfaces": [
-                {"name": "Ethernet1", "auto": False, "speed": 1},
                 {"name": "Ethernet1", "auto": False, "speed": 1, "lanes": 2},
                 {"name": "Ethernet2/1/2", "auto": False, "speed": 10},
-                {"name": "Ethernet3", "auto": True, "speed": 1},
                 {"name": "Ethernet3", "auto": True, "speed": 100, "lanes": 8},
-                {"name": "Ethernet3", "auto": True, "speed": 100},
                 {"name": "Ethernet4", "auto": False, "speed": 2.5},
             ]
         },
         "expected": {
             "result": "failure",
             "messages": [
-                "For interface Ethernet1:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.\n"
-                "Expected `1Gbps` as the speed, but found `10Gbps` instead.",
-                "For interface Ethernet1:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.\n"
-                "Expected `1Gbps` as the speed, but found `10Gbps` instead.\n"
-                "Expected `2` as the lanes, but found `4` instead.",
-                "For interface Ethernet2/1/2:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.\n"
-                "Expected `10Gbps` as the speed, but found `1Gbps` instead.",
-                "For interface Ethernet3:\nExpected `success` as the auto negotiation, but found `unknown` instead.\n"
-                "Expected `duplexFull` as the duplex mode, but found `duplexHalf` instead.",
-                "For interface Ethernet3:\nExpected `success` as the auto negotiation, but found `unknown` instead.\n"
-                "Expected `duplexFull` as the duplex mode, but found `duplexHalf` instead.\n"
-                "Expected `100Gbps` as the speed, but found `10Gbps` instead.\n"
-                "Expected `8` as the lanes, but found `6` instead.",
-                "For interface Ethernet3:\nExpected `success` as the auto negotiation, but found `unknown` instead.\n"
-                "Expected `duplexFull` as the duplex mode, but found `duplexHalf` instead.\n"
-                "Expected `100Gbps` as the speed, but found `10Gbps` instead.",
-                "For interface Ethernet4:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.\n"
-                "Expected `2.5Gbps` as the speed, but found `25Gbps` instead.",
+                "Interface: Ethernet1 - Bandwidth mismatch - Expected: 1.0Gbps Actual: 10Gbps",
+                "Interface: Ethernet1 - Duplex mode mismatch - Expected: duplexFull Actual: duplexHalf",
+                "Interface: Ethernet1 - Data lanes count mismatch - Expected: 2 Actual: 4",
+                "Interface: Ethernet2/1/2 - Bandwidth mismatch - Expected: 10.0Gbps Actual: 1Gbps",
+                "Interface: Ethernet2/1/2 - Duplex mode mismatch - Expected: duplexFull Actual: duplexHalf",
+                "Interface: Ethernet3 - Bandwidth mismatch - Expected: 100.0Gbps Actual: 10Gbps",
+                "Interface: Ethernet3 - Duplex mode mismatch - Expected: duplexFull Actual: duplexHalf",
+                "Interface: Ethernet3 - Auto-negotiation mismatch - Expected: success Actual: unknown",
+                "Interface: Ethernet3 - Data lanes count mismatch - Expected: 8 Actual: 6",
+                "Interface: Ethernet4 - Bandwidth mismatch - Expected: 2.5Gbps Actual: 25Gbps",
+                "Interface: Ethernet4 - Duplex mode mismatch - Expected: duplexFull Actual: duplexHalf",
             ],
         },
     },

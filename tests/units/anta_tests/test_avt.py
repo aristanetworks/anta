@@ -94,7 +94,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {},
         "expected": {
             "result": "failure",
-            "messages": ["Adaptive virtual topology paths are not configured."],
+            "messages": ["Adaptive virtual topology paths are not configured"],
         },
     },
     {
@@ -174,9 +174,9 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "AVT path direct:10 for profile GUEST-AVT-POLICY-DEFAULT in VRF guest is not active.",
-                "AVT path direct:1 for profile CONTROL-PLANE-PROFILE in VRF default is not active.",
-                "AVT path direct:10 for profile DEFAULT-AVT-POLICY-DEFAULT in VRF default is not active.",
+                "VRF: guest Profile: GUEST-AVT-POLICY-DEFAULT AVT path: direct:10 - Not active",
+                "VRF: default Profile: CONTROL-PLANE-PROFILE AVT path: direct:1 - Not active",
+                "VRF: default Profile: DEFAULT-AVT-POLICY-DEFAULT AVT path: direct:10 - Not active",
             ],
         },
     },
@@ -257,10 +257,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "AVT path direct:10 for profile DATA-AVT-POLICY-DEFAULT in VRF data is invalid.",
-                "AVT path direct:8 for profile GUEST-AVT-POLICY-DEFAULT in VRF guest is invalid.",
-                "AVT path direct:10 for profile CONTROL-PLANE-PROFILE in VRF default is invalid.",
-                "AVT path direct:8 for profile DEFAULT-AVT-POLICY-DEFAULT in VRF default is invalid.",
+                "VRF: data Profile: DATA-AVT-POLICY-DEFAULT AVT path: direct:10 - Invalid",
+                "VRF: guest Profile: GUEST-AVT-POLICY-DEFAULT AVT path: direct:8 - Invalid",
+                "VRF: default Profile: CONTROL-PLANE-PROFILE AVT path: direct:10 - Invalid",
+                "VRF: default Profile: DEFAULT-AVT-POLICY-DEFAULT AVT path: direct:8 - Invalid",
             ],
         },
     },
@@ -341,13 +341,13 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "AVT path direct:10 for profile DATA-AVT-POLICY-DEFAULT in VRF data is invalid and not active.",
-                "AVT path direct:1 for profile DATA-AVT-POLICY-DEFAULT in VRF data is not active.",
-                "AVT path direct:10 for profile GUEST-AVT-POLICY-DEFAULT in VRF guest is invalid.",
-                "AVT path direct:8 for profile GUEST-AVT-POLICY-DEFAULT in VRF guest is invalid and not active.",
-                "AVT path direct:10 for profile CONTROL-PLANE-PROFILE in VRF default is invalid and not active.",
-                "AVT path direct:10 for profile DEFAULT-AVT-POLICY-DEFAULT in VRF default is not active.",
-                "AVT path direct:8 for profile DEFAULT-AVT-POLICY-DEFAULT in VRF default is invalid and not active.",
+                "VRF: data Profile: DATA-AVT-POLICY-DEFAULT AVT path: direct:10 - Invalid and not active",
+                "VRF: data Profile: DATA-AVT-POLICY-DEFAULT AVT path: direct:1 - Not active",
+                "VRF: guest Profile: GUEST-AVT-POLICY-DEFAULT AVT path: direct:10 - Invalid",
+                "VRF: guest Profile: GUEST-AVT-POLICY-DEFAULT AVT path: direct:8 - Invalid and not active",
+                "VRF: default Profile: CONTROL-PLANE-PROFILE AVT path: direct:10 - Invalid and not active",
+                "VRF: default Profile: DEFAULT-AVT-POLICY-DEFAULT AVT path: direct:10 - Not active",
+                "VRF: default Profile: DEFAULT-AVT-POLICY-DEFAULT AVT path: direct:8 - Invalid and not active",
             ],
         },
     },
@@ -647,11 +647,11 @@ DATA: list[dict[str, Any]] = [
             "result": "failure",
             "messages": [
                 "AVT: DEFAULT-AVT-POLICY-CONTROL-PLANE VRF: default Destination: 10.101.255.2 Next-hop: 10.101.255.1 - "
-                "Incorrect path multihop:3 - Valid: False, Active: True",
+                "Incorrect path multihop:3 - Valid: False Active: True",
                 "AVT: DATA-AVT-POLICY-CONTROL-PLANE VRF: data Destination: 10.101.255.1 Next-hop: 10.101.255.1 - "
-                "Incorrect path direct:10 - Valid: False, Active: True",
+                "Incorrect path direct:10 - Valid: False Active: True",
                 "AVT: DATA-AVT-POLICY-CONTROL-PLANE VRF: data Destination: 10.101.255.1 Next-hop: 10.101.255.1 - "
-                "Incorrect path direct:9 - Valid: True, Active: False",
+                "Incorrect path direct:9 - Valid: True Active: False",
             ],
         },
     },
@@ -667,6 +667,6 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyAVTRole,
         "eos_data": [{"role": "transit"}],
         "inputs": {"role": "edge"},
-        "expected": {"result": "failure", "messages": ["AVT role mismatch - Expected: edge, Actual: transit"]},
+        "expected": {"result": "failure", "messages": ["AVT role mismatch - Expected: edge Actual: transit"]},
     },
 ]

@@ -97,7 +97,7 @@ class VerifyReachability(AntaTest):
 
             # Verifies the network is unreachable.
             if not host.reachable and f"{host.repeat} received" in command.json_output["messages"][0]:
-                self.result.is_failure(f"{host} - Destination is expected to be unreachable but found reachable.")
+                self.result.is_failure(f"{host} - Destination is expected to be unreachable but found reachable")
 
 
 class VerifyLLDPNeighbors(AntaTest):

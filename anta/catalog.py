@@ -14,11 +14,11 @@ from itertools import chain
 from json import load as json_load
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal, Optional, Union
-from warnings import warn
 
 from pydantic import BaseModel, ConfigDict, RootModel, ValidationError, ValidationInfo, field_validator, model_serializer, model_validator
 from pydantic.types import ImportString
 from pydantic_core import PydanticCustomError
+from typing_extensions import deprecated
 from yaml import YAMLError, safe_dump, safe_load
 
 from anta.logger import anta_log_exception
@@ -250,7 +250,7 @@ class AntaCatalogFile(RootModel[dict[ImportString[Any], list[AntaTestDefinition]
         # This could be improved.
         # https://github.com/pydantic/pydantic/issues/1043
         # Explore if this worth using this: https://github.com/NowanIlfideme/pydantic-yaml
-        return safe_dump(safe_load(self.model_dump_json(serialize_as_any=True, exclude_unset=True)), indent=2, width=math.inf)
+        return safe_dump(safe_load(self.model_dump_json(serialize_as_any=True, exclude_unset=True)), width=math.inf)
 
     def to_json(self) -> str:
         """Return a JSON representation string of this model.
@@ -289,11 +289,7 @@ class AntaCatalog:
             self._tests = tests
         self._filename: Path | None = None
         if filename is not None:
-            if isinstance(filename, Path):
-                self._filename = filename
-            else:
-                self._filename = Path(filename)
-
+            self._filename = filename if isinstance(filename, Path) else Path(filename)
         self.indexes_built: bool
         self.tag_to_tests: defaultdict[str | None, set[AntaTestDefinition]]
         self._init_indexes()
@@ -440,12 +436,11 @@ class AntaCatalog:
         combined_tests = list(chain(*(catalog.tests for catalog in catalogs)))
         return cls(tests=combined_tests)
 
+    @deprecated(
+        "This method is deprecated, use `AntaCatalogs.merge_catalogs` class method instead. This will be removed in ANTA v2.0.0.", category=DeprecationWarning
+    )
     def merge(self, catalog: AntaCatalog) -> AntaCatalog:
         """Merge two AntaCatalog instances.
-
-        Warning
-        -------
-        This method is deprecated and will be removed in ANTA v2.0. Use `AntaCatalog.merge_catalogs()` instead.
 
         Parameters
         ----------
@@ -457,12 +452,6 @@ class AntaCatalog:
         AntaCatalog
             A new AntaCatalog instance containing the tests of the two instances.
         """
-        # TODO: Use a decorator to deprecate this method instead. See https://github.com/aristanetworks/anta/issues/754
-        warn(
-            message="AntaCatalog.merge() is deprecated and will be removed in ANTA v2.0. Use AntaCatalog.merge_catalogs() instead.",
-            category=DeprecationWarning,
-            stacklevel=2,
-        )
         return self.merge_catalogs([self, catalog])
 
     def dump(self) -> AntaCatalogFile:

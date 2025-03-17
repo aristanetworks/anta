@@ -294,6 +294,15 @@ anta.tests.lanz:
 anta.tests.logging:
   - VerifyLoggingAccounting:
       # Verifies if AAA accounting logs are generated.
+  - VerifyLoggingEntries:
+      # Verifies that the expected log string is present in the last specified log messages.
+      logging_entries:
+        - regex_match: ".ACCOUNTING-5-EXEC: cvpadmin ssh."
+          last_number_messages: 30
+          severity_level: alerts
+        - regex_match: ".SPANTREE-6-INTERFACE_ADD:."
+          last_number_messages: 10
+          severity_level: critical
   - VerifyLoggingErrors:
       # Verifies there are no syslog messages with a severity of ERRORS or higher.
   - VerifyLoggingHostname:
@@ -472,6 +481,7 @@ anta.tests.routing.bgp:
           vrf: default
   - VerifyBGPPeerSession:
       # Verifies the session state of BGP IPv4 peer(s).
+      minimum_established_time: 10000
       check_tcp_queues: false
       bgp_peers:
         - peer_address: 10.1.0.1
@@ -484,6 +494,7 @@ anta.tests.routing.bgp:
           vrf: DEV
   - VerifyBGPPeerSessionRibd:
       # Verifies the session state of BGP IPv4 peer(s).
+      minimum_established_time: 10000
       check_tcp_queues: false
       bgp_peers:
         - peer_address: 10.1.0.1
@@ -494,6 +505,17 @@ anta.tests.routing.bgp:
           vrf: DEV
         - peer_address: 10.1.255.4
           vrf: DEV
+  - VerifyBGPPeerTtlMultiHops:
+      # Verifies BGP TTL and max-ttl-hops count for BGP IPv4 peer(s).
+      bgp_peers:
+          - peer_address: 172.30.11.1
+            vrf: default
+            ttl: 3
+            max_ttl_hops: 3
+          - peer_address: 172.30.11.2
+            vrf: test
+            ttl: 30
+            max_ttl_hops: 30
   - VerifyBGPPeerUpdateErrors:
       # Verifies BGP update error counters for the provided BGP IPv4 peer(s).
       bgp_peers:
@@ -503,6 +525,7 @@ anta.tests.routing.bgp:
             - inUpdErrWithdraw
   - VerifyBGPPeersHealth:
       # Verifies the health of BGP peers for given address families.
+      minimum_established_time: 10000
       address_families:
         - afi: "evpn"
         - afi: "ipv4"
@@ -520,12 +543,12 @@ anta.tests.routing.bgp:
       vrfs:
         - vrf: default
           address_families:
-            - afi_safi: ipv4Unicast
+            - afi_safi: ipv4multicast
               redistributed_routes:
                 - proto: Connected
                   include_leaked: True
                   route_map: RM-CONN-2-BGP
-                - proto: Static
+                - proto: IS-IS
                   include_leaked: True
                   route_map: RM-CONN-2-BGP
             - afi_safi: IPv6 Unicast
@@ -553,6 +576,7 @@ anta.tests.routing.bgp:
                 origin: Incomplete
   - VerifyBGPSpecificPeers:
       # Verifies the health of specific BGP peer(s) for given address families.
+      minimum_established_time: 10000
       address_families:
         - afi: "evpn"
           peers:
@@ -716,7 +740,7 @@ anta.tests.security:
   - VerifyAPIHttpStatus:
       # Verifies if eAPI HTTP server is disabled globally.
   - VerifyAPIHttpsSSL:
-      # Verifies if eAPI HTTPS server SSL profile is configured and valid.
+      # Verifies if the eAPI has a valid SSL profile.
       profile: default
   - VerifyAPIIPv4Acl:
       # Verifies if eAPI has the right number IPv4 ACL(s) configured for a specified VRF.
@@ -727,7 +751,7 @@ anta.tests.security:
       number: 3
       vrf: default
   - VerifyAPISSLCertificate:
-      # Verifies the eAPI SSL certificate.
+      # Verifies the eAPI SSL certificate expiry, common subject name, encryption algorithm and key size.
       certificates:
         - certificate_name: ARISTA_SIGNING_CA.crt
           expiry_threshold: 30
@@ -756,7 +780,7 @@ anta.tests.security:
   - VerifyIPSecConnHealth:
       # Verifies all IPv4 security connections.
   - VerifyIPv4ACL:
-      # Verifies the IPv4 ACLs.
+      # Verifies the configuration of IPv4 ACLs.
       ipv4_access_lists:
         - name: default-control-plane-acl
           entries:
@@ -974,10 +998,12 @@ anta.tests.system:
       # Verifies there are no core dump files.
   - VerifyFileSystemUtilization:
       # Verifies that no partition is utilizing more than 75% of its disk space.
+  - VerifyMaintenance:
+      # Verifies that the device is not currently under or entering maintenance.
   - VerifyMemoryUtilization:
       # Verifies whether the memory utilization is below 75%.
   - VerifyNTP:
-      # Verifies that the Network Time Protocol (NTP) is synchronized.
+      # Verifies if NTP is synchronised.
   - VerifyNTPAssociations:
       # Verifies the Network Time Protocol (NTP) associations.
       ntp_servers:
@@ -988,6 +1014,10 @@ anta.tests.system:
           stratum: 2
         - server_address: 3.3.3.3
           stratum: 2
+  - VerifyNTPAssociations:
+      ntp_pool:
+        server_addresses: [1.1.1.1, 2.2.2.2]
+        preferred_stratum_range: [1,3]
   - VerifyReloadCause:
       # Verifies the last reload cause of the device.
   - VerifyUptime:
@@ -1011,7 +1041,7 @@ anta.tests.vxlan:
       source_interface: Loopback1
       udp_port: 4789
   - VerifyVxlan1Interface:
-      # Verifies if the Vxlan1 interface is configured and 'up/up'.
+      # Verifies the Vxlan1 interface status.
   - VerifyVxlanConfigSanity:
       # Verifies there are no VXLAN config-sanity inconsistencies.
   - VerifyVxlanVniBinding:

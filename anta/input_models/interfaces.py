@@ -9,7 +9,7 @@ from ipaddress import IPv4Interface
 from typing import Any, Literal
 from warnings import warn
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from anta.custom_types import Interface, PortChannelInterface
 
@@ -42,6 +42,12 @@ class InterfaceState(BaseModel):
     """Primary IPv4 address in CIDR notation. Required field in the `VerifyInterfaceIPv4` test."""
     secondary_ips: list[IPv4Interface] | None = None
     """List of secondary IPv4 addresses in CIDR notation. Can be provided in the `VerifyInterfaceIPv4` test."""
+    auto: bool = False
+    """The auto-negotiation status of the interface. Can be provided in the `VerifyInterfacesSpeed` test."""
+    speed: float | None = Field(None, ge=1, le=1000)
+    """The speed of the interface in Gigabits per second. Valid range is 1 to 1000. Required field in the `VerifyInterfacesSpeed` test."""
+    lanes: int | None = Field(None, ge=1, le=8)
+    """The number of lanes in the interface. Valid range is 1 to 8. Can be provided in the `VerifyInterfacesSpeed` test."""
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the InterfaceState for reporting.

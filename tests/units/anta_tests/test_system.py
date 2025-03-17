@@ -12,6 +12,7 @@ from anta.tests.system import (
     VerifyCoredump,
     VerifyCPUUtilization,
     VerifyFileSystemUtilization,
+    VerifyMaintenance,
     VerifyMemoryUtilization,
     VerifyNTP,
     VerifyNTPAssociations,
@@ -33,7 +34,7 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyUptime,
         "eos_data": [{"upTime": 665.15, "loadAvg": [0.13, 0.12, 0.09], "users": 1, "currentTime": 1683186659.139859}],
         "inputs": {"minimum": 666},
-        "expected": {"result": "failure", "messages": ["Device uptime is incorrect - Expected: 666 Actual: 665.15 seconds"]},
+        "expected": {"result": "failure", "messages": ["Device uptime is incorrect - Expected: 666s Actual: 665.15s"]},
     },
     {
         "name": "success-no-reload",
@@ -347,6 +348,65 @@ poll interval unknown
         "expected": {"result": "success"},
     },
     {
+        "name": "success-ntp-pool-as-input",
+        "test": VerifyNTPAssociations,
+        "eos_data": [
+            {
+                "peers": {
+                    "1.1.1.1": {
+                        "condition": "sys.peer",
+                        "peerIpAddr": "1.1.1.1",
+                        "stratumLevel": 1,
+                    },
+                    "2.2.2.2": {
+                        "condition": "candidate",
+                        "peerIpAddr": "2.2.2.2",
+                        "stratumLevel": 2,
+                    },
+                    "3.3.3.3": {
+                        "condition": "candidate",
+                        "peerIpAddr": "3.3.3.3",
+                        "stratumLevel": 2,
+                    },
+                }
+            }
+        ],
+        "inputs": {"ntp_pool": {"server_addresses": ["1.1.1.1", "2.2.2.2", "3.3.3.3"], "preferred_stratum_range": [1, 2]}},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-ntp-pool-hostname",
+        "test": VerifyNTPAssociations,
+        "eos_data": [
+            {
+                "peers": {
+                    "itsys-ntp010p.aristanetworks.com": {
+                        "condition": "sys.peer",
+                        "peerIpAddr": "1.1.1.1",
+                        "stratumLevel": 1,
+                    },
+                    "itsys-ntp011p.aristanetworks.com": {
+                        "condition": "candidate",
+                        "peerIpAddr": "2.2.2.2",
+                        "stratumLevel": 2,
+                    },
+                    "itsys-ntp012p.aristanetworks.com": {
+                        "condition": "candidate",
+                        "peerIpAddr": "3.3.3.3",
+                        "stratumLevel": 2,
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "ntp_pool": {
+                "server_addresses": ["itsys-ntp010p.aristanetworks.com", "itsys-ntp011p.aristanetworks.com", "itsys-ntp012p.aristanetworks.com"],
+                "preferred_stratum_range": [1, 2],
+            }
+        },
+        "expected": {"result": "success"},
+    },
+    {
         "name": "success-ip-dns",
         "test": VerifyNTPAssociations,
         "eos_data": [
@@ -380,7 +440,7 @@ poll interval unknown
         "expected": {"result": "success"},
     },
     {
-        "name": "failure",
+        "name": "failure-ntp-server",
         "test": VerifyNTPAssociations,
         "eos_data": [
             {
@@ -413,9 +473,11 @@ poll interval unknown
         "expected": {
             "result": "failure",
             "messages": [
-                "NTP Server: 1.1.1.1 Preferred: True Stratum: 1 - Bad association - Condition: candidate, Stratum: 2",
-                "NTP Server: 2.2.2.2 Preferred: False Stratum: 2 - Bad association - Condition: sys.peer, Stratum: 2",
-                "NTP Server: 3.3.3.3 Preferred: False Stratum: 2 - Bad association - Condition: sys.peer, Stratum: 3",
+                "NTP Server: 1.1.1.1 Preferred: True Stratum: 1 - Incorrect condition - Expected: sys.peer Actual: candidate",
+                "NTP Server: 1.1.1.1 Preferred: True Stratum: 1 - Incorrect stratum level - Expected: 1 Actual: 2",
+                "NTP Server: 2.2.2.2 Preferred: False Stratum: 2 - Incorrect condition - Expected: candidate Actual: sys.peer",
+                "NTP Server: 3.3.3.3 Preferred: False Stratum: 2 - Incorrect condition - Expected: candidate Actual: sys.peer",
+                "NTP Server: 3.3.3.3 Preferred: False Stratum: 2 - Incorrect stratum level - Expected: 2 Actual: 3",
             ],
         },
     },
@@ -490,9 +552,311 @@ poll interval unknown
         "expected": {
             "result": "failure",
             "messages": [
-                "NTP Server: 1.1.1.1 Preferred: True Stratum: 1 - Bad association - Condition: candidate, Stratum: 1",
+                "NTP Server: 1.1.1.1 Preferred: True Stratum: 1 - Incorrect condition - Expected: sys.peer Actual: candidate",
                 "NTP Server: 2.2.2.2 Preferred: False Stratum: 1 - Not configured",
                 "NTP Server: 3.3.3.3 Preferred: False Stratum: 1 - Not configured",
+            ],
+        },
+    },
+    {
+        "name": "failure-ntp-pool-as-input",
+        "test": VerifyNTPAssociations,
+        "eos_data": [
+            {
+                "peers": {
+                    "ntp1.pool": {
+                        "condition": "sys.peer",
+                        "peerIpAddr": "1.1.1.1",
+                        "stratumLevel": 1,
+                    },
+                    "ntp2.pool": {
+                        "condition": "candidate",
+                        "peerIpAddr": "2.2.2.2",
+                        "stratumLevel": 2,
+                    },
+                    "ntp3.pool": {
+                        "condition": "candidate",
+                        "peerIpAddr": "3.3.3.3",
+                        "stratumLevel": 2,
+                    },
+                }
+            }
+        ],
+        "inputs": {"ntp_pool": {"server_addresses": ["1.1.1.1", "2.2.2.2"], "preferred_stratum_range": [1, 2]}},
+        "expected": {
+            "result": "failure",
+            "messages": ["NTP Server: 3.3.3.3 Hostname: ntp3.pool - Associated but not part of the provided NTP pool"],
+        },
+    },
+    {
+        "name": "failure-ntp-pool-as-input-bad-association",
+        "test": VerifyNTPAssociations,
+        "eos_data": [
+            {
+                "peers": {
+                    "ntp1.pool": {
+                        "condition": "sys.peer",
+                        "peerIpAddr": "1.1.1.1",
+                        "stratumLevel": 1,
+                    },
+                    "ntp2.pool": {
+                        "condition": "candidate",
+                        "peerIpAddr": "2.2.2.2",
+                        "stratumLevel": 2,
+                    },
+                    "ntp3.pool": {
+                        "condition": "reject",
+                        "peerIpAddr": "3.3.3.3",
+                        "stratumLevel": 3,
+                    },
+                }
+            }
+        ],
+        "inputs": {"ntp_pool": {"server_addresses": ["1.1.1.1", "2.2.2.2", "3.3.3.3"], "preferred_stratum_range": [1, 2]}},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "NTP Server: 3.3.3.3 Hostname: ntp3.pool - Incorrect condition  - Expected: sys.peer, candidate Actual: reject",
+                "NTP Server: 3.3.3.3 Hostname: ntp3.pool - Incorrect stratum level - Expected Stratum Range: 1 to 2 Actual: 3",
+            ],
+        },
+    },
+    {
+        "name": "failure-ntp-pool-hostname",
+        "test": VerifyNTPAssociations,
+        "eos_data": [
+            {
+                "peers": {
+                    "itsys-ntp010p.aristanetworks.com": {
+                        "condition": "sys.peer",
+                        "peerIpAddr": "1.1.1.1",
+                        "stratumLevel": 5,
+                    },
+                    "itsys-ntp011p.aristanetworks.com": {
+                        "condition": "reject",
+                        "peerIpAddr": "2.2.2.2",
+                        "stratumLevel": 4,
+                    },
+                    "itsys-ntp012p.aristanetworks.com": {
+                        "condition": "candidate",
+                        "peerIpAddr": "3.3.3.3",
+                        "stratumLevel": 2,
+                    },
+                }
+            }
+        ],
+        "inputs": {"ntp_pool": {"server_addresses": ["itsys-ntp010p.aristanetworks.com", "itsys-ntp011p.aristanetworks.com"], "preferred_stratum_range": [1, 2]}},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "NTP Server: 1.1.1.1 Hostname: itsys-ntp010p.aristanetworks.com - Incorrect stratum level - Expected Stratum Range: 1 to 2 Actual: 5",
+                "NTP Server: 2.2.2.2 Hostname: itsys-ntp011p.aristanetworks.com - Incorrect condition  - Expected: sys.peer, candidate Actual: reject",
+                "NTP Server: 2.2.2.2 Hostname: itsys-ntp011p.aristanetworks.com - Incorrect stratum level - Expected Stratum Range: 1 to 2 Actual: 4",
+                "NTP Server: 3.3.3.3 Hostname: itsys-ntp012p.aristanetworks.com - Associated but not part of the provided NTP pool",
+            ],
+        },
+    },
+    {
+        "name": "success-no-maintenance-configured",
+        "test": VerifyMaintenance,
+        "eos_data": [
+            {
+                "units": {},
+                "interfaces": {},
+                "vrfs": {},
+                "warnings": ["Maintenance Mode is disabled."],
+            },
+        ],
+        "inputs": None,
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-maintenance-configured-but-not-enabled",
+        "test": VerifyMaintenance,
+        "eos_data": [
+            {
+                "units": {
+                    "System": {
+                        "state": "active",
+                        "adminState": "active",
+                        "stateChangeTime": 0.0,
+                        "onBootMaintenance": False,
+                        "intfsViolatingTrafficThreshold": False,
+                        "aggInBpsRate": 0,
+                        "aggOutBpsRate": 0,
+                    }
+                },
+                "interfaces": {},
+                "vrfs": {},
+            },
+        ],
+        "inputs": None,
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-multiple-units-but-not-enabled",
+        "test": VerifyMaintenance,
+        "eos_data": [
+            {
+                "units": {
+                    "mlag": {
+                        "state": "active",
+                        "adminState": "active",
+                        "stateChangeTime": 0.0,
+                        "onBootMaintenance": False,
+                        "intfsViolatingTrafficThreshold": False,
+                        "aggInBpsRate": 0,
+                        "aggOutBpsRate": 0,
+                    },
+                    "System": {
+                        "state": "active",
+                        "adminState": "active",
+                        "stateChangeTime": 0.0,
+                        "onBootMaintenance": False,
+                        "intfsViolatingTrafficThreshold": False,
+                        "aggInBpsRate": 0,
+                        "aggOutBpsRate": 0,
+                    },
+                },
+                "interfaces": {},
+                "vrfs": {},
+            },
+        ],
+        "inputs": None,
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-maintenance-enabled",
+        "test": VerifyMaintenance,
+        "eos_data": [
+            {
+                "units": {
+                    "mlag": {
+                        "state": "underMaintenance",
+                        "adminState": "underMaintenance",
+                        "stateChangeTime": 1741257120.9532886,
+                        "onBootMaintenance": False,
+                        "intfsViolatingTrafficThreshold": False,
+                        "aggInBpsRate": 0,
+                        "aggOutBpsRate": 0,
+                    },
+                    "System": {
+                        "state": "active",
+                        "adminState": "active",
+                        "stateChangeTime": 0.0,
+                        "onBootMaintenance": False,
+                        "intfsViolatingTrafficThreshold": False,
+                        "aggInBpsRate": 0,
+                        "aggOutBpsRate": 0,
+                    },
+                },
+                "interfaces": {},
+                "vrfs": {},
+            },
+        ],
+        "inputs": None,
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Units under maintenance: 'mlag'.",
+                "Possible causes: 'Quiesce is configured'.",
+            ],
+        },
+    },
+    {
+        "name": "failure-multiple-reasons",
+        "test": VerifyMaintenance,
+        "eos_data": [
+            {
+                "units": {
+                    "mlag": {
+                        "state": "underMaintenance",
+                        "adminState": "underMaintenance",
+                        "stateChangeTime": 1741257120.9532895,
+                        "onBootMaintenance": False,
+                        "intfsViolatingTrafficThreshold": False,
+                        "aggInBpsRate": 0,
+                        "aggOutBpsRate": 0,
+                    },
+                    "System": {
+                        "state": "maintenanceModeEnter",
+                        "adminState": "underMaintenance",
+                        "stateChangeTime": 1741257669.7231765,
+                        "onBootMaintenance": False,
+                        "intfsViolatingTrafficThreshold": False,
+                        "aggInBpsRate": 0,
+                        "aggOutBpsRate": 0,
+                    },
+                },
+                "interfaces": {},
+                "vrfs": {},
+            },
+        ],
+        "inputs": None,
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Units under maintenance: 'mlag'.",
+                "Units entering maintenance: 'System'.",
+                "Possible causes: 'Quiesce is configured'.",
+            ],
+        },
+    },
+    {
+        "name": "failure-onboot-maintenance",
+        "test": VerifyMaintenance,
+        "eos_data": [
+            {
+                "units": {
+                    "System": {
+                        "state": "underMaintenance",
+                        "adminState": "underMaintenance",
+                        "stateChangeTime": 1741258774.3756502,
+                        "onBootMaintenance": True,
+                        "intfsViolatingTrafficThreshold": False,
+                        "aggInBpsRate": 0,
+                        "aggOutBpsRate": 0,
+                    }
+                },
+                "interfaces": {},
+                "vrfs": {},
+            },
+        ],
+        "inputs": None,
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Units under maintenance: 'System'.",
+                "Possible causes: 'On-boot maintenance is configured, Quiesce is configured'.",
+            ],
+        },
+    },
+    {
+        "name": "failure-entering-maintenance-interface-violation",
+        "test": VerifyMaintenance,
+        "eos_data": [
+            {
+                "units": {
+                    "System": {
+                        "state": "maintenanceModeEnter",
+                        "adminState": "underMaintenance",
+                        "stateChangeTime": 1741257669.7231765,
+                        "onBootMaintenance": False,
+                        "intfsViolatingTrafficThreshold": True,
+                        "aggInBpsRate": 0,
+                        "aggOutBpsRate": 0,
+                    }
+                },
+                "interfaces": {},
+                "vrfs": {},
+            },
+        ],
+        "inputs": None,
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Units entering maintenance: 'System'.",
+                "Possible causes: 'Interface traffic threshold violation, Quiesce is configured'.",
             ],
         },
     },
