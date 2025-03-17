@@ -183,7 +183,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": ["Instance: CORE-ISIS VRF: default Interface: Ethernet1 - Adjacency down"],
+            "messages": ["Instance: CORE-ISIS VRF: default Interface: Ethernet1 - Incorrect adjacency state - Expected: up Actual: down"],
         },
     },
     {
@@ -250,7 +250,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"check_all_vrfs": True},
         "expected": {
             "result": "failure",
-            "messages": ["Instance: CORE-ISIS VRF: customer Interface: Ethernet2 - Adjacency down"],
+            "messages": ["Instance: CORE-ISIS VRF: customer Interface: Ethernet2 - Incorrect adjacency state - Expected: up Actual: down"],
         },
     },
     {

@@ -1929,7 +1929,85 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"mtu": 1500},
-        "expected": {"result": "failure", "messages": ["Some L2 interfaces do not have correct MTU configured:\n[{'Ethernet10': 9214}, {'Port-Channel2': 9214}]"]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Interface: Ethernet10 - Incorrect MTU configured - Expected: 1500 Actual: 9214",
+                "Interface: Port-Channel2 - Incorrect MTU configured - Expected: 1500 Actual: 9214",
+            ],
+        },
+    },
+    {
+        "name": "failure-specific-interface",
+        "test": VerifyL2MTU,
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet2": {
+                        "name": "Ethernet2",
+                        "forwardingModel": "routed",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "hardware": "ethernet",
+                        "mtu": 1600,
+                        "l3MtuConfigured": True,
+                        "l2Mru": 0,
+                    },
+                    "Ethernet10": {
+                        "name": "Ethernet10",
+                        "forwardingModel": "bridged",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "hardware": "ethernet",
+                        "mtu": 9214,
+                        "l3MtuConfigured": False,
+                        "l2Mru": 0,
+                    },
+                    "Management0": {
+                        "name": "Management0",
+                        "forwardingModel": "routed",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "hardware": "ethernet",
+                        "mtu": 1500,
+                        "l3MtuConfigured": False,
+                        "l2Mru": 0,
+                    },
+                    "Port-Channel2": {
+                        "name": "Port-Channel2",
+                        "forwardingModel": "bridged",
+                        "lineProtocolStatus": "lowerLayerDown",
+                        "interfaceStatus": "notconnect",
+                        "hardware": "portChannel",
+                        "mtu": 9214,
+                        "l3MtuConfigured": False,
+                        "l2Mru": 0,
+                    },
+                    "Loopback0": {
+                        "name": "Loopback0",
+                        "forwardingModel": "routed",
+                        "lineProtocolStatus": "up",
+                        "interfaceStatus": "connected",
+                        "hardware": "loopback",
+                        "mtu": 65535,
+                        "l3MtuConfigured": False,
+                        "l2Mru": 0,
+                    },
+                    "Vxlan1": {
+                        "name": "Vxlan1",
+                        "forwardingModel": "bridged",
+                        "lineProtocolStatus": "down",
+                        "interfaceStatus": "notconnect",
+                        "hardware": "vxlan",
+                        "mtu": 0,
+                        "l3MtuConfigured": False,
+                        "l2Mru": 0,
+                    },
+                },
+            },
+        ],
+        "inputs": {"specific_mtu": [{"Et10": 9214}, {"Port-Channel2": 10000}]},
+        "expected": {"result": "failure", "messages": ["Interface: Port-Channel2 - Incorrect MTU configured - Expected: 10000 Actual: 9214"]},
     },
     {
         "name": "success",
@@ -2235,7 +2313,7 @@ DATA: list[dict[str, Any]] = [
             }
         ],
         "inputs": {"mac_address": "00:1c:73:00:dc:01"},
-        "expected": {"result": "failure", "messages": ["IP virtual router MAC address `00:1c:73:00:dc:01` is not configured."]},
+        "expected": {"result": "failure", "messages": ["IP virtual router MAC address: 00:1c:73:00:dc:01 - Not configured"]},
     },
     {
         "name": "success",
@@ -2327,10 +2405,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "For interface Ethernet1:\nExpected `1Gbps` as the speed, but found `100Gbps` instead.",
-                "For interface Ethernet1/1/1:\nExpected `1Gbps` as the speed, but found `100Gbps` instead.",
-                "For interface Ethernet3:\nExpected `100Gbps` as the speed, but found `10Gbps` instead.",
-                "For interface Ethernet4:\nExpected `2.5Gbps` as the speed, but found `25Gbps` instead.",
+                "Interface: Ethernet1 - Bandwidth mismatch - Expected: 1.0Gbps Actual: 100Gbps",
+                "Interface: Ethernet1/1/1 - Bandwidth mismatch - Expected: 1.0Gbps Actual: 100Gbps",
+                "Interface: Ethernet3 - Bandwidth mismatch - Expected: 100.0Gbps Actual: 10Gbps",
+                "Interface: Ethernet4 - Bandwidth mismatch - Expected: 2.5Gbps Actual: 25Gbps",
             ],
         },
     },
@@ -2379,11 +2457,11 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "For interface Ethernet1:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.",
-                "For interface Ethernet1/2/2:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.",
-                "For interface Ethernet3:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.",
-                "For interface Ethernet3:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.",
-                "For interface Ethernet4:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.",
+                "Interface: Ethernet1 - Duplex mode mismatch - Expected: duplexFull Actual: duplexHalf",
+                "Interface: Ethernet1/2/2 - Duplex mode mismatch - Expected: duplexFull Actual: duplexHalf",
+                "Interface: Ethernet3 - Duplex mode mismatch - Expected: duplexFull Actual: duplexHalf",
+                "Interface: Ethernet3 - Duplex mode mismatch - Expected: duplexFull Actual: duplexHalf",
+                "Interface: Ethernet4 - Duplex mode mismatch - Expected: duplexFull Actual: duplexHalf",
             ],
         },
     },
@@ -2437,10 +2515,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "For interface Ethernet1:\nExpected `2` as the lanes, but found `4` instead.",
-                "For interface Ethernet3:\nExpected `8` as the lanes, but found `4` instead.",
-                "For interface Ethernet4:\nExpected `4` as the lanes, but found `6` instead.",
-                "For interface Ethernet4/1/1:\nExpected `4` as the lanes, but found `6` instead.",
+                "Interface: Ethernet1 - Data lanes count mismatch - Expected: 2 Actual: 4",
+                "Interface: Ethernet3 - Data lanes count mismatch - Expected: 8 Actual: 4",
+                "Interface: Ethernet4 - Data lanes count mismatch - Expected: 4 Actual: 6",
+                "Interface: Ethernet4/1/1 - Data lanes count mismatch - Expected: 4 Actual: 6",
             ],
         },
     },
@@ -2479,36 +2557,26 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "interfaces": [
-                {"name": "Ethernet1", "auto": False, "speed": 1},
                 {"name": "Ethernet1", "auto": False, "speed": 1, "lanes": 2},
                 {"name": "Ethernet2/1/2", "auto": False, "speed": 10},
-                {"name": "Ethernet3", "auto": True, "speed": 1},
                 {"name": "Ethernet3", "auto": True, "speed": 100, "lanes": 8},
-                {"name": "Ethernet3", "auto": True, "speed": 100},
                 {"name": "Ethernet4", "auto": False, "speed": 2.5},
             ]
         },
         "expected": {
             "result": "failure",
             "messages": [
-                "For interface Ethernet1:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.\n"
-                "Expected `1Gbps` as the speed, but found `10Gbps` instead.",
-                "For interface Ethernet1:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.\n"
-                "Expected `1Gbps` as the speed, but found `10Gbps` instead.\n"
-                "Expected `2` as the lanes, but found `4` instead.",
-                "For interface Ethernet2/1/2:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.\n"
-                "Expected `10Gbps` as the speed, but found `1Gbps` instead.",
-                "For interface Ethernet3:\nExpected `success` as the auto negotiation, but found `unknown` instead.\n"
-                "Expected `duplexFull` as the duplex mode, but found `duplexHalf` instead.",
-                "For interface Ethernet3:\nExpected `success` as the auto negotiation, but found `unknown` instead.\n"
-                "Expected `duplexFull` as the duplex mode, but found `duplexHalf` instead.\n"
-                "Expected `100Gbps` as the speed, but found `10Gbps` instead.\n"
-                "Expected `8` as the lanes, but found `6` instead.",
-                "For interface Ethernet3:\nExpected `success` as the auto negotiation, but found `unknown` instead.\n"
-                "Expected `duplexFull` as the duplex mode, but found `duplexHalf` instead.\n"
-                "Expected `100Gbps` as the speed, but found `10Gbps` instead.",
-                "For interface Ethernet4:\nExpected `duplexFull` as the duplex mode, but found `duplexHalf` instead.\n"
-                "Expected `2.5Gbps` as the speed, but found `25Gbps` instead.",
+                "Interface: Ethernet1 - Bandwidth mismatch - Expected: 1.0Gbps Actual: 10Gbps",
+                "Interface: Ethernet1 - Duplex mode mismatch - Expected: duplexFull Actual: duplexHalf",
+                "Interface: Ethernet1 - Data lanes count mismatch - Expected: 2 Actual: 4",
+                "Interface: Ethernet2/1/2 - Bandwidth mismatch - Expected: 10.0Gbps Actual: 1Gbps",
+                "Interface: Ethernet2/1/2 - Duplex mode mismatch - Expected: duplexFull Actual: duplexHalf",
+                "Interface: Ethernet3 - Bandwidth mismatch - Expected: 100.0Gbps Actual: 10Gbps",
+                "Interface: Ethernet3 - Duplex mode mismatch - Expected: duplexFull Actual: duplexHalf",
+                "Interface: Ethernet3 - Auto-negotiation mismatch - Expected: success Actual: unknown",
+                "Interface: Ethernet3 - Data lanes count mismatch - Expected: 8 Actual: 6",
+                "Interface: Ethernet4 - Bandwidth mismatch - Expected: 2.5Gbps Actual: 25Gbps",
+                "Interface: Ethernet4 - Duplex mode mismatch - Expected: duplexFull Actual: duplexHalf",
             ],
         },
     },

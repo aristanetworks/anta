@@ -19,6 +19,7 @@ from anta.tests.routing.bgp import (
     VerifyBGPPeerGroup,
     VerifyBGPPeerMPCaps,
     VerifyBGPPeerRouteLimit,
+    VerifyBGPPeerTtlMultiHops,
     VerifyBGPRouteECMP,
     VerifyBgpRouteMaps,
     VerifyBGPRoutePaths,
@@ -422,12 +423,58 @@ class TestVerifyBGPAddressFamilyConfig:
             AddressFamilyConfig(afi_safi=afi_safi, redistributed_routes=redistributed_routes)
 
     @pytest.mark.parametrize(
+        ("afi_safi", "redistributed_routes"),
+        [
+            pytest.param("ipv4Unicast", [{"proto": "OSPF External", "include_leaked": True, "route_map": "RM-CONN-2-BGP"}], id="v4u-proto-ospf-external"),
+            pytest.param("ipv4 Unicast", [{"proto": "OSPF Internal", "include_leaked": True, "route_map": "RM-CONN-2-BGP"}], id="v4u-proto-ospf-internal"),
+            pytest.param("ipv4-Unicast", [{"proto": "OSPF Nssa-External", "include_leaked": True, "route_map": "RM-CONN-2-BGP"}], id="v4u-proto-ospf-nssa-external"),
+            pytest.param("ipv4_Unicast", [{"proto": "OSPFv3 External", "include_leaked": True, "route_map": "RM-CONN-2-BGP"}], id="v4u-proto-ospfv3-external"),
+            pytest.param("Ipv4Unicast", [{"proto": "OSPFv3 Internal", "include_leaked": True, "route_map": "RM-CONN-2-BGP"}], id="v4u-proto-ospfv3-internal"),
+            pytest.param(
+                "ipv4Unicast", [{"proto": "OSPFv3 Nssa-External", "include_leaked": True, "route_map": "RM-CONN-2-BGP"}], id="v4u-proto-ospfv3-nssa-external"
+            ),
+            pytest.param("ipv4unicast", [{"proto": "AttachedHost", "include_leaked": False, "route_map": "RM-CONN-2-BGP"}], id="v4u-proto-attached-host"),
+            pytest.param("IPv4UNiCast", [{"proto": "RIP", "include_leaked": False, "route_map": "RM-CONN-2-BGP"}], id="v4u-proto-rip"),
+            pytest.param("IPv4UnicasT", [{"proto": "Bgp", "include_leaked": True, "route_map": "RM-CONN-2-BGP"}], id="v4u-proto-bgp"),
+            pytest.param("ipv6_Multicast", [{"proto": "Static", "include_leaked": True, "route_map": "RM-CONN-2-BGP"}], id="v6m-proto-static"),
+            pytest.param("ipv6 Multicast", [{"proto": "OSPF Internal", "include_leaked": True, "route_map": "RM-CONN-2-BGP"}], id="v6m-proto-ospf-internal"),
+            pytest.param("ipv6-Multicast", [{"proto": "Connected", "include_leaked": True, "route_map": "RM-CONN-2-BGP"}], id="v6m-proto-connected"),
+            pytest.param("ipv4-Multicast", [{"proto": "IS-IS", "include_leaked": False, "route_map": "RM-CONN-2-BGP"}], id="v4m-proto-isis"),
+            pytest.param("ipv4Multicast", [{"proto": "Connected", "include_leaked": True, "route_map": "RM-CONN-2-BGP"}], id="v4m-proto-connected"),
+            pytest.param("ipv4_Multicast", [{"proto": "AttachedHost", "include_leaked": False, "route_map": "RM-CONN-2-BGP"}], id="v4m-proto-attached-host"),
+            pytest.param("ipv6_Unicast", [{"proto": "AttachedHost", "route_map": "RM-CONN-2-BGP"}], id="v6u-proto-attached-host"),
+            pytest.param("ipv6unicast", [{"proto": "DHCP", "route_map": "RM-CONN-2-BGP"}], id="v6u-proto-dhcp"),
+            pytest.param("ipv6 Unicast", [{"proto": "Dynamic", "include_leaked": False, "route_map": "RM-CONN-2-BGP"}], id="v6u-proto-dynamic"),
+        ],
+    )
+    def test_validate_afi_safi_supported_routes(self, afi_safi: RedistributedAfiSafi, redistributed_routes: list[Any]) -> None:
+        """Test AddressFamilyConfig validate afi-safi supported routes."""
+        AddressFamilyConfig(afi_safi=afi_safi, redistributed_routes=redistributed_routes)
+
+    @pytest.mark.parametrize(
+        ("afi_safi", "redistributed_routes"),
+        [
+            pytest.param("ipv6_Unicast", [{"proto": "RIP", "route_map": "RM-CONN-2-BGP"}], id="invalid-proto-ipv6-unicast-rip"),
+            pytest.param("ipv6-Unicast", [{"proto": "OSPF Internal", "route_map": "RM-CONN-2-BGP"}], id="invalid-proto-ipv6-unicast-ospf-internal"),
+            pytest.param("ipv4Unicast", [{"proto": "DHCP", "route_map": "RM-CONN-2-BGP"}], id="invalid-proto-ipv4-unicast-dhcp"),
+            pytest.param("ipv4-Multicast", [{"proto": "Bgp", "route_map": "RM-CONN-2-BGP"}], id="invalid-proto-ipv4-multicast-bgp"),
+            pytest.param("ipv4-Multicast", [{"proto": "RIP", "route_map": "RM-CONN-2-BGP"}], id="invalid-proto-ipv4-multicast-rip"),
+            pytest.param("ipv6-Multicast", [{"proto": "Dynamic", "route_map": "RM-CONN-2-BGP"}], id="invalid-proto-ipv4-multicast-dynamic"),
+            pytest.param("ipv6-Multicast", [{"proto": "AttachedHost", "route_map": "RM-CONN-2-BGP"}], id="invalid-proto-ipv6-multicast-attached-host"),
+        ],
+    )
+    def test_invalid_afi_safi_supported_routes(self, afi_safi: RedistributedAfiSafi, redistributed_routes: list[Any]) -> None:
+        """Test AddressFamilyConfig invalid afi-safi supported routes."""
+        with pytest.raises(ValidationError):
+            AddressFamilyConfig(afi_safi=afi_safi, redistributed_routes=redistributed_routes)
+
+    @pytest.mark.parametrize(
         ("afi_safi", "redistributed_routes", "expected"),
         [
             pytest.param(
                 "v4u", [{"proto": "OSPFv3 Nssa-External", "include_leaked": True, "route_map": "RM-CONN-2-BGP"}], "AFI-SAFI: IPv4 Unicast", id="valid-ipv4-unicast"
             ),
-            pytest.param("v4m", [{"proto": "RIP", "route_map": "RM-CONN-2-BGP"}], "AFI-SAFI: IPv4 Multicast", id="valid-ipv4-multicast"),
+            pytest.param("v4m", [{"proto": "IS-IS", "route_map": "RM-CONN-2-BGP"}], "AFI-SAFI: IPv4 Multicast", id="valid-ipv4-multicast"),
             pytest.param("v6u", [{"proto": "Bgp", "include_leaked": True, "route_map": "RM-CONN-2-BGP"}], "AFI-SAFI: IPv6 Unicast", id="valid-ipv6-unicast"),
             pytest.param("v6m", [{"proto": "Static", "include_leaked": True, "route_map": "RM-CONN-2-BGP"}], "AFI-SAFI: IPv6 Multicast", id="valid-ipv6-multicast"),
         ],
@@ -435,3 +482,29 @@ class TestVerifyBGPAddressFamilyConfig:
     def test_valid_str(self, afi_safi: RedistributedAfiSafi, redistributed_routes: list[Any], expected: str) -> None:
         """Test AddressFamilyConfig __str__."""
         assert str(AddressFamilyConfig(afi_safi=afi_safi, redistributed_routes=redistributed_routes)) == expected
+
+
+class TestVerifyBGPPeerTtlMultiHopsInput:
+    """Test anta.tests.routing.bgp.VerifyBGPPeerTtlMultiHops.Input."""
+
+    @pytest.mark.parametrize(
+        ("bgp_peers"),
+        [
+            pytest.param([{"peer_address": "172.30.255.5", "vrf": "default", "ttl": 3, "max_ttl_hops": 3}], id="valid"),
+        ],
+    )
+    def test_valid(self, bgp_peers: list[BgpPeer]) -> None:
+        """Test VerifyBGPPeerTtlMultiHops.Input valid inputs."""
+        VerifyBGPPeerTtlMultiHops.Input(bgp_peers=bgp_peers)
+
+    @pytest.mark.parametrize(
+        ("bgp_peers"),
+        [
+            pytest.param([{"peer_address": "172.30.255.5", "vrf": "default", "ttl": None, "max_ttl_hops": 3}], id="invalid-ttl-time"),
+            pytest.param([{"peer_address": "172.30.255.6", "vrf": "default", "ttl": 3, "max_ttl_hops": None}], id="invalid-max-ttl-hops"),
+        ],
+    )
+    def test_invalid(self, bgp_peers: list[BgpPeer]) -> None:
+        """Test VerifyBGPPeerTtlMultiHops.Input invalid inputs."""
+        with pytest.raises(ValidationError):
+            VerifyBGPPeerTtlMultiHops.Input(bgp_peers=bgp_peers)

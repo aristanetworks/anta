@@ -17,7 +17,7 @@ from yaml import YAMLError, safe_load
 
 from anta.device import AntaDevice, AsyncEOSDevice
 from anta.inventory.exceptions import InventoryIncorrectSchemaError, InventoryRootKeyError
-from anta.inventory.models import AntaInventoryInput
+from anta.inventory.models import AntaInventoryHost, AntaInventoryInput
 from anta.logger import anta_log_exception
 
 logger = logging.getLogger(__name__)
@@ -27,7 +27,7 @@ class AntaInventory(dict[str, AntaDevice]):
     """Inventory abstraction for ANTA framework."""
 
     # Root key of inventory part of the inventory file
-    INVENTORY_ROOT_KEY = "anta_inventory"
+    INVENTORY_ROOT_KEY: str = "anta_inventory"
     # Supported Output format
     INVENTORY_OUTPUT_FORMAT: ClassVar[list[str]] = ["native", "json"]
 
@@ -342,3 +342,20 @@ class AntaInventory(dict[str, AntaDevice]):
             if isinstance(r, Exception):
                 message = "Error when refreshing inventory"
                 anta_log_exception(r, message, logger)
+
+    def dump(self) -> AntaInventoryInput:
+        """Dump the AntaInventory to an AntaInventoryInput.
+
+        Each hosts is dumped individually.
+        """
+        hosts = [
+            AntaInventoryHost(
+                name=device.name,
+                host=device.host if hasattr(device, "host") else device.name,
+                port=device.port if hasattr(device, "port") else None,
+                tags=device.tags,
+                disable_cache=device.cache is None,
+            )
+            for device in self.devices
+        ]
+        return AntaInventoryInput(hosts=hosts)
