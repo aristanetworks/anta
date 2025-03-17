@@ -21,7 +21,6 @@ if TYPE_CHECKING:
 
     from anta.models import AntaCommand
 
-DATA_DIR: Path = Path(__file__).parent.parent.resolve() / "data"
 DEVICE_HW_MODEL = "pytest"
 DEVICE_NAME = "pytest"
 COMMAND_OUTPUT = "retrieved"
