@@ -1,14 +1,14 @@
 [
   {
     "name": "s1-leaf1",
-    "test": "VerifyActiveCVXConnections",
+    "test": "VerifyAVTPathHealth",
     "categories": [
-      "cvx"
+      "avt"
     ],
-    "description": "Verifies the number of active CVX Connections.",
-    "result": "error",
+    "description": "Verifies the status of all AVT paths for all VRFs.",
+    "result": "skipped",
     "messages": [
-      "show cvx connections brief has failed: Unavailable command (controller not ready) (at token 2: 'connections')"
+      "VerifyAVTPathHealth test is not supported on cEOSLab."
     ],
     "custom_field": null
   },
@@ -19,35 +19,22 @@
       "cvx"
     ],
     "description": "Verify if all MCS server mounts are in a MountComplete state.",
-    "result": "error",
+    "result": "failure",
     "messages": [
-      "show cvx mounts has failed: Unavailable command (controller not ready) (at token 2: 'mounts')"
+      "'show cvx mounts' failed on s1-leaf1: Unavailable command (controller not ready) (at token 2: 'mounts')"
     ],
     "custom_field": null
   },
   {
     "name": "s1-leaf1",
-    "test": "VerifyGreenTCounters",
+    "test": "VerifyVxlan1ConnSettings",
     "categories": [
-      "greent"
+      "vxlan"
     ],
-    "description": "Verifies if the GreenT counters are incremented.",
-    "result": "failure",
+    "description": "Verifies the interface vxlan1 source interface and UDP port.",
+    "result": "skipped",
     "messages": [
-      "GreenT counters are not incremented"
-    ],
-    "custom_field": null
-  },
-  {
-    "name": "s1-leaf1",
-    "test": "VerifyMcsClientMounts",
-    "categories": [
-      "cvx"
-    ],
-    "description": "Verify if all MCS client mounts are in mountStateMountComplete.",
-    "result": "failure",
-    "messages": [
-      "MCS Client mount states are not present"
+      "Vxlan1 interface is not configured."
     ],
     "custom_field": null
   },
@@ -64,60 +51,49 @@
   },
   {
     "name": "s1-leaf1",
-    "test": "VerifyMlagInterfaces",
+    "test": "VerifyInterfaceErrDisabled",
     "categories": [
-      "mlag"
+      "interfaces"
     ],
-    "description": "Verifies there are no inactive or active-partial MLAG ports.",
+    "description": "Verifies there are no interfaces in the errdisabled state.",
     "result": "success",
     "messages": [],
     "custom_field": null
   },
   {
     "name": "s1-leaf1",
-    "test": "VerifyPtpGMStatus",
+    "test": "VerifyIllegalLACP",
     "categories": [
-      "ptp"
+      "interfaces"
     ],
-    "description": "Verifies that the device is locked to a valid PTP Grandmaster.",
+    "description": "Verifies there are no illegal LACP packets in all port channels.",
+    "result": "success",
+    "messages": [],
+    "custom_field": null
+  },
+  {
+    "name": "s1-leaf1",
+    "test": "VerifyHardwareFlowTrackerStatus",
+    "categories": [
+      "flow tracking"
+    ],
+    "description": "Verifies the hardware flow tracking state.",
     "result": "skipped",
     "messages": [
-      "VerifyPtpGMStatus test is not supported on cEOSLab."
+      "VerifyHardwareFlowTrackerStatus test is not supported on cEOSLab."
     ],
     "custom_field": null
   },
   {
     "name": "s1-leaf1",
-    "test": "VerifyBGPPeersHealthRibd",
-    "categories": [
-      "bgp"
-    ],
-    "description": "Verifies the health of all the BGP IPv4 peer(s).",
-    "result": "success",
-    "messages": [],
-    "custom_field": null
-  },
-  {
-    "name": "s1-leaf1",
-    "test": "VerifyLoggingLogsGeneration",
+    "test": "VerifyLoggingErrors",
     "categories": [
       "logging"
     ],
-    "description": "Verifies if logs are generated.",
-    "result": "success",
-    "messages": [],
-    "custom_field": null
-  },
-  {
-    "name": "s1-leaf1",
-    "test": "VerifyAdverseDrops",
-    "categories": [
-      "hardware"
-    ],
-    "description": "Verifies there are no adverse drops on DCS-7280 and DCS-7500 family switches.",
-    "result": "skipped",
+    "description": "Verifies there are no syslog messages with a severity of ERRORS or higher.",
+    "result": "failure",
     "messages": [
-      "VerifyAdverseDrops test is not supported on cEOSLab."
+      "Device has reported syslog messages with a severity of ERRORS or higher"
     ],
     "custom_field": null
   },
@@ -137,6 +113,17 @@
   },
   {
     "name": "s1-leaf1",
+    "test": "VerifyInterfaceDiscards",
+    "categories": [
+      "interfaces"
+    ],
+    "description": "Verifies that the interfaces packet discard counters are equal to zero.",
+    "result": "success",
+    "messages": [],
+    "custom_field": null
+  },
+  {
+    "name": "s1-leaf1",
     "test": "VerifyInterfaceUtilization",
     "categories": [
       "interfaces"
@@ -148,52 +135,14 @@
   },
   {
     "name": "s1-leaf1",
-    "test": "VerifyLANZ",
+    "test": "VerifyDynamicVlanSource",
     "categories": [
-      "lanz"
+      "vlan"
     ],
-    "description": "Verifies if LANZ is enabled.",
-    "result": "skipped",
-    "messages": [
-      "VerifyLANZ test is not supported on cEOSLab."
-    ],
-    "custom_field": null
-  },
-  {
-    "name": "s1-leaf1",
-    "test": "VerifyInterfaceErrDisabled",
-    "categories": [
-      "interfaces"
-    ],
-    "description": "Verifies there are no interfaces in the errdisabled state.",
-    "result": "success",
-    "messages": [],
-    "custom_field": null
-  },
-
-  {
-    "name": "s1-leaf1",
-    "test": "VerifyLoggingHostname",
-    "categories": [
-      "logging"
-    ],
-    "description": "Verifies if logs are generated with the device FQDN.",
+    "description": "Verifies dynamic VLAN allocation for specified VLAN sources.",
     "result": "failure",
     "messages": [
-      "Logs are not generated with the device FQDN"
-    ],
-    "custom_field": null
-  },
-  {
-    "name": "s1-leaf1",
-    "test": "VerifyLoggingErrors",
-    "categories": [
-      "logging"
-    ],
-    "description": "Verifies there are no syslog messages with a severity of ERRORS or higher.",
-    "result": "failure",
-    "messages": [
-      "Device has reported syslog messages with a severity of ERRORS or higher"
+      "Dynamic VLAN source(s) not found in configuration: mlagsync"
     ],
     "custom_field": null
   },
@@ -212,6 +161,141 @@
   },
   {
     "name": "s1-leaf1",
+    "test": "VerifyFieldNotice44Resolution",
+    "categories": [
+      "field notices"
+    ],
+    "description": "Verifies that the device is using the correct Aboot version per FN0044.",
+    "result": "skipped",
+    "messages": [
+      "VerifyFieldNotice44Resolution test is not supported on cEOSLab."
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-leaf1",
+    "test": "VerifyAdverseDrops",
+    "categories": [
+      "hardware"
+    ],
+    "description": "Verifies there are no adverse drops on DCS-7280 and DCS-7500 family switches.",
+    "result": "skipped",
+    "messages": [
+      "VerifyAdverseDrops test is not supported on cEOSLab."
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-leaf1",
+    "test": "VerifyGreenT",
+    "categories": [
+      "greent"
+    ],
+    "description": "Verifies if a GreenT policy other than the default is created.",
+    "result": "failure",
+    "messages": [
+      "No GreenT policy is created"
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-leaf1",
+    "test": "VerifyLoggingHostname",
+    "categories": [
+      "logging"
+    ],
+    "description": "Verifies if logs are generated with the device FQDN.",
+    "result": "failure",
+    "messages": [
+      "Logs are not generated with the device FQDN"
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-leaf1",
+    "test": "VerifyGreenTCounters",
+    "categories": [
+      "greent"
+    ],
+    "description": "Verifies if the GreenT counters are incremented.",
+    "result": "failure",
+    "messages": [
+      "GreenT counters are not incremented"
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-leaf1",
+    "test": "VerifyMlagInterfaces",
+    "categories": [
+      "mlag"
+    ],
+    "description": "Verifies there are no inactive or active-partial MLAG ports.",
+    "result": "success",
+    "messages": [],
+    "custom_field": null
+  },
+  {
+    "name": "s1-leaf1",
+    "test": "VerifyBGPPeersHealthRibd",
+    "categories": [
+      "bgp"
+    ],
+    "description": "Verifies the health of all the BGP IPv4 peer(s).",
+    "result": "success",
+    "messages": [],
+    "custom_field": null
+  },
+  {
+    "name": "s1-leaf1",
+    "test": "VerifyMcsClientMounts",
+    "categories": [
+      "cvx"
+    ],
+    "description": "Verify if all MCS client mounts are in mountStateMountComplete.",
+    "result": "failure",
+    "messages": [
+      "MCS Client mount states are not present"
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-leaf1",
+    "test": "VerifyLANZ",
+    "categories": [
+      "lanz"
+    ],
+    "description": "Verifies if LANZ is enabled.",
+    "result": "skipped",
+    "messages": [
+      "VerifyLANZ test is not supported on cEOSLab."
+    ],
+    "custom_field": null
+  },
+  {
+    "name": "s1-leaf1",
+    "test": "VerifyLoggingEntries",
+    "categories": [
+      "logging"
+    ],
+    "description": "Verifies that the expected log string is present in the last specified log messages.",
+    "result": "success",
+    "messages": [],
+    "custom_field": null
+  },
+  {
+    "name": "s1-leaf1",
+    "test": "VerifyPortChannels",
+    "categories": [
+      "interfaces"
+    ],
+    "description": "Verifies there are no inactive ports in all port channels.",
+    "result": "success",
+    "messages": [],
+    "custom_field": null
+  },
+  {
+    "name": "s1-leaf1",
     "test": "VerifyMlagConfigSanity",
     "categories": [
       "mlag"
@@ -223,27 +307,14 @@
   },
   {
     "name": "s1-leaf1",
-    "test": "VerifyAVTPathHealth",
+    "test": "VerifyActiveCVXConnections",
     "categories": [
-      "avt"
+      "cvx"
     ],
-    "description": "Verifies the status of all AVT paths for all VRFs.",
-    "result": "skipped",
+    "description": "Verifies the number of active CVX Connections.",
+    "result": "failure",
     "messages": [
-      "VerifyAVTPathHealth test is not supported on cEOSLab."
-    ],
-    "custom_field": null
-  },
-  {
-    "name": "s1-leaf1",
-    "test": "VerifyHardwareFlowTrackerStatus",
-    "categories": [
-      "flow tracking"
-    ],
-    "description": "Verifies the hardware flow tracking state.",
-    "result": "skipped",
-    "messages": [
-      "VerifyHardwareFlowTrackerStatus test is not supported on cEOSLab."
+      "'show cvx connections brief' failed on s1-leaf1: Unavailable command (controller not ready) (at token 2: 'connections')"
     ],
     "custom_field": null
   },
@@ -267,95 +338,10 @@
     "categories": [
       "vxlan"
     ],
-    "description": "Verifies if the Vxlan1 interface is configured and 'up/up'.",
+    "description": "Verifies the Vxlan1 interface status.",
     "result": "skipped",
     "messages": [
       "Interface: Vxlan1 - Not configured"
-    ],
-    "custom_field": null
-  },
-  {
-    "name": "s1-leaf1",
-    "test": "VerifyIllegalLACP",
-    "categories": [
-      "interfaces"
-    ],
-    "description": "Verifies there are no illegal LACP packets in all port channels.",
-    "result": "success",
-    "messages": [],
-    "custom_field": null
-  },
-  {
-    "name": "s1-leaf1",
-    "test": "VerifyVxlan1ConnSettings",
-    "categories": [
-      "vxlan"
-    ],
-    "description": "Verifies the interface vxlan1 source interface and UDP port.",
-    "result": "skipped",
-    "messages": [
-      "Vxlan1 interface is not configured."
-    ],
-    "custom_field": null
-  },
-  {
-    "name": "s1-leaf1",
-    "test": "VerifyGreenT",
-    "categories": [
-      "greent"
-    ],
-    "description": "Verifies if a GreenT policy other than the default is created.",
-    "result": "failure",
-    "messages": [
-      "No GreenT policy is created"
-    ],
-    "custom_field": null
-  },
-  {
-    "name": "s1-leaf1",
-    "test": "VerifyPortChannels",
-    "categories": [
-      "interfaces"
-    ],
-    "description": "Verifies there are no inactive ports in all port channels.",
-    "result": "success",
-    "messages": [],
-    "custom_field": null
-  },
-  {
-    "name": "s1-leaf1",
-    "test": "VerifyDynamicVlanSource",
-    "categories": [
-      "vlan"
-    ],
-    "description": "Verifies dynamic VLAN allocation for specified VLAN sources.",
-    "result": "failure",
-    "messages": [
-      "Dynamic VLAN source(s) not found in configuration: mlagsync"
-    ],
-    "custom_field": null
-  },
-  {
-    "name": "s1-leaf1",
-    "test": "VerifyInterfaceDiscards",
-    "categories": [
-      "interfaces"
-    ],
-    "description": "Verifies that the interfaces packet discard counters are equal to zero.",
-    "result": "success",
-    "messages": [],
-    "custom_field": null
-  },
-  {
-    "name": "s1-leaf1",
-    "test": "VerifyFieldNotice44Resolution",
-    "categories": [
-      "field notices"
-    ],
-    "description": "Verifies that the device is using the correct Aboot version per FN0044.",
-    "result": "skipped",
-    "messages": [
-      "VerifyFieldNotice44Resolution test is not supported on cEOSLab."
     ],
     "custom_field": null
   },
@@ -368,6 +354,19 @@
     "description": "Verifies that the interfaces error counters are equal to zero.",
     "result": "success",
     "messages": [],
+    "custom_field": null
+  },
+  {
+    "name": "s1-leaf1",
+    "test": "VerifyPtpGMStatus",
+    "categories": [
+      "ptp"
+    ],
+    "description": "Verifies that the device is locked to a valid PTP Grandmaster.",
+    "result": "skipped",
+    "messages": [
+      "VerifyPtpGMStatus test is not supported on cEOSLab."
+    ],
     "custom_field": null
   }
 ]

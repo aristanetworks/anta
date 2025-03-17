@@ -310,7 +310,6 @@ class FailedTestResultsSummary(MDReportBase):
 
     def generate_rows(self) -> Generator[str, None, None]:
         """Generate the rows of the failed test results table."""
-        self.results.results = sorted(self.results.results, key=lambda result: [getattr(result, field) for field in ["name", "result"]])
         for result in self.results.results:
             messages = self.safe_markdown(result.messages[0]) if len(result.messages) == 1 else self.safe_markdown("<br>".join(result.messages))
             categories = ", ".join(sorted(convert_categories(result.categories)))

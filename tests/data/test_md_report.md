@@ -16,13 +16,13 @@
 
 | Total Tests | Total Tests Success | Total Tests Skipped | Total Tests Failure | Total Tests Error |
 | ----------- | ------------------- | ------------------- | ------------------- | ------------------|
-| 30 | 11 | 9 | 8 | 2 |
+| 30 | 11 | 9 | 10 | 0 |
 
 ### Summary Totals Device Under Test
 
 | Device Under Test | Total Tests | Tests Success | Tests Skipped | Tests Failure | Tests Error | Categories Skipped | Categories Failed |
 | ------------------| ----------- | ------------- | ------------- | ------------- | ----------- | -------------------| ------------------|
-| s1-leaf1 | 30 | 11 | 9 | 8 | 2 | AVT, Field Notices, Flow Tracking, Hardware, LANZ, PTP, VXLAN | Cvx, Greent, Interfaces, Logging, VLAN |
+| s1-leaf1 | 30 | 11 | 9 | 10 | 0 | AVT, Field Notices, Flow Tracking, Hardware, LANZ, PTP, VXLAN | Cvx, Greent, Interfaces, Logging, VLAN |
 
 ### Summary Totals Per Category
 
@@ -30,7 +30,7 @@
 | ------------- | ----------- | ------------- | ------------- | ------------- | ----------- |
 | AVT | 2 | 0 | 2 | 0 | 0 |
 | BGP | 1 | 1 | 0 | 0 | 0 |
-| Cvx | 3 | 0 | 0 | 1 | 2 |
+| Cvx | 3 | 0 | 0 | 3 | 0 |
 | Field Notices | 1 | 0 | 1 | 0 | 0 |
 | Flow Tracking | 1 | 0 | 1 | 0 | 0 |
 | Greent | 2 | 0 | 0 | 2 | 0 |
@@ -47,9 +47,9 @@
 
 | Device Under Test | Categories | Test | Description | Custom Field  | Result | Messages |
 | ----------------- | ---------- | ---- | ----------- | --------------| -------| -------- |
-| s1-leaf1 | Cvx | VerifyActiveCVXConnections | Verifies the number of active CVX Connections. | - | error | show cvx connections brief has failed: Unavailable command (controller not ready) (at token 2: 'connections') |
-| s1-leaf1 | Cvx | VerifyMcsServerMounts | Verify if all MCS server mounts are in a MountComplete state. | - | error | show cvx mounts has failed: Unavailable command (controller not ready) (at token 2: 'mounts') |
+| s1-leaf1 | Cvx | VerifyActiveCVXConnections | Verifies the number of active CVX Connections. | - | failure | 'show cvx connections brief' failed on s1-leaf1: Unavailable command (controller not ready) (at token 2: 'connections') |
 | s1-leaf1 | Cvx | VerifyMcsClientMounts | Verify if all MCS client mounts are in mountStateMountComplete. | - | failure | MCS Client mount states are not present |
+| s1-leaf1 | Cvx | VerifyMcsServerMounts | Verify if all MCS server mounts are in a MountComplete state. | - | failure | 'show cvx mounts' failed on s1-leaf1: Unavailable command (controller not ready) (at token 2: 'mounts') |
 | s1-leaf1 | Greent | VerifyGreenT | Verifies if a GreenT policy other than the default is created. | - | failure | No GreenT policy is created |
 | s1-leaf1 | Greent | VerifyGreenTCounters | Verifies if the GreenT counters are incremented. | - | failure | GreenT counters are not incremented |
 | s1-leaf1 | Interfaces | VerifyIPProxyARP | Verifies if Proxy ARP is enabled. | - | failure | Interface: Ethernet1 - Not found<br>Interface: Ethernet2 - Proxy-ARP disabled |
@@ -65,9 +65,9 @@
 | s1-leaf1 | AVT | VerifyAVTPathHealth | Verifies the status of all AVT paths for all VRFs. | - | skipped | VerifyAVTPathHealth test is not supported on cEOSLab. |
 | s1-leaf1 | AVT | VerifyAVTRole | Verifies the AVT role of a device. | - | skipped | VerifyAVTRole test is not supported on cEOSLab. |
 | s1-leaf1 | BGP | VerifyBGPPeersHealthRibd | Verifies the health of all the BGP IPv4 peer(s). | - | success | - |
-| s1-leaf1 | Cvx | VerifyActiveCVXConnections | Verifies the number of active CVX Connections. | - | error | show cvx connections brief has failed: Unavailable command (controller not ready) (at token 2: 'connections') |
+| s1-leaf1 | Cvx | VerifyActiveCVXConnections | Verifies the number of active CVX Connections. | - | failure | 'show cvx connections brief' failed on s1-leaf1: Unavailable command (controller not ready) (at token 2: 'connections') |
 | s1-leaf1 | Cvx | VerifyMcsClientMounts | Verify if all MCS client mounts are in mountStateMountComplete. | - | failure | MCS Client mount states are not present |
-| s1-leaf1 | Cvx | VerifyMcsServerMounts | Verify if all MCS server mounts are in a MountComplete state. | - | error | show cvx mounts has failed: Unavailable command (controller not ready) (at token 2: 'mounts') |
+| s1-leaf1 | Cvx | VerifyMcsServerMounts | Verify if all MCS server mounts are in a MountComplete state. | - | failure | 'show cvx mounts' failed on s1-leaf1: Unavailable command (controller not ready) (at token 2: 'mounts') |
 | s1-leaf1 | Field Notices | VerifyFieldNotice44Resolution | Verifies that the device is using the correct Aboot version per FN0044. | - | skipped | VerifyFieldNotice44Resolution test is not supported on cEOSLab. |
 | s1-leaf1 | Flow Tracking | VerifyHardwareFlowTrackerStatus | Verifies the hardware flow tracking state. | - | skipped | VerifyHardwareFlowTrackerStatus test is not supported on cEOSLab. |
 | s1-leaf1 | Greent | VerifyGreenT | Verifies if a GreenT policy other than the default is created. | - | failure | No GreenT policy is created |
@@ -82,13 +82,13 @@
 | s1-leaf1 | Interfaces | VerifyInterfaceUtilization | Verifies that the utilization of interfaces is below a certain threshold. | - | success | - |
 | s1-leaf1 | Interfaces | VerifyPortChannels | Verifies there are no inactive ports in all port channels. | - | success | - |
 | s1-leaf1 | LANZ | VerifyLANZ | Verifies if LANZ is enabled. | - | skipped | VerifyLANZ test is not supported on cEOSLab. |
+| s1-leaf1 | Logging | VerifyLoggingEntries | Verifies that the expected log string is present in the last specified log messages. | - | success | - |
 | s1-leaf1 | Logging | VerifyLoggingErrors | Verifies there are no syslog messages with a severity of ERRORS or higher. | - | failure | Device has reported syslog messages with a severity of ERRORS or higher |
 | s1-leaf1 | Logging | VerifyLoggingHostname | Verifies if logs are generated with the device FQDN. | - | failure | Logs are not generated with the device FQDN |
-| s1-leaf1 | Logging | VerifyLoggingLogsGeneration | Verifies if logs are generated. | - | success | - |
 | s1-leaf1 | MLAG | VerifyMlagConfigSanity | Verifies there are no MLAG config-sanity inconsistencies. | - | success | - |
 | s1-leaf1 | MLAG | VerifyMlagInterfaces | Verifies there are no inactive or active-partial MLAG ports. | - | success | - |
 | s1-leaf1 | PTP | VerifyPtpGMStatus | Verifies that the device is locked to a valid PTP Grandmaster. | - | skipped | VerifyPtpGMStatus test is not supported on cEOSLab. |
 | s1-leaf1 | VLAN | VerifyDynamicVlanSource | Verifies dynamic VLAN allocation for specified VLAN sources. | - | failure | Dynamic VLAN source(s) not found in configuration: mlagsync |
 | s1-leaf1 | VLAN | VerifyVlanInternalPolicy | Verifies the VLAN internal allocation policy and the range of VLANs. | - | success | - |
 | s1-leaf1 | VXLAN | VerifyVxlan1ConnSettings | Verifies the interface vxlan1 source interface and UDP port. | - | skipped | Vxlan1 interface is not configured. |
-| s1-leaf1 | VXLAN | VerifyVxlan1Interface | Verifies if the Vxlan1 interface is configured and 'up/up'. | - | skipped | Interface: Vxlan1 - Not configured |
+| s1-leaf1 | VXLAN | VerifyVxlan1Interface | Verifies the Vxlan1 interface status. | - | skipped | Interface: Vxlan1 - Not configured |
