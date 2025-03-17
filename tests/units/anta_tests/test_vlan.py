@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from anta.tests.vlan import VerifyDynamicVlanSource, VerifyVlanInternalPolicy
+from anta.tests.vlan import VerifyDynamicVlanSource, VerifyVlanInternalPolicy, VerifyVlanStatus
 from tests.units.anta_tests import test
 
 DATA: list[dict[str, Any]] = [
@@ -88,5 +88,63 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [{"dynamicVlans": {"evpn": {"vlanIds": [1199]}, "mlagsync": {"vlanIds": []}}}],
         "inputs": {"sources": ["evpn", "mlagsync"], "strict": True},
         "expected": {"result": "failure", "messages": ["Dynamic VLAN source(s) exist but have no VLANs allocated: mlagsync"]},
+    },
+    {
+        "name": "success",
+        "test": VerifyVlanStatus,
+        "eos_data": [
+            {
+                "vlans": {
+                    "1": {"name": "default", "dynamic": False, "status": "active", "interfaces": {}},
+                    "4092": {"name": "VLAN4092", "dynamic": True, "status": "active", "interfaces": {}},
+                    "4094": {"name": "VLAN4094", "dynamic": True, "status": "active", "interfaces": {}},
+                },
+                "sourceDetail": "",
+            }
+        ],
+        "inputs": {"vlans": [{"vlan_id": 4092, "status": "active"}, {"vlan_id": 4094, "status": "active"}]},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-not-conifgure",
+        "test": VerifyVlanStatus,
+        "eos_data": [
+            {
+                "vlans": {
+                    "1": {"name": "default", "dynamic": False, "status": "active", "interfaces": {}},
+                },
+                "sourceDetail": "",
+            }
+        ],
+        "inputs": {"vlans": [{"vlan_id": 4092, "status": "active"}, {"vlan_id": 4094, "status": "active"}]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "VLAN: Vlan4092 - Not configured",
+                "VLAN: Vlan4094 - Not configured",
+            ],
+        },
+    },
+    {
+        "name": "failure-incorrect-status",
+        "test": VerifyVlanStatus,
+        "eos_data": [
+            {
+                "vlans": {
+                    "1": {"name": "default", "dynamic": False, "status": "active", "interfaces": {}},
+                    "4092": {"name": "VLAN4092", "dynamic": True, "status": "suspended", "interfaces": {}},
+                    "4094": {"name": "VLAN4094", "dynamic": True, "status": "active", "interfaces": {}},
+                },
+                "sourceDetail": "",
+            }
+        ],
+        "inputs": {"vlans": [{"vlan_id": 4092, "status": "active"}, {"vlan_id": 4094, "status": "suspended"}]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "VLAN: Vlan4092 - Incorrect administrative status - Expected: active Actual: suspended",
+                "VLAN: Vlan4094 - Incorrect administrative status - Expected: suspended Actual: active",
+            ],
+        },
     },
 ]

@@ -10,6 +10,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, ClassVar, Literal
 
 from anta.custom_types import DynamicVlanSource, Vlan
+from anta.input_models.vlan import VLAN
 from anta.models import AntaCommand, AntaTest
 from anta.tools import get_value
 
@@ -145,3 +146,57 @@ class VerifyDynamicVlanSource(AntaTest):
             unexpected_sources = sources_with_vlans - expected_sources
             if unexpected_sources:
                 self.result.is_failure(f"Strict mode enabled: Unexpected sources have VLANs allocated: {', '.join(sorted(unexpected_sources))}")
+
+
+class VerifyVlanStatus(AntaTest):
+    """Verifies administrative status of specified VLAN(s).
+
+    This test performs the following checks for each specified VLAN:
+
+      1. Validates the specified vlan is configured.
+      2. Verifies the administrative status matches the expected.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if all of the following conditions are met:
+        - Each specified vlan exists.
+        - Each specified vlan's administrative status is correct.
+    * Failure: The test will fail if any of the following conditions is met:
+        - Specified vlan not found in configuration.
+        - Administrative status is incorrect.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.vlan:
+      - VerifyVlanStatus:
+          vlans:
+            - vlan_id: 10
+              status: suspended
+            - vlan_id: 4094
+              status: active
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["vlan"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show vlan", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyVlanStatus test."""
+
+        vlans: list[VLAN]
+        """The VLAN list."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyVlanStatus."""
+        self.result.is_success()
+        command_output = self.instance_commands[0].json_output
+
+        for vlan in self.inputs.vlans:
+            if (vlan_detail := get_value(command_output, f"vlans.{vlan.vlan_id}")) is None:
+                self.result.is_failure(f"{vlan} - Not configured")
+                continue
+
+            if (act_status := vlan_detail["status"]) != vlan.status:
+                self.result.is_failure(f"{vlan} - Incorrect administrative status - Expected: {vlan.status} Actual: {act_status}")
