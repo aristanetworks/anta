@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../../imgs/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.8">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.9">
     
     
       
@@ -28,7 +28,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.8608ea7d.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.4af4bdda.min.css">
       
         
         <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
@@ -2922,10 +2922,11 @@
 
         <p>Verifies the STP disabled VLAN(s).</p>
 <p>This test performs the following checks:</p>
-<div class="codehilite"><pre><span></span><code><span class="mf">1.</span><span class="w"> </span><span class="n">Verifies</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">STP</span><span class="w"> </span><span class="n">is</span><span class="w"> </span><span class="n">configured</span><span class="mf">.</span>
-<span class="mf">2.</span><span class="w"> </span><span class="n">Verifies</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">specified</span><span class="w"> </span><span class="n">VLAN</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="w"> </span><span class="n">exist</span><span class="w"> </span><span class="kr">on</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">device</span><span class="mf">.</span>
-<span class="mf">3.</span><span class="w"> </span><span class="n">Verifies</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">STP</span><span class="w"> </span><span class="n">is</span><span class="w"> </span><span class="n">disabled</span><span class="w"> </span><span class="kr">for</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">specified</span><span class="w"> </span><span class="n">VLAN</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="mf">.</span>
-</code></pre></div>
+<ol>
+<li>Verifies that the STP is configured.</li>
+<li>Verifies that the specified VLAN(s) exist on the device.</li>
+<li>Verifies that the STP is disabled for the specified VLAN(s).</li>
+</ol>
 
 
 <details class="expected-results" open>
@@ -3081,9 +3082,9 @@
 
 <span class="sd">    This test performs the following checks:</span>
 
-<span class="sd">        1. Verifies that the STP is configured.</span>
-<span class="sd">        2. Verifies that the specified VLAN(s) exist on the device.</span>
-<span class="sd">        3. Verifies that the STP is disabled for the specified VLAN(s).</span>
+<span class="sd">      1. Verifies that the STP is configured.</span>
+<span class="sd">      2. Verifies that the specified VLAN(s) exist on the device.</span>
+<span class="sd">      3. Verifies that the STP is disabled for the specified VLAN(s).</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
