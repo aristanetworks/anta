@@ -21,6 +21,7 @@ COMMANDS = [
     "anta nrfu text --help",
     "anta nrfu tpl-report --help",
     "anta nrfu md-report --help",
+    "anta get tags --help",
 ]
 
 for command in COMMANDS:

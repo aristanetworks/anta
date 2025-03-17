@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from pathlib import Path
+import logging
 from typing import TYPE_CHECKING
 
 import pytest
@@ -15,10 +15,9 @@ from anta.inventory import AntaInventory
 from anta.inventory.exceptions import InventoryIncorrectSchemaError, InventoryRootKeyError
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from _pytest.mark.structures import ParameterSet
-
-FILE_DIR: Path = Path(__file__).parent.parent.resolve() / "data" / "inventory"
-
 
 INIT_VALID_PARAMS: list[ParameterSet] = [
     pytest.param(
@@ -76,3 +75,15 @@ class TestAntaInventory:
         """Parse invalid YAML file to create ANTA inventory."""
         with pytest.raises((InventoryIncorrectSchemaError, InventoryRootKeyError, ValidationError)):
             AntaInventory.parse(filename=yaml_file, username="arista", password="arista123")
+
+    def test_parse_wrong_format(self) -> None:
+        """Use wrong file format to parse the ANTA inventory."""
+        with pytest.raises(ValueError, match=" is not a valid format for an AntaInventory file. Only 'yaml' and 'json' are supported."):
+            AntaInventory.parse(filename="dummy.yml", username="arista", password="arista123", file_format="wrong")  # type: ignore[arg-type]
+
+    def test_parse_os_error(self, caplog: pytest.LogCaptureFixture) -> None:
+        """Use wrong file name to parse the ANTA inventory."""
+        caplog.set_level(logging.INFO)
+        with pytest.raises(OSError, match="No such file or directory"):
+            _ = AntaInventory.parse(filename="dummy.yml", username="arista", password="arista123")
+        assert "Unable to parse ANTA Device Inventory file" in caplog.records[0].message

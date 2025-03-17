@@ -9,6 +9,7 @@ from typing import Any
 
 from anta.tests.logging import (
     VerifyLoggingAccounting,
+    VerifyLoggingEntries,
     VerifyLoggingErrors,
     VerifyLoggingHostname,
     VerifyLoggingHosts,
@@ -97,7 +98,7 @@ DATA: list[dict[str, Any]] = [
                 """,
         ],
         "inputs": {"interface": "Management0", "vrf": "MGMT"},
-        "expected": {"result": "failure", "messages": ["Source-interface 'Management0' is not configured in VRF MGMT"]},
+        "expected": {"result": "failure", "messages": ["Source-interface: Management0 VRF: MGMT - Not configured"]},
     },
     {
         "name": "failure-vrf",
@@ -112,7 +113,7 @@ DATA: list[dict[str, Any]] = [
                 """,
         ],
         "inputs": {"interface": "Management0", "vrf": "MGMT"},
-        "expected": {"result": "failure", "messages": ["Source-interface 'Management0' is not configured in VRF MGMT"]},
+        "expected": {"result": "failure", "messages": ["Source-interface: Management0 VRF: MGMT - Not configured"]},
     },
     {
         "name": "success",
@@ -317,6 +318,46 @@ DATA: list[dict[str, Any]] = [
             accounting                 debugging           debugging""",
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Syslog logging is disabled."]},
+        "expected": {"result": "failure", "messages": ["Syslog logging is disabled"]},
+    },
+    {
+        "name": "success",
+        "test": VerifyLoggingEntries,
+        "eos_data": [
+            """Mar 13 04:10:45 s1-leaf1 ProcMgr: %PROCMGR-6-TERMINATE_RUNNING_PROCESS: Terminating deconfigured/reconfigured process 'SystemInitMonitor' (PID=859)
+ Mar 13 04:10:45 s1-leaf1 ProcMgr: %PROCMGR-6-PROCESS_TERMINATED: 'SystemInitMonitor' (PID=859, status=9) has terminated.""",
+            """Mar 13 04:10:45 s1-leaf1 ProcMgr: %PROCMGR-7-WORKER_WARMSTART_DONE: ProcMgr worker warm start done. (PID=547)""",
+        ],
+        "inputs": {
+            "logging_entries": [
+                {"regex_match": ".*PROCMGR-6-PROCESS_TERMINATED:.*", "last_number_messages": 3},
+                {"regex_match": ".*ProcMgr worker warm start.*", "last_number_messages": 2, "severity_level": "debugging"},
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-log-str-not-found",
+        "test": VerifyLoggingEntries,
+        "eos_data": [
+            """Mar 12 04:34:01 s1-leaf1 ProcMgr: %PROCMGR-7-WORKER_WARMSTART_DONE: ProcMgr worker warm start done. (PID=559)
+Mar 12 04:34:01 s1-leaf1 ProcMgr: %PROCMGR-6-PROCESS_TERMINATED: 'SystemInitMonitor' (PID=867, status=9) has terminated.""",
+            """Mar 13 03:58:12 s1-leaf1 ConfigAgent: %SYS-5-CONFIG_SESSION_ABORTED: User cvpsystem aborted
+             configuration session capiVerify-612-612b34a2ffbf11ef96ba3a348d538ba0 on TerminAttr (localhost)
+ Mar 13 04:10:45 s1-leaf1 SystemInitMonitor: %SYS-5-SYSTEM_INITIALIZED: System is initialized""",
+        ],
+        "inputs": {
+            "logging_entries": [
+                {"regex_match": ".ACCOUNTING-5-EXEC: cvpadmin ssh.", "last_number_messages": 3},
+                {"regex_match": ".*ProcMgr worker warm start.*", "last_number_messages": 10, "severity_level": "debugging"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Pattern: .ACCOUNTING-5-EXEC: cvpadmin ssh. - Not found in last 3 informational log entries",
+                "Pattern: .*ProcMgr worker warm start.* - Not found in last 10 debugging log entries",
+            ],
+        },
     },
 ]

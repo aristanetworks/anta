@@ -306,7 +306,7 @@ class VerifyMlagPrimaryPriority(AntaTest):
 
         # Check MLAG state
         if mlag_state != "primary":
-            self.result.is_failure("The device is not set as MLAG primary.")
+            self.result.is_failure("The device is not set as MLAG primary")
 
         # Check primary priority
         if primary_priority != self.inputs.primary_priority:

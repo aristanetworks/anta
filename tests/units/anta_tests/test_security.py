@@ -42,7 +42,7 @@ DATA: list[dict[str, Any]] = [
         "test": VerifySSHStatus,
         "eos_data": ["SSH per host connection limit is 20\nFIPS status: disabled\n\n"],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Could not find SSH status in returned output."]},
+        "expected": {"result": "failure", "messages": ["Could not find SSH status in returned output"]},
     },
     {
         "name": "failure-ssh-enabled",
@@ -83,14 +83,14 @@ DATA: list[dict[str, Any]] = [
         "test": VerifySSHIPv4Acl,
         "eos_data": [{"ipAclList": {"aclList": []}}],
         "inputs": {"number": 1, "vrf": "MGMT"},
-        "expected": {"result": "failure", "messages": ["Expected 1 SSH IPv4 ACL(s) in vrf MGMT but got 0"]},
+        "expected": {"result": "failure", "messages": ["VRF: MGMT - SSH IPv4 ACL(s) count mismatch - Expected: 1 Actual: 0"]},
     },
     {
         "name": "failure-wrong-vrf",
         "test": VerifySSHIPv4Acl,
         "eos_data": [{"ipAclList": {"aclList": [{"type": "Ip4Acl", "name": "ACL_IPV4_SSH", "configuredVrfs": ["default"], "activeVrfs": ["default"]}]}}],
         "inputs": {"number": 1, "vrf": "MGMT"},
-        "expected": {"result": "failure", "messages": ["SSH IPv4 ACL(s) not configured or active in vrf MGMT: ACL_IPV4_SSH"]},
+        "expected": {"result": "failure", "messages": ["VRF: MGMT - Following SSH IPv4 ACL(s) not configured or active: ACL_IPV4_SSH"]},
     },
     {
         "name": "success",
@@ -104,14 +104,14 @@ DATA: list[dict[str, Any]] = [
         "test": VerifySSHIPv6Acl,
         "eos_data": [{"ipv6AclList": {"aclList": []}}],
         "inputs": {"number": 1, "vrf": "MGMT"},
-        "expected": {"result": "failure", "messages": ["Expected 1 SSH IPv6 ACL(s) in vrf MGMT but got 0"]},
+        "expected": {"result": "failure", "messages": ["VRF: MGMT - SSH IPv6 ACL(s) count mismatch - Expected: 1 Actual: 0"]},
     },
     {
         "name": "failure-wrong-vrf",
         "test": VerifySSHIPv6Acl,
         "eos_data": [{"ipv6AclList": {"aclList": [{"type": "Ip6Acl", "name": "ACL_IPV6_SSH", "configuredVrfs": ["default"], "activeVrfs": ["default"]}]}}],
         "inputs": {"number": 1, "vrf": "MGMT"},
-        "expected": {"result": "failure", "messages": ["SSH IPv6 ACL(s) not configured or active in vrf MGMT: ACL_IPV6_SSH"]},
+        "expected": {"result": "failure", "messages": ["VRF: MGMT - Following SSH IPv6 ACL(s) not configured or active: ACL_IPV6_SSH"]},
     },
     {
         "name": "success",
@@ -223,14 +223,14 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyAPIIPv4Acl,
         "eos_data": [{"ipAclList": {"aclList": []}}],
         "inputs": {"number": 1, "vrf": "MGMT"},
-        "expected": {"result": "failure", "messages": ["Expected 1 eAPI IPv4 ACL(s) in vrf MGMT but got 0"]},
+        "expected": {"result": "failure", "messages": ["VRF: MGMT - eAPI IPv4 ACL(s) count mismatch - Expected: 1 Actual: 0"]},
     },
     {
         "name": "failure-wrong-vrf",
         "test": VerifyAPIIPv4Acl,
         "eos_data": [{"ipAclList": {"aclList": [{"type": "Ip4Acl", "name": "ACL_IPV4_API", "configuredVrfs": ["default"], "activeVrfs": ["default"]}]}}],
         "inputs": {"number": 1, "vrf": "MGMT"},
-        "expected": {"result": "failure", "messages": ["eAPI IPv4 ACL(s) not configured or active in vrf MGMT: ACL_IPV4_API"]},
+        "expected": {"result": "failure", "messages": ["VRF: MGMT - Following eAPI IPv4 ACL(s) not configured or active: ACL_IPV4_API"]},
     },
     {
         "name": "success",
@@ -244,14 +244,14 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyAPIIPv6Acl,
         "eos_data": [{"ipv6AclList": {"aclList": []}}],
         "inputs": {"number": 1, "vrf": "MGMT"},
-        "expected": {"result": "failure", "messages": ["Expected 1 eAPI IPv6 ACL(s) in vrf MGMT but got 0"]},
+        "expected": {"result": "failure", "messages": ["VRF: MGMT - eAPI IPv6 ACL(s) count mismatch - Expected: 1 Actual: 0"]},
     },
     {
         "name": "failure-wrong-vrf",
         "test": VerifyAPIIPv6Acl,
         "eos_data": [{"ipv6AclList": {"aclList": [{"type": "Ip6Acl", "name": "ACL_IPV6_API", "configuredVrfs": ["default"], "activeVrfs": ["default"]}]}}],
         "inputs": {"number": 1, "vrf": "MGMT"},
-        "expected": {"result": "failure", "messages": ["eAPI IPv6 ACL(s) not configured or active in vrf MGMT: ACL_IPV6_API"]},
+        "expected": {"result": "failure", "messages": ["VRF: MGMT - Following eAPI IPv6 ACL(s) not configured or active: ACL_IPV6_API"]},
     },
     {
         "name": "success",
@@ -640,10 +640,24 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Expected `Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
-                "that can be found in the LICENSE file.` as the login banner, but found `Copyright (c) 2023 Arista Networks, Inc.\nUse of this source code is "
-                "governed by the Apache License 2.0\nthat can be found in the LICENSE file.` instead."
+                "Incorrect login banner configured - Expected: Copyright (c) 2023-2024 Arista Networks, Inc.\n"
+                "Use of this source code is governed by the Apache License 2.0\nthat can be found in the LICENSE file. "
+                "Actual: Copyright (c) 2023 Arista Networks, Inc.\n"
+                "Use of this source code is governed by the Apache License 2.0\nthat can be found in the LICENSE file."
             ],
+        },
+    },
+    {
+        "name": "failure-login-banner-not-configured",
+        "test": VerifyBannerLogin,
+        "eos_data": [{"loginBanner": ""}],
+        "inputs": {
+            "login_banner": "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+            "that can be found in the LICENSE file."
+        },
+        "expected": {
+            "result": "failure",
+            "messages": ["Login banner is not configured"],
         },
     },
     {
@@ -693,10 +707,24 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Expected `Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
-                "that can be found in the LICENSE file.` as the motd banner, but found `Copyright (c) 2023 Arista Networks, Inc.\nUse of this source code is "
-                "governed by the Apache License 2.0\nthat can be found in the LICENSE file.` instead."
+                "Incorrect MOTD banner configured - Expected: Copyright (c) 2023-2024 Arista Networks, Inc.\n"
+                "Use of this source code is governed by the Apache License 2.0\nthat can be found in the LICENSE file. "
+                "Actual: Copyright (c) 2023 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+                "that can be found in the LICENSE file."
             ],
+        },
+    },
+    {
+        "name": "failure-login-banner-not-configured",
+        "test": VerifyBannerMotd,
+        "eos_data": [{"motd": ""}],
+        "inputs": {
+            "motd_banner": "Copyright (c) 2023-2024 Arista Networks, Inc.\nUse of this source code is governed by the Apache License 2.0\n"
+            "that can be found in the LICENSE file."
+        },
+        "expected": {
+            "result": "failure",
+            "messages": ["MOTD banner is not configured"],
         },
     },
     {
@@ -954,7 +982,7 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyIPSecConnHealth,
         "eos_data": [{"connections": {}}],
         "inputs": {},
-        "expected": {"result": "failure", "messages": ["No IPv4 security connection configured."]},
+        "expected": {"result": "failure", "messages": ["No IPv4 security connection configured"]},
     },
     {
         "name": "failure-not-established",
@@ -976,9 +1004,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "The following IPv4 security connections are not established:\n"
-                "source:172.18.3.2 destination:172.18.2.2 vrf:default\n"
-                "source:100.64.3.2 destination:100.64.5.2 vrf:Guest."
+                "Source: 172.18.3.2 Destination: 172.18.2.2 VRF: default - IPv4 security connection not established",
+                "Source: 100.64.3.2 Destination: 100.64.5.2 VRF: Guest - IPv4 security connection not established",
             ],
         },
     },
@@ -1129,10 +1156,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 10.255.0.1 VRF: default Source: 172.18.3.2 Destination: 172.18.2.2 - Connection down - Expected: Established, Actual: Idle",
-                "Peer: 10.255.0.1 VRF: default Source: 100.64.2.2 Destination: 100.64.1.2 - Connection down - Expected: Established, Actual: Idle",
-                "Peer: 10.255.0.2 VRF: MGMT Source: 100.64.2.2 Destination: 100.64.1.2 - Connection down - Expected: Established, Actual: Idle",
-                "Peer: 10.255.0.2 VRF: MGMT Source: 172.18.2.2 Destination: 172.18.1.2 - Connection down - Expected: Established, Actual: Idle",
+                "Peer: 10.255.0.1 VRF: default Source: 172.18.3.2 Destination: 172.18.2.2 - Connection down - Expected: Established Actual: Idle",
+                "Peer: 10.255.0.1 VRF: default Source: 100.64.2.2 Destination: 100.64.1.2 - Connection down - Expected: Established Actual: Idle",
+                "Peer: 10.255.0.2 VRF: MGMT Source: 100.64.2.2 Destination: 100.64.1.2 - Connection down - Expected: Established Actual: Idle",
+                "Peer: 10.255.0.2 VRF: MGMT Source: 172.18.2.2 Destination: 172.18.1.2 - Connection down - Expected: Established Actual: Idle",
             ],
         },
     },
@@ -1192,8 +1219,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Peer: 10.255.0.1 VRF: default Source: 172.18.3.2 Destination: 172.18.2.2 - Connection down - Expected: Established, Actual: Idle",
-                "Peer: 10.255.0.1 VRF: default Source: 100.64.3.2 Destination: 100.64.2.2 - Connection down - Expected: Established, Actual: Idle",
+                "Peer: 10.255.0.1 VRF: default Source: 172.18.3.2 Destination: 172.18.2.2 - Connection down - Expected: Established Actual: Idle",
+                "Peer: 10.255.0.1 VRF: default Source: 100.64.3.2 Destination: 100.64.2.2 - Connection down - Expected: Established Actual: Idle",
                 "Peer: 10.255.0.2 VRF: default Source: 100.64.4.2 Destination: 100.64.1.2 - Connection not found.",
                 "Peer: 10.255.0.2 VRF: default Source: 172.18.4.2 Destination: 172.18.1.2 - Connection not found.",
             ],
@@ -1211,7 +1238,7 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyHardwareEntropy,
         "eos_data": [{"cpuModel": "2.20GHz", "cryptoModule": "Crypto Module v3.0", "hardwareEntropyEnabled": False, "blockedNetworkProtocols": []}],
         "inputs": {},
-        "expected": {"result": "failure", "messages": ["Hardware entropy generation is disabled."]},
+        "expected": {"result": "failure", "messages": ["Hardware entropy generation is disabled"]},
     },
 ]
 

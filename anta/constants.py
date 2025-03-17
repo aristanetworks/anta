@@ -44,6 +44,7 @@ KNOWN_EOS_ERRORS = [
     r".* does not support IP",
     r"IS-IS (.*) is disabled because: .*",
     r"No source interface .*",
+    r".*controller\snot\sready.*",
 ]
 """List of known EOS errors.
 
