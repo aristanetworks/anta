@@ -457,27 +457,27 @@ class VerifyISISInterfaceAuthMode(AntaTest):
     anta.tests.routing:
       isis:
         - VerifyISISInterfaceAuthMode:
-          instances:
-            - name: instance-1
-              vrf: Test
-              interfaces:
-                - name: Loopback0
-                  level: 1
-                  authentication_mode: MD5
-                - name: Ethernet1
-                  level: 2
-                  authentication_mode: Text
-            - name: instance-2
-              vrf: MGMT
-              interfaces:
-                - name: Ethernet2
-                  level: 1
-                  authentication_mode: SHA
-                  auth_key_id: 10
-                - name: Ethernet3
-                  level: 1
-                  authentication_mode: shared-secret
-                  shared_secret_key_profile: secret
+            instances:
+              - name: instance-1
+                vrf: Test
+                interfaces:
+                  - name: Loopback0
+                    level: 1
+                    authentication_mode: MD5
+                  - name: Ethernet1
+                    level: 2
+                    authentication_mode: Text
+              - name: instance-2
+                vrf: MGMT
+                interfaces:
+                  - name: Ethernet2
+                    level: 1
+                    authentication_mode: SHA
+                    auth_key_id: 10
+                  - name: Ethernet3
+                    level: 1
+                    authentication_mode: shared-secret
+                    shared_secret_key_profile: secret
     ```
     """
 
@@ -494,23 +494,24 @@ class VerifyISISInterfaceAuthMode(AntaTest):
         @classmethod
         def _validate_instances(cls, instances: list[ISISInstance]) -> list[ISISInstance]:
             """Validate required fields in each IS-IS instance."""
+            msgs: list[str] = []
             for instance in instances:
                 if not instance.interfaces:
                     msg = f"{instance} `interfaces` field missing in the input."
                     raise ValueError(msg)
                 for interface in instance.interfaces:
                     if not interface.authentication_mode:
-                        msg = f"{interface} `authentication_mode` field missing in the input."
-                        raise ValueError(msg)
-                    if interface.authentication_mode == "SHA" and not interface.auth_key_id:
-                        msg = f"{interface} AuthenticationMode: SHA `auth_key_id` field missing in the input. "
-                        raise ValueError(msg)
-                    if interface.authentication_mode == "shared-secret" and not interface.shared_secret_key_profile:
-                        msg = f"{interface}  AuthenticationMode: shared-secret `shared_secret_key_profile` field missing in the input."
-                        raise ValueError(msg)
+                        msgs.append(f"{interface} `authentication_mode` field missing in the input.")
+                    elif interface.authentication_mode == "SHA" and not interface.auth_key_id:
+                        msgs.append(f"{interface} AuthenticationMode: SHA `auth_key_id` field missing in the input. ")
+                    elif interface.authentication_mode == "shared-secret" and not interface.shared_secret_key_profile:
+                        msgs.append(f"{interface}  AuthenticationMode: shared-secret `shared_secret_key_profile` field missing in the input.")
+            if msgs:
+                raise ValueError("\n".join(msgs))
+
             return instances
 
-    def _validate_isis_auth_mode(self, instance_data: str, act_interface_detail: dict[str, Any], interface_data: dict[str, Any]) -> str | None:
+    def _validate_isis_auth_mode(self, instance_data: ISISInstance, interface_data: ISISInterface, act_interface_detail: dict[str, Any]) -> str | None:
         """Validate the authentication mode for a specified interface."""
         auth_mode = act_interface_detail.get("authenticationMode") if act_interface_detail.get("authenticationMode") else "shared-secret"
 
@@ -558,6 +559,6 @@ class VerifyISISInterfaceAuthMode(AntaTest):
                 if not (act_interface_detail := get_value(vrf_instances, f"interfaces.{interface_data.name}.intfLevels.{interface_data.level}")):
                     self.result.is_failure(f"{instance_data} Interface: {interface_data.name} Level: {interface_data.level} - Not configured")
                     continue
-                failure_msg = self._validate_isis_auth_mode(instance_data, act_interface_detail, interface_data)
+                failure_msg = self._validate_isis_auth_mode(instance_data, interface_data, act_interface_detail)
                 if failure_msg:
                     self.result.is_failure(failure_msg)

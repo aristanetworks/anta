@@ -2310,92 +2310,36 @@ DATA: list[dict[str, Any]] = [
                                 "interfaces": {
                                     "Loopback0": {
                                         "enabled": True,
-                                        "index": 2,
-                                        "snpa": "0:0:0:0:0:0",
-                                        "mtu": 65532,
-                                        "interfaceAddressFamily": "ipv4",
-                                        "interfaceType": "loopback",
-                                        "srNodeSegments": [],
-                                        "bfdIpv4Enabled": False,
-                                        "bfdIpv6Enabled": False,
-                                        "helloPaddingEnabled": True,
                                         "intfLevels": {
                                             "2": {
-                                                "ipv4Metric": 10,
                                                 "sharedSecretProfile": "",
-                                                "isisAdjacencies": [],
                                                 "passive": True,
-                                                "v4Protection": "disabled",
-                                                "v6Protection": "disabled",
                                             }
                                         },
-                                        "areaProxyBoundary": False,
                                     },
                                     "Ethernet1": {
                                         "enabled": True,
-                                        "index": 133,
-                                        "snpa": "P2P",
-                                        "mtu": 1497,
-                                        "interfaceAddressFamily": "ipv4",
-                                        "interfaceType": "point-to-point",
-                                        "srNodeSegments": [],
-                                        "bfdIpv4Enabled": False,
-                                        "bfdIpv6Enabled": False,
-                                        "helloPaddingEnabled": True,
                                         "intfLevels": {
                                             "2": {
-                                                "ipv4Metric": 10,
-                                                "numAdjacencies": 0,
-                                                "linkId": "85",
                                                 "authenticationMode": "MD5",
                                                 "sharedSecretProfile": "",
-                                                "isisAdjacencies": [],
-                                                "passive": False,
-                                                "v4Protection": "disabled",
-                                                "v6Protection": "disabled",
                                             }
                                         },
-                                        "interfaceSpeed": 1000,
-                                        "areaProxyBoundary": False,
                                     },
                                     "Ethernet2": {
                                         "enabled": True,
-                                        "index": 136,
-                                        "snpa": "P2P",
-                                        "mtu": 1497,
-                                        "interfaceAddressFamily": "ipv4",
-                                        "interfaceType": "point-to-point",
-                                        "srNodeSegments": [],
-                                        "bfdIpv4Enabled": False,
-                                        "bfdIpv6Enabled": False,
-                                        "helloPaddingEnabled": True,
                                         "intfLevels": {
                                             "2": {
-                                                "ipv4Metric": 10,
-                                                "numAdjacencies": 1,
-                                                "linkId": "88",
                                                 "sharedSecretProfile": "Secret",
                                                 "isisAdjacencies": [
                                                     {
-                                                        "systemId": "1111.0000.0008",
-                                                        "hostname": "eos8",
                                                         "level": "level2",
                                                         "state": "up",
                                                         "adjType": "l2",
-                                                        "addrFamily": "ipv4",
-                                                        "adjAddrFamilyMatch": True,
-                                                        "holdTime": 30,
-                                                        "ipv4IntfAddr": "10.6.8.8",
-                                                        "intfAreas": [{"areaId": "49"}],
                                                     }
                                                 ],
-                                                "passive": False,
-                                                "v4Protection": "disabled",
-                                                "v6Protection": "disabled",
                                             }
                                         },
-                                        "interfaceSpeed": 1000,
-                                        "areaProxyBoundary": False,
                                     },
                                 }
                             },
@@ -2403,81 +2347,30 @@ DATA: list[dict[str, Any]] = [
                                 "interfaces": {
                                     "Loopback0": {
                                         "enabled": True,
-                                        "index": 2,
-                                        "snpa": "0:0:0:0:0:0",
-                                        "mtu": 65532,
-                                        "interfaceAddressFamily": "ipv4",
-                                        "interfaceType": "loopback",
-                                        "srNodeSegments": [],
-                                        "bfdIpv4Enabled": False,
-                                        "bfdIpv6Enabled": False,
-                                        "helloPaddingEnabled": True,
                                         "intfLevels": {
                                             "2": {
-                                                "ipv4Metric": 10,
                                                 "sharedSecretProfile": "",
-                                                "isisAdjacencies": [],
-                                                "passive": True,
-                                                "v4Protection": "disabled",
-                                                "v6Protection": "disabled",
                                             }
                                         },
-                                        "areaProxyBoundary": False,
                                     },
                                     "Ethernet3": {
                                         "enabled": True,
-                                        "index": 101,
-                                        "snpa": "P2P",
-                                        "mtu": 1497,
-                                        "interfaceAddressFamily": "ipv4",
-                                        "interfaceType": "point-to-point",
-                                        "srNodeSegments": [],
-                                        "bfdIpv4Enabled": False,
-                                        "bfdIpv6Enabled": False,
-                                        "helloPaddingEnabled": True,
                                         "intfLevels": {
                                             "2": {
-                                                "ipv4Metric": 10,
-                                                "numAdjacencies": 0,
-                                                "linkId": "65",
                                                 "authenticationMode": "SHA",
                                                 "authenticationModeKeyId": 10,
                                                 "sharedSecretProfile": "",
-                                                "isisAdjacencies": [],
-                                                "passive": False,
-                                                "v4Protection": "disabled",
-                                                "v6Protection": "disabled",
                                             }
                                         },
-                                        "interfaceSpeed": 1000,
-                                        "areaProxyBoundary": False,
                                     },
                                     "Ethernet4": {
                                         "enabled": True,
-                                        "index": 113,
-                                        "snpa": "P2P",
-                                        "mtu": 1497,
-                                        "interfaceAddressFamily": "ipv4",
-                                        "interfaceType": "point-to-point",
-                                        "srNodeSegments": [],
-                                        "bfdIpv4Enabled": False,
-                                        "bfdIpv6Enabled": False,
-                                        "helloPaddingEnabled": True,
                                         "intfLevels": {
                                             "2": {
-                                                "ipv4Metric": 10,
-                                                "numAdjacencies": 0,
-                                                "linkId": "71",
                                                 "authenticationMode": "Text",
                                                 "sharedSecretProfile": "",
-                                                "isisAdjacencies": [],
-                                                "passive": False,
-                                                "v4Protection": "disabled",
-                                                "v6Protection": "disabled",
                                             }
                                         },
-                                        "interfaceSpeed": 1000,
-                                        "areaProxyBoundary": False,
                                     },
                                 }
                             },
@@ -2509,7 +2402,7 @@ DATA: list[dict[str, Any]] = [
         },
     },
     {
-        "name": "failure-is-is-not-configured",
+        "name": "skipped-is-is-not-configured",
         "test": VerifyISISInterfaceAuthMode,
         "eos_data": [{"vrfs": {}}],
         "inputs": {
@@ -2540,19 +2433,9 @@ DATA: list[dict[str, Any]] = [
                                 "interfaces": {
                                     "Loopback0": {
                                         "enabled": True,
-                                        "index": 2,
-                                        "snpa": "0:0:0:0:0:0",
-                                        "mtu": 65532,
-                                        "interfaceAddressFamily": "ipv4",
-                                        "interfaceType": "loopback",
                                         "intfLevels": {
                                             "2": {
-                                                "ipv4Metric": 10,
                                                 "sharedSecretProfile": "",
-                                                "isisAdjacencies": [],
-                                                "passive": True,
-                                                "v4Protection": "disabled",
-                                                "v6Protection": "disabled",
                                             }
                                         },
                                     },
@@ -2591,19 +2474,9 @@ DATA: list[dict[str, Any]] = [
                                 "interfaces": {
                                     "Loopback0": {
                                         "enabled": True,
-                                        "index": 2,
-                                        "snpa": "0:0:0:0:0:0",
-                                        "mtu": 65532,
-                                        "interfaceAddressFamily": "ipv4",
-                                        "interfaceType": "loopback",
                                         "intfLevels": {
                                             "2": {
-                                                "ipv4Metric": 10,
                                                 "sharedSecretProfile": "",
-                                                "isisAdjacencies": [],
-                                                "passive": True,
-                                                "v4Protection": "disabled",
-                                                "v6Protection": "disabled",
                                             }
                                         },
                                     },
@@ -2642,85 +2515,31 @@ DATA: list[dict[str, Any]] = [
                                 "interfaces": {
                                     "Ethernet1": {
                                         "enabled": True,
-                                        "index": 101,
-                                        "snpa": "P2P",
-                                        "mtu": 1497,
-                                        "interfaceAddressFamily": "ipv4",
-                                        "interfaceType": "point-to-point",
-                                        "srNodeSegments": [],
-                                        "bfdIpv4Enabled": False,
-                                        "bfdIpv6Enabled": False,
-                                        "helloPaddingEnabled": True,
                                         "intfLevels": {
                                             "2": {
-                                                "ipv4Metric": 10,
-                                                "numAdjacencies": 0,
-                                                "linkId": "65",
                                                 "authenticationMode": "SHA",
                                                 "authenticationModeKeyId": 10,
                                                 "sharedSecretProfile": "",
-                                                "isisAdjacencies": [],
-                                                "passive": False,
-                                                "v4Protection": "disabled",
-                                                "v6Protection": "disabled",
                                             }
                                         },
-                                        "interfaceSpeed": 1000,
-                                        "areaProxyBoundary": False,
                                     },
                                     "Ethernet2": {
                                         "enabled": True,
-                                        "index": 113,
-                                        "snpa": "P2P",
-                                        "mtu": 1497,
-                                        "interfaceAddressFamily": "ipv4",
-                                        "interfaceType": "point-to-point",
-                                        "srNodeSegments": [],
-                                        "bfdIpv4Enabled": False,
-                                        "bfdIpv6Enabled": False,
-                                        "helloPaddingEnabled": True,
                                         "intfLevels": {
                                             "2": {
-                                                "ipv4Metric": 10,
-                                                "numAdjacencies": 0,
-                                                "linkId": "71",
                                                 "authenticationMode": "Text",
                                                 "sharedSecretProfile": "",
-                                                "isisAdjacencies": [],
-                                                "passive": False,
-                                                "v4Protection": "disabled",
-                                                "v6Protection": "disabled",
                                             }
                                         },
-                                        "interfaceSpeed": 1000,
-                                        "areaProxyBoundary": False,
                                     },
                                     "Ethernet3": {
                                         "enabled": True,
-                                        "index": 133,
-                                        "snpa": "P2P",
-                                        "mtu": 1497,
-                                        "interfaceAddressFamily": "ipv4",
-                                        "interfaceType": "point-to-point",
-                                        "srNodeSegments": [],
-                                        "bfdIpv4Enabled": False,
-                                        "bfdIpv6Enabled": False,
-                                        "helloPaddingEnabled": True,
                                         "intfLevels": {
                                             "2": {
-                                                "ipv4Metric": 10,
-                                                "numAdjacencies": 0,
-                                                "linkId": "85",
                                                 "authenticationMode": "MD5",
                                                 "sharedSecretProfile": "",
-                                                "isisAdjacencies": [],
-                                                "passive": False,
-                                                "v4Protection": "disabled",
-                                                "v6Protection": "disabled",
                                             }
                                         },
-                                        "interfaceSpeed": 1000,
-                                        "areaProxyBoundary": False,
                                     },
                                 }
                             }
@@ -2762,58 +2581,22 @@ DATA: list[dict[str, Any]] = [
                                 "interfaces": {
                                     "Ethernet1": {
                                         "enabled": True,
-                                        "index": 101,
-                                        "snpa": "P2P",
-                                        "mtu": 1497,
-                                        "interfaceAddressFamily": "ipv4",
-                                        "interfaceType": "point-to-point",
-                                        "srNodeSegments": [],
-                                        "bfdIpv4Enabled": False,
-                                        "bfdIpv6Enabled": False,
-                                        "helloPaddingEnabled": True,
                                         "intfLevels": {
                                             "2": {
-                                                "ipv4Metric": 10,
-                                                "numAdjacencies": 0,
-                                                "linkId": "65",
                                                 "authenticationMode": "SHA",
                                                 "authenticationModeKeyId": 9,
                                                 "sharedSecretProfile": "",
-                                                "isisAdjacencies": [],
-                                                "passive": False,
-                                                "v4Protection": "disabled",
-                                                "v6Protection": "disabled",
                                             }
                                         },
-                                        "interfaceSpeed": 1000,
-                                        "areaProxyBoundary": False,
                                     },
                                     "Ethernet2": {
                                         "enabled": True,
-                                        "index": 113,
-                                        "snpa": "P2P",
-                                        "mtu": 1497,
-                                        "interfaceAddressFamily": "ipv4",
-                                        "interfaceType": "point-to-point",
-                                        "srNodeSegments": [],
-                                        "bfdIpv4Enabled": False,
-                                        "bfdIpv6Enabled": False,
-                                        "helloPaddingEnabled": True,
                                         "intfLevels": {
                                             "2": {
-                                                "ipv4Metric": 10,
-                                                "numAdjacencies": 0,
-                                                "linkId": "71",
                                                 "authenticationMode": "Text",
                                                 "sharedSecretProfile": "",
-                                                "isisAdjacencies": [],
-                                                "passive": False,
-                                                "v4Protection": "disabled",
-                                                "v6Protection": "disabled",
                                             }
                                         },
-                                        "interfaceSpeed": 1000,
-                                        "areaProxyBoundary": False,
                                     },
                                 }
                             }
@@ -2852,69 +2635,27 @@ DATA: list[dict[str, Any]] = [
                                 "interfaces": {
                                     "Ethernet1": {
                                         "enabled": True,
-                                        "index": 113,
-                                        "snpa": "P2P",
-                                        "mtu": 1497,
-                                        "interfaceAddressFamily": "ipv4",
-                                        "interfaceType": "point-to-point",
-                                        "srNodeSegments": [],
-                                        "bfdIpv4Enabled": False,
-                                        "bfdIpv6Enabled": False,
-                                        "helloPaddingEnabled": True,
                                         "intfLevels": {
                                             "2": {
-                                                "ipv4Metric": 10,
-                                                "numAdjacencies": 0,
-                                                "linkId": "71",
                                                 "authenticationMode": "Text",
                                                 "sharedSecretProfile": "",
-                                                "isisAdjacencies": [],
-                                                "passive": False,
-                                                "v4Protection": "disabled",
-                                                "v6Protection": "disabled",
                                             }
                                         },
-                                        "interfaceSpeed": 1000,
-                                        "areaProxyBoundary": False,
                                     },
                                     "Ethernet2": {
                                         "enabled": True,
-                                        "index": 136,
-                                        "snpa": "P2P",
-                                        "mtu": 1497,
-                                        "interfaceAddressFamily": "ipv4",
-                                        "interfaceType": "point-to-point",
-                                        "srNodeSegments": [],
-                                        "bfdIpv4Enabled": False,
-                                        "bfdIpv6Enabled": False,
-                                        "helloPaddingEnabled": True,
                                         "intfLevels": {
                                             "2": {
-                                                "ipv4Metric": 10,
-                                                "numAdjacencies": 1,
-                                                "linkId": "88",
                                                 "sharedSecretProfile": "Secret",
                                                 "isisAdjacencies": [
                                                     {
-                                                        "systemId": "1111.0000.0008",
-                                                        "hostname": "eos8",
                                                         "level": "level2",
                                                         "state": "up",
                                                         "adjType": "l2",
-                                                        "addrFamily": "ipv4",
-                                                        "adjAddrFamilyMatch": True,
-                                                        "holdTime": 30,
-                                                        "ipv4IntfAddr": "10.6.8.8",
-                                                        "intfAreas": [{"areaId": "49"}],
                                                     }
                                                 ],
-                                                "passive": False,
-                                                "v4Protection": "disabled",
-                                                "v6Protection": "disabled",
                                             }
                                         },
-                                        "interfaceSpeed": 1000,
-                                        "areaProxyBoundary": False,
                                     },
                                 }
                             }
