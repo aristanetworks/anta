@@ -106,7 +106,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
-        "name": "failure-not-conifgure",
+        "name": "failure-vlan-not-conifgured",
         "test": VerifyVlanStatus,
         "eos_data": [
             {

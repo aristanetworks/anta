@@ -153,16 +153,16 @@ class VerifyVlanStatus(AntaTest):
 
     This test performs the following checks for each specified VLAN:
 
-      1. Validates the specified vlan is configured.
+      1. Validates the specified VLAN is configured.
       2. Verifies the administrative status matches the expected.
 
     Expected Results
     ----------------
     * Success: The test will pass if all of the following conditions are met:
-        - Each specified vlan exists.
-        - Each specified vlan's administrative status is correct.
+        - Each specified VLAN exists.
+        - Each specified VLAN's administrative status is correct.
     * Failure: The test will fail if any of the following conditions is met:
-        - Specified vlan not found in configuration.
+        - Specified VLAN not found in configuration.
         - Administrative status is incorrect.
 
     Examples
@@ -185,7 +185,7 @@ class VerifyVlanStatus(AntaTest):
         """Input model for the VerifyVlanStatus test."""
 
         vlans: list[VLAN]
-        """The VLAN list."""
+        """List of the VLAN details."""
 
     @AntaTest.anta_test
     def test(self) -> None:
