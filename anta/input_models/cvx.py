@@ -16,4 +16,6 @@ class CVXPeers(BaseModel):
     """Model for a CVX Cluster Peer."""
 
     peer_name: Hostname
+    """The CVX Peer used communicate with a CVX server."""
     registration_state: Literal["Connecting", "Connected", "Registration error", "Registration complete", "Unexpected peer state"] = "Registration complete"
+    """The CVX registration state."""
