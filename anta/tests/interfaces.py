@@ -34,8 +34,9 @@ class VerifyInterfaceUtilization(AntaTest):
     Expected Results
     ----------------
     * Success: The test will pass if all interfaces have a usage below the threshold.
-    * Failure: The test will fail if one or more interfaces have a usage above the threshold.
-    * Error: The test will error out if the device has at least one non full-duplex interface.
+    * Failure: If any of the following occur:
+        - One or more interfaces have a usage above the threshold.
+        - The device has at least one non full-duplex interface.
 
     Examples
     --------
