@@ -2306,14 +2306,26 @@ DATA: list[dict[str, Any]] = [
                 "vrfs": {
                     "default": {
                         "isisInstances": {
-                            "1": {"gracefulRestart": True, "gracefulRestartHelper": True},
-                            "2": {"gracefulRestart": True, "gracefulRestartHelper": True},
+                            "1": {
+                                "gracefulRestart": "enabled",
+                                "gracefulRestartHelper": "enabled",
+                            },
+                            "2": {
+                                "gracefulRestart": "enabled",
+                                "gracefulRestartHelper": "disabled",
+                            },
                         }
                     },
                     "test": {
                         "isisInstances": {
-                            "11": {"gracefulRestart": True, "gracefulRestartHelper": True},
-                            "12": {"gracefulRestart": True, "gracefulRestartHelper": True},
+                            "11": {
+                                "gracefulRestart": "disabled",
+                                "gracefulRestartHelper": "enabled",
+                            },
+                            "12": {
+                                "gracefulRestart": "enabled",
+                                "gracefulRestartHelper": "disabled",
+                            },
                         }
                     },
                 }
@@ -2321,10 +2333,10 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "instances": [
-                {"vrf": "default", "name": "1", "graceful_restart": True, "graceful_helper": True},
-                {"vrf": "default", "name": "2", "graceful_restart": True, "graceful_helper": True},
-                {"vrf": "test", "name": "11", "graceful_restart": True, "graceful_helper": True},
-                {"vrf": "test", "name": "12", "graceful_restart": True, "graceful_helper": True},
+                {"vrf": "default", "name": "1", "graceful_restart": True},
+                {"vrf": "default", "name": "2", "graceful_restart": True, "graceful_helper": False},
+                {"vrf": "test", "name": "11"},
+                {"vrf": "test", "name": "12", "graceful_restart": True, "graceful_helper": False},
             ]
         },
         "expected": {"result": "success"},
@@ -2333,15 +2345,15 @@ DATA: list[dict[str, Any]] = [
         "name": "failure-isis-not-configured",
         "test": VerifyISISGracefulRestart,
         "eos_data": [{"vrfs": {}}],
-        "inputs": {"instances": [{"vrf": "default", "name": "1", "graceful_restart": True, "graceful_helper": True}]},
-        "expected": {"result": "failure", "messages": ["ISIS is not configured"]},
+        "inputs": {"instances": [{"vrf": "default", "name": "1", "graceful_restart": True}]},
+        "expected": {"result": "skipped", "messages": ["IS-IS not configured"]},
     },
     {
         "name": "failure-isis-instance-not-found",
         "test": VerifyISISGracefulRestart,
-        "eos_data": [{"vrfs": {"default": {"isisInstances": {"2": {"gracefulRestart": True, "gracefulRestartHelper": True}}}}}],
-        "inputs": {"instances": [{"vrf": "default", "name": "1", "graceful_restart": True, "graceful_helper": True}]},
-        "expected": {"result": "failure", "messages": ["Instance: 1 VRF: default - Not found"]},
+        "eos_data": [{"vrfs": {"default": {"isisInstances": {"2": {"gracefulRestart": "enabled", "gracefulRestartHelper": "enabled"}}}}}],
+        "inputs": {"instances": [{"vrf": "default", "name": "1", "graceful_restart": True}]},
+        "expected": {"result": "failure", "messages": ["Instance: 1 VRF: default - Not configured"]},
     },
     {
         "name": "failure-graceful-restart-disabled",
@@ -2351,14 +2363,26 @@ DATA: list[dict[str, Any]] = [
                 "vrfs": {
                     "default": {
                         "isisInstances": {
-                            "1": {"gracefulRestart": False, "gracefulRestartHelper": True},
-                            "2": {"gracefulRestart": True, "gracefulRestartHelper": True},
+                            "1": {
+                                "gracefulRestart": "disabled",
+                                "gracefulRestartHelper": "enabled",
+                            },
+                            "2": {
+                                "gracefulRestart": "enabled",
+                                "gracefulRestartHelper": "enabled",
+                            },
                         }
                     },
                     "test": {
                         "isisInstances": {
-                            "11": {"gracefulRestart": False, "gracefulRestartHelper": True},
-                            "12": {"gracefulRestart": True, "gracefulRestartHelper": True},
+                            "11": {
+                                "gracefulRestart": "enabled",
+                                "gracefulRestartHelper": "enabled",
+                            },
+                            "12": {
+                                "gracefulRestart": "enabled",
+                                "gracefulRestartHelper": "disabled",
+                            },
                         }
                     },
                 }
@@ -2366,15 +2390,18 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "instances": [
-                {"vrf": "default", "name": "1", "graceful_restart": True, "graceful_helper": True},
-                {"vrf": "default", "name": "2", "graceful_restart": True, "graceful_helper": True},
-                {"vrf": "test", "name": "11", "graceful_restart": True, "graceful_helper": True},
-                {"vrf": "test", "name": "12", "graceful_restart": True, "graceful_helper": True},
+                {"vrf": "default", "name": "1", "graceful_restart": True},
+                {"vrf": "default", "name": "2", "graceful_restart": True},
+                {"vrf": "test", "name": "11"},
+                {"vrf": "test", "name": "12", "graceful_restart": True, "graceful_helper": False},
             ]
         },
         "expected": {
             "result": "failure",
-            "messages": ["Instance: 1 VRF: default - Graceful Restart disabled", "Instance: 11 VRF: test - Graceful Restart disabled"],
+            "messages": [
+                "Instance: 1 VRF: default - Incorrect graceful restart state - Expected: enabled Actual: disabled",
+                "Instance: 11 VRF: test - Incorrect graceful restart state - Expected: disabled Actual: enabled",
+            ],
         },
     },
     {
@@ -2383,20 +2410,37 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {"isisInstances": {"1": {"gracefulRestart": True, "gracefulRestartHelper": False}}},
-                    "test": {"isisInstances": {"11": {"gracefulRestart": True, "gracefulRestartHelper": False}}},
+                    "default": {
+                        "isisInstances": {
+                            "1": {
+                                "gracefulRestart": "disabled",
+                                "gracefulRestartHelper": "disabled",
+                            }
+                        }
+                    },
+                    "test": {
+                        "isisInstances": {
+                            "11": {
+                                "gracefulRestart": "disabled",
+                                "gracefulRestartHelper": "enabled",
+                            }
+                        }
+                    },
                 }
             }
         ],
         "inputs": {
             "instances": [
-                {"vrf": "default", "name": "1", "graceful_restart": True, "graceful_helper": True},
-                {"vrf": "test", "name": "11", "graceful_restart": True, "graceful_helper": True},
+                {"vrf": "default", "name": "1"},
+                {"vrf": "test", "name": "11", "graceful_helper": False},
             ]
         },
         "expected": {
             "result": "failure",
-            "messages": ["Instance: 1 VRF: default - Graceful Restart Helper disabled", "Instance: 11 VRF: test - Graceful Restart Helper disabled"],
+            "messages": [
+                "Instance: 1 VRF: default - Incorrect graceful restart helper state - Expected: enabled Actual: disabled",
+                "Instance: 11 VRF: test - Incorrect graceful restart helper state - Expected: disabled Actual: enabled",
+            ],
         },
     },
 ]

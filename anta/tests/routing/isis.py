@@ -445,24 +445,23 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
 
 
 class VerifyISISGracefulRestart(AntaTest):
-    """Verifies the graceful restart and helper mechanism.
+    """Verifies the IS-IS graceful restart feature.
 
-    This test performs the following checks:
+    This test performs the following checks for each IS-IS instance:
 
-     1. Verifies that the ISIS is configured.
-     2. Verifies that the specified ISIS instance is found on the device.
-     4. Verifies that the expected and actual IS-IS graceful restart and graceful helper values are matched.
+      1. Verifies that the specified IS-IS instance is configured on the device.
+      2. Verifies the statuses of the graceful restart and graceful restart helper functionalities.
 
     Expected Results
     ----------------
     * Success: The test will pass if all of the following conditions are met:
-        - The ISIS is configured on the device.
-        - The specified ISIS instance is exist on the device.
-        - Expected and actual IS-IS graceful restart and graceful helper values are matched.
+        - The specified IS-IS instance configured on the device.
+        - Expected and actual IS-IS graceful restart and graceful restart helper values match.
     * Failure: The test will fail if any of the following conditions is met:
-        - The ISIS is not configured on the device.
-        - The Specified ISIS instance do not exist on the device.
-        - Expected and actual IS-IS graceful restart and graceful helper values are not matched.
+        - The specified IS-IS instance does not configured on the device.
+        - Expected and actual IS-IS graceful restart and graceful restart helper values do not match.
+    * Skipped: The test will skip if any of the following conditions is met:
+        - IS-IS is not configured on the device.
 
     Examples
     --------
@@ -474,24 +473,20 @@ class VerifyISISGracefulRestart(AntaTest):
               - name: '1'
                 vrf: default
                 graceful_restart: True
-                graceful_helper: True
+                graceful_helper: False
               - name: '2'
                 vrf: default
-                graceful_restart: True
-                graceful_helper: True
               - name: '11'
                 vrf: test
                 graceful_restart: True
-                graceful_helper: True
               - name: '12'
                 vrf: test
-                graceful_restart: True
-                graceful_helper: True
+                graceful_helper: False
     ```
     """
 
     categories: ClassVar[list[str]] = ["isis"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show isis summary vrf all", revision=2)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show isis graceful-restart vrf all", revision=1)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyISISGracefulRestart test."""
@@ -503,28 +498,23 @@ class VerifyISISGracefulRestart(AntaTest):
     def test(self) -> None:
         """Main test function for VerifyISISGracefulRestart."""
         self.result.is_success()
-        command_output = self.instance_commands[0].json_output
-        isis_details = command_output.get("vrfs")
 
-        # If IS-IS is not configured, test fails.
-        if not isis_details:
-            self.result.is_failure("ISIS is not configured")
+        # Verify if IS-IS is configured
+        if not (command_output := self.instance_commands[0].json_output["vrfs"]):
+            self.result.is_skipped("IS-IS not configured")
             return
 
         # If IS-IS instance is not found or GR and GR helpers are not matching with the expected values, test fails.
         for instance in self.inputs.instances:
-            vrf = instance.vrf
-            instance_name = str(instance.name)
-            graceful_restart = instance.graceful_restart
-            graceful_helper = instance.graceful_helper
+            graceful_restart = "enabled" if instance.graceful_restart else "disabled"
+            graceful_helper = "enabled" if instance.graceful_helper else "disabled"
 
-            if (instance_details := get_value(isis_details, f"{vrf}.isisInstances.{instance_name}")) is None:
-                self.result.is_failure(f"{instance} - Not found")
+            if (instance_details := get_value(command_output, f"{instance.vrf}..isisInstances..{instance.name}", separator="..")) is None:
+                self.result.is_failure(f"{instance} - Not configured")
                 continue
 
-            if instance_details.get("gracefulRestart") != graceful_restart:
-                self.result.is_failure(f"{instance} - Graceful Restart disabled")
+            if (act_state := instance_details.get("gracefulRestart")) != graceful_restart:
+                self.result.is_failure(f"{instance} - Incorrect graceful restart state - Expected: {graceful_restart} Actual: {act_state}")
 
-            actual_gr_helper = instance_details.get("gracefulRestartHelper")
-            if actual_gr_helper != graceful_helper:
-                self.result.is_failure(f"{instance} - Graceful Restart Helper disabled")
+            if (act_helper_state := instance_details.get("gracefulRestartHelper")) != graceful_helper:
+                self.result.is_failure(f"{instance} - Incorrect graceful restart helper state - Expected: {graceful_helper} Actual: {act_helper_state}")
