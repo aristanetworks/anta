@@ -2334,9 +2334,9 @@ DATA: list[dict[str, Any]] = [
         "inputs": {
             "instances": [
                 {"vrf": "default", "name": "1", "graceful_restart": True},
-                {"vrf": "default", "name": "2", "graceful_restart": True, "graceful_helper": False},
+                {"vrf": "default", "name": "2", "graceful_restart": True, "graceful_restart_helper": False},
                 {"vrf": "test", "name": "11"},
-                {"vrf": "test", "name": "12", "graceful_restart": True, "graceful_helper": False},
+                {"vrf": "test", "name": "12", "graceful_restart": True, "graceful_restart_helper": False},
             ]
         },
         "expected": {"result": "success"},
@@ -2393,7 +2393,7 @@ DATA: list[dict[str, Any]] = [
                 {"vrf": "default", "name": "1", "graceful_restart": True},
                 {"vrf": "default", "name": "2", "graceful_restart": True},
                 {"vrf": "test", "name": "11"},
-                {"vrf": "test", "name": "12", "graceful_restart": True, "graceful_helper": False},
+                {"vrf": "test", "name": "12", "graceful_restart": True, "graceful_restart_helper": False},
             ]
         },
         "expected": {
@@ -2432,7 +2432,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {
             "instances": [
                 {"vrf": "default", "name": "1"},
-                {"vrf": "test", "name": "11", "graceful_helper": False},
+                {"vrf": "test", "name": "11", "graceful_restart_helper": False},
             ]
         },
         "expected": {

@@ -27,9 +27,9 @@ class ISISInstance(BaseModel):
     segments: list[Segment] | None = None
     """List of IS-IS SR segments associated with the instance. Required field in the `VerifyISISSegmentRoutingAdjacencySegments` test."""
     graceful_restart: bool = False
-    """Specifies the Graceful Restart, True: Graceful restart is enabled; False: Graceful restart is disabled."""
-    graceful_helper: bool = True
-    """Specifies the Graceful Restart Helper, True: Graceful restart helper enabled; False: Graceful restart helper disabled."""
+    """If graceful restart is disabled"""
+    graceful_restart_helper: bool = True
+    """If graceful restart helper is enabled."""
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the ISISInstance for reporting."""

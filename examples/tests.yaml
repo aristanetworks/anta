@@ -656,7 +656,7 @@ anta.tests.routing.isis:
         - name: '1'
           vrf: default
           graceful_restart: True
-          graceful_helper: False
+          graceful_restart_helper: False
         - name: '2'
           vrf: default
         - name: '11'
@@ -664,7 +664,7 @@ anta.tests.routing.isis:
           graceful_restart: True
         - name: '12'
           vrf: test
-          graceful_helper: False
+          graceful_restart_helper: False
   - VerifyISISInterfaceMode:
       # Verifies IS-IS interfaces are running in the correct mode.
       interfaces:

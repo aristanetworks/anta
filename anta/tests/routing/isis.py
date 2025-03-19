@@ -455,13 +455,12 @@ class VerifyISISGracefulRestart(AntaTest):
     Expected Results
     ----------------
     * Success: The test will pass if all of the following conditions are met:
-        - The specified IS-IS instance configured on the device.
+        - The specified IS-IS instance is configured on the device.
         - Expected and actual IS-IS graceful restart and graceful restart helper values match.
     * Failure: The test will fail if any of the following conditions is met:
-        - The specified IS-IS instance does not configured on the device.
+        - The specified IS-IS instance is not configured on the device.
         - Expected and actual IS-IS graceful restart and graceful restart helper values do not match.
-    * Skipped: The test will skip if any of the following conditions is met:
-        - IS-IS is not configured on the device.
+    * Skipped: The test will skip if IS-IS is not configured on the device.
 
     Examples
     --------
@@ -473,7 +472,7 @@ class VerifyISISGracefulRestart(AntaTest):
               - name: '1'
                 vrf: default
                 graceful_restart: True
-                graceful_helper: False
+                graceful_restart_helper: False
               - name: '2'
                 vrf: default
               - name: '11'
@@ -481,7 +480,7 @@ class VerifyISISGracefulRestart(AntaTest):
                 graceful_restart: True
               - name: '12'
                 vrf: test
-                graceful_helper: False
+                graceful_restart_helper: False
     ```
     """
 
@@ -507,7 +506,7 @@ class VerifyISISGracefulRestart(AntaTest):
         # If IS-IS instance is not found or GR and GR helpers are not matching with the expected values, test fails.
         for instance in self.inputs.instances:
             graceful_restart = "enabled" if instance.graceful_restart else "disabled"
-            graceful_helper = "enabled" if instance.graceful_helper else "disabled"
+            graceful_restart_helper = "enabled" if instance.graceful_restart_helper else "disabled"
 
             if (instance_details := get_value(command_output, f"{instance.vrf}..isisInstances..{instance.name}", separator="..")) is None:
                 self.result.is_failure(f"{instance} - Not configured")
@@ -516,5 +515,5 @@ class VerifyISISGracefulRestart(AntaTest):
             if (act_state := instance_details.get("gracefulRestart")) != graceful_restart:
                 self.result.is_failure(f"{instance} - Incorrect graceful restart state - Expected: {graceful_restart} Actual: {act_state}")
 
-            if (act_helper_state := instance_details.get("gracefulRestartHelper")) != graceful_helper:
-                self.result.is_failure(f"{instance} - Incorrect graceful restart helper state - Expected: {graceful_helper} Actual: {act_helper_state}")
+            if (act_helper_state := instance_details.get("gracefulRestartHelper")) != graceful_restart_helper:
+                self.result.is_failure(f"{instance} - Incorrect graceful restart helper state - Expected: {graceful_restart_helper} Actual: {act_helper_state}")
