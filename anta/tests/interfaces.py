@@ -31,7 +31,7 @@ class VerifyInterfaceUtilization(AntaTest):
     Load interval (default to 5 minutes) is defined in device configuration.
 
     !!! warning
-    This test has been implemented for full-duplex interfaces only.
+        This test has been implemented for full-duplex interfaces only.
 
     Expected Results
     ----------------
