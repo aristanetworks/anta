@@ -70,7 +70,7 @@
 | s1-spine1 | Field Notices | VerifyFieldNotice44Resolution | Verifies that the device is using the correct Aboot version per FN0044. | - | skipped | VerifyFieldNotice44Resolution test is not supported on cEOSLab. |
 | s1-spine1 | Hardware | VerifyTemperature | Verifies if the device temperature is within acceptable limits. | - | skipped | VerifyTemperature test is not supported on cEOSLab. |
 | s1-spine1 | Interfaces | VerifyIPProxyARP | Verifies if Proxy ARP is enabled. | - | failure | Interface: Ethernet1 - Proxy-ARP disabled<br>Interface: Ethernet2 - Proxy-ARP disabled |
-| s1-spine1 | ISIS | VerifyISISNeighborState | Verifies the health of IS-IS neighbors. | - | skipped | IS-IS not configured |
+| s1-spine1 | ISIS | VerifyISISNeighborState | Verifies the health of IS-IS neighbors. | custom | skipped | IS-IS not configured |
 | s1-spine1 | LANZ | VerifyLANZ | Verifies if LANZ is enabled. | - | skipped | VerifyLANZ test is not supported on cEOSLab. |
 | s1-spine1 | Logging | VerifyLoggingHosts | Verifies logging hosts (syslog servers) for a specified VRF. | - | failure | Syslog servers 1.1.1.1, 2.2.2.2 are not configured in VRF default |
 | s1-spine1 | MLAG | VerifyMlagDualPrimary | Verifies the MLAG dual-primary detection parameters. | - | failure | Dual-primary detection is disabled |
