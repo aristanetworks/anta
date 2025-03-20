@@ -81,7 +81,7 @@ class VerifyInterfaceUtilization(AntaTest):
             for member_interface in interface_data:
                 self.result.is_failure(
                     f"Interface: {intf} Member Interface: {member_interface[0]} - Test not implemented for non-full-duplex interfaces - Expected: {duplex_full}"
-                    " Actual: {member_interface[1]}"
+                    f" Actual: {member_interface[1]}"
                 )
 
             if (bandwidth := interfaces["interfaces"][intf]["bandwidth"]) == 0:
