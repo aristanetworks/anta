@@ -38,7 +38,7 @@ class VerifyPathsHealth(AntaTest):
     categories: ClassVar[list[str]] = ["path-selection"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show path-selection paths", revision=1)]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab", "vEOS"])
+    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyPathsHealth."""
@@ -111,7 +111,7 @@ class VerifySpecificPath(AntaTest):
         RouterPath: ClassVar[type[DpsPath]] = DpsPath
         """To maintain backward compatibility."""
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab", "vEOS"])
+    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifySpecificPath."""

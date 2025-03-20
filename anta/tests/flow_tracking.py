@@ -100,7 +100,7 @@ class VerifyHardwareFlowTrackerStatus(AntaTest):
         trackers: list[FlowTracker]
         """List of flow trackers to verify."""
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab", "vEOS"])
+    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyHardwareFlowTrackerStatus."""

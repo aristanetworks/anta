@@ -35,7 +35,7 @@ class VerifyAVTPathHealth(AntaTest):
     categories: ClassVar[list[str]] = ["avt"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show adaptive-virtual-topology path")]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab", "vEOS"])
+    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyAVTPathHealth."""
@@ -111,7 +111,7 @@ class VerifyAVTSpecificPath(AntaTest):
         AVTPaths: ClassVar[type[AVTPath]] = AVTPath
         """To maintain backward compatibility."""
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab", "vEOS"])
+    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyAVTSpecificPath."""
@@ -180,7 +180,7 @@ class VerifyAVTRole(AntaTest):
         role: str
         """Expected AVT role of the device."""
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab", "vEOS"])
+    @skip_on_platforms(["cEOSLab", "vEOS-lab"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyAVTRole."""
