@@ -29,6 +29,8 @@ class VerifyInterfaceUtilization(AntaTest):
     """Verifies that the utilization of interfaces is below a certain threshold.
 
     Load interval (default to 5 minutes) is defined in device configuration.
+
+    !!! warning
     This test has been implemented for full-duplex interfaces only.
 
     Expected Results
@@ -72,13 +74,14 @@ class VerifyInterfaceUtilization(AntaTest):
             # The utilization logic has been implemented for full-duplex interfaces only
             if not all([duplex := (interface := interfaces["interfaces"][intf]).get("duplex", None), duplex == duplex_full]):
                 if (members := interface.get("memberInterfaces", None)) is None:
-                    self.result.is_failure(f"Interface: {intf} - Not full duplex - Expected: {duplex_full} Actual: {duplex}")
+                    self.result.is_failure(f"Interface: {intf} - Test not implemented for non-full-duplex interfaces - Expected: {duplex_full} Actual: {duplex}")
                     continue
                 interface_data = [(member_interface, state) for member_interface, stats in members.items() if (state := stats["duplex"]) != duplex_full]
 
             for member_interface in interface_data:
                 self.result.is_failure(
-                    f"Interface: {intf} MemberInterface: {member_interface[0]} - Not Full-Duplex - Expected: {duplex_full} Actual: {member_interface[1]}"
+                    f"Interface: {intf} Member Interface: {member_interface[0]} - Test not implemented for non-full-duplex interfaces - Expected: {duplex_full}"
+                    " Actual: {member_interface[1]}"
                 )
 
             if (bandwidth := interfaces["interfaces"][intf]["bandwidth"]) == 0:
