@@ -253,7 +253,7 @@ class ResultManager:
             if not set(sort_by).issubset(set(accepted_fields)):
                 msg = f"Invalid sort_by fields: {sort_by}. Accepted fields are: {list(accepted_fields)}"
                 raise ValueError(msg)
-            results = sorted(results, key=lambda result: [getattr(result, field) for field in sort_by])
+            results = sorted(results, key=lambda result: [getattr(result, field) or "" for field in sort_by])
 
         return results
 
@@ -295,7 +295,7 @@ class ResultManager:
         if not set(sort_by).issubset(set(accepted_fields)):
             msg = f"Invalid sort_by fields: {sort_by}. Accepted fields are: {list(accepted_fields)}"
             raise ValueError(msg)
-        self._result_entries.sort(key=lambda result: [getattr(result, field) for field in sort_by])
+        self._result_entries.sort(key=lambda result: [getattr(result, field) or "" for field in sort_by])
         return self
 
     def filter(self, hide: set[AntaTestStatus]) -> ResultManager:

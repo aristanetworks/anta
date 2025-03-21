@@ -56,7 +56,7 @@ repos:
         name: Run Ruff formatter
 
   - repo: https://github.com/pycqa/pylint
-    rev: "v3.3.5"
+    rev: "v3.3.6"
     hooks:
       - id: pylint
         name: Check code style with pylint
