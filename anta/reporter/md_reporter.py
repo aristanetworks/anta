@@ -35,8 +35,61 @@ class MDReportGenerator:
     The final report will be generated in the same order as the `sections` list of the method.
     """
 
-    @classmethod
-    def generate(cls, results: ResultManager, md_filename: Path) -> None:
+    def __init__(self, results: ResultManager, md_file: Path, custom_section: str, hide: AntaTestStatus) -> None:
+        """Initialize the MDReportGenerator with an ResultManager, markdown file, custom_section and hide option to generate the section.
+
+        Parameters
+        ----------
+        results
+            The ResultsManager instance containing all test results.
+        md_file
+            An open file object to write the markdown data into.
+        custom_section
+            A custom section to display in md report.
+        hide
+            A hide option to hide the specific result mentioned in hide.
+        """
+        custom_section = "fail"
+        self.md_file = md_file
+        self.custom_section = custom_section
+        self.hide = hide
+        self.results = results
+        self.sections: list[type(MDReportBase), results] = [
+            (ANTAReport, results),
+            (TestResultsSummary, results),
+            (SummaryTotals, results),
+            (SummaryTotalsDeviceUnderTest, results),
+            (SummaryTotalsPerCategory, results),
+            (TestResults, results),
+        ]
+        self.custom_heading: str = ""
+
+    def hide_result(self) -> None:
+        """Set the result manager as per the mentioned hide section."""
+        hide_results = self.results.filter(self.hide)
+        self.sections[-1] = (TestResults, hide_results)
+
+    def set_custom_section(self) -> None:
+        """Set the result manager as per the mentioned custom section."""
+        custom_result = self.results
+        if "fail" in self.custom_section.lower() or "error" in self.custom_section.lower():
+            custom_result = custom_result.filter(hide={AntaTestStatus.SUCCESS, AntaTestStatus.SKIPPED})
+        if "success" in self.custom_section.lower():
+            custom_result = custom_result.filter(hide={AntaTestStatus.FAILURE, AntaTestStatus.SKIPPED})
+        if "skip" in self.custom_section.lower():
+            custom_result = custom_result.filter(hide={AntaTestStatus.SUCCESS, AntaTestStatus.FAILURE})
+        self.sections.append((TestResults, custom_result))
+
+    def set_custom_heading(self) -> None:
+        """Set the custom table heading as per the mentioned custom section."""
+        if "fail" in self.custom_section or "error" in self.custom_section:
+            self.custom_heading = "Failed Result Summary"
+        if "success" in self.custom_section.lower():
+            self.custom_heading = "Success Result Summary"
+        if "skip" in self.custom_section.lower():
+            self.custom_heading = "Skip Result Summary"
+
+    def generate(self) -> None:
         """Generate and write the various sections of the markdown report.
 
         Parameters
@@ -47,20 +100,15 @@ class MDReportGenerator:
             The path to the markdown file to write the report into.
         """
         try:
-            with md_filename.open("w", encoding="utf-8") as mdfile:
-                sections: list[MDReportBase] = [
-                    ANTAReport(mdfile, results),
-                    TestResultsSummary(mdfile, results),
-                    SummaryTotals(mdfile, results),
-                    SummaryTotalsDeviceUnderTest(mdfile, results),
-                    SummaryTotalsPerCategory(mdfile, results),
-                    FailedTestResultsSummary(mdfile, results.filter(hide={AntaTestStatus.SUCCESS, AntaTestStatus.SKIPPED})),
-                    TestResults(mdfile, results),
-                ]
-                for section in sections:
-                    section.generate_section()
+            if self.hide:
+                self.hide_result()
+            if self.custom_section:
+                self.set_custom_section()
+            with self.md_file.open("w", encoding="utf-8") as md_file:
+                for section, results in self.sections:
+                    section(md_file, results).generate_section()
         except OSError as exc:
-            message = f"OSError caught while writing the Markdown file '{md_filename.resolve()}'."
+            message = f"OSError caught while writing the Markdown file '{md_file.resolve()}'."
             anta_log_exception(exc, message, logger)
             raise
 
@@ -296,33 +344,9 @@ class TestResults(MDReportBase):
 
     def generate_section(self) -> None:
         """Generate the `## Test Results` section of the markdown report."""
-        self.write_heading(heading_level=2)
-        self.write_table(table_heading=self.TABLE_HEADING, last_table=True)
-
-
-class FailedTestResultsSummary(MDReportBase):
-    """Generate the `## Failed Test Results Summary` section of the markdown report."""
-
-    TABLE_HEADING: ClassVar[list[str]] = [
-        "| Device Under Test | Categories | Test | Description | Custom Field  | Result | Messages |",
-        "| ----------------- | ---------- | ---- | ----------- | --------------| -------| -------- |",
-    ]
-
-    def generate_rows(self) -> Generator[str, None, None]:
-        """Generate the rows of the failed test results table."""
-        for result in self.results.results:
-            messages = self.safe_markdown(result.messages[0]) if len(result.messages) == 1 else self.safe_markdown("<br>".join(result.messages))
-            categories = ", ".join(sorted(convert_categories(result.categories)))
-            yield (
-                f"| {result.name or '-'} | {categories or '-'} | {result.test or '-'} "
-                f"| {result.description or '-'} | {self.safe_markdown(result.custom_field) or '-'} | {result.result or '-'} | {messages or '-'} |\n"
-            )
-
-    def generate_section(self) -> None:
-        """Generate the `## Failed Test Results Summary` section of the markdown report."""
         if self.results.results:
             self.write_heading(heading_level=2)
             self.write_table(table_heading=self.TABLE_HEADING)
         else:
             self.write_heading(heading_level=2)
-            self.mdfile.write("No failures detected in the test suite execution.\n\n")
+            self.mdfile.write("No failures detected in the test suite execution.\n\n")  # TODO: need to update as custom msg
