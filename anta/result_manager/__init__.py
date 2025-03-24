@@ -279,6 +279,10 @@ class ResultManager:
         # Return the total number of results for multiple statuses
         return sum(len(self.results_by_status.get(status, [])) for status in status)
 
+    def serialize_results(self, *, with_evidence: bool = False) -> list[dict[str, Any]]:
+        """Return a list of JSON serializable dictionaries of the results."""
+        return [result.dump(with_evidence=with_evidence) for result in self._result_entries]
+
     def get_status(self, *, ignore_error: bool = False) -> str:
         """Return the current status including error_status if ignore_error is False."""
         return "error" if self.error_status and not ignore_error else self.status

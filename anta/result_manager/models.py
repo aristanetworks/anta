@@ -7,8 +7,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
+from typing import TYPE_CHECKING, Any
 
 from pydantic import BaseModel
+
+if TYPE_CHECKING:
+    from anta.models import AntaCommand, AntaTest
 
 
 class AntaTestStatus(str, Enum):
@@ -26,6 +30,29 @@ class AntaTestStatus(str, Enum):
     def __str__(self) -> str:
         """Override the __str__ method to return the value of the Enum, mimicking the behavior of StrEnum."""
         return self.value
+
+
+@dataclass(frozen=True)
+class TestEvidence:
+    """Container for additional evidence related to a TestResult.
+
+    Attributes
+    ----------
+    inputs : AntaTest.Input | None
+        Inputs used for the test. Can be None in case of inputs validation error.
+    commands : list[AntaCommand]
+        List of commands executed during the test.
+    """
+
+    inputs: AntaTest.Input | None
+    commands: list[AntaCommand]
+
+    def dump(self) -> dict[str, Any]:
+        """Dump the evidence to a JSON serializable dictionary."""
+        return {
+            "inputs": self.inputs.model_dump(mode="json", exclude={"filters", "result_overwrite"}) if self.inputs else None,
+            "commands": [command.model_dump(mode="json", exclude={"template", "params", "use_cache"}) for command in self.commands],
+        }
 
 
 class TestResult(BaseModel):
@@ -47,6 +74,8 @@ class TestResult(BaseModel):
         Messages to report after the test, if any.
     custom_field : str | None
         Custom field to store a string for flexibility in integrating with ANTA.
+    _evidence : TestEvidence | None
+        Optional evidence attached to the result. Can be set and retrieved using the evidence property.
 
     """
 
@@ -57,6 +86,34 @@ class TestResult(BaseModel):
     result: AntaTestStatus = AntaTestStatus.UNSET
     messages: list[str] = []
     custom_field: str | None = None
+
+    # Optional evidence attached to the result
+    _evidence: TestEvidence | None = None
+
+    @property
+    def has_evidence(self) -> bool:
+        """Check if this result has attached evidence."""
+        return self._evidence is not None
+
+    @property
+    def evidence(self) -> TestEvidence:
+        """Return the evidence attached to this result."""
+        if self._evidence is None:
+            msg = "No evidence attached to this result"
+            raise ValueError(msg)
+        return self._evidence
+
+    @evidence.setter
+    def evidence(self, evidence: TestEvidence) -> None:
+        """Set the evidence attached to this result."""
+        self._evidence = evidence
+
+    def dump(self, *, with_evidence: bool = False) -> dict[str, Any]:
+        """Dump the TestResult to a JSON serializable dictionary."""
+        data = self.model_dump(mode="json")
+        if with_evidence and self.has_evidence:
+            data["evidence"] = self.evidence.dump()
+        return data
 
     def is_success(self, message: str | None = None) -> None:
         """Set status to success.
