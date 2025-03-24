@@ -113,7 +113,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: pytest-coverage
-          path: .coverage.xml
+          path: ${{ github.workspace }}/coverage.xml
   test-python-windows:
     name: Pytest on 3.12 for windows
     runs-on: windows-2022
