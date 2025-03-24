@@ -50,6 +50,7 @@ htmlcov/
 .coverage
 coverage_html_report
 .coverage.*
+nosetests.xml
 coverage.xml
 *.cover
 *.py,cover
