@@ -113,6 +113,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: pytest-coverage
+          include-hidden-files: true
           path: .coverage.xml
   test-python-windows:
     name: Pytest on 3.12 for windows
