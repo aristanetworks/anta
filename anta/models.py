@@ -9,6 +9,7 @@ import hashlib
 import logging
 import re
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from functools import wraps
 from string import Formatter
 from typing import TYPE_CHECKING, Any, Callable, ClassVar, Literal, TypeVar
@@ -131,6 +132,23 @@ class AntaTemplate:
         )
 
 
+@dataclass(frozen=True)
+class AntaCommandMetadata:
+    """Additional metadata captured during the AntaCommand execution.
+
+    Attributes
+    ----------
+    start_time : float | None
+        Command execution start time in seconds. Uses Unix epoch format.
+    duration : float | None
+        Command execution duration in seconds.
+
+    """
+
+    start_time: float | None = None
+    duration: float | None = None
+
+
 class AntaCommand(BaseModel):
     """Class to define a command.
 
@@ -165,6 +183,8 @@ class AntaCommand(BaseModel):
         Pydantic Model containing the variables values used to render the template.
     use_cache
         Enable or disable caching for this AntaCommand if the AntaDevice supports it.
+    metadata
+        Optional additional metadata captured during the AntaCommand execution.
 
     """
 
@@ -179,6 +199,7 @@ class AntaCommand(BaseModel):
     errors: list[str] = []
     params: AntaParamsBaseModel = AntaParamsBaseModel()
     use_cache: bool = True
+    metadata: AntaCommandMetadata | None = None
 
     @property
     def uid(self) -> str:

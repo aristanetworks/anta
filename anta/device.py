@@ -17,10 +17,13 @@ import httpcore
 from asyncssh import SSHClientConnection, SSHClientConnectionOptions
 from httpx import ConnectError, HTTPError, TimeoutException
 
-import asynceapi
 from anta import __DEBUG__
 from anta.logger import anta_log_exception, exc_to_str
-from anta.models import AntaCommand
+from anta.models import AntaCommand, AntaCommandMetadata
+from asynceapi import Device
+from asynceapi._constants import EapiCommandFormat
+from asynceapi._errors import EapiReponseError
+from asynceapi._models import EapiRequest
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -387,7 +390,7 @@ class AsyncEOSDevice(AntaDevice):
             raise ValueError(message)
         self.enable = enable
         self._enable_password = enable_password
-        self._session: asynceapi.Device = asynceapi.Device(host=host, port=port, username=username, password=password, proto=proto, timeout=timeout)
+        self._session = Device(host=host, port=port, username=username, password=password, proto=proto, timeout=timeout)
         ssh_params: dict[str, Any] = {}
         if insecure:
             ssh_params["known_hosts"] = None
@@ -469,29 +472,31 @@ class AsyncEOSDevice(AntaDevice):
 
         async with semaphore:
             commands: list[EapiComplexCommand | EapiSimpleCommand] = []
-            if self.enable and self._enable_password is not None:
-                commands.append(
-                    {
-                        "cmd": "enable",
-                        "input": str(self._enable_password),
-                    },
-                )
-            elif self.enable:
-                # No password
-                commands.append({"cmd": "enable"})
-            commands += [{"cmd": command.command, "revision": command.revision}] if command.revision else [{"cmd": command.command}]
+            if self.enable:
+                commands.append({"cmd": "enable"} if self._enable_password is None else {"cmd": "enable", "input": str(self._enable_password)})
+            commands.append({"cmd": command.command, "revision": command.revision} if command.revision else {"cmd": command.command})
+
             try:
-                response = await self._session.cli(
+                request = EapiRequest(
                     commands=commands,
-                    ofmt=command.ofmt,
                     version=command.version,
-                    req_id=f"ANTA-{collection_id}-{id(command)}" if collection_id else f"ANTA-{id(command)}",
+                    format=EapiCommandFormat(command.ofmt),
+                    timestamps=True,
+                    id=f"ANTA-{collection_id}-{id(command)}" if collection_id else f"ANTA-{id(command)}",
                 )
-                # Do not keep response of 'enable' command
-                command.output = response[-1]
-            except asynceapi.EapiCommandError as e:
+                response = await self._session.execute(request)
+                result = response.get_result(index=0 if not self.enable else 1)
+                command.output = result.output
+                # If the command is supported, we can extract metadata (timestamps) from the response
+                if result.start_time is not None or result.duration is not None:
+                    command.metadata = AntaCommandMetadata(start_time=result.start_time, duration=result.duration)
+            except EapiReponseError as e:
                 # This block catches exceptions related to EOS issuing an error.
-                self._log_eapi_command_error(command, e)
+                result = e.response.get_result(index=0 if not self.enable else 1)
+                command.errors = result.errors
+                if result.start_time is not None or result.duration is not None:
+                    command.metadata = AntaCommandMetadata(start_time=result.start_time, duration=result.duration)
+                self._log_eapi_response_error(command)
             except TimeoutException as e:
                 # This block catches Timeout exceptions.
                 command.errors = [exc_to_str(e)]
@@ -523,9 +528,8 @@ class AsyncEOSDevice(AntaDevice):
                 anta_log_exception(e, f"An error occurred while issuing an eAPI request to {self.name}", logger)
             logger.debug("%s: %s", self.name, command)
 
-    def _log_eapi_command_error(self, command: AntaCommand, e: asynceapi.EapiCommandError) -> None:
-        """Appropriately log the eapi command error."""
-        command.errors = e.errors
+    def _log_eapi_response_error(self, command: AntaCommand) -> None:
+        """Appropriately log the eAPI response error."""
         if command.requires_privileges:
             logger.error("Command '%s' requires privileged mode on %s. Verify user permissions and if the `enable` option is required.", command.command, self.name)
         if not command.supported:
@@ -533,7 +537,7 @@ class AsyncEOSDevice(AntaDevice):
         elif command.returned_known_eos_error:
             logger.debug("Command '%s' returned a known error '%s': %s", command.command, self.name, command.errors)
         else:
-            logger.error("Command '%s' failed on %s: %s", command.command, self.name, e.errors[0] if len(e.errors) == 1 else e.errors)
+            logger.error("Command '%s' failed on %s: %s", command.command, self.name, command.errors[0] if len(command.errors) == 1 else command.errors)
 
     async def refresh(self) -> None:
         """Update attributes of an AsyncEOSDevice instance.
