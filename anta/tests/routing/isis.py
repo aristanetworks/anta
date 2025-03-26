@@ -444,6 +444,81 @@ class VerifyISISSegmentRoutingTunnels(AntaTest):
         )
 
 
+class VerifyISISGracefulRestart(AntaTest):
+    """Verifies the IS-IS graceful restart feature.
+
+    This test performs the following checks for each IS-IS instance:
+
+      1. Verifies that the specified IS-IS instance is configured on the device.
+      2. Verifies the statuses of the graceful restart and graceful restart helper functionalities.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if all of the following conditions are met:
+        - The specified IS-IS instance is configured on the device.
+        - Expected and actual IS-IS graceful restart and graceful restart helper values match.
+    * Failure: The test will fail if any of the following conditions is met:
+        - The specified IS-IS instance is not configured on the device.
+        - Expected and actual IS-IS graceful restart and graceful restart helper values do not match.
+    * Skipped: The test will skip if IS-IS is not configured on the device.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      isis:
+        - VerifyISISGracefulRestart:
+            instances:
+              - name: '1'
+                vrf: default
+                graceful_restart: True
+                graceful_restart_helper: False
+              - name: '2'
+                vrf: default
+              - name: '11'
+                vrf: test
+                graceful_restart: True
+              - name: '12'
+                vrf: test
+                graceful_restart_helper: False
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["isis"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show isis graceful-restart vrf all", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyISISGracefulRestart test."""
+
+        instances: list[ISISInstance]
+        """List of IS-IS instance entries."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyISISGracefulRestart."""
+        self.result.is_success()
+
+        # Verify if IS-IS is configured
+        if not (command_output := self.instance_commands[0].json_output["vrfs"]):
+            self.result.is_skipped("IS-IS not configured")
+            return
+
+        # If IS-IS instance is not found or GR and GR helpers are not matching with the expected values, test fails.
+        for instance in self.inputs.instances:
+            graceful_restart = "enabled" if instance.graceful_restart else "disabled"
+            graceful_restart_helper = "enabled" if instance.graceful_restart_helper else "disabled"
+
+            if (instance_details := get_value(command_output, f"{instance.vrf}..isisInstances..{instance.name}", separator="..")) is None:
+                self.result.is_failure(f"{instance} - Not configured")
+                continue
+
+            if (act_state := instance_details.get("gracefulRestart")) != graceful_restart:
+                self.result.is_failure(f"{instance} - Incorrect graceful restart state - Expected: {graceful_restart} Actual: {act_state}")
+
+            if (act_helper_state := instance_details.get("gracefulRestartHelper")) != graceful_restart_helper:
+                self.result.is_failure(f"{instance} - Incorrect graceful restart helper state - Expected: {graceful_restart_helper} Actual: {act_helper_state}")
+
+
 class VerifyISISInterfaceAuthMode(AntaTest):
     """Verifies IS-IS interfaces are running in the correct authentication mode.
 

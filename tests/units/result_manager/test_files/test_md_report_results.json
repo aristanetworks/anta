@@ -75,7 +75,7 @@
     "messages": [
       "IS-IS not configured"
     ],
-    "custom_field": null
+    "custom_field": "custom"
   },
   {
     "name": "s1-spine1",

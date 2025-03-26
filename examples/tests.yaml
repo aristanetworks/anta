@@ -131,8 +131,7 @@ anta.tests.connectivity:
           df_bit: True
           size: 100
           reachable: true
-        - source: Management0
-          destination: 8.8.8.8
+        - destination: 8.8.8.8
           vrf: MGMT
           df_bit: True
           size: 100
@@ -650,6 +649,21 @@ anta.tests.routing.generic:
       minimum: 2
       maximum: 20
 anta.tests.routing.isis:
+  - VerifyISISGracefulRestart:
+      # Verifies the IS-IS graceful restart feature.
+      instances:
+        - name: '1'
+          vrf: default
+          graceful_restart: True
+          graceful_restart_helper: False
+        - name: '2'
+          vrf: default
+        - name: '11'
+          vrf: test
+          graceful_restart: True
+        - name: '12'
+          vrf: test
+          graceful_restart_helper: False
   - VerifyISISInterfaceAuthMode:
       # Verifies IS-IS interfaces are running in the correct authentication mode.
       instances:

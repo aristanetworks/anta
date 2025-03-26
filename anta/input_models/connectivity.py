@@ -20,8 +20,8 @@ class Host(BaseModel):
     model_config = ConfigDict(extra="forbid")
     destination: IPv4Address | IPv6Address
     """Destination address to ping."""
-    source: IPv4Address | IPv6Address | Interface
-    """Source address IP or egress interface to use."""
+    source: IPv4Address | IPv6Address | Interface | None = None
+    """Source address IP or egress interface to use. Can be provided in the `VerifyReachability` test."""
     vrf: str = "default"
     """VRF context."""
     repeat: int = 2
@@ -38,10 +38,15 @@ class Host(BaseModel):
 
         Examples
         --------
-        Host: 10.1.1.1 Source: 10.2.2.2 VRF: mgmt
+        - Host: 10.1.1.1 Source: 10.2.2.2 VRF: mgmt
+        - Host: 10.1.1.1 VRF: mgmt
 
         """
-        return f"Host: {self.destination} Source: {self.source} VRF: {self.vrf}"
+        base_string = f"Host: {self.destination}"
+        if self.source:
+            base_string += f" Source: {self.source}"
+        base_string += f" VRF: {self.vrf}"
+        return base_string
 
 
 class LLDPNeighbor(BaseModel):
