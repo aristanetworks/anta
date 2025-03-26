@@ -470,7 +470,7 @@ class Device(httpx.AsyncClient):
         request
             The EapiRequest to execute.
         raise_on_error
-            Raise an EapiReponseError if the response contains errors, by default True.
+            Raise an EapiResponseError if the response contains errors, by default True.
 
         Returns
         -------
