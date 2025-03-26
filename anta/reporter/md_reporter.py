@@ -9,7 +9,7 @@ import logging
 import re
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import TYPE_CHECKING, ClassVar, TextIO
+from typing import TYPE_CHECKING, Any, ClassVar, TextIO
 
 from anta.constants import MD_REPORT_TOC
 from anta.logger import anta_log_exception
@@ -23,6 +23,8 @@ if TYPE_CHECKING:
 
 
 logger = logging.getLogger(__name__)
+
+SECTIONS: list[str] = list(AntaTestStatus)
 
 
 # pylint: disable=too-few-public-methods
@@ -39,20 +41,54 @@ class MDReportGenerator:
     def __init__(self, results: ResultManager, md_file: Path, custom_section: AntaTestStatus | None = None, hide: AntaTestStatus | None = None) -> None:
         self.results = results
         self.md_file = md_file
-        self.custom_section = custom_section
-        self.hide = hide if isinstance(hide, set) else {hide}
+        self._custom_section = custom_section
+        self._hide = hide
         self.file_obj = Path.open(self.md_file, "w", encoding="utf-8")  # pylint: disable=consider-using-with
+
+    @property
+    def custom_section(self) -> Any:  # noqa: ANN401
+        """Return the evidence attached to this result."""
+        if self._custom_section is None:
+            return self._custom_section
+        if isinstance(self._custom_section, set):
+            return self._custom_section
+        if not isinstance(self._custom_section, AntaTestStatus):
+            if self._custom_section not in SECTIONS:
+                msg = f"during custom section: {self._custom_section}"
+                raise ValueError(msg)
+            return {self._custom_section}
+        return self._custom_section
+
+    @custom_section.setter
+    def custom_section(self, custom_section: AntaTestStatus) -> None:
+        """Set the evidence attached to this result."""
+        self._custom_section = custom_section
+
+    @property
+    def hide(self) -> Any:  # noqa: ANN401
+        """Return the evidence attached to this result."""
+        if self._hide is None:
+            return self._hide
+        if isinstance(self._hide, set):
+            return self._hide
+        if not isinstance(self._hide, AntaTestStatus):
+            if self._hide not in SECTIONS:
+                msg = f"during hide: {self._hide}"
+                raise ValueError(msg)
+            return {self._hide}
+        return self._hide
+
+    @hide.setter
+    def hide(self, hide: AntaTestStatus) -> None:
+        """Set the evidence attached to this result."""
+        self._hide = hide
 
     @property
     def sections(self) -> list[MDReportBase]:
         """TODO: Need to review."""
         filtered_result = self.results
         if self.hide:
-            possible_statuses = set(AntaTestStatus)
-            if not self.hide.issubset(possible_statuses):
-                msg = f"Invalid value for 'hide': {self.hide} is not one of {possible_statuses}"
-                raise ValueError(msg)
-            filtered_result = self.results.filter(self.hide)  # type: ignore[arg-type]
+            filtered_result = self.results.filter(self.hide)
         default_sections: list[MDReportBase] = [
             ANTAReport(self.file_obj, self.results),
             TestResultsSummary(self.file_obj, self.results),
@@ -73,8 +109,8 @@ class MDReportGenerator:
         custom_sections: list[MDReportBase] = []
         if self.custom_section:
             for section in [self.custom_section]:
-                filtered_result = self.results.filter(set(AntaTestStatus) - {section})
-                custom_sections.append(TestResults(self.file_obj, filtered_result, heading_ow=f"{section.capitalize()} Result Summary"))
+                filtered_result = self.results.filter(set(AntaTestStatus) - section)
+                custom_sections.append(TestResults(self.file_obj, filtered_result, heading_ow=f"{section} Result Summary"))
 
         return custom_sections
 
@@ -85,6 +121,8 @@ class MDReportGenerator:
                 section.generate_section()
             self.file_obj.close()
         except OSError as exc:
+            if not self.file_obj.closed:
+                self.file_obj.close()
             message = f"OSError caught while writing the Markdown file '{self.md_file.resolve()}'."
             anta_log_exception(exc, message, logger)
             raise
