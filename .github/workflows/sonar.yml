@@ -1,15 +1,9 @@
 ---
 name: Analysis with Sonarlint and publish to SonarCloud
-on:
-  push:
-    branches:
-      - main
-  # Need to do this to be able to have coverage on PR across forks.
-  pull_request_target:
-
-# TODO this can be made better by running only coverage, it happens that today
-# in tox gh-actions we have configured 3.11 to run the report side in
-# pyproject.toml
+"on":
+  workflow_run:
+    workflows: ["Linting and Testing ANTA"]
+    types: [completed]
 
 jobs:
   sonarcloud:
@@ -17,19 +11,45 @@ jobs:
     if: github.repository == 'aristanetworks/anta'
     runs-on: ubuntu-latest
     steps:
+      - run: |
+          echo '${{ toJson(github.event.workflow_run) }}'
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.event.workflow_run.head_sha }}
           fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - name: Download coverage from unit tests
+        continue-on-error: true
+        uses: actions/download-artifact@v4
         with:
-          python-version: 3.11
-      - name: Install dependencies
-        run: pip install tox tox-gh-actions
-      - name: "Run pytest via tox for ${{ matrix.python }}"
-        run: tox
-      - name: SonarCloud Scan
+          name: pytest-coverage
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+          merge-multiple: true
+
+      - name: "Get PR context"
+        # Source: https://github.com/orgs/community/discussions/25220#discussioncomment-11316244
+        id: pr-context
+        if: github.event.workflow_run.event == 'pull_request'
+        env:
+          # Token required for GH CLI:
+          GH_TOKEN: ${{ github.token }}
+          # Best practice for scripts is to reference via ENV at runtime. Avoid using the expression syntax in the script content directly:
+          PR_TARGET_REPO: ${{ github.repository }}
+          # If the PR is from a fork, prefix it with `<owner-login>:`, otherwise only the PR branch name is relevant:
+          PR_BRANCH: |-
+            ${{
+              (github.event.workflow_run.head_repository.owner.login != github.event.workflow_run.repository.owner.login)
+                && format('{0}:{1}', github.event.workflow_run.head_repository.owner.login, github.event.workflow_run.head_branch)
+                || github.event.workflow_run.head_branch
+            }}
+        # Query the PR number by repo + branch, then assign to step output:
+        run: |
+          gh pr view --repo "${PR_TARGET_REPO}" "${PR_BRANCH}" \
+             --json 'number,baseRefName' --jq '"number=\(.number)\nbase_ref=\(.baseRefName)"' \
+             >> "${GITHUB_OUTPUT}"
+          echo "pr_branch=${PR_BRANCH}" >> "${GITHUB_OUTPUT}"
+
+      - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v5.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -37,8 +57,8 @@ jobs:
         with:
           # Using ACTION_STEP_DEBUG to trigger verbose when debugging in Github Action
           args: >
-            -Dsonar.scm.revision=${{ github.event.pull_request.head.sha }}
-            -Dsonar.pullrequest.key=${{ github.event.number }}
-            -Dsonar.pullrequest.branch=${{ github.event.pull_request.head.ref }}
-            -Dsonar.pullrequest.base=${{ github.event.pull_request.base.ref }}
+            -Dsonar.scm.revision=${{ github.event.workflow_run.head_sha }}
+            -Dsonar.pullrequest.key=${{ steps.pr-context.outputs.number }}
+            -Dsonar.pullrequest.branch=${{ steps.pr-context.outputs.pr_branch }}
+            -Dsonar.pullrequest.base=${{ steps.pr-context.outputs.base_ref }}
             -Dsonar.verbose=${{ secrets.ACTIONS_STEP_DEBUG }}
