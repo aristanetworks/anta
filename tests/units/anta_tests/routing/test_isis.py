@@ -2826,4 +2826,61 @@ DATA: list[dict[str, Any]] = [
             "messages": ["Instance: 100 VRF: default Interface: Ethernet2 Level: 2 - Incorrect shared secrete profile - Expected: Secret1 Actual: Secret"],
         },
     },
+    {
+        "name": "failure-not-vrf-instance",
+        "test": VerifyISISInterfaceAuthMode,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "test": {
+                        "isisInstances": {
+                            "100": {
+                                "interfaces": {
+                                    "Ethernet1": {
+                                        "enabled": True,
+                                        "intfLevels": {
+                                            "2": {
+                                                "authenticationMode": "Text",
+                                                "sharedSecretProfile": "",
+                                            }
+                                        },
+                                    },
+                                    "Ethernet2": {
+                                        "enabled": True,
+                                        "intfLevels": {
+                                            "2": {
+                                                "sharedSecretProfile": "Secret",
+                                                "isisAdjacencies": [
+                                                    {
+                                                        "level": "level2",
+                                                        "state": "up",
+                                                        "adjType": "l2",
+                                                    }
+                                                ],
+                                            }
+                                        },
+                                    },
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {
+            "instances": [
+                {
+                    "name": "100",
+                    "interfaces": [
+                        {"name": "Ethernet1", "level": 2, "authentication_mode": "Text"},
+                        {"name": "Ethernet2", "level": 2, "authentication_mode": "shared-secret", "shared_secret_key_profile": "Secret1"},
+                    ],
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": ["Instance: 100 VRF: default - Not configured"],
+        },
+    },
 ]

@@ -74,7 +74,7 @@ class ISISInterface(BaseModel):
     """IS-IS network type of the interface. Required field in the `VerifyISISInterfaceMode` test."""
     authentication_mode: Literal["MD5", "Text", "SHA", "shared-secret"] | None = None
     """IS-IS authentication mode. Required field in the `VerifyISISInterfaceAuthMode` test."""
-    auth_key_id: None | int = Field(None, ge=0, le=65535)
+    auth_key_id: int | None = Field(None, ge=0, le=65535)
     """IS-IS authentication key id. Required field  if authentication mode is `SHA` in the `VerifyISISInterfaceAuthMode` test."""
     shared_secret_key_profile: str | None = None
     """IS-IS authentication shared secret key profile. Required field  if authentication mode is `shared-secret` in the `VerifyISISInterfaceAuthMode` test."""

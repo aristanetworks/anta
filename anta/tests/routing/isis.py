@@ -631,6 +631,9 @@ class VerifyISISInterfaceAuthMode(AntaTest):
 
         for instance_data in self.inputs.instances:
             vrf_instances = get_value(command_output, f"{instance_data.vrf}.isisInstances.{instance_data.name}")
+            if not vrf_instances:
+                self.result.is_failure(f"{instance_data} - Not configured")
+                return
             for interface_data in instance_data.interfaces:
                 # If the specified interface is not configured, test fails.
                 if not (act_interface_detail := get_value(vrf_instances, f"interfaces.{interface_data.name}.intfLevels.{interface_data.level}")):
