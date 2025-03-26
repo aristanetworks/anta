@@ -26,6 +26,10 @@ class ISISInstance(BaseModel):
     """Configured SR data-plane for the IS-IS instance."""
     segments: list[Segment] | None = None
     """List of IS-IS SR segments associated with the instance. Required field in the `VerifyISISSegmentRoutingAdjacencySegments` test."""
+    graceful_restart: bool = False
+    """Graceful restart status."""
+    graceful_restart_helper: bool = True
+    """Graceful restart helper status."""
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the ISISInstance for reporting."""

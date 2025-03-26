@@ -12,6 +12,7 @@ from typing import Any
 import pytest
 
 from anta.tests.routing.isis import (
+    VerifyISISGracefulRestart,
     VerifyISISInterfaceMode,
     VerifyISISNeighborCount,
     VerifyISISNeighborState,
@@ -2295,6 +2296,151 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "skipped",
             "messages": ["IS-IS-SR not configured"],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifyISISGracefulRestart,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "isisInstances": {
+                            "1": {
+                                "gracefulRestart": "enabled",
+                                "gracefulRestartHelper": "enabled",
+                            },
+                            "2": {
+                                "gracefulRestart": "enabled",
+                                "gracefulRestartHelper": "disabled",
+                            },
+                        }
+                    },
+                    "test": {
+                        "isisInstances": {
+                            "11": {
+                                "gracefulRestart": "disabled",
+                                "gracefulRestartHelper": "enabled",
+                            },
+                            "12": {
+                                "gracefulRestart": "enabled",
+                                "gracefulRestartHelper": "disabled",
+                            },
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "instances": [
+                {"vrf": "default", "name": "1", "graceful_restart": True},
+                {"vrf": "default", "name": "2", "graceful_restart": True, "graceful_restart_helper": False},
+                {"vrf": "test", "name": "11"},
+                {"vrf": "test", "name": "12", "graceful_restart": True, "graceful_restart_helper": False},
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-isis-not-configured",
+        "test": VerifyISISGracefulRestart,
+        "eos_data": [{"vrfs": {}}],
+        "inputs": {"instances": [{"vrf": "default", "name": "1", "graceful_restart": True}]},
+        "expected": {"result": "skipped", "messages": ["IS-IS not configured"]},
+    },
+    {
+        "name": "failure-isis-instance-not-found",
+        "test": VerifyISISGracefulRestart,
+        "eos_data": [{"vrfs": {"default": {"isisInstances": {"2": {"gracefulRestart": "enabled", "gracefulRestartHelper": "enabled"}}}}}],
+        "inputs": {"instances": [{"vrf": "default", "name": "1", "graceful_restart": True}]},
+        "expected": {"result": "failure", "messages": ["Instance: 1 VRF: default - Not configured"]},
+    },
+    {
+        "name": "failure-graceful-restart-disabled",
+        "test": VerifyISISGracefulRestart,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "isisInstances": {
+                            "1": {
+                                "gracefulRestart": "disabled",
+                                "gracefulRestartHelper": "enabled",
+                            },
+                            "2": {
+                                "gracefulRestart": "enabled",
+                                "gracefulRestartHelper": "enabled",
+                            },
+                        }
+                    },
+                    "test": {
+                        "isisInstances": {
+                            "11": {
+                                "gracefulRestart": "enabled",
+                                "gracefulRestartHelper": "enabled",
+                            },
+                            "12": {
+                                "gracefulRestart": "enabled",
+                                "gracefulRestartHelper": "disabled",
+                            },
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "instances": [
+                {"vrf": "default", "name": "1", "graceful_restart": True},
+                {"vrf": "default", "name": "2", "graceful_restart": True},
+                {"vrf": "test", "name": "11"},
+                {"vrf": "test", "name": "12", "graceful_restart": True, "graceful_restart_helper": False},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Instance: 1 VRF: default - Incorrect graceful restart state - Expected: enabled Actual: disabled",
+                "Instance: 11 VRF: test - Incorrect graceful restart state - Expected: disabled Actual: enabled",
+            ],
+        },
+    },
+    {
+        "name": "failure-graceful-restart-helper-disabled",
+        "test": VerifyISISGracefulRestart,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "isisInstances": {
+                            "1": {
+                                "gracefulRestart": "disabled",
+                                "gracefulRestartHelper": "disabled",
+                            }
+                        }
+                    },
+                    "test": {
+                        "isisInstances": {
+                            "11": {
+                                "gracefulRestart": "disabled",
+                                "gracefulRestartHelper": "enabled",
+                            }
+                        }
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "instances": [
+                {"vrf": "default", "name": "1"},
+                {"vrf": "test", "name": "11", "graceful_restart_helper": False},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Instance: 1 VRF: default - Incorrect graceful restart helper state - Expected: enabled Actual: disabled",
+                "Instance: 11 VRF: test - Incorrect graceful restart helper state - Expected: disabled Actual: enabled",
+            ],
         },
     },
 ]

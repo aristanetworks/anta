@@ -38,8 +38,7 @@ class VerifyReachability(AntaTest):
               df_bit: True
               size: 100
               reachable: true
-            - source: Management0
-              destination: 8.8.8.8
+            - destination: 8.8.8.8
               vrf: MGMT
               df_bit: True
               size: 100
@@ -55,7 +54,7 @@ class VerifyReachability(AntaTest):
     categories: ClassVar[list[str]] = ["connectivity"]
     # Template uses '{size}{df_bit}' without space since df_bit includes leading space when enabled
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
-        AntaTemplate(template="ping vrf {vrf} {destination} source {source} size {size}{df_bit} repeat {repeat}", revision=1)
+        AntaTemplate(template="ping vrf {vrf} {destination}{source} size {size}{df_bit} repeat {repeat}", revision=1)
     ]
 
     class Input(AntaTest.Input):
@@ -71,7 +70,7 @@ class VerifyReachability(AntaTest):
         def validate_hosts(cls, hosts: list[T]) -> list[T]:
             """Validate the 'destination' and 'source' IP address family in each host."""
             for host in hosts:
-                if not isinstance(host.source, str) and host.destination.version != host.source.version:
+                if host.source and not isinstance(host.source, str) and host.destination.version != host.source.version:
                     msg = f"{host} IP address family for destination does not match source"
                     raise ValueError(msg)
             return hosts
@@ -80,7 +79,12 @@ class VerifyReachability(AntaTest):
         """Render the template for each host in the input list."""
         return [
             template.render(
-                destination=host.destination, source=host.source, vrf=host.vrf, repeat=host.repeat, size=host.size, df_bit=" df-bit" if host.df_bit else ""
+                destination=host.destination,
+                source=f" source {host.source}" if host.source else "",
+                vrf=host.vrf,
+                repeat=host.repeat,
+                size=host.size,
+                df_bit=" df-bit" if host.df_bit else "",
             )
             for host in self.inputs.hosts
         ]

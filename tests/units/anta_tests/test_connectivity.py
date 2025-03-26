@@ -179,6 +179,26 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
+        "name": "success-without-source",
+        "test": VerifyReachability,
+        "inputs": {"hosts": [{"destination": "10.0.0.1", "repeat": 1}]},
+        "eos_data": [
+            {
+                "messages": [
+                    """PING 10.0.0.1 (10.0.0.1) : 72(100) bytes of data.
+                80 bytes from 10.0.0.1: icmp_seq=1 ttl=64 time=0.247 ms
+
+                --- 10.0.0.1 ping statistics ---
+                1 packets transmitted, 1 received, 0% packet loss, time 0ms
+                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms, ipg/ewma 0.370/0.225 ms
+
+                """,
+                ],
+            },
+        ],
+        "expected": {"result": "success"},
+    },
+    {
         "name": "failure-ip",
         "test": VerifyReachability,
         "inputs": {"hosts": [{"destination": "10.0.0.11", "source": "10.0.0.5"}, {"destination": "10.0.0.2", "source": "10.0.0.5"}]},
@@ -308,6 +328,25 @@ DATA: list[dict[str, Any]] = [
             "result": "failure",
             "messages": ["Host: 10.0.0.1 Source: 10.0.0.5 VRF: default - Destination is expected to be unreachable but found reachable"],
         },
+    },
+    {
+        "name": "failure-without-source",
+        "test": VerifyReachability,
+        "inputs": {"hosts": [{"destination": "10.0.0.1", "repeat": 1}]},
+        "eos_data": [
+            {
+                "messages": [
+                    """ping: sendmsg: Network is unreachable
+                PING 10.0.0.1 (10.0.0.1) : 72(100) bytes of data.
+
+                --- 10.0.0.11 ping statistics ---
+                2 packets transmitted, 0 received, 100% packet loss, time 10ms
+
+                """,
+                ],
+            },
+        ],
+        "expected": {"result": "failure", "messages": ["Host: 10.0.0.1 VRF: default - Unreachable"]},
     },
     {
         "name": "success",

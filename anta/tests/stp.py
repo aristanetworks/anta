@@ -299,9 +299,9 @@ class VerifySTPDisabledVlans(AntaTest):
 
     This test performs the following checks:
 
-        1. Verifies that the STP is configured.
-        2. Verifies that the specified VLAN(s) exist on the device.
-        3. Verifies that the STP is disabled for the specified VLAN(s).
+      1. Verifies that the STP is configured.
+      2. Verifies that the specified VLAN(s) exist on the device.
+      3. Verifies that the STP is disabled for the specified VLAN(s).
 
     Expected Results
     ----------------
