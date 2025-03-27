@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 
 @click.command
-@catalog_options
+@catalog_options()
 def catalog(catalog: AntaCatalog) -> None:
     """Check that the catalog is valid."""
     console.print(f"[bold][green]Catalog is valid: {catalog.filename}")
