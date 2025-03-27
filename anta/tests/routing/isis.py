@@ -522,6 +522,9 @@ class VerifyISISGracefulRestart(AntaTest):
 class VerifyISISInterfaceAuthMode(AntaTest):
     """Verifies IS-IS interfaces are running in the correct authentication mode.
 
+    !!! warning "IS-IS interface details are not render properly in the JSON output of eAPI request."
+        Impacted EOS version - 4.32.2F-38195967.4322F.
+
     Expected Results
     ----------------
     * Success: The test will pass if all provided IS-IS interfaces are running in the correct authentication mode.
