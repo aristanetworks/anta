@@ -89,7 +89,7 @@ class MDReportGenerator:
         """TODO: Need to review."""
         filtered_result = self.results
         if self.hide:
-            filtered_result = self.results.filter(self.hide)
+            filtered_result = self.results.filter(self.hide).sort(["name", "categories", "test"])
         default_sections: list[MDReportBase] = [
             ANTAReport(self.file_obj, self.results),
             TestResultsSummary(self.file_obj, self.results),
@@ -232,6 +232,8 @@ class MDReportBase(ABC):
         heading_level = max(1, min(heading_level, 6))
         heading_name = self.generate_heading_name()
         heading = "#" * heading_level + " " + heading_name
+        if self.heading_ow:
+            heading = f"\n{heading}"
         self.mdfile.write(f"{heading}\n\n")
 
     def safe_markdown(self, text: str | None) -> str:
