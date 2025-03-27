@@ -38,7 +38,8 @@ class MDReportGenerator:
     The final report will be generated in the same order as the `sections` list of the method.
     """
 
-    def __init__(self, results: ResultManager, md_file: Path, custom_section: AntaTestStatus | None = None, hide: AntaTestStatus | None = None) -> None:
+    def __init__(self, results: ResultManager, md_file: Path, custom_section: str | AntaTestStatus | None = None, hide: str | AntaTestStatus | None = None) -> None:
+        """Initialize a MDReportGenerator instance."""
         self.results = results
         self.md_file = md_file
         self._custom_section = custom_section
@@ -47,40 +48,40 @@ class MDReportGenerator:
 
     @property
     def custom_section(self) -> Any:  # noqa: ANN401
-        """Return the evidence attached to this result."""
+        """Return the custom result section to the report."""
         if self._custom_section is None:
             return self._custom_section
-        if isinstance(self._custom_section, set):
+        if isinstance(self._custom_section, set) and self._custom_section.issubset(set(SECTIONS)):
             return self._custom_section
         if not isinstance(self._custom_section, AntaTestStatus):
             if self._custom_section not in SECTIONS:
-                msg = f"during custom section: {self._custom_section}"
+                msg = f"Invalid value for 'custom_section': '{self._custom_section}' is not one of {SECTIONS}."
                 raise ValueError(msg)
             return {self._custom_section}
         return self._custom_section
 
     @custom_section.setter
     def custom_section(self, custom_section: AntaTestStatus) -> None:
-        """Set the evidence attached to this result."""
+        """Set the custom section attached to the result."""
         self._custom_section = custom_section
 
     @property
     def hide(self) -> Any:  # noqa: ANN401
-        """Return the evidence attached to this result."""
+        """Return the hide to filter the test results in TestResults section."""
         if self._hide is None:
             return self._hide
-        if isinstance(self._hide, set):
+        if isinstance(self._hide, set) and self._hide.issubset(set(SECTIONS)):
             return self._hide
         if not isinstance(self._hide, AntaTestStatus):
             if self._hide not in SECTIONS:
-                msg = f"during hide: {self._hide}"
+                msg = f"Invalid value for 'hide': '{self._hide}' is not one of {SECTIONS}."
                 raise ValueError(msg)
             return {self._hide}
         return self._hide
 
     @hide.setter
     def hide(self, hide: AntaTestStatus) -> None:
-        """Set the evidence attached to this result."""
+        """Set the hide."""
         self._hide = hide
 
     @property
@@ -105,7 +106,7 @@ class MDReportGenerator:
         return default_sections
 
     def generate_custom_section(self) -> list[MDReportBase]:
-        """TODO: Need to review."""
+        """TODO: Need to review this. We can have a list of custom sections to add."""
         custom_sections: list[MDReportBase] = []
         if self.custom_section:
             for section in [self.custom_section]:
