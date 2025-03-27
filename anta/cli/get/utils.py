@@ -232,7 +232,7 @@ def create_inventory_from_ansible(inventory: Path, output: Path, ansible_group: 
 
 
 def explore_package(module_name: str, test_name: str | None = None, *, short: bool = False, count: bool = False) -> list[type[AntaTest]]:
-    """Parse ANTA test submodules recursively and print AntaTest examples.
+    """Parse ANTA test submodules recursively and returns the found AntaTest.
 
     Parameters
     ----------
@@ -257,7 +257,7 @@ def explore_package(module_name: str, test_name: str | None = None, *, short: bo
         # Relying on module_spec check below.
         module_spec = None
     except ImportError as e:
-        msg = "`anta get tests --module <module>` does not support relative imports"
+        msg = "`--module <module>` option does not support relative imports"
         raise ValueError(msg) from e
 
     # Giving a second chance adding CWD to PYTHONPATH
@@ -288,7 +288,7 @@ def explore_package(module_name: str, test_name: str | None = None, *, short: bo
 
 
 def find_tests_in_module(qname: str, test_name: str | None) -> list[type[AntaTest]]:
-    """Print tests from `qname`, filtered by `test_name` if provided.
+    """Return the list of AntaTest in the passed module qname, potentially filtering on test_name.
 
     Parameters
     ----------
