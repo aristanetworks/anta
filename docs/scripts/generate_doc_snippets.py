@@ -22,6 +22,11 @@ COMMANDS = [
     "anta nrfu tpl-report --help",
     "anta nrfu md-report --help",
     "anta get tags --help",
+    "anta get inventory --help",
+    "anta get tests --help",
+    "anta get from-cvp --help",
+    "anta get from-ansible --help",
+    "anta get commands --help",
 ]
 
 for command in COMMANDS:

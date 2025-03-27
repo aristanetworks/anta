@@ -27,7 +27,7 @@ from anta.cli.console import console
 from anta.cli.utils import ExitCode
 from anta.inventory import AntaInventory
 from anta.inventory.models import AntaInventoryHost, AntaInventoryInput
-from anta.models import AntaTest
+from anta.models import AntaCommand, AntaTest
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -231,7 +231,7 @@ def create_inventory_from_ansible(inventory: Path, output: Path, ansible_group: 
     write_inventory_to_file(ansible_hosts, output)
 
 
-def explore_package(module_name: str, test_name: str | None = None, *, short: bool = False, count: bool = False) -> int:
+def explore_package(module_name: str, test_name: str | None = None, *, short: bool = False, count: bool = False) -> list[type[AntaTest]]:
     """Parse ANTA test submodules recursively and print AntaTest examples.
 
     Parameters
@@ -247,9 +247,10 @@ def explore_package(module_name: str, test_name: str | None = None, *, short: bo
 
     Returns
     -------
-    int:
-        The number of tests found.
+    list[type[AntaTest]]:
+        A list of the AntaTest found.
     """
+    result: list[type[AntaTest]] = []
     try:
         module_spec = importlib.util.find_spec(module_name)
     except ModuleNotFoundError:
@@ -272,22 +273,21 @@ def explore_package(module_name: str, test_name: str | None = None, *, short: bo
         msg = f"Module `{module_name}` was not found!"
         raise ValueError(msg)
 
-    tests_found = 0
     if module_spec.submodule_search_locations:
         for _, sub_module_name, ispkg in pkgutil.walk_packages(module_spec.submodule_search_locations):
             qname = f"{module_name}.{sub_module_name}"
             if ispkg:
-                tests_found += explore_package(qname, test_name=test_name, short=short, count=count)
+                result.extend(explore_package(qname, test_name=test_name, short=short, count=count))
                 continue
-            tests_found += find_tests_examples(qname, test_name, short=short, count=count)
+            result.extend(find_tests_in_module(qname, test_name))
 
     else:
-        tests_found += find_tests_examples(module_spec.name, test_name, short=short, count=count)
+        result.extend(find_tests_in_module(module_spec.name, test_name))
 
-    return tests_found
+    return result
 
 
-def find_tests_examples(qname: str, test_name: str | None, *, short: bool = False, count: bool = False) -> int:
+def find_tests_in_module(qname: str, test_name: str | None) -> list[type[AntaTest]]:
     """Print tests from `qname`, filtered by `test_name` if provided.
 
     Parameters
@@ -296,24 +296,18 @@ def find_tests_examples(qname: str, test_name: str | None, *, short: bool = Fals
         Name of the module to explore (e.g., 'anta.tests.routing.bgp').
     test_name
         If provided, only show tests starting with this name.
-    short
-        If True, only print test names without their inputs.
-    count
-        If True, only count the tests.
 
     Returns
     -------
-    int:
-        The number of tests found.
+    list[type[AntaTest]]:
+        A list of the AntaTest found in the module.
     """
+    results: list[type[AntaTest]] = []
     try:
         qname_module = importlib.import_module(qname)
     except (AssertionError, ImportError) as e:
         msg = f"Error when importing `{qname}` using importlib!"
         raise ValueError(msg) from e
-
-    module_printed = False
-    tests_found = 0
 
     for _name, obj in inspect.getmembers(qname_module):
         # Only retrieves the subclasses of AntaTest
@@ -321,16 +315,35 @@ def find_tests_examples(qname: str, test_name: str | None, *, short: bool = Fals
             continue
         if test_name and not obj.name.startswith(test_name):
             continue
-        if not module_printed:
-            if not count:
-                console.print(f"{qname}:")
-            module_printed = True
-        tests_found += 1
-        if count:
-            continue
-        print_test(obj, short=short)
+        results.append(obj)
 
-    return tests_found
+    return results
+
+
+def print_tests(tests: list[type[AntaTest]], *, short: bool = False) -> None:
+    """Print a list of AntaTests.
+
+    Parameters
+    ----------
+    tests
+        a list of the representation of the AntaTest as returned by inspect.getmembers
+    short
+        If True, only print test names without their inputs.
+    """
+
+    def module_name(test: type[AntaTest]) -> str:
+        """Return the module name for the input test.
+
+        Used to group the test by module.
+        """
+        return test.__module__
+
+    from itertools import groupby
+
+    for module, module_tests in groupby(tests, module_name):
+        console.print(module)
+        for test in module_tests:
+            print_test(test, short=short)
 
 
 def print_test(test: type[AntaTest], *, short: bool = False) -> None:
@@ -375,3 +388,32 @@ def extract_examples(docstring: str) -> str | None:
     pattern = r"Examples\s*--------\s*(.*)(?:\n\s*\n|\Z)"
     match = re.search(pattern, docstring, flags=re.DOTALL)
     return match[1].strip() if match and match[1].strip() != "" else None
+
+
+def print_commands(tests: list[type[AntaTest]]) -> None:
+    """Print a list of commands per module and per test.
+
+    Parameters
+    ----------
+    tests
+        a list of the representation of the AntaTest as returned by inspect.getmembers
+    """
+
+    def module_name(test: type[AntaTest]) -> str:
+        """Return the module name for the input test.
+
+        Used to group the test by module.
+        """
+        return test.__module__
+
+    from itertools import groupby
+
+    for module, module_tests in groupby(tests, module_name):
+        console.print(f"{module}:")
+        for test in module_tests:
+            console.print(f"  - {test.name}:")
+            for command in test.commands:
+                if isinstance(command, AntaCommand):
+                    console.print(f"    - {command.command}")
+                else:  # isinstance(command, AntaTemplate):
+                    console.print(f"    - {command.template}")
