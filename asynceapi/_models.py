@@ -108,6 +108,13 @@ class EapiResponse:
         """Get all results as a list. Results are ordered by the command indices in the request."""
         return list(self._results.values())
 
+    def get_result(self, index: int) -> EapiCommandResult:
+        """Get a result by its command index."""
+        if index not in self._results:
+            msg = f"Command index {index} not found in EapiResponse."
+            raise IndexError(msg)
+        return self._results[index]
+
     def __len__(self) -> int:
         """Return the number of results."""
         return len(self._results)

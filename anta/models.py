@@ -9,6 +9,7 @@ import hashlib
 import logging
 import re
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from functools import wraps
 from string import Formatter
 from typing import TYPE_CHECKING, Any, Callable, ClassVar, Literal, TypeVar
@@ -18,7 +19,7 @@ from pydantic import BaseModel, ConfigDict, ValidationError, create_model
 from anta.constants import EOS_BLACKLIST_CMDS, KNOWN_EOS_ERRORS, UNSUPPORTED_PLATFORM_ERRORS
 from anta.custom_types import Revision
 from anta.logger import anta_log_exception, exc_to_str
-from anta.result_manager.models import AntaTestStatus, TestResult
+from anta.result_manager.models import AntaTestStatus, TestEvidence, TestResult
 
 if TYPE_CHECKING:
     from collections.abc import Coroutine
@@ -131,6 +132,23 @@ class AntaTemplate:
         )
 
 
+@dataclass(frozen=True)
+class AntaCommandMetadata:
+    """Additional metadata captured during the AntaCommand execution.
+
+    Attributes
+    ----------
+    start_time : float | None
+        Command execution start time in seconds. Uses Unix epoch format.
+    duration : float | None
+        Command execution duration in seconds.
+
+    """
+
+    start_time: float | None = None
+    duration: float | None = None
+
+
 class AntaCommand(BaseModel):
     """Class to define a command.
 
@@ -165,6 +183,8 @@ class AntaCommand(BaseModel):
         Pydantic Model containing the variables values used to render the template.
     use_cache
         Enable or disable caching for this AntaCommand if the AntaDevice supports it.
+    metadata
+        Optional additional metadata captured during the AntaCommand execution.
 
     """
 
@@ -179,6 +199,7 @@ class AntaCommand(BaseModel):
     errors: list[str] = []
     params: AntaParamsBaseModel = AntaParamsBaseModel()
     use_cache: bool = True
+    metadata: AntaCommandMetadata | None = None
 
     @property
     def uid(self) -> str:
@@ -431,6 +452,8 @@ class AntaTest(ABC):
         device: AntaDevice,
         inputs: dict[str, Any] | AntaTest.Input | None = None,
         eos_data: list[dict[Any, Any] | str] | None = None,
+        *,
+        save_evidence: bool = False,
     ) -> None:
         """Initialize an AntaTest instance.
 
@@ -443,6 +466,8 @@ class AntaTest(ABC):
         eos_data
             Populate outputs of the test commands instead of collecting from devices.
             This list must have the same length and order than the `instance_commands` instance attribute.
+        save_evidence
+            Save the inputs and commands used to run the test in the TestResult object.
         """
         self.logger: logging.Logger = logging.getLogger(f"{self.module}.{self.__class__.__name__}")
         self.device: AntaDevice = device
@@ -457,6 +482,9 @@ class AntaTest(ABC):
         self._init_inputs(inputs)
         if self.result.result == AntaTestStatus.UNSET:
             self._init_commands(eos_data)
+
+        if save_evidence:
+            self.result.evidence = TestEvidence(self.inputs, self.instance_commands)
 
     def _init_inputs(self, inputs: dict[str, Any] | AntaTest.Input | None) -> None:
         """Instantiate the `inputs` instance attribute with an `AntaTest.Input` instance to validate test inputs using the model.
