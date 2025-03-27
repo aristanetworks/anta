@@ -7,27 +7,18 @@ anta_title: Retrieving Tests information
   ~ that can be found in the LICENSE file.
   -->
 
-`anta get tests` commands help you discover available tests in ANTA.
+## `anta get tests`
+
+`anta get tests` commands help you discover the available tests in ANTA.
 
 ### Command overview
 
 ```bash
-Usage: anta get tests [OPTIONS]
-
-  Show all builtin ANTA tests with an example output retrieved from each test
-  documentation.
-
-Options:
-  --module TEXT  Filter tests by module name.  [default: anta.tests]
-  --test TEXT    Filter by specific test name. If module is specified,
-                 searches only within that module.
-  --short        Display test names without their inputs.
-  --count        Print only the number of tests found.
-  --help         Show this message and exit.
+--8<-- "anta_get_tests_help.txt"
 ```
 
 > [!TIP]
-> By default, `anta get tests` will retrieve all tests available in ANTA.
+> By default, `anta get tests` retrieves all the tests available in ANTA.
 
 ### Examples
 
@@ -118,3 +109,85 @@ anta.tests.aaa:
 ```bash title="anta get tests --count"
 There are 155 tests available in `anta.tests`.
 ```
+
+## `anta get commands`
+
+`anta get commands` returns the EOS commands used by the targeted tests.
+
+### Command overview
+
+```bash
+--8<-- "anta_get_commands_help.txt"
+```
+
+> [!TIP]
+> By default, `anta get commands` returns the commands from every tests builtin in ANTA.
+
+### Examples
+
+#### Default usage
+
+``` yaml title="anta get commands"
+anta.tests.aaa:
+  - VerifyAcctConsoleMethods:
+    - show aaa methods accounting
+  - VerifyAcctDefaultMethods:
+    - show aaa methods accounting
+  - VerifyAuthenMethods:
+    - show aaa methods authentication
+  - VerifyAuthzMethods:
+    - show aaa methods authorization
+  - VerifyTacacsServerGroups:
+    - show tacacs
+  - VerifyTacacsServers:
+    - show tacacs
+  - VerifyTacacsSourceIntf:
+    - show tacacs
+anta.tests.avt:
+  - VerifyAVTPathHealth:
+    - show adaptive-virtual-topology path
+  - VerifyAVTRole:
+    - show adaptive-virtual-topology path
+  - VerifyAVTSpecificPath:
+    - show adaptive-virtual-topology path
+[...]
+```
+
+#### Module usage
+
+To retrieve all the commands from the tests in `anta.tests.stun`.
+
+``` yaml title="anta get commands --module anta.tests.stun"
+anta.tests.stun:
+  - VerifyStunClient:
+    - show stun client translations {source_address} {source_port}
+  - VerifyStunClientTranslation:
+    - show stun client translations {source_address} {source_port}
+  - VerifyStunServer:
+    - show stun server status
+```
+
+#### Test usage
+
+``` yaml title="anta get commands --test VerifyBGPExchangedRoutes"
+anta.tests.routing.bgp:
+  - VerifyBGPExchangedRoutes:
+    - show bgp neighbors {peer} advertised-routes vrf {vrf}
+    - show bgp neighbors {peer} routes vrf {vrf}
+      vrf: MGMT
+```
+
+> [!TIP]
+> You can filter tests by providing a prefix - ANTA will return all tests that start with your specified string.
+
+```yaml title="anta get tests --test VerifyTacacs"
+anta.tests.aaa:
+  - VerifyTacacsServerGroups:
+    - show tacacs
+  - VerifyTacacsServers:
+    - show tacacs
+  - VerifyTacacsSourceIntf:
+    - show tacacs
+```
+
+# TODO: doc for catalog
