@@ -8,7 +8,8 @@ from __future__ import annotations
 import logging
 import re
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, ClassVar, TextIO
+from pathlib import Path
+from typing import TYPE_CHECKING, Any, ClassVar, TextIO
 
 from anta.constants import MD_REPORT_TOC
 from anta.logger import anta_log_exception
@@ -17,11 +18,13 @@ from anta.tools import convert_categories
 
 if TYPE_CHECKING:
     from collections.abc import Generator
-    from pathlib import Path
 
     from anta.result_manager import ResultManager
 
+
 logger = logging.getLogger(__name__)
+
+SECTIONS: list[str] = list(AntaTestStatus)
 
 
 # pylint: disable=too-few-public-methods
@@ -35,31 +38,93 @@ class MDReportGenerator:
     The final report will be generated in the same order as the `sections` list of the method.
     """
 
-    @classmethod
-    def generate(cls, results: ResultManager, md_filename: Path) -> None:
-        """Generate and write the various sections of the markdown report.
+    def __init__(self, results: ResultManager, md_file: Path, custom_section: str | AntaTestStatus | None = None, hide: str | AntaTestStatus | None = None) -> None:
+        """Initialize a MDReportGenerator instance."""
+        self.results = results
+        self.md_file = md_file
+        self._custom_section = custom_section
+        self._hide = hide
+        self.file_obj = Path.open(self.md_file, "w", encoding="utf-8")  # pylint: disable=consider-using-with
 
-        Parameters
-        ----------
-        results
-            The ResultsManager instance containing all test results.
-        md_filename
-            The path to the markdown file to write the report into.
-        """
+    @property
+    def custom_section(self) -> Any:  # noqa: ANN401
+        """Return the custom result section to the report."""
+        if self._custom_section is None:
+            return self._custom_section
+        if isinstance(self._custom_section, set) and self._custom_section.issubset(set(SECTIONS)):
+            return self._custom_section
+        if not isinstance(self._custom_section, AntaTestStatus):
+            if self._custom_section not in SECTIONS:
+                msg = f"Invalid value for 'custom_section': '{self._custom_section}' is not one of {SECTIONS}."
+                raise ValueError(msg)
+            return {self._custom_section}
+        return self._custom_section
+
+    @custom_section.setter
+    def custom_section(self, custom_section: AntaTestStatus) -> None:
+        """Set the custom section attached to the result."""
+        self._custom_section = custom_section
+
+    @property
+    def hide(self) -> Any:  # noqa: ANN401
+        """Return the hide to filter the test results in TestResults section."""
+        if self._hide is None:
+            return self._hide
+        if isinstance(self._hide, set) and self._hide.issubset(set(SECTIONS)):
+            return self._hide
+        if not isinstance(self._hide, AntaTestStatus):
+            if self._hide not in SECTIONS:
+                msg = f"Invalid value for 'hide': '{self._hide}' is not one of {SECTIONS}."
+                raise ValueError(msg)
+            return {self._hide}
+        return self._hide
+
+    @hide.setter
+    def hide(self, hide: AntaTestStatus) -> None:
+        """Set the hide."""
+        self._hide = hide
+
+    @property
+    def sections(self) -> list[MDReportBase]:
+        """TODO: Need to review."""
+        filtered_result = self.results
+        if self.hide:
+            filtered_result = self.results.filter(self.hide).sort(["name", "categories", "test"])
+        default_sections: list[MDReportBase] = [
+            ANTAReport(self.file_obj, self.results),
+            TestResultsSummary(self.file_obj, self.results),
+            SummaryTotals(self.file_obj, self.results),
+            SummaryTotalsDeviceUnderTest(self.file_obj, self.results),
+            SummaryTotalsPerCategory(self.file_obj, self.results),
+            TestResults(self.file_obj, filtered_result),
+        ]
+
+        if self.custom_section:
+            custom_sections = self.generate_custom_section()
+            default_sections.extend(custom_sections)
+
+        return default_sections
+
+    def generate_custom_section(self) -> list[MDReportBase]:
+        """TODO: Need to review this. We can have a list of custom sections to add."""
+        custom_sections: list[MDReportBase] = []
+        if self.custom_section:
+            for section in [self.custom_section]:
+                filtered_result = self.results.filter(set(AntaTestStatus) - section)
+                custom_sections.append(TestResults(self.file_obj, filtered_result, heading_ow=f"{section} Result Summary"))
+
+        return custom_sections
+
+    def generate(self) -> None:
+        """Generate and write the various sections of the markdown report."""
         try:
-            with md_filename.open("w", encoding="utf-8") as mdfile:
-                sections: list[MDReportBase] = [
-                    ANTAReport(mdfile, results),
-                    TestResultsSummary(mdfile, results),
-                    SummaryTotals(mdfile, results),
-                    SummaryTotalsDeviceUnderTest(mdfile, results),
-                    SummaryTotalsPerCategory(mdfile, results),
-                    TestResults(mdfile, results),
-                ]
-                for section in sections:
-                    section.generate_section()
+            for section in self.sections:
+                section.generate_section()
+            self.file_obj.close()
         except OSError as exc:
-            message = f"OSError caught while writing the Markdown file '{md_filename.resolve()}'."
+            if not self.file_obj.closed:
+                self.file_obj.close()
+            message = f"OSError caught while writing the Markdown file '{self.md_file.resolve()}'."
             anta_log_exception(exc, message, logger)
             raise
 
@@ -71,7 +136,7 @@ class MDReportBase(ABC):
     to generate and write content to the provided markdown file.
     """
 
-    def __init__(self, mdfile: TextIO, results: ResultManager) -> None:
+    def __init__(self, mdfile: TextIO, results: ResultManager, heading_ow: str | None = None) -> None:
         """Initialize the MDReportBase with an open markdown file object to write to and a ResultManager instance.
 
         Parameters
@@ -80,9 +145,12 @@ class MDReportBase(ABC):
             An open file object to write the markdown data into.
         results
             The ResultsManager instance containing all test results.
+        heading_ow
+            Vitthal
         """
         self.mdfile = mdfile
         self.results = results
+        self.heading_ow = heading_ow
 
     @abstractmethod
     def generate_section(self) -> None:
@@ -116,6 +184,9 @@ class MDReportBase(ABC):
         """
         class_name = self.__class__.__name__
 
+        if self.heading_ow:
+            class_name = self.heading_ow
+
         # Split the class name into words, keeping acronyms together
         words = re.findall(r"[A-Z]?[a-z]+|[A-Z]+(?=[A-Z][a-z]|\d|\W|$)|\d+", class_name)
 
@@ -134,6 +205,9 @@ class MDReportBase(ABC):
         last_table
             Flag to determine if it's the last table of the markdown file to avoid unnecessary new line. Defaults to False.
         """
+        if len(self.results) == 0:
+            self.mdfile.write("\nNo record found.\n")
+            return
         self.mdfile.write("\n".join(table_heading) + "\n")
         for row in self.generate_rows():
             self.mdfile.write(row)
@@ -158,6 +232,8 @@ class MDReportBase(ABC):
         heading_level = max(1, min(heading_level, 6))
         heading_name = self.generate_heading_name()
         heading = "#" * heading_level + " " + heading_name
+        if self.heading_ow:
+            heading = f"\n{heading}"
         self.mdfile.write(f"{heading}\n\n")
 
     def safe_markdown(self, text: str | None) -> str:
