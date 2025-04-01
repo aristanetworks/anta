@@ -136,7 +136,7 @@ class VerifyVxlanVniBinding(AntaTest):
         self.result.is_success()
 
         if (vxlan1 := get_value(self.instance_commands[0].json_output, "vxlanIntfs.Vxlan1")) is None:
-            self.result.is_skipped("Vxlan1 interface is not configured")
+            self.result.is_skipped("Interface: Vxlan1 - Not configured")
             return
 
         for vni, vlan in self.inputs.bindings.items():
@@ -191,7 +191,7 @@ class VerifyVxlanVtep(AntaTest):
         inputs_vteps = [str(input_vtep) for input_vtep in self.inputs.vteps]
 
         if (vxlan1 := get_value(self.instance_commands[0].json_output, "interfaces.Vxlan1")) is None:
-            self.result.is_skipped("Vxlan1 interface is not configured")
+            self.result.is_skipped("Interface: Vxlan1 - Not configured")
             return
 
         difference1 = set(inputs_vteps).difference(set(vxlan1["vteps"]))
@@ -243,7 +243,7 @@ class VerifyVxlan1ConnSettings(AntaTest):
         # Skip the test case if vxlan1 interface is not configured
         vxlan_output = get_value(command_output, "interfaces.Vxlan1")
         if not vxlan_output:
-            self.result.is_skipped("Vxlan1 interface is not configured.")
+            self.result.is_skipped("Interface: Vxlan1 - Not configured")
             return
 
         src_intf = vxlan_output.get("srcIpIntf")
