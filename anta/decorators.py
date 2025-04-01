@@ -161,7 +161,7 @@ def skip_on_platforms(platforms: list[str]) -> Callable[[F], F]:
                 return anta_test.result
 
             if anta_test.device.hw_model in platforms:
-                anta_test.result.is_skipped(f"{anta_test.__class__.__name__} test is not supported on {anta_test.device.hw_model}.")
+                anta_test.result.is_skipped(f"{anta_test.__class__.__name__} test is not supported on {anta_test.device.hw_model}")
                 AntaTest.update_progress()
                 return anta_test.result
 

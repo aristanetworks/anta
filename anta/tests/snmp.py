@@ -320,7 +320,7 @@ class VerifySnmpErrorCounters(AntaTest):
 
         # Verify SNMP PDU counters.
         if not (snmp_counters := get_value(command_output, "counters")):
-            self.result.is_failure("SNMP counters not found.")
+            self.result.is_failure("SNMP counters not found")
             return
 
         # In case SNMP error counters not provided, It will check all the error counters.
