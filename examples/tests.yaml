@@ -214,8 +214,14 @@ anta.tests.interfaces:
         - Ethernet2
   - VerifyIllegalLACP:
       # Verifies there are no illegal LACP packets in all port channels.
+      ignored_interfaces:
+        - Port-Channel1
+        - Port-Channel2
   - VerifyInterfaceDiscards:
       # Verifies that the interfaces packet discard counters are equal to zero.
+      ignored_interfaces:
+        - Ethernet1
+        - Port-Channel1
   - VerifyInterfaceErrDisabled:
       # Verifies there are no interfaces in the errdisabled state.
   - VerifyInterfaceErrors:
@@ -231,6 +237,9 @@ anta.tests.interfaces:
   - VerifyInterfaceUtilization:
       # Verifies that the utilization of interfaces is below a certain threshold.
       threshold: 70.0
+      ignored_interfaces:
+        - Ethernet1
+        - Port-Channel1
   - VerifyInterfacesSpeed:
       # Verifies the speed, lanes, auto-negotiation status, and mode as full duplex for interfaces.
       interfaces:
@@ -283,6 +292,10 @@ anta.tests.interfaces:
       number: 3
   - VerifyPortChannels:
       # Verifies there are no inactive ports in all port channels.
+      ignored_interfaces:
+        - Port-Channel1
+        - Port-Channel2
+
   - VerifySVI:
       # Verifies the status of all SVIs.
   - VerifyStormControlDrops:

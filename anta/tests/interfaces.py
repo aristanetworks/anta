@@ -8,12 +8,12 @@
 from __future__ import annotations
 
 import re
-from typing import ClassVar, TypeVar
+from typing import Any, ClassVar, TypeVar
 
 from pydantic import Field, field_validator
 from pydantic_extra_types.mac_address import MacAddress
 
-from anta.custom_types import Interface, Percent, PositiveInteger
+from anta.custom_types import EthernetInterface, Interface, ManagementInterface, Percent, PortChannelInterface, PositiveInteger
 from anta.decorators import skip_on_platforms
 from anta.input_models.interfaces import InterfaceDetail, InterfaceState
 from anta.models import AntaCommand, AntaTemplate, AntaTest
@@ -46,6 +46,9 @@ class VerifyInterfaceUtilization(AntaTest):
     anta.tests.interfaces:
       - VerifyInterfaceUtilization:
           threshold: 70.0
+          ignored_interfaces:
+            - Ethernet1
+            - Port-Channel1
     ```
     """
 
@@ -60,6 +63,17 @@ class VerifyInterfaceUtilization(AntaTest):
 
         threshold: Percent = 75.0
         """Interface utilization threshold above which the test will fail."""
+        ignored_interfaces: list[EthernetInterface | PortChannelInterface | ManagementInterface] | None = None
+        """A list of L3 interfaces to ignore."""
+
+    def _check_interface_usage_threshold(self, interface: str, rate: dict[str, Any], bandwidth: int) -> list[Any]:
+        """Validate the network interface usage for specified threshold."""
+        messages: list[str] = []
+        for bps_rate in ("inBpsRate", "outBpsRate"):
+            usage = rate[bps_rate] / bandwidth * 100
+            if usage > self.inputs.threshold:
+                messages.append(f"Interface: {interface} BPS Rate: {bps_rate} - Usage exceeds the threshold - Expected: < {self.inputs.threshold}% Actual: {usage}%")
+        return messages
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -71,6 +85,8 @@ class VerifyInterfaceUtilization(AntaTest):
 
         for intf, rate in rates["interfaces"].items():
             interface_data = []
+            if self.inputs.ignored_interfaces and intf in self.inputs.ignored_interfaces:
+                continue
             # The utilization logic has been implemented for full-duplex interfaces only
             if not all([duplex := (interface := interfaces["interfaces"][intf]).get("duplex", None), duplex == duplex_full]):
                 if (members := interface.get("memberInterfaces", None)) is None:
@@ -88,13 +104,10 @@ class VerifyInterfaceUtilization(AntaTest):
                 self.logger.debug("Interface %s has been ignored due to null bandwidth value", intf)
                 continue
 
-            # If one or more interfaces have a usage above the threshold, test fails.
-            for bps_rate in ("inBpsRate", "outBpsRate"):
-                usage = rate[bps_rate] / bandwidth * 100
-                if usage > self.inputs.threshold:
-                    self.result.is_failure(
-                        f"Interface: {intf} BPS Rate: {bps_rate} - Usage exceeds the threshold - Expected: < {self.inputs.threshold}% Actual: {usage}%"
-                    )
+            failure_msgs = self._check_interface_usage_threshold(intf, rate, bandwidth)
+            if failure_msgs:
+                for msg in failure_msgs:
+                    self.result.is_failure(msg)
 
 
 class VerifyInterfaceErrors(AntaTest):
@@ -140,11 +153,20 @@ class VerifyInterfaceDiscards(AntaTest):
     ```yaml
     anta.tests.interfaces:
       - VerifyInterfaceDiscards:
+          ignored_interfaces:
+            - Ethernet1
+            - Port-Channel1
     ```
     """
 
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show interfaces counters discards", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyInterfaceDiscards test."""
+
+        ignored_interfaces: list[EthernetInterface | PortChannelInterface | ManagementInterface] | None = None
+        """A list of L3 interfaces to ignore."""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -152,6 +174,8 @@ class VerifyInterfaceDiscards(AntaTest):
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
         for interface, interface_data in command_output["interfaces"].items():
+            if self.inputs.ignored_interfaces and interface in self.inputs.ignored_interfaces:
+                continue
             counters_data = [f"{counter}: {value}" for counter, value in interface_data.items() if value > 0]
             if counters_data:
                 self.result.is_failure(f"Interface: {interface} - Non-zero discard counter(s): {', '.join(counters_data)}")
@@ -315,11 +339,21 @@ class VerifyPortChannels(AntaTest):
     ```yaml
     anta.tests.interfaces:
       - VerifyPortChannels:
+          ignored_interfaces:
+            - Port-Channel1
+            - Port-Channel2
+
     ```
     """
 
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show port-channel", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyPortChannels test."""
+
+        ignored_interfaces: list[PortChannelInterface] | None = None
+        """A list of L3 interfaces to ignore."""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -327,6 +361,8 @@ class VerifyPortChannels(AntaTest):
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
         for port_channel, port_channel_details in command_output["portChannels"].items():
+            if self.inputs.ignored_interfaces and port_channel in self.inputs.ignored_interfaces:
+                continue
             # Verify that the no inactive ports in all port channels.
             if inactive_ports := port_channel_details["inactivePorts"]:
                 self.result.is_failure(f"{port_channel} - Inactive port(s) - {', '.join(inactive_ports.keys())}")
@@ -345,11 +381,20 @@ class VerifyIllegalLACP(AntaTest):
     ```yaml
     anta.tests.interfaces:
       - VerifyIllegalLACP:
+          ignored_interfaces:
+            - Port-Channel1
+            - Port-Channel2
     ```
     """
 
     categories: ClassVar[list[str]] = ["interfaces"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show lacp counters all-ports", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyIllegalLACP test."""
+
+        ignored_interfaces: list[PortChannelInterface] | None = None
+        """A list of L3 interfaces to ignore."""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -357,6 +402,8 @@ class VerifyIllegalLACP(AntaTest):
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
         for port_channel, port_channel_dict in command_output["portChannels"].items():
+            if self.inputs.ignored_interfaces and port_channel in self.inputs.ignored_interfaces:
+                continue
             for interface, interface_details in port_channel_dict["interfaces"].items():
                 # Verify that the no illegal LACP packets in all port channels.
                 if interface_details["illegalRxCount"] != 0:

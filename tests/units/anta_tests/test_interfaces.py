@@ -266,7 +266,7 @@ DATA: list[dict[str, Any]] = [
                             "outputErrorsDetail": {"collisions": 0, "lateCollisions": 0, "deferredTransmissions": 0, "txPause": 0},
                             "counterRefreshTime": 1710253760.6489396,
                         },
-                        "duplex": "duplexFull",
+                        "duplex": "duplexHalf",
                         "autoNegotiate": "unknown",
                         "loopbackMode": "loopbackNone",
                         "lanes": 0,
@@ -311,7 +311,7 @@ DATA: list[dict[str, Any]] = [
                             "counterRefreshTime": 1710253760.6500373,
                         },
                         "memberInterfaces": {
-                            "Ethernet3/1": {"bandwidth": 1000000000, "duplex": "duplexFull"},
+                            "Ethernet3/1": {"bandwidth": 1000000000, "duplex": "duplexHalf"},
                             "Ethernet4/1": {"bandwidth": 1000000000, "duplex": "duplexFull"},
                         },
                         "fallbackEnabled": False,
@@ -363,7 +363,7 @@ DATA: list[dict[str, Any]] = [
                 }
             },
         ],
-        "inputs": {"threshold": 70.0},
+        "inputs": {"threshold": 70.0, "ignored_interfaces": ["Ethernet1/1", "Port-Channel31", "management1", "MGMT0"]},
         "expected": {"result": "success"},
     },
     {
@@ -378,7 +378,7 @@ DATA: list[dict[str, Any]] = [
                         "inBpsRate": 100000000.0,
                         "inPktsRate": 0.00028663359326985426,
                         "inPpsRate": 3.9005388262031966,
-                        "outBpsRate": 0.0,
+                        "outBpsRate": 100000000.0,
                         "outPktsRate": 0.0,
                         "outPpsRate": 0.0,
                         "lastUpdateTimestamp": 1710253727.138605,
@@ -386,10 +386,10 @@ DATA: list[dict[str, Any]] = [
                     "Port-Channel31": {
                         "description": "MLAG_PEER_dc1-leaf1b_Po31",
                         "interval": 300,
-                        "inBpsRate": 1862.4876594267096,
+                        "inBpsRate": 100000000.0,
                         "inPktsRate": 0.00011473185873493155,
                         "inPpsRate": 2.7009344704495084,
-                        "outBpsRate": 100000000.0,
+                        "outBpsRate": 1862.4876594267096,
                         "outPktsRate": 0.00010844978034772172,
                         "outPpsRate": 2.5686946869154013,
                         "lastUpdateTimestamp": 1710253726.4029949,
@@ -510,7 +510,8 @@ DATA: list[dict[str, Any]] = [
             "result": "failure",
             "messages": [
                 "Interface: Ethernet1/1 BPS Rate: inBpsRate - Usage exceeds the threshold - Expected: < 3.0% Actual: 10.0%",
-                "Interface: Port-Channel31 BPS Rate: outBpsRate - Usage exceeds the threshold - Expected: < 3.0% Actual: 5.0%",
+                "Interface: Ethernet1/1 BPS Rate: outBpsRate - Usage exceeds the threshold - Expected: < 3.0% Actual: 10.0%",
+                "Interface: Port-Channel31 BPS Rate: inBpsRate - Usage exceeds the threshold - Expected: < 3.0% Actual: 5.0%",
             ],
         },
     },
@@ -894,6 +895,24 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": None,
         "expected": {"result": "success"},
+    },
+    {
+        "name": "success-ignored-interface",
+        "test": VerifyInterfaceDiscards,
+        "eos_data": [
+            {
+                "inDiscardsTotal": 0,
+                "interfaces": {
+                    "Ethernet2": {"outDiscards": 42, "inDiscards": 0},
+                    "Ethernet1": {"outDiscards": 0, "inDiscards": 42},
+                },
+                "outDiscardsTotal": 0,
+            },
+        ],
+        "inputs": {"ignored_interfaces": ["Ethernet2", "Ethernet1"]},
+        "expected": {
+            "result": "success",
+        },
     },
     {
         "name": "failure",
@@ -1289,6 +1308,29 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
+        "name": "success-ignored-interface",
+        "test": VerifyPortChannels,
+        "eos_data": [
+            {
+                "portChannels": {
+                    "Port-Channel42": {
+                        "recircFeature": [],
+                        "maxWeight": 16,
+                        "minSpeed": "0 gbps",
+                        "rxPorts": {},
+                        "currWeight": 0,
+                        "minLinks": 0,
+                        "inactivePorts": {"Ethernet8": {"reasonUnconfigured": "waiting for LACP response"}},
+                        "activePorts": {},
+                        "inactiveLag": False,
+                    },
+                },
+            },
+        ],
+        "inputs": {"ignored_interfaces": ["Port-Channel42"]},
+        "expected": {"result": "success"},
+    },
+    {
         "name": "failure",
         "test": VerifyPortChannels,
         "eos_data": [
@@ -1337,6 +1379,35 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": None,
         "expected": {"result": "success"},
+    },
+    {
+        "name": "success-ignored-interface",
+        "test": VerifyIllegalLACP,
+        "eos_data": [
+            {
+                "portChannels": {
+                    "Port-Channel42": {
+                        "interfaces": {
+                            "Ethernet8": {
+                                "actorPortStatus": "noAgg",
+                                "illegalRxCount": 666,
+                                "markerResponseTxCount": 0,
+                                "markerResponseRxCount": 0,
+                                "lacpdusRxCount": 0,
+                                "lacpdusTxCount": 454,
+                                "markersTxCount": 0,
+                                "markersRxCount": 0,
+                            },
+                        },
+                    },
+                },
+                "orphanPorts": {},
+            },
+        ],
+        "inputs": {"ignored_interfaces": ["Port-Channel42"]},
+        "expected": {
+            "result": "success",
+        },
     },
     {
         "name": "failure",
