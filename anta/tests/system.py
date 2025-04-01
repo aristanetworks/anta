@@ -451,7 +451,7 @@ class VerifyMaintenance(AntaTest):
     ```
     """
 
-    categories: ClassVar[list[str]] = ["Maintenance"]
+    categories: ClassVar[list[str]] = ["system"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show maintenance", revision=1)]
 
     @AntaTest.anta_test

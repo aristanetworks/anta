@@ -205,7 +205,7 @@ class VerifyVxlanVtep(AntaTest):
 
 
 class VerifyVxlan1ConnSettings(AntaTest):
-    """Verifies the Vxlan1 source interface and UDP port.
+    """Verifies Vxlan1 source interface and UDP port.
 
     Expected Results
     ----------------
