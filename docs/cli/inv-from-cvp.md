@@ -15,26 +15,7 @@ In large setups, it might be beneficial to construct your inventory based on Clo
 ## Command overview
 
 ```bash
-Usage: anta get from-cvp [OPTIONS]
-
-  Build ANTA inventory from CloudVision.
-
-  NOTE: Only username/password authentication is supported for on-premises CloudVision instances.
-  Token authentication for both on-premises and CloudVision as a Service (CVaaS) is not supported.
-
-Options:
-  -o, --output FILE     Path to save inventory file  [env var: ANTA_INVENTORY;
-                        required]
-  --overwrite           Do not prompt when overriding current inventory  [env
-                        var: ANTA_GET_FROM_CVP_OVERWRITE]
-  -host, --host TEXT    CloudVision instance FQDN or IP  [required]
-  -u, --username TEXT   CloudVision username  [required]
-  -p, --password TEXT   CloudVision password  [required]
-  -c, --container TEXT  CloudVision container where devices are configured
-  --ignore-cert         By default connection to CV will use HTTPS
-                        certificate, set this flag to disable it  [env var:
-                        ANTA_GET_FROM_CVP_IGNORE_CERT]
-  --help                Show this message and exit.
+--8<-- "anta_get_fromcvp_help.txt"
 ```
 
 The output is an inventory where the name of the container is added as a tag for each host:
