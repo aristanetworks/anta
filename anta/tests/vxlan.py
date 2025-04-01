@@ -155,7 +155,7 @@ class VerifyVxlanVniBinding(AntaTest):
 
 
 class VerifyVxlanVtep(AntaTest):
-    """Verifies the VTEP peers of the Vxlan1 interface.
+    """Verifies Vxlan1 VTEP peers.
 
     Expected Results
     ----------------
@@ -205,7 +205,7 @@ class VerifyVxlanVtep(AntaTest):
 
 
 class VerifyVxlan1ConnSettings(AntaTest):
-    """Verifies the interface vxlan1 source interface and UDP port.
+    """Verifies the Vxlan1 source interface and UDP port.
 
     Expected Results
     ----------------
