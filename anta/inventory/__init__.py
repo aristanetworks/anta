@@ -200,7 +200,7 @@ class AntaInventory(dict[str, AntaDevice]):
         enable_password
             Enable password to use if required.
         timeout
-            Timeout value in seconds for outgoing API calls.
+            Global timeout value in seconds for outgoing eAPI calls. None means no timeout.
         file_format
             Whether the inventory file is in JSON or YAML.
         enable
