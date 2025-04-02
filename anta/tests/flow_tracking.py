@@ -109,7 +109,7 @@ class VerifyHardwareFlowTrackerStatus(AntaTest):
         command_output = self.instance_commands[0].json_output
         # Check if hardware flow tracking is configured
         if not command_output.get("running"):
-            self.result.is_failure("Hardware flow tracking is not running.")
+            self.result.is_failure("Hardware flow tracking is not running")
             return
 
         for tracker in self.inputs.trackers:
