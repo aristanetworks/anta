@@ -222,6 +222,8 @@ anta.tests.interfaces:
       ignored_interfaces:
         - Ethernet1
         - Port-Channel1
+      ignored_all_interfaces:
+        - Ethernet
   - VerifyInterfaceErrDisabled:
       # Verifies there are no interfaces in the errdisabled state.
   - VerifyInterfaceErrors:

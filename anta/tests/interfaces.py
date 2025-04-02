@@ -8,7 +8,7 @@
 from __future__ import annotations
 
 import re
-from typing import Any, ClassVar, TypeVar
+from typing import Any, ClassVar, Literal, TypeVar
 
 from pydantic import Field, field_validator
 from pydantic_extra_types.mac_address import MacAddress
@@ -87,6 +87,7 @@ class VerifyInterfaceUtilization(AntaTest):
             interface_data = []
             if self.inputs.ignored_interfaces and intf in self.inputs.ignored_interfaces:
                 continue
+
             # The utilization logic has been implemented for full-duplex interfaces only
             if not all([duplex := (interface := interfaces["interfaces"][intf]).get("duplex", None), duplex == duplex_full]):
                 if (members := interface.get("memberInterfaces", None)) is None:
@@ -156,6 +157,8 @@ class VerifyInterfaceDiscards(AntaTest):
           ignored_interfaces:
             - Ethernet1
             - Port-Channel1
+          ignored_all_interfaces:
+            - Ethernet
     ```
     """
 
@@ -167,6 +170,8 @@ class VerifyInterfaceDiscards(AntaTest):
 
         ignored_interfaces: list[EthernetInterface | PortChannelInterface | ManagementInterface] | None = None
         """A list of L3 interfaces to ignore."""
+        ignored_all_interfaces: list[Literal["Ethernet", "Port-Channel", "Management"]] = Field(default=[])
+        """A List of all L3 interfaces to ignore based on the keyword match."""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -176,6 +181,10 @@ class VerifyInterfaceDiscards(AntaTest):
         for interface, interface_data in command_output["interfaces"].items():
             if self.inputs.ignored_interfaces and interface in self.inputs.ignored_interfaces:
                 continue
+            ignored_interface = [ignored_intf for ignored_intf in self.inputs.ignored_all_interfaces if ignored_intf in interface]
+            if ignored_interface:
+                continue
+
             counters_data = [f"{counter}: {value}" for counter, value in interface_data.items() if value > 0]
             if counters_data:
                 self.result.is_failure(f"Interface: {interface} - Non-zero discard counter(s): {', '.join(counters_data)}")

@@ -363,7 +363,7 @@ DATA: list[dict[str, Any]] = [
                 }
             },
         ],
-        "inputs": {"threshold": 70.0, "ignored_interfaces": ["Ethernet1/1", "Port-Channel31", "management1", "MGMT0"]},
+        "inputs": {"threshold": 70.0, "ignored_interfaces": ["Ethernet1/1", "Port-Channel31", "Management1"]},
         "expected": {"result": "success"},
     },
     {
@@ -905,11 +905,14 @@ DATA: list[dict[str, Any]] = [
                 "interfaces": {
                     "Ethernet2": {"outDiscards": 42, "inDiscards": 0},
                     "Ethernet1": {"outDiscards": 0, "inDiscards": 42},
+                    "Ethernet3": {"outDiscards": 0, "inDiscards": 42},
+                    "Port-Channel1": {"outDiscards": 0, "inDiscards": 42},
+                    "Port-Channel2": {"outDiscards": 0, "inDiscards": 0},
                 },
                 "outDiscardsTotal": 0,
             },
         ],
-        "inputs": {"ignored_interfaces": ["Ethernet2", "Ethernet1"]},
+        "inputs": {"ignored_interfaces": ["Port-Channel1"], "ignored_all_interfaces": ["Ethernet"]},
         "expected": {
             "result": "success",
         },
