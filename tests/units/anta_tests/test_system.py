@@ -63,6 +63,25 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
+        "name": "success-valid-reload-cause",
+        "test": VerifyReloadCause,
+        "eos_data": [
+            {
+                "resetCauses": [
+                    {
+                        "description": "System reloaded due to Zero Touch Provisioning",
+                        "timestamp": 1729856740.0,
+                        "recommendedAction": "No action necessary.",
+                        "debugInfoIsDir": False,
+                    }
+                ],
+                "full": False,
+            }
+        ],
+        "inputs": None,
+        "expected": {"result": "success"},
+    },
+    {
         "name": "failure",
         "test": VerifyReloadCause,
         # The failure cause is made up

@@ -73,8 +73,8 @@ class VerifyReloadCause(AntaTest):
 
     Expected Results
     ----------------
-    * Success: The test will pass if there are NO reload causes or if the last reload was caused by the user or after an FPGA upgrade.
-    * Failure: The test will fail if the last reload was NOT caused by the user or after an FPGA upgrade.
+    * Success: The test passes if there are no reload causes, or if the last reload was user-initiated, after an FPGA upgrade, or caused by Zero Touch Provisioning.
+    * Failure: The test will fail if the last reload was NOT caused by the user or after an FPGA upgrade or due to Zero Touch Provisioning.
     * Error: The test will report an error if the reload cause is NOT available.
 
     Examples
@@ -98,10 +98,7 @@ class VerifyReloadCause(AntaTest):
             return
         reset_causes = command_output["resetCauses"]
         command_output_data = reset_causes[0].get("description")
-        if command_output_data in [
-            "Reload requested by the user.",
-            "Reload requested after FPGA upgrade",
-        ]:
+        if command_output_data in ["Reload requested by the user.", "Reload requested after FPGA upgrade", "System reloaded due to Zero Touch Provisioning"]:
             self.result.is_success()
         else:
             self.result.is_failure(f"Reload cause is: {command_output_data}")
