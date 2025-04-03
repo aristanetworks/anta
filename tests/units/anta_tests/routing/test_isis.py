@@ -13,6 +13,7 @@ import pytest
 
 from anta.tests.routing.isis import (
     VerifyISISGracefulRestart,
+    VerifyISISInterfaceAuthMode,
     VerifyISISInterfaceMode,
     VerifyISISNeighborCount,
     VerifyISISNeighborState,
@@ -2441,6 +2442,445 @@ DATA: list[dict[str, Any]] = [
                 "Instance: 1 VRF: default - Incorrect graceful restart helper state - Expected: enabled Actual: disabled",
                 "Instance: 11 VRF: test - Incorrect graceful restart helper state - Expected: disabled Actual: enabled",
             ],
+        },
+    },
+    {
+        "name": "success",
+        "test": VerifyISISInterfaceAuthMode,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "isisInstances": {
+                            "100": {
+                                "interfaces": {
+                                    "Loopback0": {
+                                        "enabled": True,
+                                        "intfLevels": {
+                                            "2": {
+                                                "sharedSecretProfile": "",
+                                                "passive": True,
+                                            }
+                                        },
+                                    },
+                                    "Ethernet1": {
+                                        "enabled": True,
+                                        "intfLevels": {
+                                            "2": {
+                                                "authenticationMode": "MD5",
+                                                "sharedSecretProfile": "",
+                                            }
+                                        },
+                                    },
+                                    "Ethernet2": {
+                                        "enabled": True,
+                                        "intfLevels": {
+                                            "2": {
+                                                "sharedSecretProfile": "Secret",
+                                                "isisAdjacencies": [
+                                                    {
+                                                        "level": "level2",
+                                                        "state": "up",
+                                                        "adjType": "l2",
+                                                    }
+                                                ],
+                                            }
+                                        },
+                                    },
+                                }
+                            },
+                            "101": {
+                                "interfaces": {
+                                    "Loopback0": {
+                                        "enabled": True,
+                                        "intfLevels": {
+                                            "2": {
+                                                "sharedSecretProfile": "",
+                                            }
+                                        },
+                                    },
+                                    "Ethernet3": {
+                                        "enabled": True,
+                                        "intfLevels": {
+                                            "2": {
+                                                "authenticationMode": "SHA",
+                                                "authenticationModeKeyId": 10,
+                                                "sharedSecretProfile": "",
+                                            }
+                                        },
+                                    },
+                                    "Ethernet4": {
+                                        "enabled": True,
+                                        "intfLevels": {
+                                            "2": {
+                                                "authenticationMode": "Text",
+                                                "sharedSecretProfile": "",
+                                            }
+                                        },
+                                    },
+                                }
+                            },
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {
+            "instances": [
+                {
+                    "name": "100",
+                    "interfaces": [
+                        {"name": "Ethernet1", "level": 2, "authentication_mode": "MD5"},
+                        {"name": "Ethernet2", "level": 2, "authentication_mode": "shared-secret", "shared_secret_key_profile": "Secret"},
+                    ],
+                },
+                {
+                    "name": "101",
+                    "interfaces": [
+                        {"name": "Ethernet3", "level": 2, "authentication_mode": "SHA", "auth_key_id": 10},
+                        {"name": "Ethernet4", "level": 2, "authentication_mode": "Text"},
+                    ],
+                },
+            ]
+        },
+        "expected": {
+            "result": "success",
+        },
+    },
+    {
+        "name": "skipped-is-is-not-configured",
+        "test": VerifyISISInterfaceAuthMode,
+        "eos_data": [{"vrfs": {}}],
+        "inputs": {
+            "instances": [
+                {
+                    "name": "100",
+                    "interfaces": [
+                        {"name": "Ethernet1", "level": 2, "authentication_mode": "Text"},
+                        {"name": "Ethernet2", "level": 2, "authentication_mode": "shared-secret", "shared_secret_key_profile": "Secret1"},
+                    ],
+                },
+            ]
+        },
+        "expected": {
+            "result": "skipped",
+            "messages": ["IS-IS not configured"],
+        },
+    },
+    {
+        "name": "failure-interface-not-configured",
+        "test": VerifyISISInterfaceAuthMode,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "isisInstances": {
+                            "100": {
+                                "interfaces": {
+                                    "Loopback0": {
+                                        "enabled": True,
+                                        "intfLevels": {
+                                            "2": {
+                                                "sharedSecretProfile": "",
+                                            }
+                                        },
+                                    },
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {
+            "instances": [
+                {
+                    "name": "100",
+                    "interfaces": [
+                        {
+                            "name": "Ethernet1",
+                            "level": 2,
+                            "authentication_mode": "MD5",
+                        },
+                    ],
+                },
+            ]
+        },
+        "expected": {"result": "failure", "messages": ["Instance: 100 VRF: default Interface: Ethernet1 Level: 2 - Not configured"]},
+    },
+    {
+        "name": "failure-auth-mode-not-configured",
+        "test": VerifyISISInterfaceAuthMode,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "isisInstances": {
+                            "100": {
+                                "interfaces": {
+                                    "Loopback0": {
+                                        "enabled": True,
+                                        "intfLevels": {
+                                            "2": {
+                                                "sharedSecretProfile": "",
+                                            }
+                                        },
+                                    },
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {
+            "instances": [
+                {
+                    "name": "100",
+                    "interfaces": [
+                        {
+                            "name": "Loopback0",
+                            "level": 2,
+                            "authentication_mode": "MD5",
+                        },
+                    ],
+                },
+            ]
+        },
+        "expected": {"result": "failure", "messages": ["Instance: 100 VRF: default Interface: Loopback0 Level: 2 - Authentication mode not configured"]},
+    },
+    {
+        "name": "failure-incorrect-auth-mode",
+        "test": VerifyISISInterfaceAuthMode,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "isisInstances": {
+                            "100": {
+                                "interfaces": {
+                                    "Ethernet1": {
+                                        "enabled": True,
+                                        "intfLevels": {
+                                            "2": {
+                                                "authenticationMode": "SHA",
+                                                "authenticationModeKeyId": 10,
+                                                "sharedSecretProfile": "",
+                                            }
+                                        },
+                                    },
+                                    "Ethernet2": {
+                                        "enabled": True,
+                                        "intfLevels": {
+                                            "2": {
+                                                "authenticationMode": "Text",
+                                                "sharedSecretProfile": "",
+                                            }
+                                        },
+                                    },
+                                    "Ethernet3": {
+                                        "enabled": True,
+                                        "intfLevels": {
+                                            "2": {
+                                                "authenticationMode": "MD5",
+                                                "sharedSecretProfile": "",
+                                            }
+                                        },
+                                    },
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {
+            "instances": [
+                {
+                    "name": "100",
+                    "interfaces": [
+                        {"name": "Ethernet1", "level": 2, "authentication_mode": "MD5"},
+                        {"name": "Ethernet2", "level": 2, "authentication_mode": "shared-secret", "shared_secret_key_profile": "Secret"},
+                        {"name": "Ethernet3", "level": 2, "authentication_mode": "Text"},
+                    ],
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Instance: 100 VRF: default Interface: Ethernet1 Level: 2 - Incorrect authentication mode - Expected: MD5 Actual: SHA",
+                "Instance: 100 VRF: default Interface: Ethernet2 Level: 2 - Incorrect authentication mode - Expected: shared-secret Actual: Text",
+                "Instance: 100 VRF: default Interface: Ethernet3 Level: 2 - Incorrect authentication mode - Expected: Text Actual: MD5",
+            ],
+        },
+    },
+    {
+        "name": "failure-incorrect-auth-key-id",
+        "test": VerifyISISInterfaceAuthMode,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "isisInstances": {
+                            "100": {
+                                "interfaces": {
+                                    "Ethernet1": {
+                                        "enabled": True,
+                                        "intfLevels": {
+                                            "2": {
+                                                "authenticationMode": "SHA",
+                                                "authenticationModeKeyId": 9,
+                                                "sharedSecretProfile": "",
+                                            }
+                                        },
+                                    },
+                                    "Ethernet2": {
+                                        "enabled": True,
+                                        "intfLevels": {
+                                            "2": {
+                                                "authenticationMode": "Text",
+                                                "sharedSecretProfile": "",
+                                            }
+                                        },
+                                    },
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {
+            "instances": [
+                {
+                    "name": "100",
+                    "interfaces": [
+                        {"name": "Ethernet1", "level": 2, "authentication_mode": "SHA", "auth_key_id": 10},
+                        {"name": "Ethernet2", "level": 2, "authentication_mode": "Text"},
+                    ],
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Instance: 100 VRF: default Interface: Ethernet1 Level: 2 - Incorrect authentication mode key id - Expected: 10 Actual: 9",
+            ],
+        },
+    },
+    {
+        "name": "failure-incorrect-shared-secret-profile",
+        "test": VerifyISISInterfaceAuthMode,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "isisInstances": {
+                            "100": {
+                                "interfaces": {
+                                    "Ethernet1": {
+                                        "enabled": True,
+                                        "intfLevels": {
+                                            "2": {
+                                                "authenticationMode": "Text",
+                                                "sharedSecretProfile": "",
+                                            }
+                                        },
+                                    },
+                                    "Ethernet2": {
+                                        "enabled": True,
+                                        "intfLevels": {
+                                            "2": {
+                                                "sharedSecretProfile": "Secret",
+                                                "isisAdjacencies": [
+                                                    {
+                                                        "level": "level2",
+                                                        "state": "up",
+                                                        "adjType": "l2",
+                                                    }
+                                                ],
+                                            }
+                                        },
+                                    },
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {
+            "instances": [
+                {
+                    "name": "100",
+                    "interfaces": [
+                        {"name": "Ethernet1", "level": 2, "authentication_mode": "Text"},
+                        {"name": "Ethernet2", "level": 2, "authentication_mode": "shared-secret", "shared_secret_key_profile": "Secret1"},
+                    ],
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": ["Instance: 100 VRF: default Interface: Ethernet2 Level: 2 - Incorrect shared secrete profile - Expected: Secret1 Actual: Secret"],
+        },
+    },
+    {
+        "name": "failure-not-vrf-instance",
+        "test": VerifyISISInterfaceAuthMode,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "test": {
+                        "isisInstances": {
+                            "100": {
+                                "interfaces": {
+                                    "Ethernet1": {
+                                        "enabled": True,
+                                        "intfLevels": {
+                                            "2": {
+                                                "authenticationMode": "Text",
+                                                "sharedSecretProfile": "",
+                                            }
+                                        },
+                                    },
+                                    "Ethernet2": {
+                                        "enabled": True,
+                                        "intfLevels": {
+                                            "2": {
+                                                "sharedSecretProfile": "Secret",
+                                                "isisAdjacencies": [
+                                                    {
+                                                        "level": "level2",
+                                                        "state": "up",
+                                                        "adjType": "l2",
+                                                    }
+                                                ],
+                                            }
+                                        },
+                                    },
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        ],
+        "inputs": {
+            "instances": [
+                {
+                    "name": "100",
+                    "interfaces": [
+                        {"name": "Ethernet1", "level": 2, "authentication_mode": "Text"},
+                        {"name": "Ethernet2", "level": 2, "authentication_mode": "shared-secret", "shared_secret_key_profile": "Secret1"},
+                    ],
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": ["Instance: 100 VRF: default - Not configured"],
         },
     },
 ]
