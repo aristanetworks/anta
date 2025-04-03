@@ -9,8 +9,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar, Literal
 
-from anta.custom_types import DynamicVlanSource, Vlan
-from anta.input_models.vlan import VLAN
+from anta.custom_types import DynamicVlanSource, VlanId
+from anta.input_models.vlan import Vlan
 from anta.models import AntaCommand, AntaTest
 from anta.tools import get_value
 
@@ -48,9 +48,9 @@ class VerifyVlanInternalPolicy(AntaTest):
 
         policy: Literal["ascending", "descending"]
         """The VLAN internal allocation policy. Supported values: ascending, descending."""
-        start_vlan_id: Vlan
+        start_vlan_id: VlanId
         """The starting VLAN ID in the range."""
-        end_vlan_id: Vlan
+        end_vlan_id: VlanId
         """The ending VLAN ID in the range."""
 
     @AntaTest.anta_test
@@ -151,19 +151,10 @@ class VerifyDynamicVlanSource(AntaTest):
 class VerifyVlanStatus(AntaTest):
     """Verifies administrative status of specified VLAN(s).
 
-    This test performs the following checks for each specified VLAN:
-
-      1. Validates the specified VLAN is configured.
-      2. Verifies the administrative status matches the expected.
-
     Expected Results
     ----------------
-    * Success: The test will pass if all of the following conditions are met:
-        - Each specified VLAN exists.
-        - Each specified VLAN's administrative status is correct.
-    * Failure: The test will fail if any of the following conditions is met:
-        - Specified VLAN not found in configuration.
-        - Administrative status is incorrect.
+    * Success: The test will pass if all specified VLAN(s) exist in the configuration and their administrative status is correct.
+    * Failure: The test will fail if any of the specified VLANs are not found in the configuration or if their administrative status is incorrect.
 
     Examples
     --------
@@ -184,7 +175,7 @@ class VerifyVlanStatus(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyVlanStatus test."""
 
-        vlans: list[VLAN]
+        vlans: list[Vlan]
         """List of the VLAN details."""
 
     @AntaTest.anta_test

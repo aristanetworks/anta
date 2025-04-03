@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar
 
-from anta.custom_types import Vlan
+from anta.custom_types import VlanId
 from anta.models import AntaCommand, AntaTest
 
 if TYPE_CHECKING:
@@ -41,7 +41,7 @@ class VerifyIGMPSnoopingVlans(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyIGMPSnoopingVlans test."""
 
-        vlans: dict[Vlan, bool]
+        vlans: dict[VlanId, bool]
         """Dictionary with VLAN ID and whether IGMP snooping must be enabled (True) or disabled (False)."""
 
     @AntaTest.anta_test

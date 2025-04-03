@@ -9,15 +9,15 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict
 
-from anta.custom_types import Vlan
+from anta.custom_types import VlanId
 
 
-class VLAN(BaseModel):
-    """Model for a VLANs."""
+class Vlan(BaseModel):
+    """Model for a VLAN."""
 
     model_config = ConfigDict(extra="forbid")
-    vlan_id: Vlan
-    """The VLAN Id."""
+    vlan_id: VlanId
+    """The VLAN ID."""
     status: Literal["active", "suspended", "inactive"]
     """The VLAN administrative status."""
 
