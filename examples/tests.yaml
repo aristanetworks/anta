@@ -665,7 +665,7 @@ anta.tests.routing.isis:
           vrf: test
           graceful_restart_helper: False
   - VerifyISISInterfaceAuthMode:
-      # Verifies IS-IS interfaces are running in the correct authentication mode.
+      # Verifies that IS-IS interfaces are running in the correct authentication mode.
       instances:
         - name: instance-1
           vrf: Test

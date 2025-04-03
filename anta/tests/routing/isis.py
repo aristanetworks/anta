@@ -520,15 +520,15 @@ class VerifyISISGracefulRestart(AntaTest):
 
 
 class VerifyISISInterfaceAuthMode(AntaTest):
-    """Verifies IS-IS interfaces are running in the correct authentication mode.
+    """Verifies that IS-IS interfaces are running in the correct authentication mode.
 
-    !!! warning "IS-IS interface details are not render properly in the JSON output of eAPI request."
+    !!! warning "IS-IS interface details are not rendered properly in the JSON output of the eAPI request."
         Impacted EOS version - 4.32.2F-38195967.4322F.
 
     Expected Results
     ----------------
     * Success: The test will pass if all provided IS-IS interfaces are running in the correct authentication mode.
-    * Failure: The test will fail if any of the provided IS-IS interfaces are not configured or running in the incorrect authentication mode.
+    * Failure: The test will fail if any of the provided IS-IS interfaces are not configured or are running in the incorrect authentication mode.
     * Skipped: The test will be skipped if IS-IS is not configured.
 
     Examples
@@ -568,12 +568,12 @@ class VerifyISISInterfaceAuthMode(AntaTest):
         """Input model for the VerifyISISInterfaceAuthMode test."""
 
         instances: list[ISISInstance]
-        """List of IS-IS instances with their information."""
+        """A list of IS-IS instances with their corresponding information."""
 
         @field_validator("instances")
         @classmethod
         def _validate_instances(cls, instances: list[ISISInstance]) -> list[ISISInstance]:
-            """Validate required fields in each IS-IS instance."""
+            """Validate the required fields in each IS-IS instance."""
             msgs: list[str] = []
             for instance in instances:
                 if not instance.interfaces:
@@ -592,28 +592,28 @@ class VerifyISISInterfaceAuthMode(AntaTest):
             return instances
 
     def _validate_isis_auth_mode(self, instance_data: ISISInstance, interface_data: ISISInterface, act_interface_detail: dict[str, Any]) -> str | None:
-        """Validate the authentication mode for a specified interface."""
+        """Validate the authentication mode of the specified interface."""
         auth_mode = act_interface_detail.get("authenticationMode") if act_interface_detail.get("authenticationMode") else "shared-secret"
 
-        # If authentication mode is not configured, test fails.
+        # The test fails if the authentication mode is not configured.
         if not (act_interface_detail.get("authenticationMode") or act_interface_detail["sharedSecretProfile"]):
             return f"{instance_data} Interface: {interface_data.name} Level: {interface_data.level} - Authentication mode not configured"
 
-        # If authentication mode is incorrect, test fails.
+        # The test fails if the authentication mode is incorrect.
         if auth_mode != interface_data.authentication_mode:
             return (
                 f"{instance_data} Interface: {interface_data.name} Level: {interface_data.level} - Incorrect authentication mode - "
                 f"Expected: {interface_data.authentication_mode} Actual: {auth_mode}"
             )
 
-        # If authentication mode is SHA and the key id is incorrect, test fails.
+        # The test fails if the authentication mode is SHA and the key ID is incorrect.
         if auth_mode == "SHA" and (auth_key_id := act_interface_detail["authenticationModeKeyId"]) != interface_data.auth_key_id:
             return (
                 f"{instance_data} Interface: {interface_data.name} Level: {interface_data.level} - Incorrect authentication mode key id - "
                 f"Expected: {interface_data.auth_key_id} Actual: {auth_key_id}"
             )
 
-        # If authentication mode is shared-secret and the secret profile is incorrect, test fails.
+        # The test fails if the authentication mode is shared-secret and the secret profile is incorrect.
         if auth_mode == "shared-secret" and (secret_key_profile := act_interface_detail["sharedSecretProfile"]) != interface_data.shared_secret_key_profile:
             return (
                 f"{instance_data} Interface: {interface_data.name} Level: {interface_data.level} - Incorrect shared secrete profile - "
@@ -627,7 +627,7 @@ class VerifyISISInterfaceAuthMode(AntaTest):
         """Main test function for VerifyISISInterfaceAuthMode."""
         self.result.is_success()
 
-        # Verify if IS-IS is configured
+        # Verify whether IS-IS is configured.
         if not (command_output := self.instance_commands[0].json_output["vrfs"]):
             self.result.is_skipped("IS-IS not configured")
             return
@@ -638,7 +638,7 @@ class VerifyISISInterfaceAuthMode(AntaTest):
                 self.result.is_failure(f"{instance_data} - Not configured")
                 return
             for interface_data in instance_data.interfaces:
-                # If the specified interface is not configured, test fails.
+                # The test fails if the specified interface is not configured.
                 if not (act_interface_detail := get_value(vrf_instances, f"interfaces.{interface_data.name}.intfLevels.{interface_data.level}")):
                     self.result.is_failure(f"{instance_data} Interface: {interface_data.name} Level: {interface_data.level} - Not configured")
                     continue
