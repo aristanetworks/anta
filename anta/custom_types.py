@@ -20,6 +20,10 @@ REGEXP_TYPE_VXLAN_SRC_INTERFACE = r"^(Loopback)([0-9]|[1-9][0-9]{1,2}|[1-7][0-9]
 """Match Vxlan source interface like Loopback10."""
 REGEX_TYPE_PORTCHANNEL = r"^Port-Channel[0-9]{1,6}$"
 """Match Port Channel interface like Port-Channel5."""
+REGEX_TYPE_MANAGEMENT = r"^Management(0|1(/1)?)$"
+"""Match management interface like Management0."""
+REGEXP_TYPE_EOS_INTERFACE_PREFIX = r"^(Ethernet|Port-Channel|Management)$"
+"""Match interface  prefix like Ethernet, Management"""
 REGEXP_TYPE_HOSTNAME = r"^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$"
 """Match hostname like `my-hostname`, `my-hostname-1`, `my-hostname-1-2`."""
 
@@ -214,6 +218,17 @@ PortChannelInterface = Annotated[
     str,
     Field(pattern=REGEX_TYPE_PORTCHANNEL),
     BeforeValidator(interface_autocomplete),
+    BeforeValidator(interface_case_sensitivity),
+]
+ManagementInterface = Annotated[
+    str,
+    Field(pattern=REGEX_TYPE_MANAGEMENT),
+    BeforeValidator(interface_autocomplete),
+    BeforeValidator(interface_case_sensitivity),
+]
+InterfacePrefix = Annotated[
+    str,
+    Field(pattern=REGEXP_TYPE_EOS_INTERFACE_PREFIX),
     BeforeValidator(interface_case_sensitivity),
 ]
 Afi = Literal["ipv4", "ipv6", "vpn-ipv4", "vpn-ipv6", "evpn", "rt-membership", "path-selection", "link-state"]
