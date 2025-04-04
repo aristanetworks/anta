@@ -316,6 +316,25 @@ class ResultManager:
         manager.results = self.get_results(possible_statuses - hide)
         return manager
 
+    @classmethod
+    def merge_results(cls, results_managers: list[ResultManager]) -> ResultManager:
+        """Merge multiple ResultManager instances.
+
+        Parameters
+        ----------
+        results_managers
+           A list of ResultManager instances to merge.
+
+        Returns
+        -------
+        ResultManager
+           A new ResultManager instance containing the results of all the input ResultManagers.
+        """
+        combined_results = list(chain(*(rm.results for rm in results_managers)))
+        merged_manager = cls()
+        merged_manager.results = combined_results
+        return merged_manager
+
     @deprecated("This method is deprecated. This will be removed in ANTA v2.0.0.", category=DeprecationWarning)
     def filter_by_tests(self, tests: set[str]) -> ResultManager:
         """Get a filtered ResultManager that only contains specific tests.
