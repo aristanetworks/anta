@@ -53,7 +53,10 @@ if os.name == "posix":
         logger.debug("Initial limit numbers for open file descriptors for the current ANTA process: Soft Limit: %s | Hard Limit: %s", limits[0], limits[1])
         nofile = min(limits[1], nofile)
         logger.debug("Setting soft limit for open file descriptors for the current ANTA process to %s", nofile)
-        resource.setrlimit(resource.RLIMIT_NOFILE, (nofile, limits[1]))
+        try:
+            resource.setrlimit(resource.RLIMIT_NOFILE, (nofile, limits[1]))
+        except ValueError as exception:
+            logger.warning("Failed to set soft limit for open file descriptors for the current ANTA process: %s", exc_to_str(exception))
         return resource.getrlimit(resource.RLIMIT_NOFILE)
 
 
