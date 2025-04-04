@@ -8,12 +8,12 @@
 from __future__ import annotations
 
 import re
-from typing import Any, ClassVar, Literal, TypeVar
+from typing import Any, ClassVar, TypeVar
 
 from pydantic import Field, field_validator
 from pydantic_extra_types.mac_address import MacAddress
 
-from anta.custom_types import EthernetInterface, Interface, ManagementInterface, Percent, PortChannelInterface, PositiveInteger
+from anta.custom_types import EthernetInterface, Interface, InterfacePrefix, ManagementInterface, Percent, PortChannelInterface, PositiveInteger
 from anta.decorators import skip_on_platforms
 from anta.input_models.interfaces import InterfaceDetail, InterfaceState
 from anta.models import AntaCommand, AntaTemplate, AntaTest
@@ -23,6 +23,35 @@ BPS_GBPS_CONVERSIONS = 1000000000
 
 # Using a TypeVar for the InterfaceState model since mypy thinks it's a ClassVar and not a valid type when used in field validators
 T = TypeVar("T", bound=InterfaceState)
+
+
+def _get_ignore_interfaces_status(interface: str, ignored_interfaces: list[str]) -> bool:
+    """Verify if an actual interface is present in the ignored interface list.
+
+    Parameters
+    ----------
+    interface
+        This is a string containing the interface name.
+    ignored_interfaces
+       A list containing the interfaces or interface prefixes to ignore.
+
+    Returns
+    -------
+    bool
+        True if the interface is in the list of ignored interfaces, false otherwise.
+
+    Example
+    -------
+    >>> _get_ignore_interfaces_status(interface: Ethernet1, ignored_interfaces: ["Ethernet", "Port-Channel1"])
+    True
+    >>> _get_ignore_interfaces_status(interface: Ethernet2, ignored_interfaces: ["Ethernet1", "Port-Channel"])
+    False
+    >>> _get_ignore_interfaces_status(interface: Port-Channel1, ignored_interfaces: ["Ethernet1", "Port-Channel"])
+    True
+    """
+    interface_prefix = re.findall(r"^[a-zA-Z-]+", interface, re.IGNORECASE)[0]
+    catch_interface = re.findall(r"[\w-]+", interface, re.IGNORECASE)[0]
+    return bool(ignored_interfaces and any([catch_interface in ignored_interfaces, interface_prefix in ignored_interfaces]))
 
 
 class VerifyInterfaceUtilization(AntaTest):
@@ -63,7 +92,7 @@ class VerifyInterfaceUtilization(AntaTest):
 
         threshold: Percent = 75.0
         """Interface utilization threshold above which the test will fail."""
-        ignored_interfaces: list[EthernetInterface | PortChannelInterface | ManagementInterface] | None = None
+        ignored_interfaces: list[InterfacePrefix | EthernetInterface | PortChannelInterface | ManagementInterface] | None = None
         """A list of L3 interfaces to ignore."""
 
     def _check_interface_usage_threshold(self, interface: str, rate: dict[str, Any], bandwidth: int) -> list[Any]:
@@ -85,7 +114,8 @@ class VerifyInterfaceUtilization(AntaTest):
 
         for intf, rate in rates["interfaces"].items():
             interface_data = []
-            if self.inputs.ignored_interfaces and intf in self.inputs.ignored_interfaces:
+            # Verification is skipped if the interface is in the ignored interfaces list.
+            if _get_ignore_interfaces_status(intf, self.inputs.ignored_interfaces):
                 continue
 
             # The utilization logic has been implemented for full-duplex interfaces only
@@ -106,9 +136,8 @@ class VerifyInterfaceUtilization(AntaTest):
                 continue
 
             failure_msgs = self._check_interface_usage_threshold(intf, rate, bandwidth)
-            if failure_msgs:
-                for msg in failure_msgs:
-                    self.result.is_failure(msg)
+            for msg in failure_msgs:
+                self.result.is_failure(msg)
 
 
 class VerifyInterfaceErrors(AntaTest):
@@ -155,10 +184,8 @@ class VerifyInterfaceDiscards(AntaTest):
     anta.tests.interfaces:
       - VerifyInterfaceDiscards:
           ignored_interfaces:
-            - Ethernet1
-            - Port-Channel1
-          ignored_all_interfaces:
             - Ethernet
+            - Port-Channel1
     ```
     """
 
@@ -168,10 +195,8 @@ class VerifyInterfaceDiscards(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyInterfaceDiscards test."""
 
-        ignored_interfaces: list[EthernetInterface | PortChannelInterface | ManagementInterface] | None = None
+        ignored_interfaces: list[InterfacePrefix | EthernetInterface | PortChannelInterface | ManagementInterface] | None = None
         """A list of L3 interfaces to ignore."""
-        ignored_all_interfaces: list[Literal["Ethernet", "Port-Channel", "Management"]] = Field(default=[])
-        """A List of all L3 interfaces to ignore based on the keyword match."""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -179,12 +204,9 @@ class VerifyInterfaceDiscards(AntaTest):
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
         for interface, interface_data in command_output["interfaces"].items():
-            if self.inputs.ignored_interfaces and interface in self.inputs.ignored_interfaces:
+            # Verification is skipped if the interface is in the ignored interfaces list.
+            if _get_ignore_interfaces_status(interface, self.inputs.ignored_interfaces):
                 continue
-            ignored_interface = [ignored_intf for ignored_intf in self.inputs.ignored_all_interfaces if ignored_intf in interface]
-            if ignored_interface:
-                continue
-
             counters_data = [f"{counter}: {value}" for counter, value in interface_data.items() if value > 0]
             if counters_data:
                 self.result.is_failure(f"Interface: {interface} - Non-zero discard counter(s): {', '.join(counters_data)}")
@@ -361,7 +383,7 @@ class VerifyPortChannels(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyPortChannels test."""
 
-        ignored_interfaces: list[PortChannelInterface] | None = None
+        ignored_interfaces: list[InterfacePrefix | PortChannelInterface] | None = None
         """A list of L3 interfaces to ignore."""
 
     @AntaTest.anta_test
@@ -370,7 +392,8 @@ class VerifyPortChannels(AntaTest):
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
         for port_channel, port_channel_details in command_output["portChannels"].items():
-            if self.inputs.ignored_interfaces and port_channel in self.inputs.ignored_interfaces:
+            # Verification is skipped if the interface is in the ignored interfaces list.
+            if _get_ignore_interfaces_status(port_channel, self.inputs.ignored_interfaces):
                 continue
             # Verify that the no inactive ports in all port channels.
             if inactive_ports := port_channel_details["inactivePorts"]:
@@ -402,7 +425,7 @@ class VerifyIllegalLACP(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyIllegalLACP test."""
 
-        ignored_interfaces: list[PortChannelInterface] | None = None
+        ignored_interfaces: list[InterfacePrefix | PortChannelInterface] | None = None
         """A list of L3 interfaces to ignore."""
 
     @AntaTest.anta_test
@@ -411,7 +434,8 @@ class VerifyIllegalLACP(AntaTest):
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
         for port_channel, port_channel_dict in command_output["portChannels"].items():
-            if self.inputs.ignored_interfaces and port_channel in self.inputs.ignored_interfaces:
+            # Verification is skipped if the interface is in the ignored interfaces list.
+            if _get_ignore_interfaces_status(port_channel, self.inputs.ignored_interfaces):
                 continue
             for interface, interface_details in port_channel_dict["interfaces"].items():
                 # Verify that the no illegal LACP packets in all port channels.
@@ -649,7 +673,7 @@ class VerifyL2MTU(AntaTest):
 
         for interface, details in interface_output.items():
             catch_interface = re.findall(r"^[e,p][a-zA-Z]+[-,a-zA-Z]*\d+\/*\d*", interface, re.IGNORECASE)
-            if catch_interface and catch_interface not in self.inputs.ignored_interfaces and details["forwardingModel"] == "bridged":
+            if catch_interface and catch_interface[0] not in self.inputs.ignored_interfaces and details["forwardingModel"] == "bridged":
                 if interface in specific_interfaces:
                     if (mtu := specific_interfaces[interface]) != (act_mtu := details["mtu"]):
                         self.result.is_failure(f"Interface: {interface} - Incorrect MTU configured - Expected: {mtu} Actual: {act_mtu}")
