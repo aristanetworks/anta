@@ -68,4 +68,5 @@ def test_csv(results: ResultManager, tmp_path: Path) -> None:
 @pytest.mark.dependency(depends=["anta_benchmark"], scope="package")
 def test_markdown(results: ResultManager, tmp_path: Path) -> None:
     """Benchmark MDReportGenerator.generate()."""
-    MDReportGenerator.generate(results=results, md_filename=tmp_path / "report.md")
+    sections = [(section, results.sort(sort_by=["name", "categories", "test"])) for section in MDReportGenerator.DEFAULT_SECTIONS]
+    MDReportGenerator.generate(sections=sections, md_filename=tmp_path / "report.md")

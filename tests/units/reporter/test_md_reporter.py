@@ -21,8 +21,10 @@ def test_md_report_generate(tmp_path: Path, result_manager: ResultManager) -> No
     md_filename = tmp_path / "test.md"
     expected_report = "test_md_report.md"
 
+    sections = [(section, result_manager.sort(sort_by=["name", "categories", "test"])) for section in MDReportGenerator.DEFAULT_SECTIONS]
+
     # Generate the Markdown report
-    MDReportGenerator.generate(result_manager.sort(sort_by=["name", "categories", "test"]), md_filename)
+    MDReportGenerator.generate(sections, md_filename)
     assert md_filename.exists()
 
     # Load the existing Markdown report to compare with the generated one

@@ -21,47 +21,8 @@ if TYPE_CHECKING:
 
     from anta.result_manager import ResultManager
 
+
 logger = logging.getLogger(__name__)
-
-
-# pylint: disable=too-few-public-methods
-class MDReportGenerator:
-    """Class responsible for generating a Markdown report based on the provided `ResultManager` object.
-
-    It aggregates different report sections, each represented by a subclass of `MDReportBase`,
-    and sequentially generates their content into a markdown file.
-
-    The `generate` class method will loop over all the section subclasses and call their `generate_section` method.
-    The final report will be generated in the same order as the `sections` list of the method.
-    """
-
-    @classmethod
-    def generate(cls, results: ResultManager, md_filename: Path) -> None:
-        """Generate and write the various sections of the markdown report.
-
-        Parameters
-        ----------
-        results
-            The ResultsManager instance containing all test results.
-        md_filename
-            The path to the markdown file to write the report into.
-        """
-        try:
-            with md_filename.open("w", encoding="utf-8") as mdfile:
-                sections: list[MDReportBase] = [
-                    ANTAReport(mdfile, results),
-                    TestResultsSummary(mdfile, results),
-                    SummaryTotals(mdfile, results),
-                    SummaryTotalsDeviceUnderTest(mdfile, results),
-                    SummaryTotalsPerCategory(mdfile, results),
-                    TestResults(mdfile, results),
-                ]
-                for section in sections:
-                    section.generate_section()
-        except OSError as exc:
-            message = f"OSError caught while writing the Markdown file '{md_filename.resolve()}'."
-            anta_log_exception(exc, message, logger)
-            raise
 
 
 class MDReportBase(ABC):
@@ -134,6 +95,9 @@ class MDReportBase(ABC):
         last_table
             Flag to determine if it's the last table of the markdown file to avoid unnecessary new line. Defaults to False.
         """
+        if len(self.results) == 0:
+            self.mdfile.write("\nNo record found.\n")
+            return
         self.mdfile.write("\n".join(table_heading) + "\n")
         for row in self.generate_rows():
             self.mdfile.write(row)
@@ -297,3 +261,44 @@ class TestResults(MDReportBase):
         """Generate the `## Test Results` section of the markdown report."""
         self.write_heading(heading_level=2)
         self.write_table(table_heading=self.TABLE_HEADING, last_table=True)
+
+
+# pylint: disable=too-few-public-methods
+class MDReportGenerator:
+    """Class responsible for generating a Markdown report based on the provided `ResultManager` object.
+
+    It aggregates different report sections, each represented by a subclass of `MDReportBase`,
+    and sequentially generates their content into a markdown file.
+
+    The `generate` class method will loop over all the section subclasses and call their `generate_section` method.
+    The final report will be generated in the same order as the `sections` list of the method.
+    """
+
+    DEFAULT_SECTIONS: ClassVar[list[type[MDReportBase]]] = [
+        ANTAReport,
+        TestResultsSummary,
+        SummaryTotals,
+        SummaryTotalsDeviceUnderTest,
+        SummaryTotalsPerCategory,
+        TestResults,
+    ]
+
+    @classmethod
+    def generate(cls, sections: list[tuple[type[MDReportBase], ResultManager]], md_filename: Path) -> None:
+        """Generate and write the various sections of the markdown report.
+
+        Parameters
+        ----------
+        sections
+            A list of tuples, where each tuple contains a subclass of `MDReportBase` and an instance of `ResultManager`.
+        md_filename
+            The path to the markdown file to write the report into.
+        """
+        try:
+            with md_filename.open("w", encoding="utf-8") as md_file:
+                for section, rm in sections:
+                    section(md_file, rm).generate_section()
+        except OSError as exc:
+            message = f"OSError caught while writing the Markdown file '{md_filename.resolve()}'."
+            anta_log_exception(exc, message, logger)
+            raise
