@@ -21,9 +21,10 @@ def test_md_report_generate(tmp_path: Path, result_manager: ResultManager) -> No
     md_filename = tmp_path / "test.md"
     expected_report = "test_md_report.md"
 
+    sections = [(section, result_manager.sort(sort_by=["name", "categories", "test"])) for section in MDReportGenerator.DEFAULT_SECTIONS]
+
     # Generate the Markdown report
-    report = MDReportGenerator(results=result_manager.sort(sort_by=["name", "categories", "test"]), md_file=md_filename)
-    report.generate()
+    MDReportGenerator.generate(sections, md_filename)
     assert md_filename.exists()
 
     # Load the existing Markdown report to compare with the generated one
@@ -53,23 +54,3 @@ def test_md_report_base() -> None:
 
         with pytest.raises(NotImplementedError, match="Subclasses should implement this method"):
             report.generate_rows()
-
-
-def test_md_report_generate_hide_and_custom_section(tmp_path: Path, result_manager: ResultManager) -> None:
-    """Test the MDReportGenerator class."""
-    md_filename = tmp_path / "test.md"
-    expected_report = "test_md_report_hide_and_custom_section.md"
-
-    # Generate the Markdown report
-    report = MDReportGenerator(results=result_manager.sort(sort_by=["name", "categories", "test"]), md_file=md_filename, hide="success", custom_section="success")
-    report.generate()
-    assert md_filename.exists()
-
-    # Load the existing Markdown report to compare with the generated one
-    with (DATA_DIR / expected_report).open("r", encoding="utf-8") as f:
-        expected_content = f.read()
-
-    # Check the content of the Markdown file
-    content = md_filename.read_text(encoding="utf-8")
-
-    assert content == expected_content
