@@ -112,7 +112,7 @@ There are 155 tests available in `anta.tests`.
 
 ## `anta get commands`
 
-`anta get commands` returns the EOS commands used by the targeted tests.
+`anta get commands` returns the EOS commands used by the targeted tests, if no filter is provided, the targeted tests are all the built-in ANTA tests.
 
 ### Command overview
 
