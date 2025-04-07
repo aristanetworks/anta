@@ -1,9 +1,15 @@
 ---
 name: Analysis with Sonarlint and publish to SonarCloud
-"on":
-  workflow_run:
-    workflows: ["Linting and Testing ANTA"]
-    types: [completed]
+on:
+  # workflow_run:
+  #   workflows: ["Linting and Testing ANTA"]
+  #   types: [completed]
+  workflow_dispatch:
+    inputs:
+      workflow_run_payload:
+        description: Paste the full JSON payload from a workflow_run event
+        required: true
+        type: string
 
 jobs:
   sonarcloud:
@@ -11,10 +17,11 @@ jobs:
     if: github.repository == 'aristanetworks/anta'
     runs-on: ubuntu-latest
     steps:
-      - run: |
-          echo "--- Workflow Run JSON Start ---"
-          echo "${{ toJson(github.event.workflow_run) }}"
-          echo "--- Workflow Run JSON End ---"
+      - name: Debug Echo Workflow Run JSON 
+        run: |
+            echo "--- Workflow Run JSON Start ---"
+            echo "${{ toJson(github.event.inputs.workflow_run_payload) }}"
+            echo "--- Workflow Run JSON End ---"
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
