@@ -3073,12 +3073,12 @@
               <tr>
                 <td><code>vlans</code></td>
                 <td>
-                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="            Vlan
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="            VlanId
 
 
   
       module-attribute
-   (anta.custom_types.Vlan)" href="../types/#anta.custom_types.Vlan">Vlan</a>]</code>
+   (anta.custom_types.VlanId)" href="../types/#anta.custom_types.VlanId">VlanId</a>]</code>
                 </td>
                 <td>
                   <div class="doc-md-description">
@@ -3198,7 +3198,7 @@
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifySTPDisabledVlans test.&quot;&quot;&quot;</span>
 
-        <span class="n">vlans</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Vlan</span><span class="p">]</span>
+        <span class="n">vlans</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">VlanId</span><span class="p">]</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;List of STP disabled VLAN(s).&quot;&quot;&quot;</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
@@ -3298,12 +3298,12 @@
               <tr>
                 <td><code>vlans</code></td>
                 <td>
-                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="            Vlan
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="            VlanId
 
 
   
       module-attribute
-   (anta.custom_types.Vlan)" href="../types/#anta.custom_types.Vlan">Vlan</a>]</code>
+   (anta.custom_types.VlanId)" href="../types/#anta.custom_types.VlanId">VlanId</a>]</code>
                 </td>
                 <td>
                   <div class="doc-md-description">
@@ -3402,7 +3402,7 @@
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifySTPForwardingPorts test.&quot;&quot;&quot;</span>
 
-        <span class="n">vlans</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Vlan</span><span class="p">]</span>
+        <span class="n">vlans</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">VlanId</span><span class="p">]</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;List of VLAN on which to verify forwarding states.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">AntaTemplate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]:</span>
@@ -3518,12 +3518,12 @@
               <tr>
                 <td><code>vlans</code></td>
                 <td>
-                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="            Vlan
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="            VlanId
 
 
   
       module-attribute
-   (anta.custom_types.Vlan)" href="../types/#anta.custom_types.Vlan">Vlan</a>]</code>
+   (anta.custom_types.VlanId)" href="../types/#anta.custom_types.VlanId">VlanId</a>]</code>
                 </td>
                 <td>
                   <div class="doc-md-description">
@@ -3622,7 +3622,7 @@
 
         <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;mstp&quot;</span><span class="p">,</span> <span class="s2">&quot;rstp&quot;</span><span class="p">,</span> <span class="s2">&quot;rapidPvst&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;mstp&quot;</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;STP mode to verify. Supported values: mstp, rstp, rapidPvst. Defaults to mstp.&quot;&quot;&quot;</span>
-        <span class="n">vlans</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Vlan</span><span class="p">]</span>
+        <span class="n">vlans</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">VlanId</span><span class="p">]</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;List of VLAN on which to verify STP mode.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">AntaTemplate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]:</span>
@@ -3734,12 +3734,12 @@
               <tr>
                 <td><code>instances</code></td>
                 <td>
-                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="            Vlan
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="            VlanId
 
 
   
       module-attribute
-   (anta.custom_types.Vlan)" href="../types/#anta.custom_types.Vlan">Vlan</a>]</code>
+   (anta.custom_types.VlanId)" href="../types/#anta.custom_types.VlanId">VlanId</a>]</code>
                 </td>
                 <td>
                   <div class="doc-md-description">
@@ -3843,7 +3843,7 @@
 
         <span class="n">priority</span><span class="p">:</span> <span class="nb">int</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;STP root priority to verify.&quot;&quot;&quot;</span>
-        <span class="n">instances</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Vlan</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="p">[])</span>
+        <span class="n">instances</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">VlanId</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="p">[])</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;List of VLAN or MST instance ID(s). If empty, ALL VLAN or MST instance ID(s) will be verified.&quot;&quot;&quot;</span>
 
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
