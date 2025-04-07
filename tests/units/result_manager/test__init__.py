@@ -592,3 +592,34 @@ class TestResultManager:
         """Test that the sort method is chainable."""
         result_manager = ResultManager()
         assert isinstance(result_manager.sort(["name"]), ResultManager)
+
+    def test_merge_result_manager(self) -> None:
+        """Test the merge_results function."""
+        result = ResultManager()
+        final_merged_results = ResultManager.merge_results([result])
+        assert isinstance(final_merged_results, ResultManager)
+
+    def test_merge_two_result_managers(self, test_result_factory: Callable[[], TestResult]) -> None:
+        """Test merging two non-empty ResultManager instances."""
+        rm1 = ResultManager()
+        test1_rm1 = test_result_factory()
+        test1_rm1.name = "device1"
+        rm1.add(test1_rm1)
+        test2_rm1 = test_result_factory()
+        test2_rm1.name = "device2"
+        rm1.add(test2_rm1)
+
+        rm2 = ResultManager()
+        test1_rm2 = test_result_factory()
+        test1_rm2.name = "device3"
+        rm2.add(test1_rm2)
+
+        merged_rm = ResultManager.merge_results([rm1, rm2])
+        assert len(merged_rm) == 3
+        assert {r.name for r in merged_rm.results} == {"device1", "device2", "device3"}
+
+    def test_merge_empty_list(self) -> None:
+        """Test merging an empty list of ResultManager instances."""
+        merged_rm = ResultManager.merge_results([])
+        assert isinstance(merged_rm, ResultManager)
+        assert len(merged_rm) == 0
