@@ -1027,7 +1027,7 @@ anta.tests.vlan:
       start_vlan_id: 1006
       end_vlan_id: 4094
   - VerifyVlanStatus:
-      # Verifies administrative status of specified VLAN(s).
+      # Verifies the administrative status of specified VLANs.
       vlans:
         - vlan_id: 10
           status: suspended

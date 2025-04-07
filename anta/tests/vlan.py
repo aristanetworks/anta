@@ -149,12 +149,12 @@ class VerifyDynamicVlanSource(AntaTest):
 
 
 class VerifyVlanStatus(AntaTest):
-    """Verifies administrative status of specified VLAN(s).
+    """Verifies the administrative status of specified VLANs.
 
     Expected Results
     ----------------
-    * Success: The test will pass if all specified VLAN(s) exist in the configuration and their administrative status is correct.
-    * Failure: The test will fail if any of the specified VLANs are not found in the configuration or if their administrative status is incorrect.
+    * Success: The test will pass if all specified VLANs exist in the configuration and their administrative status is correct.
+    * Failure: The test will fail if any of the specified VLANs is not found in the configuration or if its administrative status is incorrect.
 
     Examples
     --------
@@ -176,7 +176,7 @@ class VerifyVlanStatus(AntaTest):
         """Input model for the VerifyVlanStatus test."""
 
         vlans: list[Vlan]
-        """List of the VLAN details."""
+        """List of VLAN details."""
 
     @AntaTest.anta_test
     def test(self) -> None:
