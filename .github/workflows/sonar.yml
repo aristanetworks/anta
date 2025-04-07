@@ -1,15 +1,9 @@
 ---
 name: Analysis with Sonarlint and publish to SonarCloud
 on:
-  # workflow_run:
-  #   workflows: ["Linting and Testing ANTA"]
-  #   types: [completed]
-  workflow_dispatch:
-    inputs:
-      workflow_run_payload:
-        description: Paste the full JSON payload from a workflow_run event
-        required: true
-        type: string
+  workflow_run:
+    workflows: ["Linting and Testing ANTA"]
+    types: [completed]
 
 jobs:
   sonarcloud:
@@ -17,10 +11,12 @@ jobs:
     if: github.repository == 'aristanetworks/anta'
     runs-on: ubuntu-latest
     steps:
-      - name: Debug Echo Workflow Run JSON 
+      - name: Display workflow run
+        env:
+          WORKFLOW_RUN_JSON: ${{ toJson(github.event.workflow_run) }}
         run: |
             echo "--- Workflow Run JSON Start ---"
-            echo "${{ toJson(github.event.inputs.workflow_run_payload) }}"
+            echo "$WORKFLOW_RUN_JSON"
             echo "--- Workflow Run JSON End ---"
       - uses: actions/checkout@v4
         with:
@@ -35,7 +31,7 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
           merge-multiple: true
 
-      - name: "Get PR context"
+      - name: Get PR context
         # Source: https://github.com/orgs/community/discussions/25220#discussioncomment-11316244
         id: pr-context
         if: github.event.workflow_run.event == 'pull_request'
