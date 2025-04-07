@@ -54,3 +54,13 @@ def test_md_report_base() -> None:
 
         with pytest.raises(NotImplementedError, match="Subclasses should implement this method"):
             report.generate_rows()
+
+
+def test_md_report_generate_error(result_manager: ResultManager) -> None:
+    """Test the MDReportGenerator class to OSError to be raised."""
+    md_filename = Path("non_existent_directory/non_existent_file.md")
+
+    sections = [(section, result_manager.sort(sort_by=["name", "categories", "test"])) for section in MDReportGenerator.DEFAULT_SECTIONS]
+
+    with pytest.raises(OSError):  # noqa: PT011
+        MDReportGenerator.generate(sections, md_filename)
