@@ -12,7 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          echo '${{ toJson(github.event.workflow_run) }}'
+          echo "--- Workflow Run JSON Start ---"
+          echo "${{ toJson(github.event.workflow_run) }}"
+          echo "--- Workflow Run JSON End ---"
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
