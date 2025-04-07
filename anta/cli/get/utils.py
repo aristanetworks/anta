@@ -321,7 +321,7 @@ def find_tests_in_module(qname: str, test_name: str | None) -> list[type[AntaTes
 
 
 def print_tests(tests: list[type[AntaTest]], *, short: bool = False) -> None:
-    """Print a list of AntaTests.
+    """Print a list of AntaTest.
 
     Parameters
     ----------
