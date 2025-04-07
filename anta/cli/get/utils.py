@@ -232,7 +232,7 @@ def create_inventory_from_ansible(inventory: Path, output: Path, ansible_group: 
 
 
 def explore_package(module_name: str, test_name: str | None = None, *, short: bool = False, count: bool = False) -> list[type[AntaTest]]:
-    """Parse ANTA test submodules recursively and returns the found AntaTest.
+    """Parse ANTA test submodules recursively and return a list of the found AntaTest.
 
     Parameters
     ----------
