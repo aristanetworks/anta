@@ -326,7 +326,7 @@ def print_tests(tests: list[type[AntaTest]], *, short: bool = False) -> None:
     Parameters
     ----------
     tests
-        a list of the representation of the AntaTest as returned by inspect.getmembers
+        A list of AntaTest subclasses
     short
         If True, only print test names without their inputs.
     """
