@@ -1026,9 +1026,16 @@ anta.tests.vlan:
       policy: ascending
       start_vlan_id: 1006
       end_vlan_id: 4094
+  - VerifyVlanStatus:
+      # Verifies the administrative status of specified VLANs.
+      vlans:
+        - vlan_id: 10
+          status: suspended
+        - vlan_id: 4094
+          status: active
 anta.tests.vxlan:
   - VerifyVxlan1ConnSettings:
-      # Verifies the interface vxlan1 source interface and UDP port.
+      # Verifies Vxlan1 source interface and UDP port.
       source_interface: Loopback1
       udp_port: 4789
   - VerifyVxlan1Interface:
@@ -1041,7 +1048,7 @@ anta.tests.vxlan:
         10010: 10
         10020: 20
   - VerifyVxlanVtep:
-      # Verifies the VTEP peers of the Vxlan1 interface.
+      # Verifies Vxlan1 VTEP peers.
       vteps:
         - 10.1.1.5
         - 10.1.1.6
