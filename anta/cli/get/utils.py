@@ -396,7 +396,7 @@ def print_commands(tests: list[type[AntaTest]]) -> None:
     Parameters
     ----------
     tests
-        a list of the representation of the AntaTest as returned by inspect.getmembers
+        A list of AntaTest subclasses
     """
 
     def module_name(test: type[AntaTest]) -> str:
