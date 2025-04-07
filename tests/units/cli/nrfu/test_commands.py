@@ -183,6 +183,7 @@ def test_anta_nrfu_md_report_failure(click_runner: CliRunner, tmp_path: Path) ->
 
     assert result.exit_code == ExitCode.USAGE_ERROR
     assert "Failed to save Markdown report to" in result.output
+    assert not md_output.exists()
 
 
 def test_anta_nrfu_md_report_with_hide(click_runner: CliRunner, tmp_path: Path) -> None:
