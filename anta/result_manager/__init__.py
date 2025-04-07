@@ -323,12 +323,12 @@ class ResultManager:
         Parameters
         ----------
         results_managers
-           A list of ResultManager instances to merge.
+            A list of ResultManager instances to merge.
 
         Returns
         -------
         ResultManager
-           A new ResultManager instance containing the results of all the input ResultManagers.
+            A new ResultManager instance containing the results of all the input ResultManagers.
         """
         combined_results = list(chain(*(rm.results for rm in results_managers)))
         merged_manager = cls()
