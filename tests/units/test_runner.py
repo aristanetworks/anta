@@ -106,7 +106,7 @@ def test_adjust_rlimit_nofile_valid_env(caplog: pytest.LogCaptureFixture) -> Non
 
 @pytest.mark.skipif(os.name != "posix", reason="Cannot run this test on Windows")
 def test_adjust_rlimit_nofile_invalid_env(caplog: pytest.LogCaptureFixture) -> None:
-    """Test adjust_rlimit_nofile with valid environment variables."""
+    """Test adjust_rlimit_nofile with invalid environment variables."""
     with (
         caplog.at_level(logging.DEBUG),
         patch.dict("os.environ", {"ANTA_NOFILE": "invalid"}),
@@ -136,6 +136,39 @@ def test_adjust_rlimit_nofile_invalid_env(caplog: pytest.LogCaptureFixture) -> N
         assert "Setting soft limit for open file descriptors for the current ANTA process to 16384" in caplog.text
 
         setrlimit_mock.assert_called_once_with(resource.RLIMIT_NOFILE, (16384, 1048576))
+
+
+@pytest.mark.skipif(os.name != "posix", reason="Cannot run this test on Windows")
+def test_adjust_rlimit_nofile_value_error(caplog: pytest.LogCaptureFixture) -> None:
+    """Test adjust_rlimit_nofile with invalid environment variables."""
+    with (
+        caplog.at_level(logging.DEBUG),
+        patch.dict("os.environ", {"ANTA_NOFILE": "666"}),
+        patch("anta.runner.resource.getrlimit") as getrlimit_mock,
+        patch("anta.runner.resource.setrlimit") as setrlimit_mock,
+    ):
+        # Simulate the default system limits
+        system_limits = (8192, 1048576)
+
+        # Setup getrlimit mock return value
+        getrlimit_mock.return_value = system_limits
+
+        # Simulate setrlimit behavior raising ValueError
+        def side_effect_setrlimit(_resource_id: int, _limits: tuple[int, int]) -> None:
+            msg = "not allowed to raise maximum limit"
+            raise ValueError(msg)
+
+        setrlimit_mock.side_effect = side_effect_setrlimit
+
+        result = adjust_rlimit_nofile()
+
+        # Assert the limits were *NOT* updated as expected
+        assert result == system_limits
+        assert "Initial limit numbers for open file descriptors for the current ANTA process: Soft Limit: 8192 | Hard Limit: 1048576" in caplog.text
+        assert caplog.records[-1].levelname == "WARNING"
+        assert "Failed to set soft limit for open file descriptors for the current ANTA process" in caplog.records[-1].getMessage()
+
+        setrlimit_mock.assert_called_once_with(resource.RLIMIT_NOFILE, (666, 1048576))
 
 
 @pytest.mark.skipif(os.name == "posix", reason="Run this test on Windows only")
