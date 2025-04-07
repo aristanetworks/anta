@@ -266,7 +266,7 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyVxlanVniBinding,
         "eos_data": [{"vxlanIntfs": {}}],
         "inputs": {"bindings": {10020: 20, 500: 1199}},
-        "expected": {"result": "skipped", "messages": ["Vxlan1 interface is not configured"]},
+        "expected": {"result": "skipped", "messages": ["Interface: Vxlan1 - Not configured"]},
     },
     {
         "name": "success",
@@ -314,7 +314,7 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyVxlanVtep,
         "eos_data": [{"vteps": {}, "interfaces": {}}],
         "inputs": {"vteps": ["10.1.1.5", "10.1.1.6", "10.1.1.7"]},
-        "expected": {"result": "skipped", "messages": ["Vxlan1 interface is not configured"]},
+        "expected": {"result": "skipped", "messages": ["Interface: Vxlan1 - Not configured"]},
     },
     {
         "name": "success",
@@ -328,7 +328,7 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyVxlan1ConnSettings,
         "eos_data": [{"interfaces": {}}],
         "inputs": {"source_interface": "Loopback1", "udp_port": 4789},
-        "expected": {"result": "skipped", "messages": ["Vxlan1 interface is not configured."]},
+        "expected": {"result": "skipped", "messages": ["Interface: Vxlan1 - Not configured"]},
     },
     {
         "name": "failure-wrong-interface",
