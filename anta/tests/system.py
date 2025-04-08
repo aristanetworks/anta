@@ -11,7 +11,7 @@ import re
 from enum import Enum
 from typing import TYPE_CHECKING, Any, ClassVar
 
-from pydantic import Field, model_validator
+from pydantic import Field, field_validator, model_validator
 
 from anta.custom_types import Hostname, PositiveInteger
 from anta.input_models.system import NTPPool, NTPServer
@@ -103,7 +103,17 @@ class VerifyReloadCause(AntaTest):
         """Input model for the VerifyReloadCause test."""
 
         allowed_causes: list[str] = Field(default=["USER", "FPGA"])
-        """Minimum uptime in seconds."""
+        """A list of allowed system reload causes."""
+
+        @field_validator("allowed_causes")
+        @classmethod
+        def validate_allowed_causes(cls, allowed_causes: list[str]) -> list[str]:
+            """Validate the reload cause provided in the allowed_causes input field."""
+            for cause in allowed_causes:
+                if cause not in ReloadCauses.__members__:
+                    msg = f"Invalid reload cause: '{cause}' - expected causes are {list(ReloadCauses.__members__)}"
+                    raise ValueError(msg)
+            return allowed_causes
 
     @AntaTest.anta_test
     def test(self) -> None:
