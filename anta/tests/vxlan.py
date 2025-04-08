@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING, ClassVar
 
 from pydantic import Field
 
-from anta.custom_types import Vlan, Vni, VxlanSrcIntf
+from anta.custom_types import VlanId, Vni, VxlanSrcIntf
 from anta.models import AntaCommand, AntaTest
 from anta.tools import get_value
 
@@ -127,7 +127,7 @@ class VerifyVxlanVniBinding(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyVxlanVniBinding test."""
 
-        bindings: dict[Vni, Vlan]
+        bindings: dict[Vni, VlanId]
         """VNI to VLAN bindings to verify."""
 
     @AntaTest.anta_test
