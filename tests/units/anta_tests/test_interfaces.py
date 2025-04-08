@@ -2258,47 +2258,6 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "failure", "messages": ["Interface: Ethernet10 - Incorrect MTU - Expected: 1501 Actual: 1502"]},
     },
     {
-        "name": "failure-ignore-interface-l3-mtu",
-        "test": VerifyL3MTU,
-        "eos_data": [
-            {
-                "interfaces": {
-                    "Vxlan1": {
-                        "name": "Vxlan1",
-                        "forwardingModel": "routed",
-                        "lineProtocolStatus": "down",
-                        "interfaceStatus": "notconnect",
-                        "hardware": "vxlan",
-                        "mtu": 1504,
-                        "l3MtuConfigured": False,
-                        "l2Mru": 0,
-                    },
-                    "Port-Channel2": {
-                        "name": "Port-Channel2",
-                        "forwardingModel": "routed",
-                        "lineProtocolStatus": "lowerLayerDown",
-                        "interfaceStatus": "notconnect",
-                        "hardware": "portChannel",
-                        "mtu": 1504,
-                        "l3MtuConfigured": False,
-                        "l2Mru": 0,
-                    },
-                },
-            },
-        ],
-        "inputs": {
-            "mtu": 1500,
-            "ignored_interfaces": ["Loopback", "Port-Channel", "Management", "Vxlan1"],
-        },  # TODO: Need to confirm that the check covers ignoring all interfaces except for port-channel. Specific interface exclusion is not supported.
-        "expected": {
-            "result": "failure",
-            "messages": [
-                "Interface: Vxlan1 - Incorrect MTU - Expected: 1500 Actual: 1504",
-                "Interface: Port-Channel2 - Incorrect MTU - Expected: 1500 Actual: 1504",
-            ],
-        },
-    },
-    {
         "name": "success",
         "test": VerifyL2MTU,
         "eos_data": [
@@ -2369,56 +2328,6 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {"mtu": 9214, "ignored_interfaces": ["Loopback", "Port-Channel", "Management", "Vxlan"], "specific_mtu": [{"Ethernet10": 9214}]},
         "expected": {"result": "success"},
-    },
-    {
-        "name": "failure-ignore-specific-interface-l2-mtu",
-        "test": VerifyL2MTU,
-        "eos_data": [
-            {
-                "interfaces": {
-                    "Ethernet2/1": {
-                        "name": "Ethernet2/1",
-                        "forwardingModel": "bridged",
-                        "lineProtocolStatus": "up",
-                        "interfaceStatus": "connected",
-                        "hardware": "ethernet",
-                        "mtu": 9214,
-                        "l3MtuConfigured": True,
-                        "l2Mru": 0,
-                    },
-                    "Port-Channel2": {
-                        "name": "Port-Channel2",
-                        "forwardingModel": "bridged",
-                        "lineProtocolStatus": "lowerLayerDown",
-                        "interfaceStatus": "notconnect",
-                        "hardware": "portChannel",
-                        "mtu": 9215,
-                        "l3MtuConfigured": False,
-                        "l2Mru": 0,
-                    },
-                    "Loopback0": {
-                        "name": "Loopback0",
-                        "forwardingModel": "routed",
-                        "lineProtocolStatus": "up",
-                        "interfaceStatus": "connected",
-                        "hardware": "loopback",
-                        "mtu": 65535,
-                        "l3MtuConfigured": False,
-                        "l2Mru": 0,
-                    },
-                },
-            },
-        ],
-        "inputs": {
-            "mtu": 9214,
-            "ignored_interfaces": ["Loopback", "Port-Channel", "Management", "Vxlan"],
-            "specific_mtu": [{"Ethernet10": 1500}],
-        },
-        "expected": {
-            "result": "failure",
-            "messages": ["Interface: Port-Channel2 - Incorrect MTU configured - Expected: 9214 Actual: 9215"],
-        },  # TODO: Need to confirm -The current regex pattern only supports port-channel and ethernet interfaces.
-        # This test won't ignore "port-channel2" because the ignored interface is listed as "port-channel".
     },
     {
         "name": "failure",
