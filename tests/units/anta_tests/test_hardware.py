@@ -395,7 +395,7 @@ DATA: list[dict[str, Any]] = [
                         "status": "ok",
                         "fans": [
                             {
-                                "status": "Not Inserted",
+                                "status": "powerLoss",
                                 "uptime": 1682498935.9121106,
                                 "maxSpeed": 23000,
                                 "lastSpeedStableChangeTime": 1682499092.4665174,
@@ -490,7 +490,7 @@ DATA: list[dict[str, Any]] = [
                 "systemStatus": "coolingOk",
             },
         ],
-        "inputs": {"states": ["ok", "Not Inserted"]},
+        "inputs": {"states": ["ok", "powerLoss"]},
         "expected": {"result": "success"},
     },
     {
@@ -548,7 +548,7 @@ DATA: list[dict[str, Any]] = [
                         "status": "ok",
                         "fans": [
                             {
-                                "status": "down",
+                                "status": "unknownHwStatus",
                                 "uptime": 1682498923.9303148,
                                 "maxSpeed": 17500,
                                 "lastSpeedStableChangeTime": 1682498975.0139885,
@@ -584,7 +584,7 @@ DATA: list[dict[str, Any]] = [
                         "status": "ok",
                         "fans": [
                             {
-                                "status": "Not Inserted",
+                                "status": "powerLoss",
                                 "uptime": 1682498923.9383528,
                                 "maxSpeed": 17500,
                                 "lastSpeedStableChangeTime": 1682498975.0140095,
@@ -623,8 +623,8 @@ DATA: list[dict[str, Any]] = [
                 "systemStatus": "CoolingKo",
             },
         ],
-        "inputs": {"states": ["ok", "Not Inserted"]},
-        "expected": {"result": "failure", "messages": ["Fan Tray: 1 Fan: 1/1 - Invalid state - Expected: ok, Not Inserted Actual: down"]},
+        "inputs": {"states": ["ok", "powerLoss"]},
+        "expected": {"result": "failure", "messages": ["Fan Tray: 1 Fan: 1/1 - Invalid state - Expected: ok, powerLoss Actual: unknownHwStatus"]},
     },
     {
         "name": "failure-power-supply",
@@ -643,7 +643,7 @@ DATA: list[dict[str, Any]] = [
                         "status": "ok",
                         "fans": [
                             {
-                                "status": "down",
+                                "status": "unknownHwStatus",
                                 "uptime": 1682498937.0240965,
                                 "maxSpeed": 23000,
                                 "lastSpeedStableChangeTime": 1682499033.0403435,
@@ -717,7 +717,7 @@ DATA: list[dict[str, Any]] = [
                         "status": "ok",
                         "fans": [
                             {
-                                "status": "Not Inserted",
+                                "status": "powerLoss",
                                 "uptime": 1682498923.9383528,
                                 "maxSpeed": 17500,
                                 "lastSpeedStableChangeTime": 1682498975.0140095,
@@ -756,11 +756,11 @@ DATA: list[dict[str, Any]] = [
                 "systemStatus": "CoolingKo",
             },
         ],
-        "inputs": {"states": ["ok", "Not Inserted"]},
+        "inputs": {"states": ["ok", "powerLoss"]},
         "expected": {
             "result": "failure",
             "messages": [
-                "Power Slot: PowerSupply1 Fan: PowerSupply1/1 - Invalid state - Expected: ok, Not Inserted Actual: down",
+                "Power Slot: PowerSupply1 Fan: PowerSupply1/1 - Invalid state - Expected: ok, powerLoss Actual: unknownHwStatus",
             ],
         },
     },
@@ -827,7 +827,7 @@ DATA: list[dict[str, Any]] = [
                             "TempSensorP1/1": {"status": "ok", "temperature": 0.0},
                         },
                         "fans": {"FanP1/1": {"status": "ok", "speed": 33}},
-                        "state": "Not Inserted",
+                        "state": "powerLoss",
                         "inputCurrent": 0.0,
                         "dominant": False,
                         "inputVoltage": 0.0,
@@ -855,7 +855,7 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": {"states": ["ok", "Not Inserted"]},
+        "inputs": {"states": ["ok", "powerLoss"]},
         "expected": {"result": "success"},
     },
     {
