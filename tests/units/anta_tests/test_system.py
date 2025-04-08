@@ -78,7 +78,7 @@ DATA: list[dict[str, Any]] = [
                 "full": False,
             }
         ],
-        "inputs": None,
+        "inputs": {"allowed_causes": ["ZTP"]},
         "expected": {"result": "success"},
     },
     {

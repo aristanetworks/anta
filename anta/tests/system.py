@@ -8,9 +8,10 @@
 from __future__ import annotations
 
 import re
+from enum import Enum
 from typing import TYPE_CHECKING, Any, ClassVar
 
-from pydantic import model_validator
+from pydantic import Field, model_validator
 
 from anta.custom_types import Hostname, PositiveInteger
 from anta.input_models.system import NTPPool, NTPServer
@@ -31,6 +32,14 @@ if TYPE_CHECKING:
 CPU_IDLE_THRESHOLD = 25
 MEMORY_THRESHOLD = 0.25
 DISK_SPACE_THRESHOLD = 75
+
+
+class ReloadCauses(str, Enum):
+    """Represents different causes of reloads as immutable string values."""
+
+    USER = "Reload requested by the user."
+    FPGA = "Reload requested after FPGA upgrade"
+    ZTP = "System reloaded due to Zero Touch Provisioning"
 
 
 class VerifyUptime(AntaTest):
@@ -82,11 +91,19 @@ class VerifyReloadCause(AntaTest):
     ```yaml
     anta.tests.system:
       - VerifyReloadCause:
+        allowed_causes:
+          - ZTP
     ```
     """
 
     categories: ClassVar[list[str]] = ["system"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show reload cause", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyReloadCause test."""
+
+        allowed_causes: list[str] = Field(default=["USER", "FPGA"])
+        """Minimum uptime in seconds."""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -98,7 +115,8 @@ class VerifyReloadCause(AntaTest):
             return
         reset_causes = command_output["resetCauses"]
         command_output_data = reset_causes[0].get("description")
-        if command_output_data in ["Reload requested by the user.", "Reload requested after FPGA upgrade", "System reloaded due to Zero Touch Provisioning"]:
+        reload_causes = [cause.value for allowed_causes in self.inputs.allowed_causes if (cause := getattr(ReloadCauses, allowed_causes, None))]
+        if command_output_data in reload_causes:
             self.result.is_success()
         else:
             self.result.is_failure(f"Reload cause is: {command_output_data}")
