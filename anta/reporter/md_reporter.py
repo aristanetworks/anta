@@ -284,7 +284,35 @@ class MDReportGenerator:
     ]
 
     @classmethod
-    def generate(cls, sections: list[tuple[type[MDReportBase], ResultManager]], md_filename: Path) -> None:
+    def generate(cls, results: ResultManager, md_filename: Path) -> None:
+        """Generate and write the various sections of the markdown report.
+
+        Parameters
+        ----------
+        results
+            The ResultsManager instance containing all test results.
+        md_filename
+            The path to the markdown file to write the report into.
+        """
+        try:
+            with md_filename.open("w", encoding="utf-8") as mdfile:
+                sections: list[MDReportBase] = [
+                    ANTAReport(mdfile, results),
+                    TestResultsSummary(mdfile, results),
+                    SummaryTotals(mdfile, results),
+                    SummaryTotalsDeviceUnderTest(mdfile, results),
+                    SummaryTotalsPerCategory(mdfile, results),
+                    TestResults(mdfile, results),
+                ]
+                for section in sections:
+                    section.generate_section()
+        except OSError as exc:
+            message = f"OSError caught while writing the Markdown file '{md_filename.resolve()}'."
+            anta_log_exception(exc, message, logger)
+            raise
+
+    @classmethod
+    def generate_sections(cls, sections: list[tuple[type[MDReportBase], ResultManager]], md_filename: Path) -> None:
         """Generate and write the various sections of the markdown report.
 
         Parameters

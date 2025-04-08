@@ -70,4 +70,4 @@ def test_markdown(results: ResultManager, tmp_path: Path) -> None:
     """Benchmark MDReportGenerator.generate()."""
     rm = results.sort(sort_by=["name", "categories", "test"])
     sections = [(section, rm) for section in MDReportGenerator.DEFAULT_SECTIONS]
-    MDReportGenerator.generate(sections=sections, md_filename=tmp_path / "report.md")
+    MDReportGenerator.generate_sections(sections=sections, md_filename=tmp_path / "report.md")

@@ -178,7 +178,7 @@ def test_anta_nrfu_md_report(click_runner: CliRunner, tmp_path: Path) -> None:
 def test_anta_nrfu_md_report_failure(click_runner: CliRunner, tmp_path: Path) -> None:
     """Test anta nrfu md-report failure."""
     md_output = tmp_path / "test.md"
-    with patch("anta.reporter.md_reporter.MDReportGenerator.generate", side_effect=OSError()):
+    with patch("anta.reporter.md_reporter.MDReportGenerator.generate_sections", side_effect=OSError()):
         result = click_runner.invoke(anta, ["nrfu", "md-report", "--md-output", str(md_output)])
 
     assert result.exit_code == ExitCode.USAGE_ERROR
