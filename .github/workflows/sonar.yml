@@ -1,6 +1,6 @@
 ---
 name: Analysis with Sonarlint and publish to SonarCloud
-"on":
+on:
   workflow_run:
     workflows: ["Linting and Testing ANTA"]
     types: [completed]
@@ -11,8 +11,13 @@ jobs:
     if: github.repository == 'aristanetworks/anta'
     runs-on: ubuntu-latest
     steps:
-      - run: |
-          echo '${{ toJson(github.event.workflow_run) }}'
+      - name: Display workflow run
+        env:
+          WORKFLOW_RUN_JSON: ${{ toJson(github.event.workflow_run) }}
+        run: |
+            echo "--- Workflow Run JSON Start ---"
+            echo "$WORKFLOW_RUN_JSON"
+            echo "--- Workflow Run JSON End ---"
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
@@ -26,7 +31,7 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
           merge-multiple: true
 
-      - name: "Get PR context"
+      - name: Get PR context
         # Source: https://github.com/orgs/community/discussions/25220#discussioncomment-11316244
         id: pr-context
         if: github.event.workflow_run.event == 'pull_request'
@@ -50,7 +55,7 @@ jobs:
           echo "pr_branch=${PR_BRANCH}" >> "${GITHUB_OUTPUT}"
 
       - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v5.0.0
+        uses: SonarSource/sonarqube-scan-action@v5.1.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
