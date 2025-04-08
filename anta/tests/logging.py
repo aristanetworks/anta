@@ -433,7 +433,7 @@ class VerifyLoggingErrors(AntaTest):
         if len(command_output) == 0:
             self.result.is_success()
         else:
-            self.result.is_failure(f"Device has reported syslog messages at threshold level or above:\n{command_output}")
+            self.result.is_failure(f"Device has reported syslog messages with a severity of ERRORS or higher:\n{command_output}")
 
 
 class VerifyLoggingEntries(AntaTest):

@@ -280,10 +280,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Device has reported syslog messages at threshold level or above:\n"
+                "Device has reported syslog messages with a severity of ERRORS or higher:\n"
                 "Aug  2 19:57:42 DC1-LEAF1A Mlag: %FWK-3-SOCKET_CLOSE_REMOTE: Connection to Mlag "
                 "(pid:27200) at tbt://192.168.0.1:4432/+n closed by peer (EOF)"
-            ]
+            ],
         },
     },
     {
