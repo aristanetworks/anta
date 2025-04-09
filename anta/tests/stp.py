@@ -11,7 +11,7 @@ from typing import ClassVar, Literal
 
 from pydantic import Field
 
-from anta.custom_types import Vlan
+from anta.custom_types import VlanId
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 from anta.tools import get_value
 
@@ -44,7 +44,7 @@ class VerifySTPMode(AntaTest):
 
         mode: Literal["mstp", "rstp", "rapidPvst"] = "mstp"
         """STP mode to verify. Supported values: mstp, rstp, rapidPvst. Defaults to mstp."""
-        vlans: list[Vlan]
+        vlans: list[VlanId]
         """List of VLAN on which to verify STP mode."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
@@ -157,7 +157,7 @@ class VerifySTPForwardingPorts(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifySTPForwardingPorts test."""
 
-        vlans: list[Vlan]
+        vlans: list[VlanId]
         """List of VLAN on which to verify forwarding states."""
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
@@ -213,7 +213,7 @@ class VerifySTPRootPriority(AntaTest):
 
         priority: int
         """STP root priority to verify."""
-        instances: list[Vlan] = Field(default=[])
+        instances: list[VlanId] = Field(default=[])
         """List of VLAN or MST instance ID(s). If empty, ALL VLAN or MST instance ID(s) will be verified."""
 
     @AntaTest.anta_test
@@ -299,9 +299,9 @@ class VerifySTPDisabledVlans(AntaTest):
 
     This test performs the following checks:
 
-        1. Verifies that the STP is configured.
-        2. Verifies that the specified VLAN(s) exist on the device.
-        3. Verifies that the STP is disabled for the specified VLAN(s).
+      1. Verifies that the STP is configured.
+      2. Verifies that the specified VLAN(s) exist on the device.
+      3. Verifies that the STP is disabled for the specified VLAN(s).
 
     Expected Results
     ----------------
@@ -331,7 +331,7 @@ class VerifySTPDisabledVlans(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifySTPDisabledVlans test."""
 
-        vlans: list[Vlan]
+        vlans: list[VlanId]
         """List of STP disabled VLAN(s)."""
 
     @AntaTest.anta_test

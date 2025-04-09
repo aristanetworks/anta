@@ -225,6 +225,11 @@ class TestResultManager:
         assert success_skipped_results[0].categories == ["avt"]
         assert success_skipped_results[-1].categories == ["vxlan"]
 
+        # Check multiple statuses with sort_by custom_field
+        success_skipped_results = result_manager.get_results(status={AntaTestStatus.SUCCESS, AntaTestStatus.SKIPPED}, sort_by=["custom_field"])
+        assert len(success_skipped_results) == 13
+        assert success_skipped_results[-1].test == "VerifyISISNeighborState"
+
         # Check all results with bad sort_by
         with pytest.raises(
             ValueError,
@@ -546,6 +551,32 @@ class TestResultManager:
         assert results[2].result == "failure"
         assert results[2].test == "Test2"
 
+    def test_sort_fields_as_none(self, test_result_factory: Callable[[], TestResult]) -> None:
+        """Test sorting by multiple fields."""
+        result_manager = ResultManager()
+        test1 = test_result_factory()
+        test1.result = AntaTestStatus.ERROR
+        test1.test = "Test3"
+        test1.custom_field = "custom"
+        test2 = test_result_factory()
+        test2.result = AntaTestStatus.ERROR
+        test2.test = "Test1"
+        test3 = test_result_factory()
+        test3.result = AntaTestStatus.FAILURE
+        test3.test = "Test2"
+
+        result_manager.results = [test1, test2, test3]
+        sorted_manager = result_manager.sort(["custom_field"])
+        results = sorted_manager.results
+
+        assert results[0].result == "error"
+        assert results[0].test == "Test1"
+        assert results[1].result == "failure"
+        assert results[1].test == "Test2"
+        assert results[2].result == "error"
+        assert results[2].test == "Test3"
+        assert results[2].custom_field == "custom"
+
     def test_sort_invalid_field(self) -> None:
         """Test that sort method raises ValueError for invalid sort_by fields."""
         result_manager = ResultManager()
@@ -561,3 +592,34 @@ class TestResultManager:
         """Test that the sort method is chainable."""
         result_manager = ResultManager()
         assert isinstance(result_manager.sort(["name"]), ResultManager)
+
+    def test_merge_result_manager(self) -> None:
+        """Test the merge_results function."""
+        result = ResultManager()
+        final_merged_results = ResultManager.merge_results([result])
+        assert isinstance(final_merged_results, ResultManager)
+
+    def test_merge_two_result_managers(self, test_result_factory: Callable[[], TestResult]) -> None:
+        """Test merging two non-empty ResultManager instances."""
+        rm1 = ResultManager()
+        test1_rm1 = test_result_factory()
+        test1_rm1.name = "device1"
+        rm1.add(test1_rm1)
+        test2_rm1 = test_result_factory()
+        test2_rm1.name = "device2"
+        rm1.add(test2_rm1)
+
+        rm2 = ResultManager()
+        test1_rm2 = test_result_factory()
+        test1_rm2.name = "device3"
+        rm2.add(test1_rm2)
+
+        merged_rm = ResultManager.merge_results([rm1, rm2])
+        assert len(merged_rm) == 3
+        assert {r.name for r in merged_rm.results} == {"device1", "device2", "device3"}
+
+    def test_merge_empty_list(self) -> None:
+        """Test merging an empty list of ResultManager instances."""
+        merged_rm = ResultManager.merge_results([])
+        assert isinstance(merged_rm, ResultManager)
+        assert len(merged_rm) == 0

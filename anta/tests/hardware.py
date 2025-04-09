@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar
 
+from anta.custom_types import PowerSupplyFanStatus, PowerSupplyStatus
 from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTest
 
@@ -45,7 +46,7 @@ class VerifyTransceiversManufacturers(AntaTest):
         manufacturers: list[str]
         """List of approved transceivers manufacturers."""
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab"])
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyTransceiversManufacturers."""
@@ -78,7 +79,7 @@ class VerifyTemperature(AntaTest):
     categories: ClassVar[list[str]] = ["hardware"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show system environment temperature", revision=1)]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab"])
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyTemperature."""
@@ -108,7 +109,7 @@ class VerifyTransceiversTemperature(AntaTest):
     categories: ClassVar[list[str]] = ["hardware"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show system environment temperature transceiver", revision=1)]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab"])
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyTransceiversTemperature."""
@@ -141,7 +142,7 @@ class VerifyEnvironmentSystemCooling(AntaTest):
     categories: ClassVar[list[str]] = ["hardware"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show system environment cooling", revision=1)]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab"])
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyEnvironmentSystemCooling."""
@@ -176,10 +177,10 @@ class VerifyEnvironmentCooling(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyEnvironmentCooling test."""
 
-        states: list[str]
+        states: list[PowerSupplyFanStatus]
         """List of accepted states of fan status."""
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab"])
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyEnvironmentCooling."""
@@ -225,10 +226,10 @@ class VerifyEnvironmentPower(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyEnvironmentPower test."""
 
-        states: list[str]
+        states: list[PowerSupplyStatus]
         """List of accepted states list of power supplies status."""
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab"])
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyEnvironmentPower."""
@@ -259,7 +260,7 @@ class VerifyAdverseDrops(AntaTest):
     categories: ClassVar[list[str]] = ["hardware"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show hardware counter drop", revision=1)]
 
-    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab"])
+    @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyAdverseDrops."""
