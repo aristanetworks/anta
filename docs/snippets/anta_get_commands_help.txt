@@ -1,8 +1,10 @@
 $ anta get commands --help
 Usage: anta get commands [OPTIONS]
 
-  Print all EOS commands used by the selected ANTA tests. It can be filtered
-  by module, test or using a catalog.
+  Print all EOS commands used by the selected ANTA tests.
+
+  It can be filtered by module, test or using a catalog. If no filter is
+  given, all built-in ANTA tests commands are retrieved.
 
 Options:
   --module TEXT                 Filter commands by module name.  [default:
