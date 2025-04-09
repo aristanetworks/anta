@@ -1026,6 +1026,13 @@ anta.tests.vlan:
       policy: ascending
       start_vlan_id: 1006
       end_vlan_id: 4094
+  - VerifyVlanStatus:
+      # Verifies the administrative status of specified VLANs.
+      vlans:
+        - vlan_id: 10
+          status: suspended
+        - vlan_id: 4094
+          status: active
 anta.tests.vxlan:
   - VerifyVxlan1ConnSettings:
       # Verifies Vxlan1 source interface and UDP port.
