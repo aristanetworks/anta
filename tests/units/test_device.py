@@ -632,9 +632,9 @@ class TestAsyncEOSDevice:
     )
     async def test_refresh(self, async_device: AsyncEOSDevice, patch_kwargs: list[dict[str, Any]], expected: dict[str, Any]) -> None:
         """Test AsyncEOSDevice.refresh()."""
-        with patch.object(async_device._session, "check_connection", **patch_kwargs[0]), patch.object(async_device._session, "cli", **patch_kwargs[1]):
+        with patch.object(async_device._session, "check_api_endpoint", **patch_kwargs[0]), patch.object(async_device._session, "cli", **patch_kwargs[1]):
             await async_device.refresh()
-            async_device._session.check_api_endpoint.assert_called_once()  # type: ignore[attr-defined] # asynceapi.Device.check_connection is patched
+            async_device._session.check_api_endpoint.assert_called_once()  # type: ignore[attr-defined] # asynceapi.Device.check_api_endpoint is patched
             if expected["is_online"]:
                 async_device._session.cli.assert_called_once()  # type: ignore[attr-defined] # asynceapi.Device.cli is patched
             assert async_device.is_online == expected["is_online"]
