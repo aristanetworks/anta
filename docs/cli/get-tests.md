@@ -51,7 +51,7 @@ anta.tests.aaa:
 [...]
 ```
 
-#### Module usage
+#### Filtering using `--module`
 
 To retrieve all the tests from `anta.tests.stun`.
 
@@ -72,7 +72,7 @@ anta.tests.stun:
       # Verifies the STUN server status is enabled and running.
 ```
 
-#### Test usage
+#### Filtering using `--test`
 
 ``` yaml title="anta get tests --test VerifyTacacsSourceIntf"
 anta.tests.aaa:
@@ -153,7 +153,7 @@ anta.tests.avt:
 [...]
 ```
 
-#### Module usage
+#### Filtering using `--module`
 
 To retrieve all the commands from the tests in `anta.tests.stun`.
 
@@ -167,7 +167,7 @@ anta.tests.stun:
     - show stun server status
 ```
 
-#### Test usage
+#### Filtering using `--test`
 
 ``` yaml title="anta get commands --test VerifyBGPExchangedRoutes"
 anta.tests.routing.bgp:
