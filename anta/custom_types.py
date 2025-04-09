@@ -189,7 +189,7 @@ def update_bgp_redistributed_proto_user(value: str) -> str:
 
 # AntaTest.Input types
 AAAAuthMethod = Annotated[str, AfterValidator(aaa_group_prefix)]
-Vlan = Annotated[int, Field(ge=0, le=4094)]
+VlanId = Annotated[int, Field(ge=0, le=4094)]
 MlagPriority = Annotated[int, Field(ge=1, le=32767)]
 Vni = Annotated[int, Field(ge=1, le=16777215)]
 Interface = Annotated[
@@ -396,3 +396,5 @@ RedistributedProtocol = Annotated[
 ]
 RedistributedAfiSafi = Annotated[Literal["v4u", "v4m", "v6u", "v6m"], BeforeValidator(bgp_redistributed_route_proto_abbreviations)]
 NTPStratumLevel = Annotated[int, Field(ge=0, le=16)]
+PowerSupplyFanStatus = Literal["failed", "ok", "unknownHwStatus", "powerLoss", "unsupported"]
+PowerSupplyStatus = Literal["ok", "unknown", "powerLoss", "failed"]

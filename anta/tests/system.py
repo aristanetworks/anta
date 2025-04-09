@@ -451,7 +451,7 @@ class VerifyMaintenance(AntaTest):
     ```
     """
 
-    categories: ClassVar[list[str]] = ["Maintenance"]
+    categories: ClassVar[list[str]] = ["system"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show maintenance", revision=1)]
 
     @AntaTest.anta_test
@@ -476,8 +476,8 @@ class VerifyMaintenance(AntaTest):
 
         # Building the error message.
         if units_under_maintenance:
-            self.result.is_failure(f"Units under maintenance: '{', '.join(units_under_maintenance)}'.")
+            self.result.is_failure(f"Units under maintenance: '{', '.join(units_under_maintenance)}'")
         if units_entering_maintenance:
-            self.result.is_failure(f"Units entering maintenance: '{', '.join(units_entering_maintenance)}'.")
+            self.result.is_failure(f"Units entering maintenance: '{', '.join(units_entering_maintenance)}'")
         if causes:
-            self.result.is_failure(f"Possible causes: '{', '.join(sorted(causes))}'.")
+            self.result.is_failure(f"Possible causes: '{', '.join(sorted(causes))}'")

@@ -81,7 +81,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"trackers": [{"name": "FLOW-TRACKER"}]},
         "expected": {
             "result": "failure",
-            "messages": ["Hardware flow tracking is not running."],
+            "messages": ["Hardware flow tracking is not running"],
         },
     },
     {

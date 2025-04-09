@@ -9,7 +9,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar, Literal
 
-from anta.custom_types import DynamicVlanSource, Vlan
+from anta.custom_types import DynamicVlanSource, VlanId
+from anta.input_models.vlan import Vlan
 from anta.models import AntaCommand, AntaTest
 from anta.tools import get_value
 
@@ -47,9 +48,9 @@ class VerifyVlanInternalPolicy(AntaTest):
 
         policy: Literal["ascending", "descending"]
         """The VLAN internal allocation policy. Supported values: ascending, descending."""
-        start_vlan_id: Vlan
+        start_vlan_id: VlanId
         """The starting VLAN ID in the range."""
-        end_vlan_id: Vlan
+        end_vlan_id: VlanId
         """The ending VLAN ID in the range."""
 
     @AntaTest.anta_test
@@ -145,3 +146,48 @@ class VerifyDynamicVlanSource(AntaTest):
             unexpected_sources = sources_with_vlans - expected_sources
             if unexpected_sources:
                 self.result.is_failure(f"Strict mode enabled: Unexpected sources have VLANs allocated: {', '.join(sorted(unexpected_sources))}")
+
+
+class VerifyVlanStatus(AntaTest):
+    """Verifies the administrative status of specified VLANs.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if all specified VLANs exist in the configuration and their administrative status is correct.
+    * Failure: The test will fail if any of the specified VLANs is not found in the configuration or if its administrative status is incorrect.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.vlan:
+      - VerifyVlanStatus:
+          vlans:
+            - vlan_id: 10
+              status: suspended
+            - vlan_id: 4094
+              status: active
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["vlan"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show vlan", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyVlanStatus test."""
+
+        vlans: list[Vlan]
+        """List of VLAN details."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyVlanStatus."""
+        self.result.is_success()
+        command_output = self.instance_commands[0].json_output
+
+        for vlan in self.inputs.vlans:
+            if (vlan_detail := get_value(command_output, f"vlans.{vlan.vlan_id}")) is None:
+                self.result.is_failure(f"{vlan} - Not configured")
+                continue
+
+            if (act_status := vlan_detail["status"]) != vlan.status:
+                self.result.is_failure(f"{vlan} - Incorrect administrative status - Expected: {vlan.status} Actual: {act_status}")

@@ -149,7 +149,7 @@ class VerifyMcsServerMounts(AntaTest):
         active_count = 0
 
         if not (connections := command_output.get("connections")):
-            self.result.is_failure("CVX connections are not available.")
+            self.result.is_failure("CVX connections are not available")
             return
 
         for connection in connections:
