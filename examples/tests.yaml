@@ -1,5 +1,5 @@
 ---
-anta.tests.aaa
+anta.tests.aaa:
   - VerifyAcctConsoleMethods:
       # Verifies the AAA accounting console method lists for different accounting types (system, exec, commands, dot1x).
       methods:
@@ -56,7 +56,7 @@ anta.tests.aaa
       # Verifies TACACS source-interface for a specified VRF.
       intf: Management0
       vrf: MGMT
-anta.tests.avt
+anta.tests.avt:
   - VerifyAVTPathHealth:
       # Verifies the status of all AVT paths for all VRFs.
   - VerifyAVTRole:
@@ -70,7 +70,7 @@ anta.tests.avt
           destination: 10.101.255.2
           next_hop: 10.101.255.1
           path_type: direct
-anta.tests.bfd
+anta.tests.bfd:
   - VerifyBFDPeersHealth:
       # Verifies the health of IPv4 BFD peers across all VRFs.
       down_threshold: 2
@@ -102,7 +102,7 @@ anta.tests.bfd
           vrf: default
         - peer_address: 192.0.255.7
           vrf: default
-anta.tests.configuration
+anta.tests.configuration:
   - VerifyRunningConfigDiffs:
       # Verifies there is no difference between the running-config and the startup-config.
   - VerifyRunningConfigLines:
@@ -112,7 +112,7 @@ anta.tests.configuration
         - "bla bla"
   - VerifyZeroTouch:
       # Verifies ZeroTouch is disabled.
-anta.tests.connectivity
+anta.tests.connectivity:
   - VerifyLLDPNeighbors:
       # Verifies the connection status of the specified LLDP (Link Layer Discovery Protocol) neighbors.
       neighbors:
@@ -141,7 +141,7 @@ anta.tests.connectivity
           df_bit: True
           size: 100
           reachable: false
-anta.tests.cvx
+anta.tests.cvx:
   - VerifyActiveCVXConnections:
       # Verifies the number of active CVX Connections.
       connections_count: 100
@@ -161,7 +161,6 @@ anta.tests.cvx
   - VerifyMcsServerMounts:
       # Verify if all MCS server mounts are in a MountComplete state.
       connections_count: 100
-<<<<<<< HEAD
 anta.tests.evpn:
   - VerifyEVPNType5Routes:
       # Verifies EVPN Type-5 routes for given IP prefixes and VNIs.
@@ -196,14 +195,11 @@ anta.tests.evpn:
                   route_targets:
                     - "40:40"
 anta.tests.field_notices:
-=======
-anta.tests.field_notices
->>>>>>> c39ffeb3 (feat(anta.cli): Add option to retrieve the EOS command run by each test)
   - VerifyFieldNotice44Resolution:
       # Verifies that the device is using the correct Aboot version per FN0044.
   - VerifyFieldNotice72Resolution:
       # Verifies if the device is exposed to FN0072, and if the issue has been mitigated.
-anta.tests.flow_tracking
+anta.tests.flow_tracking:
   - VerifyHardwareFlowTrackerStatus:
       # Verifies the hardware flow tracking state.
       trackers:
@@ -215,12 +211,12 @@ anta.tests.flow_tracking
             - name: CV-TELEMETRY
               local_interface: Loopback0
               template_interval: 3600000
-anta.tests.greent
+anta.tests.greent:
   - VerifyGreenT:
       # Verifies if a GreenT policy other than the default is created.
   - VerifyGreenTCounters:
       # Verifies if the GreenT counters are incremented.
-anta.tests.hardware
+anta.tests.hardware:
   - VerifyAdverseDrops:
       # Verifies there are no adverse drops on DCS-7280 and DCS-7500 family switches.
   - VerifyEnvironmentCooling:
@@ -243,7 +239,7 @@ anta.tests.hardware
         - Arastra, Inc.
   - VerifyTransceiversTemperature:
       # Verifies if all the transceivers are operating at an acceptable temperature.
-anta.tests.interfaces
+anta.tests.interfaces:
   - VerifyIPProxyARP:
       # Verifies if Proxy ARP is enabled.
       interfaces:
@@ -324,10 +320,10 @@ anta.tests.interfaces
       # Verifies the status of all SVIs.
   - VerifyStormControlDrops:
       # Verifies there are no interface storm-control drop counters.
-anta.tests.lanz
+anta.tests.lanz:
   - VerifyLANZ:
       # Verifies if LANZ is enabled.
-anta.tests.logging
+anta.tests.logging:
   - VerifyLoggingAccounting:
       # Verifies if AAA accounting logs are generated.
   - VerifyLoggingEntries:
@@ -364,7 +360,7 @@ anta.tests.logging
       severity_level: informational
   - VerifySyslogLogging:
       # Verifies if syslog logging is enabled.
-anta.tests.mlag
+anta.tests.mlag:
   - VerifyMlagConfigSanity:
       # Verifies there are no MLAG config-sanity inconsistencies.
   - VerifyMlagDualPrimary:
@@ -384,7 +380,7 @@ anta.tests.mlag
       reload_delay_non_mlag: 330
   - VerifyMlagStatus:
       # Verifies the health status of the MLAG configuration.
-anta.tests.multicast
+anta.tests.multicast:
   - VerifyIGMPSnoopingGlobal:
       # Verifies the IGMP snooping global status.
       enabled: True
@@ -393,7 +389,7 @@ anta.tests.multicast
       vlans:
         10: False
         12: False
-anta.tests.path_selection
+anta.tests.path_selection:
   - VerifyPathsHealth:
       # Verifies the path and telemetry state of all paths under router path-selection.
   - VerifySpecificPath:
@@ -403,14 +399,14 @@ anta.tests.path_selection
           path_group: internet
           source_address: 100.64.3.2
           destination_address: 100.64.1.2
-anta.tests.profiles
+anta.tests.profiles:
   - VerifyTcamProfile:
       # Verifies the device TCAM profile.
       profile: vxlan-routing
   - VerifyUnifiedForwardingTableMode:
       # Verifies the device is using the expected UFT mode.
       mode: 3
-anta.tests.ptp
+anta.tests.ptp:
   - VerifyPtpGMStatus:
       # Verifies that the device is locked to a valid PTP Grandmaster.
       gmid: 0xec:46:70:ff:fe:00:ff:a9
@@ -422,7 +418,7 @@ anta.tests.ptp
       # Verifies that the PTP timing offset is within +/- 1000ns from the master clock.
   - VerifyPtpPortModeStatus:
       # Verifies the PTP interfaces state.
-anta.tests.routing.bgp
+anta.tests.routing.bgp:
   - VerifyBGPAdvCommunities:
       # Verifies the advertised communities for BGP IPv4 peer(s).
       bgp_peers:
@@ -652,7 +648,7 @@ anta.tests.routing.bgp
           vni: 10020
         - address: aac1.ab5d.b41e
           vni: 10010
-anta.tests.routing.generic
+anta.tests.routing.generic:
   - VerifyIPv4RouteNextHops:
       # Verifies the next-hops of the IPv4 prefixes.
       route_entries:
@@ -687,7 +683,7 @@ anta.tests.routing.generic
       # Verifies the size of the IP routing table of the default VRF.
       minimum: 2
       maximum: 20
-anta.tests.routing.isis
+anta.tests.routing.isis:
   - VerifyISISGracefulRestart:
       # Verifies the IS-IS graceful restart feature.
       instances:
@@ -758,7 +754,7 @@ anta.tests.routing.isis
           vias:
             - type: ip
               nexthop: 1.1.1.1
-anta.tests.routing.ospf
+anta.tests.routing.ospf:
   - VerifyOSPFMaxLSA:
       # Verifies all OSPF instances did not cross the maximum LSA threshold.
   - VerifyOSPFNeighborCount:
@@ -766,7 +762,7 @@ anta.tests.routing.ospf
       number: 3
   - VerifyOSPFNeighborState:
       # Verifies all OSPF neighbors are in FULL state.
-anta.tests.security
+anta.tests.security:
   - VerifyAPIHttpStatus:
       # Verifies if eAPI HTTP server is disabled globally.
   - VerifyAPIHttpsSSL:
@@ -849,7 +845,7 @@ anta.tests.security
               destination_address: 172.18.2.2
   - VerifyTelnetStatus:
       # Verifies if Telnet is disabled in the default VRF.
-anta.tests.services
+anta.tests.services:
   - VerifyDNSLookup:
       # Verifies the DNS name to IP address resolution.
       domain_names:
@@ -877,7 +873,7 @@ anta.tests.services
   - VerifyHostname:
       # Verifies the hostname of a device.
       hostname: s1-spine1
-anta.tests.snmp
+anta.tests.snmp:
   - VerifySnmpContact:
       # Verifies the SNMP contact of a device.
       contact: Jon@example.com
@@ -955,7 +951,7 @@ anta.tests.snmp
           version: v3
           auth_type: MD5
           priv_type: AES-128
-anta.tests.software
+anta.tests.software:
   - VerifyEOSExtensions:
       # Verifies that all EOS extensions installed on the device are enabled for boot persistence.
   - VerifyEOSVersion:
@@ -968,7 +964,7 @@ anta.tests.software
       versions:
         - v1.13.6
         - v1.8.0
-anta.tests.stp
+anta.tests.stp:
   - VerifySTPBlockedPorts:
       # Verifies there is no STP blocked ports.
   - VerifySTPCounters:
@@ -998,7 +994,7 @@ anta.tests.stp
   - VerifyStpTopologyChanges:
       # Verifies the number of changes across all interfaces in the Spanning Tree Protocol (STP) topology is below a threshold.
       threshold: 10
-anta.tests.stun
+anta.tests.stun:
   - VerifyStunClient:
       # (Deprecated) Verifies the translation for a source address on a STUN client.
       stun_clients:
@@ -1019,7 +1015,7 @@ anta.tests.stun
           public_port: 6006
   - VerifyStunServer:
       # Verifies the STUN server status is enabled and running.
-anta.tests.system
+anta.tests.system:
   - VerifyAgentLogs:
       # Verifies there are no agent crash reports.
   - VerifyCPUUtilization:
@@ -1057,7 +1053,7 @@ anta.tests.system
   - VerifyUptime:
       # Verifies the device uptime.
       minimum: 86400
-anta.tests.vlan
+anta.tests.vlan:
   - VerifyDynamicVlanSource:
       # Verifies dynamic VLAN allocation for specified VLAN sources.
       sources:
@@ -1069,7 +1065,6 @@ anta.tests.vlan
       policy: ascending
       start_vlan_id: 1006
       end_vlan_id: 4094
-<<<<<<< HEAD
   - VerifyVlanStatus:
       # Verifies the administrative status of specified VLANs.
       vlans:
@@ -1078,9 +1073,6 @@ anta.tests.vlan
         - vlan_id: 4094
           status: active
 anta.tests.vxlan:
-=======
-anta.tests.vxlan
->>>>>>> c39ffeb3 (feat(anta.cli): Add option to retrieve the EOS command run by each test)
   - VerifyVxlan1ConnSettings:
       # Verifies Vxlan1 source interface and UDP port.
       source_interface: Loopback1

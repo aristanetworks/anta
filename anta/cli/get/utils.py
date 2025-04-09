@@ -341,7 +341,7 @@ def print_tests(tests: list[type[AntaTest]], *, short: bool = False) -> None:
     from itertools import groupby
 
     for module, module_tests in groupby(tests, module_name):
-        console.print(module)
+        console.print(f"{module}:")
         for test in module_tests:
             print_test(test, short=short)
 
