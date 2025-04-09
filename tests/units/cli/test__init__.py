@@ -18,7 +18,7 @@ def test_cli_error_missing_click(capsys: pytest.CaptureFixture[Any]) -> None:
     """Test ANTA errors out when anta[cli] was not installed."""
     with patch.dict(sys.modules, {"click": None}) as sys_modules:
         for k in list(sys_modules.keys()):
-            if k.startswith("anta."):  # and k != "anta.cli":
+            if k.startswith("anta."):
                 del sys_modules[k]
         import anta.cli
 
