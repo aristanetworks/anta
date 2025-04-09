@@ -48,7 +48,7 @@ def test_cli_error_missing_other() -> None:
     with patch.dict(sys.modules, {"httpx": None}) as sys_modules:
         # Need to clean up from previous runs a path that will trigger reimporting httpx
         for k in list(sys_modules.keys()):
-            if k.startswith("anta."):  # and k != "anta.cli":
+            if k.startswith("anta."):
                 del sys_modules[k]
         import anta.cli
 
