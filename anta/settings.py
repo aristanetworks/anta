@@ -13,6 +13,8 @@ from typing import Any
 from pydantic import Field, PositiveInt
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from anta.logger import exc_to_str
+
 logger = logging.getLogger(__name__)
 
 # Default value for the maximum number of concurrent tests in the event loop
@@ -55,8 +57,9 @@ class AntaRunnerSettings(BaseSettings):
     # Computed in post-init
     _file_descriptor_limit: PositiveInt
 
-    def model_post_init(self, __context: Any) -> None:  # noqa: ANN401, PYI063
+    def model_post_init(self, context: Any, /) -> None:  # noqa: ANN401
         """Post-initialization method to set the file descriptor limit for the current ANTA process."""
+        _ = context
         if os.name != "posix":
             logger.warning("Running on a non-POSIX system, cannot adjust the maximum number of file descriptors.")
             self._file_descriptor_limit = sys.maxsize
@@ -65,12 +68,15 @@ class AntaRunnerSettings(BaseSettings):
         import resource
 
         limits = resource.getrlimit(resource.RLIMIT_NOFILE)
-        logger.debug("Initial file descriptor limits: Soft Limit: %s | Hard Limit: %s", limits[0], limits[1])
+        logger.debug("Initial file descriptor limits for the current ANTA process: Soft Limit: %s | Hard Limit: %s", limits[0], limits[1])
 
         # Set new soft limit to minimum of requested and hard limit
         new_soft_limit = min(limits[1], self.nofile)
         logger.debug("Setting file descriptor soft limit to %s", new_soft_limit)
-        resource.setrlimit(resource.RLIMIT_NOFILE, (new_soft_limit, limits[1]))
+        try:
+            resource.setrlimit(resource.RLIMIT_NOFILE, (new_soft_limit, limits[1]))
+        except ValueError as exception:
+            logger.warning("Failed to set file descriptor soft limit for the current ANTA process: %s", exc_to_str(exception))
 
         self._file_descriptor_limit = resource.getrlimit(resource.RLIMIT_NOFILE)[0]
         return

@@ -164,6 +164,7 @@ def test_adjust_rlimit_nofile_invalid_env(caplog: pytest.LogCaptureFixture) -> N
         setrlimit_mock.assert_called_once_with(resource.RLIMIT_NOFILE, (16384, 1048576))
 
 
+# TODO: Remove this in ANTA v2.0.0
 @pytest.mark.skipif(os.name != "posix", reason="Cannot run this test on Windows")
 def test_adjust_rlimit_nofile_value_error(caplog: pytest.LogCaptureFixture) -> None:
     """Test adjust_rlimit_nofile with invalid environment variables."""

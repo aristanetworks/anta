@@ -70,8 +70,7 @@ class TestAntaRunnerSettings:
             getrlimit_mock.return_value = system_limits
 
             # Simulate setrlimit behavior
-            def side_effect_setrlimit(resource_id: int, limits: tuple[int, int]) -> None:
-                _ = resource_id
+            def side_effect_setrlimit(_resource_id: int, limits: tuple[int, int]) -> None:
                 getrlimit_mock.return_value = (limits[0], limits[1])
 
             setrlimit_mock.side_effect = side_effect_setrlimit
@@ -80,7 +79,39 @@ class TestAntaRunnerSettings:
 
             # Assert the limits were updated as expected
             assert settings.file_descriptor_limit == 20480
-            assert "Initial file descriptor limits: Soft Limit: 8192 | Hard Limit: 1048576" in caplog.text
+            assert "Initial file descriptor limits for the current ANTA process: Soft Limit: 8192 | Hard Limit: 1048576" in caplog.text
             assert "Setting file descriptor soft limit to 20480" in caplog.text
 
             setrlimit_mock.assert_called_once_with(resource.RLIMIT_NOFILE, (20480, 1048576))  # pylint: disable=possibly-used-before-assignment
+
+    @pytest.mark.skipif(os.name != "posix", reason="Cannot run this test on Windows")
+    def test_file_descriptor_limit_value_error(self, caplog: pytest.LogCaptureFixture) -> None:
+        """Test file_descriptor_limit with invalid environment variables."""
+        with (
+            caplog.at_level(logging.DEBUG),
+            patch.dict("os.environ", {"ANTA_NOFILE": "666"}),
+            patch("resource.getrlimit") as getrlimit_mock,
+            patch("resource.setrlimit") as setrlimit_mock,
+        ):
+            # Simulate the default system limits
+            system_limits = (32768, 131072)
+
+            # Setup getrlimit mock return value
+            getrlimit_mock.return_value = system_limits
+
+            # Simulate setrlimit behavior raising ValueError
+            def side_effect_setrlimit(_resource_id: int, _limits: tuple[int, int]) -> None:
+                msg = "not allowed to raise maximum limit"
+                raise ValueError(msg)
+
+            setrlimit_mock.side_effect = side_effect_setrlimit
+
+            settings = AntaRunnerSettings()
+
+            # Assert the limits were *NOT* updated as expected
+            assert settings.file_descriptor_limit == 32768
+            assert "Initial file descriptor limits for the current ANTA process: Soft Limit: 32768 | Hard Limit: 131072" in caplog.text
+            assert caplog.records[-1].levelname == "WARNING"
+            assert "Failed to set file descriptor soft limit for the current ANTA process" in caplog.records[-1].getMessage()
+
+            setrlimit_mock.assert_called_once_with(resource.RLIMIT_NOFILE, (666, 131072))
