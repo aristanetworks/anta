@@ -61,10 +61,10 @@ anta_title: Frequently Asked Questions (FAQ)
 
     !!! info "Device Connection Limits"
 
-        Each device is limited to a maximum of **100** concurrent connections. This means that, even if ANTA schedules a high number of tests, it will only attempt to open up to 100 connections at a time towards each device.
+        Each EOS device is limited to a maximum of **100** concurrent connections. This means that, even if ANTA schedules a high number of tests, it will only attempt to open up to 100 connections at a time towards each device.
 
     !!! tip
-        If you run ANTA on a large fabric or encounter issues related to resource limits, consider tuning this setting.
+        If you run ANTA on a large fabric or encounter issues related to resource limits, consider tuning `ANTA_MAX_CONCURRENCY`.
         Test different values to find the optimal setting for your environment.
 
 ## `Timeout` error in the logs

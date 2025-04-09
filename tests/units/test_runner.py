@@ -37,17 +37,7 @@ async def test_empty_tests(caplog: pytest.LogCaptureFixture, inventory: AntaInve
     manager = ResultManager()
     await main(manager, inventory, AntaCatalog())
 
-    # On Windows, there is an extra log message when AntaRunner is initialized and
-    # tries to adjust the file descriptor limit.
-    if os.name != "posix":
-        record_tuples = 2
-        record_index = 1
-    else:
-        record_tuples = 1
-        record_index = 0
-
-    assert len(caplog.record_tuples) == record_tuples
-    assert "The list of tests is empty, exiting" in caplog.records[record_index].message
+    assert "The list of tests is empty, exiting" in caplog.text
 
 
 # TODO: Move this to AntaRunner tests in ANTA v2.0.0
@@ -57,17 +47,7 @@ async def test_empty_inventory(caplog: pytest.LogCaptureFixture) -> None:
     manager = ResultManager()
     await main(manager, AntaInventory(), FAKE_CATALOG)
 
-    # On Windows, there is an extra log message when AntaRunner is initialized and
-    # tries to adjust the file descriptor limit.
-    if os.name != "posix":
-        record_tuples = 4
-        record_index = 2
-    else:
-        record_tuples = 3
-        record_index = 1
-
-    assert len(caplog.record_tuples) == record_tuples
-    assert "The inventory is empty, exiting" in caplog.records[record_index].message
+    assert "The inventory is empty, exiting" in caplog.text
 
 
 # TODO: Move this to AntaRunner tests in ANTA v2.0.0

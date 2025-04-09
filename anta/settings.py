@@ -17,11 +17,11 @@ from anta.logger import exc_to_str
 
 logger = logging.getLogger(__name__)
 
-# Default value for the maximum number of concurrent tests in the event loop
 DEFAULT_MAX_CONCURRENCY = 50000
+"""Default value for the maximum number of concurrent tests in the event loop."""
 
-# Default value for the maximum number of open file descriptors for the ANTA process
 DEFAULT_NOFILE = 16384
+"""Default value for the maximum number of open file descriptors for the ANTA process."""
 
 
 class AntaRunnerSettings(BaseSettings):
@@ -30,7 +30,7 @@ class AntaRunnerSettings(BaseSettings):
     When initialized, relevant environment variables are loaded. If not set, default values are used.
 
     On POSIX systems, also adjusts the process's soft limit based on the `ANTA_NOFILE` environment variable
-    while respecting the system's hard limit, meaning the new soft limit cannot exceed the system's hard limit.
+    while respecting the system hard limit, meaning the new soft limit cannot exceed the system's hard limit.
 
     On non-POSIX systems (Windows), sets the limit to `sys.maxsize`.
 
