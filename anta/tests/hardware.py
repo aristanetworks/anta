@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar
 
+from anta.custom_types import PowerSupplyFanStatus, PowerSupplyStatus
 from anta.decorators import skip_on_platforms
 from anta.models import AntaCommand, AntaTest
 
@@ -176,7 +177,7 @@ class VerifyEnvironmentCooling(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyEnvironmentCooling test."""
 
-        states: list[str]
+        states: list[PowerSupplyFanStatus]
         """List of accepted states of fan status."""
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
@@ -225,7 +226,7 @@ class VerifyEnvironmentPower(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyEnvironmentPower test."""
 
-        states: list[str]
+        states: list[PowerSupplyStatus]
         """List of accepted states list of power supplies status."""
 
     @skip_on_platforms(["cEOSLab", "vEOS-lab", "cEOSCloudLab", "vEOS"])
