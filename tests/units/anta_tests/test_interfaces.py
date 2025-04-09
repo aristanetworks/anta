@@ -1789,7 +1789,7 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": {"mtu": 1500, "ignored_interfaces": ["Loopback", "Port-Channel", "Management", "Vxlan"], "specific_mtu": [{"Ethernet10": 1501}]},
+        "inputs": {"mtu": 1500, "ignored_interfaces": ["Loopback", "Port-Channel2", "Management", "Vxlan1"], "specific_mtu": [{"Ethernet10": 1501}]},
         "expected": {"result": "failure", "messages": ["Interface: Ethernet10 - Incorrect MTU - Expected: 1501 Actual: 1502"]},
     },
     {
@@ -1861,7 +1861,7 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": {"mtu": 9214, "ignored_interfaces": ["Loopback", "Port-Channel", "Management", "Vxlan"], "specific_mtu": [{"Ethernet10": 9214}]},
+        "inputs": {"mtu": 9214, "ignored_interfaces": ["Loopback0", "Port-Channel", "Management0", "Vxlan"], "specific_mtu": [{"Ethernet10": 9214}]},
         "expected": {"result": "success"},
     },
     {
