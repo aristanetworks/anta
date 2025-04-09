@@ -10,7 +10,7 @@ import asyncio
 import json
 import logging
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal
 
 import click
 import requests
@@ -22,7 +22,7 @@ from anta.cli.console import console
 from anta.cli.get.utils import inventory_output_options
 from anta.cli.utils import ExitCode, catalog_options, inventory_options
 
-from .utils import create_inventory_from_ansible, create_inventory_from_cvp, explore_package, get_cv_token, print_commands, print_tests
+from .utils import _explore_package, create_inventory_from_ansible, create_inventory_from_cvp, get_cv_token, print_commands, print_tests
 
 if TYPE_CHECKING:
     from anta.inventory import AntaInventory
@@ -147,7 +147,7 @@ def tags(inventory: AntaInventory, **kwargs: Any) -> None:
 def tests(ctx: click.Context, module: str, test: str | None, *, short: bool, count: bool) -> None:
     """Show all builtin ANTA tests with an example output retrieved from each test documentation."""
     try:
-        tests_found = explore_package(module, test_name=test, short=short, count=count)
+        tests_found = _explore_package(module, test_name=test, short=short, count=count)
         if len(tests_found) == 0:
             console.print(f"""No test {f"'{test}' " if test else ""}found in '{module}'.""")
         elif count:
@@ -172,12 +172,16 @@ def commands(
     module: str,
     test: str | None,
     catalog: Path,
-    catalog_format: str = "yaml",
+    catalog_format: Literal["yaml", "json"] = "yaml",
 ) -> None:
-    """Print all EOS commands used by the selected ANTA tests. It can be filtered by module, test or using a catalog."""
+    """Print all EOS commands used by the selected ANTA tests.
+
+    It can be filtered by module, test or using a catalog.
+    If no filter is given, all built-in ANTA tests commands are retrieved.
+    """
     # TODO: implement catalog and catalog format
     try:
-        tests_found = explore_package(module, test_name=test)
+        tests_found = _explore_package(module, test_name=test)
         if len(tests_found) == 0:
             console.print(f"""No test {f"'{test}' " if test else ""}found in '{module}'.""")
         print_commands(tests_found)

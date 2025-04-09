@@ -22,6 +22,7 @@ import click
 import requests
 import urllib3
 import yaml
+from typing_extensions import deprecated
 
 from anta.cli.console import console
 from anta.cli.utils import ExitCode
@@ -231,7 +232,7 @@ def create_inventory_from_ansible(inventory: Path, output: Path, ansible_group: 
     write_inventory_to_file(ansible_hosts, output)
 
 
-def explore_package(module_name: str, test_name: str | None = None, *, short: bool = False, count: bool = False) -> list[type[AntaTest]]:
+def _explore_package(module_name: str, test_name: str | None = None, *, short: bool = False, count: bool = False) -> list[type[AntaTest]]:
     """Parse ANTA test submodules recursively and return a list of the found AntaTest.
 
     Parameters
@@ -277,7 +278,7 @@ def explore_package(module_name: str, test_name: str | None = None, *, short: bo
         for _, sub_module_name, ispkg in pkgutil.walk_packages(module_spec.submodule_search_locations):
             qname = f"{module_name}.{sub_module_name}"
             if ispkg:
-                result.extend(explore_package(qname, test_name=test_name, short=short, count=count))
+                result.extend(_explore_package(qname, test_name=test_name, short=short, count=count))
                 continue
             result.extend(find_tests_in_module(qname, test_name))
 
@@ -417,3 +418,107 @@ def print_commands(tests: list[type[AntaTest]]) -> None:
                     console.print(f"    - {command.command}")
                 else:  # isinstance(command, AntaTemplate):
                     console.print(f"    - {command.template}")
+
+
+@deprecated("This function is deprecated, use `_explore_package`. This will be removed in ANTA v2.0.0.", category=DeprecationWarning)
+def explore_package(module_name: str, test_name: str | None = None, *, short: bool = False, count: bool = False) -> int:  # pragma: no cover
+    """Parse ANTA test submodules recursively and print AntaTest examples.
+
+    Parameters
+    ----------
+    module_name
+        Name of the module to explore (e.g., 'anta.tests.routing.bgp').
+    test_name
+        If provided, only show tests starting with this name.
+    short
+        If True, only print test names without their inputs.
+    count
+        If True, only count the tests.
+
+    Returns
+    -------
+    int:
+        The number of tests found.
+    """
+    try:
+        module_spec = importlib.util.find_spec(module_name)
+    except ModuleNotFoundError:
+        # Relying on module_spec check below.
+        module_spec = None
+    except ImportError as e:
+        msg = "`anta get tests --module <module>` does not support relative imports"
+        raise ValueError(msg) from e
+
+    # Giving a second chance adding CWD to PYTHONPATH
+    if module_spec is None:
+        try:
+            logger.info("Could not find module `%s`, injecting CWD in PYTHONPATH and retrying...", module_name)
+            sys.path = [str(Path.cwd()), *sys.path]
+            module_spec = importlib.util.find_spec(module_name)
+        except ImportError:
+            module_spec = None
+
+    if module_spec is None or module_spec.origin is None:
+        msg = f"Module `{module_name}` was not found!"
+        raise ValueError(msg)
+
+    tests_found = 0
+    if module_spec.submodule_search_locations:
+        for _, sub_module_name, ispkg in pkgutil.walk_packages(module_spec.submodule_search_locations):
+            qname = f"{module_name}.{sub_module_name}"
+            if ispkg:
+                tests_found += explore_package(qname, test_name=test_name, short=short, count=count)
+                continue
+            tests_found += find_tests_examples(qname, test_name, short=short, count=count)
+
+    else:
+        tests_found += find_tests_examples(module_spec.name, test_name, short=short, count=count)
+
+    return tests_found
+
+
+@deprecated("This function is deprecated, use `find_tests_in_module`. This will be removed in ANTA v2.0.0.", category=DeprecationWarning)
+def find_tests_examples(qname: str, test_name: str | None, *, short: bool = False, count: bool = False) -> int:  # pragma: no cover
+    """Print tests from `qname`, filtered by `test_name` if provided.
+
+    Parameters
+    ----------
+    qname
+        Name of the module to explore (e.g., 'anta.tests.routing.bgp').
+    test_name
+        If provided, only show tests starting with this name.
+    short
+        If True, only print test names without their inputs.
+    count
+        If True, only count the tests.
+
+    Returns
+    -------
+    int:
+        The number of tests found.
+    """
+    try:
+        qname_module = importlib.import_module(qname)
+    except (AssertionError, ImportError) as e:
+        msg = f"Error when importing `{qname}` using importlib!"
+        raise ValueError(msg) from e
+
+    module_printed = False
+    tests_found = 0
+
+    for _name, obj in inspect.getmembers(qname_module):
+        # Only retrieves the subclasses of AntaTest
+        if not inspect.isclass(obj) or not issubclass(obj, AntaTest) or obj == AntaTest:
+            continue
+        if test_name and not obj.name.startswith(test_name):
+            continue
+        if not module_printed:
+            if not count:
+                console.print(f"{qname}:")
+            module_printed = True
+        tests_found += 1
+        if count:
+            continue
+        print_test(obj, short=short)
+
+    return tests_found
