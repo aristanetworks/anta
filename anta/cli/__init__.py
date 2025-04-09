@@ -21,7 +21,6 @@ except ImportError as exc:
 
         def wrap() -> None:
             """Error message if any CLI dependency is missing."""
-            print(f"EXCEPRTION {exception}")
             if not exception.name or "click" not in exception.name:
                 raise exception
 
