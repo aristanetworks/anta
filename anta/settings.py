@@ -57,6 +57,7 @@ class AntaRunnerSettings(BaseSettings):
     # Computed in post-init
     _file_descriptor_limit: PositiveInt
 
+    # pylint: disable=arguments-differ
     def model_post_init(self, context: Any, /) -> None:  # noqa: ANN401
         """Post-initialization method to set the file descriptor limit for the current ANTA process."""
         _ = context
