@@ -3453,7 +3453,7 @@
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">command_output</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;Device has reported syslog messages with a severity of ERRORS or higher&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Device has reported syslog messages with a severity of ERRORS or higher:</span><span class="se">\n</span><span class="si">{</span><span class="n">command_output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
