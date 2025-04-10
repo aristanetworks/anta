@@ -93,7 +93,7 @@ class VerifyReloadCause(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyReloadCause test."""
 
-        allowed_causes: list[ReloadCause] = Field(default=["Reload requested by the user.", "Reload requested after FPGA upgrade"])
+        allowed_causes: list[ReloadCause] = Field(default=["USER", "FPGA"], validate_default=True)
         """A list of allowed system reload causes."""
 
     @AntaTest.anta_test
@@ -104,6 +104,7 @@ class VerifyReloadCause(AntaTest):
             # No reload causes
             self.result.is_success()
             return
+
         reset_causes = command_output["resetCauses"]
         command_output_data = reset_causes[0].get("description")
         if command_output_data in self.inputs.allowed_causes:

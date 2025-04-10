@@ -273,7 +273,9 @@ def test_snmp_v3_prefix_valid_input() -> None:
 @pytest.mark.parametrize(
     ("str_input", "expected_output"),
     [
-        pytest.param("ztp", "System reloaded due to Zero Touch Provisioning", id="valid"),
+        pytest.param("Ztp", "System reloaded due to Zero Touch Provisioning", id="valid"),
+        pytest.param("USER", "Reload requested by the user.", id="valid"),
+        pytest.param("fpga", "Reload requested after FPGA upgrade", id="valid"),
     ],
 )
 def test_convert_reload_cause(str_input: str, expected_output: str) -> None:
@@ -289,5 +291,5 @@ def test_convert_reload_cause(str_input: str, expected_output: str) -> None:
 )
 def test_invalid_convert_reload_cause(str_input: str) -> None:
     """Test invalid convert_reload_cause."""
-    with pytest.raises(ValueError, match=r"Invalid reload cause: 'ztp2' - expected causes are \['ztp'\]"):
+    with pytest.raises(ValueError, match=r"Invalid reload cause: 'ztp2' - expected causes are \['ztp', 'user', 'fpga'\]"):
         convert_reload_cause(str_input)

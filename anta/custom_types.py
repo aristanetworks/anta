@@ -197,7 +197,7 @@ def convert_reload_cause(value: str) -> str:
     'System reloaded due to Zero Touch Provisioning'
     ```
     """
-    reload_causes = {"ztp": "System reloaded due to Zero Touch Provisioning"}
+    reload_causes = {"ztp": "System reloaded due to Zero Touch Provisioning", "user": "Reload requested by the user.", "fpga": "Reload requested after FPGA upgrade"}
     if not reload_causes.get(value.lower()):
         msg = f"Invalid reload cause: '{value}' - expected causes are {list(reload_causes)}"
         raise ValueError(msg)
@@ -416,10 +416,6 @@ NTPStratumLevel = Annotated[int, Field(ge=0, le=16)]
 PowerSupplyFanStatus = Literal["failed", "ok", "unknownHwStatus", "powerLoss", "unsupported"]
 PowerSupplyStatus = Literal["ok", "unknown", "powerLoss", "failed"]
 ReloadCause = Annotated[
-    Literal[
-        "Reload requested by the user.",
-        "Reload requested after FPGA upgrade",
-        "System reloaded due to Zero Touch Provisioning",
-    ],
+    str,
     BeforeValidator(convert_reload_cause),
 ]
