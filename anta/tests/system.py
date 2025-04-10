@@ -73,8 +73,8 @@ class VerifyReloadCause(AntaTest):
 
     Expected Results
     ----------------
-    * Success: The test passes if there are no reload causes, or if the last reload was user-initiated, after an FPGA upgrade, or caused by Zero Touch Provisioning.
-    * Failure: The test will fail if the last reload was NOT caused by the user or after an FPGA upgrade or due to Zero Touch Provisioning.
+    * Success: The test passes if there is no reload cause, or if the last reload cause was one of the provided inputs.
+    * Failure: The test will fail if the last reload cause was NOT one of the provided inputs.
     * Error: The test will report an error if the reload cause is NOT available.
 
     Examples
