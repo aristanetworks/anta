@@ -416,6 +416,6 @@ NTPStratumLevel = Annotated[int, Field(ge=0, le=16)]
 PowerSupplyFanStatus = Literal["failed", "ok", "unknownHwStatus", "powerLoss", "unsupported"]
 PowerSupplyStatus = Literal["ok", "unknown", "powerLoss", "failed"]
 ReloadCause = Annotated[
-    str,
+    Literal["System reloaded due to Zero Touch Provisioning", "Reload requested by the user.", "Reload requested after FPGA upgrade"]
     BeforeValidator(convert_reload_cause),
 ]
