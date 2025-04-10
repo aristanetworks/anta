@@ -16,11 +16,14 @@ try:
 
 except ImportError as exc:
 
-    def build_cli(exception: Exception) -> Callable[[], None]:
+    def build_cli(exception: ImportError) -> Callable[[], None]:
         """Build CLI function using the caught exception."""
 
         def wrap() -> None:
             """Error message if any CLI dependency is missing."""
+            if not exception.name or "click" not in exception.name:
+                raise exception
+
             print(
                 "The ANTA command line client could not run because the required "
                 "dependencies were not installed.\nMake sure you've installed "

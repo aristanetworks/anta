@@ -56,7 +56,6 @@ requires-python = ">=3.9"
 [project.optional-dependencies]
 cli = [
   "click~=8.1.6",
-  "click-help-colors>=0.9",
 ]
 dev = [
   "bumpver>=2023.1129",

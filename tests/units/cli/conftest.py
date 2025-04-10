@@ -123,7 +123,7 @@ def click_runner(capsys: pytest.CaptureFixture[str], anta_env: dict[str, str]) -
 
     # Patch asynceapi methods used by AsyncEOSDevice. See tests/units/test_device.py
     with (
-        patch("asynceapi.device.Device.check_connection", return_value=True),
+        patch("asynceapi.device.Device.check_api_endpoint", return_value=True),
         patch("asynceapi.device.Device.cli", side_effect=cli),
         patch("asyncssh.connect"),
         patch(

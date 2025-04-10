@@ -539,29 +539,36 @@ class AsyncEOSDevice(AntaDevice):
         """Update attributes of an AsyncEOSDevice instance.
 
         This coroutine must update the following attributes of AsyncEOSDevice:
-        - is_online: When a device IP is reachable and a port can be open
+        - is_online: When a device eAPI HTTP endpoint is accessible
         - established: When a command execution succeeds
         - hw_model: The hardware model of the device
         """
         logger.debug("Refreshing device %s", self.name)
-        self.is_online = await self._session.check_connection()
-        if self.is_online:
-            show_version = AntaCommand(command="show version")
-            await self._collect(show_version)
-            if not show_version.collected:
-                logger.warning("Cannot get hardware information from device %s", self.name)
-            else:
-                self.hw_model = show_version.json_output.get("modelName", None)
-                if self.hw_model is None:
-                    logger.critical("Cannot parse 'show version' returned by device %s", self.name)
-                # in some cases it is possible that 'modelName' comes back empty
-                # and it is nice to get a meaninfule error message
-                elif self.hw_model == "":
-                    logger.critical("Got an empty 'modelName' in the 'show version' returned by device %s", self.name)
-        else:
-            logger.warning("Could not connect to device %s: cannot open eAPI port", self.name)
+        try:
+            self.is_online = await self._session.check_api_endpoint()
+        except HTTPError as e:
+            self.is_online = False
+            self.established = False
+            logger.warning("Could not connect to device %s: %s", self.name, e)
+            return
 
-        self.established = bool(self.is_online and self.hw_model)
+        show_version = AntaCommand(command="show version")
+        await self._collect(show_version)
+        if not show_version.collected:
+            self.established = False
+            logger.warning("Cannot get hardware information from device %s", self.name)
+            return
+
+        self.hw_model = show_version.json_output.get("modelName", None)
+        if self.hw_model is None:
+            self.established = False
+            logger.critical("Cannot parse 'show version' returned by device %s", self.name)
+        # in some cases it is possible that 'modelName' comes back empty
+        elif self.hw_model == "":
+            self.established = False
+            logger.critical("Got an empty 'modelName' in the 'show version' returned by device %s", self.name)
+        else:
+            self.established = True
 
     async def copy(self, sources: list[Path], destination: Path, direction: Literal["to", "from"] = "from") -> None:
         """Copy files to and from the device using asyncssh.scp().
