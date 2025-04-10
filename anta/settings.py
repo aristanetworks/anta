@@ -29,7 +29,7 @@ class AntaRunnerSettings(BaseSettings):
 
     When initialized, relevant environment variables are loaded. If not set, default values are used.
 
-    On POSIX systems, also adjusts the process's soft limit based on the `ANTA_NOFILE` environment variable
+    On POSIX systems, also adjusts the process soft limit based on the `ANTA_NOFILE` environment variable
     while respecting the system hard limit, meaning the new soft limit cannot exceed the system's hard limit.
 
     On non-POSIX systems (Windows), sets the limit to `sys.maxsize`.
