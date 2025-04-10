@@ -109,7 +109,7 @@ class VerifyReloadCause(AntaTest):
         if command_output_data in self.inputs.allowed_causes:
             self.result.is_success()
         else:
-            self.result.is_failure(f"Reload cause is: {command_output_data}")
+            self.result.is_failure(f"Invalid reload cause -  Expected: {', '.join(self.inputs.allowed_causes)} Actual: {command_output_data}")
 
 
 class VerifyCoredump(AntaTest):

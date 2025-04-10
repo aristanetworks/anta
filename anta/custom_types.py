@@ -193,7 +193,7 @@ def convert_reload_cause(value: str) -> str:
     Examples
     --------
     ```python
-    >>> update_bgp_redistributed_proto_user("ZTP")
+    >>> convert_reload_cause("ZTP")
     'System reloaded due to Zero Touch Provisioning'
     ```
     """
