@@ -7,13 +7,14 @@ from __future__ import annotations
 
 import logging
 import os
+import re
 from pathlib import Path
 
 import pytest
 import respx
 from pydantic import ValidationError
 
-from anta._runner import AntaRunner, AntaRunnerFilter
+from anta._runner import AntaRunner, AntaRunnerFilter, AntaRunnerInventoryStats
 from anta.catalog import AntaCatalog
 from anta.inventory import AntaInventory
 from anta.result_manager import ResultManager
@@ -263,3 +264,76 @@ class TestAntaRunner:
         assert len(results.results) == 15
         for result in results.results:
             assert result.result == "failure"
+
+    # Tests to cover failures
+    def test_setup_tests_raises_if_inventory_none(self) -> None:
+        """Verify _setup_tests raises RuntimeError with specific message when _selected_inventory is None."""
+        instance = AntaRunner(inventory=AntaInventory(), catalog=AntaCatalog())
+        instance._selected_inventory = None
+        expected_message = "The selected inventory is not available. ANTA must be executed through AntaRunner.run()"
+        dummy_filters = AntaRunnerFilter()
+
+        with pytest.raises(RuntimeError, match=re.escape(expected_message)):
+            instance._setup_tests(filters=dummy_filters)
+
+    def test_get_test_coroutines_raises_when_selected_tests_is_none(self) -> None:
+        """Test that _get_test_coroutines raises RuntimeError if called when self._selected_tests is None."""
+        instance = AntaRunner(inventory=AntaInventory(), catalog=AntaCatalog())
+        instance._selected_tests = None
+        expected_message = "The selected tests are not available. ANTA must be executed through AntaRunner.run()"
+
+        with pytest.raises(RuntimeError, match=re.escape(expected_message)):
+            instance._get_test_coroutines()
+
+    def test_log_run_information_raises_if_stats_none(self) -> None:
+        """Verify _log_run_information raises RuntimeError with specific message when _inventory_stats is None."""
+        instance = AntaRunner(inventory=AntaInventory(), catalog=AntaCatalog())
+        instance._inventory_stats = None
+        expected_message = "The inventory stats are not available. ANTA must be executed through AntaRunner.run()"
+        with pytest.raises(RuntimeError, match=re.escape(expected_message)):
+            # Call with default arguments or specific ones if needed by other logic
+            instance._log_run_information()
+
+    def test_log_cache_statistics_raises_if_inventory_none(self) -> None:
+        """Verify _log_cache_statistics raises RuntimeError with specific message when _selected_inventory is None."""
+        instance = AntaRunner(inventory=AntaInventory(), catalog=AntaCatalog())
+        instance._selected_inventory = None
+        expected_message = "The selected inventory is not available. ANTA must be executed through AntaRunner.run()"
+        with pytest.raises(RuntimeError, match=re.escape(expected_message)):
+            instance._log_cache_statistics()
+
+    def test_log_run_information_warning_when_tests_exceed_concurrency(self, caplog: pytest.LogCaptureFixture) -> None:
+        """Verify logger.warning is called when _total_tests > max_concurrency."""
+        caplog.set_level(logging.WARNING)
+
+        runner = AntaRunner(inventory=AntaInventory(), catalog=AntaCatalog())
+
+        runner._selected_inventory = AntaInventory()
+        runner._inventory_stats = AntaRunnerInventoryStats(total=10, filtered_by_tags=5, connection_failed=2, established=5)
+        runner._settings.max_concurrency = 10
+        runner._settings._file_descriptor_limit = 100  # Set unrelated limit high
+        runner._total_tests = 11  # Condition to trigger the first warning
+        runner._potential_connections = 50  # Condition to NOT trigger second warning
+
+        runner._log_run_information()
+
+        expected_message = "Tests count (11) exceeds concurrent limit (10). Tests will be throttled. Please consult the ANTA FAQ."
+        assert expected_message in caplog.messages
+
+    def test_log_run_information_warning_when_tests_exceed_fd_limit(self, caplog: pytest.LogCaptureFixture) -> None:
+        """Verify logger.warning is called when _total_tests > max_concurrency."""
+        caplog.set_level(logging.WARNING)
+
+        runner = AntaRunner(inventory=AntaInventory(), catalog=AntaCatalog())
+
+        runner._inventory_stats = AntaRunnerInventoryStats(total=10, filtered_by_tags=5, connection_failed=2, established=5)
+        runner._selected_inventory = AntaInventory()
+        runner._settings.max_concurrency = 10  # Set unrelated limit high
+        runner._settings._file_descriptor_limit = 100
+        runner._total_tests = 5  # Condition to NOT trigger first warning
+        runner._potential_connections = 101  # Condition to trigger the second warning (not None and > limit)
+
+        runner._log_run_information()
+
+        expected_message = "Potential connections (101) exceeds file descriptor limit (100). Connection errors may occur. Please consult the ANTA FAQ."
+        assert expected_message in caplog.messages

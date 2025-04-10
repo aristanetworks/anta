@@ -386,14 +386,14 @@ class AntaRunner(BaseModel):
         connections_line = "" if self._potential_connections is None else f"  Total potential connections: {self._potential_connections}\n"
 
         run_info = (
-            f"{' ANTA NRFU Run Information ':-^{width}}\n"
+            f"{{' ANTA NRFU Run Information ':-^{width}}}\n"
             f"{chr(10).join(device_lines)}\n"
             f"Tests: {self._total_tests} total\n"
             f"Limits:\n"
             f"  Max concurrent tests: {self._settings.max_concurrency}\n"
             f"{connections_line}"
             f"  Max file descriptors: {self._settings.file_descriptor_limit}\n"
-            f"{'':-^{width}}"
+            f"{{'':-^{width}}}"
         )
         logger.info(run_info)
 
