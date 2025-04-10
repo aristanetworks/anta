@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 import pytest
 from pydantic import ValidationError
 
-from anta.tests.system import VerifyNTPAssociations, VerifyReloadCause
+from anta.tests.system import VerifyNTPAssociations
 
 if TYPE_CHECKING:
     from anta.input_models.system import NTPPool, NTPServer
@@ -46,24 +46,3 @@ class TestVerifyNTPAssociationsInput:
         """Test VerifyNTPAssociations.Input invalid inputs."""
         with pytest.raises(ValidationError):
             VerifyNTPAssociations.Input(ntp_servers=ntp_servers, ntp_pool=ntp_pool)
-
-
-class TestVerifyReloadCause:
-    """Test anta.tests.system.VerifyReloadCause.Input."""
-
-    @pytest.mark.parametrize(
-        ("allowed_causes"),
-        [pytest.param(["ZTP"], id="valid-allowed-cause"), pytest.param(["FPGA"], id="valid-allowed-cause"), pytest.param(["USER"], id="valid-allowed-cause")],
-    )
-    def test_valid(self, allowed_causes: list[str]) -> None:
-        """Test VerifyReloadCause.Input valid inputs."""
-        VerifyReloadCause.Input(allowed_causes=allowed_causes)
-
-    @pytest.mark.parametrize(
-        ("allowed_causes"),
-        [pytest.param(["ZTP2"], id="invalid-allowed-cause")],
-    )
-    def test_invalid(self, allowed_causes: list[str]) -> None:
-        """Test VerifyReloadCause.Input invalid inputs."""
-        with pytest.raises(ValidationError):
-            VerifyReloadCause.Input(allowed_causes=allowed_causes)

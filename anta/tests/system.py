@@ -8,12 +8,11 @@
 from __future__ import annotations
 
 import re
-from enum import Enum
 from typing import TYPE_CHECKING, Any, ClassVar
 
-from pydantic import Field, field_validator, model_validator
+from pydantic import Field, model_validator
 
-from anta.custom_types import Hostname, PositiveInteger
+from anta.custom_types import Hostname, PositiveInteger, ReloadCause
 from anta.input_models.system import NTPPool, NTPServer
 from anta.models import AntaCommand, AntaTest
 from anta.tools import get_value
@@ -32,14 +31,6 @@ if TYPE_CHECKING:
 CPU_IDLE_THRESHOLD = 25
 MEMORY_THRESHOLD = 0.25
 DISK_SPACE_THRESHOLD = 75
-
-
-class ReloadCauses(str, Enum):
-    """Represents different causes of reloads as immutable string values."""
-
-    USER = "Reload requested by the user."
-    FPGA = "Reload requested after FPGA upgrade"
-    ZTP = "System reloaded due to Zero Touch Provisioning"
 
 
 class VerifyUptime(AntaTest):
@@ -102,18 +93,8 @@ class VerifyReloadCause(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyReloadCause test."""
 
-        allowed_causes: list[str] = Field(default=["USER", "FPGA"])
+        allowed_causes: list[ReloadCause] = Field(default=["Reload requested by the user.", "Reload requested after FPGA upgrade"])
         """A list of allowed system reload causes."""
-
-        @field_validator("allowed_causes")
-        @classmethod
-        def validate_allowed_causes(cls, allowed_causes: list[str]) -> list[str]:
-            """Validate the reload cause provided in the allowed_causes input field."""
-            for cause in allowed_causes:
-                if cause not in ReloadCauses.__members__:
-                    msg = f"Invalid reload cause: '{cause}' - expected causes are {list(ReloadCauses.__members__)}"
-                    raise ValueError(msg)
-            return allowed_causes
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -125,8 +106,7 @@ class VerifyReloadCause(AntaTest):
             return
         reset_causes = command_output["resetCauses"]
         command_output_data = reset_causes[0].get("description")
-        reload_causes = [cause.value for allowed_causes in self.inputs.allowed_causes if (cause := getattr(ReloadCauses, allowed_causes, None))]
-        if command_output_data in reload_causes:
+        if command_output_data in self.inputs.allowed_causes:
             self.result.is_success()
         else:
             self.result.is_failure(f"Reload cause is: {command_output_data}")

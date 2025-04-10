@@ -44,7 +44,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
-        "name": "success-valid-cause",
+        "name": "success-valid-cause-user",
         "test": VerifyReloadCause,
         "eos_data": [
             {
@@ -63,7 +63,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
-        "name": "success-valid-reload-cause",
+        "name": "success-valid-reload-cause-ztp",
         "test": VerifyReloadCause,
         "eos_data": [
             {
@@ -79,6 +79,25 @@ DATA: list[dict[str, Any]] = [
             }
         ],
         "inputs": {"allowed_causes": ["ZTP"]},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-valid-reload-cause-fpga",
+        "test": VerifyReloadCause,
+        "eos_data": [
+            {
+                "resetCauses": [
+                    {
+                        "description": "Reload requested after FPGA upgrade",
+                        "timestamp": 1729856740.0,
+                        "recommendedAction": "No action necessary.",
+                        "debugInfoIsDir": False,
+                    }
+                ],
+                "full": False,
+            }
+        ],
+        "inputs": None,
         "expected": {"result": "success"},
     },
     {
