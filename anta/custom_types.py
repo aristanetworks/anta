@@ -197,11 +197,11 @@ def convert_reload_cause(value: str) -> str:
     'System reloaded due to Zero Touch Provisioning'
     ```
     """
-    reload_causes = {"ztp": "System reloaded due to Zero Touch Provisioning", "user": "Reload requested by the user.", "fpga": "Reload requested after FPGA upgrade"}
-    if not reload_causes.get(value.lower()):
+    reload_causes = {"ZTP": "System reloaded due to Zero Touch Provisioning", "USER": "Reload requested by the user.", "FPGA": "Reload requested after FPGA upgrade"}
+    if not reload_causes.get(value.upper()):
         msg = f"Invalid reload cause: '{value}' - expected causes are {list(reload_causes)}"
         raise ValueError(msg)
-    return reload_causes[value.lower()]
+    return reload_causes[value.upper()]
 
 
 # AntaTest.Input types

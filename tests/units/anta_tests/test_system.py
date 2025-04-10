@@ -119,7 +119,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"allowed_causes": ["ZTP"]},
         "expected": {
             "result": "failure",
-            "messages": ["Invalid reload cause -  Expected: System reloaded due to Zero Touch Provisioning Actual: Reload requested after FPGA upgrade"],
+            "messages": ["Invalid reload cause -  Expected: 'System reloaded due to Zero Touch Provisioning' Actual: 'Reload requested after FPGA upgrade'"],
         },
     },
     {
@@ -137,7 +137,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": ["Invalid reload cause -  Expected: Reload requested by the user., Reload requested after FPGA upgrade Actual: Reload after crash."],
+            "messages": ["Invalid reload cause -  Expected: 'Reload requested by the user.', 'Reload requested after FPGA upgrade' Actual: 'Reload after crash.'"],
         },
     },
     {

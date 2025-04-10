@@ -83,6 +83,8 @@ class VerifyReloadCause(AntaTest):
     anta.tests.system:
       - VerifyReloadCause:
         allowed_causes:
+          - USER
+          - FPGA
           - ZTP
     ```
     """
@@ -110,7 +112,8 @@ class VerifyReloadCause(AntaTest):
         if command_output_data in self.inputs.allowed_causes:
             self.result.is_success()
         else:
-            self.result.is_failure(f"Invalid reload cause -  Expected: {', '.join(self.inputs.allowed_causes)} Actual: {command_output_data}")
+            causes = ','.join(f"'{c}'" for c in self.inputs.allowed_causes)
+            self.result.is_failure(f"Invalid reload cause -  Expected: {causes} Actual: '{command_output_data}'")
 
 
 class VerifyCoredump(AntaTest):
