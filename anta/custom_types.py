@@ -411,3 +411,5 @@ RedistributedProtocol = Annotated[
 ]
 RedistributedAfiSafi = Annotated[Literal["v4u", "v4m", "v6u", "v6m"], BeforeValidator(bgp_redistributed_route_proto_abbreviations)]
 NTPStratumLevel = Annotated[int, Field(ge=0, le=16)]
+PowerSupplyFanStatus = Literal["failed", "ok", "unknownHwStatus", "powerLoss", "unsupported"]
+PowerSupplyStatus = Literal["ok", "unknown", "powerLoss", "failed"]
