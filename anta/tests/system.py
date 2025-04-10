@@ -112,7 +112,7 @@ class VerifyReloadCause(AntaTest):
         if command_output_data in self.inputs.allowed_causes:
             self.result.is_success()
         else:
-            causes = ','.join(f"'{c}'" for c in self.inputs.allowed_causes)
+            causes = ",".join(f"'{c}'" for c in self.inputs.allowed_causes)
             self.result.is_failure(f"Invalid reload cause -  Expected: {causes} Actual: '{command_output_data}'")
 
 
