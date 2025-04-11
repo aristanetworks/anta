@@ -83,8 +83,8 @@ def test_md_report_error(result_manager: ResultManager) -> None:
 
     sections = [(section, rm) for section in MDReportGenerator.DEFAULT_SECTIONS]
 
-    with pytest.raises(OSError):  # noqa: PT011
+    with pytest.raises(OSError, match="No such file or directory"):
         MDReportGenerator.generate_sections(sections, md_filename)
 
-    with pytest.raises(OSError):  # noqa: PT011
+    with pytest.raises(OSError, match="No such file or directory"):
         MDReportGenerator.generate(result_manager, md_filename)

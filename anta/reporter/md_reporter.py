@@ -95,9 +95,6 @@ class MDReportBase(ABC):
         last_table
             Flag to determine if it's the last table of the markdown file to avoid unnecessary new line. Defaults to False.
         """
-        if len(self.results) == 0:
-            self.mdfile.write("\nNo record found.\n")
-            return
         self.mdfile.write("\n".join(table_heading) + "\n")
         for row in self.generate_rows():
             self.mdfile.write(row)
@@ -270,8 +267,14 @@ class MDReportGenerator:
     It aggregates different report sections, each represented by a subclass of `MDReportBase`,
     and sequentially generates their content into a markdown file.
 
-    The `generate` class method will loop over all the section subclasses and call their `generate_section` method.
-    The final report will be generated in the same order as the `sections` list of the method.
+    This class provides two methods for generating the report:
+
+    - `generate`: Uses a single result manager instance to generate all sections. The sections are
+    processed in the order defined by the `DEFAULT_SECTIONS` list, and the same manager is passed to each
+    section's `generate_section` method.
+
+    - `generate_sections`: Each section is generated using its own dedicated result manager instance. This allows for
+    greater flexibility or isolation between section generations.
     """
 
     DEFAULT_SECTIONS: ClassVar[list[type[MDReportBase]]] = [
@@ -285,7 +288,7 @@ class MDReportGenerator:
 
     @classmethod
     def generate(cls, results: ResultManager, md_filename: Path) -> None:
-        """Generate and write the various sections of the markdown report.
+        """Generate the sections of the markdown report defined in DEFAULT_SECTIONS using a single result manager instance for all sections.
 
         Parameters
         ----------
@@ -296,16 +299,8 @@ class MDReportGenerator:
         """
         try:
             with md_filename.open("w", encoding="utf-8") as mdfile:
-                sections: list[MDReportBase] = [
-                    ANTAReport(mdfile, results),
-                    TestResultsSummary(mdfile, results),
-                    SummaryTotals(mdfile, results),
-                    SummaryTotalsDeviceUnderTest(mdfile, results),
-                    SummaryTotalsPerCategory(mdfile, results),
-                    TestResults(mdfile, results),
-                ]
-                for section in sections:
-                    section.generate_section()
+                for section in cls.DEFAULT_SECTIONS:
+                    section(mdfile, results).generate_section()
         except OSError as exc:
             message = f"OSError caught while writing the Markdown file '{md_filename.resolve()}'."
             anta_log_exception(exc, message, logger)
@@ -313,7 +308,7 @@ class MDReportGenerator:
 
     @classmethod
     def generate_sections(cls, sections: list[tuple[type[MDReportBase], ResultManager]], md_filename: Path) -> None:
-        """Generate and write the various sections of the markdown report.
+        """Generate the different sections of the markdown report provided in the sections argument with each section using its own result manager instance.
 
         Parameters
         ----------
