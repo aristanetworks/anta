@@ -28,7 +28,7 @@ dependencies = [
   "pydantic-extra-types>=2.3.0",
   "PyYAML>=6.0",
   "requests>=2.31.0",
-  "rich>=13.5.2,<14",
+  "rich>=13.5.2,<15",
   "typing_extensions>=4.12"  # required for deprecated before Python 3.13
 ]
 keywords = ["test", "anta", "Arista", "network", "automation", "networking", "devops", "netdevops"]
@@ -56,7 +56,6 @@ requires-python = ">=3.9"
 [project.optional-dependencies]
 cli = [
   "click~=8.1.6",
-  "click-help-colors>=0.9",
 ]
 dev = [
   "bumpver>=2023.1129",
