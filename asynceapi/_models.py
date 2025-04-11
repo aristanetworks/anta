@@ -21,7 +21,6 @@ if TYPE_CHECKING:
 LOGGER = getLogger(__name__)
 
 
-# pylint: disable=too-many-instance-attributes
 @dataclass(frozen=True)
 class EapiRequest:
     """Model for an eAPI request.
