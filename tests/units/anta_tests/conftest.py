@@ -7,7 +7,8 @@ from typing import Any
 
 import pytest
 
-from anta.models import AntaTest, AntaUnitTest
+from anta.models import AntaTest
+from tests.units.anta_tests import AntaUnitTest
 
 
 def build_test_id(val: tuple[tuple[type[AntaTest], str], AntaUnitTest]) -> str:
@@ -19,6 +20,8 @@ def build_test_id(val: tuple[tuple[type[AntaTest], str], AntaUnitTest]) -> str:
         ...
     }
     """
+    # Extract the test class and its name from a nested tuple structure:
+    # `val: Tuple[Tuple[Type[AntaTest], str], AntaUnitTest]`
     anta_test = val[0][0]
     test_name = val[0][1]
 

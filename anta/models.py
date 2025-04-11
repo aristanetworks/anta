@@ -11,7 +11,7 @@ import re
 from abc import ABC, abstractmethod
 from functools import wraps
 from string import Formatter
-from typing import TYPE_CHECKING, Any, Callable, ClassVar, Literal, NotRequired, TypedDict, TypeVar
+from typing import TYPE_CHECKING, Any, Callable, ClassVar, Literal, TypeVar
 
 from pydantic import BaseModel, ConfigDict, ValidationError, create_model
 
@@ -718,18 +718,3 @@ class AntaTest(ABC):
             ```
 
         """
-
-
-class AntaUnitTest(TypedDict):
-    """The parameters required for a unit test of an AntaTest subclass."""
-
-    inputs: NotRequired[dict[str, Any]]
-    eos_data: list[dict[str, Any] | str]
-    expected: Expected
-
-
-class Expected(TypedDict):
-    """Expected result of a unit test of an AntaTest subclass."""
-
-    result: Literal["success", "failure", "skipped"]
-    messages: NotRequired[list[str]]

@@ -3,10 +3,29 @@
 # that can be found in the LICENSE file.
 """Tests for anta.tests module."""
 
-import asyncio
+from __future__ import annotations
 
-from anta.device import AntaDevice
-from anta.models import AntaTest, AntaUnitTest
+import asyncio
+from typing import TYPE_CHECKING, Any, Literal, NotRequired, TypedDict
+
+if TYPE_CHECKING:
+    from anta.device import AntaDevice
+    from anta.models import AntaTest
+
+
+class UnitTestResult(TypedDict):
+    """Expected result of a unit test of an AntaTest subclass."""
+
+    result: Literal["success", "failure", "skipped"]
+    messages: NotRequired[list[str]]
+
+
+class AntaUnitTest(TypedDict):
+    """The parameters required for a unit test of an AntaTest subclass."""
+
+    inputs: NotRequired[dict[str, Any]]
+    eos_data: list[dict[str, Any] | str]
+    expected: UnitTestResult
 
 
 def test(device: AntaDevice, data: tuple[tuple[type[AntaTest], str], AntaUnitTest]) -> None:
@@ -16,12 +35,19 @@ def test(device: AntaDevice, data: tuple[tuple[type[AntaTest], str], AntaUnitTes
 
     See `tests/units/anta_tests/README.md` for more information on how to use it.
     """
+    # Extract the test class, name and test data from a nested tuple structure:
+    # `val: Tuple[Tuple[Type[AntaTest], str], AntaUnitTest]`
     anta_test = data[0][0]
     test_data = data[1]
+
     # Instantiate the AntaTest subclass
     test_instance = anta_test(device, inputs=test_data["inputs"], eos_data=test_data["eos_data"])
     # Run the test() method
     asyncio.run(test_instance.test())
+
+    valid_results = {"success", "failure", "skipped"}
+    assert (test_result := test_data["expected"]["result"]) in valid_results, f"Invalid result: '{test_result}'. Must be one of {valid_results}"
+
     # Assert expected result
     assert test_instance.result.result == test_data["expected"]["result"], (
         f"Expected '{test_data['expected']['result']}' result, got '{test_instance.result.result}'"
