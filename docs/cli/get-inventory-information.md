@@ -16,40 +16,7 @@ This command will list all devices available in the inventory. Using the `--tags
 ### Command overview
 
 ```bash
-Usage: anta get inventory [OPTIONS]
-
-  Show inventory loaded in ANTA.
-
-Options:
-  -u, --username TEXT            Username to connect to EOS  [env var:
-                                 ANTA_USERNAME; required]
-  -p, --password TEXT            Password to connect to EOS that must be
-                                 provided. It can be prompted using '--prompt'
-                                 option.  [env var: ANTA_PASSWORD]
-  --enable-password TEXT         Password to access EOS Privileged EXEC mode.
-                                 It can be prompted using '--prompt' option.
-                                 Requires '--enable' option.  [env var:
-                                 ANTA_ENABLE_PASSWORD]
-  --enable                       Some commands may require EOS Privileged EXEC
-                                 mode. This option tries to access this mode
-                                 before sending a command to the device.  [env
-                                 var: ANTA_ENABLE]
-  -P, --prompt                   Prompt for passwords if they are not
-                                 provided.  [env var: ANTA_PROMPT]
-  --timeout FLOAT                Global API timeout. This value will be used
-                                 for all devices.  [env var: ANTA_TIMEOUT;
-                                 default: 30.0]
-  --insecure                     Disable SSH Host Key validation.  [env var:
-                                 ANTA_INSECURE]
-  --disable-cache                Disable cache globally.  [env var:
-                                 ANTA_DISABLE_CACHE]
-  -i, --inventory FILE           Path to the inventory YAML file.  [env var:
-                                 ANTA_INVENTORY; required]
-  --tags TEXT                    List of tags using comma as separator:
-                                 tag1,tag2,tag3.  [env var: ANTA_TAGS]
-  --connected / --not-connected  Display inventory after connection has been
-                                 created
-  --help                         Show this message and exit.
+--8<-- "anta_get_inventory_help.txt"
 ```
 
 > [!TIP]
