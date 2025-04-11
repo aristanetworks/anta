@@ -13,7 +13,7 @@ from typing import ClassVar, TypeVar
 from pydantic import Field, field_validator
 from pydantic_extra_types.mac_address import MacAddress
 
-from anta.custom_types import Interface, Percent, PositiveInteger
+from anta.custom_types import AllInterfacePrefix, Interface, Percent, PositiveInteger
 from anta.decorators import skip_on_platforms
 from anta.input_models.interfaces import InterfaceDetail, InterfaceState
 from anta.models import AntaCommand, AntaTemplate, AntaTest
@@ -23,6 +23,34 @@ BPS_GBPS_CONVERSIONS = 1000000000
 
 # Using a TypeVar for the InterfaceState model since mypy thinks it's a ClassVar and not a valid type when used in field validators
 T = TypeVar("T", bound=InterfaceState)
+
+
+def _get_ignore_interfaces_status(interface: str, ignored_interfaces: list[str] | None = None) -> bool:
+    """Verify if an actual interface is present in the ignored interface list.
+
+    Parameters
+    ----------
+    interface
+        This is a string containing the interface name.
+    ignored_interfaces
+       A list containing the interfaces or interface prefixes to ignore.
+
+    Returns
+    -------
+    bool
+        True if the interface is in the list of ignored interfaces, false otherwise.
+    Example
+    -------
+    >>> _get_ignore_interfaces_status(interface: Ethernet1, ignored_interfaces: ["Ethernet", "Port-Channel1"])
+    True
+    >>> _get_ignore_interfaces_status(interface: Ethernet2, ignored_interfaces: ["Ethernet1", "Port-Channel"])
+    False
+    >>> _get_ignore_interfaces_status(interface: Port-Channel1, ignored_interfaces: ["Ethernet1", "Port-Channel"])
+    True
+    """
+    interface_prefix = re.findall(r"^[a-zA-Z-]+", interface, re.IGNORECASE)[0]
+    catch_interface = re.findall(r"[\w-]+", interface, re.IGNORECASE)[0]
+    return bool(ignored_interfaces and any([catch_interface in ignored_interfaces, interface_prefix in ignored_interfaces]))
 
 
 class VerifyInterfaceUtilization(AntaTest):
@@ -474,8 +502,8 @@ class VerifyL3MTU(AntaTest):
 
         mtu: int = 1500
         """Default MTU we should have configured on all non-excluded interfaces. Defaults to 1500."""
-        ignored_interfaces: list[str] = Field(default=["Management", "Loopback", "Vxlan", "Tunnel"])
-        """A list of L3 interfaces to ignore"""
+        ignored_interfaces: list[AllInterfacePrefix | Interface] = Field(default=["Management", "Loopback", "Vxlan", "Tunnel"])
+        """A list of L3 interfaces to ignore."""
         specific_mtu: list[dict[str, int]] = Field(default=[])
         """A list of dictionary of L3 interfaces with their specific MTU configured"""
 
@@ -490,16 +518,17 @@ class VerifyL3MTU(AntaTest):
             for d in self.inputs.specific_mtu:
                 specific_interfaces.extend(d)
         for interface, values in command_output["interfaces"].items():
-            if re.findall(r"[a-z]+", interface, re.IGNORECASE)[0] not in self.inputs.ignored_interfaces and values["forwardingModel"] == "routed":
-                if interface in specific_interfaces:
-                    invalid_mtu = next(
-                        (values["mtu"] for custom_data in self.inputs.specific_mtu if values["mtu"] != (expected_mtu := custom_data[interface])), None
-                    )
-                    if invalid_mtu:
-                        self.result.is_failure(f"Interface: {interface} - Incorrect MTU - Expected: {expected_mtu} Actual: {invalid_mtu}")
-                # Comparison with generic setting
-                elif values["mtu"] != self.inputs.mtu:
-                    self.result.is_failure(f"Interface: {interface} - Incorrect MTU - Expected: {self.inputs.mtu} Actual: {values['mtu']}")
+            # Verification is skipped if the interface is in the ignored interfaces list.
+            if _get_ignore_interfaces_status(interface, self.inputs.ignored_interfaces) or values["forwardingModel"] != "routed":
+                continue
+
+            if interface in specific_interfaces:
+                invalid_mtu = next((values["mtu"] for custom_data in self.inputs.specific_mtu if values["mtu"] != (expected_mtu := custom_data[interface])), None)
+                if invalid_mtu:
+                    self.result.is_failure(f"Interface: {interface} - Incorrect MTU - Expected: {expected_mtu} Actual: {invalid_mtu}")
+            # Comparison with generic setting
+            elif values["mtu"] != self.inputs.mtu:
+                self.result.is_failure(f"Interface: {interface} - Incorrect MTU - Expected: {self.inputs.mtu} Actual: {values['mtu']}")
 
 
 class VerifyIPProxyARP(AntaTest):
@@ -579,8 +608,8 @@ class VerifyL2MTU(AntaTest):
 
         mtu: int = 9214
         """Default MTU we should have configured on all non-excluded interfaces. Defaults to 9214."""
-        ignored_interfaces: list[str] = Field(default=["Management", "Loopback", "Vxlan", "Tunnel"])
-        """A list of L2 interfaces to ignore. Defaults to ["Management", "Loopback", "Vxlan", "Tunnel"]"""
+        ignored_interfaces: list[AllInterfacePrefix | Interface] = Field(default=["Management", "Loopback", "Vxlan", "Tunnel"])
+        """A list of L2 interfaces to ignore."""
         specific_mtu: list[dict[Interface, int]] = Field(default=[])
         """A list of dictionary of L2 interfaces with their specific MTU configured"""
 
@@ -592,14 +621,14 @@ class VerifyL2MTU(AntaTest):
         specific_interfaces = {key: value for details in self.inputs.specific_mtu for key, value in details.items()}
 
         for interface, details in interface_output.items():
-            catch_interface = re.findall(r"^[e,p][a-zA-Z]+[-,a-zA-Z]*\d+\/*\d*", interface, re.IGNORECASE)
-            if catch_interface and catch_interface not in self.inputs.ignored_interfaces and details["forwardingModel"] == "bridged":
-                if interface in specific_interfaces:
-                    if (mtu := specific_interfaces[interface]) != (act_mtu := details["mtu"]):
-                        self.result.is_failure(f"Interface: {interface} - Incorrect MTU configured - Expected: {mtu} Actual: {act_mtu}")
+            if _get_ignore_interfaces_status(interface, self.inputs.ignored_interfaces) or details["forwardingModel"] != "bridged":
+                continue
+            if interface in specific_interfaces:
+                if (mtu := specific_interfaces[interface]) != (act_mtu := details["mtu"]):
+                    self.result.is_failure(f"Interface: {interface} - Incorrect MTU configured - Expected: {mtu} Actual: {act_mtu}")
 
-                elif (act_mtu := details["mtu"]) != self.inputs.mtu:
-                    self.result.is_failure(f"Interface: {interface} - Incorrect MTU configured - Expected: {self.inputs.mtu} Actual: {act_mtu}")
+            elif (act_mtu := details["mtu"]) != self.inputs.mtu:
+                self.result.is_failure(f"Interface: {interface} - Incorrect MTU configured - Expected: {self.inputs.mtu} Actual: {act_mtu}")
 
 
 class VerifyInterfaceIPv4(AntaTest):
