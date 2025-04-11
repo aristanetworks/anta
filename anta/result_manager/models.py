@@ -38,19 +38,38 @@ class TestEvidence:
 
     Attributes
     ----------
-    inputs : AntaTest.Input | None
-        Inputs used for the test. Can be None in case of inputs validation error.
+    inputs : AntaTest.Input
+        Inputs used for the test.
     commands : list[AntaCommand]
         List of commands executed during the test.
     """
 
-    inputs: AntaTest.Input | None
+    inputs: AntaTest.Input
     commands: list[AntaCommand]
+
+    def get_test_definition(self) -> dict[str, Any]:
+        """Test definition."""
+        inner_class_type = type(self.inputs)
+        qualname = inner_class_type.__qualname__
+        module_name = inner_class_type.__module__
+
+        if "." not in qualname:
+            msg = f"Input class {qualname} not nested in an AntaTest implementation. Cannot determine AntaTest class name."
+            raise ValueError(msg)
+
+        # Split qualname like 'VerifyBGPTimers.Input' into 'VerifyBGPTimers'
+        outer_class_name = qualname.rsplit(".", 1)[0]
+
+        # Get the dictionary representation of the inputs
+        input_dict = self.inputs.model_dump(mode="json", exclude_unset=True)
+
+        # Construct the final dictionary structure
+        return {module_name: [{outer_class_name: input_dict}]}
 
     def dump(self) -> dict[str, Any]:
         """Dump the evidence to a JSON serializable dictionary."""
         return {
-            "inputs": self.inputs.model_dump(mode="json", exclude={"filters", "result_overwrite"}) if self.inputs else None,
+            "inputs": self.inputs.model_dump(mode="json"),
             "commands": [command.model_dump(mode="json", exclude={"template", "params", "use_cache"}) for command in self.commands],
         }
 

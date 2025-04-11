@@ -462,8 +462,8 @@ class AntaTest(ABC):
         if self.result.result == AntaTestStatus.UNSET:
             self._init_commands(eos_data)
 
-        if save_evidence:
-            self.result.evidence = TestEvidence(self.inputs, self.instance_commands)
+            if save_evidence:
+                self.result.evidence = TestEvidence(self.inputs, self.instance_commands)
 
     def _init_inputs(self, inputs: dict[str, Any] | AntaTest.Input | None) -> None:
         """Instantiate the `inputs` instance attribute with an `AntaTest.Input` instance to validate test inputs using the model.
