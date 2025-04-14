@@ -4459,6 +4459,61 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
+        "name": "success-ipv6-rfc5549",
+        "test": VerifyBGPPeerSession,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "fd00:dc:1::1",
+                                "state": "Established",
+                                "establishedTime": 169883,
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 0,
+                                    "inputQueueLength": 0,
+                                },
+                            },
+                            {
+                                "peerAddress": "fe80::250:56ff:fe01:112%Vl4094",
+                                "state": "Established",
+                                "establishedTime": 169883,
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 0,
+                                    "inputQueueLength": 0,
+                                },
+                            },
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "state": "Established",
+                                "establishedTime": 169883,
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 0,
+                                    "inputQueueLength": 0,
+                                },
+                                "ifName": "Ethernet1",
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "minimum_established_time": 11000,
+            "check_tcp_queues": True,
+            "bgp_peers": [
+                {"peer_address": "fd00:dc:1::1", "vrf": "default"},
+                {"peer_address": "fe80::250:56ff:fe01:112%Vl4094", "vrf": "default"},
+                {"interface": "Ethernet1", "vrf": "MGMT"},
+            ],
+        },
+        "expected": {"result": "success"},
+    },
+    {
         "name": "failure-peer-not-found",
         "test": VerifyBGPPeerSession,
         "eos_data": [

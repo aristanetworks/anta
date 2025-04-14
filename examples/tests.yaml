@@ -479,7 +479,7 @@ anta.tests.routing.bgp:
         - peer_address: 172.30.11.1
           vrf: default
   - VerifyBGPPeerSession:
-      # Verifies the session state of BGP IPv4 peer(s).
+      # Verifies the session state of BGP peers.
       minimum_established_time: 10000
       check_tcp_queues: false
       bgp_peers:
@@ -491,6 +491,15 @@ anta.tests.routing.bgp:
           vrf: DEV
         - peer_address: 10.1.255.4
           vrf: DEV
+        - peer_address: fd00:dc:1::1
+          vrf: default
+        - peer_address: fe80::a8c1:abff:fe91:788e%Et1
+          vrf: default
+        # RFC5549
+        - interface: Ethernet1
+          vrf: default
+        - interface: Vlan3499
+          vrf: PROD
   - VerifyBGPPeerSessionRibd:
       # Verifies the session state of BGP IPv4 peer(s).
       minimum_established_time: 10000

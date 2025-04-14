@@ -5,14 +5,14 @@
 
 from __future__ import annotations
 
-from ipaddress import IPv4Address, IPv4Network, IPv6Address
+from ipaddress import IPv4Address, IPv4Network, IPv6Address, IPv6Network
 from typing import TYPE_CHECKING, Any, Literal
 from warnings import warn
 
 from pydantic import BaseModel, ConfigDict, Field, PositiveInt, model_validator
 from pydantic_extra_types.mac_address import MacAddress
 
-from anta.custom_types import Afi, BgpDropStats, BgpUpdateError, MultiProtocolCaps, RedistributedAfiSafi, RedistributedProtocol, Safi, Vni
+from anta.custom_types import Afi, BgpDropStats, BgpUpdateError, Interface, MultiProtocolCaps, RedistributedAfiSafi, RedistributedProtocol, Safi, Vni
 
 if TYPE_CHECKING:
     import sys
@@ -150,26 +150,30 @@ class BgpAfi(BgpAddressFamily):  # pragma: no cover
 class BgpPeer(BaseModel):
     """Model for a BGP peer.
 
-    Only IPv4 peers are supported for now.
+    Supports IPv4, IPv6 and IPv6 link-local neighbors.
+
+    Also supports RFC5549 by providing the interface to be used for session establishment.
     """
 
     model_config = ConfigDict(extra="forbid")
-    peer_address: IPv4Address
-    """IPv4 address of the BGP peer."""
+    peer_address: IPv4Address | IPv6Address | None = None
+    """IP address of the BGP peer. Optional only if using `interface` for BGP RFC5549."""
+    interface: Interface | None = None
+    """Interface to be used for BGP RFC5549 session establishment."""
     vrf: str = "default"
-    """Optional VRF for the BGP peer. Defaults to `default`."""
+    """VRF for the BGP peer."""
     peer_group: str | None = None
     """Peer group of the BGP peer. Required field in the `VerifyBGPPeerGroup` test."""
-    advertised_routes: list[IPv4Network] | None = None
+    advertised_routes: list[IPv4Network | IPv6Network] | None = None
     """List of advertised routes in CIDR format. Required field in the `VerifyBGPExchangedRoutes` test."""
-    received_routes: list[IPv4Network] | None = None
+    received_routes: list[IPv4Network | IPv6Network] | None = None
     """List of received routes in CIDR format. Required field in the `VerifyBGPExchangedRoutes` test."""
     capabilities: list[MultiProtocolCaps] | None = None
     """List of BGP multiprotocol capabilities. Required field in the `VerifyBGPPeerMPCaps`, `VerifyBGPNlriAcceptance` tests."""
     strict: bool = False
     """If True, requires exact match of the provided BGP multiprotocol capabilities.
 
-    Optional field in the `VerifyBGPPeerMPCaps` test. Defaults to False."""
+    Optional field in the `VerifyBGPPeerMPCaps` test."""
     hold_time: int | None = Field(default=None, ge=3, le=7200)
     """BGP hold time in seconds. Required field in the `VerifyBGPTimers` test."""
     keep_alive_time: int | None = Field(default=None, ge=0, le=3600)
@@ -183,11 +187,11 @@ class BgpPeer(BaseModel):
 
     Optional field in the `VerifyBGPPeerUpdateErrors` test. If not provided, the test will verifies all the update error counters."""
     inbound_route_map: str | None = None
-    """Inbound route map applied, defaults to None. Required field in the `VerifyBgpRouteMaps` test."""
+    """Inbound route map applied to the peer. Optional field in the `VerifyBgpRouteMaps` test. If not provided, `outbound_route_map` must be provided."""
     outbound_route_map: str | None = None
-    """Outbound route map applied, defaults to None. Required field in the `VerifyBgpRouteMaps` test."""
+    """Outbound route map applied to the peer. Optional field in the `VerifyBgpRouteMaps` test. If not provided, `inbound_route_map` must be provided."""
     maximum_routes: int | None = Field(default=None, ge=0, le=4294967294)
-    """The maximum allowable number of BGP routes. `0` means unlimited. Required field in the `VerifyBGPPeerRouteLimit` test"""
+    """The maximum allowable number of BGP routes. `0` means unlimited. Required field in the `VerifyBGPPeerRouteLimit` test."""
     warning_limit: int | None = Field(default=None, ge=0, le=4294967294)
     """The warning limit for the maximum routes. `0` means no warning.
 
@@ -197,9 +201,21 @@ class BgpPeer(BaseModel):
     max_ttl_hops: int | None = Field(default=None, ge=1, le=255)
     """The Max TTL hops. Required field in the `VerifyBGPPeerTtlMultiHops` test."""
 
+    @model_validator(mode="after")
+    def validate_inputs(self) -> Self:
+        """Validate the inputs provided to the BgpPeer class.
+
+        Either `peer_address` or `interface` must be provided, not both.
+        """
+        if (self.peer_address is None) == (self.interface is None):
+            msg = "Exactly one of 'peer_address' or 'interface' must be provided"
+            raise ValueError(msg)
+        return self
+
     def __str__(self) -> str:
         """Return a human-readable string representation of the BgpPeer for reporting."""
-        return f"Peer: {self.peer_address} VRF: {self.vrf}"
+        identifier = f"Peer: {self.peer_address}" if self.peer_address is not None else f"Interface: {self.interface}"
+        return f"{identifier} VRF: {self.vrf}"
 
 
 class BgpNeighbor(BgpPeer):  # pragma: no cover
@@ -344,7 +360,7 @@ class AddressFamilyConfig(BaseModel):
         Following table shows the supported redistributed routes for each address family.
 
         |    IPv4 Unicast         |    IPv6 Unicast         |   IPv4 Multicast       |   IPv6 Multicast       |
-        | ------------------------|-------------------------|------------------------|------------------------|
+        |-------------------------|-------------------------|------------------------|------------------------|
         |    AttachedHost         |    AttachedHost         |   AttachedHost         |   Connected            |
         |    Bgp                  |    Bgp                  |   Connected            |   IS-IS                |
         |    Connected            |    Connected            |   IS-IS                |   OSPF Internal        |
