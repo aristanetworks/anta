@@ -35,6 +35,28 @@ def test_md_report_generate(tmp_path: Path, result_manager: ResultManager) -> No
     assert content == expected_content
 
 
+def test_md_report_generate_sections(tmp_path: Path, result_manager: ResultManager) -> None:
+    """Test the MDReportGenerator class."""
+    md_filename = tmp_path / "test.md"
+    expected_report = "test_md_report.md"
+    rm = result_manager.sort(sort_by=["name", "categories", "test"])
+
+    sections = [(section, rm) for section in MDReportGenerator.DEFAULT_SECTIONS]
+
+    # Generate the Markdown report
+    MDReportGenerator.generate_sections(sections, md_filename)
+    assert md_filename.exists()
+
+    # Load the existing Markdown report to compare with the generated one
+    with (DATA_DIR / expected_report).open("r", encoding="utf-8") as f:
+        expected_content = f.read()
+
+    # Check the content of the Markdown file
+    content = md_filename.read_text(encoding="utf-8")
+
+    assert content == expected_content
+
+
 def test_md_report_base() -> None:
     """Test the MDReportBase class."""
 
@@ -52,3 +74,17 @@ def test_md_report_base() -> None:
 
         with pytest.raises(NotImplementedError, match="Subclasses should implement this method"):
             report.generate_rows()
+
+
+def test_md_report_error(result_manager: ResultManager) -> None:
+    """Test the MDReportGenerator class to OSError to be raised."""
+    md_filename = Path("non_existent_directory/non_existent_file.md")
+    rm = result_manager.sort(sort_by=["name", "categories", "test"])
+
+    sections = [(section, rm) for section in MDReportGenerator.DEFAULT_SECTIONS]
+
+    with pytest.raises(OSError, match="No such file or directory"):
+        MDReportGenerator.generate_sections(sections, md_filename)
+
+    with pytest.raises(OSError, match="No such file or directory"):
+        MDReportGenerator.generate(result_manager, md_filename)
