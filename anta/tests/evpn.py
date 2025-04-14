@@ -49,10 +49,10 @@ class VerifyEVPNType5Routes(AntaTest):
     anta.tests.evpn:
       - VerifyEVPNType5Routes:
           prefixes:
-            # Case 1: Prefix/VNI exists and has at least one active/valid path globally
+            # At least one active/valid path across all RDs
             - address: 192.168.10.0/24
               vni: 10
-            # Case 2: Specific routes exist and each has at least one active/valid path
+            # Specific routes each has at least one active/valid path
             - address: 192.168.20.0/24
               vni: 20
               routes:
@@ -60,7 +60,7 @@ class VerifyEVPNType5Routes(AntaTest):
                   domain: local
                 - rd: 10.0.0.2:20
                   domain: remote
-            # Case 3: Specific route exists and has at least one active/valid path matching the nexthop
+            # At least one active/valid path matching the nexthop
             - address: 192.168.30.0/24
               vni: 30
               routes:
@@ -68,7 +68,7 @@ class VerifyEVPNType5Routes(AntaTest):
                   domain: local
                   paths:
                     - nexthop: 10.1.1.1
-            # Case 4: Specific route exists and has at least one active/valid path matching nexthop and specific RTs
+            # At least one active/valid path matching nexthop and specific RTs
             - address: 192.168.40.0/24
               vni: 40
               routes:
