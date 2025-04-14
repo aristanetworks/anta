@@ -97,7 +97,7 @@ DATA: list[dict[str, Any]] = [
                 "full": False,
             }
         ],
-        "inputs": None,
+        "inputs": {"allowed_causes": ["fpga"]},
         "expected": {"result": "success"},
     },
     {

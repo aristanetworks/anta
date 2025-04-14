@@ -1012,6 +1012,8 @@ anta.tests.system:
   - VerifyReloadCause:
       # Verifies the last reload cause of the device.
       allowed_causes:
+        - USER
+        - FPGA
         - ZTP
   - VerifyUptime:
       # Verifies the device uptime.
