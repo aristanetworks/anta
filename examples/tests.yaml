@@ -1020,6 +1020,10 @@ anta.tests.system:
         preferred_stratum_range: [1,3]
   - VerifyReloadCause:
       # Verifies the last reload cause of the device.
+      allowed_causes:
+        - USER
+        - FPGA
+        - ZTP
   - VerifyUptime:
       # Verifies the device uptime.
       minimum: 86400
