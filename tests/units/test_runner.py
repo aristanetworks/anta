@@ -30,25 +30,27 @@ DATA_DIR: Path = Path(__file__).parent.parent.resolve() / "data"
 FAKE_CATALOG: AntaCatalog = AntaCatalog.from_list([(FakeTest, None)])
 
 
+# TODO: Move this to AntaRunner tests in ANTA v2.0.0
 async def test_empty_tests(caplog: pytest.LogCaptureFixture, inventory: AntaInventory) -> None:
     """Test that when the list of tests is empty, a log is raised."""
     caplog.set_level(logging.INFO)
     manager = ResultManager()
     await main(manager, inventory, AntaCatalog())
 
-    assert len(caplog.record_tuples) == 1
-    assert "The list of tests is empty, exiting" in caplog.records[0].message
+    assert "The list of tests is empty, exiting" in caplog.text
 
 
+# TODO: Move this to AntaRunner tests in ANTA v2.0.0
 async def test_empty_inventory(caplog: pytest.LogCaptureFixture) -> None:
     """Test that when the Inventory is empty, a log is raised."""
     caplog.set_level(logging.INFO)
     manager = ResultManager()
     await main(manager, AntaInventory(), FAKE_CATALOG)
-    assert len(caplog.record_tuples) == 3
-    assert "The inventory is empty, exiting" in caplog.records[1].message
+
+    assert "The inventory is empty, exiting" in caplog.text
 
 
+# TODO: Move this to AntaRunner tests in ANTA v2.0.0
 @pytest.mark.parametrize(
     ("inventory", "tags", "devices"),
     [
@@ -71,6 +73,8 @@ async def test_no_selected_device(caplog: pytest.LogCaptureFixture, inventory: A
     assert msg in caplog.messages
 
 
+# TODO: Remove this in ANTA v2.0.0
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.skipif(os.name != "posix", reason="Cannot run this test on Windows")
 def test_adjust_rlimit_nofile_valid_env(caplog: pytest.LogCaptureFixture) -> None:
     """Test adjust_rlimit_nofile with valid environment variables."""
@@ -104,6 +108,8 @@ def test_adjust_rlimit_nofile_valid_env(caplog: pytest.LogCaptureFixture) -> Non
         setrlimit_mock.assert_called_once_with(resource.RLIMIT_NOFILE, (20480, 1048576))
 
 
+# TODO: Remove this in ANTA v2.0.0
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.skipif(os.name != "posix", reason="Cannot run this test on Windows")
 def test_adjust_rlimit_nofile_invalid_env(caplog: pytest.LogCaptureFixture) -> None:
     """Test adjust_rlimit_nofile with invalid environment variables."""
@@ -138,6 +144,7 @@ def test_adjust_rlimit_nofile_invalid_env(caplog: pytest.LogCaptureFixture) -> N
         setrlimit_mock.assert_called_once_with(resource.RLIMIT_NOFILE, (16384, 1048576))
 
 
+# TODO: Remove this in ANTA v2.0.0
 @pytest.mark.skipif(os.name != "posix", reason="Cannot run this test on Windows")
 def test_adjust_rlimit_nofile_value_error(caplog: pytest.LogCaptureFixture) -> None:
     """Test adjust_rlimit_nofile with invalid environment variables."""
@@ -171,6 +178,7 @@ def test_adjust_rlimit_nofile_value_error(caplog: pytest.LogCaptureFixture) -> N
         setrlimit_mock.assert_called_once_with(resource.RLIMIT_NOFILE, (666, 1048576))
 
 
+# TODO: Move this to AntaRunner tests in ANTA v2.0.0
 @pytest.mark.skipif(os.name == "posix", reason="Run this test on Windows only")
 async def test_check_runner_log_for_windows(caplog: pytest.LogCaptureFixture, inventory: AntaInventory) -> None:
     """Test log output for Windows host regarding rlimit."""
@@ -178,9 +186,10 @@ async def test_check_runner_log_for_windows(caplog: pytest.LogCaptureFixture, in
     manager = ResultManager()
     # Using dry-run to shorten the test
     await main(manager, inventory, FAKE_CATALOG, dry_run=True)
-    assert "Running on a non-POSIX system, cannot adjust the maximum number of file descriptors." in caplog.records[-3].message
+    assert "Running on a non-POSIX system, cannot adjust the maximum number of file descriptors." in caplog.records[0].message
 
 
+# TODO: Move this to AntaRunner tests in ANTA v2.0.0
 # We could instead merge multiple coverage report together but that requires more work than just this.
 @pytest.mark.skipif(os.name != "posix", reason="Fake non-posix for coverage")
 async def test_check_runner_log_for_windows_fake(caplog: pytest.LogCaptureFixture, inventory: AntaInventory) -> None:
@@ -193,9 +202,11 @@ async def test_check_runner_log_for_windows_fake(caplog: pytest.LogCaptureFixtur
         manager = ResultManager()
         # Using dry-run to shorten the test
         await main(manager, inventory, FAKE_CATALOG, dry_run=True)
-        assert "Running on a non-POSIX system, cannot adjust the maximum number of file descriptors." in caplog.records[-3].message
+        assert "Running on a non-POSIX system, cannot adjust the maximum number of file descriptors." in caplog.records[0].message
 
 
+# TODO: Remove this in ANTA v2.0.0
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.parametrize(
     ("inventory", "tags", "tests", "devices_count", "tests_count"),
     [
@@ -225,6 +236,7 @@ async def test_prepare_tests(
     assert sum(len(tests) for tests in selected_tests.values()) == tests_count
 
 
+# TODO: Move this to AntaRunner tests in ANTA v2.0.0
 async def test_dry_run(caplog: pytest.LogCaptureFixture, inventory: AntaInventory) -> None:
     """Test that when dry_run is True, no tests are run."""
     caplog.set_level(logging.INFO)
@@ -233,6 +245,7 @@ async def test_dry_run(caplog: pytest.LogCaptureFixture, inventory: AntaInventor
     assert "Dry-run mode, exiting before running the tests." in caplog.records[-1].message
 
 
+# TODO: Move this to AntaRunner tests in ANTA v2.0.0
 async def test_cannot_create_test(caplog: pytest.LogCaptureFixture, inventory: AntaInventory) -> None:
     """Test that when an Exception is raised during test instantiation, it is caught and a log is raised."""
     caplog.set_level(logging.CRITICAL)

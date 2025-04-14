@@ -2,7 +2,7 @@
 site_name: Arista Network Test Automation - ANTA
 site_author: Khelil Sator
 site_description: Arista Network Test Automation
-copyright: Copyright &copy; 2019 - 2024 Arista Networks
+copyright: Copyright &copy; 2019 - 2025 Arista Networks
 
 # Repository
 repo_name: ANTA on Github
@@ -185,9 +185,9 @@ nav:
       - Debug commands: cli/debug.md
       - Tag Management: cli/tag-management.md
   - Advanced Usages:
-      - Caching in ANTA: advanced_usages/caching.md
-      - Developing ANTA tests: advanced_usages/custom-tests.md
-      - ANTA as a Python Library: advanced_usages/as-python-lib.md
+    - Caching in ANTA: advanced_usages/caching.md
+    - Developing ANTA tests: advanced_usages/custom-tests.md
+    - ANTA as a Python Library: advanced_usages/as-python-lib.md
   - Tests Documentation:
       - Overview: api/tests.md
       - AAA: api/tests/aaa.md
@@ -239,6 +239,7 @@ nav:
           - CSV: api/reporter/csv.md
           - Jinja: api/reporter/jinja.md
       - Runner: api/runner.md
+      - Settings: api/settings.md
   - Troubleshooting ANTA: troubleshooting.md
   - Contributions: contribution.md
   - FAQ: faq.md

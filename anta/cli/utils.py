@@ -163,6 +163,7 @@ def core_options(f: Callable[..., Any]) -> Callable[..., Any]:
         show_envvar=True,
         envvar="ANTA_TIMEOUT",
         show_default=True,
+        type=float,
     )
     @click.option(
         "--insecure",
