@@ -2553,6 +2553,20 @@
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#anta.custom_types.ReloadCause" class="md-nav__link">
+      <span class="md-ellipsis">
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code>&nbsp;ReloadCause
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#anta.custom_types.Revision" class="md-nav__link">
       <span class="md-ellipsis">
         <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code>&nbsp;Revision
@@ -2752,6 +2766,20 @@
     <a href="#anta.custom_types.bgp_redistributed_route_proto_abbreviations" class="md-nav__link">
       <span class="md-ellipsis">
         <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;bgp_redistributed_route_proto_abbreviations
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.custom_types.convert_reload_cause" class="md-nav__link">
+      <span class="md-ellipsis">
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;convert_reload_cause
       </span>
     </a>
 
@@ -3728,6 +3756,20 @@
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#anta.custom_types.ReloadCause" class="md-nav__link">
+      <span class="md-ellipsis">
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code>&nbsp;ReloadCause
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#anta.custom_types.Revision" class="md-nav__link">
       <span class="md-ellipsis">
         <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code>&nbsp;Revision
@@ -3927,6 +3969,20 @@
     <a href="#anta.custom_types.bgp_redistributed_route_proto_abbreviations" class="md-nav__link">
       <span class="md-ellipsis">
         <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;bgp_redistributed_route_proto_abbreviations
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.custom_types.convert_reload_cause" class="md-nav__link">
+      <span class="md-ellipsis">
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;convert_reload_cause
       </span>
     </a>
 
@@ -5174,6 +5230,38 @@
 
 
 
+<h4 id="anta.custom_types.ReloadCause" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>            <span class="doc doc-object-name doc-attribute-name">ReloadCause</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+<a href="#anta.custom_types.ReloadCause" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">ReloadCause</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Annotated" href="https://docs.python.org/3/library/typing.html#typing.Annotated">Annotated</a></span><span class="p">[</span>
+    <span class="n"><a class="autorefs autorefs-external" title="typing.Literal" href="https://docs.python.org/3/library/typing.html#typing.Literal">Literal</a></span><span class="p">[</span>
+        <span class="s2">&quot;System reloaded due to Zero Touch Provisioning&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Reload requested by the user.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Reload requested after FPGA upgrade&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;USER&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;FPGA&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ZTP&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="n"><span title="pydantic.functional_validators.BeforeValidator">BeforeValidator</span></span><span class="p">(</span><span class="n"><a class="autorefs autorefs-internal" title="            convert_reload_cause (anta.custom_types.convert_reload_cause)" href="#anta.custom_types.convert_reload_cause">convert_reload_cause</a></span><span class="p">),</span>
+<span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
 <h4 id="anta.custom_types.Revision" class="doc doc-heading">
 <code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>            <span class="doc doc-object-name doc-attribute-name">Revision</span>
 
@@ -5752,6 +5840,67 @@
 <div class="doc doc-object doc-function">
 
 
+<h4 id="anta.custom_types.convert_reload_cause" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <span class="doc doc-object-name doc-function-name">convert_reload_cause</span>
+
+
+<a href="#anta.custom_types.convert_reload_cause" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">convert_reload_cause</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Convert a reload cause abbreviation into its full descriptive string.</p>
+
+
+
+<details class="example" open>
+  <summary>Examples</summary>
+        <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">convert_reload_cause</span><span class="p">(</span><span class="s2">&quot;ZTP&quot;</span><span class="p">)</span>
+<span class="s1">&#39;System reloaded due to Zero Touch Provisioning&#39;</span>
+</code></pre></div>
+</details>
+
+            <details class="quote">
+              <summary>Source code in <code>anta/custom_types.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">convert_reload_cause</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a reload cause abbreviation into its full descriptive string.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    ```python</span>
+<span class="sd">    &gt;&gt;&gt; convert_reload_cause(&quot;ZTP&quot;)</span>
+<span class="sd">    &#39;System reloaded due to Zero Touch Provisioning&#39;</span>
+<span class="sd">    ```</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">reload_causes</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;ZTP&quot;</span><span class="p">:</span> <span class="s2">&quot;System reloaded due to Zero Touch Provisioning&quot;</span><span class="p">,</span> <span class="s2">&quot;USER&quot;</span><span class="p">:</span> <span class="s2">&quot;Reload requested by the user.&quot;</span><span class="p">,</span> <span class="s2">&quot;FPGA&quot;</span><span class="p">:</span> <span class="s2">&quot;Reload requested after FPGA upgrade&quot;</span><span class="p">}</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">reload_causes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">upper</span><span class="p">()):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Invalid reload cause: &#39;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&#39; - expected causes are </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">reload_causes</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">reload_causes</span><span class="p">[</span><span class="n">value</span><span class="o">.</span><span class="n">upper</span><span class="p">()]</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
 <h4 id="anta.custom_types.interface_autocomplete" class="doc doc-heading">
 <code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <span class="doc doc-object-name doc-function-name">interface_autocomplete</span>
 
@@ -5891,11 +6040,11 @@
 
             <details class="quote">
               <summary>Source code in <code>anta/custom_types.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">362</span>
-<span class="normal">363</span>
-<span class="normal">364</span>
-<span class="normal">365</span>
-<span class="normal">366</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">snmp_v3_prefix</span><span class="p">(</span><span class="n">auth_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;auth&quot;</span><span class="p">,</span> <span class="s2">&quot;priv&quot;</span><span class="p">,</span> <span class="s2">&quot;noauth&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">379</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">snmp_v3_prefix</span><span class="p">(</span><span class="n">auth_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;auth&quot;</span><span class="p">,</span> <span class="s2">&quot;priv&quot;</span><span class="p">,</span> <span class="s2">&quot;noauth&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Prefix the SNMP authentication type with &#39;v3&#39;.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">auth_type</span> <span class="o">==</span> <span class="s2">&quot;noauth&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;v3NoAuth&quot;</span>
