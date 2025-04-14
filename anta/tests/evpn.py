@@ -13,7 +13,7 @@ from anta.models import AntaCommand, AntaTemplate, AntaTest
 
 
 class VerifyEVPNType5Routes(AntaTest):
-    """Verifies EVPN Type-5 routes for given IPv4 prefixes and VNIs.
+    """Verifies EVPN Type-5 routes for given IP prefixes and VNIs.
 
     It supports multiple levels of verification based on the provided input:
 

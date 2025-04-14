@@ -163,7 +163,7 @@ anta.tests.cvx:
       connections_count: 100
 anta.tests.evpn:
   - VerifyEVPNType5Routes:
-      # Verifies EVPN Type-5 routes for given IPv4 prefixes and VNIs.
+      # Verifies EVPN Type-5 routes for given IP prefixes and VNIs.
       prefixes:
         # At least one active/valid path across all RDs
         - address: 192.168.10.0/24
