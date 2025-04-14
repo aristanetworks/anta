@@ -162,8 +162,8 @@ anta.tests.cvx:
       # Verify if all MCS server mounts are in a MountComplete state.
       connections_count: 100
 anta.tests.evpn:
-  - VerifyEVPNType5:
-      # Verifies EVPN Type-5 (IP Prefix) routes for given IPv4 prefixes and VNIs.
+  - VerifyEVPNType5Routes:
+      # Verifies EVPN Type-5 routes for given IPv4 prefixes and VNIs.
       prefixes:
         # Case 1: Prefix/VNI exists and has at least one active/valid path 
 globally
@@ -197,7 +197,7 @@ matching nexthop and specific RTs
               paths:
                 - nexthop: 10.1.1.1
                   route_targets:
-                    - "Route-Target-AS:40:40"
+                    - 40:40
 anta.tests.field_notices:
   - VerifyFieldNotice44Resolution:
       # Verifies that the device is using the correct Aboot version per FN0044.

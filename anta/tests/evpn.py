@@ -12,14 +12,13 @@ from anta.input_models.evpn import EVPNPath, EVPNRoute, EVPNType5Prefix
 from anta.models import AntaCommand, AntaTemplate, AntaTest
 
 
-class VerifyEVPNType5(AntaTest):
-    """Verifies EVPN Type-5 (IP Prefix) routes for given IPv4 prefixes and VNIs.
+class VerifyEVPNType5Routes(AntaTest):
+    """Verifies EVPN Type-5 routes for given IPv4 prefixes and VNIs.
 
     It supports multiple levels of verification based on the provided input:
 
-    1.  **Prefix/VNI only:** Verifies that for the given prefix and VNI, there is at least one
-        EVPN Type-5 route entry, and across all Route Distinguishers (RDs) learning this prefix/VNI,
-        there is at least one path that is both 'active' and 'valid'.
+    1.  **Prefix/VNI only:** Verifies there is at least one 'active' and 'valid' path across all
+        Route Distinguishers (RDs) learning the given prefix and VNI.
     2.  **Specific Routes (RD/Domain):** Verifies that routes matching the specified RDs and domains
         exist for the prefix/VNI. For each specified route, it checks if at least one of its paths
         is 'active' and 'valid'.
@@ -48,7 +47,7 @@ class VerifyEVPNType5(AntaTest):
     --------
     ```yaml
     anta.tests.evpn:
-      - VerifyEVPNType5:
+      - VerifyEVPNType5Routes:
           prefixes:
             # Case 1: Prefix/VNI exists and has at least one active/valid path globally
             - address: 192.168.10.0/24
@@ -78,7 +77,7 @@ class VerifyEVPNType5(AntaTest):
                   paths:
                     - nexthop: 10.1.1.1
                       route_targets:
-                        - "Route-Target-AS:40:40"
+                        - 40:40
     ```
     """
 
@@ -86,7 +85,7 @@ class VerifyEVPNType5(AntaTest):
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show bgp evpn route-type ip-prefix {address} vni {vni}", revision=2)]
 
     class Input(AntaTest.Input):
-        """Input model for the VerifyEVPNType5 test."""
+        """Input model for the VerifyEVPNType5Routes test."""
 
         prefixes: list[EVPNType5Prefix]
         """List of EVPN Type-5 prefixes to verify."""
@@ -95,6 +94,7 @@ class VerifyEVPNType5(AntaTest):
         """Render the template for each EVPN Type-5 prefix in the input list."""
         return [template.render(address=str(prefix.address), vni=prefix.vni) for prefix in self.inputs.prefixes]
 
+    # NOTE: The following static methods can be moved at the module level if needed for other EVPN tests
     @staticmethod
     def _get_all_paths(evpn_routes_data: dict[str, Any]) -> list[dict[str, Any]]:
         """Extract all 'evpnRoutePaths' from the entire 'evpnRoutes' dictionary."""
@@ -114,7 +114,7 @@ class VerifyEVPNType5(AntaTest):
     @staticmethod
     def _find_paths(paths: list[dict[str, Any]], nexthop: str, route_targets: list[str] | None = None) -> list[dict[str, Any]]:
         """Find all matching paths for a given nexthop and RTs."""
-        route_targets = route_targets or []
+        route_targets = [f"Route-Target-AS:{rt}" for rt in route_targets] if route_targets is not None else []
         return [path for path in paths if path["nextHop"] == nexthop and set(route_targets).issubset(set(path["routeDetail"]["extCommunities"]))]
 
     @staticmethod
@@ -124,7 +124,7 @@ class VerifyEVPNType5(AntaTest):
 
     @AntaTest.anta_test
     def test(self) -> None:
-        """Main test function for VerifyEVPNType2Route."""
+        """Main test function for VerifyEVPNType5Routes."""
         self.result.is_success()
 
         for command, prefix_input in zip(self.instance_commands, self.inputs.prefixes):

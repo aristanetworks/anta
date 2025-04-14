@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from ipaddress import IPv4Interface
+from ipaddress import IPv4Interface, IPv6Interface
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict
@@ -17,8 +17,8 @@ class EVPNType5Prefix(BaseModel):
     """Model for an EVPN Type-5 prefix."""
 
     model_config = ConfigDict(extra="forbid")
-    address: IPv4Interface
-    """IPv4 prefix address to verify."""
+    address: IPv4Interface | IPv6Interface
+    """IPv4 or IPv6 prefix address to verify."""
     vni: Vni
     """VNI associated with the prefix."""
     routes: list[EVPNRoute] | None = None
@@ -53,9 +53,9 @@ class EVPNPath(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
     nexthop: str
-    """Expected next-hop IP address. Can be an empty string for local paths."""
+    """Expected next-hop IPv4 or IPv6 address. Can be an empty string for local paths."""
     route_targets: list[str] | None = None
-    """List of expected RTs following the `Route-Target-AS:X:X` format."""
+    """List of expected RTs following the `ASN(asplain):nn` or `ASN(asdot):nn` or `IP-address:nn` format."""
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the EVPNPath for reporting."""
