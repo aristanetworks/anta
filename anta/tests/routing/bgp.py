@@ -348,14 +348,14 @@ class VerifyBGPSpecificPeers(AntaTest):
 
 
 class VerifyBGPPeerSession(AntaTest):
-    """Verifies the session state of BGP IPv4 peer(s).
+    """Verifies the session state of BGP peers.
 
     This test performs the following checks for each specified peer:
 
       1. Verifies that the peer is found in its VRF in the BGP configuration.
       2. Verifies that the BGP session is `Established` and, if specified, has remained established for at least the duration given by `minimum_established_time`.
       3. Ensures that both input and output TCP message queues are empty.
-      Can be disabled by setting `check_tcp_queues` global flag to `False`.
+      Can be disabled by setting `check_tcp_queues` input flag to `False`.
 
     Expected Results
     ----------------
@@ -387,6 +387,15 @@ class VerifyBGPPeerSession(AntaTest):
                 vrf: DEV
               - peer_address: 10.1.255.4
                 vrf: DEV
+              - peer_address: fd00:dc:1::1
+                vrf: default
+              - peer_address: fe80::a8c1:abff:fe91:788e%Et1
+                vrf: default
+              # RFC5549
+              - interface: Ethernet1
+                vrf: default
+              - interface: Vlan3499
+                vrf: PROD
     ```
     """
 
@@ -397,11 +406,11 @@ class VerifyBGPPeerSession(AntaTest):
         """Input model for the VerifyBGPPeerSession test."""
 
         minimum_established_time: PositiveInt | None = None
-        """Minimum established time (seconds) for all the BGP sessions."""
+        """Minimum established time (seconds) for all BGP sessions."""
         check_tcp_queues: bool = True
-        """Flag to check if the TCP session queues are empty for all BGP peers. Defaults to `True`."""
+        """Flag to check if the TCP session queues are empty for all BGP peers."""
         bgp_peers: list[BgpPeer]
-        """List of BGP IPv4 peers."""
+        """List of BGP peers."""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -411,11 +420,18 @@ class VerifyBGPPeerSession(AntaTest):
         output = self.instance_commands[0].json_output
 
         for peer in self.inputs.bgp_peers:
-            peer_ip = str(peer.peer_address)
+            if peer.interface is not None:
+                # RFC5549
+                identity = peer.interface
+                lookup_key = "ifName"
+            else:
+                identity = str(peer.peer_address)
+                lookup_key = "peerAddress"
+
             peer_list = get_value(output, f"vrfs.{peer.vrf}.peerList", default=[])
 
             # Check if the peer is found
-            if (peer_data := get_item(peer_list, "peerAddress", peer_ip)) is None:
+            if (peer_data := get_item(peer_list, lookup_key, identity)) is None:
                 self.result.is_failure(f"{peer} - Not found")
                 continue
 
@@ -1451,7 +1467,7 @@ class VerifyBGPPeerSessionRibd(AntaTest):
       1. Verifies that the peer is found in its VRF in the BGP configuration.
       2. Verifies that the BGP session is `Established` and, if specified, has remained established for at least the duration given by `minimum_established_time`.
       3. Ensures that both input and output TCP message queues are empty.
-      Can be disabled by setting `check_tcp_queues` global flag to `False`.
+      Can be disabled by setting `check_tcp_queues` input flag to `False`.
 
     Expected Results
     ----------------
@@ -1542,7 +1558,7 @@ class VerifyBGPPeersHealthRibd(AntaTest):
 
       1. Verifies that the BGP session is in the `Established` state.
       2. Checks that both input and output TCP message queues are empty.
-      Can be disabled by setting `check_tcp_queues` global flag to `False`.
+      Can be disabled by setting `check_tcp_queues` input flag to `False`.
 
     Expected Results
     ----------------
