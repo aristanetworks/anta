@@ -107,9 +107,18 @@ anta.tests.configuration:
       # Verifies there is no difference between the running-config and the startup-config.
   - VerifyRunningConfigLines:
       # Search the Running-Config for the given RegEx patterns.
+      sections:
+        - regex: router bgp
+          regex_patterns:
+            - neighbor*
+            - router-id 10.111.254.1
+        - regex: router ospf
+          regex_patterns:
+            - router-id
       regex_patterns:
         - "^enable password.*$"
         - "bla bla"
+
   - VerifyZeroTouch:
       # Verifies ZeroTouch is disabled.
 anta.tests.connectivity:

@@ -10,11 +10,19 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING, ClassVar
 
+from pydantic import Field, model_validator
+
 from anta.custom_types import RegexString
-from anta.models import AntaCommand, AntaTest
+from anta.input_models.configuration import RunningConfigSection
+from anta.models import AntaCommand, AntaTemplate, AntaTest
 
 if TYPE_CHECKING:
-    from anta.models import AntaTemplate
+    import sys
+
+    if sys.version_info >= (3, 11):
+        from typing import Self
+    else:
+        from typing_extensions import Self
 
 
 class VerifyZeroTouch(AntaTest):
@@ -94,35 +102,78 @@ class VerifyRunningConfigLines(AntaTest):
     ```yaml
     anta.tests.configuration:
       - VerifyRunningConfigLines:
+          sections:
+            - regex: router bgp
+              regex_patterns:
+                - neighbor*
+                - router-id 10.111.254.1
+            - regex: router ospf
+              regex_patterns:
+                - router-id
           regex_patterns:
             - "^enable password.*$"
             - "bla bla"
+
     ```
     """
 
     description = "Search the Running-Config for the given RegEx patterns."
     categories: ClassVar[list[str]] = ["configuration"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show running-config", ofmt="text")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show running-config{regex}", ofmt="text")]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyRunningConfigLines test."""
 
-        regex_patterns: list[RegexString]
+        sections: list[RunningConfigSection] = Field(default=[])
+        """List of regex sections."""
+        regex_patterns: list[RegexString] = Field(default=[])
         """List of regular expressions."""
+
+        @model_validator(mode="after")
+        def validate_inputs(self) -> Self:
+            """Validate the inputs provided to the VerifyRunningConfigLines test.
+
+            Either `sections` or `regex_patterns` can be provided at the same time.
+            """
+            if not self.sections and not self.regex_patterns:
+                msg = "'sections' or 'regex_patterns' must be provided"
+                raise ValueError(msg)
+            if self.sections and self.regex_patterns:
+                msg = "Either 'sections' or 'regex_patterns' can be provided at the same time"
+                raise ValueError(msg)
+
+            # If Sections, Verifies that the regex and regex_patterns should be required.
+            if self.sections:
+                for section in self.sections:
+                    if not section.regex_patterns:
+                        msg = f"For {section} 'regex_patterns' field missing in the input"
+                        raise ValueError(msg)
+            return self
+
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        """Render the template for each host in the input list."""
+        if self.inputs.sections:
+            return [template.render(regex=f" section {section.regex}" if section.regex else "") for section in self.inputs.sections]
+        if self.inputs.regex_patterns:
+            return [template.render(regex="")]
+
+        return []
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyRunningConfigLines."""
-        failure_msgs = []
-        command_output = self.instance_commands[0].text_output
+        self.result.is_success()
+        for output, section in zip(self.instance_commands, self.inputs.sections):
+            pattern_to_search = rf"({section.regex}[\s\S]+?)(?=\n(?:\S.*|\Z))"
+            stanzas = re.findall(pattern_to_search, output.text_output, flags=re.MULTILINE)
+            exact_match = [item for item in stanzas if item.startswith(f"{section.regex}\n")]
+            for regex_pattern in section.regex_patterns:
+                match_found = any(re.search(regex_pattern, item) for item in exact_match)
+                if not match_found:
+                    self.result.is_failure(f"Section: {section.regex} Regex pattern: {regex_pattern} - Not found")
 
-        for pattern in self.inputs.regex_patterns:
-            re_search = re.compile(pattern, flags=re.MULTILINE)
-
-            if not re_search.search(command_output):
-                failure_msgs.append(f"'{pattern}'")
-
-        if not failure_msgs:
-            self.result.is_success()
-        else:
-            self.result.is_failure("Following patterns were not found: " + ", ".join(failure_msgs))
+        if self.inputs.regex_patterns:
+            for pattern in self.inputs.regex_patterns:
+                re_search = re.compile(pattern, flags=re.MULTILINE)
+                if not re_search.search(self.instance_commands[0].text_output):
+                    self.result.is_failure(f"Regex pattern: {pattern} - Not found")
