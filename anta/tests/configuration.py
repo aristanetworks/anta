@@ -152,28 +152,27 @@ class VerifyRunningConfigLines(AntaTest):
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
         """Render the template for each host in the input list."""
+        template_render = [template.render(regex="")]
         if self.inputs.sections:
-            return [template.render(regex=f" section {section.regex}" if section.regex else "") for section in self.inputs.sections]
-        if self.inputs.regex_patterns:
-            return [template.render(regex="")]
-
-        return []
+            template_render = [template.render(regex=f" section {section.regex}") for section in self.inputs.sections]
+        return template_render
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyRunningConfigLines."""
         self.result.is_success()
-        for output, section in zip(self.instance_commands, self.inputs.sections):
-            pattern_to_search = rf"({section.regex}[\s\S]+?)(?=\n(?:\S.*|\Z))"
-            stanzas = re.findall(pattern_to_search, output.text_output, flags=re.MULTILINE)
-            exact_match = [item for item in stanzas if item.startswith(f"{section.regex}\n")]
-            for regex_pattern in section.regex_patterns:
-                match_found = any(re.search(regex_pattern, item) for item in exact_match)
-                if not match_found:
-                    self.result.is_failure(f"Section: {section.regex} Regex pattern: {regex_pattern} - Not found")
-
         if self.inputs.regex_patterns:
             for pattern in self.inputs.regex_patterns:
                 re_search = re.compile(pattern, flags=re.MULTILINE)
                 if not re_search.search(self.instance_commands[0].text_output):
                     self.result.is_failure(f"Regex pattern: {pattern} - Not found")
+            return
+
+        for output, section in zip(self.instance_commands, self.inputs.sections):
+            pattern_to_search = rf"({section.regex}[\s\S]+?)(?=\n(?:\S.*|\Z))"
+            stanzas = re.findall(pattern_to_search, output.text_output, flags=re.MULTILINE)
+            exact_match = [item for item in stanzas if re.match(f"{section.regex}\n", item)]
+            for regex_pattern in section.regex_patterns:
+                match_found = any(re.search(regex_pattern, item) for item in exact_match)
+                if not match_found:
+                    self.result.is_failure(f"Section: {section.regex} Regex pattern: {regex_pattern} - Not found")
