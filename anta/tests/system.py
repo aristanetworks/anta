@@ -10,9 +10,9 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING, Any, ClassVar
 
-from pydantic import model_validator
+from pydantic import Field, model_validator
 
-from anta.custom_types import Hostname, PositiveInteger
+from anta.custom_types import Hostname, PositiveInteger, ReloadCause
 from anta.input_models.system import NTPPool, NTPServer
 from anta.models import AntaCommand, AntaTest
 from anta.tools import get_value
@@ -73,8 +73,8 @@ class VerifyReloadCause(AntaTest):
 
     Expected Results
     ----------------
-    * Success: The test will pass if there are NO reload causes or if the last reload was caused by the user or after an FPGA upgrade.
-    * Failure: The test will fail if the last reload was NOT caused by the user or after an FPGA upgrade.
+    * Success: The test passes if there is no reload cause, or if the last reload cause was one of the provided inputs.
+    * Failure: The test will fail if the last reload cause was NOT one of the provided inputs.
     * Error: The test will report an error if the reload cause is NOT available.
 
     Examples
@@ -82,11 +82,21 @@ class VerifyReloadCause(AntaTest):
     ```yaml
     anta.tests.system:
       - VerifyReloadCause:
+        allowed_causes:
+          - USER
+          - FPGA
+          - ZTP
     ```
     """
 
     categories: ClassVar[list[str]] = ["system"]
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show reload cause", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyReloadCause test."""
+
+        allowed_causes: list[ReloadCause] = Field(default=["USER", "FPGA"], validate_default=True)
+        """A list of allowed system reload causes."""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -96,15 +106,14 @@ class VerifyReloadCause(AntaTest):
             # No reload causes
             self.result.is_success()
             return
+
         reset_causes = command_output["resetCauses"]
         command_output_data = reset_causes[0].get("description")
-        if command_output_data in [
-            "Reload requested by the user.",
-            "Reload requested after FPGA upgrade",
-        ]:
+        if command_output_data in self.inputs.allowed_causes:
             self.result.is_success()
         else:
-            self.result.is_failure(f"Reload cause is: {command_output_data}")
+            causes = ", ".join(f"'{c}'" for c in self.inputs.allowed_causes)
+            self.result.is_failure(f"Invalid reload cause -  Expected: {causes} Actual: '{command_output_data}'")
 
 
 class VerifyCoredump(AntaTest):

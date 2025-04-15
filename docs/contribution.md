@@ -32,6 +32,19 @@ Package Version Editable project location
 anta    1.3.0   /mnt/lab/projects/anta
 ```
 
+!!! info "Installation Note"
+    1. If you are using a terminal such as zsh, ensure that commands involving shell expansions within editable installs (like specifying development dependencies) are enclosed in double quotes. For example: `pip install -e ."[dev]"`
+    2. If you do not see any output when running the verification command (`pip list -e`), it is likely because the command needs to be executed from within the inner `anta` directory. Navigate to this directory and then verify the installation:
+
+     ```
+      $ cd anta/anta
+      # Verify installation
+      $ pip list -e
+      Package Version Editable project location
+      ------- ------- --------------------------
+      anta    1.3.0   /mnt/lab/projects/anta
+     ```
+
 Then, [`tox`](https://tox.wiki/) is configured with few environments to run CI locally:
 
 ```bash
