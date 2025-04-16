@@ -16,6 +16,7 @@ from typing import TYPE_CHECKING, Any, Literal, overload
 # Public Imports
 # -----------------------------------------------------------------------------
 import httpx
+from typing_extensions import deprecated
 
 # -----------------------------------------------------------------------------
 # Private Imports
@@ -51,6 +52,7 @@ class Device(httpx.AsyncClient):
     """
 
     auth = None
+    EAPI_COMMAND_API_URL = "/command-api"
     EAPI_OFMT_OPTIONS = ("json", "text")
     EAPI_DEFAULT_OFMT = "json"
 
@@ -109,6 +111,7 @@ class Device(httpx.AsyncClient):
         super().__init__(**kwargs)
         self.headers["Content-Type"] = "application/json-rpc"
 
+    @deprecated("This method is deprecated, use `Device.check_api_endpoint` method instead. This will be removed in ANTA v2.0.0.", category=DeprecationWarning)
     async def check_connection(self) -> bool:
         """Check the target device to ensure that the eAPI port is open and accepting connections.
 
@@ -121,6 +124,22 @@ class Device(httpx.AsyncClient):
             True when the device eAPI is accessible, False otherwise.
         """
         return await port_check_url(self.base_url)
+
+    async def check_api_endpoint(self) -> bool:
+        """Check the target device eAPI HTTP endpoint with a HEAD request.
+
+        It is recommended that a Caller checks the connection before involving cli commands,
+        but this step is not required.
+
+        Returns
+        -------
+        bool
+            True when the device eAPI HTTP endpoint is accessible (2xx status code),
+            otherwise an HTTPStatusError exception is raised.
+        """
+        response = await self.head(self.EAPI_COMMAND_API_URL, timeout=5)
+        response.raise_for_status()
+        return True
 
     # Single command, JSON output, no suppression
     @overload
@@ -416,7 +435,7 @@ class Device(httpx.AsyncClient):
             The list of command results; either dict or text depending on the
             JSON-RPC format parameter.
         """
-        res = await self.post("/command-api", json=jsonrpc)
+        res = await self.post(self.EAPI_COMMAND_API_URL, json=jsonrpc)
         res.raise_for_status()
         body = res.json()
 
