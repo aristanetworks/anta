@@ -51,14 +51,6 @@ class TestVerifyRunningConfigLinesInput:
                 id="invalid",
             ),
             pytest.param([], [], id="both-input-absent"),
-            pytest.param(
-                [
-                    {"regex": "interface Ethernet1"},
-                    {"regex": "router bgp 65101", "regex_patterns": ["router-id 10.111.255.12", " network 10.110.254.1"]},
-                ],
-                [],
-                id="invalid-regex-pattern",
-            ),
         ],
     )
     def test_invalid(self, sections: list[RunningConfigSection], regex_patterns: list[RegexString]) -> None:

@@ -141,13 +141,6 @@ class VerifyRunningConfigLines(AntaTest):
             if self.sections and self.regex_patterns:
                 msg = "Either 'sections' or 'regex_patterns' can be provided at the same time"
                 raise ValueError(msg)
-
-            # If Sections, Verifies that the regex and regex_patterns should be required.
-            if self.sections:
-                for section in self.sections:
-                    if not section.regex_patterns:
-                        msg = f"For {section} 'regex_patterns' field missing in the input"
-                        raise ValueError(msg)
             return self
 
     def render(self, template: AntaTemplate) -> list[AntaCommand]:
