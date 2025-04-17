@@ -5,59 +5,51 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from anta.tests.cvx import VerifyActiveCVXConnections, VerifyCVXClusterStatus, VerifyManagementCVX, VerifyMcsClientMounts, VerifyMcsServerMounts
 from tests.units.anta_tests import test
 
-DATA: list[dict[str, Any]] = [
-    {
-        "name": "success",
-        "test": VerifyMcsClientMounts,
+if TYPE_CHECKING:
+    from anta.models import AntaTest
+    from tests.units.anta_tests import AntaUnitTest
+
+DATA: dict[tuple[type[AntaTest], str], AntaUnitTest] = {
+    (VerifyMcsClientMounts, "success"): {
         "eos_data": [{"mountStates": [{"path": "mcs/v1/toSwitch/28-99-3a-8f-93-7b", "type": "Mcs::DeviceConfigV1", "state": "mountStateMountComplete"}]}],
         "inputs": None,
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-haclient",
-        "test": VerifyMcsClientMounts,
+    (VerifyMcsClientMounts, "success-haclient"): {
         "eos_data": [
             {
                 "mountStates": [
                     {"path": "mcs/v1/apiCfgRedState", "type": "Mcs::ApiConfigRedundancyState", "state": "mountStateMountComplete"},
                     {"path": "mcs/v1/toSwitch/00-1c-73-74-c0-8b", "type": "Mcs::DeviceConfigV1", "state": "mountStateMountComplete"},
                 ]
-            },
+            }
         ],
         "inputs": None,
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-partial-non-mcs",
-        "test": VerifyMcsClientMounts,
+    (VerifyMcsClientMounts, "success-partial-non-mcs"): {
         "eos_data": [
             {
                 "mountStates": [
                     {"path": "blah/blah/blah", "type": "blah::blah", "state": "mountStatePreservedUnmounted"},
                     {"path": "mcs/v1/toSwitch/00-1c-73-74-c0-8b", "type": "Mcs::DeviceConfigV1", "state": "mountStateMountComplete"},
                 ]
-            },
+            }
         ],
         "inputs": None,
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-nomounts",
-        "test": VerifyMcsClientMounts,
-        "eos_data": [
-            {"mountStates": []},
-        ],
+    (VerifyMcsClientMounts, "failure-nomounts"): {
+        "eos_data": [{"mountStates": []}],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["MCS Client mount states are not present"]},
     },
-    {
-        "name": "failure-mountStatePreservedUnmounted",
-        "test": VerifyMcsClientMounts,
+    (VerifyMcsClientMounts, "failure-mountStatePreservedUnmounted"): {
         "eos_data": [{"mountStates": [{"path": "mcs/v1/toSwitch/28-99-3a-8f-93-7b", "type": "Mcs::DeviceConfigV1", "state": "mountStatePreservedUnmounted"}]}],
         "inputs": None,
         "expected": {
@@ -65,16 +57,14 @@ DATA: list[dict[str, Any]] = [
             "messages": ["MCS Client mount states are not valid - Expected: mountStateMountComplete Actual: mountStatePreservedUnmounted"],
         },
     },
-    {
-        "name": "failure-partial-haclient",
-        "test": VerifyMcsClientMounts,
+    (VerifyMcsClientMounts, "failure-partial-haclient"): {
         "eos_data": [
             {
                 "mountStates": [
                     {"path": "mcs/v1/apiCfgRedState", "type": "Mcs::ApiConfigRedundancyState", "state": "mountStateMountComplete"},
                     {"path": "mcs/v1/toSwitch/00-1c-73-74-c0-8b", "type": "Mcs::DeviceConfigV1", "state": "mountStatePreservedUnmounted"},
                 ]
-            },
+            }
         ],
         "inputs": None,
         "expected": {
@@ -82,16 +72,14 @@ DATA: list[dict[str, Any]] = [
             "messages": ["MCS Client mount states are not valid - Expected: mountStateMountComplete Actual: mountStatePreservedUnmounted"],
         },
     },
-    {
-        "name": "failure-full-haclient",
-        "test": VerifyMcsClientMounts,
+    (VerifyMcsClientMounts, "failure-full-haclient"): {
         "eos_data": [
             {
                 "mountStates": [
                     {"path": "blah/blah/blah", "type": "blah::blahState", "state": "mountStatePreservedUnmounted"},
                     {"path": "mcs/v1/toSwitch/00-1c-73-74-c0-8b", "type": "Mcs::DeviceConfigV1", "state": "mountStatePreservedUnmounted"},
                 ]
-            },
+            }
         ],
         "inputs": None,
         "expected": {
@@ -99,25 +87,19 @@ DATA: list[dict[str, Any]] = [
             "messages": ["MCS Client mount states are not valid - Expected: mountStateMountComplete Actual: mountStatePreservedUnmounted"],
         },
     },
-    {
-        "name": "failure-non-mcs-client",
-        "test": VerifyMcsClientMounts,
-        "eos_data": [
-            {"mountStates": [{"path": "blah/blah/blah", "type": "blah::blahState", "state": "mountStatePreservedUnmounted"}]},
-        ],
+    (VerifyMcsClientMounts, "failure-non-mcs-client"): {
+        "eos_data": [{"mountStates": [{"path": "blah/blah/blah", "type": "blah::blahState", "state": "mountStatePreservedUnmounted"}]}],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["MCS Client mount states are not present"]},
     },
-    {
-        "name": "failure-partial-mcs-client",
-        "test": VerifyMcsClientMounts,
+    (VerifyMcsClientMounts, "failure-partial-mcs-client"): {
         "eos_data": [
             {
                 "mountStates": [
                     {"path": "blah/blah/blah", "type": "blah::blahState", "state": "mountStatePreservedUnmounted"},
                     {"path": "blah/blah/blah", "type": "Mcs::DeviceConfigV1", "state": "mountStatePreservedUnmounted"},
                 ]
-            },
+            }
         ],
         "inputs": None,
         "expected": {
@@ -125,62 +107,28 @@ DATA: list[dict[str, Any]] = [
             "messages": ["MCS Client mount states are not valid - Expected: mountStateMountComplete Actual: mountStatePreservedUnmounted"],
         },
     },
-    {
-        "name": "success-enabled",
-        "test": VerifyManagementCVX,
-        "eos_data": [
-            {
-                "clusterStatus": {
-                    "enabled": True,
-                }
-            }
-        ],
-        "inputs": {"enabled": True},
-        "expected": {"result": "success"},
-    },
-    {
-        "name": "success-disabled",
-        "test": VerifyManagementCVX,
-        "eos_data": [
-            {
-                "clusterStatus": {
-                    "enabled": False,
-                }
-            }
-        ],
+    (VerifyManagementCVX, "success-enabled"): {"eos_data": [{"clusterStatus": {"enabled": True}}], "inputs": {"enabled": True}, "expected": {"result": "success"}},
+    (VerifyManagementCVX, "success-disabled"): {
+        "eos_data": [{"clusterStatus": {"enabled": False}}],
         "inputs": {"enabled": False},
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-invalid-state",
-        "test": VerifyManagementCVX,
-        "eos_data": [
-            {
-                "clusterStatus": {
-                    "enabled": False,
-                }
-            }
-        ],
+    (VerifyManagementCVX, "failure-invalid-state"): {
+        "eos_data": [{"clusterStatus": {"enabled": False}}],
         "inputs": {"enabled": True},
         "expected": {"result": "failure", "messages": ["Management CVX status is not valid: Expected: enabled Actual: disabled"]},
     },
-    {
-        "name": "failure-no-enabled state",
-        "test": VerifyManagementCVX,
+    (VerifyManagementCVX, "failure-no-enabled state"): {
         "eos_data": [{"clusterStatus": {}}],
         "inputs": {"enabled": False},
         "expected": {"result": "failure", "messages": ["Management CVX status - Not configured"]},
     },
-    {
-        "name": "failure - no clusterStatus",
-        "test": VerifyManagementCVX,
+    (VerifyManagementCVX, "failure - no clusterStatus"): {
         "eos_data": [{}],
         "inputs": {"enabled": False},
         "expected": {"result": "failure", "messages": ["Management CVX status - Not configured"]},
     },
-    {
-        "name": "success",
-        "test": VerifyMcsServerMounts,
+    (VerifyMcsServerMounts, "success"): {
         "eos_data": [
             {
                 "connections": [
@@ -207,9 +155,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"connections_count": 1},
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-no-mounts",
-        "test": VerifyMcsServerMounts,
+    (VerifyMcsServerMounts, "failure-no-mounts"): {
         "eos_data": [{"connections": [{"hostname": "media-leaf-1", "mounts": []}]}],
         "inputs": {"connections_count": 1},
         "expected": {
@@ -217,9 +163,7 @@ DATA: list[dict[str, Any]] = [
             "messages": ["Host: media-leaf-1 - No mount status found", "Incorrect CVX successful connections count - Expected: 1 Actual: 0"],
         },
     },
-    {
-        "name": "failure-unexpected-number-paths",
-        "test": VerifyMcsServerMounts,
+    (VerifyMcsServerMounts, "failure-unexpected-number-paths"): {
         "eos_data": [
             {
                 "connections": [
@@ -247,14 +191,12 @@ DATA: list[dict[str, Any]] = [
             "result": "failure",
             "messages": [
                 "Host: media-leaf-1 - Incorrect number of mount path states - Expected: 3 Actual: 2",
-                "Host: media-leaf-1 - Unexpected MCS path type - Expected: Mcs::ApiConfigRedundancyStatus, Mcs::ActiveFlows, "
-                "Mcs::Client::Status Actual: Mcs::ApiStatus",
+                "Host: media-leaf-1 - Unexpected MCS path type - Expected: Mcs::ApiConfigRedundancyStatus, "
+                "Mcs::ActiveFlows, Mcs::Client::Status Actual: Mcs::ApiStatus",
             ],
         },
     },
-    {
-        "name": "failure-unexpected-path-type",
-        "test": VerifyMcsServerMounts,
+    (VerifyMcsServerMounts, "failure-unexpected-path-type"): {
         "eos_data": [
             {
                 "connections": [
@@ -282,14 +224,12 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Host: media-leaf-1 - Unexpected MCS path type - Expected: Mcs::ApiConfigRedundancyStatus, Mcs::ActiveFlows, Mcs::Client::Status"
-                " Actual: Mcs::ApiStatus"
+                "Host: media-leaf-1 - Unexpected MCS path type - Expected: Mcs::ApiConfigRedundancyStatus, Mcs::ActiveFlows, "
+                "Mcs::Client::Status Actual: Mcs::ApiStatus"
             ],
         },
     },
-    {
-        "name": "failure-invalid-mount-state",
-        "test": VerifyMcsServerMounts,
+    (VerifyMcsServerMounts, "failure-invalid-mount-state"): {
         "eos_data": [
             {
                 "connections": [
@@ -317,14 +257,12 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Host: media-leaf-1 Path Type: Mcs::ApiConfigRedundancyStatus - MCS server mount state is not valid - Expected: mountStateMountComplete"
-                " Actual:mountStateMountFailed"
+                "Host: media-leaf-1 Path Type: Mcs::ApiConfigRedundancyStatus - MCS server mount state is not valid - "
+                "Expected: mountStateMountComplete Actual:mountStateMountFailed"
             ],
         },
     },
-    {
-        "name": "failure-no-mcs-mount",
-        "test": VerifyMcsServerMounts,
+    (VerifyMcsServerMounts, "failure-no-mcs-mount"): {
         "eos_data": [
             {
                 "connections": [
@@ -343,67 +281,41 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"connections_count": 1},
         "expected": {"result": "failure", "messages": ["MCS mount state not detected", "Incorrect CVX successful connections count - Expected: 1 Actual: 0"]},
     },
-    {
-        "name": "failure-connections",
-        "test": VerifyMcsServerMounts,
+    (VerifyMcsServerMounts, "failure-connections"): {
         "eos_data": [{}],
         "inputs": {"connections_count": 1},
         "expected": {"result": "failure", "messages": ["CVX connections are not available"]},
     },
-    {
-        "name": "success",
-        "test": VerifyActiveCVXConnections,
+    (VerifyActiveCVXConnections, "success"): {
         "eos_data": [
             {
                 "connections": [
-                    {
-                        "switchId": "fc:bd:67:c3:16:55",
-                        "hostname": "lyv563",
-                        "oobConnectionActive": True,
-                    },
-                    {
-                        "switchId": "00:1c:73:3c:e3:9e",
-                        "hostname": "tg264",
-                        "oobConnectionActive": True,
-                    },
+                    {"switchId": "fc:bd:67:c3:16:55", "hostname": "lyv563", "oobConnectionActive": True},
+                    {"switchId": "00:1c:73:3c:e3:9e", "hostname": "tg264", "oobConnectionActive": True},
                 ]
             }
         ],
         "inputs": {"connections_count": 2},
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure",
-        "test": VerifyActiveCVXConnections,
+    (VerifyActiveCVXConnections, "failure"): {
         "eos_data": [
             {
                 "connections": [
-                    {
-                        "switchId": "fc:bd:67:c3:16:55",
-                        "hostname": "lyv563",
-                        "oobConnectionActive": False,
-                    },
-                    {
-                        "switchId": "00:1c:73:3c:e3:9e",
-                        "hostname": "tg264",
-                        "oobConnectionActive": True,
-                    },
+                    {"switchId": "fc:bd:67:c3:16:55", "hostname": "lyv563", "oobConnectionActive": False},
+                    {"switchId": "00:1c:73:3c:e3:9e", "hostname": "tg264", "oobConnectionActive": True},
                 ]
             }
         ],
         "inputs": {"connections_count": 2},
         "expected": {"result": "failure", "messages": ["CVX active connections count - Expected: 2 Actual: 1"]},
     },
-    {
-        "name": "failure-no-connections",
-        "test": VerifyActiveCVXConnections,
+    (VerifyActiveCVXConnections, "failure-no-connections"): {
         "eos_data": [{}],
         "inputs": {"connections_count": 2},
         "expected": {"result": "failure", "messages": ["CVX connections are not available"]},
     },
-    {
-        "name": "success-all",
-        "test": VerifyCVXClusterStatus,
+    (VerifyCVXClusterStatus, "success-all"): {
         "eos_data": [
             {
                 "enabled": True,
@@ -426,9 +338,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-invalid-role",
-        "test": VerifyCVXClusterStatus,
+    (VerifyCVXClusterStatus, "failure-invalid-role"): {
         "eos_data": [
             {
                 "enabled": True,
@@ -451,54 +361,22 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {"result": "failure", "messages": ["CVX Role is not valid: Expected: Master Actual: Standby"]},
     },
-    {
-        "name": "failure-cvx-enabled",
-        "test": VerifyCVXClusterStatus,
-        "eos_data": [
-            {
-                "enabled": False,
-                "clusterMode": True,
-                "clusterStatus": {
-                    "role": "Master",
-                    "peerStatus": {},
-                },
-            }
-        ],
-        "inputs": {
-            "role": "Master",
-            "peer_status": [],
-        },
+    (VerifyCVXClusterStatus, "failure-cvx-enabled"): {
+        "eos_data": [{"enabled": False, "clusterMode": True, "clusterStatus": {"role": "Master", "peerStatus": {}}}],
+        "inputs": {"role": "Master", "peer_status": []},
         "expected": {"result": "failure", "messages": ["CVX Server status is not enabled"]},
     },
-    {
-        "name": "failure-cluster-enabled",
-        "test": VerifyCVXClusterStatus,
-        "eos_data": [
-            {
-                "enabled": True,
-                "clusterMode": False,
-                "clusterStatus": {},
-            }
-        ],
-        "inputs": {
-            "role": "Master",
-            "peer_status": [],
-        },
+    (VerifyCVXClusterStatus, "failure-cluster-enabled"): {
+        "eos_data": [{"enabled": True, "clusterMode": False, "clusterStatus": {}}],
+        "inputs": {"role": "Master", "peer_status": []},
         "expected": {"result": "failure", "messages": ["CVX Server is not a cluster"]},
     },
-    {
-        "name": "failure-missing-peers",
-        "test": VerifyCVXClusterStatus,
+    (VerifyCVXClusterStatus, "failure-missing-peers"): {
         "eos_data": [
             {
                 "enabled": True,
                 "clusterMode": True,
-                "clusterStatus": {
-                    "role": "Master",
-                    "peerStatus": {
-                        "cvx-red-2": {"peerName": "cvx-red-2", "registrationState": "Registration complete"},
-                    },
-                },
+                "clusterStatus": {"role": "Master", "peerStatus": {"cvx-red-2": {"peerName": "cvx-red-2", "registrationState": "Registration complete"}}},
             }
         ],
         "inputs": {
@@ -510,19 +388,8 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {"result": "failure", "messages": ["Unexpected number of peers - Expected: 2 Actual: 1", "cvx-red-3 - Not present"]},
     },
-    {
-        "name": "failure-invalid-peers",
-        "test": VerifyCVXClusterStatus,
-        "eos_data": [
-            {
-                "enabled": True,
-                "clusterMode": True,
-                "clusterStatus": {
-                    "role": "Master",
-                    "peerStatus": {},
-                },
-            }
-        ],
+    (VerifyCVXClusterStatus, "failure-invalid-peers"): {
+        "eos_data": [{"enabled": True, "clusterMode": True, "clusterStatus": {"role": "Master", "peerStatus": {}}}],
         "inputs": {
             "role": "Master",
             "peer_status": [
@@ -532,9 +399,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {"result": "failure", "messages": ["Unexpected number of peers - Expected: 2 Actual: 0", "cvx-red-2 - Not present", "cvx-red-3 - Not present"]},
     },
-    {
-        "name": "failure-registration-error",
-        "test": VerifyCVXClusterStatus,
+    (VerifyCVXClusterStatus, "failure-registration-error"): {
         "eos_data": [
             {
                 "enabled": True,
@@ -557,4 +422,4 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {"result": "failure", "messages": ["cvx-red-2 - Invalid registration state - Expected: Registration complete Actual: Registration error"]},
     },
-]
+}

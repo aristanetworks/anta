@@ -5,15 +5,17 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from anta.tests.avt import VerifyAVTPathHealth, VerifyAVTRole, VerifyAVTSpecificPath
 from tests.units.anta_tests import test
 
-DATA: list[dict[str, Any]] = [
-    {
-        "name": "success",
-        "test": VerifyAVTPathHealth,
+if TYPE_CHECKING:
+    from anta.models import AntaTest
+    from tests.units.anta_tests import AntaUnitTest
+
+DATA: dict[tuple[type[AntaTest], str], AntaUnitTest] = {
+    (VerifyAVTPathHealth, "success"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -21,18 +23,10 @@ DATA: list[dict[str, Any]] = [
                         "avts": {
                             "DATA-AVT-POLICY-DEFAULT": {
                                 "avtPaths": {
-                                    "direct:9": {
-                                        "flags": {"directPath": True, "valid": True, "active": True},
-                                    },
-                                    "direct:10": {
-                                        "flags": {"directPath": True, "valid": True, "active": True},
-                                    },
-                                    "direct:1": {
-                                        "flags": {"directPath": True, "valid": True, "active": True},
-                                    },
-                                    "direct:8": {
-                                        "flags": {"directPath": True, "valid": True, "active": True},
-                                    },
+                                    "direct:9": {"flags": {"directPath": True, "valid": True, "active": True}},
+                                    "direct:10": {"flags": {"directPath": True, "valid": True, "active": True}},
+                                    "direct:1": {"flags": {"directPath": True, "valid": True, "active": True}},
+                                    "direct:8": {"flags": {"directPath": True, "valid": True, "active": True}},
                                 }
                             }
                         }
@@ -41,12 +35,8 @@ DATA: list[dict[str, Any]] = [
                         "avts": {
                             "GUEST-AVT-POLICY-DEFAULT": {
                                 "avtPaths": {
-                                    "direct:10": {
-                                        "flags": {"directPath": True, "valid": True, "active": True},
-                                    },
-                                    "direct:8": {
-                                        "flags": {"directPath": True, "valid": True, "active": True},
-                                    },
+                                    "direct:10": {"flags": {"directPath": True, "valid": True, "active": True}},
+                                    "direct:8": {"flags": {"directPath": True, "valid": True, "active": True}},
                                 }
                             }
                         }
@@ -55,28 +45,16 @@ DATA: list[dict[str, Any]] = [
                         "avts": {
                             "CONTROL-PLANE-PROFILE": {
                                 "avtPaths": {
-                                    "direct:9": {
-                                        "flags": {"directPath": True, "valid": True, "active": True},
-                                    },
-                                    "direct:10": {
-                                        "flags": {"directPath": True, "valid": True, "active": True},
-                                    },
-                                    "direct:1": {
-                                        "flags": {"directPath": True, "valid": True, "active": True},
-                                    },
-                                    "direct:8": {
-                                        "flags": {"directPath": True, "valid": True, "active": True},
-                                    },
+                                    "direct:9": {"flags": {"directPath": True, "valid": True, "active": True}},
+                                    "direct:10": {"flags": {"directPath": True, "valid": True, "active": True}},
+                                    "direct:1": {"flags": {"directPath": True, "valid": True, "active": True}},
+                                    "direct:8": {"flags": {"directPath": True, "valid": True, "active": True}},
                                 }
                             },
                             "DEFAULT-AVT-POLICY-DEFAULT": {
                                 "avtPaths": {
-                                    "direct:10": {
-                                        "flags": {"directPath": True, "valid": True, "active": True},
-                                    },
-                                    "direct:8": {
-                                        "flags": {"directPath": True, "valid": True, "active": True},
-                                    },
+                                    "direct:10": {"flags": {"directPath": True, "valid": True, "active": True}},
+                                    "direct:8": {"flags": {"directPath": True, "valid": True, "active": True}},
                                 }
                             },
                         }
@@ -87,19 +65,12 @@ DATA: list[dict[str, Any]] = [
         "inputs": {},
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-avt-not-configured",
-        "test": VerifyAVTPathHealth,
+    (VerifyAVTPathHealth, "failure-avt-not-configured"): {
         "eos_data": [{"vrfs": {}}],
         "inputs": {},
-        "expected": {
-            "result": "failure",
-            "messages": ["Adaptive virtual topology paths are not configured"],
-        },
+        "expected": {"result": "failure", "messages": ["Adaptive virtual topology paths are not configured"]},
     },
-    {
-        "name": "failure-not-active-path",
-        "test": VerifyAVTPathHealth,
+    (VerifyAVTPathHealth, "failure-not-active-path"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -107,18 +78,10 @@ DATA: list[dict[str, Any]] = [
                         "avts": {
                             "DATA-AVT-POLICY-DEFAULT": {
                                 "avtPaths": {
-                                    "direct:9": {
-                                        "flags": {"directPath": True, "valid": True, "active": True},
-                                    },
-                                    "direct:10": {
-                                        "flags": {"directPath": True, "valid": True, "active": True},
-                                    },
-                                    "direct:1": {
-                                        "flags": {"directPath": True, "valid": True, "active": True},
-                                    },
-                                    "direct:8": {
-                                        "flags": {"directPath": True, "valid": True, "active": True},
-                                    },
+                                    "direct:9": {"flags": {"directPath": True, "valid": True, "active": True}},
+                                    "direct:10": {"flags": {"directPath": True, "valid": True, "active": True}},
+                                    "direct:1": {"flags": {"directPath": True, "valid": True, "active": True}},
+                                    "direct:8": {"flags": {"directPath": True, "valid": True, "active": True}},
                                 }
                             }
                         }
@@ -127,12 +90,8 @@ DATA: list[dict[str, Any]] = [
                         "avts": {
                             "GUEST-AVT-POLICY-DEFAULT": {
                                 "avtPaths": {
-                                    "direct:10": {
-                                        "flags": {"directPath": True, "valid": True, "active": False},
-                                    },
-                                    "direct:8": {
-                                        "flags": {"directPath": True, "valid": True, "active": True},
-                                    },
+                                    "direct:10": {"flags": {"directPath": True, "valid": True, "active": False}},
+                                    "direct:8": {"flags": {"directPath": True, "valid": True, "active": True}},
                                 }
                             }
                         }
@@ -141,28 +100,16 @@ DATA: list[dict[str, Any]] = [
                         "avts": {
                             "CONTROL-PLANE-PROFILE": {
                                 "avtPaths": {
-                                    "direct:9": {
-                                        "flags": {"directPath": True, "valid": True, "active": True},
-                                    },
-                                    "direct:10": {
-                                        "flags": {"directPath": True, "valid": True, "active": True},
-                                    },
-                                    "direct:1": {
-                                        "flags": {"directPath": True, "valid": True, "active": False},
-                                    },
-                                    "direct:8": {
-                                        "flags": {"directPath": True, "valid": True, "active": True},
-                                    },
+                                    "direct:9": {"flags": {"directPath": True, "valid": True, "active": True}},
+                                    "direct:10": {"flags": {"directPath": True, "valid": True, "active": True}},
+                                    "direct:1": {"flags": {"directPath": True, "valid": True, "active": False}},
+                                    "direct:8": {"flags": {"directPath": True, "valid": True, "active": True}},
                                 }
                             },
                             "DEFAULT-AVT-POLICY-DEFAULT": {
                                 "avtPaths": {
-                                    "direct:10": {
-                                        "flags": {"directPath": True, "valid": True, "active": False},
-                                    },
-                                    "direct:8": {
-                                        "flags": {"directPath": True, "valid": True, "active": True},
-                                    },
+                                    "direct:10": {"flags": {"directPath": True, "valid": True, "active": False}},
+                                    "direct:8": {"flags": {"directPath": True, "valid": True, "active": True}},
                                 }
                             },
                         }
@@ -180,9 +127,7 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-invalid-path",
-        "test": VerifyAVTPathHealth,
+    (VerifyAVTPathHealth, "failure-invalid-path"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -190,18 +135,10 @@ DATA: list[dict[str, Any]] = [
                         "avts": {
                             "DATA-AVT-POLICY-DEFAULT": {
                                 "avtPaths": {
-                                    "direct:9": {
-                                        "flags": {"directPath": True, "valid": True, "active": True},
-                                    },
-                                    "direct:10": {
-                                        "flags": {"directPath": True, "valid": False, "active": True},
-                                    },
-                                    "direct:1": {
-                                        "flags": {"directPath": True, "valid": True, "active": True},
-                                    },
-                                    "direct:8": {
-                                        "flags": {"directPath": True, "valid": True, "active": True},
-                                    },
+                                    "direct:9": {"flags": {"directPath": True, "valid": True, "active": True}},
+                                    "direct:10": {"flags": {"directPath": True, "valid": False, "active": True}},
+                                    "direct:1": {"flags": {"directPath": True, "valid": True, "active": True}},
+                                    "direct:8": {"flags": {"directPath": True, "valid": True, "active": True}},
                                 }
                             }
                         }
@@ -210,12 +147,8 @@ DATA: list[dict[str, Any]] = [
                         "avts": {
                             "GUEST-AVT-POLICY-DEFAULT": {
                                 "avtPaths": {
-                                    "direct:10": {
-                                        "flags": {"directPath": True, "valid": True, "active": True},
-                                    },
-                                    "direct:8": {
-                                        "flags": {"directPath": True, "valid": False, "active": True},
-                                    },
+                                    "direct:10": {"flags": {"directPath": True, "valid": True, "active": True}},
+                                    "direct:8": {"flags": {"directPath": True, "valid": False, "active": True}},
                                 }
                             }
                         }
@@ -224,28 +157,16 @@ DATA: list[dict[str, Any]] = [
                         "avts": {
                             "CONTROL-PLANE-PROFILE": {
                                 "avtPaths": {
-                                    "direct:9": {
-                                        "flags": {"directPath": True, "valid": True, "active": True},
-                                    },
-                                    "direct:10": {
-                                        "flags": {"directPath": True, "valid": False, "active": True},
-                                    },
-                                    "direct:1": {
-                                        "flags": {"directPath": True, "valid": True, "active": True},
-                                    },
-                                    "direct:8": {
-                                        "flags": {"directPath": True, "valid": True, "active": True},
-                                    },
+                                    "direct:9": {"flags": {"directPath": True, "valid": True, "active": True}},
+                                    "direct:10": {"flags": {"directPath": True, "valid": False, "active": True}},
+                                    "direct:1": {"flags": {"directPath": True, "valid": True, "active": True}},
+                                    "direct:8": {"flags": {"directPath": True, "valid": True, "active": True}},
                                 }
                             },
                             "DEFAULT-AVT-POLICY-DEFAULT": {
                                 "avtPaths": {
-                                    "direct:10": {
-                                        "flags": {"directPath": True, "valid": True, "active": True},
-                                    },
-                                    "direct:8": {
-                                        "flags": {"directPath": True, "valid": False, "active": True},
-                                    },
+                                    "direct:10": {"flags": {"directPath": True, "valid": True, "active": True}},
+                                    "direct:8": {"flags": {"directPath": True, "valid": False, "active": True}},
                                 }
                             },
                         }
@@ -264,9 +185,7 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-not-active-and-invalid",
-        "test": VerifyAVTPathHealth,
+    (VerifyAVTPathHealth, "failure-not-active-and-invalid"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -274,18 +193,10 @@ DATA: list[dict[str, Any]] = [
                         "avts": {
                             "DATA-AVT-POLICY-DEFAULT": {
                                 "avtPaths": {
-                                    "direct:9": {
-                                        "flags": {"directPath": True, "valid": True, "active": True},
-                                    },
-                                    "direct:10": {
-                                        "flags": {"directPath": True, "valid": False, "active": False},
-                                    },
-                                    "direct:1": {
-                                        "flags": {"directPath": True, "valid": True, "active": False},
-                                    },
-                                    "direct:8": {
-                                        "flags": {"directPath": True, "valid": True, "active": True},
-                                    },
+                                    "direct:9": {"flags": {"directPath": True, "valid": True, "active": True}},
+                                    "direct:10": {"flags": {"directPath": True, "valid": False, "active": False}},
+                                    "direct:1": {"flags": {"directPath": True, "valid": True, "active": False}},
+                                    "direct:8": {"flags": {"directPath": True, "valid": True, "active": True}},
                                 }
                             }
                         }
@@ -294,12 +205,8 @@ DATA: list[dict[str, Any]] = [
                         "avts": {
                             "GUEST-AVT-POLICY-DEFAULT": {
                                 "avtPaths": {
-                                    "direct:10": {
-                                        "flags": {"directPath": True, "valid": False, "active": True},
-                                    },
-                                    "direct:8": {
-                                        "flags": {"directPath": True, "valid": False, "active": False},
-                                    },
+                                    "direct:10": {"flags": {"directPath": True, "valid": False, "active": True}},
+                                    "direct:8": {"flags": {"directPath": True, "valid": False, "active": False}},
                                 }
                             }
                         }
@@ -308,28 +215,16 @@ DATA: list[dict[str, Any]] = [
                         "avts": {
                             "CONTROL-PLANE-PROFILE": {
                                 "avtPaths": {
-                                    "direct:9": {
-                                        "flags": {"directPath": True, "valid": True, "active": True},
-                                    },
-                                    "direct:10": {
-                                        "flags": {"directPath": True, "valid": False, "active": False},
-                                    },
-                                    "direct:1": {
-                                        "flags": {"directPath": True, "valid": True, "active": True},
-                                    },
-                                    "direct:8": {
-                                        "flags": {"directPath": True, "valid": True, "active": True},
-                                    },
+                                    "direct:9": {"flags": {"directPath": True, "valid": True, "active": True}},
+                                    "direct:10": {"flags": {"directPath": True, "valid": False, "active": False}},
+                                    "direct:1": {"flags": {"directPath": True, "valid": True, "active": True}},
+                                    "direct:8": {"flags": {"directPath": True, "valid": True, "active": True}},
                                 }
                             },
                             "DEFAULT-AVT-POLICY-DEFAULT": {
                                 "avtPaths": {
-                                    "direct:10": {
-                                        "flags": {"directPath": True, "valid": True, "active": False},
-                                    },
-                                    "direct:8": {
-                                        "flags": {"directPath": True, "valid": False, "active": False},
-                                    },
+                                    "direct:10": {"flags": {"directPath": True, "valid": True, "active": False}},
+                                    "direct:8": {"flags": {"directPath": True, "valid": False, "active": False}},
                                 }
                             },
                         }
@@ -351,9 +246,7 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "success",
-        "test": VerifyAVTSpecificPath,
+    (VerifyAVTSpecificPath, "success"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -383,7 +276,7 @@ DATA: list[dict[str, Any]] = [
                                     },
                                 }
                             }
-                        },
+                        }
                     },
                     "data": {
                         "avts": {
@@ -415,11 +308,11 @@ DATA: list[dict[str, Any]] = [
                                         "destination": "10.101.255.1",
                                     },
                                 }
-                            },
+                            }
                         }
                     },
                 }
-            },
+            }
         ],
         "inputs": {
             "avt_paths": [
@@ -430,12 +323,8 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-no-peer",
-        "test": VerifyAVTSpecificPath,
-        "eos_data": [
-            {"vrfs": {}},
-        ],
+    (VerifyAVTSpecificPath, "failure-no-peer"): {
+        "eos_data": [{"vrfs": {}}],
         "inputs": {
             "avt_paths": [
                 {"avt_name": "MGMT-AVT-POLICY-DEFAULT", "vrf": "default", "destination": "10.101.255.2", "next_hop": "10.101.255.1", "path_type": "multihop"},
@@ -447,9 +336,7 @@ DATA: list[dict[str, Any]] = [
             "messages": ["AVT: MGMT-AVT-POLICY-DEFAULT VRF: default Destination: 10.101.255.2 Next-hop: 10.101.255.1 - No AVT path configured"],
         },
     },
-    {
-        "name": "failure-path_type_check_true",
-        "test": VerifyAVTSpecificPath,
+    (VerifyAVTSpecificPath, "failure-path_type_check_true"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -469,7 +356,7 @@ DATA: list[dict[str, Any]] = [
                                     },
                                 }
                             }
-                        },
+                        }
                     },
                     "data": {
                         "avts": {
@@ -486,11 +373,11 @@ DATA: list[dict[str, Any]] = [
                                         "destination": "10.101.255.3",
                                     },
                                 }
-                            },
+                            }
                         }
                     },
                 }
-            },
+            }
         ],
         "inputs": {
             "avt_paths": [
@@ -512,9 +399,7 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-path_type_check_false",
-        "test": VerifyAVTSpecificPath,
+    (VerifyAVTSpecificPath, "failure-path_type_check_false"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -534,7 +419,7 @@ DATA: list[dict[str, Any]] = [
                                     },
                                 }
                             }
-                        },
+                        }
                     },
                     "data": {
                         "avts": {
@@ -551,20 +436,15 @@ DATA: list[dict[str, Any]] = [
                                         "destination": "10.101.255.3",
                                     },
                                 }
-                            },
+                            }
                         }
                     },
                 }
-            },
+            }
         ],
         "inputs": {
             "avt_paths": [
-                {
-                    "avt_name": "DEFAULT-AVT-POLICY-CONTROL-PLANE",
-                    "vrf": "default",
-                    "destination": "10.101.255.2",
-                    "next_hop": "10.101.255.11",
-                },
+                {"avt_name": "DEFAULT-AVT-POLICY-CONTROL-PLANE", "vrf": "default", "destination": "10.101.255.2", "next_hop": "10.101.255.11"},
                 {"avt_name": "DATA-AVT-POLICY-CONTROL-PLANE", "vrf": "data", "destination": "10.101.255.1", "next_hop": "10.101.255.21"},
             ]
         },
@@ -576,9 +456,7 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-incorrect-path",
-        "test": VerifyAVTSpecificPath,
+    (VerifyAVTSpecificPath, "failure-incorrect-path"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -590,10 +468,10 @@ DATA: list[dict[str, Any]] = [
                                         "flags": {"directPath": False, "valid": False, "active": True},
                                         "nexthopAddr": "10.101.255.1",
                                         "destination": "10.101.255.2",
-                                    },
+                                    }
                                 }
                             }
-                        },
+                        }
                     },
                     "data": {
                         "avts": {
@@ -625,11 +503,11 @@ DATA: list[dict[str, Any]] = [
                                         "destination": "10.101.255.1",
                                     },
                                 }
-                            },
+                            }
                         }
                     },
                 }
-            },
+            }
         ],
         "inputs": {
             "avt_paths": [
@@ -646,27 +524,19 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "AVT: DEFAULT-AVT-POLICY-CONTROL-PLANE VRF: default Destination: 10.101.255.2 Next-hop: 10.101.255.1 - "
-                "Incorrect path multihop:3 - Valid: False Active: True",
-                "AVT: DATA-AVT-POLICY-CONTROL-PLANE VRF: data Destination: 10.101.255.1 Next-hop: 10.101.255.1 - "
-                "Incorrect path direct:10 - Valid: False Active: True",
-                "AVT: DATA-AVT-POLICY-CONTROL-PLANE VRF: data Destination: 10.101.255.1 Next-hop: 10.101.255.1 - "
-                "Incorrect path direct:9 - Valid: True Active: False",
+                "AVT: DEFAULT-AVT-POLICY-CONTROL-PLANE VRF: default Destination: 10.101.255.2 Next-hop: 10.101.255.1 - Incorrect path multihop:3 - "
+                "Valid: False Active: True",
+                "AVT: DATA-AVT-POLICY-CONTROL-PLANE VRF: data Destination: 10.101.255.1 Next-hop: 10.101.255.1 - Incorrect path direct:10 - "
+                "Valid: False Active: True",
+                "AVT: DATA-AVT-POLICY-CONTROL-PLANE VRF: data Destination: 10.101.255.1 Next-hop: 10.101.255.1 - Incorrect path direct:9 - "
+                "Valid: True Active: False",
             ],
         },
     },
-    {
-        "name": "success",
-        "test": VerifyAVTRole,
-        "eos_data": [{"role": "edge"}],
-        "inputs": {"role": "edge"},
-        "expected": {"result": "success"},
-    },
-    {
-        "name": "failure-incorrect-role",
-        "test": VerifyAVTRole,
+    (VerifyAVTRole, "success"): {"eos_data": [{"role": "edge"}], "inputs": {"role": "edge"}, "expected": {"result": "success"}},
+    (VerifyAVTRole, "failure-incorrect-role"): {
         "eos_data": [{"role": "transit"}],
         "inputs": {"role": "edge"},
         "expected": {"result": "failure", "messages": ["AVT role mismatch - Expected: edge Actual: transit"]},
     },
-]
+}

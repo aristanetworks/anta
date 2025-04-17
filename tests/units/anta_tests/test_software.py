@@ -5,41 +5,27 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from anta.tests.software import VerifyEOSExtensions, VerifyEOSVersion, VerifyTerminAttrVersion
 from tests.units.anta_tests import test
 
-DATA: list[dict[str, Any]] = [
-    {
-        "name": "success",
-        "test": VerifyEOSVersion,
-        "eos_data": [
-            {
-                "modelName": "vEOS-lab",
-                "internalVersion": "4.27.0F-24305004.4270F",
-                "version": "4.27.0F",
-            },
-        ],
+if TYPE_CHECKING:
+    from anta.models import AntaTest
+    from tests.units.anta_tests import AntaUnitTest
+
+DATA: dict[tuple[type[AntaTest], str], AntaUnitTest] = {
+    (VerifyEOSVersion, "success"): {
+        "eos_data": [{"modelName": "vEOS-lab", "internalVersion": "4.27.0F-24305004.4270F", "version": "4.27.0F"}],
         "inputs": {"versions": ["4.27.0F", "4.28.0F"]},
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure",
-        "test": VerifyEOSVersion,
-        "eos_data": [
-            {
-                "modelName": "vEOS-lab",
-                "internalVersion": "4.27.0F-24305004.4270F",
-                "version": "4.27.0F",
-            },
-        ],
+    (VerifyEOSVersion, "failure"): {
+        "eos_data": [{"modelName": "vEOS-lab", "internalVersion": "4.27.0F-24305004.4270F", "version": "4.27.0F"}],
         "inputs": {"versions": ["4.27.1F"]},
         "expected": {"result": "failure", "messages": ["EOS version mismatch - Actual: 4.27.0F not in Expected: 4.27.1F"]},
     },
-    {
-        "name": "success",
-        "test": VerifyTerminAttrVersion,
+    (VerifyTerminAttrVersion, "success"): {
         "eos_data": [
             {
                 "imageFormatVersion": "1.0",
@@ -49,18 +35,14 @@ DATA: list[dict[str, Any]] = [
                     "deviations": [],
                     "components": [{"name": "Aboot", "version": "Aboot-veos-8.0.0-3255441"}],
                     "switchType": "fixedSystem",
-                    "packages": {
-                        "TerminAttr-core": {"release": "1", "version": "v1.17.0"},
-                    },
+                    "packages": {"TerminAttr-core": {"release": "1", "version": "v1.17.0"}},
                 },
-            },
+            }
         ],
         "inputs": {"versions": ["v1.17.0", "v1.18.1"]},
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure",
-        "test": VerifyTerminAttrVersion,
+    (VerifyTerminAttrVersion, "failure"): {
         "eos_data": [
             {
                 "imageFormatVersion": "1.0",
@@ -70,28 +52,19 @@ DATA: list[dict[str, Any]] = [
                     "deviations": [],
                     "components": [{"name": "Aboot", "version": "Aboot-veos-8.0.0-3255441"}],
                     "switchType": "fixedSystem",
-                    "packages": {
-                        "TerminAttr-core": {"release": "1", "version": "v1.17.0"},
-                    },
+                    "packages": {"TerminAttr-core": {"release": "1", "version": "v1.17.0"}},
                 },
-            },
+            }
         ],
         "inputs": {"versions": ["v1.17.1", "v1.18.1"]},
         "expected": {"result": "failure", "messages": ["TerminAttr version mismatch - Actual: v1.17.0 not in Expected: v1.17.1, v1.18.1"]},
     },
-    {
-        "name": "success-no-extensions",
-        "test": VerifyEOSExtensions,
-        "eos_data": [
-            {"extensions": {}, "extensionStoredDir": "flash:", "warnings": ["No extensions are available"]},
-            {"extensions": []},
-        ],
+    (VerifyEOSExtensions, "success-no-extensions"): {
+        "eos_data": [{"extensions": {}, "extensionStoredDir": "flash:", "warnings": ["No extensions are available"]}, {"extensions": []}],
         "inputs": None,
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-extensions",
-        "test": VerifyEOSExtensions,
+    (VerifyEOSExtensions, "success-extensions"): {
         "eos_data": [
             {
                 "extensions": {
@@ -110,7 +83,7 @@ DATA: list[dict[str, Any]] = [
                         "description": "An extension for Arista Cloud Connect gateway",
                         "affectedAgents": [],
                         "agentsToRestart": [],
-                    },
+                    }
                 }
             },
             {"extensions": ["AristaCloudGateway-1.0.1-1.swix"]},
@@ -118,9 +91,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure",
-        "test": VerifyEOSExtensions,
+    (VerifyEOSExtensions, "failure"): {
         "eos_data": [
             {
                 "extensions": {
@@ -139,7 +110,7 @@ DATA: list[dict[str, Any]] = [
                         "description": "An extension for Arista Cloud Connect gateway",
                         "affectedAgents": [],
                         "agentsToRestart": [],
-                    },
+                    }
                 }
             },
             {"extensions": []},
@@ -147,9 +118,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": None,
         "expected": {"result": "failure", "messages": ["EOS extensions mismatch - Installed: AristaCloudGateway-1.0.1-1.swix Configured: Not found"]},
     },
-    {
-        "name": "failure-multiple-extensions",
-        "test": VerifyEOSExtensions,
+    (VerifyEOSExtensions, "failure-multiple-extensions"): {
         "eos_data": [
             {
                 "extensions": {
@@ -198,4 +167,4 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-]
+}

@@ -5,50 +5,42 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from anta.tests.vxlan import VerifyVxlan1ConnSettings, VerifyVxlan1Interface, VerifyVxlanConfigSanity, VerifyVxlanVniBinding, VerifyVxlanVtep
 from tests.units.anta_tests import test
 
-DATA: list[dict[str, Any]] = [
-    {
-        "name": "success",
-        "test": VerifyVxlan1Interface,
+if TYPE_CHECKING:
+    from anta.models import AntaTest
+    from tests.units.anta_tests import AntaUnitTest
+
+DATA: dict[tuple[type[AntaTest], str], AntaUnitTest] = {
+    (VerifyVxlan1Interface, "success"): {
         "eos_data": [{"interfaceDescriptions": {"Vxlan1": {"lineProtocolStatus": "up", "interfaceStatus": "up"}}}],
         "inputs": None,
         "expected": {"result": "success"},
     },
-    {
-        "name": "skipped",
-        "test": VerifyVxlan1Interface,
+    (VerifyVxlan1Interface, "skipped"): {
         "eos_data": [{"interfaceDescriptions": {"Loopback0": {"lineProtocolStatus": "up", "interfaceStatus": "up"}}}],
         "inputs": None,
         "expected": {"result": "skipped", "messages": ["Interface: Vxlan1 - Not configured"]},
     },
-    {
-        "name": "failure-down-up",
-        "test": VerifyVxlan1Interface,
+    (VerifyVxlan1Interface, "failure-down-up"): {
         "eos_data": [{"interfaceDescriptions": {"Vxlan1": {"lineProtocolStatus": "down", "interfaceStatus": "up"}}}],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["Interface: Vxlan1 - Incorrect Line protocol status/Status - Expected: up/up Actual: down/up"]},
     },
-    {
-        "name": "failure-up-down",
-        "test": VerifyVxlan1Interface,
+    (VerifyVxlan1Interface, "failure-up-down"): {
         "eos_data": [{"interfaceDescriptions": {"Vxlan1": {"lineProtocolStatus": "up", "interfaceStatus": "down"}}}],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["Interface: Vxlan1 - Incorrect Line protocol status/Status - Expected: up/up Actual: up/down"]},
     },
-    {
-        "name": "failure-down-down",
-        "test": VerifyVxlan1Interface,
+    (VerifyVxlan1Interface, "failure-down-down"): {
         "eos_data": [{"interfaceDescriptions": {"Vxlan1": {"lineProtocolStatus": "down", "interfaceStatus": "down"}}}],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["Interface: Vxlan1 - Incorrect Line protocol status/Status - Expected: up/up Actual: down/down"]},
     },
-    {
-        "name": "success",
-        "test": VerifyVxlanConfigSanity,
+    (VerifyVxlanConfigSanity, "success"): {
         "eos_data": [
             {
                 "categories": {
@@ -106,14 +98,12 @@ DATA: list[dict[str, Any]] = [
                     },
                 },
                 "warnings": [],
-            },
+            }
         ],
         "inputs": None,
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure",
-        "test": VerifyVxlanConfigSanity,
+    (VerifyVxlanConfigSanity, "failure"): {
         "eos_data": [
             {
                 "categories": {
@@ -171,89 +161,76 @@ DATA: list[dict[str, Any]] = [
                     },
                 },
                 "warnings": ["Your configuration contains warnings. This does not mean misconfigurations. But you may wish to re-check your configurations."],
-            },
+            }
         ],
         "inputs": None,
-        "expected": {
-            "result": "failure",
-            "messages": ["Vxlan Category: localVtep - Config sanity check is not passing"],
-        },
+        "expected": {"result": "failure", "messages": ["Vxlan Category: localVtep - Config sanity check is not passing"]},
     },
-    {
-        "name": "skipped",
-        "test": VerifyVxlanConfigSanity,
+    (VerifyVxlanConfigSanity, "skipped"): {
         "eos_data": [{"categories": {}}],
         "inputs": None,
         "expected": {"result": "skipped", "messages": ["VXLAN is not configured"]},
     },
-    {
-        "name": "success",
-        "test": VerifyVxlanVniBinding,
+    (VerifyVxlanVniBinding, "success"): {
         "eos_data": [
             {
                 "vxlanIntfs": {
                     "Vxlan1": {
                         "vniBindings": {
-                            "10020": {"vlan": 20, "dynamicVlan": False, "source": "static", "interfaces": {"Ethernet31": {"dot1q": 0}, "Vxlan1": {"dot1q": 20}}},
+                            "10020": {"vlan": 20, "dynamicVlan": False, "source": "static", "interfaces": {"Ethernet31": {"dot1q": 0}, "Vxlan1": {"dot1q": 20}}}
                         },
                         "vniBindingsToVrf": {"500": {"vrfName": "PROD", "vlan": 1199, "source": "evpn"}},
-                    },
-                },
-            },
+                    }
+                }
+            }
         ],
         "inputs": {"bindings": {10020: 20, 500: 1199}},
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-no-binding",
-        "test": VerifyVxlanVniBinding,
+    (VerifyVxlanVniBinding, "failure-no-binding"): {
         "eos_data": [
             {
                 "vxlanIntfs": {
                     "Vxlan1": {
                         "vniBindings": {
-                            "10020": {"vlan": 20, "dynamicVlan": False, "source": "static", "interfaces": {"Ethernet31": {"dot1q": 0}, "Vxlan1": {"dot1q": 20}}},
+                            "10020": {"vlan": 20, "dynamicVlan": False, "source": "static", "interfaces": {"Ethernet31": {"dot1q": 0}, "Vxlan1": {"dot1q": 20}}}
                         },
                         "vniBindingsToVrf": {"500": {"vrfName": "PROD", "vlan": 1199, "source": "evpn"}},
-                    },
-                },
-            },
+                    }
+                }
+            }
         ],
         "inputs": {"bindings": {10010: 10, 10020: 20, 500: 1199}},
         "expected": {"result": "failure", "messages": ["Interface: Vxlan1 VNI: 10010 - Binding not found"]},
     },
-    {
-        "name": "failure-wrong-binding",
-        "test": VerifyVxlanVniBinding,
+    (VerifyVxlanVniBinding, "failure-wrong-binding"): {
         "eos_data": [
             {
                 "vxlanIntfs": {
                     "Vxlan1": {
                         "vniBindings": {
-                            "10020": {"vlan": 30, "dynamicVlan": False, "source": "static", "interfaces": {"Ethernet31": {"dot1q": 0}, "Vxlan1": {"dot1q": 20}}},
+                            "10020": {"vlan": 30, "dynamicVlan": False, "source": "static", "interfaces": {"Ethernet31": {"dot1q": 0}, "Vxlan1": {"dot1q": 20}}}
                         },
                         "vniBindingsToVrf": {"500": {"vrfName": "PROD", "vlan": 1199, "source": "evpn"}},
-                    },
-                },
-            },
+                    }
+                }
+            }
         ],
         "inputs": {"bindings": {10020: 20, 500: 1199}},
         "expected": {"result": "failure", "messages": ["Interface: Vxlan1 VNI: 10020 VLAN: 20 - Wrong VLAN binding - Actual: 30"]},
     },
-    {
-        "name": "failure-no-and-wrong-binding",
-        "test": VerifyVxlanVniBinding,
+    (VerifyVxlanVniBinding, "failure-no-and-wrong-binding"): {
         "eos_data": [
             {
                 "vxlanIntfs": {
                     "Vxlan1": {
                         "vniBindings": {
-                            "10020": {"vlan": 30, "dynamicVlan": False, "source": "static", "interfaces": {"Ethernet31": {"dot1q": 0}, "Vxlan1": {"dot1q": 20}}},
+                            "10020": {"vlan": 30, "dynamicVlan": False, "source": "static", "interfaces": {"Ethernet31": {"dot1q": 0}, "Vxlan1": {"dot1q": 20}}}
                         },
                         "vniBindingsToVrf": {"500": {"vrfName": "PROD", "vlan": 1199, "source": "evpn"}},
-                    },
-                },
-            },
+                    }
+                }
+            }
         ],
         "inputs": {"bindings": {10010: 10, 10020: 20, 500: 1199}},
         "expected": {
@@ -261,44 +238,32 @@ DATA: list[dict[str, Any]] = [
             "messages": ["Interface: Vxlan1 VNI: 10010 - Binding not found", "Interface: Vxlan1 VNI: 10020 VLAN: 20 - Wrong VLAN binding - Actual: 30"],
         },
     },
-    {
-        "name": "skipped",
-        "test": VerifyVxlanVniBinding,
+    (VerifyVxlanVniBinding, "skipped"): {
         "eos_data": [{"vxlanIntfs": {}}],
         "inputs": {"bindings": {10020: 20, 500: 1199}},
         "expected": {"result": "skipped", "messages": ["Interface: Vxlan1 - Not configured"]},
     },
-    {
-        "name": "success",
-        "test": VerifyVxlanVtep,
+    (VerifyVxlanVtep, "success"): {
         "eos_data": [{"vteps": {}, "interfaces": {"Vxlan1": {"vteps": ["10.1.1.5", "10.1.1.6"]}}}],
         "inputs": {"vteps": ["10.1.1.5", "10.1.1.6"]},
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-missing-vtep",
-        "test": VerifyVxlanVtep,
+    (VerifyVxlanVtep, "failure-missing-vtep"): {
         "eos_data": [{"vteps": {}, "interfaces": {"Vxlan1": {"vteps": ["10.1.1.5", "10.1.1.6"]}}}],
         "inputs": {"vteps": ["10.1.1.5", "10.1.1.6", "10.1.1.7"]},
         "expected": {"result": "failure", "messages": ["The following VTEP peer(s) are missing from the Vxlan1 interface: 10.1.1.7"]},
     },
-    {
-        "name": "failure-no-vtep",
-        "test": VerifyVxlanVtep,
+    (VerifyVxlanVtep, "failure-no-vtep"): {
         "eos_data": [{"vteps": {}, "interfaces": {"Vxlan1": {"vteps": []}}}],
         "inputs": {"vteps": ["10.1.1.5", "10.1.1.6"]},
         "expected": {"result": "failure", "messages": ["The following VTEP peer(s) are missing from the Vxlan1 interface: 10.1.1.5, 10.1.1.6"]},
     },
-    {
-        "name": "failure-no-input-vtep",
-        "test": VerifyVxlanVtep,
+    (VerifyVxlanVtep, "failure-no-input-vtep"): {
         "eos_data": [{"vteps": {}, "interfaces": {"Vxlan1": {"vteps": ["10.1.1.5"]}}}],
         "inputs": {"vteps": []},
         "expected": {"result": "failure", "messages": ["Unexpected VTEP peer(s) on Vxlan1 interface: 10.1.1.5"]},
     },
-    {
-        "name": "failure-missmatch",
-        "test": VerifyVxlanVtep,
+    (VerifyVxlanVtep, "failure-missmatch"): {
         "eos_data": [{"vteps": {}, "interfaces": {"Vxlan1": {"vteps": ["10.1.1.6", "10.1.1.7", "10.1.1.8"]}}}],
         "inputs": {"vteps": ["10.1.1.5", "10.1.1.6"]},
         "expected": {
@@ -309,40 +274,27 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "skipped",
-        "test": VerifyVxlanVtep,
+    (VerifyVxlanVtep, "skipped"): {
         "eos_data": [{"vteps": {}, "interfaces": {}}],
         "inputs": {"vteps": ["10.1.1.5", "10.1.1.6", "10.1.1.7"]},
         "expected": {"result": "skipped", "messages": ["Interface: Vxlan1 - Not configured"]},
     },
-    {
-        "name": "success",
-        "test": VerifyVxlan1ConnSettings,
+    (VerifyVxlan1ConnSettings, "success"): {
         "eos_data": [{"interfaces": {"Vxlan1": {"srcIpIntf": "Loopback1", "udpPort": 4789}}}],
         "inputs": {"source_interface": "Loopback1", "udp_port": 4789},
         "expected": {"result": "success"},
     },
-    {
-        "name": "skipped",
-        "test": VerifyVxlan1ConnSettings,
+    (VerifyVxlan1ConnSettings, "skipped"): {
         "eos_data": [{"interfaces": {}}],
         "inputs": {"source_interface": "Loopback1", "udp_port": 4789},
         "expected": {"result": "skipped", "messages": ["Interface: Vxlan1 - Not configured"]},
     },
-    {
-        "name": "failure-wrong-interface",
-        "test": VerifyVxlan1ConnSettings,
+    (VerifyVxlan1ConnSettings, "failure-wrong-interface"): {
         "eos_data": [{"interfaces": {"Vxlan1": {"srcIpIntf": "Loopback10", "udpPort": 4789}}}],
         "inputs": {"source_interface": "lo1", "udp_port": 4789},
-        "expected": {
-            "result": "failure",
-            "messages": ["Interface: Vxlan1 - Incorrect Source interface - Expected: Loopback1 Actual: Loopback10"],
-        },
+        "expected": {"result": "failure", "messages": ["Interface: Vxlan1 - Incorrect Source interface - Expected: Loopback1 Actual: Loopback10"]},
     },
-    {
-        "name": "failure-wrong-port",
-        "test": VerifyVxlan1ConnSettings,
+    (VerifyVxlan1ConnSettings, "failure-wrong-port"): {
         "eos_data": [{"interfaces": {"Vxlan1": {"srcIpIntf": "Loopback10", "udpPort": 4789}}}],
         "inputs": {"source_interface": "Lo1", "udp_port": 4780},
         "expected": {
@@ -353,4 +305,4 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-]
+}
