@@ -10,11 +10,19 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING, ClassVar
 
+from pydantic import model_validator
+
 from anta.custom_types import RegexString
-from anta.models import AntaCommand, AntaTest
+from anta.input_models.configuration import RunningConfigSection
+from anta.models import AntaCommand, AntaTemplate, AntaTest
 
 if TYPE_CHECKING:
-    from anta.models import AntaTemplate
+    import sys
+
+    if sys.version_info >= (3, 11):
+        from typing import Self
+    else:
+        from typing_extensions import Self
 
 
 class VerifyZeroTouch(AntaTest):
@@ -76,24 +84,41 @@ class VerifyRunningConfigDiffs(AntaTest):
 
 
 class VerifyRunningConfigLines(AntaTest):
-    """Verifies the given regular expression patterns are present in the running-config.
+    """Verifies that the specified regular expression patterns or section-specific patterns are present in the running configuration.
 
     !!! warning
         Since this uses regular expression searches on the whole running-config, it can
         drastically impact performance and should only be used if no other test is available.
 
         If possible, try using another ANTA test that is more specific.
+    !!! Note
+
+        For accurate results, the section_matcher field must be unique and clearly defined.
+
+        Example:
+
+          1. router bgp
+          2. router ospf
+          3. ^interface ethernet1$
 
     Expected Results
     ----------------
-    * Success: The test will pass if all the patterns are found in the running-config.
-    * Failure: The test will fail if any of the patterns are NOT found in the running-config.
+    * Success: The test will pass if all specified regular expression patterns or section-specific patterns are found in the running configuration.
+    * Failure: The test will fail if any of the specified regular expression patterns, or section-specific patterns, are not found in the running configuration.
 
     Examples
     --------
     ```yaml
     anta.tests.configuration:
       - VerifyRunningConfigLines:
+          sections:
+            - section_matcher: router bgp
+              match_patterns:
+                - neighbor 10.111.1.0 peer group SPINE
+                - router-id 10.111.254.1
+            - section_matcher: ^interface ethernet1$
+              match_patterns:
+                - switchport mode trunk
           regex_patterns:
             - "^enable password.*$"
             - "bla bla"
@@ -102,27 +127,55 @@ class VerifyRunningConfigLines(AntaTest):
 
     description = "Search the Running-Config for the given RegEx patterns."
     categories: ClassVar[list[str]] = ["configuration"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show running-config", ofmt="text")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show running-config{section_matcher}", ofmt="text")]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyRunningConfigLines test."""
 
-        regex_patterns: list[RegexString]
+        sections: list[RunningConfigSection] | None = None
+        """List of regex sections with unique section matchers and their corresponding regular expressions."""
+        regex_patterns: list[RegexString] | None = None
         """List of regular expressions."""
+
+        @model_validator(mode="after")
+        def validate_inputs(self) -> Self:
+            """Validate the inputs provided to the VerifyRunningConfigLines test.
+
+            Either `sections` or `regex_patterns` can be provided at the same time.
+            """
+            if not self.sections and not self.regex_patterns:
+                msg = "'sections' or 'regex_patterns' must be provided"
+                raise ValueError(msg)
+            if self.sections and self.regex_patterns:
+                msg = "Either 'sections' or 'regex_patterns' can be provided at the same time"
+                raise ValueError(msg)
+            return self
+
+    def render(self, template: AntaTemplate) -> list[AntaCommand]:
+        """Render the template for each host in the input list."""
+        if self.inputs.sections:
+            return [template.render(section_matcher=f" section {section.section_matcher}") for section in self.inputs.sections]
+        return [template.render(section_matcher="")]
 
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyRunningConfigLines."""
-        failure_msgs = []
-        command_output = self.instance_commands[0].text_output
-
-        for pattern in self.inputs.regex_patterns:
-            re_search = re.compile(pattern, flags=re.MULTILINE)
-
-            if not re_search.search(command_output):
-                failure_msgs.append(f"'{pattern}'")
-
-        if not failure_msgs:
-            self.result.is_success()
-        else:
-            self.result.is_failure("Following patterns were not found: " + ", ".join(failure_msgs))
+        self.result.is_success()
+        # If only a regex pattern is provided, the matching configurations will be searched across the entire running configuration.
+        if self.inputs.regex_patterns:
+            for pattern in self.inputs.regex_patterns:
+                re_search = re.compile(pattern, flags=re.MULTILINE)
+                if not re_search.search(self.instance_commands[0].text_output):
+                    self.result.is_failure(f"Regex pattern: {pattern} - Not found")
+            return
+        # If a section matcher is provided, the matching configuration will be searched only within the specified section.
+        for output, section in zip(self.instance_commands, self.inputs.sections):
+            # Matches a section starting with section matcher, capturing everything until the next section or end of file.
+            pattern_to_search = rf"({section.section_matcher}[\s\S]+?)(?=\n(?:\S.*|\Z))"
+            # Collects exact matches for the specified section matcher.
+            matched_entries = re.findall(pattern_to_search, output.text_output, re.IGNORECASE | re.MULTILINE)
+            for match_pattern in section.match_patterns:
+                # Verifies expected regex patterns in the section matcher.
+                match_found = any(re.search(match_pattern, item) for item in matched_entries)
+                if not match_found:
+                    self.result.is_failure(f"Section: {section.section_matcher} Regex pattern: {match_pattern} - Not found")
