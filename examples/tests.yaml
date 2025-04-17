@@ -108,13 +108,13 @@ anta.tests.configuration:
   - VerifyRunningConfigLines:
       # Search the Running-Config for the given RegEx patterns.
       sections:
-        - section_matcher: router bgp 65101
+        - section_matcher: router bgp
           match_patterns:
             - neighbor 10.111.1.0 peer group SPINE
             - router-id 10.111.254.1
-        - section_matcher: router ospf 100
+        - section_matcher: ^interface ethernet1$
           match_patterns:
-            - router-id 10.111.254.1
+            - switchport mode trunk
       regex_patterns:
         - "^enable password.*$"
         - "bla bla"

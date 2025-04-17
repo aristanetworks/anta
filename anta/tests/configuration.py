@@ -97,9 +97,9 @@ class VerifyRunningConfigLines(AntaTest):
 
         Example:
 
-          1. router bgp 65101
-          2. router ospf 100
-          3. interface ethernet1
+          1. router bgp
+          2. router ospf
+          3. ^interface ethernet1$
 
     Expected Results
     ----------------
@@ -112,13 +112,13 @@ class VerifyRunningConfigLines(AntaTest):
     anta.tests.configuration:
       - VerifyRunningConfigLines:
           sections:
-            - section_matcher: router bgp 65101
+            - section_matcher: router bgp
               match_patterns:
                 - neighbor 10.111.1.0 peer group SPINE
                 - router-id 10.111.254.1
-            - section_matcher: router ospf 100
+            - section_matcher: ^interface ethernet1$
               match_patterns:
-                - router-id 10.111.254.1
+                - switchport mode trunk
           regex_patterns:
             - "^enable password.*$"
             - "bla bla"
