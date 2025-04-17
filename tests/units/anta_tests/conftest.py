@@ -22,8 +22,7 @@ def build_test_id(val: tuple[tuple[type[AntaTest], str], AntaUnitTest]) -> str:
     """
     # Extract the test class and its name from a nested tuple structure:
     # `val: Tuple[Tuple[Type[AntaTest], str], AntaUnitTest]`
-    anta_test = val[0][0]
-    test_name = val[0][1]
+    (anta_test, test_name) = val[0]
 
     return f"{anta_test.__module__}.{anta_test.__name__}-{test_name}"
 

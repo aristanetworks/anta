@@ -41,7 +41,7 @@ DATA: dict[tuple[type[AntaTest], str], AntaUnitTest] = {
         "inputs": None,
         "expected": {"result": "success"},
     },
-    (VerifyReloadCause, "success-valid-cause"): {
+    (VerifyReloadCause, "success-valid-cause-user"): {
         "eos_data": [
             {
                 "resetCauses": [
@@ -53,6 +53,60 @@ DATA: dict[tuple[type[AntaTest], str], AntaUnitTest] = {
         "inputs": None,
         "expected": {"result": "success"},
     },
+    (VerifyReloadCause, "success-valid-reload-cause-ztp"): {
+        "eos_data": [
+            {
+                "resetCauses": [
+                    {
+                        "description": "System reloaded due to Zero Touch Provisioning",
+                        "timestamp": 1729856740.0,
+                        "recommendedAction": "No action necessary.",
+                        "debugInfoIsDir": False,
+                    }
+                ],
+                "full": False,
+            }
+        ],
+        "inputs": {"allowed_causes": ["ZTP"]},
+        "expected": {"result": "success"},
+    },
+    (VerifyReloadCause, "success-valid-reload-cause-fpga"): {
+        "eos_data": [
+            {
+                "resetCauses": [
+                    {
+                        "description": "Reload requested after FPGA upgrade",
+                        "timestamp": 1729856740.0,
+                        "recommendedAction": "No action necessary.",
+                        "debugInfoIsDir": False,
+                    }
+                ],
+                "full": False,
+            }
+        ],
+        "inputs": {"allowed_causes": ["fpga"]},
+        "expected": {"result": "success"},
+    },
+    (VerifyReloadCause, "failure-invalid-reload-cause"): {
+        "eos_data": [
+            {
+                "resetCauses": [
+                    {
+                        "description": "Reload requested after FPGA upgrade",
+                        "timestamp": 1729856740.0,
+                        "recommendedAction": "No action necessary.",
+                        "debugInfoIsDir": False,
+                    }
+                ],
+                "full": False,
+            }
+        ],
+        "inputs": {"allowed_causes": ["ZTP"]},
+        "expected": {
+            "result": "failure",
+            "messages": ["Invalid reload cause -  Expected: 'System reloaded due to Zero Touch Provisioning' Actual: 'Reload requested after FPGA upgrade'"],
+        },
+    },
     (VerifyReloadCause, "failure"): {
         "eos_data": [
             {
@@ -63,13 +117,12 @@ DATA: dict[tuple[type[AntaTest], str], AntaUnitTest] = {
             }
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Reload cause is: Reload after crash."]},
+        "expected": {
+            "result": "failure",
+            "messages": ["Invalid reload cause -  Expected: 'Reload requested by the user.', 'Reload requested after FPGA upgrade' Actual: 'Reload after crash.'"],
+        },
     },
-    (VerifyCoredump, "success-without-minidump"): {
-        "eos_data": [{"mode": "compressedDeferred", "coreFiles": []}],
-        "inputs": None,
-        "expected": {"result": "success"},
-    },
+    (VerifyCoredump, "success-without-minidump"): {"eos_data": [{"mode": "compressedDeferred", "coreFiles": []}], "inputs": None, "expected": {"result": "success"}},
     (VerifyCoredump, "success-with-minidump"): {
         "eos_data": [{"mode": "compressedDeferred", "coreFiles": ["minidump"]}],
         "inputs": None,
@@ -88,19 +141,18 @@ DATA: dict[tuple[type[AntaTest], str], AntaUnitTest] = {
     (VerifyAgentLogs, "success"): {"eos_data": [""], "inputs": None, "expected": {"result": "success"}},
     (VerifyAgentLogs, "failure"): {
         "eos_data": [
-            "===> /var/log/agents/Test-666 Thu May  4 09:57:02 2023 <===\nCLI Exception: Exception\nCLI Exception: Backtrace\n"
-            "===> /var/log/agents/Aaa-855 Fri Jul  7 15:07:00 2023"
-            " <===\n===== Output from /usr/bin/Aaa [] (PID=855) started Jul  7 15:06:11.606414 ===\n"
-            "EntityManager::doBackoff waiting for remote sysdb version ....ok\n\n===> "
-            "/var/log/agents/Acl-830 Fri Jul  7 15:07:00 2023 <===\n===== Output from /usr/bin/Acl [] (PID=830) started Jul  7 15:06:10.871700 ===\n"
+            "===> /var/log/agents/Test-666 Thu May  4 09:57:02 2023 <===\nCLI Exception: Exception\nCLI Exception: Backtrace\n===> /var/log/agents/Aaa-855"
+            " Fri Jul  7 15:07:00 2023 <===\n===== Output from /usr/bin/Aaa [] (PID=855) started Jul  7 15:06:11.606414 ===\n"
+            "EntityManager::doBackoff waiting for remote sysdb version ....ok\n\n===> /var/log/agents/Acl-830"
+            " Fri Jul  7 15:07:00 2023 <===\n===== Output from /usr/bin/Acl [] (PID=830) started Jul  7 15:06:10.871700 ===\n"
             "EntityManager::doBackoff waiting for remote sysdb version ...................ok\n"
         ],
         "inputs": None,
         "expected": {
             "result": "failure",
             "messages": [
-                "Device has reported agent crashes:\n * /var/log/agents/Test-666 Thu May  4 09:57:02 2023\n * "
-                "/var/log/agents/Aaa-855 Fri Jul  7 15:07:00 2023\n * /var/log/agents/Acl-830 Fri Jul  7 15:07:00 2023"
+                "Device has reported agent crashes:\n * /var/log/agents/Test-666 Thu May  4 09:57:02 2023\n"
+                " * /var/log/agents/Aaa-855 Fri Jul  7 15:07:00 2023\n * /var/log/agents/Acl-830 Fri Jul  7 15:07:00 2023"
             ],
         },
     },
@@ -496,7 +548,7 @@ DATA: dict[tuple[type[AntaTest], str], AntaUnitTest] = {
             }
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Units under maintenance: 'mlag", "Possible causes: 'Quiesce is configured"]},
+        "expected": {"result": "failure", "messages": ["Units under maintenance: 'mlag'", "Possible causes: 'Quiesce is configured'"]},
     },
     (VerifyMaintenance, "failure-multiple-reasons"): {
         "eos_data": [
@@ -528,7 +580,7 @@ DATA: dict[tuple[type[AntaTest], str], AntaUnitTest] = {
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": ["Units under maintenance: 'mlag", "Units entering maintenance: 'System", "Possible causes: 'Quiesce is configured"],
+            "messages": ["Units under maintenance: 'mlag'", "Units entering maintenance: 'System'", "Possible causes: 'Quiesce is configured'"],
         },
     },
     (VerifyMaintenance, "failure-onboot-maintenance"): {
@@ -552,7 +604,7 @@ DATA: dict[tuple[type[AntaTest], str], AntaUnitTest] = {
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": ["Units under maintenance: 'System", "Possible causes: 'On-boot maintenance is configured, Quiesce is configured"],
+            "messages": ["Units under maintenance: 'System'", "Possible causes: 'On-boot maintenance is configured, Quiesce is configured'"],
         },
     },
     (VerifyMaintenance, "failure-entering-maintenance-interface-violation"): {
@@ -576,7 +628,7 @@ DATA: dict[tuple[type[AntaTest], str], AntaUnitTest] = {
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": ["Units entering maintenance: 'System", "Possible causes: 'Interface traffic threshold violation, Quiesce is configured"],
+            "messages": ["Units entering maintenance: 'System'", "Possible causes: 'Interface traffic threshold violation, Quiesce is configured'"],
         },
     },
 }

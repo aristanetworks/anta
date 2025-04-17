@@ -37,16 +37,12 @@ def test(device: AntaDevice, data: tuple[tuple[type[AntaTest], str], AntaUnitTes
     """
     # Extract the test class, name and test data from a nested tuple structure:
     # `val: Tuple[Tuple[Type[AntaTest], str], AntaUnitTest]`
-    anta_test = data[0][0]
-    test_data = data[1]
+    (anta_test, name), test_data = data
 
     # Instantiate the AntaTest subclass
     test_instance = anta_test(device, inputs=test_data["inputs"], eos_data=test_data["eos_data"])
     # Run the test() method
     asyncio.run(test_instance.test())
-
-    valid_results = {"success", "failure", "skipped"}
-    assert (test_result := test_data["expected"]["result"]) in valid_results, f"Invalid result: '{test_result}'. Must be one of {valid_results}"
 
     # Assert expected result
     assert test_instance.result.result == test_data["expected"]["result"], (
