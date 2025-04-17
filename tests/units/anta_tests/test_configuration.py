@@ -72,7 +72,7 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "sections": [
-                {"section_matcher": "interface Ethernet1", "match_patterns": ["switchport mode trunk"]},
+                {"section_matcher": "^interface ethernet1$", "match_patterns": ["switchport mode trunk"]},
                 {"section_matcher": "router bgp 65101", "match_patterns": ["router-id 10.111.254.1", "neighbor SPINE*"]},
             ]
         },
@@ -90,14 +90,14 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "sections": [
-                {"section_matcher": "interface Ethernet1", "match_patterns": ["switchport mode trunk"]},
+                {"section_matcher": "^interface Ethernet1$", "match_patterns": ["switchport mode trunk"]},
                 {"section_matcher": "router bgp 65101", "match_patterns": ["router-id 10.111.255.12", "network 10.110.254.1"]},
             ]
         },
         "expected": {
             "result": "failure",
             "messages": [
-                "Section: interface Ethernet1 Regex pattern: switchport mode trunk - Not found",
+                "Section: ^interface Ethernet1$ Regex pattern: switchport mode trunk - Not found",
                 "Section: router bgp 65101 Regex pattern: router-id 10.111.255.12 - Not found",
                 "Section: router bgp 65101 Regex pattern: network 10.110.254.1 - Not found",
             ],
