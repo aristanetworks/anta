@@ -64,7 +64,7 @@ DATA: list[dict[str, Any]] = [
         "name": "success-section",
         "test": VerifyRunningConfigLines,
         "eos_data": [
-            "interface Ethernet1\n   description Ethernet1- s1\n   switchport mode trunk\n   channel-group 1 mode active\ninterface Ethernet1\n   "
+            "interface Ethernet1\n   description Ethernet1- s1\n   switchport mode trunk\n   channel-group 1 mode active\ninterface Ethernet10\n   "
             "ip address 9.11.1.2/31\ninterface Ethernet100\n   ip address 10.11.19.3/31\n",
             "router bgp 65101\n   router-id 10.111.254.1\n   maximum-paths 2\n   neighbor SPINE peer group\n   neighbor SPINE remote-as 65100\n   "
             "neighbor SPINE send-community standard extended\n   neighbor 10.111.1.0 peer group SPINE\n   neighbor 10.111.2.0 peer group SPINE\n   "
@@ -72,8 +72,8 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "sections": [
-                {"regex": "interface Ethernet1", "regex_patterns": ["switchport mode trunk\n"]},
-                {"regex": "router bgp 65101", "regex_patterns": ["router-id 10.111.254.1\n", "neighbor SPINE*"]},
+                {"section_matcher": "interface Ethernet1", "match_patterns": ["switchport mode trunk"]},
+                {"section_matcher": "router bgp 65101", "match_patterns": ["router-id 10.111.254.1", "neighbor SPINE*"]},
             ]
         },
         "expected": {"result": "success"},
@@ -90,16 +90,16 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "sections": [
-                {"regex": "interface Ethernet1", "regex_patterns": ["switchport mode trunk\n"]},
-                {"regex": "router bgp 65101", "regex_patterns": ["router-id 10.111.255.12", " network 10.110.254.1"]},
+                {"section_matcher": "interface Ethernet1", "match_patterns": ["switchport mode trunk"]},
+                {"section_matcher": "router bgp 65101", "match_patterns": ["router-id 10.111.255.12", "network 10.110.254.1"]},
             ]
         },
         "expected": {
             "result": "failure",
             "messages": [
-                "Section: interface Ethernet1 Regex pattern: switchport mode trunk\n - Not found",
+                "Section: interface Ethernet1 Regex pattern: switchport mode trunk - Not found",
                 "Section: router bgp 65101 Regex pattern: router-id 10.111.255.12 - Not found",
-                "Section: router bgp 65101 Regex pattern:  network 10.110.254.1 - Not found",
+                "Section: router bgp 65101 Regex pattern: network 10.110.254.1 - Not found",
             ],
         },
     },

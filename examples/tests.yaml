@@ -108,17 +108,16 @@ anta.tests.configuration:
   - VerifyRunningConfigLines:
       # Search the Running-Config for the given RegEx patterns.
       sections:
-        - regex: router bgp
-          regex_patterns:
-            - neighbor*
+        - section_matcher: router bgp 65101
+          match_patterns:
+            - neighbor 10.111.1.0 peer group SPINE
             - router-id 10.111.254.1
-        - regex: router ospf
-          regex_patterns:
-            - router-id
+        - section_matcher: router ospf 100
+          match_patterns:
+            - router-id 10.111.254.1
       regex_patterns:
         - "^enable password.*$"
         - "bla bla"
-
   - VerifyZeroTouch:
       # Verifies ZeroTouch is disabled.
 anta.tests.connectivity:

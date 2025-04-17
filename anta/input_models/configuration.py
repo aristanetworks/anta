@@ -14,7 +14,7 @@ class RunningConfigSection(BaseModel):
     """class RunningConfigSection model representing the section details."""
 
     model_config = ConfigDict(extra="forbid")
-    regex: RegexString
-    """Regex to extract specified configs from running configuration output."""
-    regex_patterns: list[RegexString]
-    """Regex to validate the specified configs from running configuration output."""
+    section_matcher: RegexString
+    """A unique regex pattern to extract specific config entries from the running output."""
+    match_patterns: list[RegexString]
+    """Regex to validate matching patterns within selected configuration entries."""

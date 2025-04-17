@@ -26,13 +26,13 @@ class TestVerifyRunningConfigLinesInput:
         [
             pytest.param(
                 [
-                    {"regex": "interface Ethernet1", "regex_patterns": ["switchport mode trunk\n"]},
-                    {"regex": "router bgp 65101", "regex_patterns": ["router-id 10.111.255.12", " network 10.110.254.1"]},
+                    {"section_matcher": "interface Ethernet1", "match_patterns": ["switchport mode trunk"]},
+                    {"section_matcher": "router bgp 65101", "match_patterns": ["router-id 10.111.255.12", " network 10.110.254.1"]},
                 ],
-                [],
+                None,
                 id="valid-section",
             ),
-            pytest.param([], ["router-id 10.111.254.1\n", "neighbor SPINE*"], id="valid-regex-patterns"),
+            pytest.param(None, ["router-id 10.111.254.1", "neighbor SPINE*"], id="valid-regex-patterns"),
         ],
     )
     def test_valid(self, sections: list[RunningConfigSection], regex_patterns: list[RegexString]) -> None:
@@ -44,13 +44,13 @@ class TestVerifyRunningConfigLinesInput:
         [
             pytest.param(
                 [
-                    {"regex": "interface Ethernet1", "regex_patterns": ["switchport mode trunk\n"]},
-                    {"regex": "router bgp 65101", "regex_patterns": ["router-id 10.111.255.12", " network 10.110.254.1"]},
+                    {"section_matcher": "interface Ethernet1", "match_patterns": ["switchport mode trunk"]},
+                    {"section_matcher": "router bgp 65101", "match_patterns": ["router-id 10.111.255.12", " network 10.110.254.1"]},
                 ],
-                ["router-id 10.111.254.1\n", "neighbor SPINE*"],
+                ["router-id 10.111.254.1", "neighbor SPINE*"],
                 id="invalid",
             ),
-            pytest.param([], [], id="both-input-absent"),
+            pytest.param(None, None, id="both-input-absent"),
         ],
     )
     def test_invalid(self, sections: list[RunningConfigSection], regex_patterns: list[RegexString]) -> None:
