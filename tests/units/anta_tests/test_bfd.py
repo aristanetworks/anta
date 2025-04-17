@@ -6,15 +6,17 @@
 # pylint: disable=C0302
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from anta.tests.bfd import VerifyBFDPeersHealth, VerifyBFDPeersIntervals, VerifyBFDPeersRegProtocols, VerifyBFDSpecificPeers
 from tests.units.anta_tests import test
 
-DATA: list[dict[str, Any]] = [
-    {
-        "name": "success",
-        "test": VerifyBFDPeersIntervals,
+if TYPE_CHECKING:
+    from anta.models import AntaTest
+    from tests.units.anta_tests import AntaUnitTest
+
+DATA: dict[tuple[type[AntaTest], str], AntaUnitTest] = {
+    (VerifyBFDPeersIntervals, "success"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -22,14 +24,7 @@ DATA: list[dict[str, Any]] = [
                         "ipv4Neighbors": {
                             "192.0.255.7": {
                                 "peerStats": {
-                                    "": {
-                                        "peerStatsDetail": {
-                                            "operTxInterval": 1200000,
-                                            "operRxInterval": 1200000,
-                                            "detectMult": 3,
-                                            "detectTime": 3600000,
-                                        }
-                                    }
+                                    "": {"peerStatsDetail": {"operTxInterval": 1200000, "operRxInterval": 1200000, "detectMult": 3, "detectTime": 3600000}}
                                 }
                             }
                         }
@@ -38,14 +33,7 @@ DATA: list[dict[str, Any]] = [
                         "ipv4Neighbors": {
                             "192.0.255.70": {
                                 "peerStats": {
-                                    "": {
-                                        "peerStatsDetail": {
-                                            "operTxInterval": 1200000,
-                                            "operRxInterval": 1200000,
-                                            "detectMult": 3,
-                                            "detectTime": 3600000,
-                                        }
-                                    }
+                                    "": {"peerStatsDetail": {"operTxInterval": 1200000, "operRxInterval": 1200000, "detectMult": 3, "detectTime": 3600000}}
                                 }
                             }
                         }
@@ -61,9 +49,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-detection-time",
-        "test": VerifyBFDPeersIntervals,
+    (VerifyBFDPeersIntervals, "success-detection-time"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -71,14 +57,7 @@ DATA: list[dict[str, Any]] = [
                         "ipv4Neighbors": {
                             "192.0.255.7": {
                                 "peerStats": {
-                                    "": {
-                                        "peerStatsDetail": {
-                                            "operTxInterval": 1200000,
-                                            "operRxInterval": 1200000,
-                                            "detectMult": 3,
-                                            "detectTime": 3600000,
-                                        }
-                                    }
+                                    "": {"peerStatsDetail": {"operTxInterval": 1200000, "operRxInterval": 1200000, "detectMult": 3, "detectTime": 3600000}}
                                 }
                             }
                         }
@@ -87,14 +66,7 @@ DATA: list[dict[str, Any]] = [
                         "ipv4Neighbors": {
                             "192.0.255.70": {
                                 "peerStats": {
-                                    "": {
-                                        "peerStatsDetail": {
-                                            "operTxInterval": 1200000,
-                                            "operRxInterval": 1200000,
-                                            "detectMult": 3,
-                                            "detectTime": 3600000,
-                                        }
-                                    }
+                                    "": {"peerStatsDetail": {"operTxInterval": 1200000, "operRxInterval": 1200000, "detectMult": 3, "detectTime": 3600000}}
                                 }
                             }
                         }
@@ -110,9 +82,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-no-peer",
-        "test": VerifyBFDPeersIntervals,
+    (VerifyBFDPeersIntervals, "failure-no-peer"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -120,14 +90,7 @@ DATA: list[dict[str, Any]] = [
                         "ipv4Neighbors": {
                             "192.0.255.7": {
                                 "peerStats": {
-                                    "": {
-                                        "peerStatsDetail": {
-                                            "operTxInterval": 1200000,
-                                            "operRxInterval": 1200000,
-                                            "detectMult": 3,
-                                            "detectTime": 3600000,
-                                        }
-                                    }
+                                    "": {"peerStatsDetail": {"operTxInterval": 1200000, "operRxInterval": 1200000, "detectMult": 3, "detectTime": 3600000}}
                                 }
                             }
                         }
@@ -136,14 +99,7 @@ DATA: list[dict[str, Any]] = [
                         "ipv4Neighbors": {
                             "192.0.255.71": {
                                 "peerStats": {
-                                    "": {
-                                        "peerStatsDetail": {
-                                            "operTxInterval": 1200000,
-                                            "operRxInterval": 1200000,
-                                            "detectMult": 3,
-                                            "detectTime": 3600000,
-                                        }
-                                    }
+                                    "": {"peerStatsDetail": {"operTxInterval": 1200000, "operRxInterval": 1200000, "detectMult": 3, "detectTime": 3600000}}
                                 }
                             }
                         }
@@ -157,17 +113,9 @@ DATA: list[dict[str, Any]] = [
                 {"peer_address": "192.0.255.70", "vrf": "MGMT", "tx_interval": 1200, "rx_interval": 1200, "multiplier": 3, "detection_time": 3600},
             ]
         },
-        "expected": {
-            "result": "failure",
-            "messages": [
-                "Peer: 192.0.255.7 VRF: CS - Not found",
-                "Peer: 192.0.255.70 VRF: MGMT - Not found",
-            ],
-        },
+        "expected": {"result": "failure", "messages": ["Peer: 192.0.255.7 VRF: CS - Not found", "Peer: 192.0.255.70 VRF: MGMT - Not found"]},
     },
-    {
-        "name": "failure-incorrect-timers",
-        "test": VerifyBFDPeersIntervals,
+    (VerifyBFDPeersIntervals, "failure-incorrect-timers"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -175,14 +123,7 @@ DATA: list[dict[str, Any]] = [
                         "ipv4Neighbors": {
                             "192.0.255.7": {
                                 "peerStats": {
-                                    "": {
-                                        "peerStatsDetail": {
-                                            "operTxInterval": 1300000,
-                                            "operRxInterval": 1200000,
-                                            "detectMult": 4,
-                                            "detectTime": 4000000,
-                                        }
-                                    }
+                                    "": {"peerStatsDetail": {"operTxInterval": 1300000, "operRxInterval": 1200000, "detectMult": 4, "detectTime": 4000000}}
                                 }
                             }
                         }
@@ -190,16 +131,7 @@ DATA: list[dict[str, Any]] = [
                     "MGMT": {
                         "ipv4Neighbors": {
                             "192.0.255.70": {
-                                "peerStats": {
-                                    "": {
-                                        "peerStatsDetail": {
-                                            "operTxInterval": 120000,
-                                            "operRxInterval": 120000,
-                                            "detectMult": 5,
-                                            "detectTime": 4000000,
-                                        }
-                                    }
-                                }
+                                "peerStats": {"": {"peerStatsDetail": {"operTxInterval": 120000, "operRxInterval": 120000, "detectMult": 5, "detectTime": 4000000}}}
                             }
                         }
                     },
@@ -223,9 +155,7 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-incorrect-timers-with-detection-time",
-        "test": VerifyBFDPeersIntervals,
+    (VerifyBFDPeersIntervals, "failure-incorrect-timers-with-detection-time"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -233,14 +163,7 @@ DATA: list[dict[str, Any]] = [
                         "ipv4Neighbors": {
                             "192.0.255.7": {
                                 "peerStats": {
-                                    "": {
-                                        "peerStatsDetail": {
-                                            "operTxInterval": 1300000,
-                                            "operRxInterval": 1200000,
-                                            "detectMult": 4,
-                                            "detectTime": 4000000,
-                                        }
-                                    }
+                                    "": {"peerStatsDetail": {"operTxInterval": 1300000, "operRxInterval": 1200000, "detectMult": 4, "detectTime": 4000000}}
                                 }
                             }
                         }
@@ -248,16 +171,7 @@ DATA: list[dict[str, Any]] = [
                     "MGMT": {
                         "ipv4Neighbors": {
                             "192.0.255.70": {
-                                "peerStats": {
-                                    "": {
-                                        "peerStatsDetail": {
-                                            "operTxInterval": 120000,
-                                            "operRxInterval": 120000,
-                                            "detectMult": 5,
-                                            "detectTime": 4000000,
-                                        }
-                                    }
-                                }
+                                "peerStats": {"": {"peerStatsDetail": {"operTxInterval": 120000, "operRxInterval": 120000, "detectMult": 5, "detectTime": 4000000}}}
                             }
                         }
                     },
@@ -283,114 +197,36 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "success",
-        "test": VerifyBFDSpecificPeers,
+    (VerifyBFDSpecificPeers, "success"): {
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {
-                        "ipv4Neighbors": {
-                            "192.0.255.7": {
-                                "peerStats": {
-                                    "": {
-                                        "status": "up",
-                                        "remoteDisc": 108328132,
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "MGMT": {
-                        "ipv4Neighbors": {
-                            "192.0.255.70": {
-                                "peerStats": {
-                                    "": {
-                                        "status": "up",
-                                        "remoteDisc": 108328132,
-                                    }
-                                }
-                            }
-                        }
-                    },
+                    "default": {"ipv4Neighbors": {"192.0.255.7": {"peerStats": {"": {"status": "up", "remoteDisc": 108328132}}}}},
+                    "MGMT": {"ipv4Neighbors": {"192.0.255.70": {"peerStats": {"": {"status": "up", "remoteDisc": 108328132}}}}},
                 }
             }
         ],
         "inputs": {"bfd_peers": [{"peer_address": "192.0.255.7", "vrf": "default"}, {"peer_address": "192.0.255.70", "vrf": "MGMT"}]},
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-no-peer",
-        "test": VerifyBFDSpecificPeers,
+    (VerifyBFDSpecificPeers, "failure-no-peer"): {
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {
-                        "ipv4Neighbors": {
-                            "192.0.255.7": {
-                                "peerStats": {
-                                    "": {
-                                        "status": "up",
-                                        "remoteDisc": 108328132,
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "MGMT": {
-                        "ipv4Neighbors": {
-                            "192.0.255.71": {
-                                "peerStats": {
-                                    "": {
-                                        "status": "up",
-                                        "remoteDisc": 108328132,
-                                    }
-                                }
-                            }
-                        }
-                    },
+                    "default": {"ipv4Neighbors": {"192.0.255.7": {"peerStats": {"": {"status": "up", "remoteDisc": 108328132}}}}},
+                    "MGMT": {"ipv4Neighbors": {"192.0.255.71": {"peerStats": {"": {"status": "up", "remoteDisc": 108328132}}}}},
                 }
             }
         ],
         "inputs": {"bfd_peers": [{"peer_address": "192.0.255.7", "vrf": "CS"}, {"peer_address": "192.0.255.70", "vrf": "MGMT"}]},
-        "expected": {
-            "result": "failure",
-            "messages": [
-                "Peer: 192.0.255.7 VRF: CS - Not found",
-                "Peer: 192.0.255.70 VRF: MGMT - Not found",
-            ],
-        },
+        "expected": {"result": "failure", "messages": ["Peer: 192.0.255.7 VRF: CS - Not found", "Peer: 192.0.255.70 VRF: MGMT - Not found"]},
     },
-    {
-        "name": "failure-session-down",
-        "test": VerifyBFDSpecificPeers,
+    (VerifyBFDSpecificPeers, "failure-session-down"): {
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {
-                        "ipv4Neighbors": {
-                            "192.0.255.7": {
-                                "peerStats": {
-                                    "": {
-                                        "status": "down",
-                                        "remoteDisc": 108328132,
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "MGMT": {
-                        "ipv4Neighbors": {
-                            "192.0.255.70": {
-                                "peerStats": {
-                                    "": {
-                                        "status": "down",
-                                        "remoteDisc": 0,
-                                    }
-                                }
-                            }
-                        }
-                    },
+                    "default": {"ipv4Neighbors": {"192.0.255.7": {"peerStats": {"": {"status": "down", "remoteDisc": 108328132}}}}},
+                    "MGMT": {"ipv4Neighbors": {"192.0.255.70": {"peerStats": {"": {"status": "down", "remoteDisc": 0}}}}},
                 }
             }
         ],
@@ -403,128 +239,55 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "success",
-        "test": VerifyBFDPeersHealth,
+    (VerifyBFDPeersHealth, "success"): {
         "eos_data": [
             {
                 "vrfs": {
                     "default": {
                         "ipv4Neighbors": {
-                            "192.0.255.7": {
-                                "peerStats": {
-                                    "": {
-                                        "status": "up",
-                                        "remoteDisc": 3940685114,
-                                        "lastDown": 1703657258.652725,
-                                        "l3intf": "",
-                                    }
-                                }
-                            },
+                            "192.0.255.7": {"peerStats": {"": {"status": "up", "remoteDisc": 3940685114, "lastDown": 1703657258.652725, "l3intf": ""}}}
                         },
                         "ipv6Neighbors": {},
                     },
                     "MGMT": {
                         "ipv4Neighbors": {
-                            "192.0.255.71": {
-                                "peerStats": {
-                                    "": {
-                                        "status": "up",
-                                        "remoteDisc": 3940685114,
-                                        "lastDown": 1703657258.652725,
-                                        "l3intf": "",
-                                    }
-                                }
-                            },
+                            "192.0.255.71": {"peerStats": {"": {"status": "up", "remoteDisc": 3940685114, "lastDown": 1703657258.652725, "l3intf": ""}}}
                         },
                         "ipv6Neighbors": {},
                     },
                 }
             },
-            {
-                "utcTime": 1703667348.111288,
-            },
+            {"utcTime": 1703667348.111288},
         ],
         "inputs": {"down_threshold": 2},
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-no-peer",
-        "test": VerifyBFDPeersHealth,
+    (VerifyBFDPeersHealth, "failure-no-peer"): {
         "eos_data": [
-            {
-                "vrfs": {
-                    "MGMT": {
-                        "ipv6Neighbors": {},
-                        "ipv4Neighbors": {},
-                    },
-                    "default": {
-                        "ipv6Neighbors": {},
-                        "ipv4Neighbors": {},
-                    },
-                }
-            },
-            {
-                "utcTime": 1703658481.8778424,
-            },
+            {"vrfs": {"MGMT": {"ipv6Neighbors": {}, "ipv4Neighbors": {}}, "default": {"ipv6Neighbors": {}, "ipv4Neighbors": {}}}},
+            {"utcTime": 1703658481.8778424},
         ],
         "inputs": None,
-        "expected": {
-            "result": "failure",
-            "messages": ["No IPv4 BFD peers are configured for any VRF"],
-        },
+        "expected": {"result": "failure", "messages": ["No IPv4 BFD peers are configured for any VRF"]},
     },
-    {
-        "name": "failure-session-down",
-        "test": VerifyBFDPeersHealth,
+    (VerifyBFDPeersHealth, "failure-session-down"): {
         "eos_data": [
             {
                 "vrfs": {
                     "default": {
                         "ipv4Neighbors": {
-                            "192.0.255.7": {
-                                "peerStats": {
-                                    "": {
-                                        "status": "down",
-                                        "remoteDisc": 0,
-                                        "lastDown": 1703657258.652725,
-                                        "l3intf": "",
-                                    }
-                                }
-                            },
-                            "192.0.255.70": {
-                                "peerStats": {
-                                    "": {
-                                        "status": "up",
-                                        "remoteDisc": 3940685114,
-                                        "lastDown": 1703657258.652725,
-                                        "l3intf": "",
-                                    }
-                                }
-                            },
+                            "192.0.255.7": {"peerStats": {"": {"status": "down", "remoteDisc": 0, "lastDown": 1703657258.652725, "l3intf": ""}}},
+                            "192.0.255.70": {"peerStats": {"": {"status": "up", "remoteDisc": 3940685114, "lastDown": 1703657258.652725, "l3intf": ""}}},
                         },
                         "ipv6Neighbors": {},
                     },
                     "MGMT": {
-                        "ipv4Neighbors": {
-                            "192.0.255.71": {
-                                "peerStats": {
-                                    "": {
-                                        "status": "down",
-                                        "remoteDisc": 0,
-                                        "lastDown": 1703657258.652725,
-                                        "l3intf": "",
-                                    }
-                                }
-                            },
-                        },
+                        "ipv4Neighbors": {"192.0.255.71": {"peerStats": {"": {"status": "down", "remoteDisc": 0, "lastDown": 1703657258.652725, "l3intf": ""}}}},
                         "ipv6Neighbors": {},
                     },
                 }
             },
-            {
-                "utcTime": 1703658481.8778424,
-            },
+            {"utcTime": 1703658481.8778424},
         ],
         "inputs": {},
         "expected": {
@@ -535,42 +298,20 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-session-up-disc",
-        "test": VerifyBFDPeersHealth,
+    (VerifyBFDPeersHealth, "failure-session-up-disc"): {
         "eos_data": [
             {
                 "vrfs": {
                     "default": {
                         "ipv4Neighbors": {
-                            "192.0.255.7": {
-                                "peerStats": {
-                                    "": {
-                                        "status": "up",
-                                        "remoteDisc": 0,
-                                        "lastDown": 1703657258.652725,
-                                        "l3intf": "Ethernet2",
-                                    }
-                                }
-                            },
-                            "192.0.255.71": {
-                                "peerStats": {
-                                    "": {
-                                        "status": "up",
-                                        "remoteDisc": 0,
-                                        "lastDown": 1703657258.652725,
-                                        "l3intf": "Ethernet2",
-                                    }
-                                }
-                            },
+                            "192.0.255.7": {"peerStats": {"": {"status": "up", "remoteDisc": 0, "lastDown": 1703657258.652725, "l3intf": "Ethernet2"}}},
+                            "192.0.255.71": {"peerStats": {"": {"status": "up", "remoteDisc": 0, "lastDown": 1703657258.652725, "l3intf": "Ethernet2"}}},
                         },
                         "ipv6Neighbors": {},
                     }
                 }
             },
-            {
-                "utcTime": 1703658481.8778424,
-            },
+            {"utcTime": 1703658481.8778424},
         ],
         "inputs": {},
         "expected": {
@@ -581,52 +322,21 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-last-down",
-        "test": VerifyBFDPeersHealth,
+    (VerifyBFDPeersHealth, "failure-last-down"): {
         "eos_data": [
             {
                 "vrfs": {
                     "default": {
                         "ipv4Neighbors": {
-                            "192.0.255.7": {
-                                "peerStats": {
-                                    "": {
-                                        "status": "up",
-                                        "remoteDisc": 3940685114,
-                                        "lastDown": 1703657258.652725,
-                                        "l3intf": "",
-                                    }
-                                }
-                            },
-                            "192.0.255.71": {
-                                "peerStats": {
-                                    "": {
-                                        "status": "up",
-                                        "remoteDisc": 3940685114,
-                                        "lastDown": 1703657258.652725,
-                                        "l3intf": "",
-                                    }
-                                }
-                            },
-                            "192.0.255.17": {
-                                "peerStats": {
-                                    "": {
-                                        "status": "up",
-                                        "remoteDisc": 3940685114,
-                                        "lastDown": 1703657258.652725,
-                                        "l3intf": "",
-                                    }
-                                }
-                            },
+                            "192.0.255.7": {"peerStats": {"": {"status": "up", "remoteDisc": 3940685114, "lastDown": 1703657258.652725, "l3intf": ""}}},
+                            "192.0.255.71": {"peerStats": {"": {"status": "up", "remoteDisc": 3940685114, "lastDown": 1703657258.652725, "l3intf": ""}}},
+                            "192.0.255.17": {"peerStats": {"": {"status": "up", "remoteDisc": 3940685114, "lastDown": 1703657258.652725, "l3intf": ""}}},
                         },
                         "ipv6Neighbors": {},
                     }
                 }
             },
-            {
-                "utcTime": 1703667348.111288,
-            },
+            {"utcTime": 1703667348.111288},
         ],
         "inputs": {"down_threshold": 4},
         "expected": {
@@ -638,42 +348,18 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "success",
-        "test": VerifyBFDPeersRegProtocols,
+    (VerifyBFDPeersRegProtocols, "success"): {
         "eos_data": [
             {
                 "vrfs": {
                     "default": {
                         "ipv4Neighbors": {
-                            "192.0.255.7": {
-                                "peerStats": {
-                                    "": {
-                                        "status": "up",
-                                        "remoteDisc": 108328132,
-                                        "peerStatsDetail": {
-                                            "role": "active",
-                                            "apps": ["ospf"],
-                                        },
-                                    }
-                                }
-                            }
+                            "192.0.255.7": {"peerStats": {"": {"status": "up", "remoteDisc": 108328132, "peerStatsDetail": {"role": "active", "apps": ["ospf"]}}}}
                         }
                     },
                     "MGMT": {
                         "ipv4Neighbors": {
-                            "192.0.255.70": {
-                                "peerStats": {
-                                    "": {
-                                        "status": "up",
-                                        "remoteDisc": 108328132,
-                                        "peerStatsDetail": {
-                                            "role": "active",
-                                            "apps": ["bgp"],
-                                        },
-                                    }
-                                }
-                            }
+                            "192.0.255.70": {"peerStats": {"": {"status": "up", "remoteDisc": 108328132, "peerStatsDetail": {"role": "active", "apps": ["bgp"]}}}}
                         }
                     },
                 }
@@ -687,41 +373,14 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure",
-        "test": VerifyBFDPeersRegProtocols,
+    (VerifyBFDPeersRegProtocols, "failure"): {
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {
-                        "ipv4Neighbors": {
-                            "192.0.255.7": {
-                                "peerStats": {
-                                    "": {
-                                        "status": "up",
-                                        "peerStatsDetail": {
-                                            "role": "active",
-                                            "apps": ["ospf"],
-                                        },
-                                    }
-                                }
-                            }
-                        }
-                    },
+                    "default": {"ipv4Neighbors": {"192.0.255.7": {"peerStats": {"": {"status": "up", "peerStatsDetail": {"role": "active", "apps": ["ospf"]}}}}}},
                     "MGMT": {
                         "ipv4Neighbors": {
-                            "192.0.255.70": {
-                                "peerStats": {
-                                    "": {
-                                        "status": "up",
-                                        "remoteDisc": 0,
-                                        "peerStatsDetail": {
-                                            "role": "active",
-                                            "apps": ["bgp"],
-                                        },
-                                    }
-                                }
-                            }
+                            "192.0.255.70": {"peerStats": {"": {"status": "up", "remoteDisc": 0, "peerStatsDetail": {"role": "active", "apps": ["bgp"]}}}}
                         }
                     },
                 }
@@ -741,29 +400,14 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-not-found",
-        "test": VerifyBFDPeersRegProtocols,
-        "eos_data": [
-            {
-                "vrfs": {
-                    "default": {},
-                    "MGMT": {},
-                }
-            }
-        ],
+    (VerifyBFDPeersRegProtocols, "failure-not-found"): {
+        "eos_data": [{"vrfs": {"default": {}, "MGMT": {}}}],
         "inputs": {
             "bfd_peers": [
                 {"peer_address": "192.0.255.7", "vrf": "default", "protocols": ["isis"]},
                 {"peer_address": "192.0.255.70", "vrf": "MGMT", "protocols": ["isis"]},
             ]
         },
-        "expected": {
-            "result": "failure",
-            "messages": [
-                "Peer: 192.0.255.7 VRF: default - Not found",
-                "Peer: 192.0.255.70 VRF: MGMT - Not found",
-            ],
-        },
+        "expected": {"result": "failure", "messages": ["Peer: 192.0.255.7 VRF: default - Not found", "Peer: 192.0.255.70 VRF: MGMT - Not found"]},
     },
-]
+}

@@ -5,323 +5,221 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from anta.tests.connectivity import VerifyLLDPNeighbors, VerifyReachability
 from tests.units.anta_tests import test
 
-DATA: list[dict[str, Any]] = [
-    {
-        "name": "success-ip",
-        "test": VerifyReachability,
+if TYPE_CHECKING:
+    from anta.models import AntaTest
+    from tests.units.anta_tests import AntaUnitTest
+
+DATA: dict[tuple[type[AntaTest], str], AntaUnitTest] = {
+    (VerifyReachability, "success-ip"): {
         "inputs": {"hosts": [{"destination": "10.0.0.1", "source": "10.0.0.5"}, {"destination": "10.0.0.2", "source": "10.0.0.5"}]},
         "eos_data": [
             {
                 "messages": [
-                    """PING 10.0.0.1 (10.0.0.1) from 10.0.0.5 : 72(100) bytes of data.
-                80 bytes from 10.0.0.1: icmp_seq=1 ttl=64 time=0.247 ms
-                80 bytes from 10.0.0.1: icmp_seq=2 ttl=64 time=0.072 ms
-
-                --- 10.0.0.1 ping statistics ---
-                2 packets transmitted, 2 received, 0% packet loss, time 0ms
-                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms, ipg/ewma 0.370/0.225 ms
-
-                """,
-                ],
+                    "PING 10.0.0.1 (10.0.0.1) from 10.0.0.5 : 72(100) bytes of data.\n                80 bytes from 10.0.0.1: icmp_seq=1 ttl=64 time=0.247 ms\n"
+                    "                80 bytes from 10.0.0.1: icmp_seq=2 ttl=64 time=0.072 ms\n\n                --- 10.0.0.1 ping statistics ---\n"
+                    "                2 packets transmitted, 2 received, 0% packet loss, time 0ms\n                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms,"
+                    " ipg/ewma 0.370/0.225 ms\n\n                "
+                ]
             },
             {
                 "messages": [
-                    """PING 10.0.0.2 (10.0.0.2) from 10.0.0.5 : 72(100) bytes of data.
-                80 bytes from 10.0.0.2: icmp_seq=1 ttl=64 time=0.247 ms
-                80 bytes from 10.0.0.2: icmp_seq=2 ttl=64 time=0.072 ms
-
-                --- 10.0.0.2 ping statistics ---
-                2 packets transmitted, 2 received, 0% packet loss, time 0ms
-                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms, ipg/ewma 0.370/0.225 ms
-
-                """,
-                ],
+                    "PING 10.0.0.2 (10.0.0.2) from 10.0.0.5 : 72(100) bytes of data.\n                80 bytes from 10.0.0.2: icmp_seq=1 ttl=64 time=0.247 ms\n"
+                    "                80 bytes from 10.0.0.2: icmp_seq=2 ttl=64 time=0.072 ms\n\n                --- 10.0.0.2 ping statistics ---\n"
+                    "                2 packets transmitted, 2 received, 0% packet loss, time 0ms\n                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms,"
+                    " ipg/ewma 0.370/0.225 ms\n\n                "
+                ]
             },
         ],
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-expected-unreachable",
-        "test": VerifyReachability,
+    (VerifyReachability, "success-expected-unreachable"): {
         "eos_data": [
             {
                 "messages": [
-                    """PING 10.0.0.1 (10.0.0.1) from 10.0.0.5 : 72(100) bytes of data.
-
-                --- 10.0.0.1 ping statistics ---
-                2 packets transmitted, 0 received, 100% packet loss, time 10ms
-                """,
-                ],
-            },
+                    "PING 10.0.0.1 (10.0.0.1) from 10.0.0.5 : 72(100) bytes of data.\n\n                --- 10.0.0.1 ping statistics ---\n"
+                    "                2 packets transmitted, 0 received, 100% packet loss, time 10ms\n                "
+                ]
+            }
         ],
         "inputs": {"hosts": [{"destination": "10.0.0.1", "source": "10.0.0.5", "reachable": False}]},
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-ipv6",
-        "test": VerifyReachability,
+    (VerifyReachability, "success-ipv6"): {
         "eos_data": [
             {
                 "messages": [
-                    """PING fd12:3456:789a:1::2(fd12:3456:789a:1::2) from fd12:3456:789a:1::1 : 52 data bytes
-                60 bytes from fd12:3456:789a:1::2: icmp_seq=1 ttl=64 time=0.097 ms
-                60 bytes from fd12:3456:789a:1::2: icmp_seq=2 ttl=64 time=0.033 ms
-
-                --- fd12:3456:789a:1::2 ping statistics ---
-                2 packets transmitted, 2 received, 0% packet loss, time 0ms
-                rtt min/avg/max/mdev = 0.033/0.065/0.097/0.032 ms, ipg/ewma 0.148/0.089 ms
-                """,
-                ],
-            },
+                    "PING fd12:3456:789a:1::2(fd12:3456:789a:1::2) from fd12:3456:789a:1::1 : 52 data bytes\n                60 bytes from fd12:3456:789a:1::2:"
+                    " icmp_seq=1 ttl=64 time=0.097 ms\n                60 bytes from fd12:3456:789a:1::2: icmp_seq=2 ttl=64 time=0.033 ms\n\n"
+                    "                --- fd12:3456:789a:1::2 ping statistics ---\n                2 packets transmitted, 2 received, 0% packet loss, time 0ms\n"
+                    "                rtt min/avg/max/mdev = 0.033/0.065/0.097/0.032 ms, ipg/ewma 0.148/0.089 ms\n                "
+                ]
+            }
         ],
         "inputs": {"hosts": [{"destination": "fd12:3456:789a:1::2", "source": "fd12:3456:789a:1::1"}]},
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-ipv6-vlan",
-        "test": VerifyReachability,
+    (VerifyReachability, "success-ipv6-vlan"): {
         "eos_data": [
             {
                 "messages": [
-                    """PING fd12:3456:789a:1::2(fd12:3456:789a:1::2) 52 data bytes
-                60 bytes from fd12:3456:789a:1::2: icmp_seq=1 ttl=64 time=0.094 ms
-                60 bytes from fd12:3456:789a:1::2: icmp_seq=2 ttl=64 time=0.027 ms
-
-                --- fd12:3456:789a:1::2 ping statistics ---
-                2 packets transmitted, 2 received, 0% packet loss, time 0ms
-                rtt min/avg/max/mdev = 0.027/0.060/0.094/0.033 ms, ipg/ewma 0.152/0.085 ms
-                """,
-                ],
-            },
+                    "PING fd12:3456:789a:1::2(fd12:3456:789a:1::2) 52 data bytes\n                60 bytes from fd12:3456:789a:1::2: "
+                    "icmp_seq=1 ttl=64 time=0.094 ms\n                60 bytes from fd12:3456:789a:1::2: icmp_seq=2 ttl=64 time=0.027 ms\n\n"
+                    "                --- fd12:3456:789a:1::2 ping statistics ---\n                2 packets transmitted, 2 received, 0% packet loss,"
+                    " time 0ms\n                rtt min/avg/max/mdev = 0.027/0.060/0.094/0.033 ms, ipg/ewma 0.152/0.085 ms\n                "
+                ]
+            }
         ],
         "inputs": {"hosts": [{"destination": "fd12:3456:789a:1::2", "source": "vl110"}]},
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-interface",
-        "test": VerifyReachability,
+    (VerifyReachability, "success-interface"): {
         "inputs": {"hosts": [{"destination": "10.0.0.1", "source": "Management0"}, {"destination": "10.0.0.2", "source": "Management0"}]},
         "eos_data": [
             {
                 "messages": [
-                    """PING 10.0.0.1 (10.0.0.1) from 10.0.0.5 : 72(100) bytes of data.
-                80 bytes from 10.0.0.1: icmp_seq=1 ttl=64 time=0.247 ms
-                80 bytes from 10.0.0.1: icmp_seq=2 ttl=64 time=0.072 ms
-
-                --- 10.0.0.1 ping statistics ---
-                2 packets transmitted, 2 received, 0% packet loss, time 0ms
-                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms, ipg/ewma 0.370/0.225 ms
-
-                """,
-                ],
+                    "PING 10.0.0.1 (10.0.0.1) from 10.0.0.5 : 72(100) bytes of data.\n                80 bytes from 10.0.0.1: icmp_seq=1 ttl=64 time=0.247 ms\n"
+                    "                80 bytes from 10.0.0.1: icmp_seq=2 ttl=64 time=0.072 ms\n\n                --- 10.0.0.1 ping statistics ---\n"
+                    "                2 packets transmitted, 2 received, 0% packet loss, time 0ms\n                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms,"
+                    " ipg/ewma 0.370/0.225 ms\n\n                "
+                ]
             },
             {
                 "messages": [
-                    """PING 10.0.0.2 (10.0.0.2) from 10.0.0.5 : 72(100) bytes of data.
-                80 bytes from 10.0.0.2: icmp_seq=1 ttl=64 time=0.247 ms
-                80 bytes from 10.0.0.2: icmp_seq=2 ttl=64 time=0.072 ms
-
-                --- 10.0.0.2 ping statistics ---
-                2 packets transmitted, 2 received, 0% packet loss, time 0ms
-                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms, ipg/ewma 0.370/0.225 ms
-
-                """,
-                ],
+                    "PING 10.0.0.2 (10.0.0.2) from 10.0.0.5 : 72(100) bytes of data.\n                80 bytes from 10.0.0.2: icmp_seq=1 ttl=64 time=0.247 ms\n"
+                    "                80 bytes from 10.0.0.2: icmp_seq=2 ttl=64 time=0.072 ms\n\n                --- 10.0.0.2 ping statistics ---\n"
+                    "                2 packets transmitted, 2 received, 0% packet loss, time 0ms\n                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms,"
+                    " ipg/ewma 0.370/0.225 ms\n\n                "
+                ]
             },
         ],
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-repeat",
-        "test": VerifyReachability,
+    (VerifyReachability, "success-repeat"): {
         "inputs": {"hosts": [{"destination": "10.0.0.1", "source": "Management0", "repeat": 1}]},
         "eos_data": [
             {
                 "messages": [
-                    """PING 10.0.0.1 (10.0.0.1) from 10.0.0.5 : 72(100) bytes of data.
-                80 bytes from 10.0.0.1: icmp_seq=1 ttl=64 time=0.247 ms
-
-                --- 10.0.0.1 ping statistics ---
-                1 packets transmitted, 1 received, 0% packet loss, time 0ms
-                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms, ipg/ewma 0.370/0.225 ms
-
-                """,
-                ],
-            },
+                    "PING 10.0.0.1 (10.0.0.1) from 10.0.0.5 : 72(100) bytes of data.\n                80 bytes from 10.0.0.1: icmp_seq=1 ttl=64 time=0.247 ms\n\n"
+                    "                --- 10.0.0.1 ping statistics ---\n                1 packets transmitted, 1 received, 0% packet loss, time 0ms\n"
+                    "                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms, ipg/ewma 0.370/0.225 ms\n\n                "
+                ]
+            }
         ],
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-df-bit-size",
-        "test": VerifyReachability,
+    (VerifyReachability, "success-df-bit-size"): {
         "inputs": {"hosts": [{"destination": "10.0.0.1", "source": "Management0", "repeat": 5, "size": 1500, "df_bit": True}]},
         "eos_data": [
             {
                 "messages": [
-                    """PING 10.0.0.1 (10.0.0.1) from 172.20.20.6 : 1472(1500) bytes of data.
-                1480 bytes from 10.0.0.1: icmp_seq=1 ttl=64 time=0.085 ms
-                1480 bytes from 10.0.0.1: icmp_seq=2 ttl=64 time=0.020 ms
-                1480 bytes from 10.0.0.1: icmp_seq=3 ttl=64 time=0.019 ms
-                1480 bytes from 10.0.0.1: icmp_seq=4 ttl=64 time=0.018 ms
-                1480 bytes from 10.0.0.1: icmp_seq=5 ttl=64 time=0.017 ms
-
-                --- 10.0.0.1 ping statistics ---
-                5 packets transmitted, 5 received, 0% packet loss, time 0ms
-                rtt min/avg/max/mdev = 0.017/0.031/0.085/0.026 ms, ipg/ewma 0.061/0.057 ms""",
-                ],
-            },
+                    "PING 10.0.0.1 (10.0.0.1) from 172.20.20.6 : 1472(1500) bytes of data.\n                1480 bytes from 10.0.0.1: "
+                    "icmp_seq=1 ttl=64 time=0.085 ms\n                1480 bytes from 10.0.0.1: icmp_seq=2 ttl=64 time=0.020 ms\n"
+                    "                1480 bytes from 10.0.0.1: icmp_seq=3 ttl=64 time=0.019 ms\n                1480 bytes from 10.0.0.1:"
+                    " icmp_seq=4 ttl=64 time=0.018 ms\n                1480 bytes from 10.0.0.1:"
+                    " icmp_seq=5 ttl=64 time=0.017 ms\n\n                --- 10.0.0.1 ping statistics ---\n                5 packets transmitted,"
+                    " 5 received, 0% packet loss, time 0ms\n                rtt min/avg/max/mdev = 0.017/0.031/0.085/0.026 ms, ipg/ewma 0.061/0.057 ms"
+                ]
+            }
         ],
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-without-source",
-        "test": VerifyReachability,
+    (VerifyReachability, "success-without-source"): {
         "inputs": {"hosts": [{"destination": "10.0.0.1", "repeat": 1}]},
         "eos_data": [
             {
                 "messages": [
-                    """PING 10.0.0.1 (10.0.0.1) : 72(100) bytes of data.
-                80 bytes from 10.0.0.1: icmp_seq=1 ttl=64 time=0.247 ms
-
-                --- 10.0.0.1 ping statistics ---
-                1 packets transmitted, 1 received, 0% packet loss, time 0ms
-                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms, ipg/ewma 0.370/0.225 ms
-
-                """,
-                ],
-            },
+                    "PING 10.0.0.1 (10.0.0.1) : 72(100) bytes of data.\n                80 bytes from 10.0.0.1: icmp_seq=1 ttl=64 time=0.247 ms\n\n"
+                    "                --- 10.0.0.1 ping statistics ---\n                1 packets transmitted, 1 received, 0% packet loss, time 0ms\n"
+                    "                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms, ipg/ewma 0.370/0.225 ms\n\n                "
+                ]
+            }
         ],
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-ip",
-        "test": VerifyReachability,
+    (VerifyReachability, "failure-ip"): {
         "inputs": {"hosts": [{"destination": "10.0.0.11", "source": "10.0.0.5"}, {"destination": "10.0.0.2", "source": "10.0.0.5"}]},
         "eos_data": [
             {
                 "messages": [
-                    """ping: sendmsg: Network is unreachable
-                ping: sendmsg: Network is unreachable
-                PING 10.0.0.11 (10.0.0.11) from 10.0.0.5 : 72(100) bytes of data.
-
-                --- 10.0.0.11 ping statistics ---
-                2 packets transmitted, 0 received, 100% packet loss, time 10ms
-
-
-                """,
-                ],
+                    "ping: sendmsg: Network is unreachable\n                ping: sendmsg: Network is unreachable\n                "
+                    "PING 10.0.0.11 (10.0.0.11) from 10.0.0.5 : 72(100) bytes of data.\n\n                --- 10.0.0.11 ping statistics ---\n"
+                    "                2 packets transmitted, 0 received, 100% packet loss, time 10ms\n\n\n                "
+                ]
             },
             {
                 "messages": [
-                    """PING 10.0.0.2 (10.0.0.2) from 10.0.0.5 : 72(100) bytes of data.
-                80 bytes from 10.0.0.2: icmp_seq=1 ttl=64 time=0.247 ms
-                80 bytes from 10.0.0.2: icmp_seq=2 ttl=64 time=0.072 ms
-
-                --- 10.0.0.2 ping statistics ---
-                2 packets transmitted, 2 received, 0% packet loss, time 0ms
-                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms, ipg/ewma 0.370/0.225 ms
-
-                """,
-                ],
+                    "PING 10.0.0.2 (10.0.0.2) from 10.0.0.5 : 72(100) bytes of data.\n                80 bytes from 10.0.0.2: icmp_seq=1 ttl=64 time=0.247 ms\n"
+                    "                80 bytes from 10.0.0.2: icmp_seq=2 ttl=64 time=0.072 ms\n\n                --- 10.0.0.2 ping statistics ---\n                "
+                    "2 packets transmitted, 2 received, 0% packet loss, time 0ms\n                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms,"
+                    " ipg/ewma 0.370/0.225 ms\n\n                "
+                ]
             },
         ],
         "expected": {"result": "failure", "messages": ["Host: 10.0.0.11 Source: 10.0.0.5 VRF: default - Unreachable"]},
     },
-    {
-        "name": "failure-ipv6",
-        "test": VerifyReachability,
+    (VerifyReachability, "failure-ipv6"): {
         "eos_data": [
             {
                 "messages": [
-                    """PING fd12:3456:789a:1::2(fd12:3456:789a:1::2) from fd12:3456:789a:1::1 : 52 data bytes
-
-                    --- fd12:3456:789a:1::3 ping statistics ---
-                    2 packets transmitted, 0 received, 100% packet loss, time 10ms
-                """,
-                ],
-            },
+                    "PING fd12:3456:789a:1::2(fd12:3456:789a:1::2) from fd12:3456:789a:1::1 : 52 data bytes\n\n                    --- fd12:3456:789a:1::3 "
+                    "ping statistics ---\n                    2 packets transmitted, 0 received, 100% packet loss, time 10ms\n                "
+                ]
+            }
         ],
         "inputs": {"hosts": [{"destination": "fd12:3456:789a:1::2", "source": "fd12:3456:789a:1::1"}]},
         "expected": {"result": "failure", "messages": ["Host: fd12:3456:789a:1::2 Source: fd12:3456:789a:1::1 VRF: default - Unreachable"]},
     },
-    {
-        "name": "failure-interface",
-        "test": VerifyReachability,
+    (VerifyReachability, "failure-interface"): {
         "inputs": {"hosts": [{"destination": "10.0.0.11", "source": "Management0"}, {"destination": "10.0.0.2", "source": "Management0"}]},
         "eos_data": [
             {
                 "messages": [
-                    """ping: sendmsg: Network is unreachable
-                ping: sendmsg: Network is unreachable
-                PING 10.0.0.11 (10.0.0.11) from 10.0.0.5 : 72(100) bytes of data.
-
-                --- 10.0.0.11 ping statistics ---
-                2 packets transmitted, 0 received, 100% packet loss, time 10ms
-
-
-                """,
-                ],
+                    "ping: sendmsg: Network is unreachable\n                ping: sendmsg: Network is unreachable\n                "
+                    "PING 10.0.0.11 (10.0.0.11) from 10.0.0.5 : 72(100) bytes of data.\n\n                --- 10.0.0.11 ping statistics ---\n"
+                    "                2 packets transmitted, 0 received, 100% packet loss, time 10ms\n\n\n                "
+                ]
             },
             {
                 "messages": [
-                    """PING 10.0.0.2 (10.0.0.2) from 10.0.0.5 : 72(100) bytes of data.
-                80 bytes from 10.0.0.2: icmp_seq=1 ttl=64 time=0.247 ms
-                80 bytes from 10.0.0.2: icmp_seq=2 ttl=64 time=0.072 ms
-
-                --- 10.0.0.2 ping statistics ---
-                2 packets transmitted, 2 received, 0% packet loss, time 0ms
-                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms, ipg/ewma 0.370/0.225 ms
-
-                """,
-                ],
+                    "PING 10.0.0.2 (10.0.0.2) from 10.0.0.5 : 72(100) bytes of data.\n                80 bytes from 10.0.0.2: icmp_seq=1 ttl=64 time=0.247 ms\n"
+                    "                80 bytes from 10.0.0.2: icmp_seq=2 ttl=64 time=0.072 ms\n\n                --- 10.0.0.2 ping statistics ---\n"
+                    "                2 packets transmitted, 2 received, 0% packet loss, time 0ms\n                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms,"
+                    " ipg/ewma 0.370/0.225 ms\n\n                "
+                ]
             },
         ],
         "expected": {"result": "failure", "messages": ["Host: 10.0.0.11 Source: Management0 VRF: default - Unreachable"]},
     },
-    {
-        "name": "failure-size",
-        "test": VerifyReachability,
+    (VerifyReachability, "failure-size"): {
         "inputs": {"hosts": [{"destination": "10.0.0.1", "source": "Management0", "repeat": 5, "size": 1501, "df_bit": True}]},
         "eos_data": [
             {
                 "messages": [
-                    """PING 10.0.0.1 (10.0.0.1) from 172.20.20.6 : 1473(1501) bytes of data.
-                ping: local error: message too long, mtu=1500
-                ping: local error: message too long, mtu=1500
-                ping: local error: message too long, mtu=1500
-                ping: local error: message too long, mtu=1500
-                ping: local error: message too long, mtu=1500
-
-                --- 10.0.0.1 ping statistics ---
-                5 packets transmitted, 0 received, +5 errors, 100% packet loss, time 40ms
-                """,
-                ],
-            },
+                    "PING 10.0.0.1 (10.0.0.1) from 172.20.20.6 : 1473(1501) bytes of data.\n                ping: local error: message too long, mtu=1500\n"
+                    "                ping: local error: message too long, mtu=1500\n"
+                    "                ping: local error: message too long, mtu=1500\n                ping: local error: message too long, mtu=1500\n"
+                    "                ping: local error: message too long, mtu=1500\n\n                --- 10.0.0.1 ping statistics ---\n"
+                    "                5 packets transmitted, 0 received, +5 errors, 100% packet loss, time 40ms\n                "
+                ]
+            }
         ],
         "expected": {"result": "failure", "messages": ["Host: 10.0.0.1 Source: Management0 VRF: default - Unreachable"]},
     },
-    {
-        "name": "failure-expected-unreachable",
-        "test": VerifyReachability,
+    (VerifyReachability, "failure-expected-unreachable"): {
         "eos_data": [
             {
                 "messages": [
-                    """PING 10.0.0.1 (10.0.0.1) from 10.0.0.5 : 72(100) bytes of data.
-                80 bytes from 10.0.0.1: icmp_seq=1 ttl=64 time=0.247 ms
-                80 bytes from 10.0.0.1: icmp_seq=2 ttl=64 time=0.072 ms
-
-                --- 10.0.0.1 ping statistics ---
-                2 packets transmitted, 2 received, 0% packet loss, time 0ms
-                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms, ipg/ewma 0.370/0.225 ms
-
-                """,
-                ],
-            },
+                    "PING 10.0.0.1 (10.0.0.1) from 10.0.0.5 : 72(100) bytes of data.\n                80 bytes from 10.0.0.1: icmp_seq=1 ttl=64 time=0.247 ms\n"
+                    "                80 bytes from 10.0.0.1: icmp_seq=2 ttl=64 time=0.072 ms\n\n                --- 10.0.0.1 ping statistics ---\n"
+                    "                2 packets transmitted, 2 received, 0% packet loss, time 0ms\n                rtt min/avg/max/mdev = 0.072/0.159/0.247/0.088 ms,"
+                    " ipg/ewma 0.370/0.225 ms\n\n                "
+                ]
+            }
         ],
         "inputs": {"hosts": [{"destination": "10.0.0.1", "source": "10.0.0.5", "reachable": False}]},
         "expected": {
@@ -329,28 +227,20 @@ DATA: list[dict[str, Any]] = [
             "messages": ["Host: 10.0.0.1 Source: 10.0.0.5 VRF: default - Destination is expected to be unreachable but found reachable"],
         },
     },
-    {
-        "name": "failure-without-source",
-        "test": VerifyReachability,
+    (VerifyReachability, "failure-without-source"): {
         "inputs": {"hosts": [{"destination": "10.0.0.1", "repeat": 1}]},
         "eos_data": [
             {
                 "messages": [
-                    """ping: sendmsg: Network is unreachable
-                PING 10.0.0.1 (10.0.0.1) : 72(100) bytes of data.
-
-                --- 10.0.0.11 ping statistics ---
-                2 packets transmitted, 0 received, 100% packet loss, time 10ms
-
-                """,
-                ],
-            },
+                    "ping: sendmsg: Network is unreachable\n                PING 10.0.0.1 (10.0.0.1) : 72(100) bytes of data.\n\n"
+                    "                --- 10.0.0.11 ping statistics ---\n                "
+                    "2 packets transmitted, 0 received, 100% packet loss, time 10ms\n\n                "
+                ]
+            }
         ],
         "expected": {"result": "failure", "messages": ["Host: 10.0.0.1 VRF: default - Unreachable"]},
     },
-    {
-        "name": "success",
-        "test": VerifyLLDPNeighbors,
+    (VerifyLLDPNeighbors, "success"): {
         "eos_data": [
             {
                 "lldpNeighbors": {
@@ -362,12 +252,12 @@ DATA: list[dict[str, Any]] = [
                                 "systemName": "DC1-SPINE1",
                                 "neighborInterfaceInfo": {
                                     "interfaceIdType": "interfaceName",
-                                    "interfaceId": '"Ethernet1"',
+                                    "interfaceId": "Ethernet1",
                                     "interfaceId_v2": "Ethernet1",
                                     "interfaceDescription": "P2P_LINK_TO_DC1-LEAF1A_Ethernet1",
                                 },
-                            },
-                        ],
+                            }
+                        ]
                     },
                     "Ethernet2": {
                         "lldpNeighborInfo": [
@@ -377,27 +267,25 @@ DATA: list[dict[str, Any]] = [
                                 "systemName": "DC1-SPINE2",
                                 "neighborInterfaceInfo": {
                                     "interfaceIdType": "interfaceName",
-                                    "interfaceId": '"Ethernet1"',
+                                    "interfaceId": "Ethernet1",
                                     "interfaceId_v2": "Ethernet1",
                                     "interfaceDescription": "P2P_LINK_TO_DC1-LEAF1A_Ethernet2",
                                 },
-                            },
-                        ],
+                            }
+                        ]
                     },
-                },
-            },
+                }
+            }
         ],
         "inputs": {
             "neighbors": [
                 {"port": "Ethernet1", "neighbor_device": "DC1-SPINE1", "neighbor_port": "Ethernet1"},
                 {"port": "Ethernet2", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"},
-            ],
+            ]
         },
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-multiple-neighbors",
-        "test": VerifyLLDPNeighbors,
+    (VerifyLLDPNeighbors, "success-multiple-neighbors"): {
         "eos_data": [
             {
                 "lldpNeighbors": {
@@ -409,7 +297,7 @@ DATA: list[dict[str, Any]] = [
                                 "systemName": "DC1-SPINE1",
                                 "neighborInterfaceInfo": {
                                     "interfaceIdType": "interfaceName",
-                                    "interfaceId": '"Ethernet1"',
+                                    "interfaceId": "Ethernet1",
                                     "interfaceId_v2": "Ethernet1",
                                     "interfaceDescription": "P2P_LINK_TO_DC1-LEAF1A_Ethernet1",
                                 },
@@ -420,26 +308,20 @@ DATA: list[dict[str, Any]] = [
                                 "systemName": "DC1-SPINE2",
                                 "neighborInterfaceInfo": {
                                     "interfaceIdType": "interfaceName",
-                                    "interfaceId": '"Ethernet1"',
+                                    "interfaceId": "Ethernet1",
                                     "interfaceId_v2": "Ethernet1",
                                     "interfaceDescription": "P2P_LINK_TO_DC1-LEAF1A_Ethernet2",
                                 },
                             },
-                        ],
-                    },
-                },
-            },
+                        ]
+                    }
+                }
+            }
         ],
-        "inputs": {
-            "neighbors": [
-                {"port": "Ethernet1", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"},
-            ],
-        },
+        "inputs": {"neighbors": [{"port": "Ethernet1", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"}]},
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-port-not-configured",
-        "test": VerifyLLDPNeighbors,
+    (VerifyLLDPNeighbors, "failure-port-not-configured"): {
         "eos_data": [
             {
                 "lldpNeighbors": {
@@ -451,27 +333,25 @@ DATA: list[dict[str, Any]] = [
                                 "systemName": "DC1-SPINE1",
                                 "neighborInterfaceInfo": {
                                     "interfaceIdType": "interfaceName",
-                                    "interfaceId": '"Ethernet1"',
+                                    "interfaceId": "Ethernet1",
                                     "interfaceId_v2": "Ethernet1",
                                     "interfaceDescription": "P2P_LINK_TO_DC1-LEAF1A_Ethernet1",
                                 },
-                            },
-                        ],
-                    },
-                },
-            },
+                            }
+                        ]
+                    }
+                }
+            }
         ],
         "inputs": {
             "neighbors": [
                 {"port": "Ethernet1", "neighbor_device": "DC1-SPINE1", "neighbor_port": "Ethernet1"},
                 {"port": "Ethernet2", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"},
-            ],
+            ]
         },
         "expected": {"result": "failure", "messages": ["Port: Ethernet2 Neighbor: DC1-SPINE2 Neighbor Port: Ethernet1 - Port not found"]},
     },
-    {
-        "name": "failure-no-neighbor",
-        "test": VerifyLLDPNeighbors,
+    (VerifyLLDPNeighbors, "failure-no-neighbor"): {
         "eos_data": [
             {
                 "lldpNeighbors": {
@@ -483,28 +363,26 @@ DATA: list[dict[str, Any]] = [
                                 "systemName": "DC1-SPINE1",
                                 "neighborInterfaceInfo": {
                                     "interfaceIdType": "interfaceName",
-                                    "interfaceId": '"Ethernet1"',
+                                    "interfaceId": "Ethernet1",
                                     "interfaceId_v2": "Ethernet1",
                                     "interfaceDescription": "P2P_LINK_TO_DC1-LEAF1A_Ethernet1",
                                 },
-                            },
-                        ],
+                            }
+                        ]
                     },
                     "Ethernet2": {"lldpNeighborInfo": []},
-                },
-            },
+                }
+            }
         ],
         "inputs": {
             "neighbors": [
                 {"port": "Ethernet1", "neighbor_device": "DC1-SPINE1", "neighbor_port": "Ethernet1"},
                 {"port": "Ethernet2", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"},
-            ],
+            ]
         },
         "expected": {"result": "failure", "messages": ["Port: Ethernet2 Neighbor: DC1-SPINE2 Neighbor Port: Ethernet1 - No LLDP neighbors"]},
     },
-    {
-        "name": "failure-wrong-neighbor",
-        "test": VerifyLLDPNeighbors,
+    (VerifyLLDPNeighbors, "failure-wrong-neighbor"): {
         "eos_data": [
             {
                 "lldpNeighbors": {
@@ -516,12 +394,12 @@ DATA: list[dict[str, Any]] = [
                                 "systemName": "DC1-SPINE1",
                                 "neighborInterfaceInfo": {
                                     "interfaceIdType": "interfaceName",
-                                    "interfaceId": '"Ethernet1"',
+                                    "interfaceId": "Ethernet1",
                                     "interfaceId_v2": "Ethernet1",
                                     "interfaceDescription": "P2P_LINK_TO_DC1-LEAF1A_Ethernet1",
                                 },
-                            },
-                        ],
+                            }
+                        ]
                     },
                     "Ethernet2": {
                         "lldpNeighborInfo": [
@@ -531,30 +409,28 @@ DATA: list[dict[str, Any]] = [
                                 "systemName": "DC1-SPINE2",
                                 "neighborInterfaceInfo": {
                                     "interfaceIdType": "interfaceName",
-                                    "interfaceId": '"Ethernet2"',
+                                    "interfaceId": "Ethernet2",
                                     "interfaceId_v2": "Ethernet2",
                                     "interfaceDescription": "P2P_LINK_TO_DC1-LEAF1A_Ethernet2",
                                 },
-                            },
-                        ],
+                            }
+                        ]
                     },
-                },
-            },
+                }
+            }
         ],
         "inputs": {
             "neighbors": [
                 {"port": "Ethernet1", "neighbor_device": "DC1-SPINE1", "neighbor_port": "Ethernet1"},
                 {"port": "Ethernet2", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"},
-            ],
+            ]
         },
         "expected": {
             "result": "failure",
             "messages": ["Port: Ethernet2 Neighbor: DC1-SPINE2 Neighbor Port: Ethernet1 - Wrong LLDP neighbors: DC1-SPINE2/Ethernet2"],
         },
     },
-    {
-        "name": "failure-multiple",
-        "test": VerifyLLDPNeighbors,
+    (VerifyLLDPNeighbors, "failure-multiple"): {
         "eos_data": [
             {
                 "lldpNeighbors": {
@@ -566,23 +442,23 @@ DATA: list[dict[str, Any]] = [
                                 "systemName": "DC1-SPINE1",
                                 "neighborInterfaceInfo": {
                                     "interfaceIdType": "interfaceName",
-                                    "interfaceId": '"Ethernet2"',
+                                    "interfaceId": "Ethernet2",
                                     "interfaceId_v2": "Ethernet2",
                                     "interfaceDescription": "P2P_LINK_TO_DC1-LEAF1A_Ethernet1",
                                 },
-                            },
-                        ],
+                            }
+                        ]
                     },
                     "Ethernet2": {"lldpNeighborInfo": []},
-                },
-            },
+                }
+            }
         ],
         "inputs": {
             "neighbors": [
                 {"port": "Ethernet1", "neighbor_device": "DC1-SPINE1", "neighbor_port": "Ethernet1"},
                 {"port": "Ethernet2", "neighbor_device": "DC1-SPINE2", "neighbor_port": "Ethernet1"},
                 {"port": "Ethernet3", "neighbor_device": "DC1-SPINE3", "neighbor_port": "Ethernet1"},
-            ],
+            ]
         },
         "expected": {
             "result": "failure",
@@ -593,9 +469,7 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-multiple-neighbors",
-        "test": VerifyLLDPNeighbors,
+    (VerifyLLDPNeighbors, "failure-multiple-neighbors"): {
         "eos_data": [
             {
                 "lldpNeighbors": {
@@ -607,7 +481,7 @@ DATA: list[dict[str, Any]] = [
                                 "systemName": "DC1-SPINE1",
                                 "neighborInterfaceInfo": {
                                     "interfaceIdType": "interfaceName",
-                                    "interfaceId": '"Ethernet1"',
+                                    "interfaceId": "Ethernet1",
                                     "interfaceId_v2": "Ethernet1",
                                     "interfaceDescription": "P2P_LINK_TO_DC1-LEAF1A_Ethernet1",
                                 },
@@ -618,24 +492,20 @@ DATA: list[dict[str, Any]] = [
                                 "systemName": "DC1-SPINE2",
                                 "neighborInterfaceInfo": {
                                     "interfaceIdType": "interfaceName",
-                                    "interfaceId": '"Ethernet1"',
+                                    "interfaceId": "Ethernet1",
                                     "interfaceId_v2": "Ethernet1",
                                     "interfaceDescription": "P2P_LINK_TO_DC1-LEAF1A_Ethernet2",
                                 },
                             },
-                        ],
-                    },
-                },
-            },
+                        ]
+                    }
+                }
+            }
         ],
-        "inputs": {
-            "neighbors": [
-                {"port": "Ethernet1", "neighbor_device": "DC1-SPINE3", "neighbor_port": "Ethernet1"},
-            ],
-        },
+        "inputs": {"neighbors": [{"port": "Ethernet1", "neighbor_device": "DC1-SPINE3", "neighbor_port": "Ethernet1"}]},
         "expected": {
             "result": "failure",
             "messages": ["Port: Ethernet1 Neighbor: DC1-SPINE3 Neighbor Port: Ethernet1 - Wrong LLDP neighbors: DC1-SPINE1/Ethernet1, DC1-SPINE2/Ethernet1"],
         },
     },
-]
+}

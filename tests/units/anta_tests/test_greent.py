@@ -5,51 +5,47 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from anta.tests.greent import VerifyGreenT, VerifyGreenTCounters
 from tests.units.anta_tests import test
 
-DATA: list[dict[str, Any]] = [
-    {
-        "name": "success",
-        "test": VerifyGreenTCounters,
+if TYPE_CHECKING:
+    from anta.models import AntaTest
+    from tests.units.anta_tests import AntaUnitTest
+
+DATA: dict[tuple[type[AntaTest], str], AntaUnitTest] = {
+    (VerifyGreenTCounters, "success"): {
         "eos_data": [{"sampleRcvd": 0, "sampleDiscarded": 0, "multiDstSampleRcvd": 0, "grePktSent": 1, "sampleSent": 0}],
         "inputs": None,
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure",
-        "test": VerifyGreenTCounters,
+    (VerifyGreenTCounters, "failure"): {
         "eos_data": [{"sampleRcvd": 0, "sampleDiscarded": 0, "multiDstSampleRcvd": 0, "grePktSent": 0, "sampleSent": 0}],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["GreenT counters are not incremented"]},
     },
-    {
-        "name": "success",
-        "test": VerifyGreenT,
+    (VerifyGreenT, "success"): {
         "eos_data": [
             {
                 "profiles": {
                     "default": {"interfaces": [], "appliedInterfaces": [], "samplePolicy": "default", "failures": {}, "appliedInterfaces6": [], "failures6": {}},
                     "testProfile": {"interfaces": [], "appliedInterfaces": [], "samplePolicy": "default", "failures": {}, "appliedInterfaces6": [], "failures6": {}},
-                },
-            },
+                }
+            }
         ],
         "inputs": None,
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure",
-        "test": VerifyGreenT,
+    (VerifyGreenT, "failure"): {
         "eos_data": [
             {
                 "profiles": {
-                    "default": {"interfaces": [], "appliedInterfaces": [], "samplePolicy": "default", "failures": {}, "appliedInterfaces6": [], "failures6": {}},
-                },
-            },
+                    "default": {"interfaces": [], "appliedInterfaces": [], "samplePolicy": "default", "failures": {}, "appliedInterfaces6": [], "failures6": {}}
+                }
+            }
         ],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["No GreenT policy is created"]},
     },
-]
+}

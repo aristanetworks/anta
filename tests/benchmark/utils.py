@@ -87,9 +87,11 @@ class AntaMockEnvironment:  # pylint: disable=too-few-public-methods
         test_definitions = []
         eos_data_catalog = {}
         for module in import_test_modules():
-            for test_data in module.DATA:
-                test = test_data["test"]
-                result_overwrite = AntaTest.Input.ResultOverwrite(custom_field=test_data["name"])
+            for testcase, test_data in module.DATA.items():
+                # Extract the test class, name and test data from a nested tuple structure:
+                # unit test: Tuple[Tuple[Type[AntaTest], str], AntaUnitTest]
+                test = testcase[0]
+                result_overwrite = AntaTest.Input.ResultOverwrite(custom_field=testcase[1])
                 if test_data["inputs"] is None:
                     inputs = test.Input(result_overwrite=result_overwrite)
                 else:
@@ -98,7 +100,7 @@ class AntaMockEnvironment:  # pylint: disable=too-few-public-methods
                     test=test,
                     inputs=inputs,
                 )
-                eos_data_catalog[(test.__name__, test_data["name"])] = test_data["eos_data"]
+                eos_data_catalog[(test.__name__, testcase[1])] = test_data["eos_data"]
                 test_definitions.append(test_definition)
 
         return (AntaCatalog(tests=test_definitions), eos_data_catalog)

@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from anta.tests.system import (
     VerifyAgentLogs,
@@ -21,127 +21,90 @@ from anta.tests.system import (
 )
 from tests.units.anta_tests import test
 
-DATA: list[dict[str, Any]] = [
-    {
-        "name": "success",
-        "test": VerifyUptime,
+if TYPE_CHECKING:
+    from anta.models import AntaTest
+    from tests.units.anta_tests import AntaUnitTest
+
+DATA: dict[tuple[type[AntaTest], str], AntaUnitTest] = {
+    (VerifyUptime, "success"): {
         "eos_data": [{"upTime": 1186689.15, "loadAvg": [0.13, 0.12, 0.09], "users": 1, "currentTime": 1683186659.139859}],
         "inputs": {"minimum": 666},
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure",
-        "test": VerifyUptime,
+    (VerifyUptime, "failure"): {
         "eos_data": [{"upTime": 665.15, "loadAvg": [0.13, 0.12, 0.09], "users": 1, "currentTime": 1683186659.139859}],
         "inputs": {"minimum": 666},
         "expected": {"result": "failure", "messages": ["Device uptime is incorrect - Expected: 666s Actual: 665.15s"]},
     },
-    {
-        "name": "success-no-reload",
-        "test": VerifyReloadCause,
+    (VerifyReloadCause, "success-no-reload"): {
         "eos_data": [{"kernelCrashData": [], "resetCauses": [], "full": False}],
         "inputs": None,
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-valid-cause",
-        "test": VerifyReloadCause,
+    (VerifyReloadCause, "success-valid-cause"): {
         "eos_data": [
             {
                 "resetCauses": [
-                    {
-                        "recommendedAction": "No action necessary.",
-                        "description": "Reload requested by the user.",
-                        "timestamp": 1683186892.0,
-                        "debugInfoIsDir": False,
-                    },
+                    {"recommendedAction": "No action necessary.", "description": "Reload requested by the user.", "timestamp": 1683186892.0, "debugInfoIsDir": False}
                 ],
                 "full": False,
-            },
+            }
         ],
         "inputs": None,
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure",
-        "test": VerifyReloadCause,
-        # The failure cause is made up
+    (VerifyReloadCause, "failure"): {
         "eos_data": [
             {
                 "resetCauses": [
-                    {"recommendedAction": "No action necessary.", "description": "Reload after crash.", "timestamp": 1683186892.0, "debugInfoIsDir": False},
+                    {"recommendedAction": "No action necessary.", "description": "Reload after crash.", "timestamp": 1683186892.0, "debugInfoIsDir": False}
                 ],
                 "full": False,
-            },
+            }
         ],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["Reload cause is: Reload after crash."]},
     },
-    {
-        "name": "success-without-minidump",
-        "test": VerifyCoredump,
+    (VerifyCoredump, "success-without-minidump"): {
         "eos_data": [{"mode": "compressedDeferred", "coreFiles": []}],
         "inputs": None,
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-with-minidump",
-        "test": VerifyCoredump,
+    (VerifyCoredump, "success-with-minidump"): {
         "eos_data": [{"mode": "compressedDeferred", "coreFiles": ["minidump"]}],
         "inputs": None,
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-without-minidump",
-        "test": VerifyCoredump,
+    (VerifyCoredump, "failure-without-minidump"): {
         "eos_data": [{"mode": "compressedDeferred", "coreFiles": ["core.2344.1584483862.Mlag.gz", "core.23101.1584483867.Mlag.gz"]}],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["Core dump(s) have been found: core.2344.1584483862.Mlag.gz, core.23101.1584483867.Mlag.gz"]},
     },
-    {
-        "name": "failure-with-minidump",
-        "test": VerifyCoredump,
+    (VerifyCoredump, "failure-with-minidump"): {
         "eos_data": [{"mode": "compressedDeferred", "coreFiles": ["minidump", "core.2344.1584483862.Mlag.gz", "core.23101.1584483867.Mlag.gz"]}],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["Core dump(s) have been found: core.2344.1584483862.Mlag.gz, core.23101.1584483867.Mlag.gz"]},
     },
-    {
-        "name": "success",
-        "test": VerifyAgentLogs,
-        "eos_data": [""],
-        "inputs": None,
-        "expected": {"result": "success"},
-    },
-    {
-        "name": "failure",
-        "test": VerifyAgentLogs,
+    (VerifyAgentLogs, "success"): {"eos_data": [""], "inputs": None, "expected": {"result": "success"}},
+    (VerifyAgentLogs, "failure"): {
         "eos_data": [
-            """===> /var/log/agents/Test-666 Thu May  4 09:57:02 2023 <===
-CLI Exception: Exception
-CLI Exception: Backtrace
-===> /var/log/agents/Aaa-855 Fri Jul  7 15:07:00 2023 <===
-===== Output from /usr/bin/Aaa [] (PID=855) started Jul  7 15:06:11.606414 ===
-EntityManager::doBackoff waiting for remote sysdb version ....ok
-
-===> /var/log/agents/Acl-830 Fri Jul  7 15:07:00 2023 <===
-===== Output from /usr/bin/Acl [] (PID=830) started Jul  7 15:06:10.871700 ===
-EntityManager::doBackoff waiting for remote sysdb version ...................ok
-""",
+            "===> /var/log/agents/Test-666 Thu May  4 09:57:02 2023 <===\nCLI Exception: Exception\nCLI Exception: Backtrace\n"
+            "===> /var/log/agents/Aaa-855 Fri Jul  7 15:07:00 2023"
+            " <===\n===== Output from /usr/bin/Aaa [] (PID=855) started Jul  7 15:06:11.606414 ===\n"
+            "EntityManager::doBackoff waiting for remote sysdb version ....ok\n\n===> "
+            "/var/log/agents/Acl-830 Fri Jul  7 15:07:00 2023 <===\n===== Output from /usr/bin/Acl [] (PID=830) started Jul  7 15:06:10.871700 ===\n"
+            "EntityManager::doBackoff waiting for remote sysdb version ...................ok\n"
         ],
         "inputs": None,
         "expected": {
             "result": "failure",
             "messages": [
-                "Device has reported agent crashes:\n"
-                " * /var/log/agents/Test-666 Thu May  4 09:57:02 2023\n"
-                " * /var/log/agents/Aaa-855 Fri Jul  7 15:07:00 2023\n"
-                " * /var/log/agents/Acl-830 Fri Jul  7 15:07:00 2023",
+                "Device has reported agent crashes:\n * /var/log/agents/Test-666 Thu May  4 09:57:02 2023\n * "
+                "/var/log/agents/Aaa-855 Fri Jul  7 15:07:00 2023\n * /var/log/agents/Acl-830 Fri Jul  7 15:07:00 2023"
             ],
         },
     },
-    {
-        "name": "success",
-        "test": VerifyCPUUtilization,
+    (VerifyCPUUtilization, "success"): {
         "eos_data": [
             {
                 "cpuInfo": {"%Cpu(s)": {"idle": 88.2, "stolen": 0.0, "user": 5.9, "swIrq": 0.0, "ioWait": 0.0, "system": 0.0, "hwIrq": 5.9, "nice": 0.0}},
@@ -159,16 +122,14 @@ EntityManager::doBackoff waiting for remote sysdb version ...................ok
                         "activeTime": 360,
                         "virtMem": "6644",
                         "sharedMem": "3996",
-                    },
+                    }
                 },
-            },
+            }
         ],
         "inputs": None,
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure",
-        "test": VerifyCPUUtilization,
+    (VerifyCPUUtilization, "failure"): {
         "eos_data": [
             {
                 "cpuInfo": {"%Cpu(s)": {"idle": 24.8, "stolen": 0.0, "user": 5.9, "swIrq": 0.0, "ioWait": 0.0, "system": 0.0, "hwIrq": 5.9, "nice": 0.0}},
@@ -186,69 +147,39 @@ EntityManager::doBackoff waiting for remote sysdb version ...................ok
                         "activeTime": 360,
                         "virtMem": "6644",
                         "sharedMem": "3996",
-                    },
+                    }
                 },
-            },
+            }
         ],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["Device has reported a high CPU utilization -  Expected: < 75% Actual: 75.2%"]},
     },
-    {
-        "name": "success",
-        "test": VerifyMemoryUtilization,
+    (VerifyMemoryUtilization, "success"): {
         "eos_data": [
-            {
-                "uptime": 1994.67,
-                "modelName": "vEOS-lab",
-                "internalVersion": "4.27.3F-26379303.4273F",
-                "memTotal": 2004568,
-                "memFree": 879004,
-                "version": "4.27.3F",
-            },
+            {"uptime": 1994.67, "modelName": "vEOS-lab", "internalVersion": "4.27.3F-26379303.4273F", "memTotal": 2004568, "memFree": 879004, "version": "4.27.3F"}
         ],
         "inputs": None,
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure",
-        "test": VerifyMemoryUtilization,
+    (VerifyMemoryUtilization, "failure"): {
         "eos_data": [
-            {
-                "uptime": 1994.67,
-                "modelName": "vEOS-lab",
-                "internalVersion": "4.27.3F-26379303.4273F",
-                "memTotal": 2004568,
-                "memFree": 89004,
-                "version": "4.27.3F",
-            },
+            {"uptime": 1994.67, "modelName": "vEOS-lab", "internalVersion": "4.27.3F-26379303.4273F", "memTotal": 2004568, "memFree": 89004, "version": "4.27.3F"}
         ],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["Device has reported a high memory usage - Expected: < 75% Actual: 95.56%"]},
     },
-    {
-        "name": "success",
-        "test": VerifyFileSystemUtilization,
+    (VerifyFileSystemUtilization, "success"): {
         "eos_data": [
-            """Filesystem      Size  Used Avail Use% Mounted on
-/dev/sda2       3.9G  988M  2.9G  26% /mnt/flash
-none            294M   78M  217M  27% /
-none            294M   78M  217M  27% /.overlay
-/dev/loop0      461M  461M     0 100% /rootfs-i386
-""",
+            "Filesystem      Size  Used Avail Use% Mounted on\n/dev/sda2       3.9G  988M  2.9G  26% /mnt/flash\nnone            294M   78M  217M  27% /\n"
+            "none            294M   78M  217M  27% /.overlay\n/dev/loop0      461M  461M     0 100% /rootfs-i386\n"
         ],
         "inputs": None,
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure",
-        "test": VerifyFileSystemUtilization,
+    (VerifyFileSystemUtilization, "failure"): {
         "eos_data": [
-            """Filesystem      Size  Used Avail Use% Mounted on
-/dev/sda2       3.9G  988M  2.9G  84% /mnt/flash
-none            294M   78M  217M  27% /
-none            294M   78M  217M  84% /.overlay
-/dev/loop0      461M  461M     0 100% /rootfs-i386
-""",
+            "Filesystem      Size  Used Avail Use% Mounted on\n/dev/sda2       3.9G  988M  2.9G  84% /mnt/flash\nnone            294M   78M  217M  27% /\n"
+            "none            294M   78M  217M  84% /.overlay\n/dev/loop0      461M  461M     0 100% /rootfs-i386\n"
         ],
         "inputs": None,
         "expected": {
@@ -259,49 +190,19 @@ none            294M   78M  217M  84% /.overlay
             ],
         },
     },
-    {
-        "name": "success",
-        "test": VerifyNTP,
-        "eos_data": [
-            """synchronised
-poll interval unknown
-""",
-        ],
-        "inputs": None,
-        "expected": {"result": "success"},
-    },
-    {
-        "name": "failure",
-        "test": VerifyNTP,
-        "eos_data": [
-            """unsynchronised
-poll interval unknown
-""",
-        ],
+    (VerifyNTP, "success"): {"eos_data": ["synchronised\npoll interval unknown\n"], "inputs": None, "expected": {"result": "success"}},
+    (VerifyNTP, "failure"): {
+        "eos_data": ["unsynchronised\npoll interval unknown\n"],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["NTP status mismatch - Expected: synchronised Actual: unsynchronised"]},
     },
-    {
-        "name": "success",
-        "test": VerifyNTPAssociations,
+    (VerifyNTPAssociations, "success"): {
         "eos_data": [
             {
                 "peers": {
-                    "1.1.1.1": {
-                        "condition": "sys.peer",
-                        "peerIpAddr": "1.1.1.1",
-                        "stratumLevel": 1,
-                    },
-                    "2.2.2.2": {
-                        "condition": "candidate",
-                        "peerIpAddr": "2.2.2.2",
-                        "stratumLevel": 2,
-                    },
-                    "3.3.3.3": {
-                        "condition": "candidate",
-                        "peerIpAddr": "3.3.3.3",
-                        "stratumLevel": 2,
-                    },
+                    "1.1.1.1": {"condition": "sys.peer", "peerIpAddr": "1.1.1.1", "stratumLevel": 1},
+                    "2.2.2.2": {"condition": "candidate", "peerIpAddr": "2.2.2.2", "stratumLevel": 2},
+                    "3.3.3.3": {"condition": "candidate", "peerIpAddr": "3.3.3.3", "stratumLevel": 2},
                 }
             }
         ],
@@ -314,27 +215,13 @@ poll interval unknown
         },
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-pool-name",
-        "test": VerifyNTPAssociations,
+    (VerifyNTPAssociations, "success-pool-name"): {
         "eos_data": [
             {
                 "peers": {
-                    "1.ntp.networks.com": {
-                        "condition": "sys.peer",
-                        "peerIpAddr": "1.1.1.1",
-                        "stratumLevel": 1,
-                    },
-                    "2.ntp.networks.com": {
-                        "condition": "candidate",
-                        "peerIpAddr": "2.2.2.2",
-                        "stratumLevel": 2,
-                    },
-                    "3.ntp.networks.com": {
-                        "condition": "candidate",
-                        "peerIpAddr": "3.3.3.3",
-                        "stratumLevel": 2,
-                    },
+                    "1.ntp.networks.com": {"condition": "sys.peer", "peerIpAddr": "1.1.1.1", "stratumLevel": 1},
+                    "2.ntp.networks.com": {"condition": "candidate", "peerIpAddr": "2.2.2.2", "stratumLevel": 2},
+                    "3.ntp.networks.com": {"condition": "candidate", "peerIpAddr": "3.3.3.3", "stratumLevel": 2},
                 }
             }
         ],
@@ -347,54 +234,26 @@ poll interval unknown
         },
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-ntp-pool-as-input",
-        "test": VerifyNTPAssociations,
+    (VerifyNTPAssociations, "success-ntp-pool-as-input"): {
         "eos_data": [
             {
                 "peers": {
-                    "1.1.1.1": {
-                        "condition": "sys.peer",
-                        "peerIpAddr": "1.1.1.1",
-                        "stratumLevel": 1,
-                    },
-                    "2.2.2.2": {
-                        "condition": "candidate",
-                        "peerIpAddr": "2.2.2.2",
-                        "stratumLevel": 2,
-                    },
-                    "3.3.3.3": {
-                        "condition": "candidate",
-                        "peerIpAddr": "3.3.3.3",
-                        "stratumLevel": 2,
-                    },
+                    "1.1.1.1": {"condition": "sys.peer", "peerIpAddr": "1.1.1.1", "stratumLevel": 1},
+                    "2.2.2.2": {"condition": "candidate", "peerIpAddr": "2.2.2.2", "stratumLevel": 2},
+                    "3.3.3.3": {"condition": "candidate", "peerIpAddr": "3.3.3.3", "stratumLevel": 2},
                 }
             }
         ],
         "inputs": {"ntp_pool": {"server_addresses": ["1.1.1.1", "2.2.2.2", "3.3.3.3"], "preferred_stratum_range": [1, 2]}},
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-ntp-pool-hostname",
-        "test": VerifyNTPAssociations,
+    (VerifyNTPAssociations, "success-ntp-pool-hostname"): {
         "eos_data": [
             {
                 "peers": {
-                    "itsys-ntp010p.aristanetworks.com": {
-                        "condition": "sys.peer",
-                        "peerIpAddr": "1.1.1.1",
-                        "stratumLevel": 1,
-                    },
-                    "itsys-ntp011p.aristanetworks.com": {
-                        "condition": "candidate",
-                        "peerIpAddr": "2.2.2.2",
-                        "stratumLevel": 2,
-                    },
-                    "itsys-ntp012p.aristanetworks.com": {
-                        "condition": "candidate",
-                        "peerIpAddr": "3.3.3.3",
-                        "stratumLevel": 2,
-                    },
+                    "itsys-ntp010p.aristanetworks.com": {"condition": "sys.peer", "peerIpAddr": "1.1.1.1", "stratumLevel": 1},
+                    "itsys-ntp011p.aristanetworks.com": {"condition": "candidate", "peerIpAddr": "2.2.2.2", "stratumLevel": 2},
+                    "itsys-ntp012p.aristanetworks.com": {"condition": "candidate", "peerIpAddr": "3.3.3.3", "stratumLevel": 2},
                 }
             }
         ],
@@ -406,27 +265,13 @@ poll interval unknown
         },
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-ip-dns",
-        "test": VerifyNTPAssociations,
+    (VerifyNTPAssociations, "success-ip-dns"): {
         "eos_data": [
             {
                 "peers": {
-                    "1.1.1.1 (1.ntp.networks.com)": {
-                        "condition": "sys.peer",
-                        "peerIpAddr": "1.1.1.1",
-                        "stratumLevel": 1,
-                    },
-                    "2.2.2.2 (2.ntp.networks.com)": {
-                        "condition": "candidate",
-                        "peerIpAddr": "2.2.2.2",
-                        "stratumLevel": 2,
-                    },
-                    "3.3.3.3 (3.ntp.networks.com)": {
-                        "condition": "candidate",
-                        "peerIpAddr": "3.3.3.3",
-                        "stratumLevel": 2,
-                    },
+                    "1.1.1.1 (1.ntp.networks.com)": {"condition": "sys.peer", "peerIpAddr": "1.1.1.1", "stratumLevel": 1},
+                    "2.2.2.2 (2.ntp.networks.com)": {"condition": "candidate", "peerIpAddr": "2.2.2.2", "stratumLevel": 2},
+                    "3.3.3.3 (3.ntp.networks.com)": {"condition": "candidate", "peerIpAddr": "3.3.3.3", "stratumLevel": 2},
                 }
             }
         ],
@@ -439,27 +284,13 @@ poll interval unknown
         },
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-ntp-server",
-        "test": VerifyNTPAssociations,
+    (VerifyNTPAssociations, "failure-ntp-server"): {
         "eos_data": [
             {
                 "peers": {
-                    "1.1.1.1": {
-                        "condition": "candidate",
-                        "peerIpAddr": "1.1.1.1",
-                        "stratumLevel": 2,
-                    },
-                    "2.2.2.2": {
-                        "condition": "sys.peer",
-                        "peerIpAddr": "2.2.2.2",
-                        "stratumLevel": 2,
-                    },
-                    "3.3.3.3": {
-                        "condition": "sys.peer",
-                        "peerIpAddr": "3.3.3.3",
-                        "stratumLevel": 3,
-                    },
+                    "1.1.1.1": {"condition": "candidate", "peerIpAddr": "1.1.1.1", "stratumLevel": 2},
+                    "2.2.2.2": {"condition": "sys.peer", "peerIpAddr": "2.2.2.2", "stratumLevel": 2},
+                    "3.3.3.3": {"condition": "sys.peer", "peerIpAddr": "3.3.3.3", "stratumLevel": 3},
                 }
             }
         ],
@@ -481,9 +312,7 @@ poll interval unknown
             ],
         },
     },
-    {
-        "name": "failure-no-peers",
-        "test": VerifyNTPAssociations,
+    (VerifyNTPAssociations, "failure-no-peers"): {
         "eos_data": [{"peers": {}}],
         "inputs": {
             "ntp_servers": [
@@ -492,27 +321,14 @@ poll interval unknown
                 {"server_address": "3.3.3.3", "stratum": 1},
             ]
         },
-        "expected": {
-            "result": "failure",
-            "messages": ["No NTP peers configured"],
-        },
+        "expected": {"result": "failure", "messages": ["No NTP peers configured"]},
     },
-    {
-        "name": "failure-one-peer-not-found",
-        "test": VerifyNTPAssociations,
+    (VerifyNTPAssociations, "failure-one-peer-not-found"): {
         "eos_data": [
             {
                 "peers": {
-                    "1.1.1.1": {
-                        "condition": "sys.peer",
-                        "peerIpAddr": "1.1.1.1",
-                        "stratumLevel": 1,
-                    },
-                    "2.2.2.2": {
-                        "condition": "candidate",
-                        "peerIpAddr": "2.2.2.2",
-                        "stratumLevel": 1,
-                    },
+                    "1.1.1.1": {"condition": "sys.peer", "peerIpAddr": "1.1.1.1", "stratumLevel": 1},
+                    "2.2.2.2": {"condition": "candidate", "peerIpAddr": "2.2.2.2", "stratumLevel": 1},
                 }
             }
         ],
@@ -523,25 +339,10 @@ poll interval unknown
                 {"server_address": "3.3.3.3", "stratum": 1},
             ]
         },
-        "expected": {
-            "result": "failure",
-            "messages": ["NTP Server: 3.3.3.3 Preferred: False Stratum: 1 - Not configured"],
-        },
+        "expected": {"result": "failure", "messages": ["NTP Server: 3.3.3.3 Preferred: False Stratum: 1 - Not configured"]},
     },
-    {
-        "name": "failure-with-two-peers-not-found",
-        "test": VerifyNTPAssociations,
-        "eos_data": [
-            {
-                "peers": {
-                    "1.1.1.1": {
-                        "condition": "candidate",
-                        "peerIpAddr": "1.1.1.1",
-                        "stratumLevel": 1,
-                    }
-                }
-            }
-        ],
+    (VerifyNTPAssociations, "failure-with-two-peers-not-found"): {
+        "eos_data": [{"peers": {"1.1.1.1": {"condition": "candidate", "peerIpAddr": "1.1.1.1", "stratumLevel": 1}}}],
         "inputs": {
             "ntp_servers": [
                 {"server_address": "1.1.1.1", "preferred": True, "stratum": 1},
@@ -558,57 +359,26 @@ poll interval unknown
             ],
         },
     },
-    {
-        "name": "failure-ntp-pool-as-input",
-        "test": VerifyNTPAssociations,
+    (VerifyNTPAssociations, "failure-ntp-pool-as-input"): {
         "eos_data": [
             {
                 "peers": {
-                    "ntp1.pool": {
-                        "condition": "sys.peer",
-                        "peerIpAddr": "1.1.1.1",
-                        "stratumLevel": 1,
-                    },
-                    "ntp2.pool": {
-                        "condition": "candidate",
-                        "peerIpAddr": "2.2.2.2",
-                        "stratumLevel": 2,
-                    },
-                    "ntp3.pool": {
-                        "condition": "candidate",
-                        "peerIpAddr": "3.3.3.3",
-                        "stratumLevel": 2,
-                    },
+                    "ntp1.pool": {"condition": "sys.peer", "peerIpAddr": "1.1.1.1", "stratumLevel": 1},
+                    "ntp2.pool": {"condition": "candidate", "peerIpAddr": "2.2.2.2", "stratumLevel": 2},
+                    "ntp3.pool": {"condition": "candidate", "peerIpAddr": "3.3.3.3", "stratumLevel": 2},
                 }
             }
         ],
         "inputs": {"ntp_pool": {"server_addresses": ["1.1.1.1", "2.2.2.2"], "preferred_stratum_range": [1, 2]}},
-        "expected": {
-            "result": "failure",
-            "messages": ["NTP Server: 3.3.3.3 Hostname: ntp3.pool - Associated but not part of the provided NTP pool"],
-        },
+        "expected": {"result": "failure", "messages": ["NTP Server: 3.3.3.3 Hostname: ntp3.pool - Associated but not part of the provided NTP pool"]},
     },
-    {
-        "name": "failure-ntp-pool-as-input-bad-association",
-        "test": VerifyNTPAssociations,
+    (VerifyNTPAssociations, "failure-ntp-pool-as-input-bad-association"): {
         "eos_data": [
             {
                 "peers": {
-                    "ntp1.pool": {
-                        "condition": "sys.peer",
-                        "peerIpAddr": "1.1.1.1",
-                        "stratumLevel": 1,
-                    },
-                    "ntp2.pool": {
-                        "condition": "candidate",
-                        "peerIpAddr": "2.2.2.2",
-                        "stratumLevel": 2,
-                    },
-                    "ntp3.pool": {
-                        "condition": "reject",
-                        "peerIpAddr": "3.3.3.3",
-                        "stratumLevel": 3,
-                    },
+                    "ntp1.pool": {"condition": "sys.peer", "peerIpAddr": "1.1.1.1", "stratumLevel": 1},
+                    "ntp2.pool": {"condition": "candidate", "peerIpAddr": "2.2.2.2", "stratumLevel": 2},
+                    "ntp3.pool": {"condition": "reject", "peerIpAddr": "3.3.3.3", "stratumLevel": 3},
                 }
             }
         ],
@@ -621,27 +391,13 @@ poll interval unknown
             ],
         },
     },
-    {
-        "name": "failure-ntp-pool-hostname",
-        "test": VerifyNTPAssociations,
+    (VerifyNTPAssociations, "failure-ntp-pool-hostname"): {
         "eos_data": [
             {
                 "peers": {
-                    "itsys-ntp010p.aristanetworks.com": {
-                        "condition": "sys.peer",
-                        "peerIpAddr": "1.1.1.1",
-                        "stratumLevel": 5,
-                    },
-                    "itsys-ntp011p.aristanetworks.com": {
-                        "condition": "reject",
-                        "peerIpAddr": "2.2.2.2",
-                        "stratumLevel": 4,
-                    },
-                    "itsys-ntp012p.aristanetworks.com": {
-                        "condition": "candidate",
-                        "peerIpAddr": "3.3.3.3",
-                        "stratumLevel": 2,
-                    },
+                    "itsys-ntp010p.aristanetworks.com": {"condition": "sys.peer", "peerIpAddr": "1.1.1.1", "stratumLevel": 5},
+                    "itsys-ntp011p.aristanetworks.com": {"condition": "reject", "peerIpAddr": "2.2.2.2", "stratumLevel": 4},
+                    "itsys-ntp012p.aristanetworks.com": {"condition": "candidate", "peerIpAddr": "3.3.3.3", "stratumLevel": 2},
                 }
             }
         ],
@@ -656,23 +412,12 @@ poll interval unknown
             ],
         },
     },
-    {
-        "name": "success-no-maintenance-configured",
-        "test": VerifyMaintenance,
-        "eos_data": [
-            {
-                "units": {},
-                "interfaces": {},
-                "vrfs": {},
-                "warnings": ["Maintenance Mode is disabled."],
-            },
-        ],
+    (VerifyMaintenance, "success-no-maintenance-configured"): {
+        "eos_data": [{"units": {}, "interfaces": {}, "vrfs": {}, "warnings": ["Maintenance Mode is disabled."]}],
         "inputs": None,
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-maintenance-configured-but-not-enabled",
-        "test": VerifyMaintenance,
+    (VerifyMaintenance, "success-maintenance-configured-but-not-enabled"): {
         "eos_data": [
             {
                 "units": {
@@ -688,14 +433,12 @@ poll interval unknown
                 },
                 "interfaces": {},
                 "vrfs": {},
-            },
+            }
         ],
         "inputs": None,
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-multiple-units-but-not-enabled",
-        "test": VerifyMaintenance,
+    (VerifyMaintenance, "success-multiple-units-but-not-enabled"): {
         "eos_data": [
             {
                 "units": {
@@ -720,14 +463,12 @@ poll interval unknown
                 },
                 "interfaces": {},
                 "vrfs": {},
-            },
+            }
         ],
         "inputs": None,
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-maintenance-enabled",
-        "test": VerifyMaintenance,
+    (VerifyMaintenance, "failure-maintenance-enabled"): {
         "eos_data": [
             {
                 "units": {
@@ -752,20 +493,12 @@ poll interval unknown
                 },
                 "interfaces": {},
                 "vrfs": {},
-            },
+            }
         ],
         "inputs": None,
-        "expected": {
-            "result": "failure",
-            "messages": [
-                "Units under maintenance: 'mlag'",
-                "Possible causes: 'Quiesce is configured'",
-            ],
-        },
+        "expected": {"result": "failure", "messages": ["Units under maintenance: 'mlag", "Possible causes: 'Quiesce is configured"]},
     },
-    {
-        "name": "failure-multiple-reasons",
-        "test": VerifyMaintenance,
+    (VerifyMaintenance, "failure-multiple-reasons"): {
         "eos_data": [
             {
                 "units": {
@@ -790,21 +523,15 @@ poll interval unknown
                 },
                 "interfaces": {},
                 "vrfs": {},
-            },
+            }
         ],
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": [
-                "Units under maintenance: 'mlag'",
-                "Units entering maintenance: 'System'",
-                "Possible causes: 'Quiesce is configured'",
-            ],
+            "messages": ["Units under maintenance: 'mlag", "Units entering maintenance: 'System", "Possible causes: 'Quiesce is configured"],
         },
     },
-    {
-        "name": "failure-onboot-maintenance",
-        "test": VerifyMaintenance,
+    (VerifyMaintenance, "failure-onboot-maintenance"): {
         "eos_data": [
             {
                 "units": {
@@ -820,20 +547,15 @@ poll interval unknown
                 },
                 "interfaces": {},
                 "vrfs": {},
-            },
+            }
         ],
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": [
-                "Units under maintenance: 'System'",
-                "Possible causes: 'On-boot maintenance is configured, Quiesce is configured'",
-            ],
+            "messages": ["Units under maintenance: 'System", "Possible causes: 'On-boot maintenance is configured, Quiesce is configured"],
         },
     },
-    {
-        "name": "failure-entering-maintenance-interface-violation",
-        "test": VerifyMaintenance,
+    (VerifyMaintenance, "failure-entering-maintenance-interface-violation"): {
         "eos_data": [
             {
                 "units": {
@@ -849,15 +571,12 @@ poll interval unknown
                 },
                 "interfaces": {},
                 "vrfs": {},
-            },
+            }
         ],
         "inputs": None,
         "expected": {
             "result": "failure",
-            "messages": [
-                "Units entering maintenance: 'System'",
-                "Possible causes: 'Interface traffic threshold violation, Quiesce is configured'",
-            ],
+            "messages": ["Units entering maintenance: 'System", "Possible causes: 'Interface traffic threshold violation, Quiesce is configured"],
         },
     },
-]
+}

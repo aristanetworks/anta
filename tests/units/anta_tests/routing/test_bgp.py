@@ -40,6 +40,10 @@ from anta.tests.routing.bgp import (
 )
 from tests.units.anta_tests import test
 
+if TYPE_CHECKING:
+    from anta.models import AntaTest
+    from tests.units.anta_tests import AntaUnitTest
+
 
 @pytest.mark.parametrize(
     ("input_dict", "expected"),
@@ -57,10 +61,8 @@ def test_check_bgp_neighbor_capability(input_dict: dict[str, bool], expected: bo
     assert _check_bgp_neighbor_capability(input_dict) == expected
 
 
-DATA: list[dict[str, Any]] = [
-    {
-        "name": "success",
-        "test": VerifyBGPPeerCount,
+DATA: dict[tuple[type[AntaTest], str], AntaUnitTest] = {
+    (VerifyBGPPeerCount, "success"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -96,7 +98,7 @@ DATA: list[dict[str, Any]] = [
                         },
                     },
                 }
-            },
+            }
         ],
         "inputs": {
             "address_families": [
@@ -107,9 +109,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-peer-state-check-true",
-        "test": VerifyBGPPeerCount,
+    (VerifyBGPPeerCount, "success-peer-state-check-true"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -160,7 +160,7 @@ DATA: list[dict[str, Any]] = [
                         },
                     },
                 }
-            },
+            }
         ],
         "inputs": {
             "address_families": [
@@ -171,9 +171,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-vrf-not-configured",
-        "test": VerifyBGPPeerCount,
+    (VerifyBGPPeerCount, "failure-vrf-not-configured"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -224,7 +222,7 @@ DATA: list[dict[str, Any]] = [
                         },
                     },
                 }
-            },
+            }
         ],
         "inputs": {
             "address_families": [
@@ -233,16 +231,9 @@ DATA: list[dict[str, Any]] = [
                 {"afi": "ipv4", "safi": "unicast", "vrf": "PROD", "num_peers": 2, "check_peer_state": True},
             ]
         },
-        "expected": {
-            "result": "failure",
-            "messages": [
-                "AFI: ipv4 SAFI: unicast VRF: PROD - VRF not configured",
-            ],
-        },
+        "expected": {"result": "failure", "messages": ["AFI: ipv4 SAFI: unicast VRF: PROD - VRF not configured"]},
     },
-    {
-        "name": "failure-peer-state-check-true",
-        "test": VerifyBGPPeerCount,
+    (VerifyBGPPeerCount, "failure-peer-state-check-true"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -293,7 +284,7 @@ DATA: list[dict[str, Any]] = [
                         },
                     },
                 }
-            },
+            }
         ],
         "inputs": {
             "address_families": [
@@ -303,16 +294,9 @@ DATA: list[dict[str, Any]] = [
                 {"afi": "ipv4", "safi": "unicast", "vrf": "DEV", "num_peers": 1, "check_peer_state": True},
             ]
         },
-        "expected": {
-            "result": "failure",
-            "messages": [
-                "AFI: vpn-ipv4 - Peer count mismatch - Expected: 2 Actual: 0",
-            ],
-        },
+        "expected": {"result": "failure", "messages": ["AFI: vpn-ipv4 - Peer count mismatch - Expected: 2 Actual: 0"]},
     },
-    {
-        "name": "failure-wrong-count-peer-state-check-true",
-        "test": VerifyBGPPeerCount,
+    (VerifyBGPPeerCount, "failure-wrong-count-peer-state-check-true"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -363,7 +347,7 @@ DATA: list[dict[str, Any]] = [
                         },
                     },
                 }
-            },
+            }
         ],
         "inputs": {
             "address_families": [
@@ -380,9 +364,7 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-wrong-count",
-        "test": VerifyBGPPeerCount,
+    (VerifyBGPPeerCount, "failure-wrong-count"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -396,7 +378,7 @@ DATA: list[dict[str, Any]] = [
                                 "peerAsn": "65100",
                                 "ipv4Unicast": {"afiSafiState": "advertised", "nlrisReceived": 0, "nlrisAccepted": 0},
                                 "l2VpnEvpn": {"afiSafiState": "negotiated", "nlrisReceived": 42, "nlrisAccepted": 42},
-                            },
+                            }
                         },
                     },
                     "DEV": {
@@ -412,7 +394,7 @@ DATA: list[dict[str, Any]] = [
                         },
                     },
                 }
-            },
+            }
         ],
         "inputs": {
             "address_families": [
@@ -430,9 +412,7 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "success",
-        "test": VerifyBGPPeersHealth,
+    (VerifyBGPPeersHealth, "success"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -459,24 +439,16 @@ DATA: list[dict[str, Any]] = [
                                 "state": "Established",
                                 "neighborCapabilities": {"multiprotocolCaps": {"ipv4Unicast": {"advertised": True, "received": True, "enabled": True}}},
                                 "peerTcpInfo": {"state": "ESTABLISHED", "outputQueueLength": 0, "inputQueueLength": 0},
-                            },
+                            }
                         ]
                     },
                 }
             }
         ],
-        "inputs": {
-            "address_families": [
-                {"afi": "evpn"},
-                {"afi": "ipv4", "safi": "unicast", "vrf": "default"},
-                {"afi": "ipv4", "safi": "unicast", "vrf": "DEV"},
-            ]
-        },
+        "inputs": {"address_families": [{"afi": "evpn"}, {"afi": "ipv4", "safi": "unicast", "vrf": "default"}, {"afi": "ipv4", "safi": "unicast", "vrf": "DEV"}]},
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-min-established-time",
-        "test": VerifyBGPPeersHealth,
+    (VerifyBGPPeersHealth, "success-min-established-time"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -506,7 +478,7 @@ DATA: list[dict[str, Any]] = [
                                 "establishedTime": 169883,
                                 "neighborCapabilities": {"multiprotocolCaps": {"ipv4Unicast": {"advertised": True, "received": True, "enabled": True}}},
                                 "peerTcpInfo": {"state": "ESTABLISHED", "outputQueueLength": 0, "inputQueueLength": 0},
-                            },
+                            }
                         ]
                     },
                 }
@@ -514,22 +486,12 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "minimum_established_time": 10000,
-            "address_families": [
-                {"afi": "evpn"},
-                {"afi": "ipv4", "safi": "unicast", "vrf": "default"},
-                {"afi": "ipv4", "safi": "unicast", "vrf": "DEV"},
-            ],
+            "address_families": [{"afi": "evpn"}, {"afi": "ipv4", "safi": "unicast", "vrf": "default"}, {"afi": "ipv4", "safi": "unicast", "vrf": "DEV"}],
         },
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-vrf-not-configured",
-        "test": VerifyBGPPeersHealth,
-        "eos_data": [
-            {
-                "vrfs": {},
-            }
-        ],
+    (VerifyBGPPeersHealth, "failure-vrf-not-configured"): {
+        "eos_data": [{"vrfs": {}}],
         "inputs": {
             "address_families": [
                 {"afi": "ipv4", "safi": "unicast", "vrf": "default"},
@@ -548,9 +510,7 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-peer-not-found",
-        "test": VerifyBGPPeersHealth,
+    (VerifyBGPPeersHealth, "failure-peer-not-found"): {
         "eos_data": [{"vrfs": {"default": {"peerList": []}, "MGMT": {"peerList": []}}}],
         "inputs": {
             "address_families": [
@@ -570,9 +530,7 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-session-not-established",
-        "test": VerifyBGPPeersHealth,
+    (VerifyBGPPeersHealth, "failure-session-not-established"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -601,7 +559,7 @@ DATA: list[dict[str, Any]] = [
                                 "peerAddress": "10.100.0.12",
                                 "state": "Active",
                                 "neighborCapabilities": {"multiprotocolCaps": {"ipv4SrTe": {"advertised": True, "received": True, "enabled": True}}},
-                            },
+                            }
                         ]
                     },
                 }
@@ -625,9 +583,7 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-afi-not-negotiated",
-        "test": VerifyBGPPeersHealth,
+    (VerifyBGPPeersHealth, "failure-afi-not-negotiated"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -660,7 +616,7 @@ DATA: list[dict[str, Any]] = [
                                 "state": "Established",
                                 "neighborCapabilities": {"multiprotocolCaps": {"ipv4SrTe": {"advertised": False, "received": False, "enabled": False}}},
                                 "peerTcpInfo": {"state": "ESTABLISHED", "outputQueueLength": 0, "inputQueueLength": 0},
-                            },
+                            }
                         ]
                     },
                 }
@@ -684,9 +640,7 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-tcp-queues",
-        "test": VerifyBGPPeersHealth,
+    (VerifyBGPPeersHealth, "failure-tcp-queues"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -719,7 +673,7 @@ DATA: list[dict[str, Any]] = [
                                 "state": "Established",
                                 "neighborCapabilities": {"multiprotocolCaps": {"ipv4SrTe": {"advertised": True, "received": True, "enabled": True}}},
                                 "peerTcpInfo": {"state": "ESTABLISHED", "outputQueueLength": 1, "inputQueueLength": 5},
-                            },
+                            }
                         ]
                     },
                 }
@@ -743,9 +697,7 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-min-established-time",
-        "test": VerifyBGPPeersHealth,
+    (VerifyBGPPeersHealth, "failure-min-established-time"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -775,7 +727,7 @@ DATA: list[dict[str, Any]] = [
                                 "establishedTime": 9883,
                                 "neighborCapabilities": {"multiprotocolCaps": {"ipv4Unicast": {"advertised": True, "received": True, "enabled": True}}},
                                 "peerTcpInfo": {"state": "ESTABLISHED", "outputQueueLength": 0, "inputQueueLength": 0},
-                            },
+                            }
                         ]
                     },
                 }
@@ -783,11 +735,7 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "minimum_established_time": 10000,
-            "address_families": [
-                {"afi": "evpn"},
-                {"afi": "ipv4", "safi": "unicast", "vrf": "default"},
-                {"afi": "ipv4", "safi": "unicast", "vrf": "DEV"},
-            ],
+            "address_families": [{"afi": "evpn"}, {"afi": "ipv4", "safi": "unicast", "vrf": "default"}, {"afi": "ipv4", "safi": "unicast", "vrf": "DEV"}],
         },
         "expected": {
             "result": "failure",
@@ -800,9 +748,7 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "success",
-        "test": VerifyBGPSpecificPeers,
+    (VerifyBGPSpecificPeers, "success"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -829,7 +775,7 @@ DATA: list[dict[str, Any]] = [
                                 "state": "Established",
                                 "neighborCapabilities": {"multiprotocolCaps": {"ipv4Unicast": {"advertised": True, "received": True, "enabled": True}}},
                                 "peerTcpInfo": {"state": "ESTABLISHED", "outputQueueLength": 0, "inputQueueLength": 0},
-                            },
+                            }
                         ]
                     },
                 }
@@ -844,9 +790,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-min-established-time",
-        "test": VerifyBGPSpecificPeers,
+    (VerifyBGPSpecificPeers, "success-min-established-time"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -876,7 +820,7 @@ DATA: list[dict[str, Any]] = [
                                 "establishedTime": 169883,
                                 "neighborCapabilities": {"multiprotocolCaps": {"ipv4Unicast": {"advertised": True, "received": True, "enabled": True}}},
                                 "peerTcpInfo": {"state": "ESTABLISHED", "outputQueueLength": 0, "inputQueueLength": 0},
-                            },
+                            }
                         ]
                     },
                 }
@@ -892,9 +836,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-peer-not-configured",
-        "test": VerifyBGPSpecificPeers,
+    (VerifyBGPSpecificPeers, "failure-peer-not-configured"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -915,7 +857,7 @@ DATA: list[dict[str, Any]] = [
                                 "state": "Established",
                                 "neighborCapabilities": {"multiprotocolCaps": {"ipv4Unicast": {"advertised": True, "received": True, "enabled": True}}},
                                 "peerTcpInfo": {"state": "ESTABLISHED", "outputQueueLength": 0, "inputQueueLength": 0},
-                            },
+                            }
                         ]
                     },
                 }
@@ -937,14 +879,8 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-vrf-not-configured",
-        "test": VerifyBGPSpecificPeers,
-        "eos_data": [
-            {
-                "vrfs": {},
-            }
-        ],
+    (VerifyBGPSpecificPeers, "failure-vrf-not-configured"): {
+        "eos_data": [{"vrfs": {}}],
         "inputs": {
             "address_families": [
                 {"afi": "ipv4", "safi": "unicast", "peers": ["10.100.0.12"]},
@@ -961,9 +897,7 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-session-not-established",
-        "test": VerifyBGPSpecificPeers,
+    (VerifyBGPSpecificPeers, "failure-session-not-established"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -982,7 +916,7 @@ DATA: list[dict[str, Any]] = [
                                 "peerAddress": "10.100.0.14",
                                 "state": "Idle",
                                 "neighborCapabilities": {"multiprotocolCaps": {"ipv4Unicast": {"advertised": True, "received": True, "enabled": True}}},
-                            },
+                            }
                         ]
                     },
                 }
@@ -1002,9 +936,7 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-afi-safi-not-negotiated",
-        "test": VerifyBGPSpecificPeers,
+    (VerifyBGPSpecificPeers, "failure-afi-safi-not-negotiated"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -1025,7 +957,7 @@ DATA: list[dict[str, Any]] = [
                                 "state": "Established",
                                 "neighborCapabilities": {"multiprotocolCaps": {"ipv4Unicast": {"advertised": False, "received": False, "enabled": False}}},
                                 "peerTcpInfo": {"state": "ESTABLISHED", "outputQueueLength": 0, "inputQueueLength": 0},
-                            },
+                            }
                         ]
                     },
                 }
@@ -1045,9 +977,7 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-afi-safi-not-correct",
-        "test": VerifyBGPSpecificPeers,
+    (VerifyBGPSpecificPeers, "failure-afi-safi-not-correct"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -1068,7 +998,7 @@ DATA: list[dict[str, Any]] = [
                                 "state": "Established",
                                 "neighborCapabilities": {"multiprotocolCaps": {"l2VpnEvpn": {"advertised": False, "received": False, "enabled": False}}},
                                 "peerTcpInfo": {"state": "ESTABLISHED", "outputQueueLength": 0, "inputQueueLength": 0},
-                            },
+                            }
                         ]
                     },
                 }
@@ -1088,9 +1018,7 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-tcp-queues",
-        "test": VerifyBGPSpecificPeers,
+    (VerifyBGPSpecificPeers, "failure-tcp-queues"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -1111,7 +1039,7 @@ DATA: list[dict[str, Any]] = [
                                 "state": "Established",
                                 "neighborCapabilities": {"multiprotocolCaps": {"ipv4Unicast": {"advertised": True, "received": True, "enabled": True}}},
                                 "peerTcpInfo": {"state": "ESTABLISHED", "outputQueueLength": 2, "inputQueueLength": 2},
-                            },
+                            }
                         ]
                     },
                 }
@@ -1131,9 +1059,7 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-min-established-time",
-        "test": VerifyBGPSpecificPeers,
+    (VerifyBGPSpecificPeers, "failure-min-established-time"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -1163,7 +1089,7 @@ DATA: list[dict[str, Any]] = [
                                 "establishedTime": 9883,
                                 "neighborCapabilities": {"multiprotocolCaps": {"ipv4Unicast": {"advertised": True, "received": True, "enabled": True}}},
                                 "peerTcpInfo": {"state": "ESTABLISHED", "outputQueueLength": 0, "inputQueueLength": 0},
-                            },
+                            }
                         ]
                     },
                 }
@@ -1188,35 +1114,15 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "success",
-        "test": VerifyBGPExchangedRoutes,
+    (VerifyBGPExchangedRoutes, "success"): {
         "eos_data": [
             {
                 "vrfs": {
                     "default": {
                         "bgpRouteEntries": {
-                            "192.0.254.3/32": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": True,
-                                        },
-                                    }
-                                ]
-                            },
-                            "192.0.254.5/32": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": True,
-                                        },
-                                    }
-                                ]
-                            },
-                        },
+                            "192.0.254.3/32": {"bgpRoutePaths": [{"routeType": {"valid": True, "active": True}}]},
+                            "192.0.254.5/32": {"bgpRoutePaths": [{"routeType": {"valid": True, "active": True}}]},
+                        }
                     }
                 }
             },
@@ -1224,27 +1130,9 @@ DATA: list[dict[str, Any]] = [
                 "vrfs": {
                     "default": {
                         "bgpRouteEntries": {
-                            "192.0.254.3/32": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": True,
-                                        },
-                                    }
-                                ]
-                            },
-                            "192.0.254.5/32": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": True,
-                                        },
-                                    }
-                                ]
-                            },
-                        },
+                            "192.0.254.3/32": {"bgpRoutePaths": [{"routeType": {"valid": True, "active": True}}]},
+                            "192.0.254.5/32": {"bgpRoutePaths": [{"routeType": {"valid": True, "active": True}}]},
+                        }
                     }
                 }
             },
@@ -1252,27 +1140,9 @@ DATA: list[dict[str, Any]] = [
                 "vrfs": {
                     "default": {
                         "bgpRouteEntries": {
-                            "192.0.254.3/32": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": True,
-                                        },
-                                    }
-                                ],
-                            },
-                            "192.0.255.4/32": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": True,
-                                        },
-                                    }
-                                ],
-                            },
-                        },
+                            "192.0.254.3/32": {"bgpRoutePaths": [{"routeType": {"valid": True, "active": True}}]},
+                            "192.0.255.4/32": {"bgpRoutePaths": [{"routeType": {"valid": True, "active": True}}]},
+                        }
                     }
                 }
             },
@@ -1280,27 +1150,9 @@ DATA: list[dict[str, Any]] = [
                 "vrfs": {
                     "default": {
                         "bgpRouteEntries": {
-                            "192.0.254.3/32": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": True,
-                                        },
-                                    }
-                                ],
-                            },
-                            "192.0.255.4/32": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": True,
-                                        },
-                                    }
-                                ],
-                            },
-                        },
+                            "192.0.254.3/32": {"bgpRoutePaths": [{"routeType": {"valid": True, "active": True}}]},
+                            "192.0.255.4/32": {"bgpRoutePaths": [{"routeType": {"valid": True, "active": True}}]},
+                        }
                     }
                 }
             },
@@ -1323,35 +1175,15 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-advertised-route-validation-only",
-        "test": VerifyBGPExchangedRoutes,
+    (VerifyBGPExchangedRoutes, "success-advertised-route-validation-only"): {
         "eos_data": [
             {
                 "vrfs": {
                     "default": {
                         "bgpRouteEntries": {
-                            "192.0.254.3/32": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": True,
-                                        },
-                                    }
-                                ]
-                            },
-                            "192.0.254.5/32": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": True,
-                                        },
-                                    }
-                                ]
-                            },
-                        },
+                            "192.0.254.3/32": {"bgpRoutePaths": [{"routeType": {"valid": True, "active": True}}]},
+                            "192.0.254.5/32": {"bgpRoutePaths": [{"routeType": {"valid": True, "active": True}}]},
+                        }
                     }
                 }
             },
@@ -1359,27 +1191,9 @@ DATA: list[dict[str, Any]] = [
                 "vrfs": {
                     "default": {
                         "bgpRouteEntries": {
-                            "192.0.254.3/32": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": True,
-                                        },
-                                    }
-                                ]
-                            },
-                            "192.0.254.5/32": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": True,
-                                        },
-                                    }
-                                ]
-                            },
-                        },
+                            "192.0.254.3/32": {"bgpRoutePaths": [{"routeType": {"valid": True, "active": True}}]},
+                            "192.0.254.5/32": {"bgpRoutePaths": [{"routeType": {"valid": True, "active": True}}]},
+                        }
                     }
                 }
             },
@@ -1387,27 +1201,9 @@ DATA: list[dict[str, Any]] = [
                 "vrfs": {
                     "default": {
                         "bgpRouteEntries": {
-                            "192.0.254.3/32": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": False,
-                                        },
-                                    }
-                                ],
-                            },
-                            "192.0.255.4/32": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": False,
-                                        },
-                                    }
-                                ],
-                            },
-                        },
+                            "192.0.254.3/32": {"bgpRoutePaths": [{"routeType": {"valid": True, "active": False}}]},
+                            "192.0.255.4/32": {"bgpRoutePaths": [{"routeType": {"valid": True, "active": False}}]},
+                        }
                     }
                 }
             },
@@ -1415,106 +1211,32 @@ DATA: list[dict[str, Any]] = [
                 "vrfs": {
                     "default": {
                         "bgpRouteEntries": {
-                            "192.0.254.3/32": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "routeType": {
-                                            "valid": False,
-                                            "active": True,
-                                        },
-                                    }
-                                ],
-                            },
-                            "192.0.255.4/32": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "routeType": {
-                                            "valid": False,
-                                            "active": True,
-                                        },
-                                    }
-                                ],
-                            },
-                        },
+                            "192.0.254.3/32": {"bgpRoutePaths": [{"routeType": {"valid": False, "active": True}}]},
+                            "192.0.255.4/32": {"bgpRoutePaths": [{"routeType": {"valid": False, "active": True}}]},
+                        }
                     }
                 }
             },
         ],
         "inputs": {
             "bgp_peers": [
-                {
-                    "peer_address": "172.30.11.1",
-                    "vrf": "default",
-                    "advertised_routes": ["192.0.254.5/32", "192.0.254.3/32"],
-                },
-                {
-                    "peer_address": "172.30.11.5",
-                    "vrf": "default",
-                    "advertised_routes": ["192.0.254.3/32", "192.0.254.5/32"],
-                },
+                {"peer_address": "172.30.11.1", "vrf": "default", "advertised_routes": ["192.0.254.5/32", "192.0.254.3/32"]},
+                {"peer_address": "172.30.11.5", "vrf": "default", "advertised_routes": ["192.0.254.3/32", "192.0.254.5/32"]},
             ]
         },
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-no-routes",
-        "test": VerifyBGPExchangedRoutes,
+    (VerifyBGPExchangedRoutes, "failure-no-routes"): {
         "eos_data": [
-            {
-                "vrfs": {
-                    "default": {
-                        "vrf": "default",
-                        "routerId": "192.0.255.1",
-                        "asn": "65001",
-                        "bgpRouteEntries": {},
-                    }
-                }
-            },
-            {
-                "vrfs": {
-                    "default": {
-                        "vrf": "default",
-                        "routerId": "192.0.255.1",
-                        "asn": "65001",
-                        "bgpRouteEntries": {},
-                    }
-                }
-            },
-            {
-                "vrfs": {
-                    "default": {
-                        "vrf": "default",
-                        "routerId": "192.0.255.1",
-                        "asn": "65001",
-                        "bgpRouteEntries": {},
-                    }
-                }
-            },
-            {
-                "vrfs": {
-                    "default": {
-                        "vrf": "default",
-                        "routerId": "192.0.255.1",
-                        "asn": "65001",
-                        "bgpRouteEntries": {},
-                    }
-                }
-            },
+            {"vrfs": {"default": {"vrf": "default", "routerId": "192.0.255.1", "asn": "65001", "bgpRouteEntries": {}}}},
+            {"vrfs": {"default": {"vrf": "default", "routerId": "192.0.255.1", "asn": "65001", "bgpRouteEntries": {}}}},
+            {"vrfs": {"default": {"vrf": "default", "routerId": "192.0.255.1", "asn": "65001", "bgpRouteEntries": {}}}},
+            {"vrfs": {"default": {"vrf": "default", "routerId": "192.0.255.1", "asn": "65001", "bgpRouteEntries": {}}}},
         ],
         "inputs": {
             "bgp_peers": [
-                {
-                    "peer_address": "172.30.11.11",
-                    "vrf": "default",
-                    "advertised_routes": ["192.0.254.3/32"],
-                    "received_routes": ["192.0.255.3/32"],
-                },
-                {
-                    "peer_address": "172.30.11.12",
-                    "vrf": "default",
-                    "advertised_routes": ["192.0.254.31/32"],
-                    "received_routes": ["192.0.255.31/32"],
-                },
+                {"peer_address": "172.30.11.11", "vrf": "default", "advertised_routes": ["192.0.254.3/32"], "received_routes": ["192.0.255.3/32"]},
+                {"peer_address": "172.30.11.12", "vrf": "default", "advertised_routes": ["192.0.254.31/32"], "received_routes": ["192.0.255.31/32"]},
             ]
         },
         "expected": {
@@ -1527,35 +1249,15 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-invalid-or-inactive-routes",
-        "test": VerifyBGPExchangedRoutes,
+    (VerifyBGPExchangedRoutes, "failure-invalid-or-inactive-routes"): {
         "eos_data": [
             {
                 "vrfs": {
                     "default": {
                         "bgpRouteEntries": {
-                            "192.0.254.3/32": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "routeType": {
-                                            "valid": False,
-                                            "active": True,
-                                        },
-                                    }
-                                ]
-                            },
-                            "192.0.254.5/32": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": False,
-                                        },
-                                    }
-                                ]
-                            },
-                        },
+                            "192.0.254.3/32": {"bgpRoutePaths": [{"routeType": {"valid": False, "active": True}}]},
+                            "192.0.254.5/32": {"bgpRoutePaths": [{"routeType": {"valid": True, "active": False}}]},
+                        }
                     }
                 }
             },
@@ -1563,27 +1265,9 @@ DATA: list[dict[str, Any]] = [
                 "vrfs": {
                     "default": {
                         "bgpRouteEntries": {
-                            "192.0.254.3/32": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "routeType": {
-                                            "valid": False,
-                                            "active": True,
-                                        },
-                                    }
-                                ]
-                            },
-                            "192.0.254.5/32": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "routeType": {
-                                            "valid": False,
-                                            "active": True,
-                                        },
-                                    }
-                                ]
-                            },
-                        },
+                            "192.0.254.3/32": {"bgpRoutePaths": [{"routeType": {"valid": False, "active": True}}]},
+                            "192.0.254.5/32": {"bgpRoutePaths": [{"routeType": {"valid": False, "active": True}}]},
+                        }
                     }
                 }
             },
@@ -1591,27 +1275,9 @@ DATA: list[dict[str, Any]] = [
                 "vrfs": {
                     "default": {
                         "bgpRouteEntries": {
-                            "192.0.254.3/32": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "routeType": {
-                                            "valid": False,
-                                            "active": False,
-                                        },
-                                    }
-                                ],
-                            },
-                            "192.0.255.4/32": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "routeType": {
-                                            "valid": False,
-                                            "active": False,
-                                        },
-                                    }
-                                ],
-                            },
-                        },
+                            "192.0.254.3/32": {"bgpRoutePaths": [{"routeType": {"valid": False, "active": False}}]},
+                            "192.0.255.4/32": {"bgpRoutePaths": [{"routeType": {"valid": False, "active": False}}]},
+                        }
                     }
                 }
             },
@@ -1619,27 +1285,9 @@ DATA: list[dict[str, Any]] = [
                 "vrfs": {
                     "default": {
                         "bgpRouteEntries": {
-                            "192.0.254.3/32": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": False,
-                                        },
-                                    }
-                                ],
-                            },
-                            "192.0.255.4/32": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": False,
-                                        },
-                                    }
-                                ],
-                            },
-                        },
+                            "192.0.254.3/32": {"bgpRoutePaths": [{"routeType": {"valid": True, "active": False}}]},
+                            "192.0.255.4/32": {"bgpRoutePaths": [{"routeType": {"valid": True, "active": False}}]},
+                        }
                     }
                 }
             },
@@ -1674,35 +1322,15 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-invalid-or-inactive-routes-as-per-given-input",
-        "test": VerifyBGPExchangedRoutes,
+    (VerifyBGPExchangedRoutes, "failure-invalid-or-inactive-routes-as-per-given-input"): {
         "eos_data": [
             {
                 "vrfs": {
                     "default": {
                         "bgpRouteEntries": {
-                            "192.0.254.3/32": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "routeType": {
-                                            "valid": False,
-                                            "active": True,
-                                        },
-                                    }
-                                ]
-                            },
-                            "192.0.254.5/32": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": False,
-                                        },
-                                    }
-                                ]
-                            },
-                        },
+                            "192.0.254.3/32": {"bgpRoutePaths": [{"routeType": {"valid": False, "active": True}}]},
+                            "192.0.254.5/32": {"bgpRoutePaths": [{"routeType": {"valid": True, "active": False}}]},
+                        }
                     }
                 }
             },
@@ -1710,27 +1338,9 @@ DATA: list[dict[str, Any]] = [
                 "vrfs": {
                     "default": {
                         "bgpRouteEntries": {
-                            "192.0.254.3/32": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": True,
-                                        },
-                                    }
-                                ]
-                            },
-                            "192.0.254.5/32": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": True,
-                                        },
-                                    }
-                                ]
-                            },
-                        },
+                            "192.0.254.3/32": {"bgpRoutePaths": [{"routeType": {"valid": True, "active": True}}]},
+                            "192.0.254.5/32": {"bgpRoutePaths": [{"routeType": {"valid": True, "active": True}}]},
+                        }
                     }
                 }
             },
@@ -1738,27 +1348,9 @@ DATA: list[dict[str, Any]] = [
                 "vrfs": {
                     "default": {
                         "bgpRouteEntries": {
-                            "192.0.254.3/32": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": True,
-                                        },
-                                    }
-                                ],
-                            },
-                            "192.0.255.4/32": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": True,
-                                        },
-                                    }
-                                ],
-                            },
-                        },
+                            "192.0.254.3/32": {"bgpRoutePaths": [{"routeType": {"valid": True, "active": True}}]},
+                            "192.0.255.4/32": {"bgpRoutePaths": [{"routeType": {"valid": True, "active": True}}]},
+                        }
                     }
                 }
             },
@@ -1766,43 +1358,17 @@ DATA: list[dict[str, Any]] = [
                 "vrfs": {
                     "default": {
                         "bgpRouteEntries": {
-                            "192.0.254.3/32": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": False,
-                                        },
-                                    }
-                                ],
-                            },
-                            "192.0.255.4/32": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": False,
-                                        },
-                                    }
-                                ],
-                            },
-                        },
+                            "192.0.254.3/32": {"bgpRoutePaths": [{"routeType": {"valid": True, "active": False}}]},
+                            "192.0.255.4/32": {"bgpRoutePaths": [{"routeType": {"valid": True, "active": False}}]},
+                        }
                     }
                 }
             },
         ],
         "inputs": {
             "bgp_peers": [
-                {
-                    "peer_address": "172.30.11.1",
-                    "vrf": "default",
-                    "advertised_routes": ["192.0.254.3/32", "192.0.254.51/32"],
-                },
-                {
-                    "peer_address": "172.30.11.5",
-                    "vrf": "default",
-                    "received_routes": ["192.0.254.3/32", "192.0.255.41/32"],
-                },
+                {"peer_address": "172.30.11.1", "vrf": "default", "advertised_routes": ["192.0.254.3/32", "192.0.254.51/32"]},
+                {"peer_address": "172.30.11.5", "vrf": "default", "received_routes": ["192.0.254.3/32", "192.0.255.41/32"]},
             ]
         },
         "expected": {
@@ -1815,9 +1381,7 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "success",
-        "test": VerifyBGPPeerMPCaps,
+    (VerifyBGPPeerMPCaps, "success"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -1827,16 +1391,8 @@ DATA: list[dict[str, Any]] = [
                                 "peerAddress": "172.30.11.1",
                                 "neighborCapabilities": {
                                     "multiprotocolCaps": {
-                                        "ipv4Unicast": {
-                                            "advertised": True,
-                                            "received": True,
-                                            "enabled": True,
-                                        },
-                                        "ipv4MplsLabels": {
-                                            "advertised": True,
-                                            "received": True,
-                                            "enabled": True,
-                                        },
+                                        "ipv4Unicast": {"advertised": True, "received": True, "enabled": True},
+                                        "ipv4MplsLabels": {"advertised": True, "received": True, "enabled": True},
                                     }
                                 },
                             }
@@ -1848,16 +1404,8 @@ DATA: list[dict[str, Any]] = [
                                 "peerAddress": "172.30.11.10",
                                 "neighborCapabilities": {
                                     "multiprotocolCaps": {
-                                        "ipv4Unicast": {
-                                            "advertised": True,
-                                            "received": True,
-                                            "enabled": True,
-                                        },
-                                        "ipv4MplsVpn": {
-                                            "advertised": True,
-                                            "received": True,
-                                            "enabled": True,
-                                        },
+                                        "ipv4Unicast": {"advertised": True, "received": True, "enabled": True},
+                                        "ipv4MplsVpn": {"advertised": True, "received": True, "enabled": True},
                                     }
                                 },
                             }
@@ -1868,23 +1416,13 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "bgp_peers": [
-                {
-                    "peer_address": "172.30.11.1",
-                    "vrf": "default",
-                    "capabilities": ["Ipv4Unicast", "ipv4 Mpls labels"],
-                },
-                {
-                    "peer_address": "172.30.11.10",
-                    "vrf": "MGMT",
-                    "capabilities": ["ipv4_Unicast", "ipv4 MplsVpn"],
-                },
+                {"peer_address": "172.30.11.1", "vrf": "default", "capabilities": ["Ipv4Unicast", "ipv4 Mpls labels"]},
+                {"peer_address": "172.30.11.10", "vrf": "MGMT", "capabilities": ["ipv4_Unicast", "ipv4 MplsVpn"]},
             ]
         },
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-no-peer",
-        "test": VerifyBGPPeerMPCaps,
+    (VerifyBGPPeerMPCaps, "failure-no-peer"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -1892,15 +1430,7 @@ DATA: list[dict[str, Any]] = [
                         "peerList": [
                             {
                                 "peerAddress": "172.30.11.1",
-                                "neighborCapabilities": {
-                                    "multiprotocolCaps": {
-                                        "ipv4Unicast": {
-                                            "advertised": True,
-                                            "received": True,
-                                            "enabled": True,
-                                        }
-                                    },
-                                },
+                                "neighborCapabilities": {"multiprotocolCaps": {"ipv4Unicast": {"advertised": True, "received": True, "enabled": True}}},
                             }
                         ]
                     },
@@ -1908,15 +1438,7 @@ DATA: list[dict[str, Any]] = [
                         "peerList": [
                             {
                                 "peerAddress": "172.30.11.10",
-                                "neighborCapabilities": {
-                                    "multiprotocolCaps": {
-                                        "ipv4Unicast": {
-                                            "advertised": True,
-                                            "received": True,
-                                            "enabled": True,
-                                        }
-                                    },
-                                },
+                                "neighborCapabilities": {"multiprotocolCaps": {"ipv4Unicast": {"advertised": True, "received": True, "enabled": True}}},
                             }
                         ]
                     },
@@ -1925,29 +1447,13 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "bgp_peers": [
-                {
-                    "peer_address": "172.30.11.10",
-                    "vrf": "default",
-                    "capabilities": ["ipv4Unicast", "l2-vpn-EVPN"],
-                },
-                {
-                    "peer_address": "172.30.11.1",
-                    "vrf": "MGMT",
-                    "capabilities": ["ipv4Unicast", "l2vpnevpn"],
-                },
+                {"peer_address": "172.30.11.10", "vrf": "default", "capabilities": ["ipv4Unicast", "l2-vpn-EVPN"]},
+                {"peer_address": "172.30.11.1", "vrf": "MGMT", "capabilities": ["ipv4Unicast", "l2vpnevpn"]},
             ]
         },
-        "expected": {
-            "result": "failure",
-            "messages": [
-                "Peer: 172.30.11.10 VRF: default - Not found",
-                "Peer: 172.30.11.1 VRF: MGMT - Not found",
-            ],
-        },
+        "expected": {"result": "failure", "messages": ["Peer: 172.30.11.10 VRF: default - Not found", "Peer: 172.30.11.1 VRF: MGMT - Not found"]},
     },
-    {
-        "name": "failure-missing-capabilities",
-        "test": VerifyBGPPeerMPCaps,
+    (VerifyBGPPeerMPCaps, "failure-missing-capabilities"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -1955,38 +1461,17 @@ DATA: list[dict[str, Any]] = [
                         "peerList": [
                             {
                                 "peerAddress": "172.30.11.1",
-                                "neighborCapabilities": {
-                                    "multiprotocolCaps": {
-                                        "ipv4Unicast": {
-                                            "advertised": True,
-                                            "received": True,
-                                            "enabled": True,
-                                        }
-                                    },
-                                },
+                                "neighborCapabilities": {"multiprotocolCaps": {"ipv4Unicast": {"advertised": True, "received": True, "enabled": True}}},
                             }
                         ]
                     }
                 }
             }
         ],
-        "inputs": {
-            "bgp_peers": [
-                {
-                    "peer_address": "172.30.11.1",
-                    "vrf": "default",
-                    "capabilities": ["ipv4 Unicast", "L2VpnEVPN"],
-                }
-            ]
-        },
-        "expected": {
-            "result": "failure",
-            "messages": ["Peer: 172.30.11.1 VRF: default - l2VpnEvpn not found"],
-        },
+        "inputs": {"bgp_peers": [{"peer_address": "172.30.11.1", "vrf": "default", "capabilities": ["ipv4 Unicast", "L2VpnEVPN"]}]},
+        "expected": {"result": "failure", "messages": ["Peer: 172.30.11.1 VRF: default - l2VpnEvpn not found"]},
     },
-    {
-        "name": "failure-incorrect-capabilities",
-        "test": VerifyBGPPeerMPCaps,
+    (VerifyBGPPeerMPCaps, "failure-incorrect-capabilities"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -1996,17 +1481,9 @@ DATA: list[dict[str, Any]] = [
                                 "peerAddress": "172.30.11.1",
                                 "neighborCapabilities": {
                                     "multiprotocolCaps": {
-                                        "ipv4Unicast": {
-                                            "advertised": False,
-                                            "received": False,
-                                            "enabled": False,
-                                        },
-                                        "ipv4MplsVpn": {
-                                            "advertised": False,
-                                            "received": True,
-                                            "enabled": False,
-                                        },
-                                    },
+                                        "ipv4Unicast": {"advertised": False, "received": False, "enabled": False},
+                                        "ipv4MplsVpn": {"advertised": False, "received": True, "enabled": False},
+                                    }
                                 },
                             }
                         ]
@@ -2017,34 +1494,18 @@ DATA: list[dict[str, Any]] = [
                                 "peerAddress": "172.30.11.10",
                                 "neighborCapabilities": {
                                     "multiprotocolCaps": {
-                                        "l2VpnEvpn": {
-                                            "advertised": True,
-                                            "received": False,
-                                            "enabled": False,
-                                        },
-                                        "ipv4MplsVpn": {
-                                            "advertised": False,
-                                            "received": False,
-                                            "enabled": True,
-                                        },
-                                    },
+                                        "l2VpnEvpn": {"advertised": True, "received": False, "enabled": False},
+                                        "ipv4MplsVpn": {"advertised": False, "received": False, "enabled": True},
+                                    }
                                 },
                             },
                             {
                                 "peerAddress": "172.30.11.11",
                                 "neighborCapabilities": {
                                     "multiprotocolCaps": {
-                                        "ipv4Unicast": {
-                                            "advertised": False,
-                                            "received": False,
-                                            "enabled": False,
-                                        },
-                                        "ipv4MplsVpn": {
-                                            "advertised": False,
-                                            "received": False,
-                                            "enabled": False,
-                                        },
-                                    },
+                                        "ipv4Unicast": {"advertised": False, "received": False, "enabled": False},
+                                        "ipv4MplsVpn": {"advertised": False, "received": False, "enabled": False},
+                                    }
                                 },
                             },
                         ]
@@ -2054,21 +1515,9 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "bgp_peers": [
-                {
-                    "peer_address": "172.30.11.1",
-                    "vrf": "default",
-                    "capabilities": ["ipv4 unicast", "ipv4 mpls vpn", "L2 vpn EVPN"],
-                },
-                {
-                    "peer_address": "172.30.11.10",
-                    "vrf": "MGMT",
-                    "capabilities": ["ipv4_unicast", "ipv4 mplsvpn", "L2vpnEVPN"],
-                },
-                {
-                    "peer_address": "172.30.11.11",
-                    "vrf": "MGMT",
-                    "capabilities": ["Ipv4 Unicast", "ipv4 MPLSVPN", "L2 vpnEVPN"],
-                },
+                {"peer_address": "172.30.11.1", "vrf": "default", "capabilities": ["ipv4 unicast", "ipv4 mpls vpn", "L2 vpn EVPN"]},
+                {"peer_address": "172.30.11.10", "vrf": "MGMT", "capabilities": ["ipv4_unicast", "ipv4 mplsvpn", "L2vpnEVPN"]},
+                {"peer_address": "172.30.11.11", "vrf": "MGMT", "capabilities": ["Ipv4 Unicast", "ipv4 MPLSVPN", "L2 vpnEVPN"]},
             ]
         },
         "expected": {
@@ -2086,9 +1535,7 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "success-strict",
-        "test": VerifyBGPPeerMPCaps,
+    (VerifyBGPPeerMPCaps, "success-strict"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -2098,16 +1545,8 @@ DATA: list[dict[str, Any]] = [
                                 "peerAddress": "172.30.11.1",
                                 "neighborCapabilities": {
                                     "multiprotocolCaps": {
-                                        "ipv4Unicast": {
-                                            "advertised": True,
-                                            "received": True,
-                                            "enabled": True,
-                                        },
-                                        "ipv4MplsLabels": {
-                                            "advertised": True,
-                                            "received": True,
-                                            "enabled": True,
-                                        },
+                                        "ipv4Unicast": {"advertised": True, "received": True, "enabled": True},
+                                        "ipv4MplsLabels": {"advertised": True, "received": True, "enabled": True},
                                     }
                                 },
                             }
@@ -2119,16 +1558,8 @@ DATA: list[dict[str, Any]] = [
                                 "peerAddress": "172.30.11.10",
                                 "neighborCapabilities": {
                                     "multiprotocolCaps": {
-                                        "ipv4Unicast": {
-                                            "advertised": True,
-                                            "received": True,
-                                            "enabled": True,
-                                        },
-                                        "ipv4MplsVpn": {
-                                            "advertised": True,
-                                            "received": True,
-                                            "enabled": True,
-                                        },
+                                        "ipv4Unicast": {"advertised": True, "received": True, "enabled": True},
+                                        "ipv4MplsVpn": {"advertised": True, "received": True, "enabled": True},
                                     }
                                 },
                             }
@@ -2139,25 +1570,13 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "bgp_peers": [
-                {
-                    "peer_address": "172.30.11.1",
-                    "vrf": "default",
-                    "strict": True,
-                    "capabilities": ["Ipv4 Unicast", "ipv4MplsLabels"],
-                },
-                {
-                    "peer_address": "172.30.11.10",
-                    "vrf": "MGMT",
-                    "strict": True,
-                    "capabilities": ["ipv4-Unicast", "ipv4MplsVpn"],
-                },
+                {"peer_address": "172.30.11.1", "vrf": "default", "strict": True, "capabilities": ["Ipv4 Unicast", "ipv4MplsLabels"]},
+                {"peer_address": "172.30.11.10", "vrf": "MGMT", "strict": True, "capabilities": ["ipv4-Unicast", "ipv4MplsVpn"]},
             ]
         },
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-srict",
-        "test": VerifyBGPPeerMPCaps,
+    (VerifyBGPPeerMPCaps, "failure-srict"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -2167,16 +1586,8 @@ DATA: list[dict[str, Any]] = [
                                 "peerAddress": "172.30.11.1",
                                 "neighborCapabilities": {
                                     "multiprotocolCaps": {
-                                        "ipv4Unicast": {
-                                            "advertised": True,
-                                            "received": True,
-                                            "enabled": True,
-                                        },
-                                        "ipv4MplsLabels": {
-                                            "advertised": True,
-                                            "received": True,
-                                            "enabled": True,
-                                        },
+                                        "ipv4Unicast": {"advertised": True, "received": True, "enabled": True},
+                                        "ipv4MplsLabels": {"advertised": True, "received": True, "enabled": True},
                                     }
                                 },
                             }
@@ -2188,16 +1599,8 @@ DATA: list[dict[str, Any]] = [
                                 "peerAddress": "172.30.11.10",
                                 "neighborCapabilities": {
                                     "multiprotocolCaps": {
-                                        "ipv4Unicast": {
-                                            "advertised": True,
-                                            "received": True,
-                                            "enabled": True,
-                                        },
-                                        "ipv4MplsVpn": {
-                                            "advertised": False,
-                                            "received": True,
-                                            "enabled": True,
-                                        },
+                                        "ipv4Unicast": {"advertised": True, "received": True, "enabled": True},
+                                        "ipv4MplsVpn": {"advertised": False, "received": True, "enabled": True},
                                     }
                                 },
                             }
@@ -2208,18 +1611,8 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "bgp_peers": [
-                {
-                    "peer_address": "172.30.11.1",
-                    "vrf": "default",
-                    "strict": True,
-                    "capabilities": ["Ipv4 Unicast"],
-                },
-                {
-                    "peer_address": "172.30.11.10",
-                    "vrf": "MGMT",
-                    "strict": True,
-                    "capabilities": ["ipv4MplsVpn", "L2vpnEVPN"],
-                },
+                {"peer_address": "172.30.11.1", "vrf": "default", "strict": True, "capabilities": ["Ipv4 Unicast"]},
+                {"peer_address": "172.30.11.10", "vrf": "MGMT", "strict": True, "capabilities": ["ipv4MplsVpn", "L2vpnEVPN"]},
             ]
         },
         "expected": {
@@ -2230,60 +1623,27 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "success",
-        "test": VerifyBGPPeerASNCap,
+    (VerifyBGPPeerASNCap, "success"): {
         "eos_data": [
             {
                 "vrfs": {
                     "default": {
                         "peerList": [
-                            {
-                                "peerAddress": "172.30.11.1",
-                                "neighborCapabilities": {
-                                    "fourOctetAsnCap": {
-                                        "advertised": True,
-                                        "received": True,
-                                        "enabled": True,
-                                    },
-                                },
-                            }
+                            {"peerAddress": "172.30.11.1", "neighborCapabilities": {"fourOctetAsnCap": {"advertised": True, "received": True, "enabled": True}}}
                         ]
                     },
                     "MGMT": {
                         "peerList": [
-                            {
-                                "peerAddress": "172.30.11.10",
-                                "neighborCapabilities": {
-                                    "fourOctetAsnCap": {
-                                        "advertised": True,
-                                        "received": True,
-                                        "enabled": True,
-                                    },
-                                },
-                            }
+                            {"peerAddress": "172.30.11.10", "neighborCapabilities": {"fourOctetAsnCap": {"advertised": True, "received": True, "enabled": True}}}
                         ]
                     },
                 }
             }
         ],
-        "inputs": {
-            "bgp_peers": [
-                {
-                    "peer_address": "172.30.11.1",
-                    "vrf": "default",
-                },
-                {
-                    "peer_address": "172.30.11.10",
-                    "vrf": "MGMT",
-                },
-            ]
-        },
+        "inputs": {"bgp_peers": [{"peer_address": "172.30.11.1", "vrf": "default"}, {"peer_address": "172.30.11.10", "vrf": "MGMT"}]},
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-no-peer",
-        "test": VerifyBGPPeerASNCap,
+    (VerifyBGPPeerASNCap, "failure-no-peer"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -2291,37 +1651,17 @@ DATA: list[dict[str, Any]] = [
                         "peerList": [
                             {
                                 "peerAddress": "172.30.11.1",
-                                "neighborCapabilities": {
-                                    "multiprotocolCaps": {
-                                        "ipv4Unicast": {
-                                            "advertised": True,
-                                            "received": True,
-                                            "enabled": True,
-                                        }
-                                    },
-                                },
-                            },
+                                "neighborCapabilities": {"multiprotocolCaps": {"ipv4Unicast": {"advertised": True, "received": True, "enabled": True}}},
+                            }
                         ]
                     }
                 }
             }
         ],
-        "inputs": {
-            "bgp_peers": [
-                {
-                    "peer_address": "172.30.11.10",
-                    "vrf": "default",
-                }
-            ]
-        },
-        "expected": {
-            "result": "failure",
-            "messages": ["Peer: 172.30.11.10 VRF: default - Not found"],
-        },
+        "inputs": {"bgp_peers": [{"peer_address": "172.30.11.10", "vrf": "default"}]},
+        "expected": {"result": "failure", "messages": ["Peer: 172.30.11.10 VRF: default - Not found"]},
     },
-    {
-        "name": "failure-missing-capabilities",
-        "test": VerifyBGPPeerASNCap,
+    (VerifyBGPPeerASNCap, "failure-missing-capabilities"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -2329,15 +1669,7 @@ DATA: list[dict[str, Any]] = [
                         "peerList": [
                             {
                                 "peerAddress": "172.30.11.1",
-                                "neighborCapabilities": {
-                                    "multiprotocolCaps": {
-                                        "ipv4Unicast": {
-                                            "advertised": True,
-                                            "received": True,
-                                            "enabled": True,
-                                        }
-                                    },
-                                },
+                                "neighborCapabilities": {"multiprotocolCaps": {"ipv4Unicast": {"advertised": True, "received": True, "enabled": True}}},
                             }
                         ]
                     },
@@ -2345,78 +1677,37 @@ DATA: list[dict[str, Any]] = [
                         "peerList": [
                             {
                                 "peerAddress": "172.30.11.10",
-                                "neighborCapabilities": {
-                                    "multiprotocolCaps": {
-                                        "ipv4MplsLabels": {
-                                            "advertised": True,
-                                            "received": True,
-                                            "enabled": True,
-                                        }
-                                    },
-                                },
+                                "neighborCapabilities": {"multiprotocolCaps": {"ipv4MplsLabels": {"advertised": True, "received": True, "enabled": True}}},
                             }
                         ]
                     },
                 }
             }
         ],
-        "inputs": {
-            "bgp_peers": [
-                {"peer_address": "172.30.11.1", "vrf": "default"},
-                {"peer_address": "172.30.11.10", "vrf": "MGMT"},
-            ]
-        },
+        "inputs": {"bgp_peers": [{"peer_address": "172.30.11.1", "vrf": "default"}, {"peer_address": "172.30.11.10", "vrf": "MGMT"}]},
         "expected": {
             "result": "failure",
-            "messages": [
-                "Peer: 172.30.11.1 VRF: default - 4-octet ASN capability not found",
-                "Peer: 172.30.11.10 VRF: MGMT - 4-octet ASN capability not found",
-            ],
+            "messages": ["Peer: 172.30.11.1 VRF: default - 4-octet ASN capability not found", "Peer: 172.30.11.10 VRF: MGMT - 4-octet ASN capability not found"],
         },
     },
-    {
-        "name": "failure-incorrect-capabilities",
-        "test": VerifyBGPPeerASNCap,
+    (VerifyBGPPeerASNCap, "failure-incorrect-capabilities"): {
         "eos_data": [
             {
                 "vrfs": {
                     "default": {
                         "peerList": [
-                            {
-                                "peerAddress": "172.30.11.1",
-                                "neighborCapabilities": {
-                                    "fourOctetAsnCap": {
-                                        "advertised": False,
-                                        "received": False,
-                                        "enabled": False,
-                                    },
-                                },
-                            }
+                            {"peerAddress": "172.30.11.1", "neighborCapabilities": {"fourOctetAsnCap": {"advertised": False, "received": False, "enabled": False}}}
                         ]
                     },
                     "MGMT": {
                         "peerList": [
-                            {
-                                "peerAddress": "172.30.11.10",
-                                "neighborCapabilities": {
-                                    "fourOctetAsnCap": {
-                                        "advertised": True,
-                                        "received": False,
-                                        "enabled": True,
-                                    },
-                                },
-                            }
+                            {"peerAddress": "172.30.11.10", "neighborCapabilities": {"fourOctetAsnCap": {"advertised": True, "received": False, "enabled": True}}}
                         ]
                     },
                 }
             }
         ],
-        "inputs": {
-            "bgp_peers": [
-                {"peer_address": "172.30.11.1", "vrf": "default"},
-                {"peer_address": "172.30.11.10", "vrf": "MGMT"},
-            ]
-        },
+        "inputs": {"bgp_peers": [{"peer_address": "172.30.11.1", "vrf": "default"}, {"peer_address": "172.30.11.10", "vrf": "MGMT"}]},
         "expected": {
             "result": "failure",
             "messages": [
@@ -2425,60 +1716,27 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "success",
-        "test": VerifyBGPPeerRouteRefreshCap,
+    (VerifyBGPPeerRouteRefreshCap, "success"): {
         "eos_data": [
             {
                 "vrfs": {
                     "default": {
                         "peerList": [
-                            {
-                                "peerAddress": "172.30.11.1",
-                                "neighborCapabilities": {
-                                    "routeRefreshCap": {
-                                        "advertised": True,
-                                        "received": True,
-                                        "enabled": True,
-                                    },
-                                },
-                            }
+                            {"peerAddress": "172.30.11.1", "neighborCapabilities": {"routeRefreshCap": {"advertised": True, "received": True, "enabled": True}}}
                         ]
                     },
                     "CS": {
                         "peerList": [
-                            {
-                                "peerAddress": "172.30.11.11",
-                                "neighborCapabilities": {
-                                    "routeRefreshCap": {
-                                        "advertised": True,
-                                        "received": True,
-                                        "enabled": True,
-                                    },
-                                },
-                            }
+                            {"peerAddress": "172.30.11.11", "neighborCapabilities": {"routeRefreshCap": {"advertised": True, "received": True, "enabled": True}}}
                         ]
                     },
                 }
             }
         ],
-        "inputs": {
-            "bgp_peers": [
-                {
-                    "peer_address": "172.30.11.1",
-                    "vrf": "default",
-                },
-                {
-                    "peer_address": "172.30.11.11",
-                    "vrf": "CS",
-                },
-            ]
-        },
+        "inputs": {"bgp_peers": [{"peer_address": "172.30.11.1", "vrf": "default"}, {"peer_address": "172.30.11.11", "vrf": "CS"}]},
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-no-peer",
-        "test": VerifyBGPPeerRouteRefreshCap,
+    (VerifyBGPPeerRouteRefreshCap, "failure-no-peer"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -2486,15 +1744,7 @@ DATA: list[dict[str, Any]] = [
                         "peerList": [
                             {
                                 "peerAddress": "172.30.11.1",
-                                "neighborCapabilities": {
-                                    "multiprotocolCaps": {
-                                        "ip4Unicast": {
-                                            "advertised": True,
-                                            "received": True,
-                                            "enabled": True,
-                                        }
-                                    },
-                                },
+                                "neighborCapabilities": {"multiprotocolCaps": {"ip4Unicast": {"advertised": True, "received": True, "enabled": True}}},
                             }
                         ]
                     },
@@ -2502,44 +1752,17 @@ DATA: list[dict[str, Any]] = [
                         "peerList": [
                             {
                                 "peerAddress": "172.30.11.12",
-                                "neighborCapabilities": {
-                                    "multiprotocolCaps": {
-                                        "ip4Unicast": {
-                                            "advertised": True,
-                                            "received": True,
-                                            "enabled": True,
-                                        }
-                                    },
-                                },
+                                "neighborCapabilities": {"multiprotocolCaps": {"ip4Unicast": {"advertised": True, "received": True, "enabled": True}}},
                             }
                         ]
                     },
                 }
             }
         ],
-        "inputs": {
-            "bgp_peers": [
-                {
-                    "peer_address": "172.30.11.12",
-                    "vrf": "default",
-                },
-                {
-                    "peer_address": "172.30.11.1",
-                    "vrf": "CS",
-                },
-            ]
-        },
-        "expected": {
-            "result": "failure",
-            "messages": [
-                "Peer: 172.30.11.12 VRF: default - Not found",
-                "Peer: 172.30.11.1 VRF: CS - Not found",
-            ],
-        },
+        "inputs": {"bgp_peers": [{"peer_address": "172.30.11.12", "vrf": "default"}, {"peer_address": "172.30.11.1", "vrf": "CS"}]},
+        "expected": {"result": "failure", "messages": ["Peer: 172.30.11.12 VRF: default - Not found", "Peer: 172.30.11.1 VRF: CS - Not found"]},
     },
-    {
-        "name": "failure-missing-capabilities",
-        "test": VerifyBGPPeerRouteRefreshCap,
+    (VerifyBGPPeerRouteRefreshCap, "failure-missing-capabilities"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -2547,15 +1770,7 @@ DATA: list[dict[str, Any]] = [
                         "peerList": [
                             {
                                 "peerAddress": "172.30.11.1",
-                                "neighborCapabilities": {
-                                    "multiprotocolCaps": {
-                                        "ipv4Unicast": {
-                                            "advertised": True,
-                                            "received": True,
-                                            "enabled": True,
-                                        }
-                                    },
-                                },
+                                "neighborCapabilities": {"multiprotocolCaps": {"ipv4Unicast": {"advertised": True, "received": True, "enabled": True}}},
                             }
                         ]
                     },
@@ -2563,212 +1778,76 @@ DATA: list[dict[str, Any]] = [
                         "peerList": [
                             {
                                 "peerAddress": "172.30.11.11",
-                                "neighborCapabilities": {
-                                    "multiprotocolCaps": {
-                                        "ipv4Unicast": {
-                                            "advertised": True,
-                                            "received": True,
-                                            "enabled": True,
-                                        }
-                                    },
-                                },
+                                "neighborCapabilities": {"multiprotocolCaps": {"ipv4Unicast": {"advertised": True, "received": True, "enabled": True}}},
                             }
                         ]
                     },
                 }
             }
         ],
-        "inputs": {
-            "bgp_peers": [
-                {"peer_address": "172.30.11.1", "vrf": "default"},
-                {"peer_address": "172.30.11.11", "vrf": "CS"},
-            ]
-        },
+        "inputs": {"bgp_peers": [{"peer_address": "172.30.11.1", "vrf": "default"}, {"peer_address": "172.30.11.11", "vrf": "CS"}]},
         "expected": {
             "result": "failure",
-            "messages": [
-                "Peer: 172.30.11.1 VRF: default - Route refresh capability not found",
-                "Peer: 172.30.11.11 VRF: CS - Route refresh capability not found",
-            ],
+            "messages": ["Peer: 172.30.11.1 VRF: default - Route refresh capability not found", "Peer: 172.30.11.11 VRF: CS - Route refresh capability not found"],
         },
     },
-    {
-        "name": "failure-incorrect-capabilities",
-        "test": VerifyBGPPeerRouteRefreshCap,
+    (VerifyBGPPeerRouteRefreshCap, "failure-incorrect-capabilities"): {
         "eos_data": [
             {
                 "vrfs": {
                     "default": {
                         "peerList": [
-                            {
-                                "peerAddress": "172.30.11.1",
-                                "neighborCapabilities": {
-                                    "routeRefreshCap": {
-                                        "advertised": False,
-                                        "received": False,
-                                        "enabled": False,
-                                    },
-                                },
-                            }
+                            {"peerAddress": "172.30.11.1", "neighborCapabilities": {"routeRefreshCap": {"advertised": False, "received": False, "enabled": False}}}
                         ]
                     },
                     "CS": {
                         "peerList": [
-                            {
-                                "peerAddress": "172.30.11.11",
-                                "neighborCapabilities": {
-                                    "routeRefreshCap": {
-                                        "advertised": True,
-                                        "received": True,
-                                        "enabled": True,
-                                    },
-                                },
-                            }
+                            {"peerAddress": "172.30.11.11", "neighborCapabilities": {"routeRefreshCap": {"advertised": True, "received": True, "enabled": True}}}
                         ]
                     },
                 }
             }
         ],
-        "inputs": {
-            "bgp_peers": [
-                {"peer_address": "172.30.11.1", "vrf": "default"},
-                {"peer_address": "172.30.11.11", "vrf": "CS"},
-            ]
-        },
+        "inputs": {"bgp_peers": [{"peer_address": "172.30.11.1", "vrf": "default"}, {"peer_address": "172.30.11.11", "vrf": "CS"}]},
         "expected": {
             "result": "failure",
-            "messages": [
-                "Peer: 172.30.11.1 VRF: default - Route refresh capability not negotiated - Advertised: False, Received: False, Enabled: False",
-            ],
+            "messages": ["Peer: 172.30.11.1 VRF: default - Route refresh capability not negotiated - Advertised: False, Received: False, Enabled: False"],
         },
     },
-    {
-        "name": "success",
-        "test": VerifyBGPPeerMD5Auth,
+    (VerifyBGPPeerMD5Auth, "success"): {
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {
-                        "peerList": [
-                            {
-                                "peerAddress": "172.30.11.1",
-                                "state": "Established",
-                                "md5AuthEnabled": True,
-                            }
-                        ]
-                    },
-                    "CS": {
-                        "peerList": [
-                            {
-                                "peerAddress": "172.30.11.10",
-                                "state": "Established",
-                                "md5AuthEnabled": True,
-                            }
-                        ]
-                    },
+                    "default": {"peerList": [{"peerAddress": "172.30.11.1", "state": "Established", "md5AuthEnabled": True}]},
+                    "CS": {"peerList": [{"peerAddress": "172.30.11.10", "state": "Established", "md5AuthEnabled": True}]},
                 }
             }
         ],
-        "inputs": {
-            "bgp_peers": [
-                {
-                    "peer_address": "172.30.11.1",
-                    "vrf": "default",
-                },
-                {
-                    "peer_address": "172.30.11.10",
-                    "vrf": "CS",
-                },
-            ]
-        },
+        "inputs": {"bgp_peers": [{"peer_address": "172.30.11.1", "vrf": "default"}, {"peer_address": "172.30.11.10", "vrf": "CS"}]},
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-no-peer",
-        "test": VerifyBGPPeerMD5Auth,
+    (VerifyBGPPeerMD5Auth, "failure-no-peer"): {
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {
-                        "peerList": [
-                            {
-                                "peerAddress": "172.30.11.1",
-                                "state": "Established",
-                                "md5AuthEnabled": True,
-                            }
-                        ]
-                    },
-                    "CS": {
-                        "peerList": [
-                            {
-                                "peerAddress": "172.30.11.11",
-                                "state": "Established",
-                                "md5AuthEnabled": True,
-                            }
-                        ]
-                    },
+                    "default": {"peerList": [{"peerAddress": "172.30.11.1", "state": "Established", "md5AuthEnabled": True}]},
+                    "CS": {"peerList": [{"peerAddress": "172.30.11.11", "state": "Established", "md5AuthEnabled": True}]},
                 }
             }
         ],
-        "inputs": {
-            "bgp_peers": [
-                {
-                    "peer_address": "172.30.11.10",
-                    "vrf": "default",
-                },
-                {
-                    "peer_address": "172.30.11.12",
-                    "vrf": "CS",
-                },
-            ]
-        },
-        "expected": {
-            "result": "failure",
-            "messages": [
-                "Peer: 172.30.11.10 VRF: default - Not found",
-                "Peer: 172.30.11.12 VRF: CS - Not found",
-            ],
-        },
+        "inputs": {"bgp_peers": [{"peer_address": "172.30.11.10", "vrf": "default"}, {"peer_address": "172.30.11.12", "vrf": "CS"}]},
+        "expected": {"result": "failure", "messages": ["Peer: 172.30.11.10 VRF: default - Not found", "Peer: 172.30.11.12 VRF: CS - Not found"]},
     },
-    {
-        "name": "failure-not-established-peer",
-        "test": VerifyBGPPeerMD5Auth,
+    (VerifyBGPPeerMD5Auth, "failure-not-established-peer"): {
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {
-                        "peerList": [
-                            {
-                                "peerAddress": "172.30.11.1",
-                                "state": "Idle",
-                                "md5AuthEnabled": True,
-                            }
-                        ]
-                    },
-                    "MGMT": {
-                        "peerList": [
-                            {
-                                "peerAddress": "172.30.11.10",
-                                "state": "Idle",
-                                "md5AuthEnabled": True,
-                            }
-                        ]
-                    },
+                    "default": {"peerList": [{"peerAddress": "172.30.11.1", "state": "Idle", "md5AuthEnabled": True}]},
+                    "MGMT": {"peerList": [{"peerAddress": "172.30.11.10", "state": "Idle", "md5AuthEnabled": True}]},
                 }
             }
         ],
-        "inputs": {
-            "bgp_peers": [
-                {
-                    "peer_address": "172.30.11.1",
-                    "vrf": "default",
-                },
-                {
-                    "peer_address": "172.30.11.10",
-                    "vrf": "MGMT",
-                },
-            ]
-        },
+        "inputs": {"bgp_peers": [{"peer_address": "172.30.11.1", "vrf": "default"}, {"peer_address": "172.30.11.10", "vrf": "MGMT"}]},
         "expected": {
             "result": "failure",
             "messages": [
@@ -2777,49 +1856,21 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-not-md5-peer",
-        "test": VerifyBGPPeerMD5Auth,
+    (VerifyBGPPeerMD5Auth, "failure-not-md5-peer"): {
         "eos_data": [
             {
                 "vrfs": {
                     "default": {
                         "peerList": [
-                            {
-                                "peerAddress": "172.30.11.1",
-                                "state": "Established",
-                            },
-                            {
-                                "peerAddress": "172.30.11.10",
-                                "state": "Established",
-                                "md5AuthEnabled": False,
-                            },
+                            {"peerAddress": "172.30.11.1", "state": "Established"},
+                            {"peerAddress": "172.30.11.10", "state": "Established", "md5AuthEnabled": False},
                         ]
                     },
-                    "MGMT": {
-                        "peerList": [
-                            {
-                                "peerAddress": "172.30.11.11",
-                                "state": "Established",
-                                "md5AuthEnabled": False,
-                            }
-                        ]
-                    },
+                    "MGMT": {"peerList": [{"peerAddress": "172.30.11.11", "state": "Established", "md5AuthEnabled": False}]},
                 }
             }
         ],
-        "inputs": {
-            "bgp_peers": [
-                {
-                    "peer_address": "172.30.11.1",
-                    "vrf": "default",
-                },
-                {
-                    "peer_address": "172.30.11.11",
-                    "vrf": "MGMT",
-                },
-            ]
-        },
+        "inputs": {"bgp_peers": [{"peer_address": "172.30.11.1", "vrf": "default"}, {"peer_address": "172.30.11.11", "vrf": "MGMT"}]},
         "expected": {
             "result": "failure",
             "messages": [
@@ -2828,81 +1879,67 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "success",
-        "test": VerifyEVPNType2Route,
+    (VerifyEVPNType2Route, "success"): {
+        "eos_data": [
+            {
+                "vrf": "default",
+                "routerId": "10.1.0.3",
+                "asn": 65120,
+                "evpnRoutes": {"RD: 10.1.0.5:500 mac-ip 10020 aac1.ab4e.bec2 192.168.20.102": {"evpnRoutePaths": [{"routeType": {"active": True, "valid": True}}]}},
+            }
+        ],
+        "inputs": {"vxlan_endpoints": [{"address": "192.168.20.102", "vni": 10020}]},
+        "expected": {"result": "success"},
+    },
+    (VerifyEVPNType2Route, "success-multiple-endpoints"): {
+        "eos_data": [
+            {
+                "vrf": "default",
+                "routerId": "10.1.0.3",
+                "asn": 65120,
+                "evpnRoutes": {"RD: 10.1.0.5:500 mac-ip 10020 aac1.ab4e.bec2 192.168.20.102": {"evpnRoutePaths": [{"routeType": {"active": True, "valid": True}}]}},
+            },
+            {
+                "vrf": "default",
+                "routerId": "10.1.0.3",
+                "asn": 65120,
+                "evpnRoutes": {"RD: 10.1.0.5:500 mac-ip 10010 aac1.ab5d.b41e": {"evpnRoutePaths": [{"routeType": {"active": True, "valid": True}}]}},
+            },
+        ],
+        "inputs": {"vxlan_endpoints": [{"address": "192.168.20.102", "vni": 10020}, {"address": "aac1.ab5d.b41e", "vni": 10010}]},
+        "expected": {"result": "success"},
+    },
+    (VerifyEVPNType2Route, "success-multiple-routes-ip"): {
         "eos_data": [
             {
                 "vrf": "default",
                 "routerId": "10.1.0.3",
                 "asn": 65120,
                 "evpnRoutes": {
-                    "RD: 10.1.0.5:500 mac-ip 10020 aac1.ab4e.bec2 192.168.20.102": {
-                        "evpnRoutePaths": [
-                            {
-                                "routeType": {
-                                    "active": True,
-                                    "valid": True,
-                                },
-                            },
-                        ]
-                    },
+                    "RD: 10.1.0.5:500 mac-ip 10020 aac1.ab4e.bec2 192.168.20.102": {"evpnRoutePaths": [{"routeType": {"active": True, "valid": True}}]},
+                    "RD: 10.1.0.6:500 mac-ip 10020 aac1.ab4e.bec2 192.168.20.102": {"evpnRoutePaths": [{"routeType": {"active": False, "valid": False}}]},
                 },
             }
         ],
         "inputs": {"vxlan_endpoints": [{"address": "192.168.20.102", "vni": 10020}]},
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-multiple-endpoints",
-        "test": VerifyEVPNType2Route,
+    (VerifyEVPNType2Route, "success-multiple-routes-mac"): {
         "eos_data": [
             {
                 "vrf": "default",
                 "routerId": "10.1.0.3",
                 "asn": 65120,
                 "evpnRoutes": {
-                    "RD: 10.1.0.5:500 mac-ip 10020 aac1.ab4e.bec2 192.168.20.102": {
-                        "evpnRoutePaths": [
-                            {
-                                "routeType": {
-                                    "active": True,
-                                    "valid": True,
-                                },
-                            },
-                        ]
-                    },
+                    "RD: 10.1.0.5:500 mac-ip 10020 aac1.ab4e.bec2": {"evpnRoutePaths": [{"routeType": {"active": True, "valid": True}}]},
+                    "RD: 10.1.0.6:500 mac-ip 10020 aac1.ab4e.bec2": {"evpnRoutePaths": [{"routeType": {"active": True, "valid": True}}]},
                 },
-            },
-            {
-                "vrf": "default",
-                "routerId": "10.1.0.3",
-                "asn": 65120,
-                "evpnRoutes": {
-                    "RD: 10.1.0.5:500 mac-ip 10010 aac1.ab5d.b41e": {
-                        "evpnRoutePaths": [
-                            {
-                                "routeType": {
-                                    "active": True,
-                                    "valid": True,
-                                },
-                            },
-                        ]
-                    },
-                },
-            },
+            }
         ],
-        "inputs": {
-            "vxlan_endpoints": [
-                {"address": "192.168.20.102", "vni": 10020},
-                {"address": "aac1.ab5d.b41e", "vni": 10010},
-            ]
-        },
+        "inputs": {"vxlan_endpoints": [{"address": "aac1.ab4e.bec2", "vni": 10020}]},
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-multiple-routes-ip",
-        "test": VerifyEVPNType2Route,
+    (VerifyEVPNType2Route, "success-multiple-routes-multiple-paths-ip"): {
         "eos_data": [
             {
                 "vrf": "default",
@@ -2911,33 +1948,18 @@ DATA: list[dict[str, Any]] = [
                 "evpnRoutes": {
                     "RD: 10.1.0.5:500 mac-ip 10020 aac1.ab4e.bec2 192.168.20.102": {
                         "evpnRoutePaths": [
-                            {
-                                "routeType": {
-                                    "active": True,
-                                    "valid": True,
-                                },
-                            },
+                            {"routeType": {"active": True, "valid": True, "ecmp": True, "ecmpContributor": True, "ecmpHead": True}},
+                            {"routeType": {"active": False, "valid": True, "ecmp": True, "ecmpContributor": True, "ecmpHead": False}},
                         ]
                     },
-                    "RD: 10.1.0.6:500 mac-ip 10020 aac1.ab4e.bec2 192.168.20.102": {
-                        "evpnRoutePaths": [
-                            {
-                                "routeType": {
-                                    "active": False,
-                                    "valid": False,
-                                },
-                            },
-                        ]
-                    },
+                    "RD: 10.1.0.6:500 mac-ip 10020 aac1.ab4e.bec2 192.168.20.102": {"evpnRoutePaths": [{"routeType": {"active": True, "valid": True}}]},
                 },
-            },
+            }
         ],
         "inputs": {"vxlan_endpoints": [{"address": "192.168.20.102", "vni": 10020}]},
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-multiple-routes-mac",
-        "test": VerifyEVPNType2Route,
+    (VerifyEVPNType2Route, "success-multiple-routes-multiple-paths-mac"): {
         "eos_data": [
             {
                 "vrf": "default",
@@ -2946,356 +1968,91 @@ DATA: list[dict[str, Any]] = [
                 "evpnRoutes": {
                     "RD: 10.1.0.5:500 mac-ip 10020 aac1.ab4e.bec2": {
                         "evpnRoutePaths": [
-                            {
-                                "routeType": {
-                                    "active": True,
-                                    "valid": True,
-                                },
-                            },
+                            {"routeType": {"active": True, "valid": True, "ecmp": True, "ecmpContributor": True, "ecmpHead": True}},
+                            {"routeType": {"active": False, "valid": True, "ecmp": True, "ecmpContributor": True, "ecmpHead": False}},
                         ]
                     },
-                    "RD: 10.1.0.6:500 mac-ip 10020 aac1.ab4e.bec2": {
-                        "evpnRoutePaths": [
-                            {
-                                "routeType": {
-                                    "active": True,
-                                    "valid": True,
-                                },
-                            },
-                        ]
-                    },
+                    "RD: 10.1.0.6:500 mac-ip 10020 aac1.ab4e.bec2": {"evpnRoutePaths": [{"routeType": {"active": True, "valid": True}}]},
                 },
-            },
+            }
         ],
         "inputs": {"vxlan_endpoints": [{"address": "aac1.ab4e.bec2", "vni": 10020}]},
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-multiple-routes-multiple-paths-ip",
-        "test": VerifyEVPNType2Route,
-        "eos_data": [
-            {
-                "vrf": "default",
-                "routerId": "10.1.0.3",
-                "asn": 65120,
-                "evpnRoutes": {
-                    "RD: 10.1.0.5:500 mac-ip 10020 aac1.ab4e.bec2 192.168.20.102": {
-                        "evpnRoutePaths": [
-                            {
-                                "routeType": {
-                                    "active": True,
-                                    "valid": True,
-                                    "ecmp": True,
-                                    "ecmpContributor": True,
-                                    "ecmpHead": True,
-                                },
-                            },
-                            {
-                                "routeType": {
-                                    "active": False,
-                                    "valid": True,
-                                    "ecmp": True,
-                                    "ecmpContributor": True,
-                                    "ecmpHead": False,
-                                },
-                            },
-                        ]
-                    },
-                    "RD: 10.1.0.6:500 mac-ip 10020 aac1.ab4e.bec2 192.168.20.102": {
-                        "evpnRoutePaths": [
-                            {
-                                "routeType": {
-                                    "active": True,
-                                    "valid": True,
-                                },
-                            },
-                        ]
-                    },
-                },
-            },
-        ],
-        "inputs": {"vxlan_endpoints": [{"address": "192.168.20.102", "vni": 10020}]},
-        "expected": {"result": "success"},
-    },
-    {
-        "name": "success-multiple-routes-multiple-paths-mac",
-        "test": VerifyEVPNType2Route,
-        "eos_data": [
-            {
-                "vrf": "default",
-                "routerId": "10.1.0.3",
-                "asn": 65120,
-                "evpnRoutes": {
-                    "RD: 10.1.0.5:500 mac-ip 10020 aac1.ab4e.bec2": {
-                        "evpnRoutePaths": [
-                            {
-                                "routeType": {
-                                    "active": True,
-                                    "valid": True,
-                                    "ecmp": True,
-                                    "ecmpContributor": True,
-                                    "ecmpHead": True,
-                                },
-                            },
-                            {
-                                "routeType": {
-                                    "active": False,
-                                    "valid": True,
-                                    "ecmp": True,
-                                    "ecmpContributor": True,
-                                    "ecmpHead": False,
-                                },
-                            },
-                        ]
-                    },
-                    "RD: 10.1.0.6:500 mac-ip 10020 aac1.ab4e.bec2": {
-                        "evpnRoutePaths": [
-                            {
-                                "routeType": {
-                                    "active": True,
-                                    "valid": True,
-                                },
-                            },
-                        ]
-                    },
-                },
-            },
-        ],
-        "inputs": {"vxlan_endpoints": [{"address": "aac1.ab4e.bec2", "vni": 10020}]},
-        "expected": {"result": "success"},
-    },
-    {
-        "name": "failure-no-routes",
-        "test": VerifyEVPNType2Route,
+    (VerifyEVPNType2Route, "failure-no-routes"): {
         "eos_data": [{"vrf": "default", "routerId": "10.1.0.3", "asn": 65120, "evpnRoutes": {}}],
         "inputs": {"vxlan_endpoints": [{"address": "192.168.20.102", "vni": 10020}]},
-        "expected": {
-            "result": "failure",
-            "messages": ["Address: 192.168.20.102 VNI: 10020 - No EVPN Type-2 route"],
-        },
+        "expected": {"result": "failure", "messages": ["Address: 192.168.20.102 VNI: 10020 - No EVPN Type-2 route"]},
     },
-    {
-        "name": "failure-path-not-active",
-        "test": VerifyEVPNType2Route,
+    (VerifyEVPNType2Route, "failure-path-not-active"): {
         "eos_data": [
             {
                 "vrf": "default",
                 "routerId": "10.1.0.3",
                 "asn": 65120,
-                "evpnRoutes": {
-                    "RD: 10.1.0.5:500 mac-ip 10020 aac1.ab4e.bec2 192.168.20.102": {
-                        "evpnRoutePaths": [
-                            {
-                                "routeType": {
-                                    "active": False,
-                                    "valid": True,
-                                },
-                            },
-                        ]
-                    },
-                },
-            },
+                "evpnRoutes": {"RD: 10.1.0.5:500 mac-ip 10020 aac1.ab4e.bec2 192.168.20.102": {"evpnRoutePaths": [{"routeType": {"active": False, "valid": True}}]}},
+            }
         ],
         "inputs": {"vxlan_endpoints": [{"address": "192.168.20.102", "vni": 10020}]},
-        "expected": {
-            "result": "failure",
-            "messages": ["Address: 192.168.20.102 VNI: 10020 - No valid and active path"],
-        },
+        "expected": {"result": "failure", "messages": ["Address: 192.168.20.102 VNI: 10020 - No valid and active path"]},
     },
-    {
-        "name": "failure-multiple-endpoints",
-        "test": VerifyEVPNType2Route,
+    (VerifyEVPNType2Route, "failure-multiple-endpoints"): {
         "eos_data": [
             {
                 "vrf": "default",
                 "routerId": "10.1.0.3",
                 "asn": 65120,
                 "evpnRoutes": {
-                    "RD: 10.1.0.5:500 mac-ip 10020 aac1.ab4e.bec2 192.168.20.102": {
-                        "evpnRoutePaths": [
-                            {
-                                "routeType": {
-                                    "active": False,
-                                    "valid": False,
-                                },
-                            },
-                        ]
-                    },
+                    "RD: 10.1.0.5:500 mac-ip 10020 aac1.ab4e.bec2 192.168.20.102": {"evpnRoutePaths": [{"routeType": {"active": False, "valid": False}}]}
                 },
             },
             {
                 "vrf": "default",
                 "routerId": "10.1.0.3",
                 "asn": 65120,
-                "evpnRoutes": {
-                    "RD: 10.1.0.5:500 mac-ip 10010 aac1.ab5d.b41e": {
-                        "evpnRoutePaths": [
-                            {
-                                "routeType": {
-                                    "active": False,
-                                    "valid": False,
-                                },
-                            },
-                        ]
-                    },
-                },
+                "evpnRoutes": {"RD: 10.1.0.5:500 mac-ip 10010 aac1.ab5d.b41e": {"evpnRoutePaths": [{"routeType": {"active": False, "valid": False}}]}},
             },
         ],
-        "inputs": {
-            "vxlan_endpoints": [
-                {"address": "192.168.20.102", "vni": 10020},
-                {"address": "aac1.ab5d.b41e", "vni": 10010},
-            ]
-        },
+        "inputs": {"vxlan_endpoints": [{"address": "192.168.20.102", "vni": 10020}, {"address": "aac1.ab5d.b41e", "vni": 10010}]},
         "expected": {
             "result": "failure",
             "messages": ["Address: 192.168.20.102 VNI: 10020 - No valid and active path", "Address: aa:c1:ab:5d:b4:1e VNI: 10010 - No valid and active path"],
         },
     },
-    {
-        "name": "success",
-        "test": VerifyBGPAdvCommunities,
+    (VerifyBGPAdvCommunities, "success"): {
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {
-                        "peerList": [
-                            {
-                                "peerAddress": "172.30.11.1",
-                                "advertisedCommunities": {
-                                    "standard": True,
-                                    "extended": True,
-                                    "large": True,
-                                },
-                            }
-                        ]
-                    },
-                    "MGMT": {
-                        "peerList": [
-                            {
-                                "peerAddress": "172.30.11.10",
-                                "advertisedCommunities": {
-                                    "standard": True,
-                                    "extended": True,
-                                    "large": True,
-                                },
-                            }
-                        ]
-                    },
+                    "default": {"peerList": [{"peerAddress": "172.30.11.1", "advertisedCommunities": {"standard": True, "extended": True, "large": True}}]},
+                    "MGMT": {"peerList": [{"peerAddress": "172.30.11.10", "advertisedCommunities": {"standard": True, "extended": True, "large": True}}]},
                 }
             }
         ],
-        "inputs": {
-            "bgp_peers": [
-                {
-                    "peer_address": "172.30.11.1",
-                },
-                {
-                    "peer_address": "172.30.11.10",
-                    "vrf": "MGMT",
-                },
-            ]
-        },
+        "inputs": {"bgp_peers": [{"peer_address": "172.30.11.1"}, {"peer_address": "172.30.11.10", "vrf": "MGMT"}]},
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-no-peer",
-        "test": VerifyBGPAdvCommunities,
+    (VerifyBGPAdvCommunities, "failure-no-peer"): {
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {
-                        "peerList": [
-                            {
-                                "peerAddress": "172.30.11.1",
-                                "advertisedCommunities": {
-                                    "standard": True,
-                                    "extended": True,
-                                    "large": True,
-                                },
-                            }
-                        ]
-                    },
-                    "MGMT": {
-                        "peerList": [
-                            {
-                                "peerAddress": "172.30.11.1",
-                                "advertisedCommunities": {
-                                    "standard": True,
-                                    "extended": True,
-                                    "large": True,
-                                },
-                            }
-                        ]
-                    },
+                    "default": {"peerList": [{"peerAddress": "172.30.11.1", "advertisedCommunities": {"standard": True, "extended": True, "large": True}}]},
+                    "MGMT": {"peerList": [{"peerAddress": "172.30.11.1", "advertisedCommunities": {"standard": True, "extended": True, "large": True}}]},
                 }
             }
         ],
-        "inputs": {
-            "bgp_peers": [
-                {
-                    "peer_address": "172.30.11.10",
-                    "vrf": "default",
-                },
-                {
-                    "peer_address": "172.30.11.12",
-                    "vrf": "MGMT",
-                },
-            ]
-        },
-        "expected": {
-            "result": "failure",
-            "messages": [
-                "Peer: 172.30.11.10 VRF: default - Not found",
-                "Peer: 172.30.11.12 VRF: MGMT - Not found",
-            ],
-        },
+        "inputs": {"bgp_peers": [{"peer_address": "172.30.11.10", "vrf": "default"}, {"peer_address": "172.30.11.12", "vrf": "MGMT"}]},
+        "expected": {"result": "failure", "messages": ["Peer: 172.30.11.10 VRF: default - Not found", "Peer: 172.30.11.12 VRF: MGMT - Not found"]},
     },
-    {
-        "name": "failure-not-correct-communities",
-        "test": VerifyBGPAdvCommunities,
+    (VerifyBGPAdvCommunities, "failure-not-correct-communities"): {
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {
-                        "peerList": [
-                            {
-                                "peerAddress": "172.30.11.1",
-                                "advertisedCommunities": {
-                                    "standard": False,
-                                    "extended": False,
-                                    "large": False,
-                                },
-                            }
-                        ]
-                    },
-                    "CS": {
-                        "peerList": [
-                            {
-                                "peerAddress": "172.30.11.10",
-                                "advertisedCommunities": {
-                                    "standard": True,
-                                    "extended": True,
-                                    "large": False,
-                                },
-                            }
-                        ]
-                    },
+                    "default": {"peerList": [{"peerAddress": "172.30.11.1", "advertisedCommunities": {"standard": False, "extended": False, "large": False}}]},
+                    "CS": {"peerList": [{"peerAddress": "172.30.11.10", "advertisedCommunities": {"standard": True, "extended": True, "large": False}}]},
                 }
             }
         ],
-        "inputs": {
-            "bgp_peers": [
-                {
-                    "peer_address": "172.30.11.1",
-                    "vrf": "default",
-                },
-                {
-                    "peer_address": "172.30.11.10",
-                    "vrf": "CS",
-                },
-            ]
-        },
+        "inputs": {"bgp_peers": [{"peer_address": "172.30.11.1", "vrf": "default"}, {"peer_address": "172.30.11.10", "vrf": "CS"}]},
         "expected": {
             "result": "failure",
             "messages": [
@@ -3304,127 +2061,46 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "success",
-        "test": VerifyBGPTimers,
+    (VerifyBGPTimers, "success"): {
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {
-                        "peerList": [
-                            {
-                                "peerAddress": "172.30.11.1",
-                                "holdTime": 180,
-                                "keepaliveTime": 60,
-                            }
-                        ]
-                    },
-                    "MGMT": {
-                        "peerList": [
-                            {
-                                "peerAddress": "172.30.11.11",
-                                "holdTime": 180,
-                                "keepaliveTime": 60,
-                            }
-                        ]
-                    },
+                    "default": {"peerList": [{"peerAddress": "172.30.11.1", "holdTime": 180, "keepaliveTime": 60}]},
+                    "MGMT": {"peerList": [{"peerAddress": "172.30.11.11", "holdTime": 180, "keepaliveTime": 60}]},
                 }
             }
         ],
         "inputs": {
             "bgp_peers": [
-                {
-                    "peer_address": "172.30.11.1",
-                    "vrf": "default",
-                    "hold_time": 180,
-                    "keep_alive_time": 60,
-                },
-                {
-                    "peer_address": "172.30.11.11",
-                    "vrf": "MGMT",
-                    "hold_time": 180,
-                    "keep_alive_time": 60,
-                },
+                {"peer_address": "172.30.11.1", "vrf": "default", "hold_time": 180, "keep_alive_time": 60},
+                {"peer_address": "172.30.11.11", "vrf": "MGMT", "hold_time": 180, "keep_alive_time": 60},
             ]
         },
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-no-peer",
-        "test": VerifyBGPTimers,
-        "eos_data": [
-            {
-                "vrfs": {
-                    "default": {"peerList": []},
-                    "MGMT": {"peerList": []},
-                }
-            }
-        ],
+    (VerifyBGPTimers, "failure-no-peer"): {
+        "eos_data": [{"vrfs": {"default": {"peerList": []}, "MGMT": {"peerList": []}}}],
         "inputs": {
             "bgp_peers": [
-                {
-                    "peer_address": "172.30.11.1",
-                    "vrf": "MGMT",
-                    "hold_time": 180,
-                    "keep_alive_time": 60,
-                },
-                {
-                    "peer_address": "172.30.11.11",
-                    "vrf": "default",
-                    "hold_time": 180,
-                    "keep_alive_time": 60,
-                },
+                {"peer_address": "172.30.11.1", "vrf": "MGMT", "hold_time": 180, "keep_alive_time": 60},
+                {"peer_address": "172.30.11.11", "vrf": "default", "hold_time": 180, "keep_alive_time": 60},
             ]
         },
-        "expected": {
-            "result": "failure",
-            "messages": [
-                "Peer: 172.30.11.1 VRF: MGMT - Not found",
-                "Peer: 172.30.11.11 VRF: default - Not found",
-            ],
-        },
+        "expected": {"result": "failure", "messages": ["Peer: 172.30.11.1 VRF: MGMT - Not found", "Peer: 172.30.11.11 VRF: default - Not found"]},
     },
-    {
-        "name": "failure-not-correct-timers",
-        "test": VerifyBGPTimers,
+    (VerifyBGPTimers, "failure-not-correct-timers"): {
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {
-                        "peerList": [
-                            {
-                                "peerAddress": "172.30.11.1",
-                                "holdTime": 160,
-                                "keepaliveTime": 60,
-                            }
-                        ]
-                    },
-                    "MGMT": {
-                        "peerList": [
-                            {
-                                "peerAddress": "172.30.11.11",
-                                "holdTime": 120,
-                                "keepaliveTime": 40,
-                            }
-                        ]
-                    },
+                    "default": {"peerList": [{"peerAddress": "172.30.11.1", "holdTime": 160, "keepaliveTime": 60}]},
+                    "MGMT": {"peerList": [{"peerAddress": "172.30.11.11", "holdTime": 120, "keepaliveTime": 40}]},
                 }
             }
         ],
         "inputs": {
             "bgp_peers": [
-                {
-                    "peer_address": "172.30.11.1",
-                    "vrf": "default",
-                    "hold_time": 180,
-                    "keep_alive_time": 60,
-                },
-                {
-                    "peer_address": "172.30.11.11",
-                    "vrf": "MGMT",
-                    "hold_time": 180,
-                    "keep_alive_time": 60,
-                },
+                {"peer_address": "172.30.11.1", "vrf": "default", "hold_time": 180, "keep_alive_time": 60},
+                {"peer_address": "172.30.11.11", "vrf": "MGMT", "hold_time": 180, "keep_alive_time": 60},
             ]
         },
         "expected": {
@@ -3436,9 +2112,7 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "success",
-        "test": VerifyBGPPeerDropStats,
+    (VerifyBGPPeerDropStats, "success"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -3478,8 +2152,8 @@ DATA: list[dict[str, Any]] = [
                             }
                         ]
                     },
-                },
-            },
+                }
+            }
         ],
         "inputs": {
             "bgp_peers": [
@@ -3493,9 +2167,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-not-found",
-        "test": VerifyBGPPeerDropStats,
+    (VerifyBGPPeerDropStats, "failure-not-found"): {
         "eos_data": [{"vrfs": {}}],
         "inputs": {
             "bgp_peers": [
@@ -3507,17 +2179,9 @@ DATA: list[dict[str, Any]] = [
                 {"peer_address": "10.100.0.9", "vrf": "MGMT", "drop_stats": ["inDropClusterIdLoop", "inDropOrigId", "inDropNhLocal"]},
             ]
         },
-        "expected": {
-            "result": "failure",
-            "messages": [
-                "Peer: 10.100.0.8 VRF: default - Not found",
-                "Peer: 10.100.0.9 VRF: MGMT - Not found",
-            ],
-        },
+        "expected": {"result": "failure", "messages": ["Peer: 10.100.0.8 VRF: default - Not found", "Peer: 10.100.0.9 VRF: MGMT - Not found"]},
     },
-    {
-        "name": "failure",
-        "test": VerifyBGPPeerDropStats,
+    (VerifyBGPPeerDropStats, "failure"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -3557,8 +2221,8 @@ DATA: list[dict[str, Any]] = [
                             }
                         ]
                     },
-                },
-            },
+                }
+            }
         ],
         "inputs": {
             "bgp_peers": [
@@ -3580,9 +2244,7 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "success-all-drop-stats",
-        "test": VerifyBGPPeerDropStats,
+    (VerifyBGPPeerDropStats, "success-all-drop-stats"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -3622,20 +2284,13 @@ DATA: list[dict[str, Any]] = [
                             }
                         ]
                     },
-                },
-            },
+                }
+            }
         ],
-        "inputs": {
-            "bgp_peers": [
-                {"peer_address": "10.100.0.8", "vrf": "default"},
-                {"peer_address": "10.100.0.9", "vrf": "MGMT"},
-            ]
-        },
+        "inputs": {"bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default"}, {"peer_address": "10.100.0.9", "vrf": "MGMT"}]},
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-all-drop-stats",
-        "test": VerifyBGPPeerDropStats,
+    (VerifyBGPPeerDropStats, "failure-all-drop-stats"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -3675,15 +2330,10 @@ DATA: list[dict[str, Any]] = [
                             }
                         ]
                     },
-                },
-            },
+                }
+            }
         ],
-        "inputs": {
-            "bgp_peers": [
-                {"peer_address": "10.100.0.8", "vrf": "default"},
-                {"peer_address": "10.100.0.9", "vrf": "MGMT"},
-            ]
-        },
+        "inputs": {"bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default"}, {"peer_address": "10.100.0.9", "vrf": "MGMT"}]},
         "expected": {
             "result": "failure",
             "messages": [
@@ -3698,9 +2348,7 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "success",
-        "test": VerifyBGPPeerUpdateErrors,
+    (VerifyBGPPeerUpdateErrors, "success"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -3732,8 +2380,8 @@ DATA: list[dict[str, Any]] = [
                             }
                         ]
                     },
-                },
-            },
+                }
+            }
         ],
         "inputs": {
             "bgp_peers": [
@@ -3743,29 +2391,17 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-not-found",
-        "test": VerifyBGPPeerUpdateErrors,
-        "eos_data": [
-            {"vrfs": {}},
-        ],
+    (VerifyBGPPeerUpdateErrors, "failure-not-found"): {
+        "eos_data": [{"vrfs": {}}],
         "inputs": {
             "bgp_peers": [
                 {"peer_address": "10.100.0.8", "vrf": "default", "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
                 {"peer_address": "10.100.0.9", "vrf": "MGMT", "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
             ]
         },
-        "expected": {
-            "result": "failure",
-            "messages": [
-                "Peer: 10.100.0.8 VRF: default - Not found",
-                "Peer: 10.100.0.9 VRF: MGMT - Not found",
-            ],
-        },
+        "expected": {"result": "failure", "messages": ["Peer: 10.100.0.8 VRF: default - Not found", "Peer: 10.100.0.9 VRF: MGMT - Not found"]},
     },
-    {
-        "name": "failure-errors",
-        "test": VerifyBGPPeerUpdateErrors,
+    (VerifyBGPPeerUpdateErrors, "failure-errors"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -3797,8 +2433,8 @@ DATA: list[dict[str, Any]] = [
                             }
                         ]
                     },
-                },
-            },
+                }
+            }
         ],
         "inputs": {
             "bgp_peers": [
@@ -3814,9 +2450,7 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "success-all-error-counters",
-        "test": VerifyBGPPeerUpdateErrors,
+    (VerifyBGPPeerUpdateErrors, "success-all-error-counters"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -3848,20 +2482,13 @@ DATA: list[dict[str, Any]] = [
                             }
                         ]
                     },
-                },
-            },
+                }
+            }
         ],
-        "inputs": {
-            "bgp_peers": [
-                {"peer_address": "10.100.0.8", "vrf": "default"},
-                {"peer_address": "10.100.0.9", "vrf": "MGMT"},
-            ]
-        },
+        "inputs": {"bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default"}, {"peer_address": "10.100.0.9", "vrf": "MGMT"}]},
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-all-error-counters",
-        "test": VerifyBGPPeerUpdateErrors,
+    (VerifyBGPPeerUpdateErrors, "failure-all-error-counters"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -3893,17 +2520,13 @@ DATA: list[dict[str, Any]] = [
                             }
                         ]
                     },
-                },
-            },
+                }
+            }
         ],
         "inputs": {
             "bgp_peers": [
                 {"peer_address": "10.100.0.8", "vrf": "default", "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
-                {
-                    "peer_address": "10.100.0.9",
-                    "vrf": "MGMT",
-                    "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi", "inUpdErrDisableAfiSafi"],
-                },
+                {"peer_address": "10.100.0.9", "vrf": "MGMT", "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi", "inUpdErrDisableAfiSafi"]},
             ]
         },
         "expected": {
@@ -3916,9 +2539,7 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-all-not-found",
-        "test": VerifyBGPPeerUpdateErrors,
+    (VerifyBGPPeerUpdateErrors, "failure-all-not-found"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -3926,12 +2547,7 @@ DATA: list[dict[str, Any]] = [
                         "peerList": [
                             {
                                 "peerAddress": "10.100.0.8",
-                                "peerInUpdateErrors": {
-                                    "inUpdErrIgnore": 0,
-                                    "inUpdErrDisableAfiSafi": 0,
-                                    "disabledAfiSafi": "ipv4Unicast",
-                                    "lastUpdErrTime": 0,
-                                },
+                                "peerInUpdateErrors": {"inUpdErrIgnore": 0, "inUpdErrDisableAfiSafi": 0, "disabledAfiSafi": "ipv4Unicast", "lastUpdErrTime": 0},
                             }
                         ]
                     },
@@ -3939,26 +2555,17 @@ DATA: list[dict[str, Any]] = [
                         "peerList": [
                             {
                                 "peerAddress": "10.100.0.9",
-                                "peerInUpdateErrors": {
-                                    "inUpdErrWithdraw": 1,
-                                    "inUpdErrIgnore": 0,
-                                    "disabledAfiSafi": "None",
-                                    "lastUpdErrTime": 0,
-                                },
+                                "peerInUpdateErrors": {"inUpdErrWithdraw": 1, "inUpdErrIgnore": 0, "disabledAfiSafi": "None", "lastUpdErrTime": 0},
                             }
                         ]
                     },
-                },
-            },
+                }
+            }
         ],
         "inputs": {
             "bgp_peers": [
                 {"peer_address": "10.100.0.8", "vrf": "default", "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
-                {
-                    "peer_address": "10.100.0.9",
-                    "vrf": "MGMT",
-                    "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi", "inUpdErrDisableAfiSafi"],
-                },
+                {"peer_address": "10.100.0.9", "vrf": "MGMT", "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi", "inUpdErrDisableAfiSafi"]},
             ]
         },
         "expected": {
@@ -3971,32 +2578,14 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "success",
-        "test": VerifyBgpRouteMaps,
+    (VerifyBgpRouteMaps, "success"): {
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.8",
-                                "routeMapInbound": "RM-MLAG-PEER-IN",
-                                "routeMapOutbound": "RM-MLAG-PEER-OUT",
-                            }
-                        ]
-                    },
-                    "MGMT": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.10",
-                                "routeMapInbound": "RM-MLAG-PEER-IN",
-                                "routeMapOutbound": "RM-MLAG-PEER-OUT",
-                            }
-                        ]
-                    },
-                },
-            },
+                    "default": {"peerList": [{"peerAddress": "10.100.0.8", "routeMapInbound": "RM-MLAG-PEER-IN", "routeMapOutbound": "RM-MLAG-PEER-OUT"}]},
+                    "MGMT": {"peerList": [{"peerAddress": "10.100.0.10", "routeMapInbound": "RM-MLAG-PEER-IN", "routeMapOutbound": "RM-MLAG-PEER-OUT"}]},
+                }
+            }
         ],
         "inputs": {
             "bgp_peers": [
@@ -4006,32 +2595,14 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-incorrect-route-map",
-        "test": VerifyBgpRouteMaps,
+    (VerifyBgpRouteMaps, "failure-incorrect-route-map"): {
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.8",
-                                "routeMapInbound": "RM-MLAG-PEER",
-                                "routeMapOutbound": "RM-MLAG-PEER",
-                            }
-                        ]
-                    },
-                    "MGMT": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.10",
-                                "routeMapInbound": "RM-MLAG-PEER",
-                                "routeMapOutbound": "RM-MLAG-PEER",
-                            }
-                        ]
-                    },
-                },
-            },
+                    "default": {"peerList": [{"peerAddress": "10.100.0.8", "routeMapInbound": "RM-MLAG-PEER", "routeMapOutbound": "RM-MLAG-PEER"}]},
+                    "MGMT": {"peerList": [{"peerAddress": "10.100.0.10", "routeMapInbound": "RM-MLAG-PEER", "routeMapOutbound": "RM-MLAG-PEER"}]},
+                }
+            }
         ],
         "inputs": {
             "bgp_peers": [
@@ -4049,32 +2620,14 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-incorrect-inbound-map",
-        "test": VerifyBgpRouteMaps,
+    (VerifyBgpRouteMaps, "failure-incorrect-inbound-map"): {
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.8",
-                                "routeMapInbound": "RM-MLAG-PEER",
-                                "routeMapOutbound": "RM-MLAG-PEER",
-                            }
-                        ]
-                    },
-                    "MGMT": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.10",
-                                "routeMapInbound": "RM-MLAG-PEER",
-                                "routeMapOutbound": "RM-MLAG-PEER",
-                            }
-                        ]
-                    },
-                },
-            },
+                    "default": {"peerList": [{"peerAddress": "10.100.0.8", "routeMapInbound": "RM-MLAG-PEER", "routeMapOutbound": "RM-MLAG-PEER"}]},
+                    "MGMT": {"peerList": [{"peerAddress": "10.100.0.10", "routeMapInbound": "RM-MLAG-PEER", "routeMapOutbound": "RM-MLAG-PEER"}]},
+                }
+            }
         ],
         "inputs": {
             "bgp_peers": [
@@ -4090,29 +2643,8 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-route-maps-not-configured",
-        "test": VerifyBgpRouteMaps,
-        "eos_data": [
-            {
-                "vrfs": {
-                    "default": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.8",
-                            }
-                        ]
-                    },
-                    "MGMT": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.10",
-                            }
-                        ]
-                    },
-                },
-            },
-        ],
+    (VerifyBgpRouteMaps, "failure-route-maps-not-configured"): {
+        "eos_data": [{"vrfs": {"default": {"peerList": [{"peerAddress": "10.100.0.8"}]}, "MGMT": {"peerList": [{"peerAddress": "10.100.0.10"}]}}}],
         "inputs": {
             "bgp_peers": [
                 {"peer_address": "10.100.0.8", "vrf": "default", "inbound_route_map": "RM-MLAG-PEER-IN", "outbound_route_map": "RM-MLAG-PEER-OUT"},
@@ -4129,57 +2661,24 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-peer-not-found",
-        "test": VerifyBgpRouteMaps,
-        "eos_data": [
-            {
-                "vrfs": {
-                    "default": {"peerList": []},
-                    "MGMT": {"peerList": []},
-                },
-            },
-        ],
+    (VerifyBgpRouteMaps, "failure-peer-not-found"): {
+        "eos_data": [{"vrfs": {"default": {"peerList": []}, "MGMT": {"peerList": []}}}],
         "inputs": {
             "bgp_peers": [
                 {"peer_address": "10.100.0.8", "vrf": "default", "inbound_route_map": "RM-MLAG-PEER-IN"},
                 {"peer_address": "10.100.0.10", "vrf": "MGMT", "inbound_route_map": "RM-MLAG-PEER-IN"},
             ]
         },
-        "expected": {
-            "result": "failure",
-            "messages": [
-                "Peer: 10.100.0.8 VRF: default - Not found",
-                "Peer: 10.100.0.10 VRF: MGMT - Not found",
-            ],
-        },
+        "expected": {"result": "failure", "messages": ["Peer: 10.100.0.8 VRF: default - Not found", "Peer: 10.100.0.10 VRF: MGMT - Not found"]},
     },
-    {
-        "name": "success",
-        "test": VerifyBGPPeerRouteLimit,
+    (VerifyBGPPeerRouteLimit, "success"): {
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.8",
-                                "maxTotalRoutes": 12000,
-                                "totalRoutesWarnLimit": 10000,
-                            }
-                        ]
-                    },
-                    "MGMT": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.9",
-                                "maxTotalRoutes": 10000,
-                                "totalRoutesWarnLimit": 9000,
-                            }
-                        ]
-                    },
-                },
-            },
+                    "default": {"peerList": [{"peerAddress": "10.100.0.8", "maxTotalRoutes": 12000, "totalRoutesWarnLimit": 10000}]},
+                    "MGMT": {"peerList": [{"peerAddress": "10.100.0.9", "maxTotalRoutes": 10000, "totalRoutesWarnLimit": 9000}]},
+                }
+            }
         ],
         "inputs": {
             "bgp_peers": [
@@ -4189,30 +2688,14 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-no-warning-limit",
-        "test": VerifyBGPPeerRouteLimit,
+    (VerifyBGPPeerRouteLimit, "success-no-warning-limit"): {
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.8",
-                                "maxTotalRoutes": 12000,
-                            }
-                        ]
-                    },
-                    "MGMT": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.9",
-                                "maxTotalRoutes": 10000,
-                            }
-                        ]
-                    },
-                },
-            },
+                    "default": {"peerList": [{"peerAddress": "10.100.0.8", "maxTotalRoutes": 12000}]},
+                    "MGMT": {"peerList": [{"peerAddress": "10.100.0.9", "maxTotalRoutes": 10000}]},
+                }
+            }
         ],
         "inputs": {
             "bgp_peers": [
@@ -4222,57 +2705,24 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-peer-not-found",
-        "test": VerifyBGPPeerRouteLimit,
-        "eos_data": [
-            {
-                "vrfs": {
-                    "default": {},
-                    "MGMT": {},
-                },
-            },
-        ],
+    (VerifyBGPPeerRouteLimit, "failure-peer-not-found"): {
+        "eos_data": [{"vrfs": {"default": {}, "MGMT": {}}}],
         "inputs": {
             "bgp_peers": [
                 {"peer_address": "10.100.0.8", "vrf": "default", "maximum_routes": 12000, "warning_limit": 10000},
                 {"peer_address": "10.100.0.9", "vrf": "MGMT", "maximum_routes": 10000, "warning_limit": 9000},
             ]
         },
-        "expected": {
-            "result": "failure",
-            "messages": [
-                "Peer: 10.100.0.8 VRF: default - Not found",
-                "Peer: 10.100.0.9 VRF: MGMT - Not found",
-            ],
-        },
+        "expected": {"result": "failure", "messages": ["Peer: 10.100.0.8 VRF: default - Not found", "Peer: 10.100.0.9 VRF: MGMT - Not found"]},
     },
-    {
-        "name": "failure-incorrect-max-routes",
-        "test": VerifyBGPPeerRouteLimit,
+    (VerifyBGPPeerRouteLimit, "failure-incorrect-max-routes"): {
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.8",
-                                "maxTotalRoutes": 13000,
-                                "totalRoutesWarnLimit": 11000,
-                            }
-                        ]
-                    },
-                    "MGMT": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.9",
-                                "maxTotalRoutes": 11000,
-                                "totalRoutesWarnLimit": 10000,
-                            }
-                        ]
-                    },
-                },
-            },
+                    "default": {"peerList": [{"peerAddress": "10.100.0.8", "maxTotalRoutes": 13000, "totalRoutesWarnLimit": 11000}]},
+                    "MGMT": {"peerList": [{"peerAddress": "10.100.0.9", "maxTotalRoutes": 11000, "totalRoutesWarnLimit": 10000}]},
+                }
+            }
         ],
         "inputs": {
             "bgp_peers": [
@@ -4290,30 +2740,14 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-routes-not-found",
-        "test": VerifyBGPPeerRouteLimit,
+    (VerifyBGPPeerRouteLimit, "failure-routes-not-found"): {
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.8",
-                                "maxTotalRoutes": 12000,
-                            }
-                        ]
-                    },
-                    "MGMT": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.9",
-                                "maxTotalRoutes": 10000,
-                            }
-                        ]
-                    },
-                },
-            },
+                    "default": {"peerList": [{"peerAddress": "10.100.0.8", "maxTotalRoutes": 12000}]},
+                    "MGMT": {"peerList": [{"peerAddress": "10.100.0.9", "maxTotalRoutes": 10000}]},
+                }
+            }
         ],
         "inputs": {
             "bgp_peers": [
@@ -4329,93 +2763,33 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "success-no-check-tcp-queues",
-        "test": VerifyBGPPeerSession,
+    (VerifyBGPPeerSession, "success-no-check-tcp-queues"): {
         "eos_data": [
             {
                 "vrfs": {
                     "default": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.8",
-                                "state": "Established",
-                                "peerTcpInfo": {
-                                    "outputQueueLength": 10,
-                                    "inputQueueLength": 5,
-                                },
-                            }
-                        ]
+                        "peerList": [{"peerAddress": "10.100.0.8", "state": "Established", "peerTcpInfo": {"outputQueueLength": 10, "inputQueueLength": 5}}]
                     },
-                    "MGMT": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.9",
-                                "state": "Established",
-                                "peerTcpInfo": {
-                                    "outputQueueLength": 10,
-                                    "inputQueueLength": 5,
-                                },
-                            }
-                        ]
-                    },
-                },
-            },
+                    "MGMT": {"peerList": [{"peerAddress": "10.100.0.9", "state": "Established", "peerTcpInfo": {"outputQueueLength": 10, "inputQueueLength": 5}}]},
+                }
+            }
         ],
-        "inputs": {
-            "check_tcp_queues": False,
-            "bgp_peers": [
-                {"peer_address": "10.100.0.8", "vrf": "default"},
-                {"peer_address": "10.100.0.9", "vrf": "MGMT"},
-            ],
-        },
+        "inputs": {"check_tcp_queues": False, "bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default"}, {"peer_address": "10.100.0.9", "vrf": "MGMT"}]},
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-check-tcp-queues",
-        "test": VerifyBGPPeerSession,
+    (VerifyBGPPeerSession, "success-check-tcp-queues"): {
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.8",
-                                "state": "Established",
-                                "peerTcpInfo": {
-                                    "outputQueueLength": 0,
-                                    "inputQueueLength": 0,
-                                },
-                            }
-                        ]
-                    },
-                    "MGMT": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.9",
-                                "state": "Established",
-                                "peerTcpInfo": {
-                                    "outputQueueLength": 0,
-                                    "inputQueueLength": 0,
-                                },
-                            }
-                        ]
-                    },
-                },
-            },
+                    "default": {"peerList": [{"peerAddress": "10.100.0.8", "state": "Established", "peerTcpInfo": {"outputQueueLength": 0, "inputQueueLength": 0}}]},
+                    "MGMT": {"peerList": [{"peerAddress": "10.100.0.9", "state": "Established", "peerTcpInfo": {"outputQueueLength": 0, "inputQueueLength": 0}}]},
+                }
+            }
         ],
-        "inputs": {
-            "check_tcp_queues": True,
-            "bgp_peers": [
-                {"peer_address": "10.100.0.8", "vrf": "default"},
-                {"peer_address": "10.100.0.9", "vrf": "MGMT"},
-            ],
-        },
+        "inputs": {"check_tcp_queues": True, "bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default"}, {"peer_address": "10.100.0.9", "vrf": "MGMT"}]},
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-min-established-time",
-        "test": VerifyBGPPeerSession,
+    (VerifyBGPPeerSession, "success-min-established-time"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -4425,10 +2799,7 @@ DATA: list[dict[str, Any]] = [
                                 "peerAddress": "10.100.0.8",
                                 "state": "Established",
                                 "establishedTime": 169883,
-                                "peerTcpInfo": {
-                                    "outputQueueLength": 0,
-                                    "inputQueueLength": 0,
-                                },
+                                "peerTcpInfo": {"outputQueueLength": 0, "inputQueueLength": 0},
                             }
                         ]
                     },
@@ -4438,99 +2809,41 @@ DATA: list[dict[str, Any]] = [
                                 "peerAddress": "10.100.0.9",
                                 "state": "Established",
                                 "establishedTime": 169883,
-                                "peerTcpInfo": {
-                                    "outputQueueLength": 0,
-                                    "inputQueueLength": 0,
-                                },
+                                "peerTcpInfo": {"outputQueueLength": 0, "inputQueueLength": 0},
                             }
                         ]
                     },
-                },
-            },
+                }
+            }
         ],
         "inputs": {
             "minimum_established_time": 10000,
             "check_tcp_queues": True,
-            "bgp_peers": [
-                {"peer_address": "10.100.0.8", "vrf": "default"},
-                {"peer_address": "10.100.0.9", "vrf": "MGMT"},
-            ],
+            "bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default"}, {"peer_address": "10.100.0.9", "vrf": "MGMT"}],
         },
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-peer-not-found",
-        "test": VerifyBGPPeerSession,
+    (VerifyBGPPeerSession, "failure-peer-not-found"): {
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.8",
-                                "state": "Established",
-                                "peerTcpInfo": {
-                                    "outputQueueLength": 0,
-                                    "inputQueueLength": 0,
-                                },
-                            }
-                        ]
-                    },
-                },
-            },
+                    "default": {"peerList": [{"peerAddress": "10.100.0.8", "state": "Established", "peerTcpInfo": {"outputQueueLength": 0, "inputQueueLength": 0}}]}
+                }
+            }
         ],
-        "inputs": {
-            "bgp_peers": [
-                {"peer_address": "10.100.0.8", "vrf": "default"},
-                {"peer_address": "10.100.0.9", "vrf": "MGMT"},
-            ]
-        },
-        "expected": {
-            "result": "failure",
-            "messages": [
-                "Peer: 10.100.0.9 VRF: MGMT - Not found",
-            ],
-        },
+        "inputs": {"bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default"}, {"peer_address": "10.100.0.9", "vrf": "MGMT"}]},
+        "expected": {"result": "failure", "messages": ["Peer: 10.100.0.9 VRF: MGMT - Not found"]},
     },
-    {
-        "name": "failure-not-established",
-        "test": VerifyBGPPeerSession,
+    (VerifyBGPPeerSession, "failure-not-established"): {
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.8",
-                                "state": "Active",
-                                "peerTcpInfo": {
-                                    "outputQueueLength": 0,
-                                    "inputQueueLength": 0,
-                                },
-                            }
-                        ]
-                    },
-                    "MGMT": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.9",
-                                "state": "Active",
-                                "peerTcpInfo": {
-                                    "outputQueueLength": 0,
-                                    "inputQueueLength": 0,
-                                },
-                            }
-                        ]
-                    },
-                },
-            },
+                    "default": {"peerList": [{"peerAddress": "10.100.0.8", "state": "Active", "peerTcpInfo": {"outputQueueLength": 0, "inputQueueLength": 0}}]},
+                    "MGMT": {"peerList": [{"peerAddress": "10.100.0.9", "state": "Active", "peerTcpInfo": {"outputQueueLength": 0, "inputQueueLength": 0}}]},
+                }
+            }
         ],
-        "inputs": {
-            "bgp_peers": [
-                {"peer_address": "10.100.0.8", "vrf": "default"},
-                {"peer_address": "10.100.0.9", "vrf": "MGMT"},
-            ]
-        },
+        "inputs": {"bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default"}, {"peer_address": "10.100.0.9", "vrf": "MGMT"}]},
         "expected": {
             "result": "failure",
             "messages": [
@@ -4539,55 +2852,21 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-check-tcp-queues",
-        "test": VerifyBGPPeerSession,
+    (VerifyBGPPeerSession, "failure-check-tcp-queues"): {
         "eos_data": [
             {
                 "vrfs": {
                     "default": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.8",
-                                "state": "Established",
-                                "peerTcpInfo": {
-                                    "outputQueueLength": 10,
-                                    "inputQueueLength": 5,
-                                },
-                            }
-                        ]
+                        "peerList": [{"peerAddress": "10.100.0.8", "state": "Established", "peerTcpInfo": {"outputQueueLength": 10, "inputQueueLength": 5}}]
                     },
-                    "MGMT": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.9",
-                                "state": "Established",
-                                "peerTcpInfo": {
-                                    "outputQueueLength": 0,
-                                    "inputQueueLength": 0,
-                                },
-                            }
-                        ]
-                    },
-                },
-            },
+                    "MGMT": {"peerList": [{"peerAddress": "10.100.0.9", "state": "Established", "peerTcpInfo": {"outputQueueLength": 0, "inputQueueLength": 0}}]},
+                }
+            }
         ],
-        "inputs": {
-            "bgp_peers": [
-                {"peer_address": "10.100.0.8", "vrf": "default"},
-                {"peer_address": "10.100.0.9", "vrf": "MGMT"},
-            ]
-        },
-        "expected": {
-            "result": "failure",
-            "messages": [
-                "Peer: 10.100.0.8 VRF: default - Session has non-empty message queues - InQ: 5 OutQ: 10",
-            ],
-        },
+        "inputs": {"bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default"}, {"peer_address": "10.100.0.9", "vrf": "MGMT"}]},
+        "expected": {"result": "failure", "messages": ["Peer: 10.100.0.8 VRF: default - Session has non-empty message queues - InQ: 5 OutQ: 10"]},
     },
-    {
-        "name": "failure-min-established-time",
-        "test": VerifyBGPPeerSession,
+    (VerifyBGPPeerSession, "failure-min-established-time"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -4597,10 +2876,7 @@ DATA: list[dict[str, Any]] = [
                                 "peerAddress": "10.100.0.8",
                                 "state": "Established",
                                 "establishedTime": 9883,
-                                "peerTcpInfo": {
-                                    "outputQueueLength": 0,
-                                    "inputQueueLength": 0,
-                                },
+                                "peerTcpInfo": {"outputQueueLength": 0, "inputQueueLength": 0},
                             }
                         ]
                     },
@@ -4610,23 +2886,17 @@ DATA: list[dict[str, Any]] = [
                                 "peerAddress": "10.100.0.9",
                                 "state": "Established",
                                 "establishedTime": 9883,
-                                "peerTcpInfo": {
-                                    "outputQueueLength": 0,
-                                    "inputQueueLength": 0,
-                                },
+                                "peerTcpInfo": {"outputQueueLength": 0, "inputQueueLength": 0},
                             }
                         ]
                     },
-                },
-            },
+                }
+            }
         ],
         "inputs": {
             "minimum_established_time": 10000,
             "check_tcp_queues": True,
-            "bgp_peers": [
-                {"peer_address": "10.100.0.8", "vrf": "default"},
-                {"peer_address": "10.100.0.9", "vrf": "MGMT"},
-            ],
+            "bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default"}, {"peer_address": "10.100.0.9", "vrf": "MGMT"}],
         },
         "expected": {
             "result": "failure",
@@ -4636,42 +2906,25 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "success",
-        "test": VerifyBGPPeerGroup,
+    (VerifyBGPPeerGroup, "success"): {
         "eos_data": [
             {
                 "vrfs": {
                     "default": {
                         "peerList": [
-                            {
-                                "peerAddress": "10.100.0.8",
-                                "peerGroupName": "IPv4-UNDERLAY-PEERS",
-                            },
-                            {
-                                "peerAddress": "10.100.4.5",
-                                "peerGroupName": "MLAG-IPv4-UNDERLAY-PEER",
-                            },
-                            {
-                                "peerAddress": "10.100.1.1",
-                                "peerGroupName": "EVPN-OVERLAY-PEERS",
-                            },
+                            {"peerAddress": "10.100.0.8", "peerGroupName": "IPv4-UNDERLAY-PEERS"},
+                            {"peerAddress": "10.100.4.5", "peerGroupName": "MLAG-IPv4-UNDERLAY-PEER"},
+                            {"peerAddress": "10.100.1.1", "peerGroupName": "EVPN-OVERLAY-PEERS"},
                         ]
                     },
                     "MGMT": {
                         "peerList": [
-                            {
-                                "peerAddress": "10.100.0.10",
-                                "peerGroupName": "IPv4-UNDERLAY-PEERS",
-                            },
-                            {
-                                "peerAddress": "10.100.1.2",
-                                "peerGroupName": "EVPN-OVERLAY-PEERS",
-                            },
+                            {"peerAddress": "10.100.0.10", "peerGroupName": "IPv4-UNDERLAY-PEERS"},
+                            {"peerAddress": "10.100.1.2", "peerGroupName": "EVPN-OVERLAY-PEERS"},
                         ]
                     },
-                },
-            },
+                }
+            }
         ],
         "inputs": {
             "bgp_peers": [
@@ -4684,42 +2937,25 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-incorrect-peer-group",
-        "test": VerifyBGPPeerGroup,
+    (VerifyBGPPeerGroup, "failure-incorrect-peer-group"): {
         "eos_data": [
             {
                 "vrfs": {
                     "default": {
                         "peerList": [
-                            {
-                                "peerAddress": "10.100.0.8",
-                                "peerGroupName": "UNDERLAY-PEERS",
-                            },
-                            {
-                                "peerAddress": "10.100.1.1",
-                                "peerGroupName": "OVERLAY-PEERS",
-                            },
-                            {
-                                "peerAddress": "10.100.4.5",
-                                "peerGroupName": "UNDERLAY-PEER",
-                            },
+                            {"peerAddress": "10.100.0.8", "peerGroupName": "UNDERLAY-PEERS"},
+                            {"peerAddress": "10.100.1.1", "peerGroupName": "OVERLAY-PEERS"},
+                            {"peerAddress": "10.100.4.5", "peerGroupName": "UNDERLAY-PEER"},
                         ]
                     },
                     "MGMT": {
                         "peerList": [
-                            {
-                                "peerAddress": "10.100.0.10",
-                                "peerGroupName": "UNDERLAY-PEERS",
-                            },
-                            {
-                                "peerAddress": "10.100.1.2",
-                                "peerGroupName": "OVERLAY-PEERS",
-                            },
+                            {"peerAddress": "10.100.0.10", "peerGroupName": "UNDERLAY-PEERS"},
+                            {"peerAddress": "10.100.1.2", "peerGroupName": "OVERLAY-PEERS"},
                         ]
                     },
-                },
-            },
+                }
+            }
         ],
         "inputs": {
             "bgp_peers": [
@@ -4741,17 +2977,8 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-peers-not-found",
-        "test": VerifyBGPPeerGroup,
-        "eos_data": [
-            {
-                "vrfs": {
-                    "default": {"peerList": []},
-                    "MGMT": {"peerList": []},
-                },
-            },
-        ],
+    (VerifyBGPPeerGroup, "failure-peers-not-found"): {
+        "eos_data": [{"vrfs": {"default": {"peerList": []}, "MGMT": {"peerList": []}}}],
         "inputs": {
             "bgp_peers": [
                 {"peer_address": "10.100.0.8", "vrf": "default", "peer_group": "IPv4-UNDERLAY-PEERS"},
@@ -4772,37 +2999,14 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-peer-group-not-found",
-        "test": VerifyBGPPeerGroup,
+    (VerifyBGPPeerGroup, "failure-peer-group-not-found"): {
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.8",
-                            },
-                            {
-                                "peerAddress": "10.100.1.1",
-                            },
-                            {
-                                "peerAddress": "10.100.4.5",
-                            },
-                        ]
-                    },
-                    "MGMT": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.10",
-                            },
-                            {
-                                "peerAddress": "10.100.1.2",
-                            },
-                        ]
-                    },
-                },
-            },
+                    "default": {"peerList": [{"peerAddress": "10.100.0.8"}, {"peerAddress": "10.100.1.1"}, {"peerAddress": "10.100.4.5"}]},
+                    "MGMT": {"peerList": [{"peerAddress": "10.100.0.10"}, {"peerAddress": "10.100.1.2"}]},
+                }
+            }
         ],
         "inputs": {
             "bgp_peers": [
@@ -4824,51 +3028,21 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "success-no-check-tcp-queues",
-        "test": VerifyBGPPeerSessionRibd,
+    (VerifyBGPPeerSessionRibd, "success-no-check-tcp-queues"): {
         "eos_data": [
             {
                 "vrfs": {
                     "default": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.8",
-                                "state": "Established",
-                                "peerTcpInfo": {
-                                    "outputQueueLength": 10,
-                                    "inputQueueLength": 5,
-                                },
-                            }
-                        ]
+                        "peerList": [{"peerAddress": "10.100.0.8", "state": "Established", "peerTcpInfo": {"outputQueueLength": 10, "inputQueueLength": 5}}]
                     },
-                    "MGMT": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.9",
-                                "state": "Established",
-                                "peerTcpInfo": {
-                                    "outputQueueLength": 10,
-                                    "inputQueueLength": 5,
-                                },
-                            }
-                        ]
-                    },
-                },
-            },
+                    "MGMT": {"peerList": [{"peerAddress": "10.100.0.9", "state": "Established", "peerTcpInfo": {"outputQueueLength": 10, "inputQueueLength": 5}}]},
+                }
+            }
         ],
-        "inputs": {
-            "check_tcp_queues": False,
-            "bgp_peers": [
-                {"peer_address": "10.100.0.8", "vrf": "default"},
-                {"peer_address": "10.100.0.9", "vrf": "MGMT"},
-            ],
-        },
+        "inputs": {"check_tcp_queues": False, "bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default"}, {"peer_address": "10.100.0.9", "vrf": "MGMT"}]},
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-check-tcp-queues",
-        "test": VerifyBGPPeerSessionRibd,
+    (VerifyBGPPeerSessionRibd, "success-check-tcp-queues"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -4878,10 +3052,7 @@ DATA: list[dict[str, Any]] = [
                                 "peerAddress": "10.100.0.8",
                                 "state": "Established",
                                 "establishedTime": 169883,
-                                "peerTcpInfo": {
-                                    "outputQueueLength": 0,
-                                    "inputQueueLength": 0,
-                                },
+                                "peerTcpInfo": {"outputQueueLength": 0, "inputQueueLength": 0},
                             }
                         ]
                     },
@@ -4891,141 +3062,53 @@ DATA: list[dict[str, Any]] = [
                                 "peerAddress": "10.100.0.9",
                                 "state": "Established",
                                 "establishedTime": 169883,
-                                "peerTcpInfo": {
-                                    "outputQueueLength": 0,
-                                    "inputQueueLength": 0,
-                                },
+                                "peerTcpInfo": {"outputQueueLength": 0, "inputQueueLength": 0},
                             }
                         ]
                     },
-                },
-            },
+                }
+            }
         ],
         "inputs": {
             "minimum_established_time": 10000,
             "check_tcp_queues": True,
-            "bgp_peers": [
-                {"peer_address": "10.100.0.8", "vrf": "default"},
-                {"peer_address": "10.100.0.9", "vrf": "MGMT"},
-            ],
+            "bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default"}, {"peer_address": "10.100.0.9", "vrf": "MGMT"}],
         },
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-min-established-time",
-        "test": VerifyBGPPeerSessionRibd,
+    (VerifyBGPPeerSessionRibd, "success-min-established-time"): {
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.8",
-                                "state": "Established",
-                                "peerTcpInfo": {
-                                    "outputQueueLength": 0,
-                                    "inputQueueLength": 0,
-                                },
-                            }
-                        ]
-                    },
-                    "MGMT": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.9",
-                                "state": "Established",
-                                "peerTcpInfo": {
-                                    "outputQueueLength": 0,
-                                    "inputQueueLength": 0,
-                                },
-                            }
-                        ]
-                    },
-                },
-            },
+                    "default": {"peerList": [{"peerAddress": "10.100.0.8", "state": "Established", "peerTcpInfo": {"outputQueueLength": 0, "inputQueueLength": 0}}]},
+                    "MGMT": {"peerList": [{"peerAddress": "10.100.0.9", "state": "Established", "peerTcpInfo": {"outputQueueLength": 0, "inputQueueLength": 0}}]},
+                }
+            }
         ],
-        "inputs": {
-            "check_tcp_queues": True,
-            "bgp_peers": [
-                {"peer_address": "10.100.0.8", "vrf": "default"},
-                {"peer_address": "10.100.0.9", "vrf": "MGMT"},
-            ],
-        },
+        "inputs": {"check_tcp_queues": True, "bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default"}, {"peer_address": "10.100.0.9", "vrf": "MGMT"}]},
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-peer-not-found",
-        "test": VerifyBGPPeerSessionRibd,
+    (VerifyBGPPeerSessionRibd, "failure-peer-not-found"): {
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.8",
-                                "state": "Established",
-                                "peerTcpInfo": {
-                                    "outputQueueLength": 0,
-                                    "inputQueueLength": 0,
-                                },
-                            }
-                        ]
-                    },
-                },
-            },
+                    "default": {"peerList": [{"peerAddress": "10.100.0.8", "state": "Established", "peerTcpInfo": {"outputQueueLength": 0, "inputQueueLength": 0}}]}
+                }
+            }
         ],
-        "inputs": {
-            "bgp_peers": [
-                {"peer_address": "10.100.0.8", "vrf": "default"},
-                {"peer_address": "10.100.0.9", "vrf": "MGMT"},
-            ]
-        },
-        "expected": {
-            "result": "failure",
-            "messages": [
-                "Peer: 10.100.0.9 VRF: MGMT - Not found",
-            ],
-        },
+        "inputs": {"bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default"}, {"peer_address": "10.100.0.9", "vrf": "MGMT"}]},
+        "expected": {"result": "failure", "messages": ["Peer: 10.100.0.9 VRF: MGMT - Not found"]},
     },
-    {
-        "name": "failure-not-established",
-        "test": VerifyBGPPeerSessionRibd,
+    (VerifyBGPPeerSessionRibd, "failure-not-established"): {
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.8",
-                                "state": "Active",
-                                "peerTcpInfo": {
-                                    "outputQueueLength": 0,
-                                    "inputQueueLength": 0,
-                                },
-                            }
-                        ]
-                    },
-                    "MGMT": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.9",
-                                "state": "Active",
-                                "peerTcpInfo": {
-                                    "outputQueueLength": 0,
-                                    "inputQueueLength": 0,
-                                },
-                            }
-                        ]
-                    },
-                },
-            },
+                    "default": {"peerList": [{"peerAddress": "10.100.0.8", "state": "Active", "peerTcpInfo": {"outputQueueLength": 0, "inputQueueLength": 0}}]},
+                    "MGMT": {"peerList": [{"peerAddress": "10.100.0.9", "state": "Active", "peerTcpInfo": {"outputQueueLength": 0, "inputQueueLength": 0}}]},
+                }
+            }
         ],
-        "inputs": {
-            "bgp_peers": [
-                {"peer_address": "10.100.0.8", "vrf": "default"},
-                {"peer_address": "10.100.0.9", "vrf": "MGMT"},
-            ]
-        },
+        "inputs": {"bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default"}, {"peer_address": "10.100.0.9", "vrf": "MGMT"}]},
         "expected": {
             "result": "failure",
             "messages": [
@@ -5034,55 +3117,21 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-check-tcp-queues",
-        "test": VerifyBGPPeerSessionRibd,
+    (VerifyBGPPeerSessionRibd, "failure-check-tcp-queues"): {
         "eos_data": [
             {
                 "vrfs": {
                     "default": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.8",
-                                "state": "Established",
-                                "peerTcpInfo": {
-                                    "outputQueueLength": 10,
-                                    "inputQueueLength": 5,
-                                },
-                            }
-                        ]
+                        "peerList": [{"peerAddress": "10.100.0.8", "state": "Established", "peerTcpInfo": {"outputQueueLength": 10, "inputQueueLength": 5}}]
                     },
-                    "MGMT": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.9",
-                                "state": "Established",
-                                "peerTcpInfo": {
-                                    "outputQueueLength": 0,
-                                    "inputQueueLength": 0,
-                                },
-                            }
-                        ]
-                    },
-                },
-            },
+                    "MGMT": {"peerList": [{"peerAddress": "10.100.0.9", "state": "Established", "peerTcpInfo": {"outputQueueLength": 0, "inputQueueLength": 0}}]},
+                }
+            }
         ],
-        "inputs": {
-            "bgp_peers": [
-                {"peer_address": "10.100.0.8", "vrf": "default"},
-                {"peer_address": "10.100.0.9", "vrf": "MGMT"},
-            ]
-        },
-        "expected": {
-            "result": "failure",
-            "messages": [
-                "Peer: 10.100.0.8 VRF: default - Session has non-empty message queues - InQ: 5 OutQ: 10",
-            ],
-        },
+        "inputs": {"bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default"}, {"peer_address": "10.100.0.9", "vrf": "MGMT"}]},
+        "expected": {"result": "failure", "messages": ["Peer: 10.100.0.8 VRF: default - Session has non-empty message queues - InQ: 5 OutQ: 10"]},
     },
-    {
-        "name": "failure-min-established-time",
-        "test": VerifyBGPPeerSessionRibd,
+    (VerifyBGPPeerSessionRibd, "failure-min-established-time"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -5092,10 +3141,7 @@ DATA: list[dict[str, Any]] = [
                                 "peerAddress": "10.100.0.8",
                                 "state": "Established",
                                 "establishedTime": 9883,
-                                "peerTcpInfo": {
-                                    "outputQueueLength": 0,
-                                    "inputQueueLength": 0,
-                                },
+                                "peerTcpInfo": {"outputQueueLength": 0, "inputQueueLength": 0},
                             }
                         ]
                     },
@@ -5105,22 +3151,16 @@ DATA: list[dict[str, Any]] = [
                                 "peerAddress": "10.100.0.9",
                                 "state": "Established",
                                 "establishedTime": 9883,
-                                "peerTcpInfo": {
-                                    "outputQueueLength": 0,
-                                    "inputQueueLength": 0,
-                                },
+                                "peerTcpInfo": {"outputQueueLength": 0, "inputQueueLength": 0},
                             }
                         ]
                     },
-                },
-            },
+                }
+            }
         ],
         "inputs": {
             "minimum_established_time": 10000,
-            "bgp_peers": [
-                {"peer_address": "10.100.0.8", "vrf": "default"},
-                {"peer_address": "10.100.0.9", "vrf": "MGMT"},
-            ],
+            "bgp_peers": [{"peer_address": "10.100.0.8", "vrf": "default"}, {"peer_address": "10.100.0.9", "vrf": "MGMT"}],
         },
         "expected": {
             "result": "failure",
@@ -5130,114 +3170,40 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "success-no-check-tcp-queues",
-        "test": VerifyBGPPeersHealthRibd,
+    (VerifyBGPPeersHealthRibd, "success-no-check-tcp-queues"): {
         "eos_data": [
             {
                 "vrfs": {
                     "default": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.8",
-                                "state": "Established",
-                                "peerTcpInfo": {
-                                    "outputQueueLength": 10,
-                                    "inputQueueLength": 5,
-                                },
-                            }
-                        ]
+                        "peerList": [{"peerAddress": "10.100.0.8", "state": "Established", "peerTcpInfo": {"outputQueueLength": 10, "inputQueueLength": 5}}]
                     },
-                    "MGMT": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.9",
-                                "state": "Established",
-                                "peerTcpInfo": {
-                                    "outputQueueLength": 10,
-                                    "inputQueueLength": 5,
-                                },
-                            }
-                        ]
-                    },
-                },
-            },
+                    "MGMT": {"peerList": [{"peerAddress": "10.100.0.9", "state": "Established", "peerTcpInfo": {"outputQueueLength": 10, "inputQueueLength": 5}}]},
+                }
+            }
         ],
-        "inputs": {
-            "check_tcp_queues": False,
-        },
+        "inputs": {"check_tcp_queues": False},
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-check-tcp-queues",
-        "test": VerifyBGPPeersHealthRibd,
+    (VerifyBGPPeersHealthRibd, "success-check-tcp-queues"): {
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.8",
-                                "state": "Established",
-                                "peerTcpInfo": {
-                                    "outputQueueLength": 0,
-                                    "inputQueueLength": 0,
-                                },
-                            }
-                        ]
-                    },
-                    "MGMT": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.9",
-                                "state": "Established",
-                                "peerTcpInfo": {
-                                    "outputQueueLength": 0,
-                                    "inputQueueLength": 0,
-                                },
-                            }
-                        ]
-                    },
-                },
-            },
+                    "default": {"peerList": [{"peerAddress": "10.100.0.8", "state": "Established", "peerTcpInfo": {"outputQueueLength": 0, "inputQueueLength": 0}}]},
+                    "MGMT": {"peerList": [{"peerAddress": "10.100.0.9", "state": "Established", "peerTcpInfo": {"outputQueueLength": 0, "inputQueueLength": 0}}]},
+                }
+            }
         ],
-        "inputs": {
-            "check_tcp_queues": True,
-        },
+        "inputs": {"check_tcp_queues": True},
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-not-established",
-        "test": VerifyBGPPeersHealthRibd,
+    (VerifyBGPPeersHealthRibd, "failure-not-established"): {
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.8",
-                                "state": "Active",
-                                "peerTcpInfo": {
-                                    "outputQueueLength": 0,
-                                    "inputQueueLength": 0,
-                                },
-                            }
-                        ]
-                    },
-                    "MGMT": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.9",
-                                "state": "Active",
-                                "peerTcpInfo": {
-                                    "outputQueueLength": 0,
-                                    "inputQueueLength": 0,
-                                },
-                            }
-                        ]
-                    },
-                },
-            },
+                    "default": {"peerList": [{"peerAddress": "10.100.0.8", "state": "Active", "peerTcpInfo": {"outputQueueLength": 0, "inputQueueLength": 0}}]},
+                    "MGMT": {"peerList": [{"peerAddress": "10.100.0.9", "state": "Active", "peerTcpInfo": {"outputQueueLength": 0, "inputQueueLength": 0}}]},
+                }
+            }
         ],
         "inputs": {},
         "expected": {
@@ -5248,50 +3214,21 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-check-tcp-queues",
-        "test": VerifyBGPPeersHealthRibd,
+    (VerifyBGPPeersHealthRibd, "failure-check-tcp-queues"): {
         "eos_data": [
             {
                 "vrfs": {
                     "default": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.8",
-                                "state": "Established",
-                                "peerTcpInfo": {
-                                    "outputQueueLength": 10,
-                                    "inputQueueLength": 5,
-                                },
-                            }
-                        ]
+                        "peerList": [{"peerAddress": "10.100.0.8", "state": "Established", "peerTcpInfo": {"outputQueueLength": 10, "inputQueueLength": 5}}]
                     },
-                    "MGMT": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.100.0.9",
-                                "state": "Established",
-                                "peerTcpInfo": {
-                                    "outputQueueLength": 0,
-                                    "inputQueueLength": 0,
-                                },
-                            }
-                        ]
-                    },
-                },
-            },
+                    "MGMT": {"peerList": [{"peerAddress": "10.100.0.9", "state": "Established", "peerTcpInfo": {"outputQueueLength": 0, "inputQueueLength": 0}}]},
+                }
+            }
         ],
         "inputs": {},
-        "expected": {
-            "result": "failure",
-            "messages": [
-                "Peer: 10.100.0.8 VRF: default - Session has non-empty message queues - InQ: 5 OutQ: 10",
-            ],
-        },
+        "expected": {"result": "failure", "messages": ["Peer: 10.100.0.8 VRF: default - Session has non-empty message queues - InQ: 5 OutQ: 10"]},
     },
-    {
-        "name": "success",
-        "test": VerifyBGPNlriAcceptance,
+    (VerifyBGPNlriAcceptance, "success"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -5305,7 +3242,7 @@ DATA: list[dict[str, Any]] = [
                                 "peerAsn": "65100",
                                 "ipv4Unicast": {"afiSafiState": "negotiated", "nlrisReceived": 17, "nlrisAccepted": 17},
                                 "l2VpnEvpn": {"afiSafiState": "negotiated", "nlrisReceived": 56, "nlrisAccepted": 56},
-                            },
+                            }
                         },
                     },
                     "MGMT": {
@@ -5326,66 +3263,30 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "bgp_peers": [
-                {
-                    "peer_address": "10.100.0.8",
-                    "vrf": "default",
-                    "capabilities": ["Ipv4 Unicast", "L2vpnEVPN"],
-                },
-                {
-                    "peer_address": "10.100.4.5",
-                    "vrf": "MGMT",
-                    "capabilities": ["ipv4 Unicast", "L2vpnEVPN"],
-                },
+                {"peer_address": "10.100.0.8", "vrf": "default", "capabilities": ["Ipv4 Unicast", "L2vpnEVPN"]},
+                {"peer_address": "10.100.4.5", "vrf": "MGMT", "capabilities": ["ipv4 Unicast", "L2vpnEVPN"]},
             ]
         },
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-vrf-not-configured",
-        "test": VerifyBGPNlriAcceptance,
+    (VerifyBGPNlriAcceptance, "failure-vrf-not-configured"): {
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {
-                        "vrf": "default",
-                        "routerId": "10.100.1.5",
-                        "asn": "65102",
-                        "peers": {},
-                    },
-                    "MGMT": {
-                        "vrf": "MGMT",
-                        "routerId": "10.100.1.5",
-                        "asn": "65102",
-                        "peers": {},
-                    },
+                    "default": {"vrf": "default", "routerId": "10.100.1.5", "asn": "65102", "peers": {}},
+                    "MGMT": {"vrf": "MGMT", "routerId": "10.100.1.5", "asn": "65102", "peers": {}},
                 }
             }
         ],
         "inputs": {
             "bgp_peers": [
-                {
-                    "peer_address": "10.100.0.8",
-                    "vrf": "default",
-                    "capabilities": ["Ipv4 Unicast", "L2vpnEVPN"],
-                },
-                {
-                    "peer_address": "10.100.4.5",
-                    "vrf": "MGMT",
-                    "capabilities": ["ipv4 Unicast", "L2vpnEVPN"],
-                },
+                {"peer_address": "10.100.0.8", "vrf": "default", "capabilities": ["Ipv4 Unicast", "L2vpnEVPN"]},
+                {"peer_address": "10.100.4.5", "vrf": "MGMT", "capabilities": ["ipv4 Unicast", "L2vpnEVPN"]},
             ]
         },
-        "expected": {
-            "result": "failure",
-            "messages": [
-                "Peer: 10.100.0.8 VRF: default - Not found",
-                "Peer: 10.100.4.5 VRF: MGMT - Not found",
-            ],
-        },
+        "expected": {"result": "failure", "messages": ["Peer: 10.100.0.8 VRF: default - Not found", "Peer: 10.100.4.5 VRF: MGMT - Not found"]},
     },
-    {
-        "name": "failure-capability-not-found",
-        "test": VerifyBGPNlriAcceptance,
+    (VerifyBGPNlriAcceptance, "failure-capability-not-found"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -5398,7 +3299,7 @@ DATA: list[dict[str, Any]] = [
                                 "peerState": "Established",
                                 "peerAsn": "65100",
                                 "ipv4Unicast": {"afiSafiState": "negotiated", "nlrisReceived": 17, "nlrisAccepted": 17},
-                            },
+                            }
                         },
                     },
                     "MGMT": {
@@ -5418,29 +3319,13 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "bgp_peers": [
-                {
-                    "peer_address": "10.100.0.8",
-                    "vrf": "default",
-                    "capabilities": ["Ipv4 Unicast", "L2vpnEVPN"],
-                },
-                {
-                    "peer_address": "10.100.4.5",
-                    "vrf": "MGMT",
-                    "capabilities": ["ipv4 Unicast", "L2vpnEVPN"],
-                },
+                {"peer_address": "10.100.0.8", "vrf": "default", "capabilities": ["Ipv4 Unicast", "L2vpnEVPN"]},
+                {"peer_address": "10.100.4.5", "vrf": "MGMT", "capabilities": ["ipv4 Unicast", "L2vpnEVPN"]},
             ]
         },
-        "expected": {
-            "result": "failure",
-            "messages": [
-                "Peer: 10.100.0.8 VRF: default - l2VpnEvpn not found",
-                "Peer: 10.100.4.5 VRF: MGMT - ipv4Unicast not found",
-            ],
-        },
+        "expected": {"result": "failure", "messages": ["Peer: 10.100.0.8 VRF: default - l2VpnEvpn not found", "Peer: 10.100.4.5 VRF: MGMT - ipv4Unicast not found"]},
     },
-    {
-        "name": "failure-capability-not-negotiated",
-        "test": VerifyBGPNlriAcceptance,
+    (VerifyBGPNlriAcceptance, "failure-capability-not-negotiated"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -5453,7 +3338,7 @@ DATA: list[dict[str, Any]] = [
                                 "peerState": "Established",
                                 "peerAsn": "65100",
                                 "ipv4Unicast": {"afiSafiState": "configured", "nlrisReceived": 17, "nlrisAccepted": 17},
-                            },
+                            }
                         },
                     },
                     "MGMT": {
@@ -5473,16 +3358,8 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "bgp_peers": [
-                {
-                    "peer_address": "10.100.0.8",
-                    "vrf": "default",
-                    "capabilities": ["Ipv4 Unicast", "L2vpnEVPN"],
-                },
-                {
-                    "peer_address": "10.100.4.5",
-                    "vrf": "MGMT",
-                    "capabilities": ["ipv4 Unicast", "L2vpnEVPN"],
-                },
+                {"peer_address": "10.100.0.8", "vrf": "default", "capabilities": ["Ipv4 Unicast", "L2vpnEVPN"]},
+                {"peer_address": "10.100.4.5", "vrf": "MGMT", "capabilities": ["ipv4 Unicast", "L2vpnEVPN"]},
             ]
         },
         "expected": {
@@ -5495,9 +3372,7 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-nlris-not-accepted",
-        "test": VerifyBGPNlriAcceptance,
+    (VerifyBGPNlriAcceptance, "failure-nlris-not-accepted"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -5511,7 +3386,7 @@ DATA: list[dict[str, Any]] = [
                                 "peerAsn": "65100",
                                 "ipv4Unicast": {"afiSafiState": "negotiated", "nlrisReceived": 17, "nlrisAccepted": 16},
                                 "l2VpnEvpn": {"afiSafiState": "negotiated", "nlrisReceived": 58, "nlrisAccepted": 56},
-                            },
+                            }
                         },
                     },
                     "MGMT": {
@@ -5532,16 +3407,8 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "bgp_peers": [
-                {
-                    "peer_address": "10.100.0.8",
-                    "vrf": "default",
-                    "capabilities": ["Ipv4 Unicast", "L2vpnEVPN"],
-                },
-                {
-                    "peer_address": "10.100.4.5",
-                    "vrf": "MGMT",
-                    "capabilities": ["ipv4 Unicast", "L2vpnEVPN"],
-                },
+                {"peer_address": "10.100.0.8", "vrf": "default", "capabilities": ["Ipv4 Unicast", "L2vpnEVPN"]},
+                {"peer_address": "10.100.4.5", "vrf": "MGMT", "capabilities": ["ipv4 Unicast", "L2vpnEVPN"]},
             ]
         },
         "expected": {
@@ -5554,9 +3421,7 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "success",
-        "test": VerifyBGPRoutePaths,
+    (VerifyBGPRoutePaths, "success"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -5564,19 +3429,9 @@ DATA: list[dict[str, Any]] = [
                         "bgpRouteEntries": {
                             "10.100.0.128/31": {
                                 "bgpRoutePaths": [
-                                    {
-                                        "nextHop": "10.100.0.10",
-                                        "routeType": {
-                                            "origin": "Igp",
-                                        },
-                                    },
-                                    {
-                                        "nextHop": "10.100.4.5",
-                                        "routeType": {
-                                            "origin": "Incomplete",
-                                        },
-                                    },
-                                ],
+                                    {"nextHop": "10.100.0.10", "routeType": {"origin": "Igp"}},
+                                    {"nextHop": "10.100.4.5", "routeType": {"origin": "Incomplete"}},
+                                ]
                             }
                         }
                     },
@@ -5584,24 +3439,14 @@ DATA: list[dict[str, Any]] = [
                         "bgpRouteEntries": {
                             "10.100.0.130/31": {
                                 "bgpRoutePaths": [
-                                    {
-                                        "nextHop": "10.100.0.8",
-                                        "routeType": {
-                                            "origin": "Igp",
-                                        },
-                                    },
-                                    {
-                                        "nextHop": "10.100.0.10",
-                                        "routeType": {
-                                            "origin": "Igp",
-                                        },
-                                    },
-                                ],
+                                    {"nextHop": "10.100.0.8", "routeType": {"origin": "Igp"}},
+                                    {"nextHop": "10.100.0.10", "routeType": {"origin": "Igp"}},
+                                ]
                             }
                         }
                     },
                 }
-            },
+            }
         ],
         "inputs": {
             "route_entries": [
@@ -5610,18 +3455,12 @@ DATA: list[dict[str, Any]] = [
                     "vrf": "default",
                     "paths": [{"nexthop": "10.100.0.10", "origin": "Igp"}, {"nexthop": "10.100.4.5", "origin": "Incomplete"}],
                 },
-                {
-                    "prefix": "10.100.0.130/31",
-                    "vrf": "MGMT",
-                    "paths": [{"nexthop": "10.100.0.8", "origin": "Igp"}, {"nexthop": "10.100.0.10", "origin": "Igp"}],
-                },
+                {"prefix": "10.100.0.130/31", "vrf": "MGMT", "paths": [{"nexthop": "10.100.0.8", "origin": "Igp"}, {"nexthop": "10.100.0.10", "origin": "Igp"}]},
             ]
         },
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-origin-not-correct",
-        "test": VerifyBGPRoutePaths,
+    (VerifyBGPRoutePaths, "failure-origin-not-correct"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -5629,19 +3468,9 @@ DATA: list[dict[str, Any]] = [
                         "bgpRouteEntries": {
                             "10.100.0.128/31": {
                                 "bgpRoutePaths": [
-                                    {
-                                        "nextHop": "10.100.0.10",
-                                        "routeType": {
-                                            "origin": "Igp",
-                                        },
-                                    },
-                                    {
-                                        "nextHop": "10.100.4.5",
-                                        "routeType": {
-                                            "origin": "Incomplete",
-                                        },
-                                    },
-                                ],
+                                    {"nextHop": "10.100.0.10", "routeType": {"origin": "Igp"}},
+                                    {"nextHop": "10.100.4.5", "routeType": {"origin": "Incomplete"}},
+                                ]
                             }
                         }
                     },
@@ -5649,24 +3478,14 @@ DATA: list[dict[str, Any]] = [
                         "bgpRouteEntries": {
                             "10.100.0.130/31": {
                                 "bgpRoutePaths": [
-                                    {
-                                        "nextHop": "10.100.0.8",
-                                        "routeType": {
-                                            "origin": "Igp",
-                                        },
-                                    },
-                                    {
-                                        "nextHop": "10.100.0.10",
-                                        "routeType": {
-                                            "origin": "Igp",
-                                        },
-                                    },
-                                ],
+                                    {"nextHop": "10.100.0.8", "routeType": {"origin": "Igp"}},
+                                    {"nextHop": "10.100.0.10", "routeType": {"origin": "Igp"}},
+                                ]
                             }
                         }
                     },
                 }
-            },
+            }
         ],
         "inputs": {
             "route_entries": [
@@ -5692,42 +3511,14 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-path-not-found",
-        "test": VerifyBGPRoutePaths,
+    (VerifyBGPRoutePaths, "failure-path-not-found"): {
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {
-                        "bgpRouteEntries": {
-                            "10.100.0.128/31": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "nextHop": "10.100.0.15",
-                                        "routeType": {
-                                            "origin": "Igp",
-                                        },
-                                    },
-                                ],
-                            }
-                        }
-                    },
-                    "MGMT": {
-                        "bgpRouteEntries": {
-                            "10.100.0.130/31": {
-                                "bgpRoutePaths": [
-                                    {
-                                        "nextHop": "10.100.0.15",
-                                        "routeType": {
-                                            "origin": "Igp",
-                                        },
-                                    },
-                                ],
-                            }
-                        }
-                    },
+                    "default": {"bgpRouteEntries": {"10.100.0.128/31": {"bgpRoutePaths": [{"nextHop": "10.100.0.15", "routeType": {"origin": "Igp"}}]}}},
+                    "MGMT": {"bgpRouteEntries": {"10.100.0.130/31": {"bgpRoutePaths": [{"nextHop": "10.100.0.15", "routeType": {"origin": "Igp"}}]}}},
                 }
-            },
+            }
         ],
         "inputs": {
             "route_entries": [
@@ -5753,12 +3544,8 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-prefix-not-found",
-        "test": VerifyBGPRoutePaths,
-        "eos_data": [
-            {"vrfs": {"default": {"bgpRouteEntries": {}}, "MGMT": {"bgpRouteEntries": {}}}},
-        ],
+    (VerifyBGPRoutePaths, "failure-prefix-not-found"): {
+        "eos_data": [{"vrfs": {"default": {"bgpRouteEntries": {}}, "MGMT": {"bgpRouteEntries": {}}}}],
         "inputs": {
             "route_entries": [
                 {
@@ -5778,9 +3565,7 @@ DATA: list[dict[str, Any]] = [
             "messages": ["Prefix: 10.100.0.128/31 VRF: default - Prefix not found", "Prefix: 10.100.0.130/31 VRF: MGMT - Prefix not found"],
         },
     },
-    {
-        "name": "success",
-        "test": VerifyBGPRouteECMP,
+    (VerifyBGPRouteECMP, "success"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -5793,29 +3578,14 @@ DATA: list[dict[str, Any]] = [
                                 "address": "10.111.134.0",
                                 "maskLength": 24,
                                 "bgpRoutePaths": [
-                                    {
-                                        "nextHop": "10.111.2.0",
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": True,
-                                            "ecmpHead": True,
-                                            "ecmp": True,
-                                            "ecmpContributor": True,
-                                        },
-                                    },
+                                    {"nextHop": "10.111.2.0", "routeType": {"valid": True, "active": True, "ecmpHead": True, "ecmp": True, "ecmpContributor": True}},
                                     {
                                         "nextHop": "10.111.1.0",
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": False,
-                                            "ecmpHead": False,
-                                            "ecmp": True,
-                                            "ecmpContributor": True,
-                                        },
+                                        "routeType": {"valid": True, "active": False, "ecmpHead": False, "ecmp": True, "ecmpContributor": True},
                                     },
                                 ],
                                 "totalPaths": 2,
-                            },
+                            }
                         },
                     }
                 }
@@ -5827,13 +3597,10 @@ DATA: list[dict[str, Any]] = [
                             "10.111.112.0/24": {"routeType": "eBGP", "vias": [{"interface": "Vlan112"}]},
                             "10.111.134.0/24": {
                                 "routeType": "eBGP",
-                                "vias": [
-                                    {"nexthopAddr": "10.111.1.0", "interface": "Ethernet2"},
-                                    {"nexthopAddr": "10.111.2.0", "interface": "Ethernet3"},
-                                ],
+                                "vias": [{"nexthopAddr": "10.111.1.0", "interface": "Ethernet2"}, {"nexthopAddr": "10.111.2.0", "interface": "Ethernet3"}],
                                 "directlyConnected": False,
                             },
-                        },
+                        }
                     }
                 }
             },
@@ -5841,9 +3608,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"route_entries": [{"prefix": "10.111.134.0/24", "vrf": "default", "ecmp_count": 2}]},
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-prefix-not-found-bgp-table",
-        "test": VerifyBGPRouteECMP,
+    (VerifyBGPRouteECMP, "failure-prefix-not-found-bgp-table"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -5856,39 +3621,18 @@ DATA: list[dict[str, Any]] = [
                                 "address": "10.111.134.0",
                                 "maskLength": 24,
                                 "bgpRoutePaths": [
-                                    {
-                                        "nextHop": "10.111.1.0",
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": True,
-                                            "ecmpHead": True,
-                                            "ecmp": True,
-                                            "ecmpContributor": True,
-                                        },
-                                    },
+                                    {"nextHop": "10.111.1.0", "routeType": {"valid": True, "active": True, "ecmpHead": True, "ecmp": True, "ecmpContributor": True}},
                                     {
                                         "nextHop": "10.111.2.0",
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": False,
-                                            "ecmpHead": False,
-                                            "ecmp": True,
-                                            "ecmpContributor": True,
-                                        },
+                                        "routeType": {"valid": True, "active": False, "ecmpHead": False, "ecmp": True, "ecmpContributor": True},
                                     },
                                     {
                                         "nextHop": "10.255.255.2",
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": False,
-                                            "ecmpHead": False,
-                                            "ecmp": False,
-                                            "ecmpContributor": False,
-                                        },
+                                        "routeType": {"valid": True, "active": False, "ecmpHead": False, "ecmp": False, "ecmpContributor": False},
                                     },
                                 ],
                                 "totalPaths": 3,
-                            },
+                            }
                         },
                     }
                 }
@@ -5903,7 +3647,7 @@ DATA: list[dict[str, Any]] = [
                                 "vias": [{"nexthopAddr": "10.111.1.0", "interface": "Ethernet2"}, {"nexthopAddr": "10.111.2.0", "interface": "Ethernet3"}],
                                 "directlyConnected": False,
                             },
-                        },
+                        }
                     }
                 }
             },
@@ -5911,9 +3655,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"route_entries": [{"prefix": "10.111.124.0/24", "vrf": "default", "ecmp_count": 2}]},
         "expected": {"result": "failure", "messages": ["Prefix: 10.111.124.0/24 VRF: default - Prefix not found in BGP table"]},
     },
-    {
-        "name": "failure-valid-active-ecmp-head-not-found",
-        "test": VerifyBGPRouteECMP,
+    (VerifyBGPRouteECMP, "failure-valid-active-ecmp-head-not-found"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -5928,37 +3670,19 @@ DATA: list[dict[str, Any]] = [
                                 "bgpRoutePaths": [
                                     {
                                         "nextHop": "10.111.1.0",
-                                        "routeType": {
-                                            "valid": False,
-                                            "active": True,
-                                            "ecmpHead": False,
-                                            "ecmp": True,
-                                            "ecmpContributor": True,
-                                        },
+                                        "routeType": {"valid": False, "active": True, "ecmpHead": False, "ecmp": True, "ecmpContributor": True},
                                     },
                                     {
                                         "nextHop": "10.111.2.0",
-                                        "routeType": {
-                                            "valid": False,
-                                            "active": True,
-                                            "ecmpHead": True,
-                                            "ecmp": True,
-                                            "ecmpContributor": True,
-                                        },
+                                        "routeType": {"valid": False, "active": True, "ecmpHead": True, "ecmp": True, "ecmpContributor": True},
                                     },
                                     {
                                         "nextHop": "10.255.255.2",
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": False,
-                                            "ecmpHead": False,
-                                            "ecmp": False,
-                                            "ecmpContributor": False,
-                                        },
+                                        "routeType": {"valid": True, "active": False, "ecmpHead": False, "ecmp": False, "ecmpContributor": False},
                                     },
                                 ],
                                 "totalPaths": 3,
-                            },
+                            }
                         },
                     }
                 }
@@ -5973,7 +3697,7 @@ DATA: list[dict[str, Any]] = [
                                 "vias": [{"nexthopAddr": "10.111.1.0", "interface": "Ethernet2"}, {"nexthopAddr": "10.111.2.0", "interface": "Ethernet3"}],
                                 "directlyConnected": False,
                             },
-                        },
+                        }
                     }
                 }
             },
@@ -5981,9 +3705,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"route_entries": [{"prefix": "10.111.134.0/24", "vrf": "default", "ecmp_count": 2}]},
         "expected": {"result": "failure", "messages": ["Prefix: 10.111.134.0/24 VRF: default - Valid and active ECMP head not found"]},
     },
-    {
-        "name": "failure-ecmp-count-mismatch",
-        "test": VerifyBGPRouteECMP,
+    (VerifyBGPRouteECMP, "failure-ecmp-count-mismatch"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -5996,39 +3718,18 @@ DATA: list[dict[str, Any]] = [
                                 "address": "10.111.134.0",
                                 "maskLength": 24,
                                 "bgpRoutePaths": [
-                                    {
-                                        "nextHop": "10.111.1.0",
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": True,
-                                            "ecmpHead": True,
-                                            "ecmp": True,
-                                            "ecmpContributor": True,
-                                        },
-                                    },
+                                    {"nextHop": "10.111.1.0", "routeType": {"valid": True, "active": True, "ecmpHead": True, "ecmp": True, "ecmpContributor": True}},
                                     {
                                         "nextHop": "10.111.2.0",
-                                        "routeType": {
-                                            "valid": False,
-                                            "active": True,
-                                            "ecmpHead": True,
-                                            "ecmp": True,
-                                            "ecmpContributor": True,
-                                        },
+                                        "routeType": {"valid": False, "active": True, "ecmpHead": True, "ecmp": True, "ecmpContributor": True},
                                     },
                                     {
                                         "nextHop": "10.255.255.2",
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": False,
-                                            "ecmpHead": False,
-                                            "ecmp": False,
-                                            "ecmpContributor": False,
-                                        },
+                                        "routeType": {"valid": True, "active": False, "ecmpHead": False, "ecmp": False, "ecmpContributor": False},
                                     },
                                 ],
                                 "totalPaths": 3,
-                            },
+                            }
                         },
                     }
                 }
@@ -6043,7 +3744,7 @@ DATA: list[dict[str, Any]] = [
                                 "vias": [{"nexthopAddr": "10.111.1.0", "interface": "Ethernet2"}, {"nexthopAddr": "10.111.2.0", "interface": "Ethernet3"}],
                                 "directlyConnected": False,
                             },
-                        },
+                        }
                     }
                 }
             },
@@ -6051,9 +3752,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"route_entries": [{"prefix": "10.111.134.0/24", "vrf": "default", "ecmp_count": 2}]},
         "expected": {"result": "failure", "messages": ["Prefix: 10.111.134.0/24 VRF: default - ECMP count mismatch - Expected: 2 Actual: 1"]},
     },
-    {
-        "name": "failure-prefix-not-found-routing-table",
-        "test": VerifyBGPRouteECMP,
+    (VerifyBGPRouteECMP, "failure-prefix-not-found-routing-table"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -6066,39 +3765,18 @@ DATA: list[dict[str, Any]] = [
                                 "address": "10.111.134.0",
                                 "maskLength": 24,
                                 "bgpRoutePaths": [
-                                    {
-                                        "nextHop": "10.111.1.0",
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": True,
-                                            "ecmpHead": True,
-                                            "ecmp": True,
-                                            "ecmpContributor": True,
-                                        },
-                                    },
+                                    {"nextHop": "10.111.1.0", "routeType": {"valid": True, "active": True, "ecmpHead": True, "ecmp": True, "ecmpContributor": True}},
                                     {
                                         "nextHop": "10.111.2.0",
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": False,
-                                            "ecmpHead": False,
-                                            "ecmp": True,
-                                            "ecmpContributor": True,
-                                        },
+                                        "routeType": {"valid": True, "active": False, "ecmpHead": False, "ecmp": True, "ecmpContributor": True},
                                     },
                                     {
                                         "nextHop": "10.255.255.2",
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": False,
-                                            "ecmpHead": False,
-                                            "ecmp": False,
-                                            "ecmpContributor": False,
-                                        },
+                                        "routeType": {"valid": True, "active": False, "ecmpHead": False, "ecmp": False, "ecmpContributor": False},
                                     },
                                 ],
                                 "totalPaths": 3,
-                            },
+                            }
                         },
                     }
                 }
@@ -6113,7 +3791,7 @@ DATA: list[dict[str, Any]] = [
                                 "vias": [{"nexthopAddr": "10.111.1.0", "interface": "Ethernet2"}, {"nexthopAddr": "10.111.2.0", "interface": "Ethernet3"}],
                                 "directlyConnected": False,
                             },
-                        },
+                        }
                     }
                 }
             },
@@ -6121,9 +3799,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"route_entries": [{"prefix": "10.111.134.0/24", "vrf": "default", "ecmp_count": 2}]},
         "expected": {"result": "failure", "messages": ["Prefix: 10.111.134.0/24 VRF: default - Prefix not found in routing table"]},
     },
-    {
-        "name": "failure-nexthops-mismatch",
-        "test": VerifyBGPRouteECMP,
+    (VerifyBGPRouteECMP, "failure-nexthops-mismatch"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -6136,39 +3812,18 @@ DATA: list[dict[str, Any]] = [
                                 "address": "10.111.134.0",
                                 "maskLength": 24,
                                 "bgpRoutePaths": [
-                                    {
-                                        "nextHop": "10.111.1.0",
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": True,
-                                            "ecmpHead": True,
-                                            "ecmp": True,
-                                            "ecmpContributor": True,
-                                        },
-                                    },
+                                    {"nextHop": "10.111.1.0", "routeType": {"valid": True, "active": True, "ecmpHead": True, "ecmp": True, "ecmpContributor": True}},
                                     {
                                         "nextHop": "10.111.2.0",
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": False,
-                                            "ecmpHead": False,
-                                            "ecmp": True,
-                                            "ecmpContributor": True,
-                                        },
+                                        "routeType": {"valid": True, "active": False, "ecmpHead": False, "ecmp": True, "ecmpContributor": True},
                                     },
                                     {
                                         "nextHop": "10.255.255.2",
-                                        "routeType": {
-                                            "valid": True,
-                                            "active": False,
-                                            "ecmpHead": False,
-                                            "ecmp": False,
-                                            "ecmpContributor": False,
-                                        },
+                                        "routeType": {"valid": True, "active": False, "ecmpHead": False, "ecmp": False, "ecmpContributor": False},
                                     },
                                 ],
                                 "totalPaths": 3,
-                            },
+                            }
                         },
                     }
                 }
@@ -6178,12 +3833,8 @@ DATA: list[dict[str, Any]] = [
                     "default": {
                         "routes": {
                             "10.111.112.0/24": {"routeType": "eBGP", "vias": [{"interface": "Vlan112"}]},
-                            "10.111.134.0/24": {
-                                "routeType": "eBGP",
-                                "vias": [{"nexthopAddr": "10.111.1.0", "interface": "Ethernet2"}],
-                                "directlyConnected": False,
-                            },
-                        },
+                            "10.111.134.0/24": {"routeType": "eBGP", "vias": [{"nexthopAddr": "10.111.1.0", "interface": "Ethernet2"}], "directlyConnected": False},
+                        }
                     }
                 }
             },
@@ -6191,9 +3842,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"route_entries": [{"prefix": "10.111.134.0/24", "vrf": "default", "ecmp_count": 2}]},
         "expected": {"result": "failure", "messages": ["Prefix: 10.111.134.0/24 VRF: default - Nexthops count mismatch - BGP: 2 RIB: 1"]},
     },
-    {
-        "name": "success",
-        "test": VerifyBGPRedistribution,
+    (VerifyBGPRedistribution, "success"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -6276,9 +3925,7 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-vrf-not-found",
-        "test": VerifyBGPRedistribution,
+    (VerifyBGPRedistribution, "failure-vrf-not-found"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -6292,30 +3939,20 @@ DATA: list[dict[str, Any]] = [
                 {
                     "vrf": "default",
                     "address_families": [
-                        {
-                            "afi_safi": "ipv6 Multicast",
-                            "redistributed_routes": [{"proto": "Connected", "include_leaked": False, "route_map": "RM-CONN-2-BGP"}],
-                        },
+                        {"afi_safi": "ipv6 Multicast", "redistributed_routes": [{"proto": "Connected", "include_leaked": False, "route_map": "RM-CONN-2-BGP"}]}
                     ],
                 },
                 {
                     "vrf": "test",
                     "address_families": [
-                        {
-                            "afi_safi": "ipv6 Multicast",
-                            "redistributed_routes": [
-                                {"proto": "Connected", "include_leaked": True, "route_map": "RM-CONN-2-BGP"},
-                            ],
-                        },
+                        {"afi_safi": "ipv6 Multicast", "redistributed_routes": [{"proto": "Connected", "include_leaked": True, "route_map": "RM-CONN-2-BGP"}]}
                     ],
                 },
             ]
         },
         "expected": {"result": "failure", "messages": ["VRF: test - Not configured"]},
     },
-    {
-        "name": "failure-afi-safi-config-not-found",
-        "test": VerifyBGPRedistribution,
+    (VerifyBGPRedistribution, "failure-afi-safi-config-not-found"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -6335,16 +3972,14 @@ DATA: list[dict[str, Any]] = [
                                 {"proto": "Connected", "include_leaked": True, "route_map": "RM-CONN-2-BGP"},
                                 {"proto": "Static", "include_leaked": True, "route_map": "RM-CONN-2-BGP"},
                             ],
-                        },
+                        }
                     ],
-                },
+                }
             ]
         },
         "expected": {"result": "failure", "messages": ["VRF: default, AFI-SAFI: IPv6 Multicast - Not redistributed"]},
     },
-    {
-        "name": "failure-expected-proto-not-found",
-        "test": VerifyBGPRedistribution,
+    (VerifyBGPRedistribution, "failure-expected-proto-not-found"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -6355,13 +3990,7 @@ DATA: list[dict[str, Any]] = [
                             }
                         }
                     },
-                    "test": {
-                        "afiSafiConfig": {
-                            "v6u": {
-                                "redistributedRoutes": [{"proto": "Static", "routeMap": "RM-CONN-2-BGP"}],
-                            }
-                        }
-                    },
+                    "test": {"afiSafiConfig": {"v6u": {"redistributedRoutes": [{"proto": "Static", "routeMap": "RM-CONN-2-BGP"}]}}},
                 }
             }
         ],
@@ -6388,7 +4017,7 @@ DATA: list[dict[str, Any]] = [
                                 {"proto": "DHCP", "route_map": "RM-CONN-2-BGP"},
                                 {"proto": "Bgp", "include_leaked": True, "route_map": "RM-CONN-2-BGP"},
                             ],
-                        },
+                        }
                     ],
                 },
             ]
@@ -6403,20 +4032,12 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-route-map-not-found",
-        "test": VerifyBGPRedistribution,
+    (VerifyBGPRedistribution, "failure-route-map-not-found"): {
         "eos_data": [
             {
                 "vrfs": {
                     "default": {"afiSafiConfig": {"v4u": {"redistributedRoutes": [{"proto": "Connected", "routeMap": "RM-CONN-10-BGP"}, {"proto": "Static"}]}}},
-                    "test": {
-                        "afiSafiConfig": {
-                            "v6u": {
-                                "redistributedRoutes": [{"proto": "EOS SDK", "routeMap": "RM-MLAG-PEER-IN"}, {"proto": "DHCP"}],
-                            }
-                        }
-                    },
+                    "test": {"afiSafiConfig": {"v6u": {"redistributedRoutes": [{"proto": "EOS SDK", "routeMap": "RM-MLAG-PEER-IN"}, {"proto": "DHCP"}]}}},
                 }
             }
         ],
@@ -6427,11 +4048,8 @@ DATA: list[dict[str, Any]] = [
                     "address_families": [
                         {
                             "afi_safi": "ipv4 UNicast",
-                            "redistributed_routes": [
-                                {"proto": "Connected", "route_map": "RM-CONN-2-BGP"},
-                                {"proto": "Static", "route_map": "RM-CONN-2-BGP"},
-                            ],
-                        },
+                            "redistributed_routes": [{"proto": "Connected", "route_map": "RM-CONN-2-BGP"}, {"proto": "Static", "route_map": "RM-CONN-2-BGP"}],
+                        }
                     ],
                 },
                 {
@@ -6439,11 +4057,8 @@ DATA: list[dict[str, Any]] = [
                     "address_families": [
                         {
                             "afi_safi": "ipv6-Unicast",
-                            "redistributed_routes": [
-                                {"proto": "User", "route_map": "RM-CONN-2-BGP"},
-                                {"proto": "DHCP", "route_map": "RM-CONN-2-BGP"},
-                            ],
-                        },
+                            "redistributed_routes": [{"proto": "User", "route_map": "RM-CONN-2-BGP"}, {"proto": "DHCP", "route_map": "RM-CONN-2-BGP"}],
+                        }
                     ],
                 },
             ]
@@ -6458,9 +4073,7 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-incorrect-value-include-leaked",
-        "test": VerifyBGPRedistribution,
+    (VerifyBGPRedistribution, "failure-incorrect-value-include-leaked"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -6471,7 +4084,7 @@ DATA: list[dict[str, Any]] = [
                                     {"proto": "Connected", "routeMap": "RM-CONN-2-BGP"},
                                     {"proto": "IS-IS", "includeLeaked": False, "routeMap": "RM-CONN-2-BGP"},
                                 ]
-                            },
+                            }
                         }
                     },
                     "test": {
@@ -6481,7 +4094,7 @@ DATA: list[dict[str, Any]] = [
                                     {"proto": "Dynamic", "routeMap": "RM-CONN-2-BGP"},
                                     {"proto": "Bgp", "includeLeaked": True, "routeMap": "RM-CONN-2-BGP"},
                                 ]
-                            },
+                            }
                         }
                     },
                 }
@@ -6492,12 +4105,7 @@ DATA: list[dict[str, Any]] = [
                 {
                     "vrf": "default",
                     "address_families": [
-                        {
-                            "afi_safi": "ipv4-multicast",
-                            "redistributed_routes": [
-                                {"proto": "IS-IS", "include_leaked": True, "route_map": "RM-CONN-2-BGP"},
-                            ],
-                        },
+                        {"afi_safi": "ipv4-multicast", "redistributed_routes": [{"proto": "IS-IS", "include_leaked": True, "route_map": "RM-CONN-2-BGP"}]}
                     ],
                 },
                 {
@@ -6509,7 +4117,7 @@ DATA: list[dict[str, Any]] = [
                                 {"proto": "Dynamic", "route_map": "RM-CONN-2-BGP"},
                                 {"proto": "Bgp", "include_leaked": False, "route_map": "RM-CONN-2-BGP"},
                             ],
-                        },
+                        }
                     ],
                 },
             ]
@@ -6522,140 +4130,55 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "success",
-        "test": VerifyBGPPeerTtlMultiHops,
+    (VerifyBGPPeerTtlMultiHops, "success"): {
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.111.0.1",
-                                "ttl": 2,
-                                "maxTtlHops": 2,
-                            },
-                            {
-                                "peerAddress": "10.111.0.2",
-                                "ttl": 1,
-                                "maxTtlHops": 1,
-                            },
-                        ]
-                    },
+                    "default": {"peerList": [{"peerAddress": "10.111.0.1", "ttl": 2, "maxTtlHops": 2}, {"peerAddress": "10.111.0.2", "ttl": 1, "maxTtlHops": 1}]},
                     "Test": {"peerList": [{"peerAddress": "10.111.0.3", "ttl": 255, "maxTtlHops": 255}]},
                 }
             }
         ],
         "inputs": {
             "bgp_peers": [
-                {
-                    "peer_address": "10.111.0.1",
-                    "vrf": "default",
-                    "ttl": 2,
-                    "max_ttl_hops": 2,
-                },
-                {
-                    "peer_address": "10.111.0.2",
-                    "vrf": "default",
-                    "ttl": 1,
-                    "max_ttl_hops": 1,
-                },
-                {
-                    "peer_address": "10.111.0.3",
-                    "vrf": "Test",
-                    "ttl": 255,
-                    "max_ttl_hops": 255,
-                },
+                {"peer_address": "10.111.0.1", "vrf": "default", "ttl": 2, "max_ttl_hops": 2},
+                {"peer_address": "10.111.0.2", "vrf": "default", "ttl": 1, "max_ttl_hops": 1},
+                {"peer_address": "10.111.0.3", "vrf": "Test", "ttl": 255, "max_ttl_hops": 255},
             ]
         },
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-peer-not-found",
-        "test": VerifyBGPPeerTtlMultiHops,
+    (VerifyBGPPeerTtlMultiHops, "failure-peer-not-found"): {
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.111.0.4",
-                                "ttl": 2,
-                                "maxTtlHops": 2,
-                            },
-                            {
-                                "peerAddress": "10.111.0.5",
-                                "ttl": 1,
-                                "maxTtlHops": 1,
-                            },
-                        ]
-                    },
+                    "default": {"peerList": [{"peerAddress": "10.111.0.4", "ttl": 2, "maxTtlHops": 2}, {"peerAddress": "10.111.0.5", "ttl": 1, "maxTtlHops": 1}]},
                     "Test": {"peerList": [{"peerAddress": "10.111.0.6", "ttl": 255, "maxTtlHops": 255}]},
                 }
             }
         ],
         "inputs": {
             "bgp_peers": [
-                {
-                    "peer_address": "10.111.0.1",
-                    "vrf": "default",
-                    "ttl": 2,
-                    "max_ttl_hops": 2,
-                },
-                {
-                    "peer_address": "10.111.0.2",
-                    "vrf": "Test",
-                    "ttl": 255,
-                    "max_ttl_hops": 255,
-                },
+                {"peer_address": "10.111.0.1", "vrf": "default", "ttl": 2, "max_ttl_hops": 2},
+                {"peer_address": "10.111.0.2", "vrf": "Test", "ttl": 255, "max_ttl_hops": 255},
             ]
         },
         "expected": {"result": "failure", "messages": ["Peer: 10.111.0.1 VRF: default - Not found", "Peer: 10.111.0.2 VRF: Test - Not found"]},
     },
-    {
-        "name": "failure-ttl-time-mismatch",
-        "test": VerifyBGPPeerTtlMultiHops,
+    (VerifyBGPPeerTtlMultiHops, "failure-ttl-time-mismatch"): {
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.111.0.1",
-                                "ttl": 12,
-                                "maxTtlHops": 2,
-                            },
-                            {
-                                "peerAddress": "10.111.0.2",
-                                "ttl": 120,
-                                "maxTtlHops": 1,
-                            },
-                        ]
-                    },
+                    "default": {"peerList": [{"peerAddress": "10.111.0.1", "ttl": 12, "maxTtlHops": 2}, {"peerAddress": "10.111.0.2", "ttl": 120, "maxTtlHops": 1}]},
                     "Test": {"peerList": [{"peerAddress": "10.111.0.3", "ttl": 205, "maxTtlHops": 255}]},
                 }
             }
         ],
         "inputs": {
             "bgp_peers": [
-                {
-                    "peer_address": "10.111.0.1",
-                    "vrf": "default",
-                    "ttl": 2,
-                    "max_ttl_hops": 2,
-                },
-                {
-                    "peer_address": "10.111.0.2",
-                    "vrf": "default",
-                    "ttl": 1,
-                    "max_ttl_hops": 1,
-                },
-                {
-                    "peer_address": "10.111.0.3",
-                    "vrf": "Test",
-                    "ttl": 255,
-                    "max_ttl_hops": 255,
-                },
+                {"peer_address": "10.111.0.1", "vrf": "default", "ttl": 2, "max_ttl_hops": 2},
+                {"peer_address": "10.111.0.2", "vrf": "default", "ttl": 1, "max_ttl_hops": 1},
+                {"peer_address": "10.111.0.3", "vrf": "Test", "ttl": 255, "max_ttl_hops": 255},
             ]
         },
         "expected": {
@@ -6667,50 +4190,20 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-max-ttl-hops-mismatch",
-        "test": VerifyBGPPeerTtlMultiHops,
+    (VerifyBGPPeerTtlMultiHops, "failure-max-ttl-hops-mismatch"): {
         "eos_data": [
             {
                 "vrfs": {
-                    "default": {
-                        "peerList": [
-                            {
-                                "peerAddress": "10.111.0.1",
-                                "ttl": 2,
-                                "maxTtlHops": 12,
-                            },
-                            {
-                                "peerAddress": "10.111.0.2",
-                                "ttl": 1,
-                                "maxTtlHops": 100,
-                            },
-                        ]
-                    },
+                    "default": {"peerList": [{"peerAddress": "10.111.0.1", "ttl": 2, "maxTtlHops": 12}, {"peerAddress": "10.111.0.2", "ttl": 1, "maxTtlHops": 100}]},
                     "Test": {"peerList": [{"peerAddress": "10.111.0.3", "ttl": 255, "maxTtlHops": 205}]},
                 }
             }
         ],
         "inputs": {
             "bgp_peers": [
-                {
-                    "peer_address": "10.111.0.1",
-                    "vrf": "default",
-                    "ttl": 2,
-                    "max_ttl_hops": 2,
-                },
-                {
-                    "peer_address": "10.111.0.2",
-                    "vrf": "default",
-                    "ttl": 1,
-                    "max_ttl_hops": 1,
-                },
-                {
-                    "peer_address": "10.111.0.3",
-                    "vrf": "Test",
-                    "ttl": 255,
-                    "max_ttl_hops": 255,
-                },
+                {"peer_address": "10.111.0.1", "vrf": "default", "ttl": 2, "max_ttl_hops": 2},
+                {"peer_address": "10.111.0.2", "vrf": "default", "ttl": 1, "max_ttl_hops": 1},
+                {"peer_address": "10.111.0.3", "vrf": "Test", "ttl": 255, "max_ttl_hops": 255},
             ]
         },
         "expected": {
@@ -6722,4 +4215,4 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-]
+}

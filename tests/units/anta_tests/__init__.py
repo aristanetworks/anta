@@ -23,7 +23,7 @@ class UnitTestResult(TypedDict):
 class AntaUnitTest(TypedDict):
     """The parameters required for a unit test of an AntaTest subclass."""
 
-    inputs: NotRequired[dict[str, Any]]
+    inputs: NotRequired[dict[str, Any] | None]
     eos_data: list[dict[str, Any] | str]
     expected: UnitTestResult
 

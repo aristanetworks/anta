@@ -6,7 +6,7 @@
 # pylint: disable=C0302
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from anta.tests.interfaces import (
     VerifyIllegalLACP,
@@ -29,10 +29,12 @@ from anta.tests.interfaces import (
 )
 from tests.units.anta_tests import test
 
-DATA: list[dict[str, Any]] = [
-    {
-        "name": "success",
-        "test": VerifyInterfaceUtilization,
+if TYPE_CHECKING:
+    from anta.models import AntaTest
+    from tests.units.anta_tests import AntaUnitTest
+
+DATA: dict[tuple[type[AntaTest], str], AntaUnitTest] = {
+    (VerifyInterfaceUtilization, "success"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -172,9 +174,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"threshold": 70.0},
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-ignored-interface",
-        "test": VerifyInterfaceUtilization,
+    (VerifyInterfaceUtilization, "success-ignored-interface"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -209,7 +209,7 @@ DATA: list[dict[str, Any]] = [
                         "outPpsRate": 0.0,
                         "lastUpdateTimestamp": 1712928643.7805147,
                     },
-                },
+                }
             },
             {
                 "interfaces": {
@@ -366,9 +366,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"threshold": 70.0},
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure",
-        "test": VerifyInterfaceUtilization,
+    (VerifyInterfaceUtilization, "failure"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -514,9 +512,7 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "error-duplex-half",
-        "test": VerifyInterfaceUtilization,
+    (VerifyInterfaceUtilization, "error-duplex-half"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -659,9 +655,7 @@ DATA: list[dict[str, Any]] = [
             "messages": ["Interface: Ethernet1/1 - Test not implemented for non-full-duplex interfaces - Expected: duplexFull Actual: duplexHalf"],
         },
     },
-    {
-        "name": "error-duplex-half-po",
-        "test": VerifyInterfaceUtilization,
+    (VerifyInterfaceUtilization, "error-duplex-half-po"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -802,37 +796,33 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Interface: Port-Channel31 Member Interface: Ethernet3/1 - Test not implemented for non-full-duplex interfaces - Expected: duplexFull "
-                "Actual: duplexHalf",
-                "Interface: Port-Channel31 Member Interface: Ethernet4/1 - Test not implemented for non-full-duplex interfaces - Expected: duplexFull "
-                "Actual: duplexHalf",
+                "Interface: Port-Channel31 Member Interface: Ethernet3/1 - Test not implemented for non-full-duplex interfaces - "
+                "Expected: duplexFull Actual: duplexHalf",
+                "Interface: Port-Channel31 Member Interface: Ethernet4/1 - Test not implemented for non-full-duplex interfaces - "
+                "Expected: duplexFull Actual: duplexHalf",
             ],
         },
     },
-    {
-        "name": "success",
-        "test": VerifyInterfaceErrors,
+    (VerifyInterfaceErrors, "success"): {
         "eos_data": [
             {
                 "interfaceErrorCounters": {
                     "Ethernet1": {"inErrors": 0, "frameTooLongs": 0, "outErrors": 0, "frameTooShorts": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0},
                     "Ethernet6": {"inErrors": 0, "frameTooLongs": 0, "outErrors": 0, "frameTooShorts": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0},
-                },
-            },
+                }
+            }
         ],
         "inputs": None,
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-multiple-intfs",
-        "test": VerifyInterfaceErrors,
+    (VerifyInterfaceErrors, "failure-multiple-intfs"): {
         "eos_data": [
             {
                 "interfaceErrorCounters": {
                     "Ethernet1": {"inErrors": 42, "frameTooLongs": 0, "outErrors": 0, "frameTooShorts": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0},
                     "Ethernet6": {"inErrors": 0, "frameTooLongs": 0, "outErrors": 0, "frameTooShorts": 0, "fcsErrors": 0, "alignmentErrors": 666, "symbolErrors": 0},
-                },
-            },
+                }
+            }
         ],
         "inputs": None,
         "expected": {
@@ -843,16 +833,14 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-multiple-intfs-multiple-errors",
-        "test": VerifyInterfaceErrors,
+    (VerifyInterfaceErrors, "failure-multiple-intfs-multiple-errors"): {
         "eos_data": [
             {
                 "interfaceErrorCounters": {
                     "Ethernet1": {"inErrors": 42, "frameTooLongs": 0, "outErrors": 10, "frameTooShorts": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0},
                     "Ethernet6": {"inErrors": 0, "frameTooLongs": 0, "outErrors": 0, "frameTooShorts": 0, "fcsErrors": 0, "alignmentErrors": 6, "symbolErrors": 10},
-                },
-            },
+                }
+            }
         ],
         "inputs": None,
         "expected": {
@@ -863,50 +851,35 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-single-intf-multiple-errors",
-        "test": VerifyInterfaceErrors,
+    (VerifyInterfaceErrors, "failure-single-intf-multiple-errors"): {
         "eos_data": [
             {
                 "interfaceErrorCounters": {
-                    "Ethernet1": {"inErrors": 42, "frameTooLongs": 0, "outErrors": 2, "frameTooShorts": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0},
-                },
-            },
+                    "Ethernet1": {"inErrors": 42, "frameTooLongs": 0, "outErrors": 2, "frameTooShorts": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0}
+                }
+            }
         ],
         "inputs": None,
-        "expected": {
-            "result": "failure",
-            "messages": ["Interface: Ethernet1 - Non-zero error counter(s) - inErrors: 42, outErrors: 2"],
-        },
+        "expected": {"result": "failure", "messages": ["Interface: Ethernet1 - Non-zero error counter(s) - inErrors: 42, outErrors: 2"]},
     },
-    {
-        "name": "success",
-        "test": VerifyInterfaceDiscards,
+    (VerifyInterfaceDiscards, "success"): {
         "eos_data": [
             {
                 "inDiscardsTotal": 0,
-                "interfaces": {
-                    "Ethernet2": {"outDiscards": 0, "inDiscards": 0},
-                    "Ethernet1": {"outDiscards": 0, "inDiscards": 0},
-                },
+                "interfaces": {"Ethernet2": {"outDiscards": 0, "inDiscards": 0}, "Ethernet1": {"outDiscards": 0, "inDiscards": 0}},
                 "outDiscardsTotal": 0,
-            },
+            }
         ],
         "inputs": None,
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure",
-        "test": VerifyInterfaceDiscards,
+    (VerifyInterfaceDiscards, "failure"): {
         "eos_data": [
             {
                 "inDiscardsTotal": 0,
-                "interfaces": {
-                    "Ethernet2": {"outDiscards": 42, "inDiscards": 0},
-                    "Ethernet1": {"outDiscards": 0, "inDiscards": 42},
-                },
+                "interfaces": {"Ethernet2": {"outDiscards": 42, "inDiscards": 0}, "Ethernet1": {"outDiscards": 0, "inDiscards": 42}},
                 "outDiscardsTotal": 0,
-            },
+            }
         ],
         "inputs": None,
         "expected": {
@@ -917,73 +890,35 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "success",
-        "test": VerifyInterfaceErrDisabled,
-        "eos_data": [
-            {
-                "interfaceStatuses": {
-                    "Management1": {
-                        "linkStatus": "connected",
-                    },
-                    "Ethernet8": {
-                        "linkStatus": "connected",
-                    },
-                },
-            },
-        ],
+    (VerifyInterfaceErrDisabled, "success"): {
+        "eos_data": [{"interfaceStatuses": {"Management1": {"linkStatus": "connected"}, "Ethernet8": {"linkStatus": "connected"}}}],
         "inputs": None,
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure",
-        "test": VerifyInterfaceErrDisabled,
-        "eos_data": [
-            {
-                "interfaceStatuses": {
-                    "Management1": {
-                        "linkStatus": "errdisabled",
-                    },
-                    "Ethernet8": {
-                        "linkStatus": "errdisabled",
-                    },
-                },
-            },
-        ],
+    (VerifyInterfaceErrDisabled, "failure"): {
+        "eos_data": [{"interfaceStatuses": {"Management1": {"linkStatus": "errdisabled"}, "Ethernet8": {"linkStatus": "errdisabled"}}}],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["Interface: Management1 - Link status Error disabled", "Interface: Ethernet8 - Link status Error disabled"]},
     },
-    {
-        "name": "success",
-        "test": VerifyInterfacesStatus,
+    (VerifyInterfacesStatus, "success"): {
         "eos_data": [
             {
                 "interfaceDescriptions": {
                     "Ethernet8": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
                     "Ethernet2": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "down"},
                     "Ethernet3": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
-                },
-            },
+                }
+            }
         ],
         "inputs": {"interfaces": [{"name": "Ethernet2", "status": "adminDown"}, {"name": "Ethernet8", "status": "up"}, {"name": "Ethernet3", "status": "up"}]},
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-up-with-line-protocol-status",
-        "test": VerifyInterfacesStatus,
-        "eos_data": [
-            {
-                "interfaceDescriptions": {
-                    "Ethernet8": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "down"},
-                }
-            }
-        ],
+    (VerifyInterfacesStatus, "success-up-with-line-protocol-status"): {
+        "eos_data": [{"interfaceDescriptions": {"Ethernet8": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "down"}}}],
         "inputs": {"interfaces": [{"name": "Ethernet8", "status": "up", "line_protocol_status": "down"}]},
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-with-line-protocol-status",
-        "test": VerifyInterfacesStatus,
+    (VerifyInterfacesStatus, "success-with-line-protocol-status"): {
         "eos_data": [
             {
                 "interfaceDescriptions": {
@@ -1002,179 +937,101 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-lower",
-        "test": VerifyInterfacesStatus,
+    (VerifyInterfacesStatus, "success-lower"): {
         "eos_data": [
             {
                 "interfaceDescriptions": {
                     "Ethernet8": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
                     "Ethernet2": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "down"},
                     "Ethernet3": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
-                },
-            },
+                }
+            }
         ],
         "inputs": {"interfaces": [{"name": "ethernet2", "status": "adminDown"}, {"name": "ethernet8", "status": "up"}, {"name": "ethernet3", "status": "up"}]},
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-eth-name",
-        "test": VerifyInterfacesStatus,
+    (VerifyInterfacesStatus, "success-eth-name"): {
         "eos_data": [
             {
                 "interfaceDescriptions": {
                     "Ethernet8": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
                     "Ethernet2": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "down"},
                     "Ethernet3": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
-                },
-            },
+                }
+            }
         ],
         "inputs": {"interfaces": [{"name": "eth2", "status": "adminDown"}, {"name": "et8", "status": "up"}, {"name": "et3", "status": "up"}]},
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-po-name",
-        "test": VerifyInterfacesStatus,
-        "eos_data": [
-            {
-                "interfaceDescriptions": {
-                    "Port-Channel100": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
-                },
-            },
-        ],
+    (VerifyInterfacesStatus, "success-po-name"): {
+        "eos_data": [{"interfaceDescriptions": {"Port-Channel100": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"}}}],
         "inputs": {"interfaces": [{"name": "po100", "status": "up"}]},
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-sub-interfaces",
-        "test": VerifyInterfacesStatus,
-        "eos_data": [
-            {
-                "interfaceDescriptions": {
-                    "Ethernet52/1.1963": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
-                },
-            },
-        ],
+    (VerifyInterfacesStatus, "success-sub-interfaces"): {
+        "eos_data": [{"interfaceDescriptions": {"Ethernet52/1.1963": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"}}}],
         "inputs": {"interfaces": [{"name": "Ethernet52/1.1963", "status": "up"}]},
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-transceiver-down",
-        "test": VerifyInterfacesStatus,
-        "eos_data": [
-            {
-                "interfaceDescriptions": {
-                    "Ethernet49/1": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "notPresent"},
-                }
-            }
-        ],
+    (VerifyInterfacesStatus, "success-transceiver-down"): {
+        "eos_data": [{"interfaceDescriptions": {"Ethernet49/1": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "notPresent"}}}],
         "inputs": {"interfaces": [{"name": "Ethernet49/1", "status": "adminDown"}]},
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-po-down",
-        "test": VerifyInterfacesStatus,
-        "eos_data": [
-            {
-                "interfaceDescriptions": {
-                    "Port-Channel100": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "lowerLayerDown"},
-                }
-            }
-        ],
+    (VerifyInterfacesStatus, "success-po-down"): {
+        "eos_data": [{"interfaceDescriptions": {"Port-Channel100": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "lowerLayerDown"}}}],
         "inputs": {"interfaces": [{"name": "PortChannel100", "status": "adminDown"}]},
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-po-lowerlayerdown",
-        "test": VerifyInterfacesStatus,
-        "eos_data": [
-            {
-                "interfaceDescriptions": {
-                    "Port-Channel100": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "lowerLayerDown"},
-                }
-            }
-        ],
+    (VerifyInterfacesStatus, "success-po-lowerlayerdown"): {
+        "eos_data": [{"interfaceDescriptions": {"Port-Channel100": {"interfaceStatus": "adminDown", "description": "", "lineProtocolStatus": "lowerLayerDown"}}}],
         "inputs": {"interfaces": [{"name": "Port-Channel100", "status": "adminDown", "line_protocol_status": "lowerLayerDown"}]},
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-not-configured",
-        "test": VerifyInterfacesStatus,
+    (VerifyInterfacesStatus, "failure-not-configured"): {
         "eos_data": [
             {
                 "interfaceDescriptions": {
                     "Ethernet2": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
                     "Ethernet3": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
-                },
-            },
+                }
+            }
         ],
         "inputs": {"interfaces": [{"name": "Ethernet2", "status": "up"}, {"name": "Ethernet8", "status": "up"}, {"name": "Ethernet3", "status": "up"}]},
-        "expected": {
-            "result": "failure",
-            "messages": ["Ethernet8 - Not configured"],
-        },
+        "expected": {"result": "failure", "messages": ["Ethernet8 - Not configured"]},
     },
-    {
-        "name": "failure-status-down",
-        "test": VerifyInterfacesStatus,
+    (VerifyInterfacesStatus, "failure-status-down"): {
         "eos_data": [
             {
                 "interfaceDescriptions": {
                     "Ethernet8": {"interfaceStatus": "down", "description": "", "lineProtocolStatus": "down"},
                     "Ethernet2": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
                     "Ethernet3": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
-                },
-            },
+                }
+            }
         ],
         "inputs": {"interfaces": [{"name": "Ethernet2", "status": "up"}, {"name": "Ethernet8", "status": "up"}, {"name": "Ethernet3", "status": "up"}]},
-        "expected": {
-            "result": "failure",
-            "messages": ["Ethernet8 - Status mismatch - Expected: up/up, Actual: down/down"],
-        },
+        "expected": {"result": "failure", "messages": ["Ethernet8 - Status mismatch - Expected: up/up, Actual: down/down"]},
     },
-    {
-        "name": "failure-proto-down",
-        "test": VerifyInterfacesStatus,
+    (VerifyInterfacesStatus, "failure-proto-down"): {
         "eos_data": [
             {
                 "interfaceDescriptions": {
                     "Ethernet8": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "down"},
                     "Ethernet2": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
                     "Ethernet3": {"interfaceStatus": "up", "description": "", "lineProtocolStatus": "up"},
-                },
-            },
-        ],
-        "inputs": {
-            "interfaces": [
-                {"name": "Ethernet2", "status": "up"},
-                {"name": "Ethernet8", "status": "up"},
-                {"name": "Ethernet3", "status": "up"},
-            ]
-        },
-        "expected": {
-            "result": "failure",
-            "messages": ["Ethernet8 - Status mismatch - Expected: up/up, Actual: up/down"],
-        },
-    },
-    {
-        "name": "failure-po-status-down",
-        "test": VerifyInterfacesStatus,
-        "eos_data": [
-            {
-                "interfaceDescriptions": {
-                    "Port-Channel100": {"interfaceStatus": "down", "description": "", "lineProtocolStatus": "lowerLayerDown"},
                 }
             }
         ],
-        "inputs": {"interfaces": [{"name": "PortChannel100", "status": "up"}]},
-        "expected": {
-            "result": "failure",
-            "messages": ["Port-Channel100 - Status mismatch - Expected: up/up, Actual: down/lowerLayerDown"],
-        },
+        "inputs": {"interfaces": [{"name": "Ethernet2", "status": "up"}, {"name": "Ethernet8", "status": "up"}, {"name": "Ethernet3", "status": "up"}]},
+        "expected": {"result": "failure", "messages": ["Ethernet8 - Status mismatch - Expected: up/up, Actual: up/down"]},
     },
-    {
-        "name": "failure-proto-unknown",
-        "test": VerifyInterfacesStatus,
+    (VerifyInterfacesStatus, "failure-po-status-down"): {
+        "eos_data": [{"interfaceDescriptions": {"Port-Channel100": {"interfaceStatus": "down", "description": "", "lineProtocolStatus": "lowerLayerDown"}}}],
+        "inputs": {"interfaces": [{"name": "PortChannel100", "status": "up"}]},
+        "expected": {"result": "failure", "messages": ["Port-Channel100 - Status mismatch - Expected: up/up, Actual: down/lowerLayerDown"]},
+    },
+    (VerifyInterfacesStatus, "failure-proto-unknown"): {
         "eos_data": [
             {
                 "interfaceDescriptions": {
@@ -1193,15 +1050,10 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {
             "result": "failure",
-            "messages": [
-                "Ethernet2 - Status mismatch - Expected: up/down, Actual: up/unknown",
-                "Ethernet8 - Status mismatch - Expected: up/up, Actual: up/down",
-            ],
+            "messages": ["Ethernet2 - Status mismatch - Expected: up/down, Actual: up/unknown", "Ethernet8 - Status mismatch - Expected: up/up, Actual: up/down"],
         },
     },
-    {
-        "name": "failure-interface-status-down",
-        "test": VerifyInterfacesStatus,
+    (VerifyInterfacesStatus, "failure-interface-status-down"): {
         "eos_data": [
             {
                 "interfaceDescriptions": {
@@ -1211,13 +1063,7 @@ DATA: list[dict[str, Any]] = [
                 }
             }
         ],
-        "inputs": {
-            "interfaces": [
-                {"name": "Ethernet2", "status": "down"},
-                {"name": "Ethernet8", "status": "down"},
-                {"name": "Ethernet3", "status": "down"},
-            ]
-        },
+        "inputs": {"interfaces": [{"name": "Ethernet2", "status": "down"}, {"name": "Ethernet8", "status": "down"}, {"name": "Ethernet3", "status": "down"}]},
         "expected": {
             "result": "failure",
             "messages": [
@@ -1227,9 +1073,7 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "success",
-        "test": VerifyStormControlDrops,
+    (VerifyStormControlDrops, "success"): {
         "eos_data": [
             {
                 "aggregateTrafficClasses": {},
@@ -1239,16 +1083,14 @@ DATA: list[dict[str, Any]] = [
                         "active": True,
                         "reason": "",
                         "errdisabled": False,
-                    },
+                    }
                 },
-            },
+            }
         ],
         "inputs": None,
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure",
-        "test": VerifyStormControlDrops,
+    (VerifyStormControlDrops, "failure"): {
         "eos_data": [
             {
                 "aggregateTrafficClasses": {},
@@ -1258,16 +1100,14 @@ DATA: list[dict[str, Any]] = [
                         "active": True,
                         "reason": "",
                         "errdisabled": False,
-                    },
+                    }
                 },
-            },
+            }
         ],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["Interface: Ethernet1 - Non-zero storm-control drop counter(s) - broadcast: 666"]},
     },
-    {
-        "name": "success",
-        "test": VerifyPortChannels,
+    (VerifyPortChannels, "success"): {
         "eos_data": [
             {
                 "portChannels": {
@@ -1281,16 +1121,14 @@ DATA: list[dict[str, Any]] = [
                         "inactivePorts": {},
                         "activePorts": {},
                         "inactiveLag": False,
-                    },
-                },
-            },
+                    }
+                }
+            }
         ],
         "inputs": None,
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure",
-        "test": VerifyPortChannels,
+    (VerifyPortChannels, "failure"): {
         "eos_data": [
             {
                 "portChannels": {
@@ -1304,16 +1142,14 @@ DATA: list[dict[str, Any]] = [
                         "inactivePorts": {"Ethernet8": {"reasonUnconfigured": "waiting for LACP response"}},
                         "activePorts": {},
                         "inactiveLag": False,
-                    },
-                },
-            },
+                    }
+                }
+            }
         ],
         "inputs": None,
         "expected": {"result": "failure", "messages": ["Port-Channel42 - Inactive port(s) - Ethernet8"]},
     },
-    {
-        "name": "success",
-        "test": VerifyIllegalLACP,
+    (VerifyIllegalLACP, "success"): {
         "eos_data": [
             {
                 "portChannels": {
@@ -1328,19 +1164,17 @@ DATA: list[dict[str, Any]] = [
                                 "lacpdusTxCount": 454,
                                 "markersTxCount": 0,
                                 "markersRxCount": 0,
-                            },
-                        },
-                    },
+                            }
+                        }
+                    }
                 },
                 "orphanPorts": {},
-            },
+            }
         ],
         "inputs": None,
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure",
-        "test": VerifyIllegalLACP,
+    (VerifyIllegalLACP, "failure"): {
         "eos_data": [
             {
                 "portChannels": {
@@ -1355,22 +1189,17 @@ DATA: list[dict[str, Any]] = [
                                 "lacpdusTxCount": 454,
                                 "markersTxCount": 0,
                                 "markersRxCount": 0,
-                            },
-                        },
-                    },
+                            }
+                        }
+                    }
                 },
                 "orphanPorts": {},
-            },
+            }
         ],
         "inputs": None,
-        "expected": {
-            "result": "failure",
-            "messages": ["Port-Channel42 Interface: Ethernet8 - Illegal LACP packets found"],
-        },
+        "expected": {"result": "failure", "messages": ["Port-Channel42 Interface: Ethernet8 - Illegal LACP packets found"]},
     },
-    {
-        "name": "success",
-        "test": VerifyLoopbackCount,
+    (VerifyLoopbackCount, "success"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -1390,7 +1219,6 @@ DATA: list[dict[str, Any]] = [
                         "lineProtocolStatus": "up",
                         "mtu": 65535,
                     },
-                    # Checking not loopbacks are skipped
                     "Ethernet666": {
                         "name": "Ethernet666",
                         "interfaceStatus": "connected",
@@ -1398,15 +1226,13 @@ DATA: list[dict[str, Any]] = [
                         "ipv4Routable240": False,
                         "lineProtocolStatus": "up",
                     },
-                },
-            },
+                }
+            }
         ],
         "inputs": {"number": 2},
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-loopback-down",
-        "test": VerifyLoopbackCount,
+    (VerifyLoopbackCount, "failure-loopback-down"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -1426,8 +1252,8 @@ DATA: list[dict[str, Any]] = [
                         "lineProtocolStatus": "down",
                         "mtu": 65535,
                     },
-                },
-            },
+                }
+            }
         ],
         "inputs": {"number": 2},
         "expected": {
@@ -1438,9 +1264,7 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-count-loopback",
-        "test": VerifyLoopbackCount,
+    (VerifyLoopbackCount, "failure-count-loopback"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -1451,16 +1275,14 @@ DATA: list[dict[str, Any]] = [
                         "ipv4Routable240": False,
                         "lineProtocolStatus": "up",
                         "mtu": 65535,
-                    },
-                },
-            },
+                    }
+                }
+            }
         ],
         "inputs": {"number": 2},
         "expected": {"result": "failure", "messages": ["Loopback interface(s) count mismatch: Expected 2 Actual: 1"]},
     },
-    {
-        "name": "success",
-        "test": VerifySVI,
+    (VerifySVI, "success"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -1471,16 +1293,14 @@ DATA: list[dict[str, Any]] = [
                         "ipv4Routable240": False,
                         "lineProtocolStatus": "up",
                         "mtu": 1500,
-                    },
-                },
-            },
+                    }
+                }
+            }
         ],
         "inputs": None,
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure",
-        "test": VerifySVI,
+    (VerifySVI, "failure"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -1491,9 +1311,9 @@ DATA: list[dict[str, Any]] = [
                         "ipv4Routable240": False,
                         "lineProtocolStatus": "lowerLayerDown",
                         "mtu": 1500,
-                    },
-                },
-            },
+                    }
+                }
+            }
         ],
         "inputs": None,
         "expected": {
@@ -1504,9 +1324,7 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "success",
-        "test": VerifyL3MTU,
+    (VerifyL3MTU, "success"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -1570,15 +1388,13 @@ DATA: list[dict[str, Any]] = [
                         "l3MtuConfigured": False,
                         "l2Mru": 0,
                     },
-                },
-            },
+                }
+            }
         ],
         "inputs": {"mtu": 1500},
         "expected": {"result": "success"},
     },
-    {
-        "name": "success",
-        "test": VerifyL3MTU,
+    (VerifyL3MTU, "success-specific-mtu"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -1642,15 +1458,13 @@ DATA: list[dict[str, Any]] = [
                         "l3MtuConfigured": False,
                         "l2Mru": 0,
                     },
-                },
-            },
+                }
+            }
         ],
         "inputs": {"mtu": 1500, "ignored_interfaces": ["Loopback", "Port-Channel", "Management", "Vxlan"], "specific_mtu": [{"Ethernet10": 1501}]},
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure",
-        "test": VerifyL3MTU,
+    (VerifyL3MTU, "failure"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -1714,15 +1528,13 @@ DATA: list[dict[str, Any]] = [
                         "l3MtuConfigured": False,
                         "l2Mru": 0,
                     },
-                },
-            },
+                }
+            }
         ],
         "inputs": {"mtu": 1500},
         "expected": {"result": "failure", "messages": ["Interface: Ethernet2 - Incorrect MTU - Expected: 1500 Actual: 1600"]},
     },
-    {
-        "name": "failure-specified-interface-mtu",
-        "test": VerifyL3MTU,
+    (VerifyL3MTU, "failure-specified-interface-mtu"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -1786,15 +1598,13 @@ DATA: list[dict[str, Any]] = [
                         "l3MtuConfigured": False,
                         "l2Mru": 0,
                     },
-                },
-            },
+                }
+            }
         ],
         "inputs": {"mtu": 1500, "ignored_interfaces": ["Loopback", "Port-Channel", "Management", "Vxlan"], "specific_mtu": [{"Ethernet10": 1501}]},
         "expected": {"result": "failure", "messages": ["Interface: Ethernet10 - Incorrect MTU - Expected: 1501 Actual: 1502"]},
     },
-    {
-        "name": "success",
-        "test": VerifyL2MTU,
+    (VerifyL2MTU, "success"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -1858,15 +1668,13 @@ DATA: list[dict[str, Any]] = [
                         "l3MtuConfigured": False,
                         "l2Mru": 0,
                     },
-                },
-            },
+                }
+            }
         ],
         "inputs": {"mtu": 9214, "ignored_interfaces": ["Loopback", "Port-Channel", "Management", "Vxlan"], "specific_mtu": [{"Ethernet10": 9214}]},
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure",
-        "test": VerifyL2MTU,
+    (VerifyL2MTU, "failure"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -1930,8 +1738,8 @@ DATA: list[dict[str, Any]] = [
                         "l3MtuConfigured": False,
                         "l2Mru": 0,
                     },
-                },
-            },
+                }
+            }
         ],
         "inputs": {"mtu": 1500},
         "expected": {
@@ -1942,9 +1750,7 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-specific-interface",
-        "test": VerifyL2MTU,
+    (VerifyL2MTU, "failure-specific-interface"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -2008,81 +1814,42 @@ DATA: list[dict[str, Any]] = [
                         "l3MtuConfigured": False,
                         "l2Mru": 0,
                     },
-                },
-            },
+                }
+            }
         ],
         "inputs": {"specific_mtu": [{"Et10": 9214}, {"Port-Channel2": 10000}]},
         "expected": {"result": "failure", "messages": ["Interface: Port-Channel2 - Incorrect MTU configured - Expected: 10000 Actual: 9214"]},
     },
-    {
-        "name": "success",
-        "test": VerifyIPProxyARP,
+    (VerifyIPProxyARP, "success"): {
         "eos_data": [
             {
                 "interfaces": {
-                    "Ethernet1": {
-                        "name": "Ethernet1",
-                        "lineProtocolStatus": "up",
-                        "interfaceStatus": "connected",
-                        "proxyArp": True,
-                    },
-                    "Ethernet2": {
-                        "name": "Ethernet2",
-                        "lineProtocolStatus": "up",
-                        "interfaceStatus": "connected",
-                        "proxyArp": True,
-                    },
-                },
-            },
+                    "Ethernet1": {"name": "Ethernet1", "lineProtocolStatus": "up", "interfaceStatus": "connected", "proxyArp": True},
+                    "Ethernet2": {"name": "Ethernet2", "lineProtocolStatus": "up", "interfaceStatus": "connected", "proxyArp": True},
+                }
+            }
         ],
         "inputs": {"interfaces": ["Ethernet1", "Ethernet2"]},
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-interface-not-found",
-        "test": VerifyIPProxyARP,
-        "eos_data": [
-            {
-                "interfaces": {
-                    "Ethernet1": {
-                        "name": "Ethernet1",
-                        "lineProtocolStatus": "up",
-                        "interfaceStatus": "connected",
-                        "proxyArp": True,
-                    },
-                },
-            },
-        ],
+    (VerifyIPProxyARP, "failure-interface-not-found"): {
+        "eos_data": [{"interfaces": {"Ethernet1": {"name": "Ethernet1", "lineProtocolStatus": "up", "interfaceStatus": "connected", "proxyArp": True}}}],
         "inputs": {"interfaces": ["Ethernet1", "Ethernet2"]},
         "expected": {"result": "failure", "messages": ["Interface: Ethernet2 - Not found"]},
     },
-    {
-        "name": "failure",
-        "test": VerifyIPProxyARP,
+    (VerifyIPProxyARP, "failure"): {
         "eos_data": [
             {
                 "interfaces": {
-                    "Ethernet1": {
-                        "name": "Ethernet1",
-                        "lineProtocolStatus": "up",
-                        "interfaceStatus": "connected",
-                        "proxyArp": True,
-                    },
-                    "Ethernet2": {
-                        "name": "Ethernet2",
-                        "lineProtocolStatus": "up",
-                        "interfaceStatus": "connected",
-                        "proxyArp": False,
-                    },
-                },
-            },
+                    "Ethernet1": {"name": "Ethernet1", "lineProtocolStatus": "up", "interfaceStatus": "connected", "proxyArp": True},
+                    "Ethernet2": {"name": "Ethernet2", "lineProtocolStatus": "up", "interfaceStatus": "connected", "proxyArp": False},
+                }
+            }
         ],
         "inputs": {"interfaces": ["Ethernet1", "Ethernet2"]},
         "expected": {"result": "failure", "messages": ["Interface: Ethernet2 - Proxy-ARP disabled"]},
     },
-    {
-        "name": "success",
-        "test": VerifyInterfaceIPv4,
+    (VerifyInterfaceIPv4, "success"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -2099,7 +1866,7 @@ DATA: list[dict[str, Any]] = [
                         }
                     },
                 }
-            },
+            }
         ],
         "inputs": {
             "interfaces": [
@@ -2109,64 +1876,29 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-without-secondary-ip",
-        "test": VerifyInterfaceIPv4,
+    (VerifyInterfaceIPv4, "success-without-secondary-ip"): {
         "eos_data": [
             {
                 "interfaces": {
-                    "Ethernet2": {
-                        "interfaceAddress": {
-                            "primaryIp": {"address": "172.30.11.0", "maskLen": 31},
-                            "secondaryIpsOrderedList": [],
-                        }
-                    },
-                    "Ethernet12": {
-                        "interfaceAddress": {
-                            "primaryIp": {"address": "172.30.11.10", "maskLen": 31},
-                            "secondaryIpsOrderedList": [],
-                        }
-                    },
-                }
-            },
-        ],
-        "inputs": {
-            "interfaces": [
-                {"name": "Ethernet2", "primary_ip": "172.30.11.0/31"},
-                {"name": "Ethernet12", "primary_ip": "172.30.11.10/31"},
-            ]
-        },
-        "expected": {"result": "success"},
-    },
-    {
-        "name": "failure-interface-not-found",
-        "test": VerifyInterfaceIPv4,
-        "eos_data": [
-            {
-                "interfaces": {
-                    "Ethernet10": {
-                        "interfaceAddress": {
-                            "primaryIp": {"address": "172.30.11.0", "maskLen": 31},
-                            "secondaryIpsOrderedList": [],
-                        }
-                    }
+                    "Ethernet2": {"interfaceAddress": {"primaryIp": {"address": "172.30.11.0", "maskLen": 31}, "secondaryIpsOrderedList": []}},
+                    "Ethernet12": {"interfaceAddress": {"primaryIp": {"address": "172.30.11.10", "maskLen": 31}, "secondaryIpsOrderedList": []}},
                 }
             }
         ],
+        "inputs": {"interfaces": [{"name": "Ethernet2", "primary_ip": "172.30.11.0/31"}, {"name": "Ethernet12", "primary_ip": "172.30.11.10/31"}]},
+        "expected": {"result": "success"},
+    },
+    (VerifyInterfaceIPv4, "failure-interface-not-found"): {
+        "eos_data": [{"interfaces": {"Ethernet10": {"interfaceAddress": {"primaryIp": {"address": "172.30.11.0", "maskLen": 31}, "secondaryIpsOrderedList": []}}}}],
         "inputs": {
             "interfaces": [
                 {"name": "Ethernet2", "primary_ip": "172.30.11.0/31", "secondary_ips": ["10.10.10.0/31", "10.10.10.10/31"]},
                 {"name": "Ethernet12", "primary_ip": "172.30.11.20/31", "secondary_ips": ["10.10.11.0/31", "10.10.11.10/31"]},
             ]
         },
-        "expected": {
-            "result": "failure",
-            "messages": ["Interface: Ethernet2 - Not found", "Interface: Ethernet12 - Not found"],
-        },
+        "expected": {"result": "failure", "messages": ["Interface: Ethernet2 - Not found", "Interface: Ethernet12 - Not found"]},
     },
-    {
-        "name": "failure-not-l3-interface",
-        "test": VerifyInterfaceIPv4,
+    (VerifyInterfaceIPv4, "failure-not-l3-interface"): {
         "eos_data": [{"interfaces": {"Ethernet2": {"interfaceAddress": {}}, "Ethernet12": {"interfaceAddress": {}}}}],
         "inputs": {
             "interfaces": [
@@ -2179,26 +1911,14 @@ DATA: list[dict[str, Any]] = [
             "messages": ["Interface: Ethernet2 - IP address is not configured", "Interface: Ethernet12 - IP address is not configured"],
         },
     },
-    {
-        "name": "failure-ip-address-not-configured",
-        "test": VerifyInterfaceIPv4,
+    (VerifyInterfaceIPv4, "failure-ip-address-not-configured"): {
         "eos_data": [
             {
                 "interfaces": {
-                    "Ethernet2": {
-                        "interfaceAddress": {
-                            "primaryIp": {"address": "0.0.0.0", "maskLen": 0},
-                            "secondaryIpsOrderedList": [],
-                        }
-                    },
-                    "Ethernet12": {
-                        "interfaceAddress": {
-                            "primaryIp": {"address": "0.0.0.0", "maskLen": 0},
-                            "secondaryIpsOrderedList": [],
-                        }
-                    },
+                    "Ethernet2": {"interfaceAddress": {"primaryIp": {"address": "0.0.0.0", "maskLen": 0}, "secondaryIpsOrderedList": []}},
+                    "Ethernet12": {"interfaceAddress": {"primaryIp": {"address": "0.0.0.0", "maskLen": 0}, "secondaryIpsOrderedList": []}},
                 }
-            },
+            }
         ],
         "inputs": {
             "interfaces": [
@@ -2216,9 +1936,7 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-ip-address-missmatch",
-        "test": VerifyInterfaceIPv4,
+    (VerifyInterfaceIPv4, "failure-ip-address-missmatch"): {
         "eos_data": [
             {
                 "interfaces": {
@@ -2235,7 +1953,7 @@ DATA: list[dict[str, Any]] = [
                         }
                     },
                 }
-            },
+            }
         ],
         "inputs": {
             "interfaces": [
@@ -2253,18 +1971,11 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-secondary-ip-address",
-        "test": VerifyInterfaceIPv4,
+    (VerifyInterfaceIPv4, "failure-secondary-ip-address"): {
         "eos_data": [
             {
                 "interfaces": {
-                    "Ethernet2": {
-                        "interfaceAddress": {
-                            "primaryIp": {"address": "172.30.11.0", "maskLen": 31},
-                            "secondaryIpsOrderedList": [],
-                        }
-                    },
+                    "Ethernet2": {"interfaceAddress": {"primaryIp": {"address": "172.30.11.0", "maskLen": 31}, "secondaryIpsOrderedList": []}},
                     "Ethernet3": {
                         "interfaceAddress": {
                             "primaryIp": {"address": "172.30.10.10", "maskLen": 31},
@@ -2272,7 +1983,7 @@ DATA: list[dict[str, Any]] = [
                         }
                     },
                 }
-            },
+            }
         ],
         "inputs": {
             "interfaces": [
@@ -2290,66 +2001,24 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "success",
-        "test": VerifyIpVirtualRouterMac,
-        "eos_data": [
-            {
-                "virtualMacs": [
-                    {
-                        "macAddress": "00:1c:73:00:dc:01",
-                    }
-                ],
-            }
-        ],
+    (VerifyIpVirtualRouterMac, "success"): {
+        "eos_data": [{"virtualMacs": [{"macAddress": "00:1c:73:00:dc:01"}]}],
         "inputs": {"mac_address": "00:1c:73:00:dc:01"},
         "expected": {"result": "success"},
     },
-    {
-        "name": "faliure-incorrect-mac-address",
-        "test": VerifyIpVirtualRouterMac,
-        "eos_data": [
-            {
-                "virtualMacs": [
-                    {
-                        "macAddress": "00:00:00:00:00:00",
-                    }
-                ],
-            }
-        ],
+    (VerifyIpVirtualRouterMac, "faliure-incorrect-mac-address"): {
+        "eos_data": [{"virtualMacs": [{"macAddress": "00:00:00:00:00:00"}]}],
         "inputs": {"mac_address": "00:1c:73:00:dc:01"},
         "expected": {"result": "failure", "messages": ["IP virtual router MAC address: 00:1c:73:00:dc:01 - Not configured"]},
     },
-    {
-        "name": "success",
-        "test": VerifyInterfacesSpeed,
+    (VerifyInterfacesSpeed, "success"): {
         "eos_data": [
             {
                 "interfaces": {
-                    "Ethernet1": {
-                        "bandwidth": 1000000000,
-                        "autoNegotiate": "unknown",
-                        "duplex": "duplexFull",
-                        "lanes": 2,
-                    },
-                    "Ethernet1/1/2": {
-                        "bandwidth": 1000000000,
-                        "autoNegotiate": "unknown",
-                        "duplex": "duplexFull",
-                        "lanes": 2,
-                    },
-                    "Ethernet3": {
-                        "bandwidth": 100000000000,
-                        "autoNegotiate": "success",
-                        "duplex": "duplexFull",
-                        "lanes": 8,
-                    },
-                    "Ethernet4": {
-                        "bandwidth": 2500000000,
-                        "autoNegotiate": "unknown",
-                        "duplex": "duplexFull",
-                        "lanes": 8,
-                    },
+                    "Ethernet1": {"bandwidth": 1000000000, "autoNegotiate": "unknown", "duplex": "duplexFull", "lanes": 2},
+                    "Ethernet1/1/2": {"bandwidth": 1000000000, "autoNegotiate": "unknown", "duplex": "duplexFull", "lanes": 2},
+                    "Ethernet3": {"bandwidth": 100000000000, "autoNegotiate": "success", "duplex": "duplexFull", "lanes": 8},
+                    "Ethernet4": {"bandwidth": 2500000000, "autoNegotiate": "unknown", "duplex": "duplexFull", "lanes": 8},
                 }
             }
         ],
@@ -2366,36 +2035,14 @@ DATA: list[dict[str, Any]] = [
         },
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-incorrect-speed",
-        "test": VerifyInterfacesSpeed,
+    (VerifyInterfacesSpeed, "failure-incorrect-speed"): {
         "eos_data": [
             {
                 "interfaces": {
-                    "Ethernet1": {
-                        "bandwidth": 100000000000,
-                        "autoNegotiate": "unknown",
-                        "duplex": "duplexFull",
-                        "lanes": 2,
-                    },
-                    "Ethernet1/1/1": {
-                        "bandwidth": 100000000000,
-                        "autoNegotiate": "unknown",
-                        "duplex": "duplexFull",
-                        "lanes": 2,
-                    },
-                    "Ethernet3": {
-                        "bandwidth": 10000000000,
-                        "autoNegotiate": "success",
-                        "duplex": "duplexFull",
-                        "lanes": 8,
-                    },
-                    "Ethernet4": {
-                        "bandwidth": 25000000000,
-                        "autoNegotiate": "unknown",
-                        "duplex": "duplexFull",
-                        "lanes": 8,
-                    },
+                    "Ethernet1": {"bandwidth": 100000000000, "autoNegotiate": "unknown", "duplex": "duplexFull", "lanes": 2},
+                    "Ethernet1/1/1": {"bandwidth": 100000000000, "autoNegotiate": "unknown", "duplex": "duplexFull", "lanes": 2},
+                    "Ethernet3": {"bandwidth": 10000000000, "autoNegotiate": "success", "duplex": "duplexFull", "lanes": 8},
+                    "Ethernet4": {"bandwidth": 25000000000, "autoNegotiate": "unknown", "duplex": "duplexFull", "lanes": 8},
                 }
             }
         ],
@@ -2417,36 +2064,14 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-incorrect-mode",
-        "test": VerifyInterfacesSpeed,
+    (VerifyInterfacesSpeed, "failure-incorrect-mode"): {
         "eos_data": [
             {
                 "interfaces": {
-                    "Ethernet1": {
-                        "bandwidth": 1000000000,
-                        "autoNegotiate": "unknown",
-                        "duplex": "duplexHalf",
-                        "lanes": 2,
-                    },
-                    "Ethernet1/2/2": {
-                        "bandwidth": 1000000000,
-                        "autoNegotiate": "unknown",
-                        "duplex": "duplexHalf",
-                        "lanes": 2,
-                    },
-                    "Ethernet3": {
-                        "bandwidth": 100000000000,
-                        "autoNegotiate": "success",
-                        "duplex": "duplexHalf",
-                        "lanes": 8,
-                    },
-                    "Ethernet4": {
-                        "bandwidth": 2500000000,
-                        "autoNegotiate": "unknown",
-                        "duplex": "duplexHalf",
-                        "lanes": 8,
-                    },
+                    "Ethernet1": {"bandwidth": 1000000000, "autoNegotiate": "unknown", "duplex": "duplexHalf", "lanes": 2},
+                    "Ethernet1/2/2": {"bandwidth": 1000000000, "autoNegotiate": "unknown", "duplex": "duplexHalf", "lanes": 2},
+                    "Ethernet3": {"bandwidth": 100000000000, "autoNegotiate": "success", "duplex": "duplexHalf", "lanes": 8},
+                    "Ethernet4": {"bandwidth": 2500000000, "autoNegotiate": "unknown", "duplex": "duplexHalf", "lanes": 8},
                 }
             }
         ],
@@ -2470,42 +2095,15 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-incorrect-lane",
-        "test": VerifyInterfacesSpeed,
+    (VerifyInterfacesSpeed, "failure-incorrect-lane"): {
         "eos_data": [
             {
                 "interfaces": {
-                    "Ethernet1": {
-                        "bandwidth": 1000000000,
-                        "autoNegotiate": "unknown",
-                        "duplex": "duplexFull",
-                        "lanes": 4,
-                    },
-                    "Ethernet2": {
-                        "bandwidth": 10000000000,
-                        "autoNegotiate": "unknown",
-                        "duplex": "duplexFull",
-                        "lanes": 4,
-                    },
-                    "Ethernet3": {
-                        "bandwidth": 100000000000,
-                        "autoNegotiate": "success",
-                        "duplex": "duplexFull",
-                        "lanes": 4,
-                    },
-                    "Ethernet4": {
-                        "bandwidth": 2500000000,
-                        "autoNegotiate": "unknown",
-                        "duplex": "duplexFull",
-                        "lanes": 6,
-                    },
-                    "Ethernet4/1/1": {
-                        "bandwidth": 2500000000,
-                        "autoNegotiate": "unknown",
-                        "duplex": "duplexFull",
-                        "lanes": 6,
-                    },
+                    "Ethernet1": {"bandwidth": 1000000000, "autoNegotiate": "unknown", "duplex": "duplexFull", "lanes": 4},
+                    "Ethernet2": {"bandwidth": 10000000000, "autoNegotiate": "unknown", "duplex": "duplexFull", "lanes": 4},
+                    "Ethernet3": {"bandwidth": 100000000000, "autoNegotiate": "success", "duplex": "duplexFull", "lanes": 4},
+                    "Ethernet4": {"bandwidth": 2500000000, "autoNegotiate": "unknown", "duplex": "duplexFull", "lanes": 6},
+                    "Ethernet4/1/1": {"bandwidth": 2500000000, "autoNegotiate": "unknown", "duplex": "duplexFull", "lanes": 6},
                 }
             }
         ],
@@ -2527,36 +2125,14 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "failure-all-type",
-        "test": VerifyInterfacesSpeed,
+    (VerifyInterfacesSpeed, "failure-all-type"): {
         "eos_data": [
             {
                 "interfaces": {
-                    "Ethernet1": {
-                        "bandwidth": 10000000000,
-                        "autoNegotiate": "unknown",
-                        "duplex": "duplexHalf",
-                        "lanes": 4,
-                    },
-                    "Ethernet2/1/2": {
-                        "bandwidth": 1000000000,
-                        "autoNegotiate": "unknown",
-                        "duplex": "duplexHalf",
-                        "lanes": 2,
-                    },
-                    "Ethernet3": {
-                        "bandwidth": 10000000000,
-                        "autoNegotiate": "unknown",
-                        "duplex": "duplexHalf",
-                        "lanes": 6,
-                    },
-                    "Ethernet4": {
-                        "bandwidth": 25000000000,
-                        "autoNegotiate": "unknown",
-                        "duplex": "duplexHalf",
-                        "lanes": 4,
-                    },
+                    "Ethernet1": {"bandwidth": 10000000000, "autoNegotiate": "unknown", "duplex": "duplexHalf", "lanes": 4},
+                    "Ethernet2/1/2": {"bandwidth": 1000000000, "autoNegotiate": "unknown", "duplex": "duplexHalf", "lanes": 2},
+                    "Ethernet3": {"bandwidth": 10000000000, "autoNegotiate": "unknown", "duplex": "duplexHalf", "lanes": 6},
+                    "Ethernet4": {"bandwidth": 25000000000, "autoNegotiate": "unknown", "duplex": "duplexHalf", "lanes": 4},
                 }
             }
         ],
@@ -2585,9 +2161,7 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "success",
-        "test": VerifyLACPInterfacesStatus,
+    (VerifyLACPInterfacesStatus, "success"): {
         "eos_data": [
             {
                 "portChannels": {
@@ -2622,9 +2196,7 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "Port-Channel5"}]},
         "expected": {"result": "success"},
     },
-    {
-        "name": "success-short-timeout",
-        "test": VerifyLACPInterfacesStatus,
+    (VerifyLACPInterfacesStatus, "success-short-timeout"): {
         "eos_data": [
             {
                 "portChannels": {
@@ -2659,47 +2231,19 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "Port-Channel5", "lacp_rate_fast": True}]},
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-not-bundled",
-        "test": VerifyLACPInterfacesStatus,
+    (VerifyLACPInterfacesStatus, "failure-not-bundled"): {
         "eos_data": [
-            {
-                "portChannels": {
-                    "Port-Channel5": {
-                        "interfaces": {
-                            "Ethernet5": {
-                                "actorPortStatus": "No Aggregate",
-                            }
-                        }
-                    }
-                },
-                "interface": "Ethernet5",
-                "orphanPorts": {},
-            }
+            {"portChannels": {"Port-Channel5": {"interfaces": {"Ethernet5": {"actorPortStatus": "No Aggregate"}}}}, "interface": "Ethernet5", "orphanPorts": {}}
         ],
         "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "Po5"}]},
-        "expected": {
-            "result": "failure",
-            "messages": ["Interface: Ethernet5 Port-Channel: Port-Channel5 - Not bundled - Port Status: No Aggregate"],
-        },
+        "expected": {"result": "failure", "messages": ["Interface: Ethernet5 Port-Channel: Port-Channel5 - Not bundled - Port Status: No Aggregate"]},
     },
-    {
-        "name": "failure-no-details-found",
-        "test": VerifyLACPInterfacesStatus,
-        "eos_data": [
-            {
-                "portChannels": {"Port-Channel5": {"interfaces": {}}},
-            }
-        ],
+    (VerifyLACPInterfacesStatus, "failure-no-details-found"): {
+        "eos_data": [{"portChannels": {"Port-Channel5": {"interfaces": {}}}}],
         "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "Po 5"}]},
-        "expected": {
-            "result": "failure",
-            "messages": ["Interface: Ethernet5 Port-Channel: Port-Channel5 - Not configured"],
-        },
+        "expected": {"result": "failure", "messages": ["Interface: Ethernet5 Port-Channel: Port-Channel5 - Not configured"]},
     },
-    {
-        "name": "failure-lacp-params",
-        "test": VerifyLACPInterfacesStatus,
+    (VerifyLACPInterfacesStatus, "failure-lacp-params"): {
         "eos_data": [
             {
                 "portChannels": {
@@ -2735,16 +2279,14 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Actor port details mismatch - Activity: False, Aggregation: False, "
-                "Synchronization: False, Collecting: True, Distributing: True, Timeout: False",
-                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Partner port details mismatch - Activity: False, Aggregation: False, "
-                "Synchronization: False, Collecting: True, Distributing: True, Timeout: False",
+                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Actor port details mismatch - "
+                "Activity: False, Aggregation: False, Synchronization: False, Collecting: True, Distributing: True, Timeout: False",
+                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Partner port details mismatch - "
+                "Activity: False, Aggregation: False, Synchronization: False, Collecting: True, Distributing: True, Timeout: False",
             ],
         },
     },
-    {
-        "name": "failure-short-timeout",
-        "test": VerifyLACPInterfacesStatus,
+    (VerifyLACPInterfacesStatus, "failure-short-timeout"): {
         "eos_data": [
             {
                 "portChannels": {
@@ -2780,11 +2322,11 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Actor port details mismatch - Activity: True, Aggregation: True, "
-                "Synchronization: True, Collecting: True, Distributing: True, Timeout: False",
-                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Partner port details mismatch - Activity: True, Aggregation: True, "
-                "Synchronization: True, Collecting: True, Distributing: True, Timeout: False",
+                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Actor port details mismatch - "
+                "Activity: True, Aggregation: True, Synchronization: True, Collecting: True, Distributing: True, Timeout: False",
+                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Partner port details mismatch - "
+                "Activity: True, Aggregation: True, Synchronization: True, Collecting: True, Distributing: True, Timeout: False",
             ],
         },
     },
-]
+}
