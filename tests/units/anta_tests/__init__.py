@@ -6,11 +6,18 @@
 from __future__ import annotations
 
 import asyncio
-from typing import TYPE_CHECKING, Any, Literal, NotRequired, TypedDict
+from typing import TYPE_CHECKING, Any, Literal, TypedDict
 
 if TYPE_CHECKING:
+    import sys
+
     from anta.device import AntaDevice
     from anta.models import AntaTest
+
+    if sys.version_info >= (3, 11):
+        from typing import NotRequired
+    else:
+        from typing_extensions import NotRequired
 
 
 class UnitTestResult(TypedDict):
