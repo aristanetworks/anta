@@ -3002,7 +3002,7 @@ DATA: list[dict[str, Any]] = [
         },
     },
     {
-        "name": "success-ipv6-rfc5549",
+        "name": "failure-ipv6-rfc5549",
         "test": VerifyBGPPeerRouteRefreshCap,
         "eos_data": [
             {
