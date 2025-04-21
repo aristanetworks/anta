@@ -926,19 +926,16 @@ class VerifyBGPAdvCommunities(AntaTest):
     This test performs the following checks for each specified peer:
 
       1. Verifies that the peer is found in its VRF in the BGP configuration.
-      2. Validates that all required community types are advertised:
-        - Standard communities
-        - Extended communities
-        - Large communities
+      2. Validates that given community types are advertised. If not provided, validates all the advertised communities.
 
     Expected Results
     ----------------
     * Success: If all of the following conditions are met:
         - All specified peers are found in the BGP configuration.
-        - Each peer advertises standard, extended and large communities.
+        - Each peer adverties the given community types. If not provided, advertises standard, extended and large communities.
     * Failure: If any of the following occur:
         - A specified peer is not found in the BGP configuration.
-        - A peer does not advertise standard, extended or large communities.
+        - A peer does not advertise the given community types. If not provided, does not advertises standard, extended and large communities.
 
     Examples
     --------
@@ -951,6 +948,7 @@ class VerifyBGPAdvCommunities(AntaTest):
                 vrf: default
               - peer_address: 172.30.11.21
                 vrf: default
+                advertised_communities: ["standard", "extended"]
     ```
     """
 
@@ -981,7 +979,7 @@ class VerifyBGPAdvCommunities(AntaTest):
                 continue
 
             # Check BGP peer advertised communities
-            if not all(get_value(peer_data, f"advertisedCommunities.{community}") is True for community in ["standard", "extended", "large"]):
+            if not all(get_value(peer_data, f"advertisedCommunities.{community}") is True for community in peer.advertised_communities):
                 self.result.is_failure(f"{peer} - {format_data(peer_data['advertisedCommunities'])}")
 
 

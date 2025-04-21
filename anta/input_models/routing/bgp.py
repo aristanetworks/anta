@@ -12,7 +12,7 @@ from warnings import warn
 from pydantic import BaseModel, ConfigDict, Field, PositiveInt, model_validator
 from pydantic_extra_types.mac_address import MacAddress
 
-from anta.custom_types import Afi, BgpDropStats, BgpUpdateError, MultiProtocolCaps, RedistributedAfiSafi, RedistributedProtocol, Safi, Vni
+from anta.custom_types import Afi, BGPCommunity, BgpDropStats, BgpUpdateError, MultiProtocolCaps, RedistributedAfiSafi, RedistributedProtocol, Safi, Vni
 
 if TYPE_CHECKING:
     import sys
@@ -196,6 +196,10 @@ class BgpPeer(BaseModel):
     """The Time-To-Live (TTL). Required field in the `VerifyBGPPeerTtlMultiHops` test."""
     max_ttl_hops: int | None = Field(default=None, ge=1, le=255)
     """The Max TTL hops. Required field in the `VerifyBGPPeerTtlMultiHops` test."""
+    advertised_communities: list[BGPCommunity] = Field(default=["standard", "extended", "large"])
+    """List of advertised communities to be verified.
+
+    Optional field in the `VerifyBGPAdvCommunities` test. If not provided, the test will verifies all the advertised communities."""
 
     def __str__(self) -> str:
         """Return a human-readable string representation of the BgpPeer for reporting."""

@@ -393,6 +393,7 @@ anta.tests.routing.bgp:
           vrf: default
         - peer_address: 172.30.11.21
           vrf: default
+          advertised_communities: ["standard", "extended"]
   - VerifyBGPExchangedRoutes:
       # Verifies the advertised and received routes of BGP IPv4 peer(s).
       bgp_peers:

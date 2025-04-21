@@ -3199,6 +3199,47 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
+        "name": "success-specified-communities",
+        "test": VerifyBGPAdvCommunities,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.1",
+                                "advertisedCommunities": {
+                                    "standard": True,
+                                    "extended": True,
+                                    "large": False,
+                                },
+                            }
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.10",
+                                "advertisedCommunities": {
+                                    "standard": False,
+                                    "extended": True,
+                                    "large": False,
+                                },
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "172.30.11.1", "advertised_communities": ["standard", "extended"]},
+                {"peer_address": "172.30.11.10", "vrf": "MGMT", "advertised_communities": ["extended"]},
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
         "name": "failure-no-peer",
         "test": VerifyBGPAdvCommunities,
         "eos_data": [
@@ -3301,6 +3342,52 @@ DATA: list[dict[str, Any]] = [
             "messages": [
                 "Peer: 172.30.11.1 VRF: default - Standard: False, Extended: False, Large: False",
                 "Peer: 172.30.11.10 VRF: CS - Standard: True, Extended: True, Large: False",
+            ],
+        },
+    },
+    {
+        "name": "failure-specified-communities",
+        "test": VerifyBGPAdvCommunities,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.1",
+                                "advertisedCommunities": {
+                                    "standard": False,
+                                    "extended": False,
+                                    "large": False,
+                                },
+                            }
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.10",
+                                "advertisedCommunities": {
+                                    "standard": False,
+                                    "extended": True,
+                                    "large": False,
+                                },
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "172.30.11.1", "advertised_communities": ["standard", "extended"]},
+                {"peer_address": "172.30.11.10", "vrf": "MGMT", "advertised_communities": ["extended"]},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Peer: 172.30.11.1 VRF: default - Standard: False, Extended: False, Large: False",
             ],
         },
     },
