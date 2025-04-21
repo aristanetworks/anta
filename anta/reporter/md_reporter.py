@@ -257,6 +257,30 @@ class TestResults(MDReportBase):
     def generate_section(self) -> None:
         """Generate the `## Test Results` section of the markdown report."""
         self.write_heading(heading_level=2)
+        self.write_table(table_heading=self.TABLE_HEADING, last_table=True) # TODO: Have to find a way for last line.
+
+
+class FailedTestResultsSummary(MDReportBase):
+    """Generates the `## Failed Test Results Summary` section of the markdown report."""
+
+    TABLE_HEADING: ClassVar[list[str]] = [
+        "| Device Under Test | Categories | Test | Description | Custom Field | Result | Messages |",
+        "| ----------------- | ---------- | ---- | ----------- | ------------ | ------ | -------- |",
+    ]
+
+    def generate_rows(self) -> Generator[str, None, None]:
+        """Generate the rows of the all test results table."""
+        for result in self.results.results:
+            messages = self.safe_markdown(result.messages[0]) if len(result.messages) == 1 else self.safe_markdown("<br>".join(result.messages))
+            categories = ", ".join(sorted(convert_categories(result.categories)))
+            yield (
+                f"| {result.name or '-'} | {categories or '-'} | {result.test or '-'} "
+                f"| {result.description or '-'} | {self.safe_markdown(result.custom_field) or '-'} | {result.result or '-'} | {messages or '-'} |\n"
+            )
+
+    def generate_section(self) -> None:
+        """Generate the `## Failed Test Results Summary` section of the markdown report."""
+        self.write_heading(heading_level=2)
         self.write_table(table_heading=self.TABLE_HEADING, last_table=True)
 
 
@@ -269,12 +293,10 @@ class MDReportGenerator:
 
     This class provides two methods for generating the report:
 
-    - `generate`: Uses a single result manager instance to generate all sections. The sections are
-    processed in the order defined by the `DEFAULT_SECTIONS` list, and the same manager is passed to each
-    section's `generate_section` method.
+    - `generate`: Uses a single result manager instance to generate all sections defined in the `DEFAULT_SECTIONS` class variable list.
 
-    - `generate_sections`: Each section is generated using its own dedicated result manager instance. This allows for
-    greater flexibility or isolation between section generations.
+    - `generate_sections`: A custom list of sections is provided. Each section uses its own dedicated result manager instance,
+    allowing greater flexibility or isolation between section generations.
     """
 
     DEFAULT_SECTIONS: ClassVar[list[type[MDReportBase]]] = [

@@ -10,8 +10,8 @@ from pathlib import Path
 
 import pytest
 
-from anta.reporter.md_reporter import MDReportBase, MDReportGenerator
-from anta.result_manager import ResultManager
+from anta.reporter.md_reporter import FailedTestResultsSummary, MDReportBase, MDReportGenerator
+from anta.result_manager import AntaTestStatus, ResultManager
 
 DATA_DIR: Path = Path(__file__).parent.parent.parent.resolve() / "data"
 
@@ -38,10 +38,13 @@ def test_md_report_generate(tmp_path: Path, result_manager: ResultManager) -> No
 def test_md_report_generate_sections(tmp_path: Path, result_manager: ResultManager) -> None:
     """Test the MDReportGenerator class."""
     md_filename = tmp_path / "test.md"
-    expected_report = "test_md_report.md"
+    expected_report = "test_md_report_custom_sections.md"
     rm = result_manager.sort(sort_by=["name", "categories", "test"])
 
     sections = [(section, rm) for section in MDReportGenerator.DEFAULT_SECTIONS]
+    # Adding custom section
+    failed_section = (FailedTestResultsSummary, rm.filter({AntaTestStatus.SUCCESS, AntaTestStatus.ERROR, AntaTestStatus.SKIPPED, AntaTestStatus.UNSET}))
+    sections.append(failed_section)
 
     # Generate the Markdown report
     MDReportGenerator.generate_sections(sections, md_filename)
