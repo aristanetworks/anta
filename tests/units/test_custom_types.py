@@ -23,6 +23,7 @@ from anta.custom_types import (
     REGEXP_TYPE_VXLAN_SRC_INTERFACE,
     aaa_group_prefix,
     bgp_multiprotocol_capabilities_abbreviations,
+    convert_reload_cause,
     interface_autocomplete,
     interface_case_sensitivity,
     snmp_v3_prefix,
@@ -267,3 +268,28 @@ def test_snmp_v3_prefix_valid_input() -> None:
     assert snmp_v3_prefix("auth") == "v3Auth"
     assert snmp_v3_prefix("noauth") == "v3NoAuth"
     assert snmp_v3_prefix("priv") == "v3Priv"
+
+
+@pytest.mark.parametrize(
+    ("str_input", "expected_output"),
+    [
+        pytest.param("Ztp", "System reloaded due to Zero Touch Provisioning", id="valid"),
+        pytest.param("USER", "Reload requested by the user.", id="valid"),
+        pytest.param("fpga", "Reload requested after FPGA upgrade", id="valid"),
+    ],
+)
+def test_convert_reload_cause(str_input: str, expected_output: str) -> None:
+    """Test convert_reload_cause."""
+    assert convert_reload_cause(str_input) == expected_output
+
+
+@pytest.mark.parametrize(
+    ("str_input"),
+    [
+        pytest.param("ztp2", id="invalid"),
+    ],
+)
+def test_invalid_convert_reload_cause(str_input: str) -> None:
+    """Test invalid convert_reload_cause."""
+    with pytest.raises(ValueError, match=r"Invalid reload cause: 'ztp2' - expected causes are \['ZTP', 'USER', 'FPGA'\]"):
+        convert_reload_cause(str_input)
