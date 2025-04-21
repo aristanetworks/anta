@@ -349,3 +349,55 @@ class VerifyIPv4RouteNextHops(AntaTest):
             for nexthop in entry.nexthops:
                 if not get_item(route_data["vias"], "nexthopAddr", str(nexthop)):
                     self.result.is_failure(f"{entry} Nexthop: {nexthop} - Route not found")
+
+
+class VerifyRoutingStatus(AntaTest):
+    """Verifies that IPv4/IPv6 unicast, multicast, and IPv6 interface forwarding routing are enabled.
+
+    Expected Results
+    ----------------
+    * Success: The test will pass if routing is enabled for the specified types of routing, such as IPv4/IPv6 unicast, multicast, and IPv6 interface forwarding.
+    * Failure: The test will fail if routing is disabled for any of the specified types of routing, such as IPv4/IPv6 unicast, multicast, or IPv6 interface
+     forwarding.
+
+    Examples
+    --------
+    ```yaml
+    anta.tests.routing:
+      generic:
+        - VerifyRoutingStatus:
+           v4_routing_enabled: True
+           v6_routing_enabled: True
+    ```
+    """
+
+    categories: ClassVar[list[str]] = ["routing"]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show ip", revision=1)]
+
+    class Input(AntaTest.Input):
+        """Input model for the VerifyRoutingStatus test."""
+
+        v4_routing_enabled: bool = False
+        """Expected status for enabling IPv4 unicast routing."""
+        v6_routing_enabled: bool = False
+        """Expected status for enabling IPv6 unicast routing."""
+        ip_multicast_enabled: bool = False
+        """Expected status for enabling IPv4 multicast routing."""
+        ipv6_multicast_enabled: bool = False
+        """Expected status for enabling IPv6 multicast routing."""
+        ipv6_interfaces_forwarding: bool = False  # TODO: need to implement
+        """Expected status for enabling IPv6 interface forwarding."""
+
+    @AntaTest.anta_test
+    def test(self) -> None:
+        """Main test function for VerifyRoutingStatus."""
+        self.result.is_success()
+        command_output = self.instance_commands[0].json_output
+        if self.inputs.v4_routing_enabled and not command_output["v4RoutingEnabled"]:
+            self.result.is_failure("IPv4 routing mismatch - Expected: Enabled Actual: Disabled")
+        if self.inputs.v6_routing_enabled and not command_output["v6RoutingEnabled"]:
+            self.result.is_failure("IPv6 routing mismatch - Expected: Enabled Actual: Disabled")
+        if self.inputs.ip_multicast_enabled and not command_output["multicastRouting"]["ipMulticastEnabled"]:
+            self.result.is_failure("IPv4 multicast routing mismatch - Expected: Enabled Actual: Disabled")
+        if self.inputs.ipv6_multicast_enabled and not command_output["multicastRouting"]["ip6MulticastEnabled"]:
+            self.result.is_failure("IPv6 multicast routing mismatch - Expected: Enabled Actual: Disabled")

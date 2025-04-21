@@ -11,7 +11,14 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
-from anta.tests.routing.generic import VerifyIPv4RouteNextHops, VerifyIPv4RouteType, VerifyRoutingProtocolModel, VerifyRoutingTableEntry, VerifyRoutingTableSize
+from anta.tests.routing.generic import (
+    VerifyIPv4RouteNextHops,
+    VerifyIPv4RouteType,
+    VerifyRoutingProtocolModel,
+    VerifyRoutingStatus,
+    VerifyRoutingTableEntry,
+    VerifyRoutingTableSize,
+)
 from tests.units.anta_tests import test
 
 DATA: list[dict[str, Any]] = [
@@ -395,7 +402,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
-        "name": "success-strict-true",
+        "name": "success-strict-True",
         "test": VerifyIPv4RouteNextHops,
         "eos_data": [
             {
@@ -515,6 +522,62 @@ DATA: list[dict[str, Any]] = [
                 "Prefix: 10.10.0.1/32 VRF: default Nexthop: 10.100.0.11 - Route not found",
                 "Prefix: 10.100.0.128/31 VRF: MGMT Nexthop: 10.100.0.11 - Route not found",
             ],
+        },
+    },
+    {
+        "name": "success-routing-enablement",
+        "test": VerifyRoutingStatus,
+        "eos_data": [
+            {
+                "v4RoutingEnabled": True,
+                "v6RoutingEnabled": True,
+                "vrrpIntfs": 0,
+                "multicastRouting": {"ipMulticastEnabled": False, "ip6MulticastEnabled": False},
+                "v6EcmpInfo": {"v6EcmpRouteSupport": True},
+            }
+        ],
+        "inputs": {"v4_routing_enabled": True, "v6_routing_enabled": True},
+        "expected": {
+            "result": "success",
+        },
+    },
+    {
+        "name": "failure-ip-multicastrouting-enablement",
+        "test": VerifyRoutingStatus,
+        "eos_data": [
+            {
+                "v4RoutingEnabled": True,
+                "v6RoutingEnabled": True,
+                "vrrpIntfs": 0,
+                "multicastRouting": {"ipMulticastEnabled": False, "ip6MulticastEnabled": False},
+                "v6EcmpInfo": {"v6EcmpRouteSupport": True},
+            }
+        ],
+        "inputs": {"ip_multicast_enabled": True, "ipv6_multicast_enabled": True},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "IPv4 multicast routing mismatch - Expected: Enabled Actual: Disabled",
+                "IPv6 multicast routing mismatch - Expected: Enabled Actual: Disabled",
+            ],
+        },
+    },
+    {
+        "name": "failure-ip-routing-enablement",
+        "test": VerifyRoutingStatus,
+        "eos_data": [
+            {
+                "v4RoutingEnabled": False,
+                "v6RoutingEnabled": False,
+                "vrrpIntfs": 0,
+                "multicastRouting": {"ipMulticastEnabled": False, "ip6MulticastEnabled": False},
+                "v6EcmpInfo": {"v6EcmpRouteSupport": True},
+            }
+        ],
+        "inputs": {"v4_routing_enabled": True, "v6_routing_enabled": True},
+        "expected": {
+            "result": "failure",
+            "messages": ["IPv4 routing mismatch - Expected: Enabled Actual: Disabled", "IPv6 routing mismatch - Expected: Enabled Actual: Disabled"],
         },
     },
 ]
