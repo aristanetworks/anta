@@ -1946,6 +1946,39 @@ DATA: list[dict[str, Any]] = [
         },
     },
     {
+        "name": "failure-capabilities-not-found",
+        "test": VerifyBGPPeerMPCaps,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "172.30.11.1",
+                                "neighborCapabilities": {},
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "172.30.11.1",
+                    "vrf": "default",
+                    "capabilities": ["ipv4Unicast", "l2-vpn-EVPN"],
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Peer: 172.30.11.1 VRF: default - Multiprotocol capabilities not found",
+            ],
+        },
+    },
+    {
         "name": "failure-missing-capabilities",
         "test": VerifyBGPPeerMPCaps,
         "eos_data": [
