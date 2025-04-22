@@ -177,7 +177,7 @@ class VerifyEVPNType5Routes(AntaTest):
         # Try to find all paths matching nexthop and RTs criteria from the available paths for this route
         matching_paths = self._find_paths(available_paths, path_input.nexthop, path_input.route_targets)
         if not matching_paths:
-            self.result.is_failure(f"{prefix_input} {route_input} {path_input} - Not path found")
+            self.result.is_failure(f"{prefix_input} {route_input} {path_input} - Path not found")
             return
 
         # Check that at least one matching path is active/valid
