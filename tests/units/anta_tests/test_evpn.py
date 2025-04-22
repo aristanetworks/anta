@@ -113,6 +113,55 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
+        "name": "success-ipv6",
+        "test": VerifyEVPNType5Routes,
+        "eos_data": [
+            {
+                "vrf": "default",
+                "routerId": "10.1.0.21",
+                "asn": 65120,
+                "evpnRoutes": {
+                    "RD: 10.1.0.21:500 ip-prefix fd00:dc:5::1/128": {
+                        "totalPaths": 1,
+                        "routeKeyDetail": {"ipGenPrefix": "fd00:dc:5::1/128", "domain": "local", "rd": "10.1.0.21:500", "nlriType": "ip-prefix"},
+                        "evpnRoutePaths": [
+                            {
+                                "nextHop": "",
+                                "asPathEntry": {"asPathType": "Local", "asPath": "i"},
+                                "reasonNotBestpath": "noReason",
+                                "routeType": {
+                                    "active": True,
+                                    "valid": True,
+                                },
+                            }
+                        ],
+                    },
+                    "RD: 10.1.0.21:500 ip-prefix fd00:dc:5::1/128 remote": {
+                        "totalPaths": 1,
+                        "routeKeyDetail": {"ipGenPrefix": "fd00:dc:5::1/128", "domain": "remote", "rd": "10.1.0.21:500", "nlriType": "ip-prefix"},
+                        "evpnRoutePaths": [
+                            {
+                                "nextHop": "",
+                                "asPathEntry": {"asPathType": "Local", "asPath": "i"},
+                                "reasonNotBestpath": "noReason",
+                                "routeType": {
+                                    "active": True,
+                                    "valid": True,
+                                },
+                            }
+                        ],
+                    },
+                },
+            }
+        ],
+        "inputs": {
+            "prefixes": [
+                {"address": "fd00:dc:5::1/128", "vni": 500},
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
         "name": "success-across-all-rds",
         "test": VerifyEVPNType5Routes,
         "eos_data": [
@@ -442,13 +491,13 @@ DATA: list[dict[str, Any]] = [
         ],
         "inputs": {
             "prefixes": [
-                {"address": "10.100.0.128/31", "vni": 10, "routes": [{"rd": "10.100.1.3:10", "domain": "local"}]},
+                {"address": "10.100.0.128/31", "vni": 10, "routes": [{"rd": "10.100.1.3:10", "domain": "remote"}]},
             ]
         },
         "expected": {
             "result": "failure",
             "messages": [
-                "Prefix: 10.100.0.128/31 VNI: 10 RD: 10.100.1.3:10 - Route not found",
+                "Prefix: 10.100.0.128/31 VNI: 10 RD: 10.100.1.3:10 Domain: remote - Route not found",
             ],
         },
     },
@@ -531,6 +580,60 @@ DATA: list[dict[str, Any]] = [
             "result": "failure",
             "messages": [
                 "Prefix: 10.100.4.1/31 VNI: 10 RD: 10.100.1.3:10 Nexthop: 10.100.2.3 RTs: 10:10 - Path not found",
+            ],
+        },
+    },
+    {
+        "name": "failure-ipv6",
+        "test": VerifyEVPNType5Routes,
+        "eos_data": [
+            {
+                "vrf": "default",
+                "routerId": "10.1.0.21",
+                "asn": 65120,
+                "evpnRoutes": {
+                    "RD: 10.1.0.21:500 ip-prefix fd00:dc:5::1/128": {
+                        "totalPaths": 1,
+                        "routeKeyDetail": {"ipGenPrefix": "fd00:dc:5::1/128", "domain": "local", "rd": "10.1.0.21:500", "nlriType": "ip-prefix"},
+                        "evpnRoutePaths": [
+                            {
+                                "nextHop": "",
+                                "asPathEntry": {"asPathType": "Local", "asPath": "i"},
+                                "reasonNotBestpath": "noReason",
+                                "routeType": {
+                                    "active": True,
+                                    "valid": False,
+                                },
+                            }
+                        ],
+                    },
+                    "RD: 10.1.0.21:500 ip-prefix fd00:dc:5::1/128 remote": {
+                        "totalPaths": 1,
+                        "routeKeyDetail": {"ipGenPrefix": "fd00:dc:5::1/128", "domain": "remote", "rd": "10.1.0.21:500", "nlriType": "ip-prefix"},
+                        "evpnRoutePaths": [
+                            {
+                                "nextHop": "",
+                                "asPathEntry": {"asPathType": "Local", "asPath": "i"},
+                                "reasonNotBestpath": "noReason",
+                                "routeType": {
+                                    "active": False,
+                                    "valid": True,
+                                },
+                            }
+                        ],
+                    },
+                },
+            }
+        ],
+        "inputs": {
+            "prefixes": [
+                {"address": "fd00:dc:5::1/128", "vni": 500},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Prefix: fd00:dc:5::1/128 VNI: 500 - No active and valid path found across all RDs",
             ],
         },
     },
