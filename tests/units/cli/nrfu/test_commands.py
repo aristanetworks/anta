@@ -208,3 +208,15 @@ def test_anta_nrfu_md_report_with_hide(click_runner: CliRunner, tmp_path: Path) 
 
     assert total_tests == 3
     assert total_tests_success == 3
+
+    # Collecting the row inside the Test Results section
+    row_count = 0
+    lines = content.splitlines()
+
+    idx = lines.index("## Test Results")
+
+    for line in lines[idx + 1 :]:
+        if line.startswith("|") and "---" not in line:
+            row_count += 1
+    # Reducing the row count by 1, as above conditions counts the TABLE_HEADING
+    assert (row_count - 1) == 0

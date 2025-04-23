@@ -106,6 +106,7 @@ repos:
     hooks:
       - id: markdownlint
         name: Check Markdown files style.
+        exclude: ^tests/data/test_md_report_custom_sections\.md$  # If a user wants to add a section in MD report, they will need to override the section as well and set last_table=False. RE: anta/tests/units/reporter/test_md_reporter.py
         args:
           - --config=.github/markdownlint.yaml
           - --ignore-path=.github/markdownlintignore

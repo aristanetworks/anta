@@ -257,30 +257,6 @@ class TestResults(MDReportBase):
     def generate_section(self) -> None:
         """Generate the `## Test Results` section of the markdown report."""
         self.write_heading(heading_level=2)
-        self.write_table(table_heading=self.TABLE_HEADING, last_table=True) # TODO: Have to find a way for last line.
-
-
-class FailedTestResultsSummary(MDReportBase):
-    """Generates the `## Failed Test Results Summary` section of the markdown report."""
-
-    TABLE_HEADING: ClassVar[list[str]] = [
-        "| Device Under Test | Categories | Test | Description | Custom Field | Result | Messages |",
-        "| ----------------- | ---------- | ---- | ----------- | ------------ | ------ | -------- |",
-    ]
-
-    def generate_rows(self) -> Generator[str, None, None]:
-        """Generate the rows of the all test results table."""
-        for result in self.results.results:
-            messages = self.safe_markdown(result.messages[0]) if len(result.messages) == 1 else self.safe_markdown("<br>".join(result.messages))
-            categories = ", ".join(sorted(convert_categories(result.categories)))
-            yield (
-                f"| {result.name or '-'} | {categories or '-'} | {result.test or '-'} "
-                f"| {result.description or '-'} | {self.safe_markdown(result.custom_field) or '-'} | {result.result or '-'} | {messages or '-'} |\n"
-            )
-
-    def generate_section(self) -> None:
-        """Generate the `## Failed Test Results Summary` section of the markdown report."""
-        self.write_heading(heading_level=2)
         self.write_table(table_heading=self.TABLE_HEADING, last_table=True)
 
 

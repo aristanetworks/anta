@@ -90,7 +90,6 @@
 | s1-spine1 | System | VerifyNTPAssociations | Verifies the Network Time Protocol (NTP) associations. | - | failure | NTP Server: 1.1.1.1 Preferred: True Stratum: 1 - Not configured<br>NTP Server: 2.2.2.2 Preferred: False Stratum: 2 - Not configured<br>NTP Server: 3.3.3.3 Preferred: False Stratum: 2 - Not configured |
 | s1-spine1 | VLAN | VerifyDynamicVlanSource | Verifies dynamic VLAN allocation for specified VLAN sources. | - | failure | Dynamic VLAN source(s) exist but have no VLANs allocated: mlagsync |
 | s1-spine1 | VXLAN | VerifyVxlan1ConnSettings | Verifies the interface vxlan1 source interface and UDP port. | - | success | - |
-
 ## Failed Test Results Summary
 
 | Device Under Test | Categories | Test | Description | Custom Field | Result | Messages |

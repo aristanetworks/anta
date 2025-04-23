@@ -7,13 +7,43 @@ from __future__ import annotations
 
 from io import StringIO
 from pathlib import Path
+from typing import TYPE_CHECKING, ClassVar
 
 import pytest
 
-from anta.reporter.md_reporter import FailedTestResultsSummary, MDReportBase, MDReportGenerator
-from anta.result_manager import AntaTestStatus, ResultManager
+from anta.models import AntaTestStatus
+from anta.reporter.md_reporter import MDReportBase, MDReportGenerator
+from anta.result_manager import ResultManager
+from anta.tools import convert_categories
+
+if TYPE_CHECKING:
+    from collections.abc import Generator
 
 DATA_DIR: Path = Path(__file__).parent.parent.parent.resolve() / "data"
+
+
+class FailedTestResultsSummary(MDReportBase):
+    """Generates the `## Failed Test Results Summary` section of the markdown report."""
+
+    TABLE_HEADING: ClassVar[list[str]] = [
+        "| Device Under Test | Categories | Test | Description | Custom Field | Result | Messages |",
+        "| ----------------- | ---------- | ---- | ----------- | ------------ | ------ | -------- |",
+    ]
+
+    def generate_rows(self) -> Generator[str, None, None]:
+        """Generate the rows of the all test results table."""
+        for result in self.results.results:
+            messages = self.safe_markdown(result.messages[0]) if len(result.messages) == 1 else self.safe_markdown("<br>".join(result.messages))
+            categories = ", ".join(sorted(convert_categories(result.categories)))
+            yield (
+                f"| {result.name or '-'} | {categories or '-'} | {result.test or '-'} "
+                f"| {result.description or '-'} | {self.safe_markdown(result.custom_field) or '-'} | {result.result or '-'} | {messages or '-'} |\n"
+            )
+
+    def generate_section(self) -> None:
+        """Generate the `## Failed Test Results Summary` section of the markdown report."""
+        self.write_heading(heading_level=2)
+        self.write_table(table_heading=self.TABLE_HEADING, last_table=True)
 
 
 def test_md_report_generate(tmp_path: Path, result_manager: ResultManager) -> None:
