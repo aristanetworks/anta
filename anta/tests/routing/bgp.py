@@ -460,16 +460,17 @@ class VerifyBGPExchangedRoutes(AntaTest):
 
       For each advertised and received route:
         - Confirms that the route exists in the BGP route table.
-        - Verifies that the route is in an 'active' and 'valid' state.
+        - If `check_active` input flag is True, verifies that the route is 'valid' and 'active'.
+        - If `check_active` input flag is False, verifies that the route is 'valid'.
 
     Expected Results
     ----------------
     * Success: If all of the following conditions are met:
         - All specified advertised/received routes are found in the BGP route table.
-        - All routes are in both 'active' and 'valid' states.
+        - All routes are 'active' and 'valid' or 'valid' only per the `check_active` input flag.
     * Failure: If any of the following occur:
         - An advertised/received route is not found in the BGP route table.
-        - Any route is not in an 'active' or 'valid' state.
+        - Any route is not 'active' and 'valid' or 'valid' only per `check_active` input flag.
 
     Examples
     --------
@@ -477,6 +478,7 @@ class VerifyBGPExchangedRoutes(AntaTest):
     anta.tests.routing:
       bgp:
         - VerifyBGPExchangedRoutes:
+            check_active: True
             bgp_peers:
               - peer_address: 172.30.255.5
                 vrf: default
@@ -501,6 +503,8 @@ class VerifyBGPExchangedRoutes(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPExchangedRoutes test."""
 
+        check_active: bool = True
+        """Flag to check if the provided prefixes must be active and valid. If False, checks if the prefixes are valid only. """
         bgp_peers: list[BgpPeer]
         """List of BGP peers."""
         BgpNeighbor: ClassVar[type[BgpNeighbor]] = BgpNeighbor
@@ -519,7 +523,7 @@ class VerifyBGPExchangedRoutes(AntaTest):
         """Render the template for each BGP peer in the input list."""
         return [template.render(peer=str(bgp_peer.peer_address), vrf=bgp_peer.vrf) for bgp_peer in self.inputs.bgp_peers]
 
-    def _validate_bgp_route_paths(self, peer: str, route_type: str, route: str, entries: dict[str, Any]) -> str | None:
+    def _validate_bgp_route_paths(self, peer: str, route_type: str, route: str, entries: dict[str, Any], *, active_flag: bool = True) -> str | None:
         """Validate the BGP route paths."""
         # Check if the route is found
         if route in entries:
@@ -527,8 +531,11 @@ class VerifyBGPExchangedRoutes(AntaTest):
             route_paths = entries[route]["bgpRoutePaths"][0]["routeType"]
             is_active = route_paths["active"]
             is_valid = route_paths["valid"]
-            if not is_active or not is_valid:
-                return f"{peer} {route_type} route: {route} - Valid: {is_valid} Active: {is_active}"
+            if active_flag:
+                if not is_active or not is_valid:
+                    return f"{peer} {route_type} route: {route} - Valid: {is_valid} Active: {is_active}"
+            elif not is_valid:
+                return f"{peer} {route_type} route: {route} - Valid: {is_valid}"
             return None
 
         return f"{peer} {route_type} route: {route} - Not found"
@@ -560,8 +567,8 @@ class VerifyBGPExchangedRoutes(AntaTest):
 
                 entries = command_output[route_type]
                 for route in routes:
-                    # Check if the route is found. If yes then checks the route is active and valid
-                    failure_msg = self._validate_bgp_route_paths(str(peer), route_type, str(route), entries)
+                    # Check if the route is found. If yes then checks the route is active/valid
+                    failure_msg = self._validate_bgp_route_paths(str(peer), route_type, str(route), entries, active_flag=self.inputs.check_active)
                     if failure_msg:
                         self.result.is_failure(failure_msg)
 
@@ -663,8 +670,10 @@ class VerifyBGPPeerMPCaps(AntaTest):
                 self.result.is_failure(f"{peer} - Not found")
                 continue
 
-            # Fetching the multiprotocol capabilities
-            act_mp_caps = get_value(peer_data, "neighborCapabilities.multiprotocolCaps")
+            # Check if the multiprotocol capabilities are found
+            if (act_mp_caps := get_value(peer_data, "neighborCapabilities.multiprotocolCaps")) is None:
+                self.result.is_failure(f"{peer} - Multiprotocol capabilities not found")
+                continue
 
             # If strict is True, check if only the specified capabilities are configured
             if peer.strict and sorted(peer.capabilities) != sorted(act_mp_caps):
@@ -993,24 +1002,21 @@ class VerifyEVPNType2Route(AntaTest):
 
 
 class VerifyBGPAdvCommunities(AntaTest):
-    """Verifies that advertised communities are standard, extended and large for BGP peers.
+    """Verifies the advertised communities for BGP peers.
 
     This test performs the following checks for each specified peer:
 
       1. Verifies that the peer is found in its VRF in the BGP configuration.
-      2. Validates that all required community types are advertised:
-        - Standard communities
-        - Extended communities
-        - Large communities
+      2. Validates that given community types are advertised. If not provided, validates that all communities (standard, extended, large) are advertised.
 
     Expected Results
     ----------------
     * Success: If all of the following conditions are met:
         - All specified peers are found in the BGP configuration.
-        - Each peer advertises standard, extended and large communities.
+        - Each peer advertises the given community types.
     * Failure: If any of the following occur:
         - A specified peer is not found in the BGP configuration.
-        - A peer does not advertise standard, extended or large communities.
+        - A peer does not advertise any of the given community types.
 
     Examples
     --------
@@ -1023,11 +1029,13 @@ class VerifyBGPAdvCommunities(AntaTest):
                 vrf: default
               - peer_address: 172.30.11.21
                 vrf: MGMT
+                advertised_communities: ["standard", "extended"]
               - peer_address: fd00:dc:1::1
                 vrf: default
               # RFC5549
               - interface: Ethernet1
                 vrf: default
+                advertised_communities: ["standard", "extended"]
     ```
     """
 
@@ -1065,7 +1073,7 @@ class VerifyBGPAdvCommunities(AntaTest):
                 continue
 
             # Check BGP peer advertised communities
-            if not all(get_value(peer_data, f"advertisedCommunities.{community}") is True for community in ["standard", "extended", "large"]):
+            if not all(get_value(peer_data, f"advertisedCommunities.{community}") is True for community in peer.advertised_communities):
                 self.result.is_failure(f"{peer} - {format_data(peer_data['advertisedCommunities'])}")
 
 
