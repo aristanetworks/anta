@@ -921,21 +921,21 @@ class VerifyEVPNType2Route(AntaTest):
 
 
 class VerifyBGPAdvCommunities(AntaTest):
-    """Verifies that advertised communities are standard, extended and large for BGP IPv4 peer(s).
+    """Verifies the advertised communities for BGP IPv4 peer(s).
 
     This test performs the following checks for each specified peer:
 
       1. Verifies that the peer is found in its VRF in the BGP configuration.
-      2. Validates that given community types are advertised. If not provided, validates all the advertised communities.
+      2. Validates that given community types are advertised. If not provided, validates that all communities (standard, extended, large) are advertised.
 
     Expected Results
     ----------------
     * Success: If all of the following conditions are met:
         - All specified peers are found in the BGP configuration.
-        - Each peer adverties the given community types. If not provided, advertises standard, extended and large communities.
+        - Each peer advertises the given community types.
     * Failure: If any of the following occur:
         - A specified peer is not found in the BGP configuration.
-        - A peer does not advertise the given community types. If not provided, does not advertises standard, extended and large communities.
+        - A peer does not advertise any of the given community types.
 
     Examples
     --------

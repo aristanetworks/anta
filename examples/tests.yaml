@@ -387,7 +387,7 @@ anta.tests.ptp:
       # Verifies the PTP interfaces state.
 anta.tests.routing.bgp:
   - VerifyBGPAdvCommunities:
-      # Verifies that advertised communities are standard, extended and large for BGP IPv4 peer(s).
+      # Verifies the advertised communities for BGP IPv4 peer(s).
       bgp_peers:
         - peer_address: 172.30.11.17
           vrf: default
