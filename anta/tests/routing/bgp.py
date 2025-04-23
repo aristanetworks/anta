@@ -444,16 +444,17 @@ class VerifyBGPExchangedRoutes(AntaTest):
 
       For each advertised and received route:
         - Confirms that the route exists in the BGP route table.
-        - Verifies that the route is in an 'active' and 'valid' state.
+        - If `check_active` input flag is True, verifies that the route is 'valid' and 'active'.
+        - If `check_active` input flag is False, verifies that the route is 'valid'.
 
     Expected Results
     ----------------
     * Success: If all of the following conditions are met:
         - All specified advertised/received routes are found in the BGP route table.
-        - All routes are in both 'active' and 'valid' states.
+        - All routes are 'active' and 'valid' or 'valid' only per the `check_active` input flag.
     * Failure: If any of the following occur:
         - An advertised/received route is not found in the BGP route table.
-        - Any route is not in an 'active' or 'valid' state.
+        - Any route is not 'active' and 'valid' or 'valid' only per `check_active` input flag.
 
     Examples
     --------
@@ -461,6 +462,7 @@ class VerifyBGPExchangedRoutes(AntaTest):
     anta.tests.routing:
       bgp:
         - VerifyBGPExchangedRoutes:
+            check_active: True
             bgp_peers:
               - peer_address: 172.30.255.5
                 vrf: default
@@ -485,6 +487,8 @@ class VerifyBGPExchangedRoutes(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPExchangedRoutes test."""
 
+        check_active: bool = True
+        """Flag to check if the provided prefixes must be active and valid. If False, checks if the prefixes are valid only. """
         bgp_peers: list[BgpPeer]
         """List of BGP IPv4 peers."""
         BgpNeighbor: ClassVar[type[BgpNeighbor]] = BgpNeighbor
@@ -503,7 +507,7 @@ class VerifyBGPExchangedRoutes(AntaTest):
         """Render the template for each BGP peer in the input list."""
         return [template.render(peer=str(bgp_peer.peer_address), vrf=bgp_peer.vrf) for bgp_peer in self.inputs.bgp_peers]
 
-    def _validate_bgp_route_paths(self, peer: str, route_type: str, route: str, entries: dict[str, Any]) -> str | None:
+    def _validate_bgp_route_paths(self, peer: str, route_type: str, route: str, entries: dict[str, Any], *, active_flag: bool = True) -> str | None:
         """Validate the BGP route paths."""
         # Check if the route is found
         if route in entries:
@@ -511,8 +515,11 @@ class VerifyBGPExchangedRoutes(AntaTest):
             route_paths = entries[route]["bgpRoutePaths"][0]["routeType"]
             is_active = route_paths["active"]
             is_valid = route_paths["valid"]
-            if not is_active or not is_valid:
-                return f"{peer} {route_type} route: {route} - Valid: {is_valid} Active: {is_active}"
+            if active_flag:
+                if not is_active or not is_valid:
+                    return f"{peer} {route_type} route: {route} - Valid: {is_valid} Active: {is_active}"
+            elif not is_valid:
+                return f"{peer} {route_type} route: {route} - Valid: {is_valid}"
             return None
 
         return f"{peer} {route_type} route: {route} - Not found"
@@ -544,8 +551,8 @@ class VerifyBGPExchangedRoutes(AntaTest):
 
                 entries = command_output[route_type]
                 for route in routes:
-                    # Check if the route is found. If yes then checks the route is active and valid
-                    failure_msg = self._validate_bgp_route_paths(str(peer), route_type, str(route), entries)
+                    # Check if the route is found. If yes then checks the route is active/valid
+                    failure_msg = self._validate_bgp_route_paths(str(peer), route_type, str(route), entries, active_flag=self.inputs.check_active)
                     if failure_msg:
                         self.result.is_failure(failure_msg)
 
