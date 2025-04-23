@@ -2038,6 +2038,95 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
+        "name": "success-ipv6-rfc5549",
+        "test": VerifyBGPPeerMPCaps,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "fd00:dc:1::1",
+                                "neighborCapabilities": {
+                                    "multiprotocolCaps": {
+                                        "ipv4Unicast": {
+                                            "advertised": True,
+                                            "received": True,
+                                            "enabled": True,
+                                        },
+                                        "ipv4MplsLabels": {
+                                            "advertised": True,
+                                            "received": True,
+                                            "enabled": True,
+                                        },
+                                    }
+                                },
+                            },
+                            {
+                                "peerAddress": "fe80::250:56ff:fe01:112%Vl4094",
+                                "neighborCapabilities": {
+                                    "multiprotocolCaps": {
+                                        "ipv4Unicast": {
+                                            "advertised": True,
+                                            "received": True,
+                                            "enabled": True,
+                                        },
+                                        "ipv4MplsLabels": {
+                                            "advertised": True,
+                                            "received": True,
+                                            "enabled": True,
+                                        },
+                                    }
+                                },
+                            },
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "neighborCapabilities": {
+                                    "multiprotocolCaps": {
+                                        "ipv4Unicast": {
+                                            "advertised": True,
+                                            "received": True,
+                                            "enabled": True,
+                                        },
+                                        "ipv4MplsVpn": {
+                                            "advertised": True,
+                                            "received": True,
+                                            "enabled": True,
+                                        },
+                                    }
+                                },
+                                "ifName": "Ethernet1",
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "fd00:dc:1::1",
+                    "vrf": "default",
+                    "capabilities": ["Ipv4Unicast", "ipv4 Mpls labels"],
+                },
+                {
+                    "peer_address": "fe80::250:56ff:fe01:112%Vl4094",
+                    "vrf": "default",
+                    "capabilities": ["Ipv4Unicast", "ipv4 Mpls labels"],
+                },
+                {
+                    "interface": "Ethernet1",
+                    "vrf": "MGMT",
+                    "capabilities": ["ipv4_Unicast", "ipv4 MplsVpn"],
+                },
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
         "name": "failure-no-peer",
         "test": VerifyBGPPeerMPCaps,
         "eos_data": [
@@ -2419,6 +2508,102 @@ DATA: list[dict[str, Any]] = [
         },
     },
     {
+        "name": "failure-ipv6-rfc5549",
+        "test": VerifyBGPPeerMPCaps,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "fd00:dc:1::1",
+                                "neighborCapabilities": {
+                                    "multiprotocolCaps": {
+                                        "ipv4Unicast": {
+                                            "advertised": True,
+                                            "received": True,
+                                            "enabled": True,
+                                        },
+                                        "ipv4MplsLabels": {
+                                            "advertised": False,
+                                            "received": True,
+                                            "enabled": True,
+                                        },
+                                    }
+                                },
+                            },
+                            {
+                                "peerAddress": "fe80::250:56ff:fe01:112%Vl4094",
+                                "neighborCapabilities": {
+                                    "multiprotocolCaps": {
+                                        "ipv4Unicast": {
+                                            "advertised": False,
+                                            "received": True,
+                                            "enabled": True,
+                                        },
+                                        "ipv4MplsLabels": {
+                                            "advertised": True,
+                                            "received": True,
+                                            "enabled": True,
+                                        },
+                                    }
+                                },
+                            },
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "neighborCapabilities": {
+                                    "multiprotocolCaps": {
+                                        "ipv4Unicast": {
+                                            "advertised": True,
+                                            "received": True,
+                                            "enabled": True,
+                                        },
+                                        "ipv4MplsVpn": {
+                                            "advertised": False,
+                                            "received": True,
+                                            "enabled": True,
+                                        },
+                                    }
+                                },
+                                "ifName": "Ethernet1",
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "fd00:dc:1::1",
+                    "vrf": "default",
+                    "capabilities": ["Ipv4Unicast", "ipv4 Mpls labels"],
+                },
+                {
+                    "peer_address": "fe80::250:56ff:fe01:112%Vl4094",
+                    "vrf": "default",
+                    "capabilities": ["Ipv4Unicast", "ipv4 Mpls labels"],
+                },
+                {
+                    "interface": "Ethernet1",
+                    "vrf": "MGMT",
+                    "capabilities": ["ipv4_Unicast", "ipv4 MplsVpn"],
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Peer: fd00:dc:1::1 VRF: default - ipv4MplsLabels not negotiated - Advertised: False, Received: True, Enabled: True",
+                "Peer: fe80::250:56ff:fe01:112%Vl4094 VRF: default - ipv4Unicast not negotiated - Advertised: False, Received: True, Enabled: True",
+                "Interface: Ethernet1 VRF: MGMT - ipv4MplsVpn not negotiated - Advertised: False, Received: True, Enabled: True",
+            ],
+        },
+    },
+    {
         "name": "success",
         "test": VerifyBGPPeerASNCap,
         "eos_data": [
@@ -2466,6 +2651,62 @@ DATA: list[dict[str, Any]] = [
                     "vrf": "MGMT",
                 },
             ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-ipv6-rfc5549",
+        "test": VerifyBGPPeerASNCap,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "fd00:dc:1::1",
+                                "neighborCapabilities": {
+                                    "fourOctetAsnCap": {
+                                        "advertised": True,
+                                        "received": True,
+                                        "enabled": True,
+                                    },
+                                },
+                            },
+                            {
+                                "peerAddress": "fe80::250:56ff:fe01:112%Vl4094",
+                                "neighborCapabilities": {
+                                    "fourOctetAsnCap": {
+                                        "advertised": True,
+                                        "received": True,
+                                        "enabled": True,
+                                    },
+                                },
+                            },
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "neighborCapabilities": {
+                                    "fourOctetAsnCap": {
+                                        "advertised": True,
+                                        "received": True,
+                                        "enabled": True,
+                                    },
+                                },
+                                "ifName": "Ethernet1",
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "fd00:dc:1::1", "vrf": "default"},
+                {"peer_address": "fe80::250:56ff:fe01:112%Vl4094", "vrf": "default"},
+                {"interface": "Ethernet1", "vrf": "MGMT"},
+            ],
         },
         "expected": {"result": "success"},
     },
@@ -2614,6 +2855,68 @@ DATA: list[dict[str, Any]] = [
         },
     },
     {
+        "name": "failure-ipv6-rfc5549",
+        "test": VerifyBGPPeerASNCap,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "fd00:dc:1::1",
+                                "neighborCapabilities": {
+                                    "fourOctetAsnCap": {
+                                        "advertised": True,
+                                        "received": True,
+                                        "enabled": True,
+                                    },
+                                },
+                            },
+                            {
+                                "peerAddress": "fe80::250:56ff:fe01:112%Vl4094",
+                                "neighborCapabilities": {
+                                    "fourOctetAsnCap": {
+                                        "advertised": False,
+                                        "received": True,
+                                        "enabled": True,
+                                    },
+                                },
+                            },
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "neighborCapabilities": {
+                                    "fourOctetAsnCap": {
+                                        "advertised": False,
+                                        "received": True,
+                                        "enabled": True,
+                                    },
+                                },
+                                "ifName": "Ethernet1",
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "fd00:dc:1::1", "vrf": "default"},
+                {"peer_address": "fe80::250:56ff:fe01:112%Vl4094", "vrf": "default"},
+                {"interface": "Ethernet1", "vrf": "MGMT"},
+            ],
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Peer: fe80::250:56ff:fe01:112%Vl4094 VRF: default - 4-octet ASN capability not negotiated - Advertised: False, Received: True, Enabled: True",
+                "Interface: Ethernet1 VRF: MGMT - 4-octet ASN capability not negotiated - Advertised: False, Received: True, Enabled: True",
+            ],
+        },
+    },
+    {
         "name": "success",
         "test": VerifyBGPPeerRouteRefreshCap,
         "eos_data": [
@@ -2661,6 +2964,62 @@ DATA: list[dict[str, Any]] = [
                     "vrf": "CS",
                 },
             ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-ipv6-rfc5549",
+        "test": VerifyBGPPeerRouteRefreshCap,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "fd00:dc:1::1",
+                                "neighborCapabilities": {
+                                    "routeRefreshCap": {
+                                        "advertised": True,
+                                        "received": True,
+                                        "enabled": True,
+                                    },
+                                },
+                            },
+                            {
+                                "peerAddress": "fe80::250:56ff:fe01:112%Vl4094",
+                                "neighborCapabilities": {
+                                    "routeRefreshCap": {
+                                        "advertised": True,
+                                        "received": True,
+                                        "enabled": True,
+                                    },
+                                },
+                            },
+                        ]
+                    },
+                    "CS": {
+                        "peerList": [
+                            {
+                                "neighborCapabilities": {
+                                    "routeRefreshCap": {
+                                        "advertised": True,
+                                        "received": True,
+                                        "enabled": True,
+                                    },
+                                },
+                                "ifName": "Ethernet1",
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "fd00:dc:1::1", "vrf": "default"},
+                {"peer_address": "fe80::250:56ff:fe01:112%Vl4094", "vrf": "default"},
+                {"interface": "Ethernet1", "vrf": "CS"},
+            ],
         },
         "expected": {"result": "success"},
     },
@@ -2831,6 +3190,69 @@ DATA: list[dict[str, Any]] = [
         },
     },
     {
+        "name": "failure-ipv6-rfc5549",
+        "test": VerifyBGPPeerRouteRefreshCap,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "fd00:dc:1::1",
+                                "neighborCapabilities": {
+                                    "routeRefreshCap": {
+                                        "advertised": True,
+                                        "received": False,
+                                        "enabled": True,
+                                    },
+                                },
+                            },
+                            {
+                                "peerAddress": "fe80::250:56ff:fe01:112%Vl4094",
+                                "neighborCapabilities": {
+                                    "routeRefreshCap": {
+                                        "advertised": True,
+                                        "received": True,
+                                        "enabled": False,
+                                    },
+                                },
+                            },
+                        ]
+                    },
+                    "CS": {
+                        "peerList": [
+                            {
+                                "neighborCapabilities": {
+                                    "routeRefreshCap": {
+                                        "advertised": False,
+                                        "received": True,
+                                        "enabled": True,
+                                    },
+                                },
+                                "ifName": "Ethernet1",
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "fd00:dc:1::1", "vrf": "default"},
+                {"peer_address": "fe80::250:56ff:fe01:112%Vl4094", "vrf": "default"},
+                {"interface": "Ethernet1", "vrf": "CS"},
+            ],
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Peer: fd00:dc:1::1 VRF: default - Route refresh capability not negotiated - Advertised: True, Received: False, Enabled: True",
+                "Peer: fe80::250:56ff:fe01:112%Vl4094 VRF: default - Route refresh capability not negotiated - Advertised: True, Received: True, Enabled: False",
+                "Interface: Ethernet1 VRF: CS - Route refresh capability not negotiated - Advertised: False, Received: True, Enabled: True",
+            ],
+        },
+    },
+    {
         "name": "success",
         "test": VerifyBGPPeerMD5Auth,
         "eos_data": [
@@ -2868,6 +3290,47 @@ DATA: list[dict[str, Any]] = [
                     "vrf": "CS",
                 },
             ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-ipv6-rfc5549",
+        "test": VerifyBGPPeerMD5Auth,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "fd00:dc:1::1",
+                                "state": "Established",
+                                "md5AuthEnabled": True,
+                            },
+                            {
+                                "peerAddress": "fe80::250:56ff:fe01:112%Vl4094",
+                                "state": "Established",
+                                "md5AuthEnabled": True,
+                            },
+                        ]
+                    },
+                    "CS": {
+                        "peerList": [
+                            {
+                                "state": "Established",
+                                "md5AuthEnabled": True,
+                                "ifName": "Ethernet1",
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "fd00:dc:1::1", "vrf": "default"},
+                {"peer_address": "fe80::250:56ff:fe01:112%Vl4094", "vrf": "default"},
+                {"interface": "Ethernet1", "vrf": "CS"},
+            ],
         },
         "expected": {"result": "success"},
     },
@@ -3013,6 +3476,53 @@ DATA: list[dict[str, Any]] = [
             "messages": [
                 "Peer: 172.30.11.1 VRF: default - Session does not have MD5 authentication enabled",
                 "Peer: 172.30.11.11 VRF: MGMT - Session does not have MD5 authentication enabled",
+            ],
+        },
+    },
+    {
+        "name": "failure-ipv6-rfc5549",
+        "test": VerifyBGPPeerMD5Auth,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "fd00:dc:1::1",
+                                "state": "Idle",
+                                "md5AuthEnabled": True,
+                            },
+                            {
+                                "peerAddress": "fe80::250:56ff:fe01:112%Vl4094",
+                                "state": "Established",
+                            },
+                        ]
+                    },
+                    "CS": {
+                        "peerList": [
+                            {
+                                "state": "Idle",
+                                "md5AuthEnabled": True,
+                                "ifName": "Ethernet1",
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "fd00:dc:1::1", "vrf": "default"},
+                {"peer_address": "fe80::250:56ff:fe01:112%Vl4094", "vrf": "default"},
+                {"interface": "Ethernet1", "vrf": "CS"},
+            ],
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Peer: fd00:dc:1::1 VRF: default - Incorrect session state - Expected: Established Actual: Idle",
+                "Peer: fe80::250:56ff:fe01:112%Vl4094 VRF: default - Session does not have MD5 authentication enabled",
+                "Interface: Ethernet1 VRF: CS - Incorrect session state - Expected: Established Actual: Idle",
             ],
         },
     },
@@ -3732,6 +4242,52 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
+        "name": "success-ipv6-rfc5549",
+        "test": VerifyBGPTimers,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "fd00:dc:1::1",
+                                "holdTime": 180,
+                                "keepaliveTime": 60,
+                            },
+                            {
+                                "peerAddress": "fe80::250:56ff:fe01:112%Vl4094",
+                                "holdTime": 180,
+                                "keepaliveTime": 60,
+                            },
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "holdTime": 180,
+                                "keepaliveTime": 60,
+                                "ifName": "Ethernet1",
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "fd00:dc:1::1", "vrf": "default", "hold_time": 180, "keep_alive_time": 60},
+                {"peer_address": "fe80::250:56ff:fe01:112%Vl4094", "vrf": "default", "hold_time": 180, "keep_alive_time": 60},
+                {
+                    "interface": "Ethernet1",
+                    "vrf": "MGMT",
+                    "hold_time": 180,
+                    "keep_alive_time": 60,
+                },
+            ],
+        },
+        "expected": {"result": "success"},
+    },
+    {
         "name": "failure-no-peer",
         "test": VerifyBGPTimers,
         "eos_data": [
@@ -3819,6 +4375,60 @@ DATA: list[dict[str, Any]] = [
         },
     },
     {
+        "name": "failure-ipv6-rfc5549",
+        "test": VerifyBGPTimers,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "fd00:dc:1::1",
+                                "holdTime": 100,
+                                "keepaliveTime": 60,
+                            },
+                            {
+                                "peerAddress": "fe80::250:56ff:fe01:112%Vl4094",
+                                "holdTime": 180,
+                                "keepaliveTime": 50,
+                            },
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "holdTime": 150,
+                                "keepaliveTime": 50,
+                                "ifName": "Ethernet1",
+                            }
+                        ]
+                    },
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "fd00:dc:1::1", "vrf": "default", "hold_time": 180, "keep_alive_time": 60},
+                {"peer_address": "fe80::250:56ff:fe01:112%Vl4094", "vrf": "default", "hold_time": 180, "keep_alive_time": 60},
+                {
+                    "interface": "Ethernet1",
+                    "vrf": "MGMT",
+                    "hold_time": 180,
+                    "keep_alive_time": 60,
+                },
+            ],
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Peer: fd00:dc:1::1 VRF: default - Hold time mismatch - Expected: 180 Actual: 100",
+                "Peer: fe80::250:56ff:fe01:112%Vl4094 VRF: default - Keepalive time mismatch - Expected: 60 Actual: 50",
+                "Interface: Ethernet1 VRF: MGMT - Hold time mismatch - Expected: 180 Actual: 150",
+                "Interface: Ethernet1 VRF: MGMT - Keepalive time mismatch - Expected: 60 Actual: 50",
+            ],
+        },
+    },
+    {
         "name": "success",
         "test": VerifyBGPPeerDropStats,
         "eos_data": [
@@ -3872,6 +4482,82 @@ DATA: list[dict[str, Any]] = [
                 },
                 {"peer_address": "10.100.0.9", "vrf": "MGMT", "drop_stats": ["inDropClusterIdLoop", "inDropOrigId", "inDropNhLocal"]},
             ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-ipv6-rfc5549",
+        "test": VerifyBGPPeerDropStats,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "fd00:dc:1::1",
+                                "dropStats": {
+                                    "inDropAsloop": 0,
+                                    "inDropClusterIdLoop": 0,
+                                    "inDropMalformedMpbgp": 0,
+                                    "inDropOrigId": 0,
+                                    "inDropNhLocal": 0,
+                                    "inDropNhAfV6": 0,
+                                    "prefixDroppedMartianV4": 0,
+                                    "prefixDroppedMaxRouteLimitViolatedV4": 0,
+                                    "prefixDroppedMartianV6": 0,
+                                },
+                            },
+                            {
+                                "peerAddress": "fe80::250:56ff:fe01:112%Vl4094",
+                                "dropStats": {
+                                    "inDropAsloop": 0,
+                                    "inDropClusterIdLoop": 0,
+                                    "inDropMalformedMpbgp": 0,
+                                    "inDropOrigId": 0,
+                                    "inDropNhLocal": 0,
+                                    "inDropNhAfV6": 0,
+                                    "prefixDroppedMartianV4": 0,
+                                    "prefixDroppedMaxRouteLimitViolatedV4": 0,
+                                    "prefixDroppedMartianV6": 0,
+                                },
+                            },
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "dropStats": {
+                                    "inDropAsloop": 0,
+                                    "inDropClusterIdLoop": 0,
+                                    "inDropMalformedMpbgp": 0,
+                                    "inDropOrigId": 0,
+                                    "inDropNhLocal": 0,
+                                    "inDropNhAfV6": 0,
+                                    "prefixDroppedMartianV4": 0,
+                                    "prefixDroppedMaxRouteLimitViolatedV4": 0,
+                                    "prefixDroppedMartianV6": 0,
+                                },
+                                "ifName": "Ethernet1",
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "fd00:dc:1::1",
+                    "vrf": "default",
+                    "drop_stats": ["prefixDroppedMartianV4", "prefixDroppedMaxRouteLimitViolatedV4", "prefixDroppedMartianV6"],
+                },
+                {
+                    "peer_address": "fe80::250:56ff:fe01:112%Vl4094",
+                    "vrf": "default",
+                    "drop_stats": ["prefixDroppedMartianV4", "prefixDroppedMaxRouteLimitViolatedV4", "prefixDroppedMartianV6"],
+                },
+                {"interface": "Ethernet1", "vrf": "MGMT", "drop_stats": ["inDropClusterIdLoop", "inDropOrigId", "inDropNhLocal"]},
+            ],
         },
         "expected": {"result": "success"},
     },
@@ -4081,6 +4767,91 @@ DATA: list[dict[str, Any]] = [
         },
     },
     {
+        "name": "failure-ipv6-rfc5549",
+        "test": VerifyBGPPeerDropStats,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "fd00:dc:1::1",
+                                "dropStats": {
+                                    "inDropAsloop": 0,
+                                    "inDropClusterIdLoop": 0,
+                                    "inDropMalformedMpbgp": 0,
+                                    "inDropOrigId": 0,
+                                    "inDropNhLocal": 0,
+                                    "inDropNhAfV6": 0,
+                                    "prefixDroppedMartianV4": 4,
+                                    "prefixDroppedMaxRouteLimitViolatedV4": 0,
+                                    "prefixDroppedMartianV6": 2,
+                                },
+                            },
+                            {
+                                "peerAddress": "fe80::250:56ff:fe01:112%Vl4094",
+                                "dropStats": {
+                                    "inDropAsloop": 0,
+                                    "inDropClusterIdLoop": 0,
+                                    "inDropMalformedMpbgp": 0,
+                                    "inDropOrigId": 0,
+                                    "inDropNhLocal": 0,
+                                    "inDropNhAfV6": 0,
+                                    "prefixDroppedMartianV4": 0,
+                                    "prefixDroppedMaxRouteLimitViolatedV4": 3,
+                                    "prefixDroppedMartianV6": 2,
+                                },
+                            },
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "dropStats": {
+                                    "inDropAsloop": 0,
+                                    "inDropClusterIdLoop": 0,
+                                    "inDropMalformedMpbgp": 0,
+                                    "inDropOrigId": 3,
+                                    "inDropNhLocal": 0,
+                                    "inDropNhAfV6": 0,
+                                    "prefixDroppedMartianV4": 0,
+                                    "prefixDroppedMaxRouteLimitViolatedV4": 0,
+                                    "prefixDroppedMartianV6": 0,
+                                },
+                                "ifName": "Ethernet1",
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "fd00:dc:1::1",
+                    "vrf": "default",
+                    "drop_stats": ["prefixDroppedMartianV4", "prefixDroppedMaxRouteLimitViolatedV4", "prefixDroppedMartianV6"],
+                },
+                {
+                    "peer_address": "fe80::250:56ff:fe01:112%Vl4094",
+                    "vrf": "default",
+                    "drop_stats": ["prefixDroppedMartianV4", "prefixDroppedMaxRouteLimitViolatedV4", "prefixDroppedMartianV6"],
+                },
+                {"interface": "Ethernet1", "vrf": "MGMT", "drop_stats": ["inDropClusterIdLoop", "inDropOrigId", "inDropNhLocal"]},
+            ],
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Peer: fd00:dc:1::1 VRF: default - Non-zero NLRI drop statistics counter - prefixDroppedMartianV4: 4",
+                "Peer: fd00:dc:1::1 VRF: default - Non-zero NLRI drop statistics counter - prefixDroppedMartianV6: 2",
+                "Peer: fe80::250:56ff:fe01:112%Vl4094 VRF: default - Non-zero NLRI drop statistics counter - prefixDroppedMaxRouteLimitViolatedV4: 3",
+                "Peer: fe80::250:56ff:fe01:112%Vl4094 VRF: default - Non-zero NLRI drop statistics counter - prefixDroppedMartianV6: 2",
+                "Interface: Ethernet1 VRF: MGMT - Non-zero NLRI drop statistics counter - inDropOrigId: 3",
+            ],
+        },
+    },
+    {
         "name": "success",
         "test": VerifyBGPPeerUpdateErrors,
         "eos_data": [
@@ -4122,6 +4893,62 @@ DATA: list[dict[str, Any]] = [
                 {"peer_address": "10.100.0.8", "vrf": "default", "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
                 {"peer_address": "10.100.0.9", "vrf": "MGMT", "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
             ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-ipv6-rfc5549",
+        "test": VerifyBGPPeerUpdateErrors,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "fd00:dc:1::1",
+                                "peerInUpdateErrors": {
+                                    "inUpdErrWithdraw": 0,
+                                    "inUpdErrIgnore": 0,
+                                    "inUpdErrDisableAfiSafi": 0,
+                                    "disabledAfiSafi": "None",
+                                    "lastUpdErrTime": 0,
+                                },
+                            },
+                            {
+                                "peerAddress": "fe80::250:56ff:fe01:112%Vl4094",
+                                "peerInUpdateErrors": {
+                                    "inUpdErrWithdraw": 0,
+                                    "inUpdErrIgnore": 0,
+                                    "inUpdErrDisableAfiSafi": 0,
+                                    "disabledAfiSafi": "None",
+                                    "lastUpdErrTime": 0,
+                                },
+                            },
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerInUpdateErrors": {
+                                    "inUpdErrWithdraw": 0,
+                                    "inUpdErrIgnore": 0,
+                                    "inUpdErrDisableAfiSafi": 0,
+                                    "disabledAfiSafi": "None",
+                                    "lastUpdErrTime": 0,
+                                },
+                                "ifName": "Ethernet1",
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "fd00:dc:1::1", "vrf": "default", "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
+                {"peer_address": "fe80::250:56ff:fe01:112%Vl4094", "vrf": "default", "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
+                {"interface": "Ethernet1", "vrf": "MGMT", "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
+            ],
         },
         "expected": {"result": "success"},
     },
@@ -4354,6 +5181,69 @@ DATA: list[dict[str, Any]] = [
         },
     },
     {
+        "name": "failure-ipv6-rfc5549",
+        "test": VerifyBGPPeerUpdateErrors,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "fd00:dc:1::1",
+                                "peerInUpdateErrors": {
+                                    "inUpdErrWithdraw": 3,
+                                    "inUpdErrIgnore": 0,
+                                    "inUpdErrDisableAfiSafi": 0,
+                                    "disabledAfiSafi": "None",
+                                    "lastUpdErrTime": 0,
+                                },
+                            },
+                            {
+                                "peerAddress": "fe80::250:56ff:fe01:112%Vl4094",
+                                "peerInUpdateErrors": {
+                                    "inUpdErrWithdraw": 0,
+                                    "inUpdErrIgnore": 3,
+                                    "inUpdErrDisableAfiSafi": 0,
+                                    "disabledAfiSafi": "None",
+                                    "lastUpdErrTime": 0,
+                                },
+                            },
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerInUpdateErrors": {
+                                    "inUpdErrWithdraw": 0,
+                                    "inUpdErrIgnore": 0,
+                                    "inUpdErrDisableAfiSafi": 0,
+                                    "disabledAfiSafi": "ipv4Unicast",
+                                    "lastUpdErrTime": 0,
+                                },
+                                "ifName": "Ethernet1",
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "fd00:dc:1::1", "vrf": "default", "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
+                {"peer_address": "fe80::250:56ff:fe01:112%Vl4094", "vrf": "default", "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
+                {"interface": "Ethernet1", "vrf": "MGMT", "update_errors": ["inUpdErrWithdraw", "inUpdErrIgnore", "disabledAfiSafi"]},
+            ],
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Peer: fd00:dc:1::1 VRF: default - Non-zero update error counter - inUpdErrWithdraw: 3",
+                "Peer: fe80::250:56ff:fe01:112%Vl4094 VRF: default - Non-zero update error counter - inUpdErrIgnore: 3",
+                "Interface: Ethernet1 VRF: MGMT - Non-zero update error counter - disabledAfiSafi: ipv4Unicast",
+            ],
+        },
+    },
+    {
         "name": "success",
         "test": VerifyBgpRouteMaps,
         "eos_data": [
@@ -4385,6 +5275,52 @@ DATA: list[dict[str, Any]] = [
                 {"peer_address": "10.100.0.8", "vrf": "default", "inbound_route_map": "RM-MLAG-PEER-IN", "outbound_route_map": "RM-MLAG-PEER-OUT"},
                 {"peer_address": "10.100.0.10", "vrf": "MGMT", "inbound_route_map": "RM-MLAG-PEER-IN", "outbound_route_map": "RM-MLAG-PEER-OUT"},
             ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-ipv6-rfc5549",
+        "test": VerifyBgpRouteMaps,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "fd00:dc:1::1",
+                                "routeMapInbound": "RM-MLAG-PEER-IN",
+                                "routeMapOutbound": "RM-MLAG-PEER-OUT",
+                            },
+                            {
+                                "peerAddress": "fe80::250:56ff:fe01:112%Vl4094",
+                                "routeMapInbound": "RM-MLAG-PEER-IN",
+                                "routeMapOutbound": "RM-MLAG-PEER-OUT",
+                            },
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "routeMapInbound": "RM-MLAG-PEER-IN",
+                                "routeMapOutbound": "RM-MLAG-PEER-OUT",
+                                "ifName": "Ethernet1",
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "fd00:dc:1::1", "vrf": "default", "inbound_route_map": "RM-MLAG-PEER-IN", "outbound_route_map": "RM-MLAG-PEER-OUT"},
+                {
+                    "peer_address": "fe80::250:56ff:fe01:112%Vl4094",
+                    "vrf": "default",
+                    "inbound_route_map": "RM-MLAG-PEER-IN",
+                    "outbound_route_map": "RM-MLAG-PEER-OUT",
+                },
+                {"interface": "Ethernet1", "vrf": "MGMT", "inbound_route_map": "RM-MLAG-PEER-IN", "outbound_route_map": "RM-MLAG-PEER-OUT"},
+            ],
         },
         "expected": {"result": "success"},
     },
@@ -4537,6 +5473,60 @@ DATA: list[dict[str, Any]] = [
         },
     },
     {
+        "name": "failure-ipv6-rfc5549",
+        "test": VerifyBgpRouteMaps,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "fd00:dc:1::1",
+                                "routeMapInbound": "RM-MLAG-PEER-IN1",
+                                "routeMapOutbound": "RM-MLAG-PEER-OUT",
+                            },
+                            {
+                                "peerAddress": "fe80::250:56ff:fe01:112%Vl4094",
+                                "routeMapInbound": "RM-MLAG-PEER-IN",
+                                "routeMapOutbound": "RM-MLAG-PEER-OUT1",
+                            },
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "routeMapInbound": "RM-MLAG-PEER-IN1",
+                                "routeMapOutbound": "RM-MLAG-PEER-OUT1",
+                                "ifName": "Ethernet1",
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "fd00:dc:1::1", "vrf": "default", "inbound_route_map": "RM-MLAG-PEER-IN", "outbound_route_map": "RM-MLAG-PEER-OUT"},
+                {
+                    "peer_address": "fe80::250:56ff:fe01:112%Vl4094",
+                    "vrf": "default",
+                    "inbound_route_map": "RM-MLAG-PEER-IN",
+                    "outbound_route_map": "RM-MLAG-PEER-OUT",
+                },
+                {"interface": "Ethernet1", "vrf": "MGMT", "inbound_route_map": "RM-MLAG-PEER-IN", "outbound_route_map": "RM-MLAG-PEER-OUT"},
+            ],
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Peer: fd00:dc:1::1 VRF: default - Inbound route-map mismatch - Expected: RM-MLAG-PEER-IN Actual: RM-MLAG-PEER-IN1",
+                "Peer: fe80::250:56ff:fe01:112%Vl4094 VRF: default - Outbound route-map mismatch - Expected: RM-MLAG-PEER-OUT Actual: RM-MLAG-PEER-OUT1",
+                "Interface: Ethernet1 VRF: MGMT - Inbound route-map mismatch - Expected: RM-MLAG-PEER-IN Actual: RM-MLAG-PEER-IN1",
+                "Interface: Ethernet1 VRF: MGMT - Outbound route-map mismatch - Expected: RM-MLAG-PEER-OUT Actual: RM-MLAG-PEER-OUT1",
+            ],
+        },
+    },
+    {
         "name": "success",
         "test": VerifyBGPPeerRouteLimit,
         "eos_data": [
@@ -4568,6 +5558,47 @@ DATA: list[dict[str, Any]] = [
                 {"peer_address": "10.100.0.8", "vrf": "default", "maximum_routes": 12000, "warning_limit": 10000},
                 {"peer_address": "10.100.0.9", "vrf": "MGMT", "maximum_routes": 10000},
             ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-ipv6-rfc5549",
+        "test": VerifyBGPPeerRouteLimit,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "fd00:dc:1::1",
+                                "maxTotalRoutes": 12000,
+                                "totalRoutesWarnLimit": 10000,
+                            },
+                            {
+                                "peerAddress": "fe80::250:56ff:fe01:112%Vl4094",
+                                "maxTotalRoutes": 12000,
+                                "totalRoutesWarnLimit": 10000,
+                            },
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "maxTotalRoutes": 10000,
+                                "totalRoutesWarnLimit": 9000,
+                                "ifName": "Ethernet1",
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "fd00:dc:1::1", "vrf": "default", "maximum_routes": 12000, "warning_limit": 10000},
+                {"peer_address": "fe80::250:56ff:fe01:112%Vl4094", "vrf": "default", "maximum_routes": 12000, "warning_limit": 10000},
+                {"interface": "Ethernet1", "vrf": "MGMT", "maximum_routes": 10000},
+            ],
         },
         "expected": {"result": "success"},
     },
@@ -4712,6 +5743,56 @@ DATA: list[dict[str, Any]] = [
         },
     },
     {
+        "name": "failure-ipv6-rfc5549",
+        "test": VerifyBGPPeerRouteLimit,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "fd00:dc:1::1",
+                                "maxTotalRoutes": 10000,
+                                "totalRoutesWarnLimit": 9000,
+                            },
+                            {
+                                "peerAddress": "fe80::250:56ff:fe01:112%Vl4094",
+                                "maxTotalRoutes": 10000,
+                                "totalRoutesWarnLimit": 9000,
+                            },
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "maxTotalRoutes": 11000,
+                                "totalRoutesWarnLimit": 9000,
+                                "ifName": "Ethernet1",
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "fd00:dc:1::1", "vrf": "default", "maximum_routes": 12000, "warning_limit": 10000},
+                {"peer_address": "fe80::250:56ff:fe01:112%Vl4094", "vrf": "default", "maximum_routes": 12000, "warning_limit": 10000},
+                {"interface": "Ethernet1", "vrf": "MGMT", "maximum_routes": 10000},
+            ],
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Peer: fd00:dc:1::1 VRF: default - Maximum routes mismatch - Expected: 12000 Actual: 10000",
+                "Peer: fd00:dc:1::1 VRF: default - Maximum routes warning limit mismatch - Expected: 10000 Actual: 9000",
+                "Peer: fe80::250:56ff:fe01:112%Vl4094 VRF: default - Maximum routes mismatch - Expected: 12000 Actual: 10000",
+                "Peer: fe80::250:56ff:fe01:112%Vl4094 VRF: default - Maximum routes warning limit mismatch - Expected: 10000 Actual: 9000",
+                "Interface: Ethernet1 VRF: MGMT - Maximum routes mismatch - Expected: 10000 Actual: 11000",
+            ],
+        },
+    },
+    {
         "name": "success-no-check-tcp-queues",
         "test": VerifyBGPPeerSession,
         "eos_data": [
@@ -4836,6 +5917,61 @@ DATA: list[dict[str, Any]] = [
             "bgp_peers": [
                 {"peer_address": "10.100.0.8", "vrf": "default"},
                 {"peer_address": "10.100.0.9", "vrf": "MGMT"},
+            ],
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-ipv6-rfc5549",
+        "test": VerifyBGPPeerSession,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "fd00:dc:1::1",
+                                "state": "Established",
+                                "establishedTime": 169883,
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 0,
+                                    "inputQueueLength": 0,
+                                },
+                            },
+                            {
+                                "peerAddress": "fe80::250:56ff:fe01:112%Vl4094",
+                                "state": "Established",
+                                "establishedTime": 169883,
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 0,
+                                    "inputQueueLength": 0,
+                                },
+                            },
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "state": "Established",
+                                "establishedTime": 169883,
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 0,
+                                    "inputQueueLength": 0,
+                                },
+                                "ifName": "Ethernet1",
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "minimum_established_time": 11000,
+            "check_tcp_queues": True,
+            "bgp_peers": [
+                {"peer_address": "fd00:dc:1::1", "vrf": "default"},
+                {"peer_address": "fe80::250:56ff:fe01:112%Vl4094", "vrf": "default"},
+                {"interface": "Ethernet1", "vrf": "MGMT"},
             ],
         },
         "expected": {"result": "success"},
@@ -5067,6 +6203,44 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
+        "name": "success-ipv6-rfc5549",
+        "test": VerifyBGPPeerGroup,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "fd00:dc:1::1",
+                                "peerGroupName": "IPv4-UNDERLAY-PEERS",
+                            },
+                            {
+                                "peerAddress": "fe80::250:56ff:fe01:112%Vl4094",
+                                "peerGroupName": "EVPN-OVERLAY-PEERS",
+                            },
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerGroupName": "EVPN-OVERLAY-PEERS",
+                                "ifName": "Ethernet1",
+                            },
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "fd00:dc:1::1", "vrf": "default", "peer_group": "IPv4-UNDERLAY-PEERS"},
+                {"peer_address": "fe80::250:56ff:fe01:112%Vl4094", "vrf": "default", "peer_group": "EVPN-OVERLAY-PEERS"},
+                {"interface": "Ethernet1", "vrf": "MGMT", "peer_group": "EVPN-OVERLAY-PEERS"},
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
         "name": "failure-incorrect-peer-group",
         "test": VerifyBGPPeerGroup,
         "eos_data": [
@@ -5207,6 +6381,51 @@ DATA: list[dict[str, Any]] = [
         },
     },
     {
+        "name": "failure-ipv6-rfc5549",
+        "test": VerifyBGPPeerGroup,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "fd00:dc:1::1",
+                                "peerGroupName": "IPv6-UNDERLAY-PEERS",
+                            },
+                            {
+                                "peerAddress": "fe80::250:56ff:fe01:112%Vl4094",
+                                "peerGroupName": "EVPN-UNDERLAY-PEERS",
+                            },
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "peerGroupName": "EVPN-UNDERLAY-PEERS",
+                                "ifName": "Ethernet1",
+                            },
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "fd00:dc:1::1", "vrf": "default", "peer_group": "IPv4-UNDERLAY-PEERS"},
+                {"peer_address": "fe80::250:56ff:fe01:112%Vl4094", "vrf": "default", "peer_group": "EVPN-OVERLAY-PEERS"},
+                {"interface": "Ethernet1", "vrf": "MGMT", "peer_group": "EVPN-OVERLAY-PEERS"},
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Peer: fd00:dc:1::1 VRF: default - Incorrect peer group configured - Expected: IPv4-UNDERLAY-PEERS Actual: IPv6-UNDERLAY-PEERS",
+                "Peer: fe80::250:56ff:fe01:112%Vl4094 VRF: default - Incorrect peer group configured - Expected: EVPN-OVERLAY-PEERS Actual: EVPN-UNDERLAY-PEERS",
+                "Interface: Ethernet1 VRF: MGMT - Incorrect peer group configured - Expected: EVPN-OVERLAY-PEERS Actual: EVPN-UNDERLAY-PEERS",
+            ],
+        },
+    },
+    {
         "name": "success-no-check-tcp-queues",
         "test": VerifyBGPPeerSessionRibd,
         "eos_data": [
@@ -5331,6 +6550,57 @@ DATA: list[dict[str, Any]] = [
             "bgp_peers": [
                 {"peer_address": "10.100.0.8", "vrf": "default"},
                 {"peer_address": "10.100.0.9", "vrf": "MGMT"},
+            ],
+        },
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-ipv6-rfc5549",
+        "test": VerifyBGPPeerSessionRibd,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "fd00:dc:1::1",
+                                "state": "Established",
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 10,
+                                    "inputQueueLength": 5,
+                                },
+                            },
+                            {
+                                "peerAddress": "fe80::250:56ff:fe01:112%Vl4094",
+                                "state": "Established",
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 10,
+                                    "inputQueueLength": 5,
+                                },
+                            },
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "state": "Established",
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 10,
+                                    "inputQueueLength": 5,
+                                },
+                                "ifName": "Ethernet1",
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "check_tcp_queues": False,
+            "bgp_peers": [
+                {"peer_address": "fd00:dc:1::1", "vrf": "default"},
+                {"peer_address": "fe80::250:56ff:fe01:112%Vl4094", "vrf": "default"},
+                {"interface": "Ethernet1", "vrf": "MGMT"},
             ],
         },
         "expected": {"result": "success"},
@@ -5509,6 +6779,64 @@ DATA: list[dict[str, Any]] = [
             "messages": [
                 "Peer: 10.100.0.8 VRF: default - BGP session not established for the minimum required duration - Expected: 10000s Actual: 9883s",
                 "Peer: 10.100.0.9 VRF: MGMT - BGP session not established for the minimum required duration - Expected: 10000s Actual: 9883s",
+            ],
+        },
+    },
+    {
+        "name": "failure-ipv6-rfc5549",
+        "test": VerifyBGPPeerSessionRibd,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "fd00:dc:1::1",
+                                "state": "Active",
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 10,
+                                    "inputQueueLength": 5,
+                                },
+                            },
+                            {
+                                "peerAddress": "fe80::250:56ff:fe01:112%Vl4094",
+                                "state": "Active",
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 10,
+                                    "inputQueueLength": 5,
+                                },
+                            },
+                        ]
+                    },
+                    "MGMT": {
+                        "peerList": [
+                            {
+                                "state": "Active",
+                                "peerTcpInfo": {
+                                    "outputQueueLength": 10,
+                                    "inputQueueLength": 5,
+                                },
+                                "ifName": "Ethernet1",
+                            }
+                        ]
+                    },
+                },
+            },
+        ],
+        "inputs": {
+            "check_tcp_queues": False,
+            "bgp_peers": [
+                {"peer_address": "fd00:dc:1::1", "vrf": "default"},
+                {"peer_address": "fe80::250:56ff:fe01:112%Vl4094", "vrf": "default"},
+                {"interface": "Ethernet1", "vrf": "MGMT"},
+            ],
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Peer: fd00:dc:1::1 VRF: default - Incorrect session state - Expected: Established Actual: Active",
+                "Peer: fe80::250:56ff:fe01:112%Vl4094 VRF: default - Incorrect session state - Expected: Established Actual: Active",
+                "Interface: Ethernet1 VRF: MGMT - Incorrect session state - Expected: Established Actual: Active",
             ],
         },
     },
@@ -6953,6 +8281,54 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
+        "name": "success-ipv6-rfc5549",
+        "test": VerifyBGPPeerTtlMultiHops,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.111.0.1",
+                                "ttl": 2,
+                                "maxTtlHops": 2,
+                            },
+                            {
+                                "peerAddress": "fe80::250:56ff:fe01:112%Vl4094",
+                                "ttl": 1,
+                                "maxTtlHops": 1,
+                            },
+                        ]
+                    },
+                    "Test": {"peerList": [{"ttl": 255, "maxTtlHops": 255, "ifName": "Ethernet1"}]},
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "10.111.0.1",
+                    "vrf": "default",
+                    "ttl": 2,
+                    "max_ttl_hops": 2,
+                },
+                {
+                    "peer_address": "fe80::250:56ff:fe01:112%Vl4094",
+                    "vrf": "default",
+                    "ttl": 1,
+                    "max_ttl_hops": 1,
+                },
+                {
+                    "interface": "Ethernet1",
+                    "vrf": "Test",
+                    "ttl": 255,
+                    "max_ttl_hops": 255,
+                },
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
         "name": "failure-peer-not-found",
         "test": VerifyBGPPeerTtlMultiHops,
         "eos_data": [
@@ -7101,6 +8477,63 @@ DATA: list[dict[str, Any]] = [
                 "Peer: 10.111.0.1 VRF: default - Max TTL Hops mismatch - Expected: 2 Actual: 12",
                 "Peer: 10.111.0.2 VRF: default - Max TTL Hops mismatch - Expected: 1 Actual: 100",
                 "Peer: 10.111.0.3 VRF: Test - Max TTL Hops mismatch - Expected: 255 Actual: 205",
+            ],
+        },
+    },
+    {
+        "name": "failure-ipv6-rfc5549",
+        "test": VerifyBGPPeerTtlMultiHops,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {
+                                "peerAddress": "10.111.0.1",
+                                "ttl": 3,
+                                "maxTtlHops": 3,
+                            },
+                            {
+                                "peerAddress": "fe80::250:56ff:fe01:112%Vl4094",
+                                "ttl": 2,
+                                "maxTtlHops": 1,
+                            },
+                        ]
+                    },
+                    "Test": {"peerList": [{"ttl": 250, "maxTtlHops": 250, "ifName": "Ethernet1"}]},
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "10.111.0.1",
+                    "vrf": "default",
+                    "ttl": 2,
+                    "max_ttl_hops": 2,
+                },
+                {
+                    "peer_address": "fe80::250:56ff:fe01:112%Vl4094",
+                    "vrf": "default",
+                    "ttl": 1,
+                    "max_ttl_hops": 1,
+                },
+                {
+                    "interface": "Ethernet1",
+                    "vrf": "Test",
+                    "ttl": 255,
+                    "max_ttl_hops": 255,
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Peer: 10.111.0.1 VRF: default - TTL mismatch - Expected: 2 Actual: 3",
+                "Peer: 10.111.0.1 VRF: default - Max TTL Hops mismatch - Expected: 2 Actual: 3",
+                "Peer: fe80::250:56ff:fe01:112%Vl4094 VRF: default - TTL mismatch - Expected: 1 Actual: 2",
+                "Interface: Ethernet1 VRF: Test - TTL mismatch - Expected: 255 Actual: 250",
+                "Interface: Ethernet1 VRF: Test - Max TTL Hops mismatch - Expected: 255 Actual: 250",
             ],
         },
     },
