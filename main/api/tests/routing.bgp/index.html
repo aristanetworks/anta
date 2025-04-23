@@ -4564,16 +4564,11 @@
 
 
 
-        <p>Verifies that advertised communities are standard, extended and large for BGP IPv4 peer(s).</p>
+        <p>Verifies the advertised communities for BGP IPv4 peer(s).</p>
 <p>This test performs the following checks for each specified peer:</p>
 <ol>
 <li>Verifies that the peer is found in its VRF in the BGP configuration.</li>
-<li>Validates that all required community types are advertised:<ul>
-<li>Standard communities</li>
-<li>Extended communities</li>
-<li>Large communities</li>
-</ul>
-</li>
+<li>Validates that given community types are advertised. If not provided, validates that all communities (standard, extended, large) are advertised.</li>
 </ol>
 
 
@@ -4582,12 +4577,12 @@
   <ul>
 <li>Success: If all of the following conditions are met:<ul>
 <li>All specified peers are found in the BGP configuration.</li>
-<li>Each peer advertises standard, extended and large communities.</li>
+<li>Each peer advertises the given community types.</li>
 </ul>
 </li>
 <li>Failure: If any of the following occur:<ul>
 <li>A specified peer is not found in the BGP configuration.</li>
-<li>A peer does not advertise standard, extended or large communities.</li>
+<li>A peer does not advertise any of the given community types.</li>
 </ul>
 </li>
 </ul>
@@ -4604,6 +4599,7 @@
 <span class="w">            </span><span class="nt">vrf</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
 <span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">peer_address</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">172.30.11.21</span>
 <span class="w">            </span><span class="nt">vrf</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
+<span class="w">            </span><span class="nt">advertised_communities</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;standard&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;extended&quot;</span><span class="p p-Indicator">]</span>
 </code></pre></div>
 </details>
 
@@ -4720,27 +4716,22 @@
 <span class="normal">982</span>
 <span class="normal">983</span>
 <span class="normal">984</span>
-<span class="normal">985</span>
-<span class="normal">986</span>
-<span class="normal">987</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPAdvCommunities</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies that advertised communities are standard, extended and large for BGP IPv4 peer(s).</span>
+<span class="normal">985</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPAdvCommunities</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the advertised communities for BGP IPv4 peer(s).</span>
 
 <span class="sd">    This test performs the following checks for each specified peer:</span>
 
 <span class="sd">      1. Verifies that the peer is found in its VRF in the BGP configuration.</span>
-<span class="sd">      2. Validates that all required community types are advertised:</span>
-<span class="sd">        - Standard communities</span>
-<span class="sd">        - Extended communities</span>
-<span class="sd">        - Large communities</span>
+<span class="sd">      2. Validates that given community types are advertised. If not provided, validates that all communities (standard, extended, large) are advertised.</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
 <span class="sd">    * Success: If all of the following conditions are met:</span>
 <span class="sd">        - All specified peers are found in the BGP configuration.</span>
-<span class="sd">        - Each peer advertises standard, extended and large communities.</span>
+<span class="sd">        - Each peer advertises the given community types.</span>
 <span class="sd">    * Failure: If any of the following occur:</span>
 <span class="sd">        - A specified peer is not found in the BGP configuration.</span>
-<span class="sd">        - A peer does not advertise standard, extended or large communities.</span>
+<span class="sd">        - A peer does not advertise any of the given community types.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -4753,6 +4744,7 @@
 <span class="sd">                vrf: default</span>
 <span class="sd">              - peer_address: 172.30.11.21</span>
 <span class="sd">                vrf: default</span>
+<span class="sd">                advertised_communities: [&quot;standard&quot;, &quot;extended&quot;]</span>
 <span class="sd">    ```</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -4783,7 +4775,7 @@
                 <span class="k">continue</span>
 
             <span class="c1"># Check BGP peer advertised communities</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">get_value</span><span class="p">(</span><span class="n">peer_data</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;advertisedCommunities.</span><span class="si">{</span><span class="n">community</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">True</span> <span class="k">for</span> <span class="n">community</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;standard&quot;</span><span class="p">,</span> <span class="s2">&quot;extended&quot;</span><span class="p">,</span> <span class="s2">&quot;large&quot;</span><span class="p">]):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">get_value</span><span class="p">(</span><span class="n">peer_data</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;advertisedCommunities.</span><span class="si">{</span><span class="n">community</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">True</span> <span class="k">for</span> <span class="n">community</span> <span class="ow">in</span> <span class="n">peer</span><span class="o">.</span><span class="n">advertised_communities</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">peer</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">format_data</span><span class="p">(</span><span class="n">peer_data</span><span class="p">[</span><span class="s1">&#39;advertisedCommunities&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
@@ -5234,7 +5226,9 @@
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/routing/bgp.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1598</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1596</span>
+<span class="normal">1597</span>
+<span class="normal">1598</span>
 <span class="normal">1599</span>
 <span class="normal">1600</span>
 <span class="normal">1601</span>
@@ -5304,9 +5298,7 @@
 <span class="normal">1665</span>
 <span class="normal">1666</span>
 <span class="normal">1667</span>
-<span class="normal">1668</span>
-<span class="normal">1669</span>
-<span class="normal">1670</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPNlriAcceptance</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">1668</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPNlriAcceptance</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies that all received NLRI are accepted for all AFI/SAFI configured for BGP IPv4 peer(s).</span>
 
 <span class="sd">    This test performs the following checks for each specified peer:</span>
@@ -6047,7 +6039,9 @@ have successfully negotiated the specified AFI/SAFI</li>
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/routing/bgp.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1068</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1066</span>
+<span class="normal">1067</span>
+<span class="normal">1068</span>
 <span class="normal">1069</span>
 <span class="normal">1070</span>
 <span class="normal">1071</span>
@@ -6118,9 +6112,7 @@ have successfully negotiated the specified AFI/SAFI</li>
 <span class="normal">1136</span>
 <span class="normal">1137</span>
 <span class="normal">1138</span>
-<span class="normal">1139</span>
-<span class="normal">1140</span>
-<span class="normal">1141</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPPeerDropStats</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">1139</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPPeerDropStats</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies BGP NLRI drop statistics for the provided BGP IPv4 peer(s).</span>
 
 <span class="sd">    This test performs the following checks for each specified peer:</span>
@@ -6306,7 +6298,9 @@ have successfully negotiated the specified AFI/SAFI</li>
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/routing/bgp.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1377</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1375</span>
+<span class="normal">1376</span>
+<span class="normal">1377</span>
 <span class="normal">1378</span>
 <span class="normal">1379</span>
 <span class="normal">1380</span>
@@ -6370,9 +6364,7 @@ have successfully negotiated the specified AFI/SAFI</li>
 <span class="normal">1438</span>
 <span class="normal">1439</span>
 <span class="normal">1440</span>
-<span class="normal">1441</span>
-<span class="normal">1442</span>
-<span class="normal">1443</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPPeerGroup</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">1441</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPPeerGroup</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies BGP peer group of BGP IPv4 peer(s).</span>
 
 <span class="sd">    This test performs the following checks for each specified peer:</span>
@@ -7119,7 +7111,9 @@ have successfully negotiated the specified AFI/SAFI</li>
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/routing/bgp.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1299</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1297</span>
+<span class="normal">1298</span>
+<span class="normal">1299</span>
 <span class="normal">1300</span>
 <span class="normal">1301</span>
 <span class="normal">1302</span>
@@ -7192,9 +7186,7 @@ have successfully negotiated the specified AFI/SAFI</li>
 <span class="normal">1369</span>
 <span class="normal">1370</span>
 <span class="normal">1371</span>
-<span class="normal">1372</span>
-<span class="normal">1373</span>
-<span class="normal">1374</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPPeerRouteLimit</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">1372</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPPeerRouteLimit</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies maximum routes and warning limit for BGP IPv4 peer(s).</span>
 
 <span class="sd">    This test performs the following checks for each specified peer:</span>
@@ -7997,7 +7989,9 @@ the <code>minimum_established_time</code>.</li>
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/routing/bgp.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1446</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1444</span>
+<span class="normal">1445</span>
+<span class="normal">1446</span>
 <span class="normal">1447</span>
 <span class="normal">1448</span>
 <span class="normal">1449</span>
@@ -8084,9 +8078,7 @@ the <code>minimum_established_time</code>.</li>
 <span class="normal">1530</span>
 <span class="normal">1531</span>
 <span class="normal">1532</span>
-<span class="normal">1533</span>
-<span class="normal">1534</span>
-<span class="normal">1535</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPPeerSessionRibd</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">1533</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPPeerSessionRibd</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the session state of BGP IPv4 peer(s).</span>
 
 <span class="sd">    Compatible with EOS operating in `ribd` routing protocol model.</span>
@@ -8289,7 +8281,9 @@ the <code>minimum_established_time</code>.</li>
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/routing/bgp.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1935</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1933</span>
+<span class="normal">1934</span>
+<span class="normal">1935</span>
 <span class="normal">1936</span>
 <span class="normal">1937</span>
 <span class="normal">1938</span>
@@ -8364,9 +8358,7 @@ the <code>minimum_established_time</code>.</li>
 <span class="normal">2007</span>
 <span class="normal">2008</span>
 <span class="normal">2009</span>
-<span class="normal">2010</span>
-<span class="normal">2011</span>
-<span class="normal">2012</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPPeerTtlMultiHops</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">2010</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPPeerTtlMultiHops</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies BGP TTL and max-ttl-hops count for BGP IPv4 peer(s).</span>
 
 <span class="sd">    This test performs the following checks for each specified BGP peer:</span>
@@ -8564,7 +8556,9 @@ the <code>minimum_established_time</code>.</li>
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/routing/bgp.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1144</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1142</span>
+<span class="normal">1143</span>
+<span class="normal">1144</span>
 <span class="normal">1145</span>
 <span class="normal">1146</span>
 <span class="normal">1147</span>
@@ -8636,9 +8630,7 @@ the <code>minimum_established_time</code>.</li>
 <span class="normal">1213</span>
 <span class="normal">1214</span>
 <span class="normal">1215</span>
-<span class="normal">1216</span>
-<span class="normal">1217</span>
-<span class="normal">1218</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPPeerUpdateErrors</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">1216</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPPeerUpdateErrors</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies BGP update error counters for the provided BGP IPv4 peer(s).</span>
 
 <span class="sd">    This test performs the following checks for each specified peer:</span>
@@ -9154,7 +9146,9 @@ the <code>minimum_established_time</code>.</li>
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/routing/bgp.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1538</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1536</span>
+<span class="normal">1537</span>
+<span class="normal">1538</span>
 <span class="normal">1539</span>
 <span class="normal">1540</span>
 <span class="normal">1541</span>
@@ -9209,9 +9203,7 @@ the <code>minimum_established_time</code>.</li>
 <span class="normal">1590</span>
 <span class="normal">1591</span>
 <span class="normal">1592</span>
-<span class="normal">1593</span>
-<span class="normal">1594</span>
-<span class="normal">1595</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPPeersHealthRibd</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">1593</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPPeersHealthRibd</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the health of all the BGP IPv4 peer(s).</span>
 
 <span class="sd">    Compatible with EOS operating in `ribd` routing protocol model.</span>
@@ -9395,7 +9387,9 @@ the <code>minimum_established_time</code>.</li>
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/routing/bgp.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1841</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1839</span>
+<span class="normal">1840</span>
+<span class="normal">1841</span>
 <span class="normal">1842</span>
 <span class="normal">1843</span>
 <span class="normal">1844</span>
@@ -9484,9 +9478,7 @@ the <code>minimum_established_time</code>.</li>
 <span class="normal">1927</span>
 <span class="normal">1928</span>
 <span class="normal">1929</span>
-<span class="normal">1930</span>
-<span class="normal">1931</span>
-<span class="normal">1932</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPRedistribution</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">1930</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPRedistribution</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies BGP redistribution.</span>
 
 <span class="sd">    This test performs the following checks for each specified VRF in the BGP instance:</span>
@@ -9691,7 +9683,9 @@ the <code>minimum_established_time</code>.</li>
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/routing/bgp.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1750</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1748</span>
+<span class="normal">1749</span>
+<span class="normal">1750</span>
 <span class="normal">1751</span>
 <span class="normal">1752</span>
 <span class="normal">1753</span>
@@ -9777,9 +9771,7 @@ the <code>minimum_established_time</code>.</li>
 <span class="normal">1833</span>
 <span class="normal">1834</span>
 <span class="normal">1835</span>
-<span class="normal">1836</span>
-<span class="normal">1837</span>
-<span class="normal">1838</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPRouteECMP</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">1836</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPRouteECMP</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies BGP IPv4 route ECMP paths.</span>
 
 <span class="sd">    This test performs the following checks for each specified BGP route entry:</span>
@@ -9985,7 +9977,9 @@ the <code>minimum_established_time</code>.</li>
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/routing/bgp.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1673</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1671</span>
+<span class="normal">1672</span>
+<span class="normal">1673</span>
 <span class="normal">1674</span>
 <span class="normal">1675</span>
 <span class="normal">1676</span>
@@ -10057,9 +10051,7 @@ the <code>minimum_established_time</code>.</li>
 <span class="normal">1742</span>
 <span class="normal">1743</span>
 <span class="normal">1744</span>
-<span class="normal">1745</span>
-<span class="normal">1746</span>
-<span class="normal">1747</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPRoutePaths</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">1745</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPRoutePaths</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies BGP IPv4 route paths.</span>
 
 <span class="sd">    This test performs the following checks for each specified BGP route entry:</span>
@@ -10614,7 +10606,9 @@ the <code>minimum_established_time</code>.</li>
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/routing/bgp.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 990</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 988</span>
+<span class="normal"> 989</span>
+<span class="normal"> 990</span>
 <span class="normal"> 991</span>
 <span class="normal"> 992</span>
 <span class="normal"> 993</span>
@@ -10687,9 +10681,7 @@ the <code>minimum_established_time</code>.</li>
 <span class="normal">1060</span>
 <span class="normal">1061</span>
 <span class="normal">1062</span>
-<span class="normal">1063</span>
-<span class="normal">1064</span>
-<span class="normal">1065</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPTimers</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">1063</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBGPTimers</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the timers of BGP IPv4 peer(s).</span>
 
 <span class="sd">    This test performs the following checks for each specified peer:</span>
@@ -10878,7 +10870,9 @@ the <code>minimum_established_time</code>.</li>
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/tests/routing/bgp.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1221</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1219</span>
+<span class="normal">1220</span>
+<span class="normal">1221</span>
 <span class="normal">1222</span>
 <span class="normal">1223</span>
 <span class="normal">1224</span>
@@ -10951,9 +10945,7 @@ the <code>minimum_established_time</code>.</li>
 <span class="normal">1291</span>
 <span class="normal">1292</span>
 <span class="normal">1293</span>
-<span class="normal">1294</span>
-<span class="normal">1295</span>
-<span class="normal">1296</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBgpRouteMaps</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="normal">1294</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyBgpRouteMaps</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies BGP inbound and outbound route-maps of BGP IPv4 peer(s).</span>
 
 <span class="sd">    This test performs the following checks for each specified peer:</span>
@@ -11615,11 +11607,7 @@ the <code>minimum_established_time</code>.</li>
 
             <details class="quote">
               <summary>Source code in <code>anta/input_models/routing/bgp.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">340</span>
-<span class="normal">341</span>
-<span class="normal">342</span>
-<span class="normal">343</span>
-<span class="normal">344</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">344</span>
 <span class="normal">345</span>
 <span class="normal">346</span>
 <span class="normal">347</span>
@@ -11655,7 +11643,11 @@ the <code>minimum_established_time</code>.</li>
 <span class="normal">377</span>
 <span class="normal">378</span>
 <span class="normal">379</span>
-<span class="normal">380</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span>
+<span class="normal">384</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">validate_afi_safi_supported_routes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate each address family supported redistributed protocol.</span>
 
@@ -11707,11 +11699,7 @@ the <code>minimum_established_time</code>.</li>
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/input_models/routing/bgp.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">332</span>
-<span class="normal">333</span>
-<span class="normal">334</span>
-<span class="normal">335</span>
-<span class="normal">336</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">336</span>
 <span class="normal">337</span>
 <span class="normal">338</span>
 <span class="normal">339</span>
@@ -11764,7 +11752,11 @@ the <code>minimum_established_time</code>.</li>
 <span class="normal">386</span>
 <span class="normal">387</span>
 <span class="normal">388</span>
-<span class="normal">389</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AddressFamilyConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="normal">389</span>
+<span class="normal">390</span>
+<span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AddressFamilyConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Model representing a BGP address family configuration.&quot;&quot;&quot;</span>
 
     <span class="n">afi_safi</span><span class="p">:</span> <span class="n">RedistributedAfiSafi</span>
@@ -12252,11 +12244,7 @@ Can be enabled in the `VerifyBGPPeerCount` tests.
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/input_models/routing/bgp.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">205</span>
-<span class="normal">206</span>
-<span class="normal">207</span>
-<span class="normal">208</span>
-<span class="normal">209</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">209</span>
 <span class="normal">210</span>
 <span class="normal">211</span>
 <span class="normal">212</span>
@@ -12267,7 +12255,11 @@ Can be enabled in the `VerifyBGPPeerCount` tests.
 <span class="normal">217</span>
 <span class="normal">218</span>
 <span class="normal">219</span>
-<span class="normal">220</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BgpNeighbor</span><span class="p">(</span><span class="n">BgpPeer</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BgpNeighbor</span><span class="p">(</span><span class="n">BgpPeer</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Alias for the BgpPeer model to maintain backward compatibility.</span>
 
 <span class="sd">    When initialised, it will emit a deprecation warning and call the BgpPeer model.</span>
@@ -12597,6 +12589,27 @@ Optional field in the `VerifyBGPPeerRouteLimit` test. If not provided, the test 
                       <code><span title="pydantic.Field">Field</span>(<span title="pydantic.Field(default)">default</span>=None, <span title="pydantic.Field(ge)">ge</span>=1, <span title="pydantic.Field(le)">le</span>=255)</code>
                 </td>
               </tr>
+              <tr>
+                <td><code>advertised_communities</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="            BgpCommunity
+
+
+  
+      module-attribute
+   (anta.custom_types.BgpCommunity)" href="../types/#anta.custom_types.BgpCommunity">BgpCommunity</a>]</code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    List of advertised communities to be verified.
+
+Optional field in the `VerifyBGPAdvCommunities` test. If not provided, the test will verify that all communities are advertised.
+                  </div>
+                </td>
+                <td>
+                      <code><span title="pydantic.Field">Field</span>(<span title="pydantic.Field(default)">default</span>=[&#39;standard&#39;, &#39;extended&#39;, &#39;large&#39;])</code>
+                </td>
+              </tr>
           </tbody>
         </table>
   </div>
@@ -12661,7 +12674,11 @@ Optional field in the `VerifyBGPPeerRouteLimit` test. If not provided, the test 
 <span class="normal">199</span>
 <span class="normal">200</span>
 <span class="normal">201</span>
-<span class="normal">202</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BgpPeer</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BgpPeer</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Model for a BGP peer.</span>
 
 <span class="sd">    Only IPv4 peers are supported for now.</span>
@@ -12710,6 +12727,10 @@ Optional field in the `VerifyBGPPeerRouteLimit` test. If not provided, the test 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;The Time-To-Live (TTL). Required field in the `VerifyBGPPeerTtlMultiHops` test.&quot;&quot;&quot;</span>
     <span class="n">max_ttl_hops</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mi">255</span><span class="p">)</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;The Max TTL hops. Required field in the `VerifyBGPPeerTtlMultiHops` test.&quot;&quot;&quot;</span>
+    <span class="n">advertised_communities</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BgpCommunity</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;standard&quot;</span><span class="p">,</span> <span class="s2">&quot;extended&quot;</span><span class="p">,</span> <span class="s2">&quot;large&quot;</span><span class="p">])</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;List of advertised communities to be verified.</span>
+
+<span class="sd">    Optional field in the `VerifyBGPAdvCommunities` test. If not provided, the test will verify that all communities are advertised.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a human-readable string representation of the BgpPeer for reporting.&quot;&quot;&quot;</span>
@@ -12835,11 +12856,7 @@ Optional field in the `VerifyBGPPeerRouteLimit` test. If not provided, the test 
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/input_models/routing/bgp.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">236</span>
-<span class="normal">237</span>
-<span class="normal">238</span>
-<span class="normal">239</span>
-<span class="normal">240</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">240</span>
 <span class="normal">241</span>
 <span class="normal">242</span>
 <span class="normal">243</span>
@@ -12858,7 +12875,11 @@ Optional field in the `VerifyBGPPeerRouteLimit` test. If not provided, the test 
 <span class="normal">256</span>
 <span class="normal">257</span>
 <span class="normal">258</span>
-<span class="normal">259</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BgpRoute</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BgpRoute</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Model representing BGP routes.</span>
 
 <span class="sd">    Only IPv4 prefixes are supported for now.</span>
@@ -12974,11 +12995,7 @@ Optional field in the `VerifyBGPPeerRouteLimit` test. If not provided, the test 
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/input_models/routing/bgp.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">262</span>
-<span class="normal">263</span>
-<span class="normal">264</span>
-<span class="normal">265</span>
-<span class="normal">266</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">266</span>
 <span class="normal">267</span>
 <span class="normal">268</span>
 <span class="normal">269</span>
@@ -12990,7 +13007,11 @@ Optional field in the `VerifyBGPPeerRouteLimit` test. If not provided, the test 
 <span class="normal">275</span>
 <span class="normal">276</span>
 <span class="normal">277</span>
-<span class="normal">278</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BgpRoutePath</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BgpRoutePath</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Model representing a BGP route path.&quot;&quot;&quot;</span>
 
     <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
@@ -13099,11 +13120,7 @@ Optional field in the `VerifyBGPPeerRouteLimit` test. If not provided, the test 
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/input_models/routing/bgp.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">281</span>
-<span class="normal">282</span>
-<span class="normal">283</span>
-<span class="normal">284</span>
-<span class="normal">285</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">285</span>
 <span class="normal">286</span>
 <span class="normal">287</span>
 <span class="normal">288</span>
@@ -13114,7 +13131,11 @@ Optional field in the `VerifyBGPPeerRouteLimit` test. If not provided, the test 
 <span class="normal">293</span>
 <span class="normal">294</span>
 <span class="normal">295</span>
-<span class="normal">296</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BgpVrf</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BgpVrf</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Model representing a VRF in a BGP instance.&quot;&quot;&quot;</span>
 
     <span class="n">vrf</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
@@ -13254,13 +13275,13 @@ Optional field in the `VerifyBGPPeerRouteLimit` test. If not provided, the test 
 
             <details class="quote">
               <summary>Source code in <code>anta/input_models/routing/bgp.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">309</span>
-<span class="normal">310</span>
-<span class="normal">311</span>
-<span class="normal">312</span>
-<span class="normal">313</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">313</span>
 <span class="normal">314</span>
-<span class="normal">315</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">validate_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate that &#39;include_leaked&#39; is not set when the redistributed protocol is AttachedHost, User, Dynamic, or RIP.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_leaked</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">proto</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;AttachedHost&quot;</span><span class="p">,</span> <span class="s2">&quot;EOS SDK&quot;</span><span class="p">,</span> <span class="s2">&quot;Dynamic&quot;</span><span class="p">,</span> <span class="s2">&quot;RIP&quot;</span><span class="p">]:</span>
@@ -13278,11 +13299,7 @@ Optional field in the `VerifyBGPPeerRouteLimit` test. If not provided, the test 
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/input_models/routing/bgp.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">299</span>
-<span class="normal">300</span>
-<span class="normal">301</span>
-<span class="normal">302</span>
-<span class="normal">303</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">303</span>
 <span class="normal">304</span>
 <span class="normal">305</span>
 <span class="normal">306</span>
@@ -13308,7 +13325,11 @@ Optional field in the `VerifyBGPPeerRouteLimit` test. If not provided, the test 
 <span class="normal">326</span>
 <span class="normal">327</span>
 <span class="normal">328</span>
-<span class="normal">329</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RedistributedRouteConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RedistributedRouteConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Model representing a BGP redistributed route configuration.&quot;&quot;&quot;</span>
 
     <span class="n">proto</span><span class="p">:</span> <span class="n">RedistributedProtocol</span>
@@ -13436,17 +13457,17 @@ Optional field in the `VerifyBGPPeerRouteLimit` test. If not provided, the test 
   </div>
   <details class="quote">
   <summary>Source code in <code>anta/input_models/routing/bgp.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">223</span>
-<span class="normal">224</span>
-<span class="normal">225</span>
-<span class="normal">226</span>
-<span class="normal">227</span>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">227</span>
 <span class="normal">228</span>
 <span class="normal">229</span>
 <span class="normal">230</span>
 <span class="normal">231</span>
 <span class="normal">232</span>
-<span class="normal">233</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VxlanEndpoint</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VxlanEndpoint</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Model for a VXLAN endpoint.&quot;&quot;&quot;</span>
 
     <span class="n">address</span><span class="p">:</span> <span class="n">IPv4Address</span> <span class="o">|</span> <span class="n">MacAddress</span>
