@@ -634,8 +634,10 @@ class VerifyBGPPeerMPCaps(AntaTest):
                 self.result.is_failure(f"{peer} - Not found")
                 continue
 
-            # Fetching the multiprotocol capabilities
-            act_mp_caps = get_value(peer_data, "neighborCapabilities.multiprotocolCaps")
+            # Check if the multiprotocol capabilities are found
+            if (act_mp_caps := get_value(peer_data, "neighborCapabilities.multiprotocolCaps")) is None:
+                self.result.is_failure(f"{peer} - Multiprotocol capabilities not found")
+                continue
 
             # If strict is True, check if only the specified capabilities are configured
             if peer.strict and sorted(peer.capabilities) != sorted(act_mp_caps):
