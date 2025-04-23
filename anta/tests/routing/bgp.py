@@ -451,10 +451,10 @@ class VerifyBGPExchangedRoutes(AntaTest):
     ----------------
     * Success: If all of the following conditions are met:
         - All specified advertised/received routes are found in the BGP route table.
-        - All routes are in 'active' and 'valid' states as per `check_active` input flag.
+        - All routes are 'active' and 'valid' or 'valid' only per the `check_active` input flag.
     * Failure: If any of the following occur:
         - An advertised/received route is not found in the BGP route table.
-        - Any route is not in an 'active/valid' state as per `check_active` input flag.
+        - Any route is not 'active' and 'valid' or 'valid' only per `check_active` input flag.
 
     Examples
     --------
@@ -488,7 +488,7 @@ class VerifyBGPExchangedRoutes(AntaTest):
         """Input model for the VerifyBGPExchangedRoutes test."""
 
         check_active: bool = True
-        """Flag to check if the provided prefix is active and valid. If False, checks if the prefix is valid only. """
+        """Flag to check if the provided prefixes must be active and valid. If False, checks if the prefixes are valid only. """
         bgp_peers: list[BgpPeer]
         """List of BGP IPv4 peers."""
         BgpNeighbor: ClassVar[type[BgpNeighbor]] = BgpNeighbor
