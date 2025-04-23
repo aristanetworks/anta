@@ -12,9 +12,7 @@ from warnings import warn
 from pydantic import BaseModel, ConfigDict, Field, PositiveInt, model_validator
 from pydantic_extra_types.mac_address import MacAddress
 
-
 from anta.custom_types import Afi, BgpCommunity, BgpDropStats, BgpUpdateError, Interface, MultiProtocolCaps, RedistributedAfiSafi, RedistributedProtocol, Safi, Vni
-
 
 if TYPE_CHECKING:
     import sys
