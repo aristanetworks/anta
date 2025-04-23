@@ -11,10 +11,10 @@ from anta.custom_types import RegexString
 
 
 class RunningConfigSection(BaseModel):
-    """class RunningConfigSection model representing the section details."""
+    """Model representing a running-config section."""
 
     model_config = ConfigDict(extra="forbid")
-    section_matcher: RegexString
+    section: RegexString
     """A unique regex pattern to extract specific config entries from the running output."""
-    match_patterns: list[RegexString]
+    regex_patterns: list[RegexString]
     """Regex to validate matching patterns within selected configuration entries."""

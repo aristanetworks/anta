@@ -106,14 +106,14 @@ anta.tests.configuration:
   - VerifyRunningConfigDiffs:
       # Verifies there is no difference between the running-config and the startup-config.
   - VerifyRunningConfigLines:
-      # Search the Running-Config for the given RegEx patterns.
+      # Verifies the given regular expression patterns are present in the running-config.
       sections:
-        - section_matcher: router bgp
-          match_patterns:
+        - section: router bgp
+          regex_patterns:
             - neighbor 10.111.1.0 peer group SPINE
             - router-id 10.111.254.1
-        - section_matcher: ^interface ethernet1$
-          match_patterns:
+        - section: ^interface ethernet1$
+          regex_patterns:
             - switchport mode trunk
       regex_patterns:
         - "^enable password.*$"
