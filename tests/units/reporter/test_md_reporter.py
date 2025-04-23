@@ -11,9 +11,9 @@ from typing import TYPE_CHECKING, ClassVar
 
 import pytest
 
-from anta.models import AntaTestStatus
 from anta.reporter.md_reporter import MDReportBase, MDReportGenerator
 from anta.result_manager import ResultManager
+from anta.result_manager.models import AntaTestStatus
 from anta.tools import convert_categories
 
 if TYPE_CHECKING:
