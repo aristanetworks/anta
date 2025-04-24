@@ -209,7 +209,7 @@ def test_anta_nrfu_md_report_with_hide(click_runner: CliRunner, tmp_path: Path) 
     assert total_tests == 3
     assert total_tests_success == 3
 
-    # Collecting the row inside the Test Results section
+    # Collecting the rows inside the Test Results section
     row_count = 0
     lines = content.splitlines()
 

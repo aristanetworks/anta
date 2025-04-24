@@ -23,7 +23,10 @@ DATA_DIR: Path = Path(__file__).parent.parent.parent.resolve() / "data"
 
 
 class FailedTestResultsSummary(MDReportBase):
-    """Generates the `## Failed Test Results Summary` section of the markdown report."""
+    """Test-only class used for simulating behavior in unit tests.
+
+    Generates the `## Failed Test Results Summary` section of the markdown report.
+    """
 
     TABLE_HEADING: ClassVar[list[str]] = [
         "| Device Under Test | Categories | Test | Description | Custom Field | Result | Messages |",
@@ -43,7 +46,7 @@ class FailedTestResultsSummary(MDReportBase):
     def generate_section(self) -> None:
         """Generate the `## Failed Test Results Summary` section of the markdown report."""
         self.write_heading(heading_level=2)
-        self.write_table(table_heading=self.TABLE_HEADING, last_table=True)
+        self.write_table(table_heading=self.TABLE_HEADING)
 
 
 def test_md_report_generate(tmp_path: Path, result_manager: ResultManager) -> None:
@@ -74,7 +77,7 @@ def test_md_report_generate_sections(tmp_path: Path, result_manager: ResultManag
     sections = [(section, rm) for section in MDReportGenerator.DEFAULT_SECTIONS]
     # Adding custom section
     failed_section = (FailedTestResultsSummary, rm.filter({AntaTestStatus.SUCCESS, AntaTestStatus.ERROR, AntaTestStatus.SKIPPED, AntaTestStatus.UNSET}))
-    sections.append(failed_section)
+    sections.insert(-1, failed_section)
 
     # Generate the Markdown report
     MDReportGenerator.generate_sections(sections, md_filename)

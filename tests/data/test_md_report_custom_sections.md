@@ -56,6 +56,26 @@
 | VLAN | 1 | 0 | 0 | 1 | 0 |
 | VXLAN | 1 | 1 | 0 | 0 | 0 |
 
+## Failed Test Results Summary
+
+| Device Under Test | Categories | Test | Description | Custom Field | Result | Messages |
+| ----------------- | ---------- | ---- | ----------- | ------------ | ------ | -------- |
+| s1-spine1 | AAA | VerifyAcctConsoleMethods | Verifies the AAA accounting console method lists for different accounting types (system, exec, commands, dot1x). | - | failure | AAA console accounting is not configured for commands, exec, system, dot1x |
+| s1-spine1 | BFD | VerifyBFDPeersHealth | Verifies the health of IPv4 BFD peers across all VRFs. | - | failure | No IPv4 BFD peers are configured for any VRF. |
+| s1-spine1 | Connectivity | VerifyLLDPNeighbors | Verifies the connection status of the specified LLDP (Link Layer Discovery Protocol) neighbors. | - | failure | Port: Ethernet1 Neighbor: DC1-SPINE1 Neighbor Port: Ethernet1 - Wrong LLDP neighbors: spine1-dc1.fun.aristanetworks.com/Ethernet3<br>Port: Ethernet2 Neighbor: DC1-SPINE2 Neighbor Port: Ethernet1 - Wrong LLDP neighbors: spine2-dc1.fun.aristanetworks.com/Ethernet3 |
+| s1-spine1 | Interfaces | VerifyIPProxyARP | Verifies if Proxy ARP is enabled. | - | failure | Interface: Ethernet1 - Proxy-ARP disabled<br>Interface: Ethernet2 - Proxy-ARP disabled |
+| s1-spine1 | Logging | VerifyLoggingHosts | Verifies logging hosts (syslog servers) for a specified VRF. | - | failure | Syslog servers 1.1.1.1, 2.2.2.2 are not configured in VRF default |
+| s1-spine1 | MLAG | VerifyMlagDualPrimary | Verifies the MLAG dual-primary detection parameters. | - | failure | Dual-primary detection is disabled |
+| s1-spine1 | Security | VerifyBannerLogin | Verifies the login banner of a device. | - | failure | Expected '# Copyright (c) 2023-2024 Arista Networks, Inc.<br># Use of this source code is governed by the Apache License 2.0<br># that can be found in the LICENSE file.<br>' as the login banner, but found '' instead. |
+| s1-spine1 | Security | VerifyBannerMotd | Verifies the motd banner of a device. | - | failure | Expected '# Copyright (c) 2023-2024 Arista Networks, Inc.<br># Use of this source code is governed by the Apache License 2.0<br># that can be found in the LICENSE file.<br>' as the motd banner, but found '' instead. |
+| s1-spine1 | Services | VerifyHostname | Verifies the hostname of a device. | - | failure | Incorrect Hostname - Expected: s1-spine1 Actual: leaf1-dc1 |
+| s1-spine1 | SNMP | VerifySnmpContact | Verifies the SNMP contact of a device. | - | failure | SNMP contact is not configured. |
+| s1-spine1 | Software | VerifyEOSVersion | Verifies the EOS version of the device. | - | failure | EOS version mismatch - Actual: 4.31.0F-33804048.4310F (engineering build) not in Expected: 4.25.4M, 4.26.1F |
+| s1-spine1 | STUN | VerifyStunClient | (Deprecated) Verifies the translation for a source address on a STUN client. | - | failure | Client 172.18.3.2 Port: 4500 - STUN client translation not found. |
+| s1-spine1 | STUN | VerifyStunClientTranslation | Verifies the translation for a source address on a STUN client. | - | failure | Client 172.18.3.2 Port: 4500 - STUN client translation not found.<br>Client 100.64.3.2 Port: 4500 - STUN client translation not found. |
+| s1-spine1 | System | VerifyNTPAssociations | Verifies the Network Time Protocol (NTP) associations. | - | failure | NTP Server: 1.1.1.1 Preferred: True Stratum: 1 - Not configured<br>NTP Server: 2.2.2.2 Preferred: False Stratum: 2 - Not configured<br>NTP Server: 3.3.3.3 Preferred: False Stratum: 2 - Not configured |
+| s1-spine1 | VLAN | VerifyDynamicVlanSource | Verifies dynamic VLAN allocation for specified VLAN sources. | - | failure | Dynamic VLAN source(s) exist but have no VLANs allocated: mlagsync |
+
 ## Test Results
 
 | Device Under Test | Categories | Test | Description | Custom Field | Result | Messages |
@@ -90,22 +110,3 @@
 | s1-spine1 | System | VerifyNTPAssociations | Verifies the Network Time Protocol (NTP) associations. | - | failure | NTP Server: 1.1.1.1 Preferred: True Stratum: 1 - Not configured<br>NTP Server: 2.2.2.2 Preferred: False Stratum: 2 - Not configured<br>NTP Server: 3.3.3.3 Preferred: False Stratum: 2 - Not configured |
 | s1-spine1 | VLAN | VerifyDynamicVlanSource | Verifies dynamic VLAN allocation for specified VLAN sources. | - | failure | Dynamic VLAN source(s) exist but have no VLANs allocated: mlagsync |
 | s1-spine1 | VXLAN | VerifyVxlan1ConnSettings | Verifies the interface vxlan1 source interface and UDP port. | - | success | - |
-## Failed Test Results Summary
-
-| Device Under Test | Categories | Test | Description | Custom Field | Result | Messages |
-| ----------------- | ---------- | ---- | ----------- | ------------ | ------ | -------- |
-| s1-spine1 | AAA | VerifyAcctConsoleMethods | Verifies the AAA accounting console method lists for different accounting types (system, exec, commands, dot1x). | - | failure | AAA console accounting is not configured for commands, exec, system, dot1x |
-| s1-spine1 | BFD | VerifyBFDPeersHealth | Verifies the health of IPv4 BFD peers across all VRFs. | - | failure | No IPv4 BFD peers are configured for any VRF. |
-| s1-spine1 | Connectivity | VerifyLLDPNeighbors | Verifies the connection status of the specified LLDP (Link Layer Discovery Protocol) neighbors. | - | failure | Port: Ethernet1 Neighbor: DC1-SPINE1 Neighbor Port: Ethernet1 - Wrong LLDP neighbors: spine1-dc1.fun.aristanetworks.com/Ethernet3<br>Port: Ethernet2 Neighbor: DC1-SPINE2 Neighbor Port: Ethernet1 - Wrong LLDP neighbors: spine2-dc1.fun.aristanetworks.com/Ethernet3 |
-| s1-spine1 | Interfaces | VerifyIPProxyARP | Verifies if Proxy ARP is enabled. | - | failure | Interface: Ethernet1 - Proxy-ARP disabled<br>Interface: Ethernet2 - Proxy-ARP disabled |
-| s1-spine1 | Logging | VerifyLoggingHosts | Verifies logging hosts (syslog servers) for a specified VRF. | - | failure | Syslog servers 1.1.1.1, 2.2.2.2 are not configured in VRF default |
-| s1-spine1 | MLAG | VerifyMlagDualPrimary | Verifies the MLAG dual-primary detection parameters. | - | failure | Dual-primary detection is disabled |
-| s1-spine1 | Security | VerifyBannerLogin | Verifies the login banner of a device. | - | failure | Expected '# Copyright (c) 2023-2024 Arista Networks, Inc.<br># Use of this source code is governed by the Apache License 2.0<br># that can be found in the LICENSE file.<br>' as the login banner, but found '' instead. |
-| s1-spine1 | Security | VerifyBannerMotd | Verifies the motd banner of a device. | - | failure | Expected '# Copyright (c) 2023-2024 Arista Networks, Inc.<br># Use of this source code is governed by the Apache License 2.0<br># that can be found in the LICENSE file.<br>' as the motd banner, but found '' instead. |
-| s1-spine1 | Services | VerifyHostname | Verifies the hostname of a device. | - | failure | Incorrect Hostname - Expected: s1-spine1 Actual: leaf1-dc1 |
-| s1-spine1 | SNMP | VerifySnmpContact | Verifies the SNMP contact of a device. | - | failure | SNMP contact is not configured. |
-| s1-spine1 | Software | VerifyEOSVersion | Verifies the EOS version of the device. | - | failure | EOS version mismatch - Actual: 4.31.0F-33804048.4310F (engineering build) not in Expected: 4.25.4M, 4.26.1F |
-| s1-spine1 | STUN | VerifyStunClient | (Deprecated) Verifies the translation for a source address on a STUN client. | - | failure | Client 172.18.3.2 Port: 4500 - STUN client translation not found. |
-| s1-spine1 | STUN | VerifyStunClientTranslation | Verifies the translation for a source address on a STUN client. | - | failure | Client 172.18.3.2 Port: 4500 - STUN client translation not found.<br>Client 100.64.3.2 Port: 4500 - STUN client translation not found. |
-| s1-spine1 | System | VerifyNTPAssociations | Verifies the Network Time Protocol (NTP) associations. | - | failure | NTP Server: 1.1.1.1 Preferred: True Stratum: 1 - Not configured<br>NTP Server: 2.2.2.2 Preferred: False Stratum: 2 - Not configured<br>NTP Server: 3.3.3.3 Preferred: False Stratum: 2 - Not configured |
-| s1-spine1 | VLAN | VerifyDynamicVlanSource | Verifies dynamic VLAN allocation for specified VLAN sources. | - | failure | Dynamic VLAN source(s) exist but have no VLANs allocated: mlagsync |
