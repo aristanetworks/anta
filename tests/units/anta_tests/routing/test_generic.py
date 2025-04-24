@@ -532,11 +532,29 @@ DATA: list[dict[str, Any]] = [
                 "v4RoutingEnabled": True,
                 "v6RoutingEnabled": True,
                 "vrrpIntfs": 0,
+                "v6IntfForwarding": True,
                 "multicastRouting": {"ipMulticastEnabled": False, "ip6MulticastEnabled": False},
                 "v6EcmpInfo": {"v6EcmpRouteSupport": True},
             }
         ],
-        "inputs": {"v4_routing_enabled": True, "v6_routing_enabled": True},
+        "inputs": {"ipv4_unicast": True, "ipv6_unicast": True, "ipv6_interfaces": True},
+        "expected": {
+            "result": "success",
+        },
+    },
+    {
+        "name": "success-routing-disable",
+        "test": VerifyRoutingStatus,
+        "eos_data": [
+            {
+                "v4RoutingEnabled": False,
+                "v6RoutingEnabled": False,
+                "vrrpIntfs": 0,
+                "multicastRouting": {"ipMulticastEnabled": False, "ip6MulticastEnabled": False},
+                "v6EcmpInfo": {"v6EcmpRouteSupport": False},
+            }
+        ],
+        "inputs": {},
         "expected": {
             "result": "success",
         },
@@ -546,19 +564,19 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyRoutingStatus,
         "eos_data": [
             {
-                "v4RoutingEnabled": True,
-                "v6RoutingEnabled": True,
+                "v4RoutingEnabled": False,
+                "v6RoutingEnabled": False,
                 "vrrpIntfs": 0,
                 "multicastRouting": {"ipMulticastEnabled": False, "ip6MulticastEnabled": False},
                 "v6EcmpInfo": {"v6EcmpRouteSupport": True},
             }
         ],
-        "inputs": {"ip_multicast_enabled": True, "ipv6_multicast_enabled": True},
+        "inputs": {"ipv4_multicast": True, "ipv6_multicast": True},
         "expected": {
             "result": "failure",
             "messages": [
-                "IPv4 multicast routing mismatch - Expected: Enabled Actual: Disabled",
-                "IPv6 multicast routing mismatch - Expected: Enabled Actual: Disabled",
+                "IPv4 multicast routing mismatch - Expected: True Actual: False",
+                "IPv6 multicast routing mismatch - Expected: True Actual: False",
             ],
         },
     },
@@ -574,10 +592,28 @@ DATA: list[dict[str, Any]] = [
                 "v6EcmpInfo": {"v6EcmpRouteSupport": True},
             }
         ],
-        "inputs": {"v4_routing_enabled": True, "v6_routing_enabled": True},
+        "inputs": {"ipv4_unicast": True, "ipv6_unicast": True},
         "expected": {
             "result": "failure",
-            "messages": ["IPv4 routing mismatch - Expected: Enabled Actual: Disabled", "IPv6 routing mismatch - Expected: Enabled Actual: Disabled"],
+            "messages": ["IPv4 routing mismatch - Expected: True Actual: False", "IPv6 routing mismatch - Expected: True Actual: False"],
+        },
+    },
+    {
+        "name": "failure-ipv6-interface-routing-enablement",
+        "test": VerifyRoutingStatus,
+        "eos_data": [
+            {
+                "v4RoutingEnabled": True,
+                "v6RoutingEnabled": True,
+                "vrrpIntfs": 0,
+                "multicastRouting": {"ipMulticastEnabled": False, "ip6MulticastEnabled": False},
+                "v6EcmpInfo": {"v6EcmpRouteSupport": True},
+            }
+        ],
+        "inputs": {"ipv4_unicast": True, "ipv6_unicast": True, "ipv6_interfaces": True},
+        "expected": {
+            "result": "failure",
+            "messages": ["IPv6 interface routing mismatch - Expected: True Actual: False"],
         },
     },
 ]
