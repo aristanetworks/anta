@@ -19,6 +19,7 @@ Here are the tests that we currently provide:
 - [Configuration](tests/configuration.md)
 - [Connectivity](tests/connectivity.md)
 - [CVX](tests/cvx.md)
+- [EVPN](tests/evpn.md)
 - [Field Notices](tests/field_notices.md)
 - [Flow Tracking](tests/flow_tracking.md)
 - [GreenT](tests/greent.md)
