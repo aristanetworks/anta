@@ -13,10 +13,10 @@
       
       
       
-        <link rel="prev" href="../ptp/">
+        <link rel="prev" href="../cvx/">
       
       
-        <link rel="next" href="../routing.generic/">
+        <link rel="next" href="../field_notices/">
       
       
       <link rel="icon" href="../../../imgs/favicon.ico">
@@ -24,7 +24,7 @@
     
     
       
-        <title>Router Path Selection - Arista Network Test Automation - ANTA</title>
+        <title>EVPN - Arista Network Test Automation - ANTA</title>
       
     
     
@@ -150,7 +150,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Router Path Selection
+              EVPN
             
           </span>
         </div>
@@ -1063,10 +1063,30 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../evpn/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    EVPN
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -1077,6 +1097,136 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#tests" class="md-nav__link">
+      <span class="md-ellipsis">
+        Tests
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="Tests">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.evpn.VerifyEVPNType5Routes" class="md-nav__link">
+      <span class="md-ellipsis">
+        VerifyEVPNType5Routes
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="VerifyEVPNType5Routes">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.evpn.VerifyEVPNType5Routes-attributes" class="md-nav__link">
+      <span class="md-ellipsis">
+        Inputs
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
+      
+        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#input-models" class="md-nav__link">
+      <span class="md-ellipsis">
+        Input models
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="Input models">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.input_models.evpn.EVPNPath" class="md-nav__link">
+      <span class="md-ellipsis">
+        EVPNPath
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.input_models.evpn.EVPNRoute" class="md-nav__link">
+      <span class="md-ellipsis">
+        EVPNRoute
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.input_models.evpn.EVPNType5Prefix" class="md-nav__link">
+      <span class="md-ellipsis">
+        EVPNType5Prefix
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1339,30 +1489,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    Router Path Selection
-    
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../path_selection/" class="md-nav__link">
         
   
   
@@ -1373,122 +1503,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#tests" class="md-nav__link">
-      <span class="md-ellipsis">
-        Tests
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-      <nav class="md-nav" aria-label="Tests">
-        <ul class="md-nav__list">
-          
-          
-            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#anta.tests.path_selection.VerifyPathsHealth" class="md-nav__link">
-      <span class="md-ellipsis">
-        VerifyPathsHealth
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-  </li>
-          
-          
-          
-            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#anta.tests.path_selection.VerifySpecificPath" class="md-nav__link">
-      <span class="md-ellipsis">
-        VerifySpecificPath
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-      <nav class="md-nav" aria-label="VerifySpecificPath">
-        <ul class="md-nav__list">
-          
-          
-            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#anta.tests.path_selection.VerifySpecificPath-attributes" class="md-nav__link">
-      <span class="md-ellipsis">
-        Inputs
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-  </li>
-          
-          
-        </ul>
-      </nav>
-    
-  </li>
-          
-          
-        </ul>
-      </nav>
-    
-  </li>
-      
-        <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#input-models" class="md-nav__link">
-      <span class="md-ellipsis">
-        Input models
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-      <nav class="md-nav" aria-label="Input models">
-        <ul class="md-nav__list">
-          
-          
-            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#anta.input_models.path_selection.DpsPath" class="md-nav__link">
-      <span class="md-ellipsis">
-        DpsPath
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-  </li>
-          
-          
-        </ul>
-      </nav>
-    
-  </li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -2459,35 +2473,21 @@
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
-    <a href="#anta.tests.path_selection.VerifyPathsHealth" class="md-nav__link">
+    <a href="#anta.tests.evpn.VerifyEVPNType5Routes" class="md-nav__link">
       <span class="md-ellipsis">
-        VerifyPathsHealth
+        VerifyEVPNType5Routes
       </span>
     </a>
 
     <!-- Table of contents list -->
     
-  </li>
-          
-          
-          
-            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
-<li class="md-nav__item">
-    <a href="#anta.tests.path_selection.VerifySpecificPath" class="md-nav__link">
-      <span class="md-ellipsis">
-        VerifySpecificPath
-      </span>
-    </a>
-
-    <!-- Table of contents list -->
-    
-      <nav class="md-nav" aria-label="VerifySpecificPath">
+      <nav class="md-nav" aria-label="VerifyEVPNType5Routes">
         <ul class="md-nav__list">
           
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
-    <a href="#anta.tests.path_selection.VerifySpecificPath-attributes" class="md-nav__link">
+    <a href="#anta.tests.evpn.VerifyEVPNType5Routes-attributes" class="md-nav__link">
       <span class="md-ellipsis">
         Inputs
       </span>
@@ -2525,9 +2525,37 @@
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
-    <a href="#anta.input_models.path_selection.DpsPath" class="md-nav__link">
+    <a href="#anta.input_models.evpn.EVPNPath" class="md-nav__link">
       <span class="md-ellipsis">
-        DpsPath
+        EVPNPath
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.input_models.evpn.EVPNRoute" class="md-nav__link">
+      <span class="md-ellipsis">
+        EVPNRoute
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.input_models.evpn.EVPNType5Prefix" class="md-nav__link">
+      <span class="md-ellipsis">
+        EVPNType5Prefix
       </span>
     </a>
 
@@ -2560,7 +2588,7 @@
 
 
   
-    <h1>ANTA catalog for Router path-selection tests</h1>
+    <h1>ANTA catalog for EVPN tests</h1>
   
 
 <!--
@@ -2579,7 +2607,7 @@
 
     <div class="doc doc-contents first">
 
-        <p>Test functions related to various router path-selection settings.</p>
+        <p>Module related to EVPN tests.</p>
 
 
 
@@ -2602,179 +2630,11 @@
 
 
 
-<h2 id="anta.tests.path_selection.VerifyPathsHealth" class="doc doc-heading">
-            <span class="doc doc-object-name doc-class-name">VerifyPathsHealth</span>
+<h2 id="anta.tests.evpn.VerifyEVPNType5Routes" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">VerifyEVPNType5Routes</span>
 
 
-<a href="#anta.tests.path_selection.VerifyPathsHealth" class="headerlink" title="Permanent link">&para;</a></h2>
-
-
-    <div class="doc doc-contents ">
-
-
-
-
-        <p>Verifies the path and telemetry state of all paths under router path-selection.</p>
-<p>The expected states are &lsquo;IPsec established&rsquo;, &lsquo;Resolved&rsquo; for path and &lsquo;active&rsquo; for telemetry.</p>
-
-
-<details class="expected-results" open>
-  <summary>Expected Results</summary>
-  <ul>
-<li>Success: The test will pass if all path states under router path-selection are either &lsquo;IPsec established&rsquo; or &lsquo;Resolved&rsquo;
-           and their telemetry state as &lsquo;active&rsquo;.</li>
-<li>Failure: The test will fail if router path-selection is not configured or if any path state is not &lsquo;IPsec established&rsquo; or &lsquo;Resolved&rsquo;,
-           or the telemetry state is &lsquo;inactive&rsquo;.</li>
-</ul>
-</details>
-
-
-<details class="example" open>
-  <summary>Examples</summary>
-        <div class="highlight"><pre><span></span><code><span class="nt">anta.tests.path_selection</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyPathsHealth</span><span class="p">:</span>
-</code></pre></div>
-</details>
-
-
-
-
-
-
-
-  
-
-  <div class="doc doc-children">
-
-
-
-
-
-
-
-
-
-
-
-  </div>
-  <details class="quote">
-  <summary>Source code in <code>anta/tests/path_selection.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyPathsHealth</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the path and telemetry state of all paths under router path-selection.</span>
-
-<span class="sd">    The expected states are &#39;IPsec established&#39;, &#39;Resolved&#39; for path and &#39;active&#39; for telemetry.</span>
-
-<span class="sd">    Expected Results</span>
-<span class="sd">    ----------------</span>
-<span class="sd">    * Success: The test will pass if all path states under router path-selection are either &#39;IPsec established&#39; or &#39;Resolved&#39;</span>
-<span class="sd">               and their telemetry state as &#39;active&#39;.</span>
-<span class="sd">    * Failure: The test will fail if router path-selection is not configured or if any path state is not &#39;IPsec established&#39; or &#39;Resolved&#39;,</span>
-<span class="sd">               or the telemetry state is &#39;inactive&#39;.</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    ```yaml</span>
-<span class="sd">    anta.tests.path_selection:</span>
-<span class="sd">      - VerifyPathsHealth:</span>
-<span class="sd">    ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;path-selection&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show path-selection paths&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
-
-    <span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS-lab&quot;</span><span class="p">])</span>
-    <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyPathsHealth.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
-
-        <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span><span class="p">[</span><span class="s2">&quot;dpsPeers&quot;</span><span class="p">]</span>
-
-        <span class="c1"># If no paths are configured for router path-selection, the test fails</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">command_output</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;No path configured for router path-selection&quot;</span><span class="p">)</span>
-            <span class="k">return</span>
-
-        <span class="c1"># Check the state of each path</span>
-        <span class="k">for</span> <span class="n">peer</span><span class="p">,</span> <span class="n">peer_data</span> <span class="ow">in</span> <span class="n">command_output</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">for</span> <span class="n">group</span><span class="p">,</span> <span class="n">group_data</span> <span class="ow">in</span> <span class="n">peer_data</span><span class="p">[</span><span class="s2">&quot;dpsGroups&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="k">for</span> <span class="n">path_data</span> <span class="ow">in</span> <span class="n">group_data</span><span class="p">[</span><span class="s2">&quot;dpsPaths&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-                    <span class="n">path_state</span> <span class="o">=</span> <span class="n">path_data</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]</span>
-                    <span class="n">session</span> <span class="o">=</span> <span class="n">path_data</span><span class="p">[</span><span class="s2">&quot;dpsSessions&quot;</span><span class="p">][</span><span class="s2">&quot;0&quot;</span><span class="p">][</span><span class="s2">&quot;active&quot;</span><span class="p">]</span>
-
-                    <span class="c1"># If the path state of any path is not &#39;ipsecEstablished&#39; or &#39;routeResolved&#39;, the test fails</span>
-                    <span class="n">expected_state</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ipsecEstablished&quot;</span><span class="p">,</span> <span class="s2">&quot;routeResolved&quot;</span><span class="p">]</span>
-                    <span class="k">if</span> <span class="n">path_state</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">expected_state</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Peer: </span><span class="si">{</span><span class="n">peer</span><span class="si">}</span><span class="s2"> Path Group: </span><span class="si">{</span><span class="n">group</span><span class="si">}</span><span class="s2"> - Invalid path state - Expected: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">expected_state</span><span class="p">)</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">path_state</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-                    <span class="c1"># If the telemetry state of any path is inactive, the test fails</span>
-                    <span class="k">elif</span> <span class="ow">not</span> <span class="n">session</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Peer: </span><span class="si">{</span><span class="n">peer</span><span class="si">}</span><span class="s2"> Path Group </span><span class="si">{</span><span class="n">group</span><span class="si">}</span><span class="s2"> - Telemetry state inactive&quot;</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-  </details>
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-class">
-
-
-
-<h2 id="anta.tests.path_selection.VerifySpecificPath" class="doc doc-heading">
-            <span class="doc doc-object-name doc-class-name">VerifySpecificPath</span>
-
-
-<a href="#anta.tests.path_selection.VerifySpecificPath" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#anta.tests.evpn.VerifyEVPNType5Routes" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
     <div class="doc doc-contents ">
@@ -2782,40 +2642,79 @@
 
 
 
-        <p>Verifies the DPS path and telemetry state of an IPv4 peer.</p>
-<p>This test performs the following checks:</p>
+        <p>Verifies EVPN Type-5 routes for given IP prefixes and VNIs.</p>
+<p>It supports multiple levels of verification based on the provided input:</p>
 <ol>
-<li>Verifies that the specified peer is configured.</li>
-<li>Verifies that the specified path group is found.</li>
-<li>For each specified DPS path:<ul>
-<li>Verifies that the expected source and destination address matches the expected.</li>
-<li>Verifies that the state is <code>ipsecEstablished</code> or <code>routeResolved</code>.</li>
-<li>Verifies that the telemetry state is <code>active</code>.</li>
-</ul>
-</li>
+<li><strong>Prefix/VNI only:</strong> Verifies there is at least one &lsquo;active&rsquo; and &lsquo;valid&rsquo; path across all
+    Route Distinguishers (RDs) learning the given prefix and VNI.</li>
+<li><strong>Specific Routes (RD/Domain):</strong> Verifies that routes matching the specified RDs and domains
+    exist for the prefix/VNI. For each specified route, it checks if at least one of its paths
+    is &lsquo;active&rsquo; and &lsquo;valid&rsquo;.</li>
+<li><strong>Specific Paths (Nexthop/Route Targets):</strong> Verifies that specific paths exist within a
+    specified route (RD/Domain). For each specified path criteria (nexthop and optional route targets),
+    it finds all matching paths received from the peer and checks if at least one of these
+    matching paths is &lsquo;active&rsquo; and &lsquo;valid&rsquo;. The route targets check ensures all specified RTs
+    are present in the path&rsquo;s extended communities (subset check).</li>
 </ol>
 
 
 <details class="expected-results" open>
   <summary>Expected Results</summary>
   <ul>
-<li>Success: The test will pass if the path state under router path-selection is either &lsquo;IPsecEstablished&rsquo; or &lsquo;Resolved&rsquo;
-           and telemetry state as &lsquo;active&rsquo;.</li>
-<li>Failure: The test will fail if router path selection or the peer is not configured or if the path state is not &lsquo;IPsec established&rsquo; or &lsquo;Resolved&rsquo;,
-           or the telemetry state is &lsquo;inactive&rsquo;.</li>
+<li>Success:<ul>
+<li>If only prefix/VNI is provided: The prefix/VNI exists in the EVPN table
+  and has at least one active and valid path across all RDs.</li>
+<li>If specific routes are provided: All specified routes (by RD/Domain) are found,
+  and each has at least one active and valid path (if paths are not specified for the route).</li>
+<li>If specific paths are provided: All specified routes are found, and for each specified path criteria (nexthop/RTs),
+  at least one matching path exists and is active and valid.</li>
+</ul>
+</li>
+<li>Failure:<ul>
+<li>No EVPN Type-5 routes are found for the given prefix/VNI.</li>
+<li>A specified route (RD/Domain) is not found.</li>
+<li>No active and valid path is found when required (either globally for the prefix, per specified route, or per specified path criteria).</li>
+<li>A specified path criteria (nexthop/RTs) does not match any received paths for the route.</li>
+</ul>
+</li>
 </ul>
 </details>
 
 
 <details class="example" open>
   <summary>Examples</summary>
-        <div class="highlight"><pre><span></span><code><span class="nt">anta.tests.path_selection</span><span class="p">:</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifySpecificPath</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">paths</span><span class="p">:</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">peer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.255.0.1</span>
-<span class="w">          </span><span class="nt">path_group</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">internet</span>
-<span class="w">          </span><span class="nt">source_address</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100.64.3.2</span>
-<span class="w">          </span><span class="nt">destination_address</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100.64.1.2</span>
+        <div class="highlight"><pre><span></span><code><span class="nt">anta.tests.evpn</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyEVPNType5Routes</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">prefixes</span><span class="p">:</span>
+<span class="w">        </span><span class="c1"># At least one active/valid path across all RDs</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">address</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.10.0/24</span>
+<span class="w">          </span><span class="nt">vni</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">        </span><span class="c1"># Specific routes each has at least one active/valid path</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">address</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.20.0/24</span>
+<span class="w">          </span><span class="nt">vni</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span>
+<span class="w">          </span><span class="nt">routes</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">rd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.0.0.1:20</span>
+<span class="w">              </span><span class="nt">domain</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">local</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">rd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.0.0.2:20</span>
+<span class="w">              </span><span class="nt">domain</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">remote</span>
+<span class="w">        </span><span class="c1"># At least one active/valid path matching the nexthop</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">address</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.30.0/24</span>
+<span class="w">          </span><span class="nt">vni</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span>
+<span class="w">          </span><span class="nt">routes</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">rd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.0.0.1:30</span>
+<span class="w">              </span><span class="nt">domain</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">local</span>
+<span class="w">              </span><span class="nt">paths</span><span class="p">:</span>
+<span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">nexthop</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.1.1.1</span>
+<span class="w">        </span><span class="c1"># At least one active/valid path matching nexthop and specific RTs</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">address</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.40.0/24</span>
+<span class="w">          </span><span class="nt">vni</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">40</span>
+<span class="w">          </span><span class="nt">routes</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">rd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.0.0.1:40</span>
+<span class="w">              </span><span class="nt">domain</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">local</span>
+<span class="w">              </span><span class="nt">paths</span><span class="p">:</span>
+<span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">nexthop</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.1.1.1</span>
+<span class="w">                  </span><span class="nt">route_targets</span><span class="p">:</span>
+<span class="w">                    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">40:40</span>
 </code></pre></div>
 </details>
 
@@ -2834,7 +2733,7 @@
 
 
 
-<h3 id="anta.tests.path_selection.VerifySpecificPath-attributes">Inputs<a href="#anta.tests.path_selection.VerifySpecificPath-attributes" class="headerlink" title="Permanent link">&para;</a></h3>  
+<h3 id="anta.tests.evpn.VerifyEVPNType5Routes-attributes">Inputs<a href="#anta.tests.evpn.VerifyEVPNType5Routes-attributes" class="headerlink" title="Permanent link">&para;</a></h3>  
 
   <div class="doc doc-children">
         <table>
@@ -2848,31 +2747,17 @@
           </thead>
           <tbody>
               <tr>
-                <td><code>paths</code></td>
+                <td><code>prefixes</code></td>
                 <td>
-                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="DpsPath (anta.input_models.path_selection.DpsPath)" href="#anta.input_models.path_selection.DpsPath">DpsPath</a>]</code>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="EVPNType5Prefix (anta.input_models.evpn.EVPNType5Prefix)" href="#anta.input_models.evpn.EVPNType5Prefix">EVPNType5Prefix</a>]</code>
                 </td>
                 <td>
                   <div class="doc-md-description">
-                    List of router paths to verify.
+                    List of EVPN Type-5 prefixes to verify.
                   </div>
                 </td>
                 <td>
                     <em>-</em>
-                </td>
-              </tr>
-              <tr>
-                <td><code>RouterPath</code></td>
-                <td>
-                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#type">type</a>[<a class="autorefs autorefs-internal" title="DpsPath (anta.input_models.path_selection.DpsPath)" href="#anta.input_models.path_selection.DpsPath">DpsPath</a>]</code>
-                </td>
-                <td>
-                  <div class="doc-md-description">
-                    To maintain backward compatibility.
-                  </div>
-                </td>
-                <td>
-                      <code><a class="autorefs autorefs-internal" title="DpsPath (anta.input_models.path_selection.DpsPath)" href="#anta.input_models.path_selection.DpsPath">DpsPath</a></code>
                 </td>
               </tr>
           </tbody>
@@ -2885,8 +2770,64 @@
 
   </div>
   <details class="quote">
-  <summary>Source code in <code>anta/tests/path_selection.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 71</span>
+  <summary>Source code in <code>anta/tests/evpn.py</code></summary>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 15</span>
+<span class="normal"> 16</span>
+<span class="normal"> 17</span>
+<span class="normal"> 18</span>
+<span class="normal"> 19</span>
+<span class="normal"> 20</span>
+<span class="normal"> 21</span>
+<span class="normal"> 22</span>
+<span class="normal"> 23</span>
+<span class="normal"> 24</span>
+<span class="normal"> 25</span>
+<span class="normal"> 26</span>
+<span class="normal"> 27</span>
+<span class="normal"> 28</span>
+<span class="normal"> 29</span>
+<span class="normal"> 30</span>
+<span class="normal"> 31</span>
+<span class="normal"> 32</span>
+<span class="normal"> 33</span>
+<span class="normal"> 34</span>
+<span class="normal"> 35</span>
+<span class="normal"> 36</span>
+<span class="normal"> 37</span>
+<span class="normal"> 38</span>
+<span class="normal"> 39</span>
+<span class="normal"> 40</span>
+<span class="normal"> 41</span>
+<span class="normal"> 42</span>
+<span class="normal"> 43</span>
+<span class="normal"> 44</span>
+<span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
 <span class="normal"> 72</span>
 <span class="normal"> 73</span>
 <span class="normal"> 74</span>
@@ -2973,94 +2914,204 @@
 <span class="normal">155</span>
 <span class="normal">156</span>
 <span class="normal">157</span>
-<span class="normal">158</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifySpecificPath</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the DPS path and telemetry state of an IPv4 peer.</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyEVPNType5Routes</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies EVPN Type-5 routes for given IP prefixes and VNIs.</span>
 
-<span class="sd">    This test performs the following checks:</span>
+<span class="sd">    It supports multiple levels of verification based on the provided input:</span>
 
-<span class="sd">      1. Verifies that the specified peer is configured.</span>
-<span class="sd">      2. Verifies that the specified path group is found.</span>
-<span class="sd">      3. For each specified DPS path:</span>
-<span class="sd">         - Verifies that the expected source and destination address matches the expected.</span>
-<span class="sd">         - Verifies that the state is `ipsecEstablished` or `routeResolved`.</span>
-<span class="sd">         - Verifies that the telemetry state is `active`.</span>
+<span class="sd">    1.  **Prefix/VNI only:** Verifies there is at least one &#39;active&#39; and &#39;valid&#39; path across all</span>
+<span class="sd">        Route Distinguishers (RDs) learning the given prefix and VNI.</span>
+<span class="sd">    2.  **Specific Routes (RD/Domain):** Verifies that routes matching the specified RDs and domains</span>
+<span class="sd">        exist for the prefix/VNI. For each specified route, it checks if at least one of its paths</span>
+<span class="sd">        is &#39;active&#39; and &#39;valid&#39;.</span>
+<span class="sd">    3.  **Specific Paths (Nexthop/Route Targets):** Verifies that specific paths exist within a</span>
+<span class="sd">        specified route (RD/Domain). For each specified path criteria (nexthop and optional route targets),</span>
+<span class="sd">        it finds all matching paths received from the peer and checks if at least one of these</span>
+<span class="sd">        matching paths is &#39;active&#39; and &#39;valid&#39;. The route targets check ensures all specified RTs</span>
+<span class="sd">        are present in the path&#39;s extended communities (subset check).</span>
 
 <span class="sd">    Expected Results</span>
 <span class="sd">    ----------------</span>
-<span class="sd">    * Success: The test will pass if the path state under router path-selection is either &#39;IPsecEstablished&#39; or &#39;Resolved&#39;</span>
-<span class="sd">               and telemetry state as &#39;active&#39;.</span>
-<span class="sd">    * Failure: The test will fail if router path selection or the peer is not configured or if the path state is not &#39;IPsec established&#39; or &#39;Resolved&#39;,</span>
-<span class="sd">               or the telemetry state is &#39;inactive&#39;.</span>
+<span class="sd">    * Success:</span>
+<span class="sd">        - If only prefix/VNI is provided: The prefix/VNI exists in the EVPN table</span>
+<span class="sd">          and has at least one active and valid path across all RDs.</span>
+<span class="sd">        - If specific routes are provided: All specified routes (by RD/Domain) are found,</span>
+<span class="sd">          and each has at least one active and valid path (if paths are not specified for the route).</span>
+<span class="sd">        - If specific paths are provided: All specified routes are found, and for each specified path criteria (nexthop/RTs),</span>
+<span class="sd">          at least one matching path exists and is active and valid.</span>
+<span class="sd">    * Failure:</span>
+<span class="sd">        - No EVPN Type-5 routes are found for the given prefix/VNI.</span>
+<span class="sd">        - A specified route (RD/Domain) is not found.</span>
+<span class="sd">        - No active and valid path is found when required (either globally for the prefix, per specified route, or per specified path criteria).</span>
+<span class="sd">        - A specified path criteria (nexthop/RTs) does not match any received paths for the route.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    ```yaml</span>
-<span class="sd">    anta.tests.path_selection:</span>
-<span class="sd">      - VerifySpecificPath:</span>
-<span class="sd">          paths:</span>
-<span class="sd">            - peer: 10.255.0.1</span>
-<span class="sd">              path_group: internet</span>
-<span class="sd">              source_address: 100.64.3.2</span>
-<span class="sd">              destination_address: 100.64.1.2</span>
+<span class="sd">    anta.tests.evpn:</span>
+<span class="sd">      - VerifyEVPNType5Routes:</span>
+<span class="sd">          prefixes:</span>
+<span class="sd">            # At least one active/valid path across all RDs</span>
+<span class="sd">            - address: 192.168.10.0/24</span>
+<span class="sd">              vni: 10</span>
+<span class="sd">            # Specific routes each has at least one active/valid path</span>
+<span class="sd">            - address: 192.168.20.0/24</span>
+<span class="sd">              vni: 20</span>
+<span class="sd">              routes:</span>
+<span class="sd">                - rd: 10.0.0.1:20</span>
+<span class="sd">                  domain: local</span>
+<span class="sd">                - rd: 10.0.0.2:20</span>
+<span class="sd">                  domain: remote</span>
+<span class="sd">            # At least one active/valid path matching the nexthop</span>
+<span class="sd">            - address: 192.168.30.0/24</span>
+<span class="sd">              vni: 30</span>
+<span class="sd">              routes:</span>
+<span class="sd">                - rd: 10.0.0.1:30</span>
+<span class="sd">                  domain: local</span>
+<span class="sd">                  paths:</span>
+<span class="sd">                    - nexthop: 10.1.1.1</span>
+<span class="sd">            # At least one active/valid path matching nexthop and specific RTs</span>
+<span class="sd">            - address: 192.168.40.0/24</span>
+<span class="sd">              vni: 40</span>
+<span class="sd">              routes:</span>
+<span class="sd">                - rd: 10.0.0.1:40</span>
+<span class="sd">                  domain: local</span>
+<span class="sd">                  paths:</span>
+<span class="sd">                    - nexthop: 10.1.1.1</span>
+<span class="sd">                      route_targets:</span>
+<span class="sd">                        - 40:40</span>
 <span class="sd">    ```</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;path-selection&quot;</span><span class="p">]</span>
-    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show path-selection paths&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;bgp&quot;</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="s2">&quot;show bgp evpn route-type ip-prefix </span><span class="si">{address}</span><span class="s2"> vni </span><span class="si">{vni}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">2</span><span class="p">)]</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifySpecificPath test.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyEVPNType5Routes test.&quot;&quot;&quot;</span>
 
-        <span class="n">paths</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">DpsPath</span><span class="p">]</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of router paths to verify.&quot;&quot;&quot;</span>
-        <span class="n">RouterPath</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">DpsPath</span><span class="p">]]</span> <span class="o">=</span> <span class="n">DpsPath</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;To maintain backward compatibility.&quot;&quot;&quot;</span>
+        <span class="n">prefixes</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">EVPNType5Prefix</span><span class="p">]</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of EVPN Type-5 prefixes to verify.&quot;&quot;&quot;</span>
 
-    <span class="nd">@skip_on_platforms</span><span class="p">([</span><span class="s2">&quot;cEOSLab&quot;</span><span class="p">,</span> <span class="s2">&quot;vEOS-lab&quot;</span><span class="p">])</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">AntaTemplate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Render the template for each EVPN Type-5 prefix in the input list.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">address</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">prefix</span><span class="o">.</span><span class="n">address</span><span class="p">),</span> <span class="n">vni</span><span class="o">=</span><span class="n">prefix</span><span class="o">.</span><span class="n">vni</span><span class="p">)</span> <span class="k">for</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">prefixes</span><span class="p">]</span>
+
+    <span class="c1"># NOTE: The following static methods can be moved at the module level if needed for other EVPN tests</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_all_paths</span><span class="p">(</span><span class="n">evpn_routes_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract all &#39;evpnRoutePaths&#39; from the entire &#39;evpnRoutes&#39; dictionary.&quot;&quot;&quot;</span>
+        <span class="n">all_paths</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">route_data</span> <span class="ow">in</span> <span class="n">evpn_routes_data</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">all_paths</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">route_data</span><span class="p">[</span><span class="s2">&quot;evpnRoutePaths&quot;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">all_paths</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_find_route</span><span class="p">(</span><span class="n">evpn_routes_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">rd_to_find</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">domain_to_find</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Find the specific route block for a given RD and domain.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">route_data</span> <span class="ow">in</span> <span class="n">evpn_routes_data</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">route_data</span><span class="p">[</span><span class="s2">&quot;routeKeyDetail&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;rd&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">rd_to_find</span> <span class="ow">and</span> <span class="n">route_data</span><span class="p">[</span><span class="s2">&quot;routeKeyDetail&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;domain&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">domain_to_find</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">route_data</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_find_paths</span><span class="p">(</span><span class="n">paths</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="n">nexthop</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">route_targets</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Find all matching paths for a given nexthop and RTs.&quot;&quot;&quot;</span>
+        <span class="n">route_targets</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;Route-Target-AS:</span><span class="si">{</span><span class="n">rt</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">rt</span> <span class="ow">in</span> <span class="n">route_targets</span><span class="p">]</span> <span class="k">if</span> <span class="n">route_targets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">path</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">paths</span> <span class="k">if</span> <span class="n">path</span><span class="p">[</span><span class="s2">&quot;nextHop&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">nexthop</span> <span class="ow">and</span> <span class="nb">set</span><span class="p">(</span><span class="n">route_targets</span><span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">path</span><span class="p">[</span><span class="s2">&quot;routeDetail&quot;</span><span class="p">][</span><span class="s2">&quot;extCommunities&quot;</span><span class="p">]))]</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_has_active_valid_path</span><span class="p">(</span><span class="n">paths</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if any path in the list is active and valid.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">path</span><span class="p">[</span><span class="s2">&quot;routeType&quot;</span><span class="p">][</span><span class="s2">&quot;active&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">path</span><span class="p">[</span><span class="s2">&quot;routeType&quot;</span><span class="p">][</span><span class="s2">&quot;valid&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">)</span>
+
     <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifySpecificPath.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyEVPNType5Routes.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
 
-        <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
+        <span class="k">for</span> <span class="n">command</span><span class="p">,</span> <span class="n">prefix_input</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">prefixes</span><span class="p">):</span>
+            <span class="c1"># Verify that the prefix is in the BGP EVPN table</span>
+            <span class="n">evpn_routes_data</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">json_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;evpnRoutes&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">evpn_routes_data</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix_input</span><span class="si">}</span><span class="s2"> - No EVPN Type-5 routes found&quot;</span><span class="p">)</span>
+                <span class="k">continue</span>
 
-        <span class="c1"># If the dpsPeers details are not found in the command output, the test fails.</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">dps_peers_details</span> <span class="o">:=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">command_output</span><span class="p">,</span> <span class="s2">&quot;dpsPeers&quot;</span><span class="p">)):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="s2">&quot;Router path-selection not configured&quot;</span><span class="p">)</span>
+            <span class="c1"># Delegate verification logic for this prefix</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_verify_routes_for_prefix</span><span class="p">(</span><span class="n">prefix_input</span><span class="p">,</span> <span class="n">evpn_routes_data</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_verify_routes_for_prefix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix_input</span><span class="p">:</span> <span class="n">EVPNType5Prefix</span><span class="p">,</span> <span class="n">evpn_routes_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Verify EVPN routes for an input prefix.&quot;&quot;&quot;</span>
+        <span class="c1"># Case: routes not provided for the prefix, check that at least one EVPN Type-5 route</span>
+        <span class="c1"># has at least one active and valid path across all learned routes from all RDs combined</span>
+        <span class="k">if</span> <span class="n">prefix_input</span><span class="o">.</span><span class="n">routes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">all_paths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_all_paths</span><span class="p">(</span><span class="n">evpn_routes_data</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_active_valid_path</span><span class="p">(</span><span class="n">all_paths</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix_input</span><span class="si">}</span><span class="s2"> - No active and valid path found across all RDs&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="c1"># Iterating on each DPS peer mentioned in the inputs.</span>
-        <span class="k">for</span> <span class="n">dps_path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">paths</span><span class="p">:</span>
-            <span class="n">peer</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">dps_path</span><span class="o">.</span><span class="n">peer</span><span class="p">)</span>
-            <span class="n">peer_details</span> <span class="o">=</span> <span class="n">dps_peers_details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">peer</span><span class="p">,</span> <span class="p">{})</span>
-            <span class="c1"># If the peer is not configured for the path group, the test fails</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">peer_details</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dps_path</span><span class="si">}</span><span class="s2"> - Peer not found&quot;</span><span class="p">)</span>
+        <span class="c1"># Case: routes *is* provided, check each specified route</span>
+        <span class="k">for</span> <span class="n">route_input</span> <span class="ow">in</span> <span class="n">prefix_input</span><span class="o">.</span><span class="n">routes</span><span class="p">:</span>
+            <span class="c1"># Try to find a route with matching RD and domain</span>
+            <span class="n">route_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_route</span><span class="p">(</span><span class="n">evpn_routes_data</span><span class="p">,</span> <span class="n">route_input</span><span class="o">.</span><span class="n">rd</span><span class="p">,</span> <span class="n">route_input</span><span class="o">.</span><span class="n">domain</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">route_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix_input</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">route_input</span><span class="si">}</span><span class="s2"> - Route not found&quot;</span><span class="p">)</span>
                 <span class="k">continue</span>
 
-            <span class="n">path_group</span> <span class="o">=</span> <span class="n">dps_path</span><span class="o">.</span><span class="n">path_group</span>
-            <span class="n">source</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">dps_path</span><span class="o">.</span><span class="n">source_address</span><span class="p">)</span>
-            <span class="n">destination</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">dps_path</span><span class="o">.</span><span class="n">destination_address</span><span class="p">)</span>
-            <span class="n">path_group_details</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">peer_details</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;dpsGroups..</span><span class="si">{</span><span class="n">path_group</span><span class="si">}</span><span class="s2">..dpsPaths&quot;</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;..&quot;</span><span class="p">)</span>
-            <span class="c1"># If the expected path group is not found for the peer, the test fails.</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">path_group_details</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dps_path</span><span class="si">}</span><span class="s2"> - No DPS path found for this peer and path group&quot;</span><span class="p">)</span>
-                <span class="k">continue</span>
+            <span class="c1"># Route found, now check its paths based on route_input criteria</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_verify_paths_for_route</span><span class="p">(</span><span class="n">prefix_input</span><span class="p">,</span> <span class="n">route_input</span><span class="p">,</span> <span class="n">route_data</span><span class="p">)</span>
 
-            <span class="n">path_data</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">path</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">path_group_details</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;source&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">source</span> <span class="ow">and</span> <span class="n">path</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;destination&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">destination</span><span class="p">)),</span> <span class="kc">None</span><span class="p">)</span>
-            <span class="c1">#  Source and destination address do not match, the test fails.</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">path_data</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dps_path</span><span class="si">}</span><span class="s2"> - No path matching the source and destination found&quot;</span><span class="p">)</span>
-                <span class="k">continue</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_verify_paths_for_route</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix_input</span><span class="p">:</span> <span class="n">EVPNType5Prefix</span><span class="p">,</span> <span class="n">route_input</span><span class="p">:</span> <span class="n">EVPNRoute</span><span class="p">,</span> <span class="n">route_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Verify paths for a specific EVPN route (route_data) based on route_input criteria.&quot;&quot;&quot;</span>
+        <span class="n">route_paths</span> <span class="o">=</span> <span class="n">route_data</span><span class="p">[</span><span class="s2">&quot;evpnRoutePaths&quot;</span><span class="p">]</span>
 
-            <span class="n">path_state</span> <span class="o">=</span> <span class="n">path_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;state&quot;</span><span class="p">)</span>
-            <span class="n">session</span> <span class="o">=</span> <span class="n">get_value</span><span class="p">(</span><span class="n">path_data</span><span class="p">,</span> <span class="s2">&quot;dpsSessions.0.active&quot;</span><span class="p">)</span>
+        <span class="c1"># Case: paths not provided for the route, check that at least one path is active/valid</span>
+        <span class="k">if</span> <span class="n">route_input</span><span class="o">.</span><span class="n">paths</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_active_valid_path</span><span class="p">(</span><span class="n">route_paths</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix_input</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">route_input</span><span class="si">}</span><span class="s2"> - No active and valid path found&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
 
-            <span class="c1"># If the state of the path is not &#39;ipsecEstablished&#39; or &#39;routeResolved&#39;, or the telemetry state is &#39;inactive&#39;, the test fails</span>
-            <span class="k">if</span> <span class="n">path_state</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;ipsecEstablished&quot;</span><span class="p">,</span> <span class="s2">&quot;routeResolved&quot;</span><span class="p">]:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dps_path</span><span class="si">}</span><span class="s2"> - Invalid state path - Expected: ipsecEstablished, routeResolved Actual: </span><span class="si">{</span><span class="n">path_state</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="ow">not</span> <span class="n">session</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dps_path</span><span class="si">}</span><span class="s2"> - Telemetry state inactive for this path&quot;</span><span class="p">)</span>
+        <span class="c1"># Case: paths *is* provided, check each specified path criteria</span>
+        <span class="k">for</span> <span class="n">path_input</span> <span class="ow">in</span> <span class="n">route_input</span><span class="o">.</span><span class="n">paths</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_verify_single_path</span><span class="p">(</span><span class="n">prefix_input</span><span class="p">,</span> <span class="n">route_input</span><span class="p">,</span> <span class="n">path_input</span><span class="p">,</span> <span class="n">route_paths</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_verify_single_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix_input</span><span class="p">:</span> <span class="n">EVPNType5Prefix</span><span class="p">,</span> <span class="n">route_input</span><span class="p">:</span> <span class="n">EVPNRoute</span><span class="p">,</span> <span class="n">path_input</span><span class="p">:</span> <span class="n">EVPNPath</span><span class="p">,</span> <span class="n">available_paths</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Verify if at least one active/valid path exists among available_paths matching the path_input criteria.&quot;&quot;&quot;</span>
+        <span class="c1"># Try to find all paths matching nexthop and RTs criteria from the available paths for this route</span>
+        <span class="n">matching_paths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_paths</span><span class="p">(</span><span class="n">available_paths</span><span class="p">,</span> <span class="n">path_input</span><span class="o">.</span><span class="n">nexthop</span><span class="p">,</span> <span class="n">path_input</span><span class="o">.</span><span class="n">route_targets</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">matching_paths</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix_input</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">route_input</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">path_input</span><span class="si">}</span><span class="s2"> - Path not found&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Check that at least one matching path is active/valid</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_active_valid_path</span><span class="p">(</span><span class="n">matching_paths</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix_input</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">route_input</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">path_input</span><span class="si">}</span><span class="s2"> - No active and valid path found&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -3084,7 +3135,7 @@
 
     <div class="doc doc-contents first">
 
-        <p>Module containing input models for path-selection tests.</p>
+        <p>Module containing input models for EVPN tests.</p>
 
 
 
@@ -3107,11 +3158,11 @@
 
 
 
-<h2 id="anta.input_models.path_selection.DpsPath" class="doc doc-heading">
-            <span class="doc doc-object-name doc-class-name">DpsPath</span>
+<h2 id="anta.input_models.evpn.EVPNPath" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">EVPNPath</span>
 
 
-<a href="#anta.input_models.path_selection.DpsPath" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#anta.input_models.evpn.EVPNPath" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
     <div class="doc doc-contents ">
@@ -3119,7 +3170,7 @@
 
 
 
-        <p>Model for a list of DPS path entries.</p>
+        <p>Model for an EVPN Type-5 path for a route.</p>
 
 
 
@@ -3150,27 +3201,13 @@
           </thead>
           <tbody>
               <tr>
-                <td><code>peer</code></td>
-                <td>
-                      <code><a class="autorefs autorefs-external" title="ipaddress.IPv4Address" href="https://docs.python.org/3/library/ipaddress.html#ipaddress.IPv4Address">IPv4Address</a></code>
-                </td>
-                <td>
-                  <div class="doc-md-description">
-                    Static peer IPv4 address.
-                  </div>
-                </td>
-                <td>
-                    <em>-</em>
-                </td>
-              </tr>
-              <tr>
-                <td><code>path_group</code></td>
+                <td><code>nexthop</code></td>
                 <td>
                       <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>
                 </td>
                 <td>
                   <div class="doc-md-description">
-                    Router path group name.
+                    Expected next-hop IPv4 or IPv6 address. Can be an empty string for local paths.
                   </div>
                 </td>
                 <td>
@@ -3178,31 +3215,17 @@
                 </td>
               </tr>
               <tr>
-                <td><code>source_address</code></td>
+                <td><code>route_targets</code></td>
                 <td>
-                      <code><a class="autorefs autorefs-external" title="ipaddress.IPv4Address" href="https://docs.python.org/3/library/ipaddress.html#ipaddress.IPv4Address">IPv4Address</a></code>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a>] | None</code>
                 </td>
                 <td>
                   <div class="doc-md-description">
-                    Source IPv4 address of path.
+                    List of expected RTs following the `ASN(asplain):nn` or `ASN(asdot):nn` or `IP-address:nn` format.
                   </div>
                 </td>
                 <td>
-                    <em>-</em>
-                </td>
-              </tr>
-              <tr>
-                <td><code>destination_address</code></td>
-                <td>
-                      <code><a class="autorefs autorefs-external" title="ipaddress.IPv4Address" href="https://docs.python.org/3/library/ipaddress.html#ipaddress.IPv4Address">IPv4Address</a></code>
-                </td>
-                <td>
-                  <div class="doc-md-description">
-                    Destination IPv4 address of path.
-                  </div>
-                </td>
-                <td>
-                    <em>-</em>
+                      <code>None</code>
                 </td>
               </tr>
           </tbody>
@@ -3216,11 +3239,287 @@
 
   </div>
   <details class="quote">
-  <summary>Source code in <code>anta/input_models/path_selection.py</code></summary>
-  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
+  <summary>Source code in <code>anta/input_models/evpn.py</code></summary>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">EVPNPath</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Model for an EVPN Type-5 path for a route.&quot;&quot;&quot;</span>
+
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+    <span class="n">nexthop</span><span class="p">:</span> <span class="nb">str</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Expected next-hop IPv4 or IPv6 address. Can be an empty string for local paths.&quot;&quot;&quot;</span>
+    <span class="n">route_targets</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;List of expected RTs following the `ASN(asplain):nn` or `ASN(asdot):nn` or `IP-address:nn` format.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a human-readable string representation of the EVPNPath for reporting.&quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Nexthop: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nexthop</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">route_targets</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; RTs: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">route_targets</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="n">value</span>
+</code></pre></div></td></tr></table></div>
+  </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="anta.input_models.evpn.EVPNRoute" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">EVPNRoute</span>
+
+
+<a href="#anta.input_models.evpn.EVPNRoute" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+
+        <p>Model for an EVPN Type-5 route for a prefix.</p>
+
+
+
+
+
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+  
+
+  <div class="doc doc-children">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Description</th>
+              <th>Default</th>
+            </tr>
+          </thead>
+          <tbody>
+              <tr>
+                <td><code>rd</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    Expected route distinguisher `&lt;admin&gt;:&lt;local assignment&gt;` of the route.
+                  </div>
+                </td>
+                <td>
+                    <em>-</em>
+                </td>
+              </tr>
+              <tr>
+                <td><code>domain</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" title="typing.Literal" href="https://docs.python.org/3/library/typing.html#typing.Literal">Literal</a>[&#39;local&#39;, &#39;remote&#39;]</code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    EVPN domain. Can be remote on gateway nodes in a multi-domain EVPN VXLAN fabric.
+                  </div>
+                </td>
+                <td>
+                      <code>&#39;local&#39;</code>
+                </td>
+              </tr>
+              <tr>
+                <td><code>paths</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="EVPNPath (anta.input_models.evpn.EVPNPath)" href="#anta.input_models.evpn.EVPNPath">EVPNPath</a>] | None</code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    Specific paths to verify for this route.
+                  </div>
+                </td>
+                <td>
+                      <code>None</code>
+                </td>
+              </tr>
+          </tbody>
+        </table>
+  </div>
+
+
+
+
+
+
+  </div>
+  <details class="quote">
+  <summary>Source code in <code>anta/input_models/evpn.py</code></summary>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">EVPNRoute</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Model for an EVPN Type-5 route for a prefix.&quot;&quot;&quot;</span>
+
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+    <span class="n">rd</span><span class="p">:</span> <span class="nb">str</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Expected route distinguisher `&lt;admin&gt;:&lt;local assignment&gt;` of the route.&quot;&quot;&quot;</span>
+    <span class="n">domain</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;local&quot;</span><span class="p">,</span> <span class="s2">&quot;remote&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;local&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;EVPN domain. Can be remote on gateway nodes in a multi-domain EVPN VXLAN fabric.&quot;&quot;&quot;</span>
+    <span class="n">paths</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">EVPNPath</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Specific paths to verify for this route.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a human-readable string representation of the EVPNRoute for reporting.&quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;RD: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rd</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain</span> <span class="o">==</span> <span class="s2">&quot;remote&quot;</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">+=</span> <span class="s2">&quot; Domain: remote&quot;</span>
+        <span class="k">return</span> <span class="n">value</span>
+</code></pre></div></td></tr></table></div>
+  </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="anta.input_models.evpn.EVPNType5Prefix" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">EVPNType5Prefix</span>
+
+
+<a href="#anta.input_models.evpn.EVPNType5Prefix" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+
+        <p>Model for an EVPN Type-5 prefix.</p>
+
+
+
+
+
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+  
+
+  <div class="doc doc-children">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Description</th>
+              <th>Default</th>
+            </tr>
+          </thead>
+          <tbody>
+              <tr>
+                <td><code>address</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" title="ipaddress.IPv4Interface" href="https://docs.python.org/3/library/ipaddress.html#ipaddress.IPv4Interface">IPv4Interface</a> | <a class="autorefs autorefs-external" title="ipaddress.IPv6Interface" href="https://docs.python.org/3/library/ipaddress.html#ipaddress.IPv6Interface">IPv6Interface</a></code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    IPv4 or IPv6 prefix address to verify.
+                  </div>
+                </td>
+                <td>
+                    <em>-</em>
+                </td>
+              </tr>
+              <tr>
+                <td><code>vni</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-internal" title="            Vni
+
+
+  
+      module-attribute
+   (anta.custom_types.Vni)" href="../types/#anta.custom_types.Vni">Vni</a></code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    VNI associated with the prefix.
+                  </div>
+                </td>
+                <td>
+                    <em>-</em>
+                </td>
+              </tr>
+              <tr>
+                <td><code>routes</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="EVPNRoute (anta.input_models.evpn.EVPNRoute)" href="#anta.input_models.evpn.EVPNRoute">EVPNRoute</a>] | None</code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    Specific EVPN routes to verify for this prefix.
+                  </div>
+                </td>
+                <td>
+                      <code>None</code>
+                </td>
+              </tr>
+          </tbody>
+        </table>
+  </div>
+
+
+
+
+
+
+  </div>
+  <details class="quote">
+  <summary>Source code in <code>anta/input_models/evpn.py</code></summary>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">16</span>
 <span class="normal">17</span>
 <span class="normal">18</span>
 <span class="normal">19</span>
@@ -3232,22 +3531,21 @@
 <span class="normal">25</span>
 <span class="normal">26</span>
 <span class="normal">27</span>
-<span class="normal">28</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DpsPath</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Model for a list of DPS path entries.&quot;&quot;&quot;</span>
+<span class="normal">28</span>
+<span class="normal">29</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">EVPNType5Prefix</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Model for an EVPN Type-5 prefix.&quot;&quot;&quot;</span>
 
     <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
-    <span class="n">peer</span><span class="p">:</span> <span class="n">IPv4Address</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Static peer IPv4 address.&quot;&quot;&quot;</span>
-    <span class="n">path_group</span><span class="p">:</span> <span class="nb">str</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Router path group name.&quot;&quot;&quot;</span>
-    <span class="n">source_address</span><span class="p">:</span> <span class="n">IPv4Address</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Source IPv4 address of path.&quot;&quot;&quot;</span>
-    <span class="n">destination_address</span><span class="p">:</span> <span class="n">IPv4Address</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Destination IPv4 address of path.&quot;&quot;&quot;</span>
+    <span class="n">address</span><span class="p">:</span> <span class="n">IPv4Interface</span> <span class="o">|</span> <span class="n">IPv6Interface</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;IPv4 or IPv6 prefix address to verify.&quot;&quot;&quot;</span>
+    <span class="n">vni</span><span class="p">:</span> <span class="n">Vni</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;VNI associated with the prefix.&quot;&quot;&quot;</span>
+    <span class="n">routes</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">EVPNRoute</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Specific EVPN routes to verify for this prefix.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a human-readable string representation of the DpsPath for reporting.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Peer: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">peer</span><span class="si">}</span><span class="s2"> PathGroup: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">path_group</span><span class="si">}</span><span class="s2"> Source: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">source_address</span><span class="si">}</span><span class="s2"> Destination: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">destination_address</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a human-readable string representation of the EVPNType5Prefix for reporting.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Prefix: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="si">}</span><span class="s2"> VNI: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">vni</span><span class="si">}</span><span class="s2">&quot;</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
@@ -3282,7 +3580,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="February 7, 2025 13:14:18">February 7, 2025</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="April 24, 2025 20:52:06">April 24, 2025</span>
   </span>
 
     
