@@ -395,12 +395,12 @@ class VerifyRoutingStatus(AntaTest):
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
         if self.inputs.ipv4_unicast != command_output["v4RoutingEnabled"]:
-            self.result.is_failure(f"IPv4 routing mismatch - Expected: {self.inputs.ipv4_unicast} Actual: {command_output['v4RoutingEnabled']}")
+            self.result.is_failure(f"IPv4 routing enabled status mismatch - Expected: {self.inputs.ipv4_unicast} Actual: {command_output['v4RoutingEnabled']}")
         if self.inputs.ipv6_unicast != command_output["v6RoutingEnabled"]:
-            self.result.is_failure(f"IPv6 routing mismatch - Expected: {self.inputs.ipv6_unicast} Actual: {command_output['v6RoutingEnabled']}")
+            self.result.is_failure(f"IPv6 routing enabled status mismatch - Expected: {self.inputs.ipv6_unicast} Actual: {command_output['v6RoutingEnabled']}")
         if self.inputs.ipv4_multicast != (ip_multicast := command_output["multicastRouting"]["ipMulticastEnabled"]):
-            self.result.is_failure(f"IPv4 multicast routing mismatch - Expected: {self.inputs.ipv4_multicast} Actual: {ip_multicast}")
+            self.result.is_failure(f"IPv4 multicast routing enabled status mismatch - Expected: {self.inputs.ipv4_multicast} Actual: {ip_multicast}")
         if self.inputs.ipv6_multicast != (ipv6_multicast := command_output["multicastRouting"]["ip6MulticastEnabled"]):
-            self.result.is_failure(f"IPv6 multicast routing mismatch - Expected: {self.inputs.ipv6_multicast} Actual: {ipv6_multicast}")
+            self.result.is_failure(f"IPv6 multicast routing enabled status mismatch - Expected: {self.inputs.ipv6_multicast} Actual: {ipv6_multicast}")
         if self.inputs.ipv6_interfaces != (ipv6_interfaces := command_output.get("v6IntfForwarding", False)):
-            self.result.is_failure(f"IPv6 interface routing mismatch - Expected: {self.inputs.ipv6_interfaces} Actual: {ipv6_interfaces}")
+            self.result.is_failure(f"IPv6 interface routing enabled status mismatch - Expected: {self.inputs.ipv6_interfaces} Actual: {ipv6_interfaces}")
