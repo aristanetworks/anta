@@ -29,10 +29,10 @@ class TestVerifyRunningConfigLinesInput:
                     {"section": "^interface Ethernet1$", "regex_patterns": ["switchport mode trunk"]},
                     {"section": "router bgp 65101", "regex_patterns": ["router-id 10.111.255.12", " network 10.110.254.1"]},
                 ],
-                None,
+                [],
                 id="valid-section",
             ),
-            pytest.param(None, ["router-id 10.111.254.1", "neighbor SPINE*"], id="valid-regex-patterns"),
+            pytest.param([], ["router-id 10.111.254.1", "neighbor SPINE*"], id="valid-regex-patterns"),
             pytest.param(
                 [
                     {"section": "^interface Ethernet1$", "regex_patterns": ["switchport mode trunk"]},
@@ -50,7 +50,7 @@ class TestVerifyRunningConfigLinesInput:
     @pytest.mark.parametrize(
         ("sections", "regex_patterns"),
         [
-            pytest.param(None, None, id="both-input-absent"),
+            pytest.param([], [], id="both-input-absent"),
         ],
     )
     def test_invalid(self, sections: list[RunningConfigSection], regex_patterns: list[RegexString]) -> None:

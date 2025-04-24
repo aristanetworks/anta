@@ -10,7 +10,7 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING, ClassVar
 
-from pydantic import model_validator
+from pydantic import Field, model_validator
 
 from anta.custom_types import RegexString
 from anta.input_models.configuration import RunningConfigSection
@@ -117,12 +117,12 @@ class VerifyRunningConfigLines(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["configuration"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaTemplate(template="show running-config{section}", ofmt="text")]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show running-config", ofmt="text")]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyRunningConfigLines test."""
 
-        sections: list[RunningConfigSection] | None = None
+        sections: list[RunningConfigSection] = Field(default=[])
         """A list of unique regex sections and their corresponding regular expressions. Each pattern is validated only within its specific configuration section.
 
          For accurate results, the section field must be unique and clearly defined.
@@ -131,7 +131,7 @@ class VerifyRunningConfigLines(AntaTest):
           1. section: router bgp 65101, regex_patterns: router-id 10.111.254.1
           2. section: ^router isis 1$ regex_patterns: address-family ipv4 unicast
           """
-        regex_patterns: list[RegexString] | None = None
+        regex_patterns: list[RegexString] = Field(default=[])
         """A list of regular expressions validated across the entire running configuration."""
 
         @model_validator(mode="after")
@@ -145,39 +145,23 @@ class VerifyRunningConfigLines(AntaTest):
                 raise ValueError(msg)
             return self
 
-    def render(self, template: AntaTemplate) -> list[AntaCommand]:
-        """Render the template for each host in the input list."""
-        templates = []
-        if self.inputs.sections:
-            templates.extend([template.render(section=f" section {section.section}") for section in self.inputs.sections])
-        if self.inputs.regex_patterns:
-            templates.extend([template.render(section="")])
-        return templates
-
-    def _get_running_config_command_output(self, instance_commands_details: list[AntaCommand]) -> AntaCommand:
-        """Return the full running configuration output from the device."""
-        command_details: AntaCommand
-        for instance_command in instance_commands_details:
-            if instance_command.command == "show running-config":
-                command_details = instance_command
-        return command_details
-
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyRunningConfigLines."""
         self.result.is_success()
-        # If only a regex pattern is provided, the matching configurations will be searched across the entire running configuration.
-        if self.inputs.regex_patterns:
-            for pattern in self.inputs.regex_patterns:
-                re_search = re.compile(pattern, re.IGNORECASE | re.MULTILINE)
-                output = self._get_running_config_command_output(self.instance_commands)
-                if not re_search.search(output.text_output):
-                    self.result.is_failure(f"Regex pattern: {pattern} - Not found")
-        if self.inputs.sections:
-            # If a section matcher is provided, the matching configuration will be searched only within the specified section.
-            for output, section in zip(self.instance_commands, self.inputs.sections):
-                for match_pattern in section.regex_patterns:
-                    # Verifies expected regex patterns in the section matcher.
-                    match_found = re.search(match_pattern, output.text_output, re.IGNORECASE | re.MULTILINE)
-                    if not match_found:
-                        self.result.is_failure(f"Section: {section.section} Regex pattern: {match_pattern} - Not found")
+        # If regex patterns are provided, matching configurations will be searched throughout the entire running configuration.
+        for pattern in self.inputs.regex_patterns:
+            re_search = re.compile(pattern, re.IGNORECASE | re.MULTILINE)
+            if not re_search.search(self.instance_commands[0].text_output):
+                self.result.is_failure(f"Regex pattern: {pattern} - Not found")
+        # If sections are specified, matching configurations will be searched only within their respective configuration sections.
+        for section in self.inputs.sections:
+            # Matches a section starting with section matcher, capturing everything until the next section or end of file.
+            pattern_to_search = rf"({section.section}[\s\S]+?)(?=\n(?:\S.*|\Z))"
+            # Collects exact matches for the specified section matcher.
+            matched_entries = re.findall(pattern_to_search, self.instance_commands[0].text_output, re.IGNORECASE | re.MULTILINE)
+            for match_pattern in section.regex_patterns:
+                # Verifies expected regex patterns in the section matcher.
+                match_found = any(re.search(match_pattern, item) for item in matched_entries)
+                if not match_found:
+                    self.result.is_failure(f"Section: {section.section} Regex pattern: {match_pattern} - Not found")

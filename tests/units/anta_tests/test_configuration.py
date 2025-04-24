@@ -65,10 +65,10 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyRunningConfigLines,
         "eos_data": [
             "interface Ethernet1\n   description Ethernet1- s1\n   switchport mode trunk\n   channel-group 1 mode active\ninterface Ethernet10\n   "
-            "ip address 9.11.1.2/31\ninterface Ethernet100\n   ip address 10.11.19.3/31\n",
-            "router bgp 65101\n   router-id 10.111.254.1\n   maximum-paths 2\n   neighbor SPINE peer group\n   neighbor SPINE remote-as 65100\n   "
+            "ip address 9.11.1.2/31\ninterface Ethernet100\n   ip address 10.11.19.3/31\nrouter bgp 65101\n   router-id 10.111.254.1\n   "
+            "maximum-paths 2\n   neighbor SPINE peer group\n   neighbor SPINE remote-as 65100\n   "
             "neighbor SPINE send-community standard extended\n   neighbor 10.111.1.0 peer group SPINE\n   neighbor 10.111.2.0 peer group SPINE\n   "
-            "neighbor 10.255.255.2 remote-as 65101\n   neighbor 10.255.255.2 next-hop-self\n   network 10.111.112.0/24\n   network 10.111.254.1/32\n",
+            "neighbor 10.255.255.2 remote-as 65101\n   neighbor 10.255.255.2 next-hop-self\n   network 10.111.112.0/24\n   network 10.111.254.1/32\n"
         ],
         "inputs": {
             "sections": [
@@ -83,11 +83,11 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyRunningConfigLines,
         "eos_data": [
             "interface Ethernet1\n   description Ethernet1- s1\n   switchport mode trunk\n   channel-group 1 mode active\ninterface Ethernet10\n   "
-            "ip address 9.11.1.2/31\ninterface Ethernet100\n   ip address 10.11.19.3/31\n",
-            "router bgp 65101\n   router-id 10.111.254.1\n   maximum-paths 2\n   neighbor SPINE peer group\n   neighbor SPINE remote-as 65100\n   "
+            "ip address 9.11.1.2/31\ninterface Ethernet100\n   ip address 10.11.19.3/31\nrouter bgp 65101\n   router-id 10.111.254.1\n   "
+            "maximum-paths 2\n   neighbor SPINE peer group\n   neighbor SPINE remote-as 65100\n   "
             "neighbor SPINE send-community standard extended\n   neighbor 10.111.1.0 peer group SPINE\n   neighbor 10.111.2.0 peer group SPINE\n   "
-            "neighbor 10.255.255.2 remote-as 65101\n   neighbor 10.255.255.2 next-hop-self\n   network 10.111.112.0/24\n   network 10.111.254.1/32\n",
-            "enable password something\nsome other line",
+            "neighbor 10.255.255.2 remote-as 65101\n   neighbor 10.255.255.2 next-hop-self\n   network 10.111.112.0/24\n   network 10.111.254.1/32\n"
+            "enable password something\nsome other line"
         ],
         "inputs": {
             "sections": [
@@ -103,8 +103,8 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyRunningConfigLines,
         "eos_data": [
             "interface Ethernet1\n   description MLAG Peer-link - s1-leaf1\n   no switchport\n   no switchport\n   ip address 10.0.12.2/24\n"
-            "   channel-group 1mode active\n   isis enable 1\n",
-            "router bgp 65101\n   router-id 10.111.254.1\n   maximum-paths 2\n   neighbor SPINE peer group\n   neighbor SPINE remote-as 65100\n   "
+            "   channel-group 1mode active\n   isis enable 1\nrouter bgp 65101\n   router-id 10.111.254.1\n   maximum-paths 2\n   "
+            "neighbor SPINE peer group\n   neighbor SPINE remote-as 65100\n   "
             "neighbor SPINE send-community standard extended\n   neighbor 10.111.1.0 peer group SPINE\n   neighbor 10.111.2.0 peer group SPINE\n   "
             "neighbor 10.255.255.2 remote-as 65101\n   neighbor 10.255.255.2 next-hop-self\n   network 10.111.112.0/24\n   network 10.111.254.1/32\n",
         ],
@@ -129,9 +129,10 @@ DATA: list[dict[str, Any]] = [
         "eos_data": [
             "router bgp 65101\n   router-id 10.111.254.1\n   maximum-paths 2\n   neighbor SPINE peer group\n   neighbor SPINE remote-as 65100\n   "
             "neighbor SPINE send-community standard extended\n   neighbor 10.111.1.0 peer group SPINE\n   neighbor 10.111.2.0 peer group SPINE\n   "
-            "neighbor 10.255.255.2 remote-as 65101\n   neighbor 10.255.255.2 next-hop-self\n   network 10.111.112.0/24\n   network 10.111.254.1/32\n",
-            "router isis 1\n   net 49.0001.0000.0000.0002.00\n   !\n   address-family ipv4 unicast\n!\nrouter multicast\n   ipv4\n      software-forwarding kernel\n"
-            "   !\n   ipv6\nsoftware-forwarding kernel\n",
+            "neighbor 10.255.255.2 remote-as 65101\n   neighbor 10.255.255.2 next-hop-self\n   network 10.111.112.0/24\n   network 10.111.254.1/32\n"
+            "router isis 1\n   net 49.0001.0000.0000.0002.00\n   !\n   address-family ipv4 unicast\n!\nrouter multicast\n   ipv4\n"
+            "      software-forwarding kernel\n"
+            "   !\n   ipv6\nsoftware-forwarding kernel\n"
         ],
         "inputs": {
             "sections": [{"section": "router bgp 65101", "regex_patterns": ["router-id 10.111.255.12", "network 10.110.254.1"]}],
