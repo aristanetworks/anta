@@ -387,7 +387,7 @@ anta.tests.ptp:
       # Verifies the PTP interfaces state.
 anta.tests.routing.bgp:
   - VerifyBGPAdvCommunities:
-      # Verifies the advertised communities for BGP peers.
+      # Verifies the advertised communities of BGP peers.
       bgp_peers:
         - peer_address: 172.30.11.17
           vrf: default
@@ -416,12 +416,20 @@ anta.tests.routing.bgp:
             - 192.0.255.1/32
             - 192.0.254.5/32
   - VerifyBGPNlriAcceptance:
-      # Verifies that all received NLRI are accepted for all AFI/SAFI configured for BGP IPv4 peer(s).
+      # Verifies that all received NLRI are accepted for all AFI/SAFI configured for BGP peers.
       bgp_peers:
         - peer_address: 10.100.0.128
           vrf: default
           capabilities:
             - ipv4Unicast
+        - peer_address: 2001:db8:1::2
+          vrf: default
+          capabilities:
+            - ipv6Unicast
+        - peer_address: fe80::2%Et1
+          vrf: default
+          capabilities:
+            - ipv6Unicast
   - VerifyBGPPeerASNCap:
       # Verifies the four octet ASN capability of BGP peers.
       bgp_peers:
@@ -450,7 +458,7 @@ anta.tests.routing.bgp:
           vrf: "DEV"
           num_peers: 3
   - VerifyBGPPeerDropStats:
-      # Verifies BGP NLRI drop statistics for the provided BGP peers.
+      # Verifies BGP NLRI drop statistics of BGP peers.
       bgp_peers:
         - peer_address: 172.30.11.1
           vrf: default
@@ -482,7 +490,7 @@ anta.tests.routing.bgp:
           vrf: MGMT
           peer_group: IPv4-UNDERLAY-PEERS
   - VerifyBGPPeerMD5Auth:
-      # Verifies the MD5 authentication and state of BGP peers in a specified VRF.
+      # Verifies the MD5 authentication and state of BGP peers.
       bgp_peers:
         - peer_address: 172.30.11.1
           vrf: default
@@ -532,7 +540,7 @@ anta.tests.routing.bgp:
           maximum_routes: 12000
           warning_limit: 10000
   - VerifyBGPPeerRouteRefreshCap:
-      # Verifies the route refresh capabilities of BGP peers in a specified VRF.
+      # Verifies the route refresh capabilities of BGP peers.
       bgp_peers:
         - peer_address: 172.30.11.1
           vrf: default
@@ -555,8 +563,6 @@ anta.tests.routing.bgp:
         - peer_address: 10.1.255.4
           vrf: DEV
         - peer_address: fd00:dc:1::1
-          vrf: default
-        - peer_address: fe80::a8c1:abff:fe91:788e%Et1
           vrf: default
         # RFC5549
         - interface: Ethernet1
@@ -598,7 +604,7 @@ anta.tests.routing.bgp:
             ttl: 30
             max_ttl_hops: 30
   - VerifyBGPPeerUpdateErrors:
-      # Verifies BGP update error counters for the provided BGP peers.
+      # Verifies BGP update error counters of BGP peers.
       bgp_peers:
         - peer_address: 172.30.11.1
           vrf: default

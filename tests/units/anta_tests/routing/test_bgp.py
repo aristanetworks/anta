@@ -7051,6 +7051,48 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
+        "name": "success-ipv6-link-local",
+        "test": VerifyBGPNlriAcceptance,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "vrf": "default",
+                        "routerId": "1.1.1.1",
+                        "asn": "65001",
+                        "peers": {
+                            "2001:db8:1::2": {
+                                "peerState": "Established",
+                                "peerAsn": "65003",
+                                "ipv6Unicast": {"afiSafiState": "negotiated", "nlrisReceived": 2, "nlrisAccepted": 2},
+                            },
+                            "fe80::2%Et1": {
+                                "peerState": "Established",
+                                "peerAsn": "65002",
+                                "ipv6Unicast": {"afiSafiState": "negotiated", "nlrisReceived": 1, "nlrisAccepted": 1},
+                            },
+                        },
+                    }
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "2001:db8:1::2",
+                    "vrf": "default",
+                    "capabilities": ["ipv6Unicast"],
+                },
+                {
+                    "peer_address": "fe80::2%Et1",
+                    "vrf": "default",
+                    "capabilities": ["ipv6Unicast"],
+                },
+            ]
+        },
+        "expected": {"result": "success"},
+    },
+    {
         "name": "failure-vrf-not-configured",
         "test": VerifyBGPNlriAcceptance,
         "eos_data": [
@@ -7261,6 +7303,55 @@ DATA: list[dict[str, Any]] = [
                 "Peer: 10.100.0.8 VRF: default AFI/SAFI: l2VpnEvpn - Some NLRI were filtered or rejected - Accepted: 56 Received: 58",
                 "Peer: 10.100.4.5 VRF: MGMT AFI/SAFI: ipv4Unicast - Some NLRI were filtered or rejected - Accepted: 14 Received: 15",
                 "Peer: 10.100.4.5 VRF: MGMT AFI/SAFI: l2VpnEvpn - Some NLRI were filtered or rejected - Accepted: 56 Received: 59",
+            ],
+        },
+    },
+    {
+        "name": "failure-ipv6-link-local",
+        "test": VerifyBGPNlriAcceptance,
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "vrf": "default",
+                        "routerId": "1.1.1.1",
+                        "asn": "65001",
+                        "peers": {
+                            "2001:db8:1::2": {
+                                "peerState": "Established",
+                                "peerAsn": "65003",
+                                "ipv6Unicast": {"afiSafiState": "configured", "nlrisReceived": 2, "nlrisAccepted": 3},
+                            },
+                            "fe80::2%Et1": {
+                                "peerState": "Established",
+                                "peerAsn": "65002",
+                                "ipv6Unicast": {"afiSafiState": "negotiated", "nlrisReceived": 2, "nlrisAccepted": 1},
+                            },
+                        },
+                    }
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "peer_address": "2001:db8:1::2",
+                    "vrf": "default",
+                    "capabilities": ["ipv6Unicast"],
+                },
+                {
+                    "peer_address": "fe80::2%Et1",
+                    "vrf": "default",
+                    "capabilities": ["ipv6Unicast"],
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Peer: 2001:db8:1::2 VRF: default - ipv6Unicast not negotiated",
+                "Peer: 2001:db8:1::2 VRF: default AFI/SAFI: ipv6Unicast - Some NLRI were filtered or rejected - Accepted: 3 Received: 2",
+                "Peer: fe80::2%Et1 VRF: default AFI/SAFI: ipv6Unicast - Some NLRI were filtered or rejected - Accepted: 1 Received: 2",
             ],
         },
     },

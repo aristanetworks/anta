@@ -389,8 +389,6 @@ class VerifyBGPPeerSession(AntaTest):
                 vrf: DEV
               - peer_address: fd00:dc:1::1
                 vrf: default
-              - peer_address: fe80::a8c1:abff:fe91:788e%Et1
-                vrf: default
               # RFC5549
               - interface: Ethernet1
                 vrf: default
@@ -772,7 +770,7 @@ class VerifyBGPPeerASNCap(AntaTest):
 
 
 class VerifyBGPPeerRouteRefreshCap(AntaTest):
-    """Verifies the route refresh capabilities of BGP peers in a specified VRF.
+    """Verifies the route refresh capabilities of BGP peers.
 
     This test performs the following checks for each specified peer:
 
@@ -852,7 +850,7 @@ class VerifyBGPPeerRouteRefreshCap(AntaTest):
 
 
 class VerifyBGPPeerMD5Auth(AntaTest):
-    """Verifies the MD5 authentication and state of BGP peers in a specified VRF.
+    """Verifies the MD5 authentication and state of BGP peers.
 
     This test performs the following checks for each specified peer:
 
@@ -1002,7 +1000,7 @@ class VerifyEVPNType2Route(AntaTest):
 
 
 class VerifyBGPAdvCommunities(AntaTest):
-    """Verifies the advertised communities for BGP peers.
+    """Verifies the advertised communities of BGP peers.
 
     This test performs the following checks for each specified peer:
 
@@ -1172,7 +1170,7 @@ class VerifyBGPTimers(AntaTest):
 
 
 class VerifyBGPPeerDropStats(AntaTest):
-    """Verifies BGP NLRI drop statistics for the provided BGP peers.
+    """Verifies BGP NLRI drop statistics of BGP peers.
 
     This test performs the following checks for each specified peer:
 
@@ -1266,7 +1264,7 @@ class VerifyBGPPeerDropStats(AntaTest):
 
 
 class VerifyBGPPeerUpdateErrors(AntaTest):
-    """Verifies BGP update error counters for the provided BGP peers.
+    """Verifies BGP update error counters of BGP peers.
 
     This test performs the following checks for each specified peer:
 
@@ -1790,7 +1788,7 @@ class VerifyBGPPeersHealthRibd(AntaTest):
 
 
 class VerifyBGPNlriAcceptance(AntaTest):
-    """Verifies that all received NLRI are accepted for all AFI/SAFI configured for BGP IPv4 peer(s).
+    """Verifies that all received NLRI are accepted for all AFI/SAFI configured for BGP peers.
 
     This test performs the following checks for each specified peer:
 
@@ -1815,6 +1813,14 @@ class VerifyBGPNlriAcceptance(AntaTest):
                 vrf: default
                 capabilities:
                   - ipv4Unicast
+              - peer_address: 2001:db8:1::2
+                vrf: default
+                capabilities:
+                  - ipv6Unicast
+              - peer_address: fe80::2%Et1
+                vrf: default
+                capabilities:
+                  - ipv6Unicast
     ```
     """
 
@@ -1845,8 +1851,10 @@ class VerifyBGPNlriAcceptance(AntaTest):
         output = self.instance_commands[0].json_output
 
         for peer in self.inputs.bgp_peers:
+            identity = peer.interface if peer.interface is not None else str(peer.peer_address)
+
             # Check if the peer is found
-            if not (peer_data := get_value(output, f"vrfs..{peer.vrf}..peers..{peer.peer_address}", separator="..")):
+            if not (peer_data := get_value(output, f"vrfs..{peer.vrf}..peers..{identity}", separator="..")):
                 self.result.is_failure(f"{peer} - Not found")
                 continue
 
