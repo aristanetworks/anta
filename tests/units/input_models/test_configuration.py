@@ -26,7 +26,7 @@ class TestVerifyRunningConfigLinesInput:
         [
             pytest.param(
                 [
-                    {"section": "^interface Ethernet1$", "regex_patterns": ["switchport mode trunk"]},
+                    {"section": "interface Ethernet1", "regex_patterns": ["switchport mode trunk"]},
                     {"section": "router bgp 65101", "regex_patterns": ["router-id 10.111.255.12", " network 10.110.254.1"]},
                 ],
                 [],
@@ -35,7 +35,7 @@ class TestVerifyRunningConfigLinesInput:
             pytest.param([], ["router-id 10.111.254.1", "neighbor SPINE*"], id="valid-regex-patterns"),
             pytest.param(
                 [
-                    {"section": "^interface Ethernet1$", "regex_patterns": ["switchport mode trunk"]},
+                    {"section": "interface Ethernet1", "regex_patterns": ["switchport mode trunk"]},
                     {"section": "router bgp 65101", "regex_patterns": ["router-id 10.111.255.12", " network 10.110.254.1"]},
                 ],
                 ["router-id 10.111.254.1", "neighbor SPINE*"],

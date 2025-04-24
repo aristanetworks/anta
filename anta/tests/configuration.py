@@ -103,7 +103,7 @@ class VerifyRunningConfigLines(AntaTest):
     anta.tests.configuration:
       - VerifyRunningConfigLines:
           sections:
-            - section: router bgp
+            - section: router bgp 65101
               regex_patterns:
                 - neighbor 10.111.1.0 peer group SPINE
                 - router-id 10.111.254.1
@@ -150,20 +150,20 @@ class VerifyRunningConfigLines(AntaTest):
         """Main test function for VerifyRunningConfigLines."""
         self.result.is_success()
 
-        # If regex patterns are provided, matching configurations will be searched throughout the entire running configuration.
+        # If regex patterns are provided, matching configurations will be searched throughout the entire running configuration
         for pattern in self.inputs.regex_patterns:
             re_search = re.compile(pattern, re.IGNORECASE | re.MULTILINE)
             if not re_search.search(self.instance_commands[0].text_output):
                 self.result.is_failure(f"Regex pattern: {pattern} - Not found")
 
-        # If sections are specified, matching configurations will be searched only within their respective configuration sections.
+        # If sections are specified, matching configurations will be searched only within their respective configuration sections
         for section in self.inputs.sections:
-            # Matches a section starting with section matcher, capturing everything until the next section or end of file.
+            # Matches a section starting with section matcher, capturing everything until the next section or end of file
             pattern_to_search = rf"({section.section}$[\s\S]+?)(?=\n(?:\S.*|\Z))"
-            # Collects exact matches for the specified section matcher.
+            # Collects exact matches for the specified section matcher
             matched_entries = re.findall(pattern_to_search, self.instance_commands[0].text_output, re.IGNORECASE | re.MULTILINE)
             for match_pattern in section.regex_patterns:
-                # Verifies expected regex patterns in the section matcher.
+                # Verifies expected regex patterns in the section matcher
                 match_found = any(re.search(match_pattern, item) for item in matched_entries)
                 if not match_found:
                     self.result.is_failure(f"Section: {section.section} Regex pattern: {match_pattern} - Not found")

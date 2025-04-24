@@ -108,7 +108,7 @@ anta.tests.configuration:
   - VerifyRunningConfigLines:
       # Verifies the given regular expression patterns are present in the running-config.
       sections:
-        - section: router bgp
+        - section: router bgp 65101
           regex_patterns:
             - neighbor 10.111.1.0 peer group SPINE
             - router-id 10.111.254.1
