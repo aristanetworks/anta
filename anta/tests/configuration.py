@@ -107,7 +107,7 @@ class VerifyRunningConfigLines(AntaTest):
               regex_patterns:
                 - neighbor 10.111.1.0 peer group SPINE
                 - router-id 10.111.254.1
-            - section: ^interface ethernet1$
+            - section: interface ethernet1
               regex_patterns:
                 - switchport mode trunk
           regex_patterns:
@@ -129,7 +129,7 @@ class VerifyRunningConfigLines(AntaTest):
 
          Example:
           1. section: router bgp 65101, regex_patterns: router-id 10.111.254.1
-          2. section: ^router isis 1$ regex_patterns: address-family ipv4 unicast
+          2. section: router isis 1 regex_patterns: address-family ipv4 unicast
           """
         regex_patterns: list[RegexString] = Field(default=[])
         """A list of regular expressions validated across the entire running configuration."""
@@ -149,15 +149,17 @@ class VerifyRunningConfigLines(AntaTest):
     def test(self) -> None:
         """Main test function for VerifyRunningConfigLines."""
         self.result.is_success()
+
         # If regex patterns are provided, matching configurations will be searched throughout the entire running configuration.
         for pattern in self.inputs.regex_patterns:
             re_search = re.compile(pattern, re.IGNORECASE | re.MULTILINE)
             if not re_search.search(self.instance_commands[0].text_output):
                 self.result.is_failure(f"Regex pattern: {pattern} - Not found")
+
         # If sections are specified, matching configurations will be searched only within their respective configuration sections.
         for section in self.inputs.sections:
             # Matches a section starting with section matcher, capturing everything until the next section or end of file.
-            pattern_to_search = rf"({section.section}[\s\S]+?)(?=\n(?:\S.*|\Z))"
+            pattern_to_search = rf"({section.section}$[\s\S]+?)(?=\n(?:\S.*|\Z))"
             # Collects exact matches for the specified section matcher.
             matched_entries = re.findall(pattern_to_search, self.instance_commands[0].text_output, re.IGNORECASE | re.MULTILINE)
             for match_pattern in section.regex_patterns:

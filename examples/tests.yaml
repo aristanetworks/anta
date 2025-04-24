@@ -112,7 +112,7 @@ anta.tests.configuration:
           regex_patterns:
             - neighbor 10.111.1.0 peer group SPINE
             - router-id 10.111.254.1
-        - section: ^interface ethernet1$
+        - section: interface ethernet1
           regex_patterns:
             - switchport mode trunk
       regex_patterns:
