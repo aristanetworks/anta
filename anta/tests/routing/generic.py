@@ -406,4 +406,4 @@ class VerifyRoutingStatus(AntaTest):
                 routing_status_mismatch = True
 
         if routing_status_mismatch:
-            self.result.is_failure(f"Routing enabled status mismatch- {format_data(actual_routing_status)}")
+            self.result.is_failure(f"Routing enabled status mismatch - {format_data(actual_routing_status)}")

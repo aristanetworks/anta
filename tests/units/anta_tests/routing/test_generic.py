@@ -543,7 +543,7 @@ DATA: list[dict[str, Any]] = [
         },
     },
     {
-        "name": "success-routing-disable",
+        "name": "success-routing-disable-all",
         "test": VerifyRoutingStatus,
         "eos_data": [
             {
@@ -575,7 +575,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Routing enabled status mismatch- Ipv4_unicast: False, Ipv6_unicast: False, Ipv4_multicast: False, Ipv6_multicast: False, Ipv6_interfaces: False"
+                "Routing enabled status mismatch - Ipv4_unicast: False, Ipv6_unicast: False, Ipv4_multicast: False, Ipv6_multicast: False, Ipv6_interfaces: False"
             ],
         },
     },
@@ -595,7 +595,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Routing enabled status mismatch- Ipv4_unicast: False, Ipv6_unicast: False, Ipv4_multicast: True, Ipv6_multicast: True, Ipv6_interfaces: False"
+                "Routing enabled status mismatch - Ipv4_unicast: False, Ipv6_unicast: False, Ipv4_multicast: True, Ipv6_multicast: True, Ipv6_interfaces: False"
             ],
         },
     },
@@ -615,7 +615,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Routing enabled status mismatch- Ipv4_unicast: True, Ipv6_unicast: True, Ipv4_multicast: False, Ipv6_multicast: False, Ipv6_interfaces: False"
+                "Routing enabled status mismatch - Ipv4_unicast: True, Ipv6_unicast: True, Ipv4_multicast: False, Ipv6_multicast: False, Ipv6_interfaces: False"
             ],
         },
     },
