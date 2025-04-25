@@ -16,7 +16,7 @@ from pydantic import field_validator, model_validator
 from anta.custom_types import PositiveInteger
 from anta.input_models.routing.generic import IPv4Routes
 from anta.models import AntaCommand, AntaTemplate, AntaTest
-from anta.tools import format_data, get_item, get_value
+from anta.tools import get_item, get_value
 
 if TYPE_CHECKING:
     import sys
@@ -400,10 +400,7 @@ class VerifyRoutingStatus(AntaTest):
             "ipv6_interfaces": command_output.get("v6IntfForwarding", False),
         }
 
-        routing_status_mismatch = False
         for input_key, value in self.inputs:
             if input_key in actual_routing_status and value != actual_routing_status[input_key]:
-                routing_status_mismatch = True
-
-        if routing_status_mismatch:
-            self.result.is_failure(f"Routing enabled status mismatch - {format_data(actual_routing_status)}")
+                route_type = input_key.replace("_", " ").capitalize()
+                self.result.is_failure(f"{route_type} routing enabled status mismatch - Expected: {value} Actual: {actual_routing_status[input_key]}")
