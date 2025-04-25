@@ -129,7 +129,7 @@ class VerifyVxlanVniBinding(AntaTest):
         """Input model for the VerifyVxlanVniBinding test."""
 
         bindings: dict[Vni, VlanId | str]
-        """VNI to VLAN bindings to verify."""
+        """VNI-VLAN or VNI-VRF bindings to verify."""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -144,7 +144,7 @@ class VerifyVxlanVniBinding(AntaTest):
             str_vni = str(vni)
             retrieved_vlan = ""
             retrieved_vrf = ""
-            if str_vni in vxlan1["vniBindings"]:
+            if all([str_vni in vxlan1["vniBindings"], isinstance(vlan_vrf, int)]):
                 retrieved_vlan = get_value(vxlan1, f"vniBindings..{str_vni}..vlan", separator="..")
             elif str_vni in vxlan1["vniBindingsToVrf"]:
                 if isinstance(vlan_vrf, int):

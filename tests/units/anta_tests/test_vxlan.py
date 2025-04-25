@@ -280,6 +280,27 @@ DATA: list[dict[str, Any]] = [
         },
     },
     {
+        "name": "failure-wrong-vni-vrf-binding",
+        "test": VerifyVxlanVniBinding,
+        "eos_data": [
+            {
+                "vxlanIntfs": {
+                    "Vxlan1": {
+                        "vniBindings": {
+                            "10020": {"vlan": 30, "dynamicVlan": False, "source": "static", "interfaces": {"Ethernet31": {"dot1q": 0}, "Vxlan1": {"dot1q": 20}}},
+                        },
+                        "vniBindingsToVrf": {"500": {"vrfName": "PROD", "vlan": 1199, "source": "evpn"}},
+                    },
+                },
+            },
+        ],
+        "inputs": {"bindings": {10020: "PROD", 500: 30}},
+        "expected": {
+            "result": "failure",
+            "messages": ["Interface: Vxlan1 VNI: 10020 - Binding not found", "Interface: Vxlan1 VNI: 500 - Wrong VLAN binding - Expected: 30 Actual: 1199"],
+        },
+    },
+    {
         "name": "skipped",
         "test": VerifyVxlanVniBinding,
         "eos_data": [{"vxlanIntfs": {}}],
