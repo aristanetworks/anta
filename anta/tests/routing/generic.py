@@ -9,14 +9,14 @@ from __future__ import annotations
 
 from functools import cache
 from ipaddress import IPv4Address, IPv4Interface
-from typing import TYPE_CHECKING, ClassVar, Literal
+from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
 from pydantic import field_validator, model_validator
 
 from anta.custom_types import PositiveInteger
 from anta.input_models.routing.generic import IPv4Routes
 from anta.models import AntaCommand, AntaTemplate, AntaTest
-from anta.tools import get_item, get_value
+from anta.tools import format_data, get_item, get_value
 
 if TYPE_CHECKING:
     import sys
@@ -352,14 +352,12 @@ class VerifyIPv4RouteNextHops(AntaTest):
 
 
 class VerifyRoutingStatus(AntaTest):
-    """Verifies the routing status for IPv4/IPv6 unicast, multicast, and IPv6 interface forwarding.
+    """Verifies the routing status for IPv4/IPv6 unicast, multicast, and IPv6 interfaces (RFC5549).
 
     Expected Results
     ----------------
-    * Success: The test will pass if the routing status for the specified types, such as IPv4/IPv6 unicast, multicast, and IPv6 interface, matches the
-     expected values.
-    * Failure: The test will fail if the routing status for any specified type, such as IPv4/IPv6 unicast, multicast, or IPv6 interface forwarding,
-     does not match the expected values.
+    * Success: The test will pass if the routing status is correct..
+    * Failure: The test will fail if the routing status doesn't match the expected configuration.
 
     Examples
     --------
@@ -394,13 +392,18 @@ class VerifyRoutingStatus(AntaTest):
         """Main test function for VerifyRoutingStatus."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
-        if self.inputs.ipv4_unicast != command_output["v4RoutingEnabled"]:
-            self.result.is_failure(f"IPv4 routing enabled status mismatch - Expected: {self.inputs.ipv4_unicast} Actual: {command_output['v4RoutingEnabled']}")
-        if self.inputs.ipv6_unicast != command_output["v6RoutingEnabled"]:
-            self.result.is_failure(f"IPv6 routing enabled status mismatch - Expected: {self.inputs.ipv6_unicast} Actual: {command_output['v6RoutingEnabled']}")
-        if self.inputs.ipv4_multicast != (ip_multicast := command_output["multicastRouting"]["ipMulticastEnabled"]):
-            self.result.is_failure(f"IPv4 multicast routing enabled status mismatch - Expected: {self.inputs.ipv4_multicast} Actual: {ip_multicast}")
-        if self.inputs.ipv6_multicast != (ipv6_multicast := command_output["multicastRouting"]["ip6MulticastEnabled"]):
-            self.result.is_failure(f"IPv6 multicast routing enabled status mismatch - Expected: {self.inputs.ipv6_multicast} Actual: {ipv6_multicast}")
-        if self.inputs.ipv6_interfaces != (ipv6_interfaces := command_output.get("v6IntfForwarding", False)):
-            self.result.is_failure(f"IPv6 interface routing enabled status mismatch - Expected: {self.inputs.ipv6_interfaces} Actual: {ipv6_interfaces}")
+        actual_routing_status: dict[str, Any] = {
+            "ipv4_unicast": command_output["v4RoutingEnabled"],
+            "ipv6_unicast": command_output["v6RoutingEnabled"],
+            "ipv4_multicast": command_output["multicastRouting"]["ipMulticastEnabled"],
+            "ipv6_multicast": command_output["multicastRouting"]["ip6MulticastEnabled"],
+            "ipv6_interfaces": command_output.get("v6IntfForwarding", False),
+        }
+
+        routing_status_mismatch = False
+        for input_key, value in self.inputs:
+            if input_key in actual_routing_status and value != actual_routing_status[input_key]:
+                routing_status_mismatch = True
+
+        if routing_status_mismatch:
+            self.result.is_failure(f"Routing enabled status mismatch- {format_data(actual_routing_status)}")

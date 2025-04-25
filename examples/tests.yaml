@@ -674,7 +674,7 @@ anta.tests.routing.generic:
       # Verifies the configured routing protocol model.
       model: multi-agent
   - VerifyRoutingStatus:
-      # Verifies the routing status for IPv4/IPv6 unicast, multicast, and IPv6 interface forwarding.
+      # Verifies the routing status for IPv4/IPv6 unicast, multicast, and IPv6 interfaces (RFC5549).
       ipv4_unicast: True
       ipv6_unicast: True
   - VerifyRoutingTableEntry:

@@ -575,8 +575,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "IPv4 multicast routing enabled status mismatch - Expected: True Actual: False",
-                "IPv6 multicast routing enabled status mismatch - Expected: True Actual: False",
+                "Routing enabled status mismatch- Ipv4_unicast: False, Ipv6_unicast: False, Ipv4_multicast: False, Ipv6_multicast: False, Ipv6_interfaces: False"
             ],
         },
     },
@@ -588,7 +587,7 @@ DATA: list[dict[str, Any]] = [
                 "v4RoutingEnabled": False,
                 "v6RoutingEnabled": False,
                 "vrrpIntfs": 0,
-                "multicastRouting": {"ipMulticastEnabled": False, "ip6MulticastEnabled": False},
+                "multicastRouting": {"ipMulticastEnabled": True, "ip6MulticastEnabled": True},
                 "v6EcmpInfo": {"v6EcmpRouteSupport": True},
             }
         ],
@@ -596,8 +595,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "IPv4 routing enabled status mismatch - Expected: True Actual: False",
-                "IPv6 routing enabled status mismatch - Expected: True Actual: False",
+                "Routing enabled status mismatch- Ipv4_unicast: False, Ipv6_unicast: False, Ipv4_multicast: True, Ipv6_multicast: True, Ipv6_interfaces: False"
             ],
         },
     },
@@ -616,7 +614,9 @@ DATA: list[dict[str, Any]] = [
         "inputs": {"ipv4_unicast": True, "ipv6_unicast": True, "ipv6_interfaces": True},
         "expected": {
             "result": "failure",
-            "messages": ["IPv6 interface routing enabled status mismatch - Expected: True Actual: False"],
+            "messages": [
+                "Routing enabled status mismatch- Ipv4_unicast: True, Ipv6_unicast: True, Ipv4_multicast: False, Ipv6_multicast: False, Ipv6_interfaces: False"
+            ],
         },
     },
 ]
