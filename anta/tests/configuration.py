@@ -149,11 +149,11 @@ class VerifyRunningConfigLines(AntaTest):
     def test(self) -> None:
         """Main test function for VerifyRunningConfigLines."""
         self.result.is_success()
-
+        output = self.instance_commands[0].text_output
         # If regex patterns are provided, matching configurations will be searched throughout the entire running configuration
         for pattern in self.inputs.regex_patterns:
             re_search = re.compile(pattern, re.IGNORECASE | re.MULTILINE)
-            if not re_search.search(self.instance_commands[0].text_output):
+            if not re_search.search(output):
                 self.result.is_failure(f"Regex pattern: {pattern} - Not found")
 
         # If sections are specified, matching configurations will be searched only within their respective configuration sections
@@ -161,7 +161,7 @@ class VerifyRunningConfigLines(AntaTest):
             # Matches a section starting with section matcher, capturing everything until the next section or end of file
             pattern_to_search = rf"({section.section}$[\s\S]+?)(?=\n(?:\S.*|\Z))"
             # Collects exact matches for the specified section matcher
-            matched_entries = re.findall(pattern_to_search, self.instance_commands[0].text_output, re.IGNORECASE | re.MULTILINE)
+            matched_entries = re.findall(pattern_to_search, output, re.IGNORECASE | re.MULTILINE)
             for match_pattern in section.regex_patterns:
                 # Verifies expected regex patterns in the section matcher
                 match_found = any(re.search(match_pattern, item) for item in matched_entries)
