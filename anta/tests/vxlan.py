@@ -102,11 +102,11 @@ class VerifyVxlanConfigSanity(AntaTest):
 
 
 class VerifyVxlanVniBinding(AntaTest):
-    """Verifies the VNI-VLAN bindings of the Vxlan1 interface.
+    """Verifies the VNI-VLAN, VNI-VRF bindings of the Vxlan1 interface.
 
     Expected Results
     ----------------
-    * Success: The test will pass if the VNI-VLAN bindings provided are properly configured.
+    * Success: The test will pass if the VNI-VLAN and VNI-VRF bindings provided are properly configured.
     * Failure: The test will fail if any VNI lacks bindings or if any bindings are incorrect.
     * Skipped: The test will be skipped if the Vxlan1 interface is not configured.
 
@@ -118,6 +118,7 @@ class VerifyVxlanVniBinding(AntaTest):
           bindings:
             10010: 10
             10020: 20
+            500: PROD
     ```
     """
 
@@ -127,7 +128,7 @@ class VerifyVxlanVniBinding(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyVxlanVniBinding test."""
 
-        bindings: dict[Vni, VlanId]
+        bindings: dict[Vni, VlanId | str]
         """VNI to VLAN bindings to verify."""
 
     @AntaTest.anta_test
@@ -139,19 +140,25 @@ class VerifyVxlanVniBinding(AntaTest):
             self.result.is_skipped("Interface: Vxlan1 - Not configured")
             return
 
-        for vni, vlan in self.inputs.bindings.items():
+        for vni, vlan_vrf in self.inputs.bindings.items():
             str_vni = str(vni)
             retrieved_vlan = ""
+            retrieved_vrf = ""
             if str_vni in vxlan1["vniBindings"]:
                 retrieved_vlan = get_value(vxlan1, f"vniBindings..{str_vni}..vlan", separator="..")
             elif str_vni in vxlan1["vniBindingsToVrf"]:
-                retrieved_vlan = get_value(vxlan1, f"vniBindingsToVrf..{str_vni}..vlan", separator="..")
-
-            if not retrieved_vlan:
+                if isinstance(vlan_vrf, int):
+                    retrieved_vlan = get_value(vxlan1, f"vniBindingsToVrf..{str_vni}..vlan", separator="..")
+                else:
+                    retrieved_vrf = get_value(vxlan1, f"vniBindingsToVrf..{str_vni}..vrfName", separator="..")
+            if not any([retrieved_vlan, retrieved_vrf]):
                 self.result.is_failure(f"Interface: Vxlan1 VNI: {str_vni} - Binding not found")
 
-            elif vlan != retrieved_vlan:
-                self.result.is_failure(f"Interface: Vxlan1 VNI: {str_vni} VLAN: {vlan} - Wrong VLAN binding - Actual: {retrieved_vlan}")
+            elif retrieved_vlan and vlan_vrf != retrieved_vlan:
+                self.result.is_failure(f"Interface: Vxlan1 VNI: {str_vni} - Wrong VLAN binding - Expected: {vlan_vrf} Actual: {retrieved_vlan}")
+
+            elif retrieved_vrf and vlan_vrf != retrieved_vrf:
+                self.result.is_failure(f"Interface: Vxlan1 VNI: {str_vni} - Wrong VRF binding - Expected: {vlan_vrf} Actual: {retrieved_vrf}")
 
 
 class VerifyVxlanVtep(AntaTest):

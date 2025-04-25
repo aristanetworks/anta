@@ -1047,10 +1047,11 @@ anta.tests.vxlan:
   - VerifyVxlanConfigSanity:
       # Verifies there are no VXLAN config-sanity inconsistencies.
   - VerifyVxlanVniBinding:
-      # Verifies the VNI-VLAN bindings of the Vxlan1 interface.
+      # Verifies the VNI-VLAN, VNI-VRF bindings of the Vxlan1 interface.
       bindings:
         10010: 10
         10020: 20
+        500: PROD
   - VerifyVxlanVtep:
       # Verifies Vxlan1 VTEP peers.
       vteps:
