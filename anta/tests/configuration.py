@@ -10,7 +10,7 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING, ClassVar
 
-from pydantic import Field, model_validator
+from pydantic import model_validator
 
 from anta.custom_types import RegexString
 from anta.input_models.configuration import RunningConfigSection
@@ -122,7 +122,7 @@ class VerifyRunningConfigLines(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyRunningConfigLines test."""
 
-        sections: list[RunningConfigSection] = Field(default=[])
+        sections: list[RunningConfigSection] | None = None
         """A list of unique regex sections and their corresponding regular expressions. Each pattern is validated only within its specific configuration section.
 
          For accurate results, the section field must be unique and clearly defined.
@@ -131,7 +131,7 @@ class VerifyRunningConfigLines(AntaTest):
           1. section: router bgp 65101, regex_patterns: router-id 10.111.254.1
           2. section: router isis 1 regex_patterns: address-family ipv4 unicast
           """
-        regex_patterns: list[RegexString] = Field(default=[])
+        regex_patterns: list[RegexString] | None = None
         """A list of regular expressions validated across the entire running configuration."""
 
         @model_validator(mode="after")
@@ -150,20 +150,23 @@ class VerifyRunningConfigLines(AntaTest):
         """Main test function for VerifyRunningConfigLines."""
         self.result.is_success()
         output = self.instance_commands[0].text_output
+        not_found_patterns: list[str] = []
         # If regex patterns are provided, matching configurations will be searched throughout the entire running configuration
-        for pattern in self.inputs.regex_patterns:
-            re_search = re.compile(pattern, re.IGNORECASE | re.MULTILINE)
-            if not re_search.search(output):
-                self.result.is_failure(f"Regex pattern: {pattern} - Not found")
+        if self.inputs.regex_patterns:
+            not_found_patterns = [pattern for pattern in self.inputs.regex_patterns if not re.search(pattern, output, re.IGNORECASE | re.MULTILINE)]
+
+        for pattern in not_found_patterns:
+            self.result.is_failure(f"Regex pattern: {pattern} - Not found")
 
         # If sections are specified, matching configurations will be searched only within their respective configuration sections
-        for section in self.inputs.sections:
-            # Matches a section starting with section matcher, capturing everything until the next section or end of file
-            pattern_to_search = rf"({section.section}$[\s\S]+?)(?=\n(?:\S.*|\Z))"
-            # Collects exact matches for the specified section matcher
-            matched_entries = re.findall(pattern_to_search, output, re.IGNORECASE | re.MULTILINE)
-            for match_pattern in section.regex_patterns:
-                # Verifies expected regex patterns in the section matcher
-                match_found = any(re.search(match_pattern, item) for item in matched_entries)
-                if not match_found:
-                    self.result.is_failure(f"Section: {section.section} Regex pattern: {match_pattern} - Not found")
+        if self.inputs.sections:
+            for section in self.inputs.sections:
+                # Matches a section starting with section matcher, capturing everything until the next section or end of file
+                pattern_to_search = rf"({section.section}$[\s\S]+?)(?=\n(?:\S.*|\Z))"
+                # Collects exact matches for the specified section matcher
+                matched_entries = re.findall(pattern_to_search, output, re.IGNORECASE | re.MULTILINE)
+                for match_pattern in section.regex_patterns:
+                    # Verifies expected regex patterns in the section matcher
+                    match_found = any(re.search(match_pattern, item) for item in matched_entries)
+                    if not match_found:
+                        self.result.is_failure(f"Section: {section.section} Regex pattern: {match_pattern} - Not found")
