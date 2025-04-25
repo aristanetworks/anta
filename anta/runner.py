@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING, Any
 from typing_extensions import deprecated
 
 from anta import GITHUB_SUGGESTION
-from anta._runner import AntaRunner, AntaRunnerFilter
+from anta._runner import AntaRunFilters, AntaRunner
 from anta.logger import anta_log_exception, exc_to_str
 from anta.tools import Catchtime, cprofile
 
@@ -258,11 +258,11 @@ async def main(
     dry_run
         Build the list of coroutine to run and stop before test execution.
     """
-    runner = AntaRunner(inventory=inventory, catalog=catalog, manager=manager)
-    scope = AntaRunnerFilter(
+    runner = AntaRunner()
+    filters = AntaRunFilters(
         devices=devices,
         tests=tests,
         tags=tags,
         established_only=established_only,
     )
-    await runner.run(scope, dry_run=dry_run)
+    await runner.run(inventory, catalog, manager, filters, dry_run=dry_run)

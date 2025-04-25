@@ -8,16 +8,14 @@ from __future__ import annotations
 import logging
 from asyncio import Semaphore, gather
 from collections import defaultdict
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from inspect import getcoroutinelocals
 from typing import TYPE_CHECKING, Any
 
-from pydantic import BaseModel, ConfigDict, PrivateAttr
+from pydantic import BaseModel, ConfigDict
 
 from anta import GITHUB_SUGGESTION
-from anta.catalog import AntaCatalog, AntaTestDefinition
 from anta.cli.console import console
-from anta.device import AntaDevice
 from anta.inventory import AntaInventory
 from anta.logger import anta_log_exception
 from anta.models import AntaTest
@@ -28,14 +26,17 @@ from anta.tools import Catchtime
 if TYPE_CHECKING:
     from collections.abc import Coroutine
 
+    from anta.catalog import AntaCatalog, AntaTestDefinition
+    from anta.device import AntaDevice
     from anta.result_manager.models import TestResult
 
 logger = logging.getLogger(__name__)
 
 
-@dataclass(frozen=True)
-class AntaRunnerInventoryStats:
-    """Store inventory filtering statistics of an ANTA run.
+# TODO: Update docstring
+@dataclass
+class AntaRunStatistics:
+    """Store various statistics of an ANTA run.
 
     This class maintains counters for tracking how the device inventory is filtered
     during test setup.
@@ -53,13 +54,15 @@ class AntaRunnerInventoryStats:
         included in the final test run.
     """
 
-    total: int
-    filtered_by_tags: int
-    connection_failed: int
-    established: int
+    total_tests: int = 0
+    total_devices: int = 0
+    filtered_by_tags_devices: int = 0
+    connection_failed_devices: int = 0
+    established_devices: int = 0
 
 
-class AntaRunnerFilter(BaseModel):
+# TODO: Update docstring
+class AntaRunFilters(BaseModel):
     """Define a filter for an ANTA run.
 
     The filter determines which devices and tests to include in a run, and how to
@@ -89,7 +92,25 @@ class AntaRunnerFilter(BaseModel):
     established_only: bool = True
 
 
-class AntaRunner(BaseModel):
+# TODO: Update docstring
+@dataclass
+class AntaRunnerContext:
+    """Store an AntaRunner run context."""
+
+    inventory: AntaInventory
+    catalog: AntaCatalog
+    filters: AntaRunFilters
+    dry_run: bool = False
+
+    # Attributes set during setup phases in each run
+    selected_inventory: AntaInventory = field(default_factory=AntaInventory)
+    selected_tests: defaultdict[AntaDevice, set[AntaTestDefinition]] = field(default_factory=lambda: defaultdict(set))
+    run_statistics: AntaRunStatistics = field(default_factory=AntaRunStatistics)
+
+
+# TODO: Update docstring
+# pylint: disable=too-few-public-methods
+class AntaRunner:
     """Run and manage ANTA test execution.
 
     This class orchestrates the execution of ANTA tests across network devices. It handles
@@ -109,7 +130,7 @@ class AntaRunner(BaseModel):
         Internal state of filtered inventory for current run.
     _selected_tests : defaultdict[AntaDevice, set[AntaTestDefinition]] | None
         Mapping of devices to their selected tests for current run.
-    _inventory_stats : AntaRunnerInventoryStats | None
+    _run_statistics : AntaRunStatistics | None
         Statistics about inventory filtering for current run.
     _total_tests : int
         Total number of tests to run in current execution.
@@ -136,7 +157,7 @@ class AntaRunner(BaseModel):
     ```python
     import asyncio
 
-    from anta._runner import AntaRunner, AntaRunnerFilter
+    from anta._runner import AntaRunner, AntaRunFilters
     from anta.catalog import AntaCatalog
     from anta.inventory import AntaInventory
 
@@ -154,34 +175,26 @@ class AntaRunner(BaseModel):
     first_run_results = asyncio.run(runner.run())
 
     # Run with filters
-    second_run_results = asyncio.run(runner.run(scope=AntaRunnerFilter(tags={"leaf"})))
+    second_run_results = asyncio.run(runner.run(scope=AntaRunFilters(tags={"leaf"})))
     ```
     """
 
-    model_config = ConfigDict(extra="forbid", arbitrary_types_allowed=True)
-    inventory: AntaInventory
-    catalog: AntaCatalog
-    manager: ResultManager | None = None
+    def __init__(self, settings: AntaRunnerSettings | None = None) -> None:
+        """Initialize AntaRunner."""
+        self._settings = settings if settings is not None else AntaRunnerSettings()
+        logger.debug("AntaRunner initialized with settings: %s", self._settings.model_dump())
 
-    # Internal attributes set during setup phases before each run
-    _selected_inventory: AntaInventory | None = PrivateAttr(default=None)
-    _selected_tests: defaultdict[AntaDevice, set[AntaTestDefinition]] | None = PrivateAttr(default=None)
-    _inventory_stats: AntaRunnerInventoryStats | None = PrivateAttr(default=None)
-    _total_tests: int = PrivateAttr(default=0)
-    _potential_connections: float | None = PrivateAttr(default=None)
-
-    # Internal settings loaded from environment variables
-    _settings: AntaRunnerSettings = PrivateAttr(default_factory=AntaRunnerSettings)
-
-    def reset(self) -> None:
-        """Reset the internal attributes of the ANTA runner."""
-        self._selected_inventory: AntaInventory | None = None
-        self._selected_tests: defaultdict[AntaDevice, set[AntaTestDefinition]] | None = None
-        self._inventory_stats: AntaRunnerInventoryStats | None = None
-        self._total_tests: int = 0
-        self._potential_connections: float | None = None
-
-    async def run(self, filters: AntaRunnerFilter | None = None, *, dry_run: bool = False) -> ResultManager:
+    # TODO: Add knob to clear the manager
+    # TODO: Update docstring
+    async def run(  # noqa: D417
+        self,
+        inventory: AntaInventory,
+        catalog: AntaCatalog,
+        result_manager: ResultManager | None = None,
+        filters: AntaRunFilters | None = None,
+        *,
+        dry_run: bool = False,
+    ) -> ResultManager:
         """Run ANTA.
 
         Parameters
@@ -191,48 +204,49 @@ class AntaRunner(BaseModel):
         dry_run
             Dry-run mode flag. If True, runs all setup steps but does not execute tests.
         """
-        filters = filters or AntaRunnerFilter()
+        ctx = AntaRunnerContext(
+            inventory=inventory,
+            catalog=catalog,
+            filters=filters if filters is not None else AntaRunFilters(),
+            dry_run=dry_run,
+        )
+        result_manager = result_manager if result_manager is not None else ResultManager()
 
-        # Cleanup the instance before each run
-        self.reset()
-        self.catalog.clear_indexes()
-        manager = ResultManager() if self.manager is None else self.manager
-
-        if not self.catalog.tests:
-            logger.info("The list of tests is empty, exiting")
-            return manager
+        if not ctx.catalog.tests:
+            logger.warning("The list of tests is empty, exiting")
+            return result_manager
 
         with Catchtime(logger=logger, message="Preparing ANTA NRFU Run"):
             # Set up inventory
-            if not await self._setup_inventory(filters, dry_run=dry_run):
-                return manager
+            if not await self._setup_inventory(ctx):
+                return result_manager
 
             # Set up tests
             with Catchtime(logger=logger, message="Preparing Tests"):
-                if not self._setup_tests(filters):
-                    return manager
+                if not self._setup_tests(ctx):
+                    return result_manager
 
             # Log run information
-            self._log_run_information(dry_run=dry_run)
+            self._log_run_information(ctx)
 
             # Build test coroutines
-            test_coroutines = self._get_test_coroutines()
+            test_coroutines = self._get_test_coroutines(ctx)
 
-        if dry_run:
+        if ctx.dry_run:
             logger.info("Dry-run mode, exiting before running the tests.")
             for coro in test_coroutines:
                 # Get the AntaTest instance from the coroutine locals, can be in `args` when decorated
                 coro_locals = getcoroutinelocals(coro)
                 test = coro_locals.get("self") or coro_locals.get("args", (None))[0]
                 if isinstance(test, AntaTest):
-                    manager.add(test.result)
+                    result_manager.add(test.result)
                 else:
                     logger.error("Coroutine %s does not have an AntaTest instance.", coro)
                 coro.close()
-            return manager
+            return result_manager
 
         if AntaTest.progress is not None:
-            AntaTest.nrfu_task = AntaTest.progress.add_task("Running NRFU Tests...", total=self._total_tests)
+            AntaTest.nrfu_task = AntaTest.progress.add_task("Running NRFU Tests...", total=ctx.run_statistics.total_tests)
 
         with Catchtime(logger=logger, message="Running Tests"):
             sem = Semaphore(self._settings.max_concurrency)
@@ -244,110 +258,97 @@ class AntaRunner(BaseModel):
 
             results = await gather(*[run_with_sem(coro) for coro in test_coroutines])
             for res in results:
-                manager.add(res)
+                result_manager.add(res)
 
-        self._log_cache_statistics()
-        return manager
+        self._log_cache_statistics(ctx)
+        return result_manager
 
-    async def _setup_inventory(self, filters: AntaRunnerFilter, *, dry_run: bool = False) -> bool:
+    async def _setup_inventory(self, ctx: AntaRunnerContext) -> bool:
         """Set up the inventory for the ANTA run."""
-        total_devices = len(self.inventory)
+        total_devices = len(ctx.inventory)
 
         # In dry-run mode, set the selected inventory to the full inventory
-        if dry_run:
-            self._selected_inventory = self.inventory
-            self._inventory_stats = AntaRunnerInventoryStats(total=total_devices, filtered_by_tags=0, connection_failed=0, established=0)
+        if ctx.dry_run:
+            ctx.selected_inventory = ctx.inventory
+            ctx.run_statistics.total_devices = total_devices
             return True
 
         # If the inventory is empty, exit
         if total_devices == 0:
-            logger.info("The inventory is empty, exiting")
+            logger.warning("The inventory is empty, exiting")
             return False
 
-        # Filter the inventory based on the provided filters any
-        filtered_inventory = self.inventory.get_inventory(tags=filters.tags, devices=filters.devices) if filters.tags or filters.devices else self.inventory
-        filtered_by_tags = total_devices - len(filtered_inventory)
+        # Filter the inventory based on the provided filters if any
+        filtered_inventory = (
+            ctx.inventory.get_inventory(tags=ctx.filters.tags, devices=ctx.filters.devices) if ctx.filters.tags or ctx.filters.devices else ctx.inventory
+        )
 
         # Connect to devices
         with Catchtime(logger=logger, message="Connecting to devices"):
             await filtered_inventory.connect_inventory()
 
-        # Remove devices that are unreachable
-        self._selected_inventory = filtered_inventory.get_inventory(established_only=filters.established_only)
-        connection_failed = len(filtered_inventory) - len(self._selected_inventory)
+        # Remove devices that are unreachable if required
+        ctx.selected_inventory = filtered_inventory.get_inventory(established_only=True) if ctx.filters.established_only else filtered_inventory
 
         # If there are no devices in the inventory after filtering, exit
-        if not self._selected_inventory.devices:
+        if not ctx.selected_inventory.devices:
             # Build message parts
-            tag_msg = f"matching the tags {filters.tags} " if filters.tags else ""
-            device_msg = f" Selected devices: {filters.devices} " if filters.devices is not None else ""
+            tag_msg = f"matching the tags {ctx.filters.tags} " if ctx.filters.tags else ""
+            device_msg = f" Selected devices: {ctx.filters.devices} " if ctx.filters.devices else ""
             logger.warning("No reachable device %swas found.%s", tag_msg, device_msg)
             return False
 
-        self._inventory_stats = AntaRunnerInventoryStats(
-            total=total_devices, filtered_by_tags=filtered_by_tags, connection_failed=connection_failed, established=len(self._selected_inventory)
-        )
+        # TODO: Add unreachable devices to the result manager
+
+        # Update the run statistics
+        ctx.run_statistics.total_devices = total_devices
+        ctx.run_statistics.filtered_by_tags_devices = total_devices - len(filtered_inventory)
+        ctx.run_statistics.connection_failed_devices = len(filtered_inventory) - len(ctx.selected_inventory)
+        ctx.run_statistics.established_devices = len(ctx.selected_inventory)
+
         return True
 
-    def _setup_tests(self, filters: AntaRunnerFilter) -> bool:
+    def _setup_tests(self, ctx: AntaRunnerContext) -> bool:
         """Set up tests for the ANTA run."""
-        if self._selected_inventory is None:
-            msg = "The selected inventory is not available. ANTA must be executed through AntaRunner.run()"
-            raise RuntimeError(msg)
+        # Build indexes for the catalog. If `ctx.filters.tests` is set, filter the indexes based on these tests
+        ctx.catalog.build_indexes(filtered_tests=ctx.filters.tests)
 
-        # Build indexes for the catalog. If `filters.tests` is set, filter the indexes based on these tests
-        self.catalog.build_indexes(filtered_tests=filters.tests)
-
-        # Using a set to avoid inserting duplicate tests
-        device_to_tests: defaultdict[AntaDevice, set[AntaTestDefinition]] = defaultdict(set)
         total_tests = 0
-        total_connections = 0
-        all_have_connections = True
 
-        # Create the device to tests mapping from the tags and calculate connection stats
-        for device in self._selected_inventory.devices:
-            if filters.tags:
+        # Create the device to tests mapping from the tags
+        for device in ctx.selected_inventory.devices:
+            if ctx.filters.tags:
                 # If there are CLI tags, execute tests with matching tags for this device
-                if not (matching_tags := filters.tags.intersection(device.tags)):
+                if not (matching_tags := ctx.filters.tags.intersection(device.tags)):
                     # The device does not have any selected tag, skipping
                     continue
-                device_to_tests[device].update(self.catalog.get_tests_by_tags(matching_tags))
+                ctx.selected_tests[device].update(ctx.catalog.get_tests_by_tags(matching_tags))
             else:
                 # If there is no CLI tags, execute all tests that do not have any tags
-                device_to_tests[device].update(self.catalog.tag_to_tests[None])
+                ctx.selected_tests[device].update(ctx.catalog.tag_to_tests[None])
 
                 # Then add the tests with matching tags from device tags
-                device_to_tests[device].update(self.catalog.get_tests_by_tags(device.tags))
+                ctx.selected_tests[device].update(ctx.catalog.get_tests_by_tags(device.tags))
 
-            total_tests += len(device_to_tests[device])
-
-            # Check device connections
-            if not hasattr(device, "max_connections") or device.max_connections is None:
-                all_have_connections = False
-            else:
-                total_connections += device.max_connections
+            total_tests += len(ctx.selected_tests[device])
 
         if total_tests == 0:
-            tag_msg = f" matching the tags {filters.tags} " if filters.tags else " "
+            tag_msg = f" matching the tags {ctx.filters.tags} " if ctx.filters.tags else " "
             logger.warning(
                 "There are no tests%sto run in the current test catalog and device inventory, please verify your inputs.",
                 tag_msg,
             )
             return False
 
-        self._selected_tests = device_to_tests
-        self._total_tests = total_tests
-        self._potential_connections = None if not all_have_connections else total_connections
+        # Update the run statistics
+        ctx.run_statistics.total_tests = total_tests
+
         return True
 
-    def _get_test_coroutines(self) -> list[Coroutine[Any, Any, TestResult]]:
+    def _get_test_coroutines(self, ctx: AntaRunnerContext) -> list[Coroutine[Any, Any, TestResult]]:
         """Get the test coroutines for the ANTA run with semaphore control."""
-        if self._selected_tests is None:
-            msg = "The selected tests are not available. ANTA must be executed through AntaRunner.run()"
-            raise RuntimeError(msg)
-
         coros = []
-        for device, test_definitions in self._selected_tests.items():
+        for device, test_definitions in ctx.selected_tests.items():
             for test_def in test_definitions:
                 try:
                     coros.append(test_def.test(device=device, inputs=test_def.inputs).test())
@@ -363,32 +364,29 @@ class AntaRunner(BaseModel):
                     anta_log_exception(exc, message, logger)
         return coros
 
-    def _log_run_information(self, *, dry_run: bool = False) -> None:
+    def _log_run_information(self, ctx: AntaRunnerContext) -> None:
         """Log ANTA run information and potential resource limit warnings."""
-        if self._inventory_stats is None:
-            msg = "The inventory stats are not available. ANTA must be executed through AntaRunner.run()"
-            raise RuntimeError(msg)
-
         width = min(int(console.width) - 34, len("  Total potential connections: 100000000\n"))
 
         # Build device information
         device_lines = [
             "Devices:",
-            f"  Total: {self._inventory_stats.total}",
+            f"  Total: {ctx.run_statistics.total_devices}",
         ]
-        if self._inventory_stats.filtered_by_tags > 0:
-            device_lines.append(f"  Excluded by tags: {self._inventory_stats.filtered_by_tags}")
-        if self._inventory_stats.connection_failed > 0:
-            device_lines.append(f"  Failed to connect: {self._inventory_stats.connection_failed}")
-        device_lines.append(f"  Selected: {self._inventory_stats.established}{' (dry-run mode)' if dry_run else ''}")
+        if ctx.run_statistics.filtered_by_tags_devices > 0:
+            device_lines.append(f"  Excluded by tags: {ctx.run_statistics.filtered_by_tags_devices}")
+        if ctx.run_statistics.connection_failed_devices > 0:
+            device_lines.append(f"  Failed to connect: {ctx.run_statistics.connection_failed_devices}")
+        device_lines.append(f"  Selected: {ctx.run_statistics.established_devices}{' (dry-run mode)' if ctx.dry_run else ''}")
 
         # Build connection information
-        connections_line = "" if self._potential_connections is None else f"  Total potential connections: {self._potential_connections}\n"
+        potential_connections = ctx.selected_inventory.get_potential_connections()
+        connections_line = "" if potential_connections is None else f"  Total potential connections: {potential_connections}\n"
 
         run_info = (
             f"{{' ANTA NRFU Run Information ':-^{width}}}\n"
             f"{chr(10).join(device_lines)}\n"
-            f"Tests: {self._total_tests} total\n"
+            f"Tests: {ctx.run_statistics.total_tests} total\n"
             f"Limits:\n"
             f"  Max concurrent tests: {self._settings.max_concurrency}\n"
             f"{connections_line}"
@@ -398,26 +396,22 @@ class AntaRunner(BaseModel):
         logger.info(run_info)
 
         # Log warnings for potential resource limits
-        if self._total_tests > self._settings.max_concurrency:
+        if ctx.run_statistics.total_tests > self._settings.max_concurrency:
             logger.warning(
                 "Tests count (%s) exceeds concurrent limit (%s). Tests will be throttled. Please consult the ANTA FAQ.",
-                self._total_tests,
+                ctx.run_statistics.total_tests,
                 self._settings.max_concurrency,
             )
-        if self._potential_connections is not None and self._potential_connections > self._settings.file_descriptor_limit:
+        if potential_connections is not None and potential_connections > self._settings.file_descriptor_limit:
             logger.warning(
                 "Potential connections (%s) exceeds file descriptor limit (%s). Connection errors may occur. Please consult the ANTA FAQ.",
-                self._potential_connections,
+                potential_connections,
                 self._settings.file_descriptor_limit,
             )
 
-    def _log_cache_statistics(self) -> None:
+    def _log_cache_statistics(self, ctx: AntaRunnerContext) -> None:
         """Log cache statistics for each device in the inventory."""
-        if self._selected_inventory is None:
-            msg = "The selected inventory is not available. ANTA must be executed through AntaRunner.run()"
-            raise RuntimeError(msg)
-
-        for device in self._selected_inventory.devices:
+        for device in ctx.selected_inventory.devices:
             if device.cache_statistics is not None:
                 msg = (
                     f"Cache statistics for '{device.name}': "
