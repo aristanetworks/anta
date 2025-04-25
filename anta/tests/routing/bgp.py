@@ -1821,11 +1821,19 @@ class VerifyBGPNlriAcceptance(AntaTest):
                 vrf: default
                 capabilities:
                   - ipv6Unicast
+              # RFC 5549
+              - peer_address: fe80::2%Et1
+                vrf: default
+                capabilities:
+                  - ipv6Unicast
     ```
     """
 
     categories: ClassVar[list[str]] = ["bgp"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp summary vrf all", revision=1)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
+        AntaCommand(command="show bgp summary vrf all", revision=1),
+        AntaCommand(command="show bgp neighbors vrf all", revision=3),
+    ]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPNlriAcceptance test."""
@@ -1849,9 +1857,24 @@ class VerifyBGPNlriAcceptance(AntaTest):
         self.result.is_success()
 
         output = self.instance_commands[0].json_output
+        peer_output = self.instance_commands[1].json_output
 
         for peer in self.inputs.bgp_peers:
-            identity = peer.interface if peer.interface is not None else str(peer.peer_address)
+            if peer.interface is not None:
+                # RFC5549
+                interface = str(peer.interface)
+                lookup_key = "ifName"
+
+                peer_list = get_value(peer_output, f"vrfs.{peer.vrf}.peerList", default=[])
+                # Check if the peer is found
+                if (peer_details := get_item(peer_list, lookup_key, interface)) is None:
+                    self.result.is_failure(f"{peer} - Not found")
+                    continue
+
+                identity = str(peer_details["peerAddress"])
+
+            else:
+                identity = str(peer.peer_address)
 
             # Check if the peer is found
             if not (peer_data := get_value(output, f"vrfs..{peer.vrf}..peers..{identity}", separator="..")):

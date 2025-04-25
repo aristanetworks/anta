@@ -430,6 +430,11 @@ anta.tests.routing.bgp:
           vrf: default
           capabilities:
             - ipv6Unicast
+        # RFC 5549
+        - peer_address: fe80::2%Et1
+          vrf: default
+          capabilities:
+            - ipv6Unicast
   - VerifyBGPPeerASNCap:
       # Verifies the four octet ASN capability of BGP peers.
       bgp_peers:

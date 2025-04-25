@@ -7032,7 +7032,8 @@ DATA: list[dict[str, Any]] = [
                         },
                     },
                 }
-            }
+            },
+            {},
         ],
         "inputs": {
             "bgp_peers": [
@@ -7051,7 +7052,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
-        "name": "success-ipv6-link-local",
+        "name": "success-ipv6-rfc5549",
         "test": VerifyBGPNlriAcceptance,
         "eos_data": [
             {
@@ -7071,10 +7072,24 @@ DATA: list[dict[str, Any]] = [
                                 "peerAsn": "65002",
                                 "ipv6Unicast": {"afiSafiState": "negotiated", "nlrisReceived": 1, "nlrisAccepted": 1},
                             },
+                            "fe80::3%Et2": {
+                                "peerState": "Established",
+                                "peerAsn": "65002",
+                                "ipv6Unicast": {"afiSafiState": "negotiated", "nlrisReceived": 1, "nlrisAccepted": 1},
+                            },
                         },
                     }
                 }
-            }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {"peerAddress": "fe80::3%Et2", "ifName": "Ethernet2"},
+                        ]
+                    }
+                }
+            },
         ],
         "inputs": {
             "bgp_peers": [
@@ -7085,6 +7100,11 @@ DATA: list[dict[str, Any]] = [
                 },
                 {
                     "peer_address": "fe80::2%Et1",
+                    "vrf": "default",
+                    "capabilities": ["ipv6Unicast"],
+                },
+                {
+                    "interface": "Ethernet2",
                     "vrf": "default",
                     "capabilities": ["ipv6Unicast"],
                 },
@@ -7111,7 +7131,8 @@ DATA: list[dict[str, Any]] = [
                         "peers": {},
                     },
                 }
-            }
+            },
+            {},
         ],
         "inputs": {
             "bgp_peers": [
@@ -7166,7 +7187,8 @@ DATA: list[dict[str, Any]] = [
                         },
                     },
                 }
-            }
+            },
+            {},
         ],
         "inputs": {
             "bgp_peers": [
@@ -7221,7 +7243,8 @@ DATA: list[dict[str, Any]] = [
                         },
                     },
                 }
-            }
+            },
+            {},
         ],
         "inputs": {
             "bgp_peers": [
@@ -7280,7 +7303,8 @@ DATA: list[dict[str, Any]] = [
                         },
                     },
                 }
-            }
+            },
+            {},
         ],
         "inputs": {
             "bgp_peers": [
@@ -7307,7 +7331,7 @@ DATA: list[dict[str, Any]] = [
         },
     },
     {
-        "name": "failure-ipv6-link-local",
+        "name": "failure-ipv6-rfc5549",
         "test": VerifyBGPNlriAcceptance,
         "eos_data": [
             {
@@ -7327,10 +7351,24 @@ DATA: list[dict[str, Any]] = [
                                 "peerAsn": "65002",
                                 "ipv6Unicast": {"afiSafiState": "negotiated", "nlrisReceived": 2, "nlrisAccepted": 1},
                             },
+                            "fe80::3%Et2": {
+                                "peerState": "Established",
+                                "peerAsn": "65002",
+                                "ipv6Unicast": {"afiSafiState": "negotiated", "nlrisReceived": 3, "nlrisAccepted": 1},
+                            },
                         },
                     }
                 }
-            }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "peerList": [
+                            {"peerAddress": "fe80::3%Et2", "ifName": "Ethernet2"},
+                        ]
+                    }
+                }
+            },
         ],
         "inputs": {
             "bgp_peers": [
@@ -7344,6 +7382,11 @@ DATA: list[dict[str, Any]] = [
                     "vrf": "default",
                     "capabilities": ["ipv6Unicast"],
                 },
+                {
+                    "interface": "Ethernet2",
+                    "vrf": "default",
+                    "capabilities": ["ipv6Unicast"],
+                },
             ]
         },
         "expected": {
@@ -7352,6 +7395,27 @@ DATA: list[dict[str, Any]] = [
                 "Peer: 2001:db8:1::2 VRF: default - ipv6Unicast not negotiated",
                 "Peer: 2001:db8:1::2 VRF: default AFI/SAFI: ipv6Unicast - Some NLRI were filtered or rejected - Accepted: 3 Received: 2",
                 "Peer: fe80::2%Et1 VRF: default AFI/SAFI: ipv6Unicast - Some NLRI were filtered or rejected - Accepted: 1 Received: 2",
+                "Interface: Ethernet2 VRF: default AFI/SAFI: ipv6Unicast - Some NLRI were filtered or rejected - Accepted: 1 Received: 3",
+            ],
+        },
+    },
+    {
+        "name": "failure-rfc5549-not-found",
+        "test": VerifyBGPNlriAcceptance,
+        "eos_data": [{"vrfs": {"default": {}}}, {"vrfs": {"default": {"peerList": []}}}],
+        "inputs": {
+            "bgp_peers": [
+                {
+                    "interface": "Ethernet2",
+                    "vrf": "default",
+                    "capabilities": ["ipv6Unicast"],
+                },
+            ]
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Interface: Ethernet2 VRF: default - Not found",
             ],
         },
     },
