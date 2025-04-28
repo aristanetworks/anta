@@ -2707,25 +2707,49 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "failure-not-bundled",
-        "test": VerifyLACPInterfacesStatus,  # TODO: Need to update as per the latest command
+        "test": VerifyLACPInterfacesStatus,
         "eos_data": [
             {
                 "portChannels": {
                     "Port-Channel5": {
                         "interfaces": {
                             "Ethernet5": {
-                                "actorPortStatus": "No Aggregate",
+                                "actorPortStatus": "negotiation",
+                                "partnerPortState": {
+                                    "activity": True,
+                                    "timeout": False,
+                                    "aggregation": True,
+                                    "synchronization": False,
+                                    "collecting": True,
+                                    "distributing": True,
+                                    "defaulted": False,
+                                    "expired": False,
+                                },
+                                "actorPortState": {
+                                    "activity": True,
+                                    "timeout": False,
+                                    "aggregation": True,
+                                    "synchronization": True,
+                                    "collecting": False,
+                                    "distributing": False,
+                                    "defaulted": False,
+                                    "expired": False,
+                                },
+                                "details": {
+                                    "partnerChurnState": "churnMonitor",
+                                    "actorChurnState": "noChurn",
+                                },
                             }
                         }
                     }
                 },
-                "interface": "Ethernet5",
+                "orphanPorts": {},
             }
         ],
         "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "Po5"}]},
         "expected": {
             "result": "failure",
-            "messages": ["Interface: Ethernet5 Port-Channel: Port-Channel5 - Not bundled - Port Status: No Aggregate"],
+            "messages": ["Interface: Ethernet5 Port-Channel: Port-Channel5 - Not bundled - Port Status: negotiation"],
         },
     },
     {
@@ -2861,8 +2885,8 @@ DATA: list[dict[str, Any]] = [
                                     "timeout": False,
                                     "aggregation": True,
                                     "synchronization": True,
-                                    "collecting": True,
-                                    "distributing": True,
+                                    "collecting": False,
+                                    "distributing": False,
                                 },
                                 "details": {
                                     "partnerChurnState": "churnDetected",
@@ -2876,6 +2900,13 @@ DATA: list[dict[str, Any]] = [
             }
         ],
         "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "Port-Channel5", "validate_churn_state": True}]},
-        "expected": {"result": "failure", "messages": ["Interface: Ethernet5 Port-Channel: Port-Channel5 - Churn detected (mismatch system ID)"]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Actor port details mismatch - Activity: True, "
+                "Aggregation: True, Synchronization: True, Collecting: False, Distributing: False, Timeout: False",
+                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Churn detected (mismatch system ID)",
+            ],
+        },
     },
 ]
