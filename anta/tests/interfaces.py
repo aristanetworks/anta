@@ -8,7 +8,7 @@
 from __future__ import annotations
 
 import re
-from typing import ClassVar, TypeVar
+from typing import Any, ClassVar, TypeVar
 
 from pydantic import Field, field_validator
 from pydantic_extra_types.mac_address import MacAddress
@@ -831,7 +831,7 @@ class VerifyLACPInterfacesStatus(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["interfaces"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show lacp interface", revision=1)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show lacp interface all-ports detailed", revision=1)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyLACPInterfacesStatus test."""
@@ -849,6 +849,16 @@ class VerifyLACPInterfacesStatus(AntaTest):
                     msg = f"{interface} 'portchannel' field missing in the input"
                     raise ValueError(msg)
             return interfaces
+
+    def _validate_churn_state_details(self, interface_details: dict[str, Any], *, validate_churn_state: bool) -> str | None:
+        """Validate the partner and actor churn details for the given interface."""
+        if validate_churn_state:
+            partner_churn_state = get_value(interface_details, "details.partnerChurnState")
+            actor_churn_state = get_value(interface_details, "details.actorChurnState")
+            if partner_churn_state == "churnDetected" or actor_churn_state == "churnDetected":
+                return "Churn detected (mismatch system ID)"
+
+        return None
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -892,3 +902,6 @@ class VerifyLACPInterfacesStatus(AntaTest):
 
             if (part_port_details := actual_interface_output["partner_port_details"]) != expected_details:
                 self.result.is_failure(f"{interface} - Partner port details mismatch - {format_data(part_port_details)}")
+            failure_msg = self._validate_churn_state_details(interface_details, validate_churn_state=interface.validate_churn_state)
+            if failure_msg:
+                self.result.is_failure(f"{interface} - {failure_msg}")

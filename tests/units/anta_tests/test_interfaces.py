@@ -2611,15 +2611,58 @@ DATA: list[dict[str, Any]] = [
                                     "collecting": True,
                                     "distributing": True,
                                 },
+                                "details": {
+                                    "partnerChurnState": "noChurn",
+                                    "actorChurnState": "noChurn",
+                                },
                             }
                         }
                     }
                 },
-                "interface": "Ethernet5",
                 "orphanPorts": {},
             }
         ],
         "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "Port-Channel5"}]},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-validate-churn-state",
+        "test": VerifyLACPInterfacesStatus,
+        "eos_data": [
+            {
+                "portChannels": {
+                    "Port-Channel5": {
+                        "interfaces": {
+                            "Ethernet5": {
+                                "actorPortStatus": "bundled",
+                                "partnerPortState": {
+                                    "activity": True,
+                                    "timeout": False,
+                                    "aggregation": True,
+                                    "synchronization": True,
+                                    "collecting": True,
+                                    "distributing": True,
+                                },
+                                "actorPortState": {
+                                    "activity": True,
+                                    "timeout": False,
+                                    "aggregation": True,
+                                    "synchronization": True,
+                                    "collecting": True,
+                                    "distributing": True,
+                                },
+                                "details": {
+                                    "partnerChurnState": "noChurn",
+                                    "actorChurnState": "noChurn",
+                                },
+                            }
+                        }
+                    }
+                },
+                "orphanPorts": {},
+            }
+        ],
+        "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "Port-Channel5", "validate_churn_state": True}]},
         "expected": {"result": "success"},
     },
     {
@@ -2648,11 +2691,14 @@ DATA: list[dict[str, Any]] = [
                                     "collecting": True,
                                     "distributing": True,
                                 },
+                                "details": {
+                                    "partnerChurnState": "noChurn",
+                                    "actorChurnState": "noChurn",
+                                },
                             }
                         }
                     }
                 },
-                "interface": "Ethernet5",
                 "orphanPorts": {},
             }
         ],
@@ -2661,7 +2707,7 @@ DATA: list[dict[str, Any]] = [
     },
     {
         "name": "failure-not-bundled",
-        "test": VerifyLACPInterfacesStatus,
+        "test": VerifyLACPInterfacesStatus,  # TODO: Need to update as per the latest command
         "eos_data": [
             {
                 "portChannels": {
@@ -2674,7 +2720,6 @@ DATA: list[dict[str, Any]] = [
                     }
                 },
                 "interface": "Ethernet5",
-                "orphanPorts": {},
             }
         ],
         "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "Po5"}]},
@@ -2723,11 +2768,14 @@ DATA: list[dict[str, Any]] = [
                                     "collecting": True,
                                     "distributing": True,
                                 },
+                                "details": {
+                                    "partnerChurnState": "noChurn",
+                                    "actorChurnState": "noChurn",
+                                },
                             }
                         }
                     }
                 },
-                "interface": "Ethernet5",
                 "orphanPorts": {},
             }
         ],
@@ -2768,11 +2816,14 @@ DATA: list[dict[str, Any]] = [
                                     "collecting": True,
                                     "distributing": True,
                                 },
+                                "details": {
+                                    "partnerChurnState": "noChurn",
+                                    "actorChurnState": "noChurn",
+                                },
                             }
                         }
                     }
                 },
-                "interface": "Ethernet5",
                 "orphanPorts": {},
             }
         ],
@@ -2786,5 +2837,45 @@ DATA: list[dict[str, Any]] = [
                 "Synchronization: True, Collecting: True, Distributing: True, Timeout: False",
             ],
         },
+    },
+    {
+        "name": "failure-validate-churn-state",
+        "test": VerifyLACPInterfacesStatus,
+        "eos_data": [
+            {
+                "portChannels": {
+                    "Port-Channel5": {
+                        "interfaces": {
+                            "Ethernet5": {
+                                "actorPortStatus": "bundled",
+                                "partnerPortState": {
+                                    "activity": True,
+                                    "timeout": False,
+                                    "aggregation": True,
+                                    "synchronization": True,
+                                    "collecting": True,
+                                    "distributing": True,
+                                },
+                                "actorPortState": {
+                                    "activity": True,
+                                    "timeout": False,
+                                    "aggregation": True,
+                                    "synchronization": True,
+                                    "collecting": True,
+                                    "distributing": True,
+                                },
+                                "details": {
+                                    "partnerChurnState": "churnDetected",
+                                    "actorChurnState": "churnDetected",
+                                },
+                            }
+                        }
+                    }
+                },
+                "orphanPorts": {},
+            }
+        ],
+        "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "Port-Channel5", "validate_churn_state": True}]},
+        "expected": {"result": "failure", "messages": ["Interface: Ethernet5 Port-Channel: Port-Channel5 - Churn detected (mismatch system ID)"]},
     },
 ]
