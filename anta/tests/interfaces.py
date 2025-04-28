@@ -831,7 +831,7 @@ class VerifyLACPInterfacesStatus(AntaTest):
     """
 
     categories: ClassVar[list[str]] = ["interfaces"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show lacp interface all-ports detailed", revision=1)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show lacp interface detail", revision=1)]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyLACPInterfacesStatus test."""
@@ -852,7 +852,9 @@ class VerifyLACPInterfacesStatus(AntaTest):
 
     def _validate_churn_state_details(self, interface_details: dict[str, Any], *, validate_churn_state: bool) -> str | None:
         """Validate the partner and actor churn details for the given interface."""
-        if validate_churn_state:
+        collecting_state = get_value(interface_details, "actorPortState.collecting")
+        distributing_state = get_value(interface_details, "actorPortState.distributing")
+        if validate_churn_state and not (collecting_state and distributing_state):
             partner_churn_state = get_value(interface_details, "details.partnerChurnState")
             actor_churn_state = get_value(interface_details, "details.actorChurnState")
             if partner_churn_state == "churnDetected" or actor_churn_state == "churnDetected":
