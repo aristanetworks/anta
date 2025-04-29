@@ -5,15 +5,23 @@
 
 from __future__ import annotations
 
-from typing import Any
+import sys
+from typing import TYPE_CHECKING, Any
 
+from anta.models import AntaTest
 from anta.tests.routing.ospf import VerifyOSPFMaxLSA, VerifyOSPFNeighborCount, VerifyOSPFNeighborState
-from tests.units.anta_tests import test
+from tests.units.anta_tests import AntaUnitTest, test
 
-DATA: list[dict[str, Any]] = [
-    {
-        "name": "success",
-        "test": VerifyOSPFNeighborState,
+if sys.version_info >= (3, 10):
+    from typing import TypeAlias
+else:
+    TypeAlias = type
+
+
+AntaUnitTestDataDict: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
+
+DATA: AntaUnitTestDataDict = {
+    (VerifyOSPFNeighborState, "success"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -39,9 +47,9 @@ DATA: list[dict[str, Any]] = [
                                         "inactivity": 1683298014.844345,
                                         "interfaceAddress": "10.3.0.1",
                                     },
-                                ],
-                            },
-                        },
+                                ]
+                            }
+                        }
                     },
                     "BLAH": {
                         "instList": {
@@ -55,20 +63,18 @@ DATA: list[dict[str, Any]] = [
                                         "adjacencyState": "full",
                                         "inactivity": 1683298014.844345,
                                         "interfaceAddress": "10.3.0.1",
-                                    },
-                                ],
-                            },
-                        },
+                                    }
+                                ]
+                            }
+                        }
                     },
-                },
-            },
+                }
+            }
         ],
         "inputs": None,
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure",
-        "test": VerifyOSPFNeighborState,
+    (VerifyOSPFNeighborState, "failure"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -94,9 +100,9 @@ DATA: list[dict[str, Any]] = [
                                         "inactivity": 1683298014.844345,
                                         "interfaceAddress": "10.3.0.1",
                                     },
-                                ],
-                            },
-                        },
+                                ]
+                            }
+                        }
                     },
                     "BLAH": {
                         "instList": {
@@ -110,13 +116,13 @@ DATA: list[dict[str, Any]] = [
                                         "adjacencyState": "down",
                                         "inactivity": 1683298014.844345,
                                         "interfaceAddress": "10.3.0.1",
-                                    },
-                                ],
-                            },
-                        },
+                                    }
+                                ]
+                            }
+                        }
                     },
-                },
-            },
+                }
+            }
         ],
         "inputs": None,
         "expected": {
@@ -127,46 +133,17 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "skipped-ospf-not-configured",
-        "test": VerifyOSPFNeighborState,
-        "eos_data": [
-            {
-                "vrfs": {},
-            },
-        ],
+    (VerifyOSPFNeighborState, "skipped-ospf-not-configured"): {
+        "eos_data": [{"vrfs": {}}],
         "inputs": None,
         "expected": {"result": "skipped", "messages": ["OSPF not configured"]},
     },
-    {
-        "name": "skipped-neighbor-not-found",
-        "test": VerifyOSPFNeighborState,
-        "eos_data": [
-            {
-                "vrfs": {
-                    "default": {
-                        "instList": {
-                            "666": {
-                                "ospfNeighborEntries": [],
-                            },
-                        },
-                    },
-                    "BLAH": {
-                        "instList": {
-                            "777": {
-                                "ospfNeighborEntries": [],
-                            },
-                        },
-                    },
-                },
-            },
-        ],
+    (VerifyOSPFNeighborState, "skipped-neighbor-not-found"): {
+        "eos_data": [{"vrfs": {"default": {"instList": {"666": {"ospfNeighborEntries": []}}}, "BLAH": {"instList": {"777": {"ospfNeighborEntries": []}}}}}],
         "inputs": None,
         "expected": {"result": "skipped", "messages": ["No OSPF neighbor detected"]},
     },
-    {
-        "name": "success",
-        "test": VerifyOSPFNeighborCount,
+    (VerifyOSPFNeighborCount, "success"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -192,9 +169,9 @@ DATA: list[dict[str, Any]] = [
                                         "inactivity": 1683298014.844345,
                                         "interfaceAddress": "10.3.0.1",
                                     },
-                                ],
-                            },
-                        },
+                                ]
+                            }
+                        }
                     },
                     "BLAH": {
                         "instList": {
@@ -208,20 +185,18 @@ DATA: list[dict[str, Any]] = [
                                         "adjacencyState": "full",
                                         "inactivity": 1683298014.844345,
                                         "interfaceAddress": "10.3.0.1",
-                                    },
-                                ],
-                            },
-                        },
+                                    }
+                                ]
+                            }
+                        }
                     },
-                },
-            },
+                }
+            }
         ],
         "inputs": {"number": 3},
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure-good-number-wrong-state",
-        "test": VerifyOSPFNeighborCount,
+    (VerifyOSPFNeighborCount, "failure-good-number-wrong-state"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -247,9 +222,9 @@ DATA: list[dict[str, Any]] = [
                                         "inactivity": 1683298014.844345,
                                         "interfaceAddress": "10.3.0.1",
                                     },
-                                ],
-                            },
-                        },
+                                ]
+                            }
+                        }
                     },
                     "BLAH": {
                         "instList": {
@@ -263,65 +238,28 @@ DATA: list[dict[str, Any]] = [
                                         "adjacencyState": "down",
                                         "inactivity": 1683298014.844345,
                                         "interfaceAddress": "10.3.0.1",
-                                    },
-                                ],
-                            },
-                        },
+                                    }
+                                ]
+                            }
+                        }
                     },
-                },
-            },
+                }
+            }
         ],
         "inputs": {"number": 3},
-        "expected": {
-            "result": "failure",
-            "messages": ["Neighbor count mismatch - Expected: 3 Actual: 1"],
-        },
+        "expected": {"result": "failure", "messages": ["Neighbor count mismatch - Expected: 3 Actual: 1"]},
     },
-    {
-        "name": "skipped-ospf-not-configured",
-        "test": VerifyOSPFNeighborCount,
-        "eos_data": [
-            {
-                "vrfs": {},
-            },
-        ],
+    (VerifyOSPFNeighborCount, "skipped-ospf-not-configured"): {
+        "eos_data": [{"vrfs": {}}],
         "inputs": {"number": 3},
         "expected": {"result": "skipped", "messages": ["OSPF not configured"]},
     },
-    {
-        "name": "skipped-no-neighbor-detected",
-        "test": VerifyOSPFNeighborCount,
-        "eos_data": [
-            {
-                "vrfs": {
-                    "default": {
-                        "instList": {
-                            "666": {
-                                "ospfNeighborEntries": [],
-                            },
-                        },
-                    },
-                    "BLAH": {
-                        "instList": {
-                            "777": {
-                                "ospfNeighborEntries": [],
-                            },
-                        },
-                    },
-                },
-            },
-        ],
+    (VerifyOSPFNeighborCount, "skipped-no-neighbor-detected"): {
+        "eos_data": [{"vrfs": {"default": {"instList": {"666": {"ospfNeighborEntries": []}}}, "BLAH": {"instList": {"777": {"ospfNeighborEntries": []}}}}}],
         "inputs": {"number": 3},
-        "expected": {
-            "result": "skipped",
-            "messages": [
-                "No OSPF neighbor detected",
-            ],
-        },
+        "expected": {"result": "skipped", "messages": ["No OSPF neighbor detected"]},
     },
-    {
-        "name": "success",
-        "test": VerifyOSPFMaxLSA,
+    (VerifyOSPFMaxLSA, "success"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -329,10 +267,7 @@ DATA: list[dict[str, Any]] = [
                         "instList": {
                             "1": {
                                 "instanceId": 1,
-                                "maxLsaInformation": {
-                                    "maxLsa": 12000,
-                                    "maxLsaThreshold": 75,
-                                },
+                                "maxLsaInformation": {"maxLsa": 12000, "maxLsaThreshold": 75},
                                 "routerId": "1.1.1.1",
                                 "lsaInformation": {
                                     "lsaArrivalInterval": 1000,
@@ -341,17 +276,14 @@ DATA: list[dict[str, Any]] = [
                                     "lsaMaxWaitInterval": 5000,
                                     "numLsa": 9,
                                 },
-                            },
-                        },
+                            }
+                        }
                     },
                     "TEST": {
                         "instList": {
                             "10": {
                                 "instanceId": 10,
-                                "maxLsaInformation": {
-                                    "maxLsa": 1000,
-                                    "maxLsaThreshold": 75,
-                                },
+                                "maxLsaInformation": {"maxLsa": 1000, "maxLsaThreshold": 75},
                                 "routerId": "20.20.20.20",
                                 "lsaInformation": {
                                     "lsaArrivalInterval": 1000,
@@ -360,18 +292,16 @@ DATA: list[dict[str, Any]] = [
                                     "lsaMaxWaitInterval": 5000,
                                     "numLsa": 5,
                                 },
-                            },
-                        },
+                            }
+                        }
                     },
-                },
-            },
+                }
+            }
         ],
         "inputs": None,
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure",
-        "test": VerifyOSPFMaxLSA,
+    (VerifyOSPFMaxLSA, "failure"): {
         "eos_data": [
             {
                 "vrfs": {
@@ -379,10 +309,7 @@ DATA: list[dict[str, Any]] = [
                         "instList": {
                             "1": {
                                 "instanceId": 1,
-                                "maxLsaInformation": {
-                                    "maxLsa": 12000,
-                                    "maxLsaThreshold": 75,
-                                },
+                                "maxLsaInformation": {"maxLsa": 12000, "maxLsaThreshold": 75},
                                 "routerId": "1.1.1.1",
                                 "lsaInformation": {
                                     "lsaArrivalInterval": 1000,
@@ -391,17 +318,14 @@ DATA: list[dict[str, Any]] = [
                                     "lsaMaxWaitInterval": 5000,
                                     "numLsa": 11500,
                                 },
-                            },
-                        },
+                            }
+                        }
                     },
                     "TEST": {
                         "instList": {
                             "10": {
                                 "instanceId": 10,
-                                "maxLsaInformation": {
-                                    "maxLsa": 1000,
-                                    "maxLsaThreshold": 75,
-                                },
+                                "maxLsaInformation": {"maxLsa": 1000, "maxLsaThreshold": 75},
                                 "routerId": "20.20.20.20",
                                 "lsaInformation": {
                                     "lsaArrivalInterval": 1000,
@@ -410,11 +334,11 @@ DATA: list[dict[str, Any]] = [
                                     "lsaMaxWaitInterval": 5000,
                                     "numLsa": 1500,
                                 },
-                            },
-                        },
+                            }
+                        }
                     },
-                },
-            },
+                }
+            }
         ],
         "inputs": None,
         "expected": {
@@ -425,15 +349,5 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
-    {
-        "name": "skipped",
-        "test": VerifyOSPFMaxLSA,
-        "eos_data": [
-            {
-                "vrfs": {},
-            },
-        ],
-        "inputs": None,
-        "expected": {"result": "skipped", "messages": ["OSPF not configured"]},
-    },
-]
+    (VerifyOSPFMaxLSA, "skipped"): {"eos_data": [{"vrfs": {}}], "inputs": None, "expected": {"result": "skipped", "messages": ["OSPF not configured"]}},
+}

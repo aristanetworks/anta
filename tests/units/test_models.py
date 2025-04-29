@@ -298,82 +298,30 @@ class FakeTestWithMissingTest(AntaTest):
     commands: ClassVar[list[AntaCommand | AntaTemplate]] = []
 
 
-ANTATEST_DATA: list[dict[str, Any]] = [
-    {
-        "name": "no input",
-        "test": FakeTest,
-        "inputs": None,
-        "expected": {"__init__": {"result": "unset"}, "test": {"result": "success"}},
-    },
-    {
-        "name": "extra input",
-        "test": FakeTest,
+ANTATEST_DATA: dict[tuple[type[AntaTest], str], Any] = {
+    (FakeTest, "no input"): {"inputs": None, "expected": {"__init__": {"result": "unset"}, "test": {"result": "success"}}},
+    (FakeTest, "extra input"): {
         "inputs": {"string": "culpa! veniam quas quas veniam molestias, esse"},
-        "expected": {
-            "__init__": {
-                "result": "error",
-                "messages": ["Extra inputs are not permitted"],
-            },
-            "test": {"result": "error"},
-        },
+        "expected": {"__init__": {"result": "error", "messages": ["Extra inputs are not permitted"]}, "test": {"result": "error"}},
     },
-    {
-        "name": "no input",
-        "test": FakeTestWithInput,
-        "inputs": None,
-        "expected": {
-            "__init__": {"result": "error", "messages": ["Field required"]},
-            "test": {"result": "error"},
-        },
-    },
-    {
-        "name": "wrong input type",
-        "test": FakeTestWithInput,
+    (FakeTestWithInput, "no input"): {"inputs": None, "expected": {"__init__": {"result": "error", "messages": ["Field required"]}, "test": {"result": "error"}}},
+    (FakeTestWithInput, "wrong input type"): {
         "inputs": {"string": 1},
-        "expected": {
-            "__init__": {
-                "result": "error",
-                "messages": ["Input should be a valid string"],
-            },
-            "test": {"result": "error"},
-        },
+        "expected": {"__init__": {"result": "error", "messages": ["Input should be a valid string"]}, "test": {"result": "error"}},
     },
-    {
-        "name": "good input",
-        "test": FakeTestWithInput,
+    (FakeTestWithInput, "good input"): {
         "inputs": {"string": "culpa! veniam quas quas veniam molestias, esse"},
-        "expected": {
-            "__init__": {"result": "unset"},
-            "test": {
-                "result": "success",
-                "messages": ["culpa! veniam quas quas veniam molestias, esse"],
-            },
-        },
+        "expected": {"__init__": {"result": "unset"}, "test": {"result": "success", "messages": ["culpa! veniam quas quas veniam molestias, esse"]}},
     },
-    {
-        "name": "good input",
-        "test": FakeTestWithTemplate,
+    (FakeTestWithTemplate, "good input"): {
         "inputs": {"interface": "Ethernet1"},
-        "expected": {
-            "__init__": {"result": "unset"},
-            "test": {"result": "success", "messages": ["show interface Ethernet1"]},
-        },
+        "expected": {"__init__": {"result": "unset"}, "test": {"result": "success", "messages": ["show interface Ethernet1"]}},
     },
-    {
-        "name": "wrong input type",
-        "test": FakeTestWithTemplate,
+    (FakeTestWithTemplate, "wrong input type"): {
         "inputs": {"interface": 1},
-        "expected": {
-            "__init__": {
-                "result": "error",
-                "messages": ["Input should be a valid string"],
-            },
-            "test": {"result": "error"},
-        },
+        "expected": {"__init__": {"result": "error", "messages": ["Input should be a valid string"]}, "test": {"result": "error"}},
     },
-    {
-        "name": "wrong render definition",
-        "test": FakeTestWithTemplateNoRender,
+    (FakeTestWithTemplateNoRender, "wrong render definition"): {
         "inputs": {"interface": "Ethernet1"},
         "expected": {
             "__init__": {
@@ -383,9 +331,7 @@ ANTATEST_DATA: list[dict[str, Any]] = [
             "test": {"result": "error"},
         },
     },
-    {
-        "name": "AntaTemplateRenderError",
-        "test": FakeTestWithTemplateBadRender1,
+    (FakeTestWithTemplateBadRender1, "AntaTemplateRenderError"): {
         "inputs": {"interface": "Ethernet1"},
         "expected": {
             "__init__": {
@@ -395,125 +341,57 @@ ANTATEST_DATA: list[dict[str, Any]] = [
             "test": {"result": "error"},
         },
     },
-    {
-        "name": "RuntimeError in render()",
-        "test": FakeTestWithTemplateBadRender2,
+    (FakeTestWithTemplateBadRender2, "RuntimeError in render()"): {
         "inputs": {"interface": "Ethernet1"},
         "expected": {
-            "__init__": {
-                "result": "error",
-                "messages": ["Exception in tests.units.test_models.FakeTestWithTemplateBadRender2.render(): RuntimeError"],
-            },
+            "__init__": {"result": "error", "messages": ["Exception in tests.units.test_models.FakeTestWithTemplateBadRender2.render(): RuntimeError"]},
             "test": {"result": "error"},
         },
     },
-    {
-        "name": "Extra template parameters in render()",
-        "test": FakeTestWithTemplateBadRender3,
+    (FakeTestWithTemplateBadRender3, "Extra template parameters in render()"): {
         "inputs": {"interface": "Ethernet1"},
         "expected": {
             "__init__": {
                 "result": "error",
                 "messages": [
-                    "Exception in tests.units.test_models.FakeTestWithTemplateBadRender3.render(): ValidationError: 1 validation error for AntaParams\n"
-                    "extra\n"
+                    "Exception in tests.units.test_models.FakeTestWithTemplateBadRender3.render(): ValidationError: 1 validation error for AntaParams\nextra\n"
                     "  Extra inputs are not permitted [type=extra_forbidden, input_value='blah', input_type=str]\n"
                 ],
             },
             "test": {"result": "error"},
         },
     },
-    {
-        "name": "Access undefined template param in test()",
-        "test": FakeTestWithTemplateBadTest,
+    (FakeTestWithTemplateBadTest, "Access undefined template param in test()"): {
         "inputs": {"interface": "Ethernet1"},
         "expected": {
             "__init__": {"result": "unset"},
             "test": {"result": "error", "messages": ["AttributeError: 'AntaParams' object has no attribute 'wrong_template_param'"]},
         },
     },
-    {
-        "name": "unskip on platforms",
-        "test": UnSkipOnPlatformTest,
+    (UnSkipOnPlatformTest, "unskip on platforms"): {"inputs": None, "expected": {"__init__": {"result": "unset"}, "test": {"result": "success"}}},
+    (SkipOnPlatformTest, "skip on platforms, unset"): {"inputs": None, "expected": {"__init__": {"result": "unset"}, "test": {"result": "skipped"}}},
+    (SkipOnPlatformTestWithInput, "skip on platforms, not unset"): {
         "inputs": None,
-        "expected": {
-            "__init__": {"result": "unset"},
-            "test": {"result": "success"},
-        },
+        "expected": {"__init__": {"result": "error", "messages": ["Field required"]}, "test": {"result": "error"}},
     },
-    {
-        "name": "skip on platforms, unset",
-        "test": SkipOnPlatformTest,
+    (DeprecatedTestWithoutNewTest, "deprecate test without new test"): {
         "inputs": None,
-        "expected": {
-            "__init__": {"result": "unset"},
-            "test": {"result": "skipped"},
-        },
+        "expected": {"__init__": {"result": "unset"}, "test": {"result": "success"}},
     },
-    {
-        "name": "skip on platforms, not unset",
-        "test": SkipOnPlatformTestWithInput,
+    (DeprecatedTestWithNewTest, "deprecate test with new test"): {"inputs": None, "expected": {"__init__": {"result": "unset"}, "test": {"result": "success"}}},
+    (FakeTestWithFailedCommand, "failed command"): {
         "inputs": None,
-        "expected": {
-            "__init__": {"result": "error", "messages": ["Field required"]},
-            "test": {"result": "error"},
-        },
+        "expected": {"__init__": {"result": "unset"}, "test": {"result": "error", "messages": ["show version has failed: failed command"]}},
     },
-    {
-        "name": "deprecate test without new test",
-        "test": DeprecatedTestWithoutNewTest,
+    (FakeTestWithUnsupportedCommand, "unsupported command"): {
         "inputs": None,
-        "expected": {
-            "__init__": {"result": "unset"},
-            "test": {"result": "success"},
-        },
+        "expected": {"__init__": {"result": "unset"}, "test": {"result": "skipped", "messages": ["'show hardware counter drop' is not supported on pytest"]}},
     },
-    {
-        "name": "deprecate test with new test",
-        "test": DeprecatedTestWithNewTest,
+    (FakeTestWithKnownEOSError, "known EOS error command"): {
         "inputs": None,
-        "expected": {
-            "__init__": {"result": "unset"},
-            "test": {"result": "success"},
-        },
+        "expected": {"__init__": {"result": "unset"}, "test": {"result": "failure", "messages": ["BGP inactive"]}},
     },
-    {
-        "name": "failed command",
-        "test": FakeTestWithFailedCommand,
-        "inputs": None,
-        "expected": {
-            "__init__": {"result": "unset"},
-            "test": {
-                "result": "error",
-                "messages": ["show version has failed: failed command"],
-            },
-        },
-    },
-    {
-        "name": "unsupported command",
-        "test": FakeTestWithUnsupportedCommand,
-        "inputs": None,
-        "expected": {
-            "__init__": {"result": "unset"},
-            "test": {
-                "result": "skipped",
-                "messages": ["'show hardware counter drop' is not supported on pytest"],
-            },
-        },
-    },
-    {
-        "name": "known EOS error command",
-        "test": FakeTestWithKnownEOSError,
-        "inputs": None,
-        "expected": {
-            "__init__": {"result": "unset"},
-            "test": {
-                "result": "failure",
-                "messages": ["BGP inactive"],
-            },
-        },
-    },
-]
+}
 
 BLACKLIST_COMMANDS_PARAMS = ["reload", "reload now", "reload --force", "write", "wr mem", "write memory", "conf t", "configure terminal", "configure session"]
 
@@ -597,18 +475,20 @@ class TestAntaTest:
             for result_msg, expected_msg in zip(test.result.messages, expected["messages"]):  # NOTE: zip(strict=True) has been added in Python 3.10
                 assert expected_msg in result_msg
 
-    @pytest.mark.parametrize("data", ANTATEST_DATA, ids=build_test_id)
-    def test__init__(self, device: AntaDevice, data: dict[str, Any]) -> None:
+    @pytest.mark.parametrize("data", ANTATEST_DATA.items(), ids=build_test_id)
+    def test__init__(self, device: AntaDevice, data: tuple[tuple[type[AntaTest], str], Any]) -> None:
         """Test the AntaTest constructor."""
-        expected = data["expected"]["__init__"]
-        test = data["test"](device, inputs=data["inputs"])
+        (anta_test, test_data) = data
+        expected = test_data["expected"]["__init__"]
+        test = anta_test[0](device, inputs=test_data["inputs"])
         self._assert_test(test, expected)
 
-    @pytest.mark.parametrize("data", ANTATEST_DATA, ids=build_test_id)
-    def test_test(self, device: AntaDevice, data: dict[str, Any]) -> None:
+    @pytest.mark.parametrize("data", ANTATEST_DATA.items(), ids=build_test_id)
+    def test_test(self, device: AntaDevice, data: tuple[tuple[type[AntaTest], str], Any]) -> None:
         """Test the AntaTest.test method."""
-        expected = data["expected"]["test"]
-        test = data["test"](device, inputs=data["inputs"])
+        (anta_test, test_data) = data
+        expected = test_data["expected"]["test"]
+        test = anta_test[0](device, inputs=test_data["inputs"])
         asyncio.run(test.test())
         self._assert_test(test, expected)
 

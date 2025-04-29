@@ -5,59 +5,35 @@
 
 from __future__ import annotations
 
-from typing import Any
+import sys
+from typing import TYPE_CHECKING, Any
 
+from anta.models import AntaTest
 from anta.tests.configuration import VerifyRunningConfigDiffs, VerifyRunningConfigLines, VerifyZeroTouch
-from tests.units.anta_tests import test
+from tests.units.anta_tests import AntaUnitTest, test
 
-DATA: list[dict[str, Any]] = [
-    {
-        "name": "success",
-        "test": VerifyZeroTouch,
-        "eos_data": [{"mode": "disabled"}],
-        "inputs": None,
-        "expected": {"result": "success"},
-    },
-    {
-        "name": "failure",
-        "test": VerifyZeroTouch,
-        "eos_data": [{"mode": "enabled"}],
-        "inputs": None,
-        "expected": {"result": "failure", "messages": ["ZTP is NOT disabled"]},
-    },
-    {
-        "name": "success",
-        "test": VerifyRunningConfigDiffs,
-        "eos_data": [""],
-        "inputs": None,
-        "expected": {"result": "success"},
-    },
-    {
-        "name": "failure",
-        "test": VerifyRunningConfigDiffs,
-        "eos_data": ["blah blah"],
-        "inputs": None,
-        "expected": {"result": "failure", "messages": ["blah blah"]},
-    },
-    {
-        "name": "success",
-        "test": VerifyRunningConfigLines,
-        "eos_data": ["blah blah"],
-        "inputs": {"regex_patterns": ["blah"]},
-        "expected": {"result": "success"},
-    },
-    {
-        "name": "success",
-        "test": VerifyRunningConfigLines,
+if sys.version_info >= (3, 10):
+    from typing import TypeAlias
+else:
+    TypeAlias = type
+
+
+AntaUnitTestDataDict: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
+
+DATA: AntaUnitTestDataDict = {
+    (VerifyZeroTouch, "success"): {"eos_data": [{"mode": "disabled"}], "inputs": None, "expected": {"result": "success"}},
+    (VerifyZeroTouch, "failure"): {"eos_data": [{"mode": "enabled"}], "inputs": None, "expected": {"result": "failure", "messages": ["ZTP is NOT disabled"]}},
+    (VerifyRunningConfigDiffs, "success"): {"eos_data": [""], "inputs": None, "expected": {"result": "success"}},
+    (VerifyRunningConfigDiffs, "failure"): {"eos_data": ["blah blah"], "inputs": None, "expected": {"result": "failure", "messages": ["blah blah"]}},
+    (VerifyRunningConfigLines, "success"): {"eos_data": ["blah blah"], "inputs": {"regex_patterns": ["blah"]}, "expected": {"result": "success"}},
+    (VerifyRunningConfigLines, "success-patterns"): {
         "eos_data": ["enable password something\nsome other line"],
         "inputs": {"regex_patterns": ["^enable password .*$", "^.*other line$"]},
         "expected": {"result": "success"},
     },
-    {
-        "name": "failure",
-        "test": VerifyRunningConfigLines,
+    (VerifyRunningConfigLines, "failure"): {
         "eos_data": ["enable password something\nsome other line"],
         "inputs": {"regex_patterns": ["bla", "bleh"]},
-        "expected": {"result": "failure", "messages": ["Following patterns were not found: 'bla', 'bleh'"]},
+        "expected": {"result": "failure", "messages": ["Following patterns were not found: 'bla', 'bleh"]},
     },
-]
+}
