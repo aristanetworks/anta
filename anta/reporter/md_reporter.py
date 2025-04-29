@@ -163,11 +163,12 @@ class MDReportBase(ABC):
         # Replace newlines with <br> to preserve line breaks in HTML
         text = text.replace("\n", "<br>")
 
-        # Pattern to match special characters
-        spe_chars = r"([\\`*_{}\[\]#+\!|])"
+        # Special characters to escape
+        excape_chars = "[\\`*_{}\\[\\]#+\\!|]"
+        mapping_dict = {ord(char): f"\\{char}" for char in excape_chars}
 
         # Escape each matched character with a backslash
-        return re.sub(spe_chars, r"\\\1", text)
+        return text.translate(mapping_dict)
 
 
 class ANTAReport(MDReportBase):
