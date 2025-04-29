@@ -2909,4 +2909,51 @@ DATA: list[dict[str, Any]] = [
             ],
         },
     },
+    {
+        "name": "failure-validate-actorchurn-state",
+        "test": VerifyLACPInterfacesStatus,
+        "eos_data": [
+            {
+                "portChannels": {
+                    "Port-Channel5": {
+                        "interfaces": {
+                            "Ethernet5": {
+                                "actorPortStatus": "bundled",
+                                "partnerPortState": {
+                                    "activity": True,
+                                    "timeout": False,
+                                    "aggregation": True,
+                                    "synchronization": True,
+                                    "collecting": True,
+                                    "distributing": True,
+                                },
+                                "actorPortState": {
+                                    "activity": True,
+                                    "timeout": False,
+                                    "aggregation": True,
+                                    "synchronization": True,
+                                    "collecting": False,
+                                    "distributing": False,
+                                },
+                                "details": {
+                                    "partnerChurnState": "noChurn",
+                                    "actorChurnState": "churnDetected",
+                                },
+                            }
+                        }
+                    }
+                },
+                "orphanPorts": {},
+            }
+        ],
+        "inputs": {"interfaces": [{"name": "Ethernet5", "portchannel": "Port-Channel5", "validate_churn_state": True}]},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Actor port details mismatch - Activity: True, Aggregation: True, "
+                "Synchronization: True, Collecting: False, Distributing: False, Timeout: False",
+                "Interface: Ethernet5 Port-Channel: Port-Channel5 - Churn detected (mismatch system ID)",
+            ],
+        },
+    },
 ]
