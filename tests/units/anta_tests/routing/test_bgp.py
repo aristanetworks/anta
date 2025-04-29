@@ -6,11 +6,12 @@
 # pylint: disable=C0302
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, TypeAlias
 
 import pytest
 
 from anta.input_models.routing.bgp import BgpAddressFamily
+from anta.models import AntaTest
 from anta.tests.routing.bgp import (
     VerifyBGPAdvCommunities,
     VerifyBGPExchangedRoutes,
@@ -38,11 +39,9 @@ from anta.tests.routing.bgp import (
     VerifyEVPNType2Route,
     _check_bgp_neighbor_capability,
 )
-from tests.units.anta_tests import test
+from tests.units.anta_tests import AntaUnitTest, test
 
-if TYPE_CHECKING:
-    from anta.models import AntaTest
-    from tests.units.anta_tests import AntaUnitTest
+AntaUnitTestDataDict: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
 
 
 @pytest.mark.parametrize(
@@ -61,7 +60,7 @@ def test_check_bgp_neighbor_capability(input_dict: dict[str, bool], expected: bo
     assert _check_bgp_neighbor_capability(input_dict) == expected
 
 
-DATA: dict[tuple[type[AntaTest], str], AntaUnitTest] = {
+DATA: AntaUnitTestDataDict = {
     (VerifyBGPPeerCount, "success"): {
         "eos_data": [
             {

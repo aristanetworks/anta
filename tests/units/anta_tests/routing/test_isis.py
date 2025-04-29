@@ -7,10 +7,11 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, TypeAlias
 
 import pytest
 
+from anta.models import AntaTest
 from anta.tests.routing.isis import (
     VerifyISISGracefulRestart,
     VerifyISISInterfaceMode,
@@ -20,13 +21,11 @@ from anta.tests.routing.isis import (
     VerifyISISSegmentRoutingDataplane,
     VerifyISISSegmentRoutingTunnels,
 )
-from tests.units.anta_tests import test
+from tests.units.anta_tests import AntaUnitTest, test
 
-if TYPE_CHECKING:
-    from anta.models import AntaTest
-    from tests.units.anta_tests import AntaUnitTest
+AntaUnitTestDataDict: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
 
-DATA: dict[tuple[type[AntaTest], str], AntaUnitTest] = {
+DATA: AntaUnitTestDataDict = {
     (VerifyISISNeighborState, "success-default-vrf"): {
         "eos_data": [
             {

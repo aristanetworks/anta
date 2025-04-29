@@ -5,8 +5,9 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, TypeAlias
 
+from anta.models import AntaTest
 from anta.tests.hardware import (
     VerifyAdverseDrops,
     VerifyEnvironmentCooling,
@@ -16,13 +17,11 @@ from anta.tests.hardware import (
     VerifyTransceiversManufacturers,
     VerifyTransceiversTemperature,
 )
-from tests.units.anta_tests import test
+from tests.units.anta_tests import AntaUnitTest, test
 
-if TYPE_CHECKING:
-    from anta.models import AntaTest
-    from tests.units.anta_tests import AntaUnitTest
+AntaUnitTestDataDict: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
 
-DATA: dict[tuple[type[AntaTest], str], AntaUnitTest] = {
+DATA: AntaUnitTestDataDict = {
     (VerifyTransceiversManufacturers, "success"): {
         "eos_data": [
             {

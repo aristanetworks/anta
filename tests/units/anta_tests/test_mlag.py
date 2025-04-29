@@ -5,16 +5,15 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, TypeAlias
 
+from anta.models import AntaTest
 from anta.tests.mlag import VerifyMlagConfigSanity, VerifyMlagDualPrimary, VerifyMlagInterfaces, VerifyMlagPrimaryPriority, VerifyMlagReloadDelay, VerifyMlagStatus
-from tests.units.anta_tests import test
+from tests.units.anta_tests import AntaUnitTest, test
 
-if TYPE_CHECKING:
-    from anta.models import AntaTest
-    from tests.units.anta_tests import AntaUnitTest
+AntaUnitTestDataDict: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
 
-DATA: dict[tuple[type[AntaTest], str], AntaUnitTest] = {
+DATA: AntaUnitTestDataDict = {
     (VerifyMlagStatus, "success"): {
         "eos_data": [{"state": "active", "negStatus": "connected", "peerLinkStatus": "up", "localIntfStatus": "up"}],
         "inputs": None,

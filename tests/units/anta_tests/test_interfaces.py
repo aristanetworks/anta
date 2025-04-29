@@ -6,8 +6,9 @@
 # pylint: disable=C0302
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, TypeAlias
 
+from anta.models import AntaTest
 from anta.tests.interfaces import (
     VerifyIllegalLACP,
     VerifyInterfaceDiscards,
@@ -27,13 +28,11 @@ from anta.tests.interfaces import (
     VerifyStormControlDrops,
     VerifySVI,
 )
-from tests.units.anta_tests import test
+from tests.units.anta_tests import AntaUnitTest, test
 
-if TYPE_CHECKING:
-    from anta.models import AntaTest
-    from tests.units.anta_tests import AntaUnitTest
+AntaUnitTestDataDict: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
 
-DATA: dict[tuple[type[AntaTest], str], AntaUnitTest] = {
+DATA: AntaUnitTestDataDict = {
     (VerifyInterfaceUtilization, "success"): {
         "eos_data": [
             {

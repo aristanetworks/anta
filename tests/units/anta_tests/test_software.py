@@ -5,16 +5,15 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, TypeAlias
 
+from anta.models import AntaTest
 from anta.tests.software import VerifyEOSExtensions, VerifyEOSVersion, VerifyTerminAttrVersion
-from tests.units.anta_tests import test
+from tests.units.anta_tests import AntaUnitTest, test
 
-if TYPE_CHECKING:
-    from anta.models import AntaTest
-    from tests.units.anta_tests import AntaUnitTest
+AntaUnitTestDataDict: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
 
-DATA: dict[tuple[type[AntaTest], str], AntaUnitTest] = {
+DATA: AntaUnitTestDataDict = {
     (VerifyEOSVersion, "success"): {
         "eos_data": [{"modelName": "vEOS-lab", "internalVersion": "4.27.0F-24305004.4270F", "version": "4.27.0F"}],
         "inputs": {"versions": ["4.27.0F", "4.28.0F"]},

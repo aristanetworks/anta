@@ -6,19 +6,18 @@
 from __future__ import annotations
 
 import sys
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, TypeAlias
 
 import pytest
 from pydantic import ValidationError
 
+from anta.models import AntaTest
 from anta.tests.routing.generic import VerifyIPv4RouteNextHops, VerifyIPv4RouteType, VerifyRoutingProtocolModel, VerifyRoutingTableEntry, VerifyRoutingTableSize
-from tests.units.anta_tests import test
+from tests.units.anta_tests import AntaUnitTest, test
 
-if TYPE_CHECKING:
-    from anta.models import AntaTest
-    from tests.units.anta_tests import AntaUnitTest
+AntaUnitTestDataDict: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
 
-DATA: dict[tuple[type[AntaTest], str], AntaUnitTest] = {
+DATA: AntaUnitTestDataDict = {
     (VerifyRoutingProtocolModel, "success"): {
         "eos_data": [{"vrfs": {"default": {}}, "protoModelStatus": {"configuredProtoModel": "multi-agent", "operatingProtoModel": "multi-agent"}}],
         "inputs": {"model": "multi-agent"},

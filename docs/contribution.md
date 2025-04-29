@@ -118,9 +118,10 @@ See https://docs.pytest.org/en/7.3.x/how-to/parametrize.html#basic-pytest-genera
 
 The `DATA` structure is a dictionary where:
 
-- each key is a tuple containing:
-  - a type object of AntaTest (i.e., a class derived from AntaTest e.g. VerifyUptime) and a string (Test name as displayed by Pytest)
-- each value is an instance of AntaUnitTest
+- Each key is a tuple of size 2 containing:
+  - An AntaTest subclass imported in the test module as first element - e.g. VerifyUptime.
+  - A string used as name displayed by pytest as second element.
+- Each value is an instance of AntaUnitTest, which is a Python TypedDict.
 
 And AntaUnitTest have the following keys:
 

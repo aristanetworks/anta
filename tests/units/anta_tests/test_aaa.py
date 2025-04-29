@@ -5,8 +5,9 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, TypeAlias
 
+from anta.models import AntaTest
 from anta.tests.aaa import (
     VerifyAcctConsoleMethods,
     VerifyAcctDefaultMethods,
@@ -16,13 +17,11 @@ from anta.tests.aaa import (
     VerifyTacacsServers,
     VerifyTacacsSourceIntf,
 )
-from tests.units.anta_tests import test
+from tests.units.anta_tests import AntaUnitTest, test
 
-if TYPE_CHECKING:
-    from anta.models import AntaTest
-    from tests.units.anta_tests import AntaUnitTest
+AntaUnitTestDataDict: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
 
-DATA: dict[tuple[type[AntaTest], str], AntaUnitTest] = {
+DATA: AntaUnitTestDataDict = {
     (VerifyTacacsSourceIntf, "success"): {
         "eos_data": [
             {

@@ -5,16 +5,15 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, TypeAlias
 
+from anta.models import AntaTest
 from anta.tests.configuration import VerifyRunningConfigDiffs, VerifyRunningConfigLines, VerifyZeroTouch
-from tests.units.anta_tests import test
+from tests.units.anta_tests import AntaUnitTest, test
 
-if TYPE_CHECKING:
-    from anta.models import AntaTest
-    from tests.units.anta_tests import AntaUnitTest
+AntaUnitTestDataDict: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
 
-DATA: dict[tuple[type[AntaTest], str], AntaUnitTest] = {
+DATA: AntaUnitTestDataDict = {
     (VerifyZeroTouch, "success"): {"eos_data": [{"mode": "disabled"}], "inputs": None, "expected": {"result": "success"}},
     (VerifyZeroTouch, "failure"): {"eos_data": [{"mode": "enabled"}], "inputs": None, "expected": {"result": "failure", "messages": ["ZTP is NOT disabled"]}},
     (VerifyRunningConfigDiffs, "success"): {"eos_data": [""], "inputs": None, "expected": {"result": "success"}},

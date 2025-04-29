@@ -5,16 +5,15 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, TypeAlias
 
+from anta.models import AntaTest
 from anta.tests.vlan import VerifyDynamicVlanSource, VerifyVlanInternalPolicy, VerifyVlanStatus
-from tests.units.anta_tests import test
+from tests.units.anta_tests import AntaUnitTest, test
 
-if TYPE_CHECKING:
-    from anta.models import AntaTest
-    from tests.units.anta_tests import AntaUnitTest
+AntaUnitTestDataDict: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
 
-DATA: dict[tuple[type[AntaTest], str], AntaUnitTest] = {
+DATA: AntaUnitTestDataDict = {
     (VerifyVlanInternalPolicy, "success"): {
         "eos_data": [{"policy": "ascending", "startVlanId": 1006, "endVlanId": 4094}],
         "inputs": {"policy": "ascending", "start_vlan_id": 1006, "end_vlan_id": 4094},

@@ -5,11 +5,12 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, TypeAlias
 
 import pytest
 from pydantic import ValidationError
 
+from anta.models import AntaTest
 from anta.tests.security import (
     VerifyAPIHttpsSSL,
     VerifyAPIHttpStatus,
@@ -27,13 +28,11 @@ from anta.tests.security import (
     VerifySSHStatus,
     VerifyTelnetStatus,
 )
-from tests.units.anta_tests import test
+from tests.units.anta_tests import AntaUnitTest, test
 
-if TYPE_CHECKING:
-    from anta.models import AntaTest
-    from tests.units.anta_tests import AntaUnitTest
+AntaUnitTestDataDict: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
 
-DATA: dict[tuple[type[AntaTest], str], AntaUnitTest] = {
+DATA: AntaUnitTestDataDict = {
     (VerifySSHStatus, "success"): {
         "eos_data": ["SSHD status for Default VRF is disabled\nSSH connection limit is 50\nSSH per host connection limit is 20\nFIPS status: disabled\n\n"],
         "inputs": None,

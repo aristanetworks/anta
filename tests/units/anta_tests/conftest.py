@@ -15,8 +15,11 @@ def build_test_id(val: tuple[tuple[type[AntaTest], str], AntaUnitTest]) -> str:
     """Build id for a unit test of an AntaTest subclass.
 
     {
-        "name": "meaniful test name",
-        "test": <AntaTest instance>,
+        (<AntaTest instance>, "meaniful test name"):
+            {
+                "eos_data": [{}],
+                ....
+            }
         ...
     }
     """
