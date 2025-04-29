@@ -5,7 +5,8 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, TypeAlias
+import sys
+from typing import TYPE_CHECKING, Any
 
 from anta.models import AntaTest
 from anta.tests.snmp import (
@@ -23,6 +24,12 @@ from anta.tests.snmp import (
     VerifySnmpUser,
 )
 from tests.units.anta_tests import AntaUnitTest, test
+
+if sys.version_info >= (3, 10):
+    from typing import TypeAlias
+else:
+    TypeAlias = type
+
 
 AntaUnitTestDataDict: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
 

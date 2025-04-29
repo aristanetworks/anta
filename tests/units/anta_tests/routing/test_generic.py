@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 import sys
-from typing import TYPE_CHECKING, Any, TypeAlias
+from typing import TYPE_CHECKING, Any
 
 import pytest
 from pydantic import ValidationError
@@ -14,6 +14,12 @@ from pydantic import ValidationError
 from anta.models import AntaTest
 from anta.tests.routing.generic import VerifyIPv4RouteNextHops, VerifyIPv4RouteType, VerifyRoutingProtocolModel, VerifyRoutingTableEntry, VerifyRoutingTableSize
 from tests.units.anta_tests import AntaUnitTest, test
+
+if sys.version_info >= (3, 10):
+    from typing import TypeAlias
+else:
+    TypeAlias = type
+
 
 AntaUnitTestDataDict: TypeAlias = dict[tuple[type[AntaTest], str], AntaUnitTest]
 
