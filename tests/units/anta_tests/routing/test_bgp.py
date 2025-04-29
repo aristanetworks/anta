@@ -1175,6 +1175,42 @@ DATA: dict[tuple[type[AntaTest], str], AntaUnitTest] = {
         },
         "expected": {"result": "success"},
     },
+    (VerifyBGPExchangedRoutes, "success-check-active-false"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "bgpRouteEntries": {
+                            "192.0.254.3/32": {"bgpRoutePaths": [{"routeType": {"valid": True, "active": True}}]},
+                            "192.0.254.5/32": {"bgpRoutePaths": [{"routeType": {"valid": True, "active": True}}]},
+                        }
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "bgpRouteEntries": {
+                            "192.0.254.3/32": {"bgpRoutePaths": [{"routeType": {"valid": True, "active": True}}]},
+                            "192.0.255.4/32": {"bgpRoutePaths": [{"routeType": {"valid": True, "active": True}}]},
+                        }
+                    }
+                }
+            },
+        ],
+        "inputs": {
+            "check_active": False,
+            "bgp_peers": [
+                {
+                    "peer_address": "172.30.11.1",
+                    "vrf": "default",
+                    "advertised_routes": ["192.0.254.5/32", "192.0.254.3/32"],
+                    "received_routes": ["192.0.254.3/32", "192.0.255.4/32"],
+                }
+            ],
+        },
+        "expected": {"result": "success"},
+    },
     (VerifyBGPExchangedRoutes, "success-advertised-route-validation-only"): {
         "eos_data": [
             {
@@ -1381,6 +1417,49 @@ DATA: dict[tuple[type[AntaTest], str], AntaUnitTest] = {
             ],
         },
     },
+    (VerifyBGPExchangedRoutes, "failure-check-active-false"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {
+                        "bgpRouteEntries": {
+                            "192.0.254.3/32": {"bgpRoutePaths": [{"routeType": {"valid": False, "active": False}}]},
+                            "192.0.254.5/32": {"bgpRoutePaths": [{"routeType": {"valid": False, "active": True}}]},
+                        }
+                    }
+                }
+            },
+            {
+                "vrfs": {
+                    "default": {
+                        "bgpRouteEntries": {
+                            "192.0.254.3/32": {"bgpRoutePaths": [{"routeType": {"valid": True, "active": True}}]},
+                            "192.0.255.4/32": {"bgpRoutePaths": [{"routeType": {"valid": False, "active": True}}]},
+                        }
+                    }
+                }
+            },
+        ],
+        "inputs": {
+            "check_active": False,
+            "bgp_peers": [
+                {
+                    "peer_address": "172.30.11.1",
+                    "vrf": "default",
+                    "advertised_routes": ["192.0.254.5/32", "192.0.254.3/32"],
+                    "received_routes": ["192.0.254.3/32", "192.0.255.4/32"],
+                }
+            ],
+        },
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Peer: 172.30.11.1 VRF: default Advertised route: 192.0.254.5/32 - Valid: False",
+                "Peer: 172.30.11.1 VRF: default Advertised route: 192.0.254.3/32 - Valid: False",
+                "Peer: 172.30.11.1 VRF: default Received route: 192.0.255.4/32 - Valid: False",
+            ],
+        },
+    },
     (VerifyBGPPeerMPCaps, "success"): {
         "eos_data": [
             {
@@ -1452,6 +1531,11 @@ DATA: dict[tuple[type[AntaTest], str], AntaUnitTest] = {
             ]
         },
         "expected": {"result": "failure", "messages": ["Peer: 172.30.11.10 VRF: default - Not found", "Peer: 172.30.11.1 VRF: MGMT - Not found"]},
+    },
+    (VerifyBGPPeerMPCaps, "failure-capabilities-not-found"): {
+        "eos_data": [{"vrfs": {"default": {"peerList": [{"peerAddress": "172.30.11.1", "neighborCapabilities": {}}]}}}],
+        "inputs": {"bgp_peers": [{"peer_address": "172.30.11.1", "vrf": "default", "capabilities": ["ipv4Unicast", "l2-vpn-EVPN"]}]},
+        "expected": {"result": "failure", "messages": ["Peer: 172.30.11.1 VRF: default - Multiprotocol capabilities not found"]},
     },
     (VerifyBGPPeerMPCaps, "failure-missing-capabilities"): {
         "eos_data": [
@@ -2031,6 +2115,23 @@ DATA: dict[tuple[type[AntaTest], str], AntaUnitTest] = {
         "inputs": {"bgp_peers": [{"peer_address": "172.30.11.1"}, {"peer_address": "172.30.11.10", "vrf": "MGMT"}]},
         "expected": {"result": "success"},
     },
+    (VerifyBGPAdvCommunities, "success-specified-communities"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {"peerList": [{"peerAddress": "172.30.11.1", "advertisedCommunities": {"standard": True, "extended": True, "large": False}}]},
+                    "MGMT": {"peerList": [{"peerAddress": "172.30.11.10", "advertisedCommunities": {"standard": False, "extended": True, "large": False}}]},
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "172.30.11.1", "advertised_communities": ["standard", "extended"]},
+                {"peer_address": "172.30.11.10", "vrf": "MGMT", "advertised_communities": ["extended"]},
+            ]
+        },
+        "expected": {"result": "success"},
+    },
     (VerifyBGPAdvCommunities, "failure-no-peer"): {
         "eos_data": [
             {
@@ -2060,6 +2161,23 @@ DATA: dict[tuple[type[AntaTest], str], AntaUnitTest] = {
                 "Peer: 172.30.11.10 VRF: CS - Standard: True, Extended: True, Large: False",
             ],
         },
+    },
+    (VerifyBGPAdvCommunities, "failure-specified-communities"): {
+        "eos_data": [
+            {
+                "vrfs": {
+                    "default": {"peerList": [{"peerAddress": "172.30.11.1", "advertisedCommunities": {"standard": False, "extended": False, "large": False}}]},
+                    "MGMT": {"peerList": [{"peerAddress": "172.30.11.10", "advertisedCommunities": {"standard": False, "extended": True, "large": False}}]},
+                }
+            }
+        ],
+        "inputs": {
+            "bgp_peers": [
+                {"peer_address": "172.30.11.1", "advertised_communities": ["standard", "extended"]},
+                {"peer_address": "172.30.11.10", "vrf": "MGMT", "advertised_communities": ["extended"]},
+            ]
+        },
+        "expected": {"result": "failure", "messages": ["Peer: 172.30.11.1 VRF: default - Standard: False, Extended: False, Large: False"]},
     },
     (VerifyBGPTimers, "success"): {
         "eos_data": [
