@@ -419,3 +419,4 @@ ReloadCause = Annotated[
     Literal["System reloaded due to Zero Touch Provisioning", "Reload requested by the user.", "Reload requested after FPGA upgrade", "USER", "FPGA", "ZTP"],
     BeforeValidator(convert_reload_cause),
 ]
+BgpCommunity = Literal["standard", "extended", "large"]

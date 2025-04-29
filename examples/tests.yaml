@@ -161,6 +161,39 @@ anta.tests.cvx:
   - VerifyMcsServerMounts:
       # Verify if all MCS server mounts are in a MountComplete state.
       connections_count: 100
+anta.tests.evpn:
+  - VerifyEVPNType5Routes:
+      # Verifies EVPN Type-5 routes for given IP prefixes and VNIs.
+      prefixes:
+        # At least one active/valid path across all RDs
+        - address: 192.168.10.0/24
+          vni: 10
+        # Specific routes each has at least one active/valid path
+        - address: 192.168.20.0/24
+          vni: 20
+          routes:
+            - rd: 10.0.0.1:20
+              domain: local
+            - rd: 10.0.0.2:20
+              domain: remote
+        # At least one active/valid path matching the nexthop
+        - address: 192.168.30.0/24
+          vni: 30
+          routes:
+            - rd: 10.0.0.1:30
+              domain: local
+              paths:
+                - nexthop: 10.1.1.1
+        # At least one active/valid path matching nexthop and specific RTs
+        - address: 192.168.40.0/24
+          vni: 40
+          routes:
+            - rd: 10.0.0.1:40
+              domain: local
+              paths:
+                - nexthop: 10.1.1.1
+                  route_targets:
+                    - 40:40
 anta.tests.field_notices:
   - VerifyFieldNotice44Resolution:
       # Verifies that the device is using the correct Aboot version per FN0044.
@@ -387,14 +420,16 @@ anta.tests.ptp:
       # Verifies the PTP interfaces state.
 anta.tests.routing.bgp:
   - VerifyBGPAdvCommunities:
-      # Verifies that advertised communities are standard, extended and large for BGP IPv4 peer(s).
+      # Verifies the advertised communities for BGP IPv4 peer(s).
       bgp_peers:
         - peer_address: 172.30.11.17
           vrf: default
         - peer_address: 172.30.11.21
           vrf: default
+          advertised_communities: ["standard", "extended"]
   - VerifyBGPExchangedRoutes:
       # Verifies the advertised and received routes of BGP IPv4 peer(s).
+      check_active: True
       bgp_peers:
         - peer_address: 172.30.255.5
           vrf: default
