@@ -56,15 +56,15 @@ class VerifyEVPNType5Routes(AntaTest):
             - address: 192.168.20.0/24
               vni: 20
               routes:
-                - rd: 10.0.0.1:20
+                - rd: "10.0.0.1:20"
                   domain: local
-                - rd: 10.0.0.2:20
+                - rd: "10.0.0.2:20"
                   domain: remote
             # At least one active/valid path matching the nexthop
             - address: 192.168.30.0/24
               vni: 30
               routes:
-                - rd: 10.0.0.1:30
+                - rd: "10.0.0.1:30"
                   domain: local
                   paths:
                     - nexthop: 10.1.1.1
@@ -72,12 +72,12 @@ class VerifyEVPNType5Routes(AntaTest):
             - address: 192.168.40.0/24
               vni: 40
               routes:
-                - rd: 10.0.0.1:40
+                - rd: "10.0.0.1:40"
                   domain: local
                   paths:
                     - nexthop: 10.1.1.1
                       route_targets:
-                        - 40:40
+                        - "40:40"
     ```
     """
 
