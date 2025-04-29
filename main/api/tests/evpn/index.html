@@ -2693,15 +2693,15 @@
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">address</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.20.0/24</span>
 <span class="w">          </span><span class="nt">vni</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span>
 <span class="w">          </span><span class="nt">routes</span><span class="p">:</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">rd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.0.0.1:20</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">rd</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;10.0.0.1:20&quot;</span>
 <span class="w">              </span><span class="nt">domain</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">local</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">rd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.0.0.2:20</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">rd</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;10.0.0.2:20&quot;</span>
 <span class="w">              </span><span class="nt">domain</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">remote</span>
 <span class="w">        </span><span class="c1"># At least one active/valid path matching the nexthop</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">address</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.30.0/24</span>
 <span class="w">          </span><span class="nt">vni</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span>
 <span class="w">          </span><span class="nt">routes</span><span class="p">:</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">rd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.0.0.1:30</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">rd</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;10.0.0.1:30&quot;</span>
 <span class="w">              </span><span class="nt">domain</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">local</span>
 <span class="w">              </span><span class="nt">paths</span><span class="p">:</span>
 <span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">nexthop</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.1.1.1</span>
@@ -2709,12 +2709,12 @@
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">address</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.40.0/24</span>
 <span class="w">          </span><span class="nt">vni</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">40</span>
 <span class="w">          </span><span class="nt">routes</span><span class="p">:</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">rd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.0.0.1:40</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">rd</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;10.0.0.1:40&quot;</span>
 <span class="w">              </span><span class="nt">domain</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">local</span>
 <span class="w">              </span><span class="nt">paths</span><span class="p">:</span>
 <span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">nexthop</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.1.1.1</span>
 <span class="w">                  </span><span class="nt">route_targets</span><span class="p">:</span>
-<span class="w">                    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">40:40</span>
+<span class="w">                    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;40:40&quot;</span>
 </code></pre></div>
 </details>
 
@@ -2985,15 +2985,15 @@
 <span class="sd">            - address: 192.168.20.0/24</span>
 <span class="sd">              vni: 20</span>
 <span class="sd">              routes:</span>
-<span class="sd">                - rd: 10.0.0.1:20</span>
+<span class="sd">                - rd: &quot;10.0.0.1:20&quot;</span>
 <span class="sd">                  domain: local</span>
-<span class="sd">                - rd: 10.0.0.2:20</span>
+<span class="sd">                - rd: &quot;10.0.0.2:20&quot;</span>
 <span class="sd">                  domain: remote</span>
 <span class="sd">            # At least one active/valid path matching the nexthop</span>
 <span class="sd">            - address: 192.168.30.0/24</span>
 <span class="sd">              vni: 30</span>
 <span class="sd">              routes:</span>
-<span class="sd">                - rd: 10.0.0.1:30</span>
+<span class="sd">                - rd: &quot;10.0.0.1:30&quot;</span>
 <span class="sd">                  domain: local</span>
 <span class="sd">                  paths:</span>
 <span class="sd">                    - nexthop: 10.1.1.1</span>
@@ -3001,12 +3001,12 @@
 <span class="sd">            - address: 192.168.40.0/24</span>
 <span class="sd">              vni: 40</span>
 <span class="sd">              routes:</span>
-<span class="sd">                - rd: 10.0.0.1:40</span>
+<span class="sd">                - rd: &quot;10.0.0.1:40&quot;</span>
 <span class="sd">                  domain: local</span>
 <span class="sd">                  paths:</span>
 <span class="sd">                    - nexthop: 10.1.1.1</span>
 <span class="sd">                      route_targets:</span>
-<span class="sd">                        - 40:40</span>
+<span class="sd">                        - &quot;40:40&quot;</span>
 <span class="sd">    ```</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
