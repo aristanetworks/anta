@@ -65,9 +65,11 @@ def run_tests(ctx: click.Context) -> None:
         ctx.exit()
 
 
-def _get_result_manager(ctx: click.Context) -> ResultManager:
+def _get_result_manager(ctx: click.Context, *, apply_hide_filter: bool = True) -> ResultManager:
     """Get a ResultManager instance based on Click context."""
-    return ctx.obj["result_manager"].filter(ctx.obj.get("hide")) if ctx.obj.get("hide") is not None else ctx.obj["result_manager"]
+    if apply_hide_filter:
+        return ctx.obj["result_manager"].filter(ctx.obj.get("hide")) if ctx.obj.get("hide") is not None else ctx.obj["result_manager"]
+    return ctx.obj["result_manager"]
 
 
 def print_settings(
@@ -157,7 +159,10 @@ def save_markdown_report(ctx: click.Context, md_output: pathlib.Path) -> None:
         Path to save the markdown report.
     """
     try:
-        MDReportGenerator.generate(results=_get_result_manager(ctx).sort(["name", "categories", "test"]), md_filename=md_output)
+        manager = _get_result_manager(ctx, apply_hide_filter=False).sort(["name", "categories", "test"])
+        filtered_manager = _get_result_manager(ctx, apply_hide_filter=True).sort(["name", "categories", "test"])
+        sections = [(section, filtered_manager) if section.__name__ == "TestResults" else (section, manager) for section in MDReportGenerator.DEFAULT_SECTIONS]
+        MDReportGenerator.generate_sections(md_filename=md_output, sections=sections)
         console.print(f"Markdown report saved to {md_output} ✅", style="cyan")
     except OSError:
         console.print(f"Failed to save Markdown report to {md_output} ❌", style="cyan")
