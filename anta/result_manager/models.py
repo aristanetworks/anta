@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import TYPE_CHECKING, Any
@@ -12,7 +13,10 @@ from typing import TYPE_CHECKING, Any
 from pydantic import BaseModel
 
 if TYPE_CHECKING:
-    from anta.models import AntaCommand, AntaTest
+    from anta.catalog import RawCatalogInput
+    from anta.models import AntaCommand
+
+logger = logging.getLogger(__name__)
 
 
 class AntaTestStatus(str, Enum):
@@ -38,40 +42,14 @@ class TestEvidence:
 
     Attributes
     ----------
-    inputs : AntaTest.Input
-        Inputs used for the test.
+    test_definition : RawCatalogInput
+        Test definition used for the test.
     commands : list[AntaCommand]
-        List of commands executed during the test.
+        List of attempted commands during the test.
     """
 
-    inputs: AntaTest.Input
+    test_definition: RawCatalogInput
     commands: list[AntaCommand]
-
-    def get_test_definition(self) -> dict[str, Any]:
-        """Test definition."""
-        inner_class_type = type(self.inputs)
-        qualname = inner_class_type.__qualname__
-        module_name = inner_class_type.__module__
-
-        if "." not in qualname:
-            msg = f"Input class {qualname} not nested in an AntaTest implementation. Cannot determine AntaTest class name."
-            raise ValueError(msg)
-
-        # Split qualname like 'VerifyBGPTimers.Input' into 'VerifyBGPTimers'
-        outer_class_name = qualname.rsplit(".", 1)[0]
-
-        # Get the dictionary representation of the inputs
-        input_dict = self.inputs.model_dump(mode="json", exclude_unset=True)
-
-        # Construct the final dictionary structure
-        return {module_name: [{outer_class_name: input_dict}]}
-
-    def dump(self) -> dict[str, Any]:
-        """Dump the evidence to a JSON serializable dictionary."""
-        return {
-            "inputs": self.inputs.model_dump(mode="json"),
-            "commands": [command.model_dump(mode="json", exclude={"template", "params", "use_cache"}) for command in self.commands],
-        }
 
 
 class TestResult(BaseModel):
@@ -130,8 +108,14 @@ class TestResult(BaseModel):
     def dump(self, *, with_evidence: bool = False) -> dict[str, Any]:
         """Dump the TestResult to a JSON serializable dictionary."""
         data = self.model_dump(mode="json")
-        if with_evidence and self.has_evidence:
-            data["evidence"] = self.evidence.dump()
+        if with_evidence:
+            if self.has_evidence:
+                data["evidence"] = {
+                    "test_definition": self.evidence.test_definition,
+                    "commands": [command.model_dump(mode="json", exclude={"template", "params", "use_cache"}) for command in self.evidence.commands],
+                }
+            else:
+                logger.warning("Evidence requested for '%s' on '%s', but not available", self.name, self.test)
         return data
 
     def is_success(self, message: str | None = None) -> None:

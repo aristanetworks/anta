@@ -25,6 +25,7 @@ if TYPE_CHECKING:
 
     from rich.progress import Progress, TaskID
 
+    from anta.catalog import RawCatalogInput
     from anta.device import AntaDevice
 
 F = TypeVar("F", bound=Callable[..., Any])
@@ -446,7 +447,7 @@ class AntaTest(ABC):
             Populate outputs of the test commands instead of collecting from devices.
             This list must have the same length and order than the `instance_commands` instance attribute.
         save_evidence
-            Save the inputs and commands used to run the test in the TestResult object.
+            Save the test definition and commands used to run the test in the TestResult object.
         """
         self.logger: logging.Logger = logging.getLogger(f"{self.module}.{self.__class__.__name__}")
         self.device: AntaDevice = device
@@ -463,7 +464,7 @@ class AntaTest(ABC):
             self._init_commands(eos_data)
 
             if save_evidence:
-                self.result.evidence = TestEvidence(self.inputs, self.instance_commands)
+                self.result.evidence = TestEvidence(self.test_definition, self.instance_commands)
 
     def _init_inputs(self, inputs: dict[str, Any] | AntaTest.Input | None) -> None:
         """Instantiate the `inputs` instance attribute with an `AntaTest.Input` instance to validate test inputs using the model.
@@ -556,6 +557,12 @@ class AntaTest(ABC):
     def module(self) -> str:
         """Return the Python module in which this AntaTest class is defined."""
         return self.__module__
+
+    @property
+    def test_definition(self) -> RawCatalogInput:
+        """Return the catalog test definition of this AntaTest."""
+        input_dict = self.inputs.model_dump(mode="json", exclude_unset=True)
+        return {self.module: [{self.name: input_dict}]}
 
     @property
     def collected(self) -> bool:
