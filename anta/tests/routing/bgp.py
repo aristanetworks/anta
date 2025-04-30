@@ -1751,6 +1751,38 @@ class VerifyBGPNlriAcceptance(AntaTest):
                     raise ValueError(msg)
             return bgp_peers
 
+    @staticmethod
+    def _get_peer_address(peer: BgpPeer, command_output: dict[str, Any]) -> str | None:
+        """Retrieve the peer address for the given BGP peer data.
+
+        If an interface is specified, the address is extracted from the command output;
+        otherwise, it is retrieved directly from the peer object.
+
+        Parameters
+        ----------
+        peer : BgpPeer
+            The BGP peer object to look up.
+        command_output : dict
+            Parsed output from the relevant command.
+
+        Returns
+        -------
+        str | None
+            The peer address if found, otherwise None.
+        """
+        if peer.interface is not None:
+            # RFC5549
+            interface = str(peer.interface)
+            lookup_key = "ifName"
+
+            peer_list = get_value(command_output, f"vrfs.{peer.vrf}.peerList", default=[])
+            # Check if the peer is found
+            if (peer_details := get_item(peer_list, lookup_key, interface)) is not None:
+                return str(peer_details.get("peerAddress"))
+            return None
+
+        return str(peer.peer_address)
+
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyBGPNlriAcceptance."""
@@ -1760,22 +1792,7 @@ class VerifyBGPNlriAcceptance(AntaTest):
         peer_output = self.instance_commands[1].json_output
 
         for peer in self.inputs.bgp_peers:
-            if peer.interface is not None:
-                # RFC5549
-                interface = str(peer.interface)
-                lookup_key = "ifName"
-
-                peer_list = get_value(peer_output, f"vrfs.{peer.vrf}.peerList", default=[])
-                # Check if the peer is found
-                if (peer_details := get_item(peer_list, lookup_key, interface)) is None:
-                    self.result.is_failure(f"{peer} - Not found")
-                    continue
-
-                identity = str(peer_details["peerAddress"])
-
-            else:
-                identity = str(peer.peer_address)
-
+            identity = self._get_peer_address(peer, peer_output)
             # Check if the peer is found
             if not (peer_data := get_value(output, f"vrfs..{peer.vrf}..peers..{identity}", separator="..")):
                 self.result.is_failure(f"{peer} - Not found")
