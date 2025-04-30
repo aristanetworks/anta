@@ -1760,9 +1760,9 @@ class VerifyBGPNlriAcceptance(AntaTest):
 
         Parameters
         ----------
-        peer : BgpPeer
+        peer
             The BGP peer object to look up.
-        command_output : dict
+        command_output
             Parsed output from the relevant command.
 
         Returns
