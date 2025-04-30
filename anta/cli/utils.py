@@ -324,12 +324,14 @@ def catalog_options(*, required: bool = True) -> Callable[..., Callable[..., Any
         def wrapper(
             ctx: click.Context,
             *args: tuple[Any],
-            catalog: Path,
-            catalog_format: str,
+            catalog: Path | None,
+            catalog_format: Literal["yaml", "json"],
             **kwargs: dict[str, Any],
         ) -> Any:
             # If help is invoke somewhere, do not parse catalog
             if ctx.obj.get("_anta_help"):
+                return f(*args, catalog=None, **kwargs)
+            if not catalog and not required:
                 return f(*args, catalog=None, **kwargs)
             try:
                 file_format = catalog_format.lower()

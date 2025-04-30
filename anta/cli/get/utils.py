@@ -16,7 +16,7 @@ import sys
 import textwrap
 from pathlib import Path
 from sys import stdin
-from typing import Any, Callable
+from typing import TYPE_CHECKING, Any, Callable
 
 import click
 import requests
@@ -31,6 +31,9 @@ from anta.inventory.models import AntaInventoryHost, AntaInventoryInput
 from anta.models import AntaCommand, AntaTest
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+if TYPE_CHECKING:
+    from anta.catalog import AntaCatalog
 
 logger = logging.getLogger(__name__)
 
@@ -321,6 +324,25 @@ def find_tests_in_module(qname: str, test_name: str | None) -> list[type[AntaTes
     return results
 
 
+def _filter_tests_via_catalog(tests: list[type[AntaTest]], catalog: AntaCatalog) -> list[type[AntaTest]]:
+    """Return the filtered list of tests present in the catalog.
+
+    Parameters
+    ----------
+    tests:
+        list of tests.
+    catalog:
+        the AntaCatalog to use as filtering
+
+    Returns
+    -------
+    list[type[AntaTest]]:
+        the filtered list of tests containing uniquely the tests found in the catalog.
+    """
+    catalog_test_names = {test.test.name for test in catalog.tests}
+    return [test for test in tests if test.name in catalog_test_names]
+
+
 def print_tests(tests: list[type[AntaTest]], *, short: bool = False) -> None:
     """Print a list of AntaTest.
 
@@ -391,7 +413,7 @@ def extract_examples(docstring: str) -> str | None:
     return match[1].strip() if match and match[1].strip() != "" else None
 
 
-def print_commands(tests: list[type[AntaTest]]) -> None:
+def _print_commands(tests: list[type[AntaTest]]) -> None:
     """Print a list of commands per module and per test.
 
     Parameters
@@ -418,6 +440,31 @@ def print_commands(tests: list[type[AntaTest]]) -> None:
                     console.print(f"    - {command.command}")
                 else:  # isinstance(command, AntaTemplate):
                     console.print(f"    - {command.template}")
+
+
+def _get_unique_commands(tests: list[type[AntaTest]]) -> set[str]:
+    """Return a set of unique commands used by the tests.
+
+    Parameters
+    ----------
+    tests
+        A list of AntaTest subclasses.
+
+    Returns
+    -------
+    set[str]
+        A set of commands or templates used by each test.
+    """
+    result: set[str] = set()
+
+    for test in tests:
+        for command in test.commands:
+            if isinstance(command, AntaCommand):
+                result.add(command.command)
+            else:  # isinstance(command, AntaTemplate):
+                result.add(command.template)
+
+    return result
 
 
 @deprecated("This function is deprecated, use `_explore_package`. This will be removed in ANTA v2.0.0.", category=DeprecationWarning)

@@ -190,4 +190,51 @@ anta.tests.aaa:
     - show tacacs
 ```
 
-# TODO: doc for catalog
+#### Filtering using `--catalog`
+
+To retrieve all the commands from the tests in a catalog:
+
+``` yaml title="anta get commands --catalog my-catalog.yml"
+anta.tests.interfaces:
+  - VerifyL3MTU:
+    - show interfaces
+anta.tests.mlag:
+  - VerifyMlagStatus:
+    - show mlag
+anta.tests.system:
+  - VerifyAgentLogs:
+    - show agent logs crash
+  - VerifyCPUUtilization:
+    - show processes top once
+  - VerifyCoredump:
+    - show system coredump
+  - VerifyFileSystemUtilization:
+    - bash timeout 10 df -h
+  - VerifyMemoryUtilization:
+    - show version
+  - VerifyNTP:
+    - show ntp status
+  - VerifyReloadCause:
+    - show reload cause
+  - VerifyUptime:
+    - show uptime
+```
+
+#### Output using `--unique`
+
+Using the `--unique` flag will output only the list of unique commands that will be run which can be useful to configure a AAA system.
+
+For instance with the previous catalog, the output would be:
+
+``` yaml title="anta get commands --catalog my-catalog.yml --uniquek"
+show processes top once
+bash timeout 10 df -h
+show system coredump
+show agent logs crash
+show interfaces
+show uptime
+show ntp status
+show version
+show reload cause
+show mlag
+```
