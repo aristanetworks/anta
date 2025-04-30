@@ -42,6 +42,34 @@ def _check_bgp_neighbor_capability(capability_status: dict[str, bool]) -> bool:
     return all(capability_status.get(state, False) for state in ("advertised", "received", "enabled"))
 
 
+def _get_bgp_peer_data(peer: BgpPeer, command_output: dict[str, Any]) -> dict[str, Any] | None:
+    """Retrieve BGP peer data for the given peer from the command output.
+
+    Parameters
+    ----------
+    peer
+        The BgpPeer object to look up.
+    command_output
+        Parsed output of the command.
+
+    Returns
+    -------
+    dict | None
+        The peer data dictionary if found, otherwise None.
+    """
+    if peer.interface is not None:
+        # RFC5549
+        identity = peer.interface
+        lookup_key = "ifName"
+    else:
+        identity = str(peer.peer_address)
+        lookup_key = "peerAddress"
+
+    peer_list = get_value(command_output, f"vrfs.{peer.vrf}.peerList", default=[])
+
+    return get_item(peer_list, lookup_key, identity)
+
+
 class VerifyBGPPeerCount(AntaTest):
     """Verifies the count of BGP peers for given address families.
 
@@ -418,18 +446,8 @@ class VerifyBGPPeerSession(AntaTest):
         output = self.instance_commands[0].json_output
 
         for peer in self.inputs.bgp_peers:
-            if peer.interface is not None:
-                # RFC5549
-                identity = peer.interface
-                lookup_key = "ifName"
-            else:
-                identity = str(peer.peer_address)
-                lookup_key = "peerAddress"
-
-            peer_list = get_value(output, f"vrfs.{peer.vrf}.peerList", default=[])
-
             # Check if the peer is found
-            if (peer_data := get_item(peer_list, lookup_key, identity)) is None:
+            if (peer_data := _get_bgp_peer_data(peer, output)) is None:
                 self.result.is_failure(f"{peer} - Not found")
                 continue
 
@@ -653,18 +671,8 @@ class VerifyBGPPeerMPCaps(AntaTest):
         output = self.instance_commands[0].json_output
 
         for peer in self.inputs.bgp_peers:
-            if peer.interface is not None:
-                # RFC5549
-                identity = peer.interface
-                lookup_key = "ifName"
-            else:
-                identity = str(peer.peer_address)
-                lookup_key = "peerAddress"
-
-            peer_list = get_value(output, f"vrfs.{peer.vrf}.peerList", default=[])
-
             # Check if the peer is found
-            if (peer_data := get_item(peer_list, lookup_key, identity)) is None:
+            if (peer_data := _get_bgp_peer_data(peer, output)) is None:
                 self.result.is_failure(f"{peer} - Not found")
                 continue
 
@@ -744,18 +752,8 @@ class VerifyBGPPeerASNCap(AntaTest):
         output = self.instance_commands[0].json_output
 
         for peer in self.inputs.bgp_peers:
-            if peer.interface is not None:
-                # RFC5549
-                identity = peer.interface
-                lookup_key = "ifName"
-            else:
-                identity = str(peer.peer_address)
-                lookup_key = "peerAddress"
-
-            peer_list = get_value(output, f"vrfs.{peer.vrf}.peerList", default=[])
-
             # Check if the peer is found
-            if (peer_data := get_item(peer_list, lookup_key, identity)) is None:
+            if (peer_data := _get_bgp_peer_data(peer, output)) is None:
                 self.result.is_failure(f"{peer} - Not found")
                 continue
 
@@ -824,18 +822,8 @@ class VerifyBGPPeerRouteRefreshCap(AntaTest):
         output = self.instance_commands[0].json_output
 
         for peer in self.inputs.bgp_peers:
-            if peer.interface is not None:
-                # RFC5549
-                identity = peer.interface
-                lookup_key = "ifName"
-            else:
-                identity = str(peer.peer_address)
-                lookup_key = "peerAddress"
-
-            peer_list = get_value(output, f"vrfs.{peer.vrf}.peerList", default=[])
-
             # Check if the peer is found
-            if (peer_data := get_item(peer_list, lookup_key, identity)) is None:
+            if (peer_data := _get_bgp_peer_data(peer, output)) is None:
                 self.result.is_failure(f"{peer} - Not found")
                 continue
 
@@ -906,18 +894,8 @@ class VerifyBGPPeerMD5Auth(AntaTest):
         output = self.instance_commands[0].json_output
 
         for peer in self.inputs.bgp_peers:
-            if peer.interface is not None:
-                # RFC5549
-                identity = peer.interface
-                lookup_key = "ifName"
-            else:
-                identity = str(peer.peer_address)
-                lookup_key = "peerAddress"
-
-            peer_list = get_value(output, f"vrfs.{peer.vrf}.peerList", default=[])
-
             # Check if the peer is found
-            if (peer_data := get_item(peer_list, lookup_key, identity)) is None:
+            if (peer_data := _get_bgp_peer_data(peer, output)) is None:
                 self.result.is_failure(f"{peer} - Not found")
                 continue
 
@@ -1055,18 +1033,8 @@ class VerifyBGPAdvCommunities(AntaTest):
         output = self.instance_commands[0].json_output
 
         for peer in self.inputs.bgp_peers:
-            if peer.interface is not None:
-                # RFC5549
-                identity = peer.interface
-                lookup_key = "ifName"
-            else:
-                identity = str(peer.peer_address)
-                lookup_key = "peerAddress"
-
-            peer_list = get_value(output, f"vrfs.{peer.vrf}.peerList", default=[])
-
             # Check if the peer is found
-            if (peer_data := get_item(peer_list, lookup_key, identity)) is None:
+            if (peer_data := _get_bgp_peer_data(peer, output)) is None:
                 self.result.is_failure(f"{peer} - Not found")
                 continue
 
@@ -1147,18 +1115,8 @@ class VerifyBGPTimers(AntaTest):
         output = self.instance_commands[0].json_output
 
         for peer in self.inputs.bgp_peers:
-            if peer.interface is not None:
-                # RFC5549
-                identity = peer.interface
-                lookup_key = "ifName"
-            else:
-                identity = str(peer.peer_address)
-                lookup_key = "peerAddress"
-
-            peer_list = get_value(output, f"vrfs.{peer.vrf}.peerList", default=[])
-
             # Check if the peer is found
-            if (peer_data := get_item(peer_list, lookup_key, identity)) is None:
+            if (peer_data := _get_bgp_peer_data(peer, output)) is None:
                 self.result.is_failure(f"{peer} - Not found")
                 continue
 
@@ -1235,18 +1193,8 @@ class VerifyBGPPeerDropStats(AntaTest):
 
         for peer in self.inputs.bgp_peers:
             drop_stats_input = peer.drop_stats
-            if peer.interface is not None:
-                # RFC5549
-                identity = peer.interface
-                lookup_key = "ifName"
-            else:
-                identity = str(peer.peer_address)
-                lookup_key = "peerAddress"
-
-            peer_list = get_value(output, f"vrfs.{peer.vrf}.peerList", default=[])
-
             # Check if the peer is found
-            if (peer_data := get_item(peer_list, lookup_key, identity)) is None:
+            if (peer_data := _get_bgp_peer_data(peer, output)) is None:
                 self.result.is_failure(f"{peer} - Not found")
                 continue
 
@@ -1328,18 +1276,8 @@ class VerifyBGPPeerUpdateErrors(AntaTest):
 
         for peer in self.inputs.bgp_peers:
             update_errors_input = peer.update_errors
-            if peer.interface is not None:
-                # RFC5549
-                identity = peer.interface
-                lookup_key = "ifName"
-            else:
-                identity = str(peer.peer_address)
-                lookup_key = "peerAddress"
-
-            peer_list = get_value(output, f"vrfs.{peer.vrf}.peerList", default=[])
-
             # Check if the peer is found
-            if (peer_data := get_item(peer_list, lookup_key, identity)) is None:
+            if (peer_data := _get_bgp_peer_data(peer, output)) is None:
                 self.result.is_failure(f"{peer} - Not found")
                 continue
 
@@ -1426,18 +1364,9 @@ class VerifyBgpRouteMaps(AntaTest):
         for peer in self.inputs.bgp_peers:
             inbound_route_map = peer.inbound_route_map
             outbound_route_map = peer.outbound_route_map
-            if peer.interface is not None:
-                # RFC5549
-                identity = peer.interface
-                lookup_key = "ifName"
-            else:
-                identity = str(peer.peer_address)
-                lookup_key = "peerAddress"
-
-            peer_list = get_value(output, f"vrfs.{peer.vrf}.peerList", default=[])
 
             # Check if the peer is found
-            if (peer_data := get_item(peer_list, lookup_key, identity)) is None:
+            if (peer_data := _get_bgp_peer_data(peer, output)) is None:
                 self.result.is_failure(f"{peer} - Not found")
                 continue
 
@@ -1520,18 +1449,9 @@ class VerifyBGPPeerRouteLimit(AntaTest):
         for peer in self.inputs.bgp_peers:
             maximum_routes = peer.maximum_routes
             warning_limit = peer.warning_limit
-            if peer.interface is not None:
-                # RFC5549
-                identity = peer.interface
-                lookup_key = "ifName"
-            else:
-                identity = str(peer.peer_address)
-                lookup_key = "peerAddress"
-
-            peer_list = get_value(output, f"vrfs.{peer.vrf}.peerList", default=[])
 
             # Check if the peer is found
-            if (peer_data := get_item(peer_list, lookup_key, identity)) is None:
+            if (peer_data := _get_bgp_peer_data(peer, output)) is None:
                 self.result.is_failure(f"{peer} - Not found")
                 continue
 
@@ -1608,18 +1528,8 @@ class VerifyBGPPeerGroup(AntaTest):
         output = self.instance_commands[0].json_output
 
         for peer in self.inputs.bgp_peers:
-            if peer.interface is not None:
-                # RFC5549
-                identity = peer.interface
-                lookup_key = "ifName"
-            else:
-                identity = str(peer.peer_address)
-                lookup_key = "peerAddress"
-
-            peer_list = get_value(output, f"vrfs.{peer.vrf}.peerList", default=[])
-
             # Check if the peer is found
-            if (peer_data := get_item(peer_list, lookup_key, identity)) is None:
+            if (peer_data := _get_bgp_peer_data(peer, output)) is None:
                 self.result.is_failure(f"{peer} - Not found")
                 continue
 
@@ -1694,18 +1604,8 @@ class VerifyBGPPeerSessionRibd(AntaTest):
         output = self.instance_commands[0].json_output
 
         for peer in self.inputs.bgp_peers:
-            if peer.interface is not None:
-                # RFC5549
-                identity = peer.interface
-                lookup_key = "ifName"
-            else:
-                identity = str(peer.peer_address)
-                lookup_key = "peerAddress"
-
-            peer_list = get_value(output, f"vrfs.{peer.vrf}.peerList", default=[])
-
             # Check if the peer is found
-            if (peer_data := get_item(peer_list, lookup_key, identity)) is None:
+            if (peer_data := _get_bgp_peer_data(peer, output)) is None:
                 self.result.is_failure(f"{peer} - Not found")
                 continue
 
@@ -2229,18 +2129,8 @@ class VerifyBGPPeerTtlMultiHops(AntaTest):
         command_output = self.instance_commands[0].json_output
 
         for peer in self.inputs.bgp_peers:
-            if peer.interface is not None:
-                # RFC5549
-                identity = peer.interface
-                lookup_key = "ifName"
-            else:
-                identity = str(peer.peer_address)
-                lookup_key = "peerAddress"
-
-            peer_list = get_value(command_output, f"vrfs.{peer.vrf}.peerList", default=[])
-
             # Check if the peer is found
-            if (peer_details := get_item(peer_list, lookup_key, identity)) is None:
+            if (peer_details := _get_bgp_peer_data(peer, command_output)) is None:
                 self.result.is_failure(f"{peer} - Not found")
                 continue
 
