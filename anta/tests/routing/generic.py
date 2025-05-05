@@ -356,7 +356,7 @@ class VerifyRoutingStatus(AntaTest):
 
     Expected Results
     ----------------
-    * Success: The test will pass if the routing status is correct..
+    * Success: The test will pass if the routing status is correct.
     * Failure: The test will fail if the routing status doesn't match the expected configuration.
 
     Examples
@@ -402,5 +402,5 @@ class VerifyRoutingStatus(AntaTest):
 
         for input_key, value in self.inputs:
             if input_key in actual_routing_status and value != actual_routing_status[input_key]:
-                route_type = input_key.replace("_", " ").capitalize()
+                route_type = " ".join([{"ipv4": "IPv4", "ipv6": "IPv6"}.get(part, part) for part in input_key.split("_")])
                 self.result.is_failure(f"{route_type} routing enabled status mismatch - Expected: {value} Actual: {actual_routing_status[input_key]}")
