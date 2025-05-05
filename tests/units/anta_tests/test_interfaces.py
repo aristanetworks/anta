@@ -814,69 +814,237 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyInterfaceErrors,
         "eos_data": [
             {
-                "interfaceErrorCounters": {
-                    "Ethernet1": {"inErrors": 0, "frameTooLongs": 0, "outErrors": 0, "frameTooShorts": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0},
-                    "Ethernet6": {"inErrors": 0, "frameTooLongs": 0, "outErrors": 0, "frameTooShorts": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0},
-                },
-            },
+                "interfaces": {
+                    "Ethernet2": {
+                        "name": "Ethernet2",
+                        "interfaceAddress": [],
+                        "interfaceStatistics": {},
+                        "interfaceCounters": {
+                            "linkStatusChanges": 2,
+                            "totalInErrors": 0,
+                            "inputErrorsDetail": {"runtFrames": 0, "giantFrames": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 0},
+                            "totalOutErrors": 0,
+                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 0, "deferredTransmissions": 0, "txPause": 0},
+                        },
+                    },
+                    "Ethernet4": {
+                        "name": "Ethernet4",
+                        "interfaceStatistics": {},
+                        "interfaceCounters": {
+                            "linkStatusChanges": 2,
+                            "totalInErrors": 0,
+                            "inputErrorsDetail": {"runtFrames": 0, "giantFrames": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 0},
+                            "totalOutErrors": 0,
+                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 0, "deferredTransmissions": 0, "txPause": 0},
+                        },
+                    },
+                }
+            }
         ],
         "inputs": None,
         "expected": {"result": "success"},
     },
     {
-        "name": "failure-multiple-intfs",
+        "name": "success-error-threshold",
         "test": VerifyInterfaceErrors,
         "eos_data": [
             {
-                "interfaceErrorCounters": {
-                    "Ethernet1": {"inErrors": 42, "frameTooLongs": 0, "outErrors": 0, "frameTooShorts": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0},
-                    "Ethernet6": {"inErrors": 0, "frameTooLongs": 0, "outErrors": 0, "frameTooShorts": 0, "fcsErrors": 0, "alignmentErrors": 666, "symbolErrors": 0},
-                },
-            },
+                "interfaces": {
+                    "Ethernet2": {
+                        "name": "Ethernet2",
+                        "interfaceAddress": [],
+                        "interfaceStatistics": {},
+                        "interfaceCounters": {
+                            "linkStatusChanges": 2,
+                            "totalInErrors": 0,
+                            "inputErrorsDetail": {"runtFrames": 0, "giantFrames": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 0},
+                            "totalOutErrors": 0,
+                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 0, "deferredTransmissions": 0, "txPause": 0},
+                        },
+                    },
+                    "Ethernet4": {
+                        "name": "Ethernet4",
+                        "interfaceStatistics": {},
+                        "interfaceCounters": {
+                            "linkStatusChanges": 2,
+                            "totalInErrors": 2,
+                            "inputErrorsDetail": {"runtFrames": 5, "giantFrames": 5, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 0},
+                            "totalOutErrors": 3,
+                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 5, "deferredTransmissions": 5, "txPause": 0},
+                        },
+                    },
+                }
+            }
+        ],
+        "inputs": {"error_threshold": 5},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-error-threshold-linkstatus",
+        "test": VerifyInterfaceErrors,
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet2": {
+                        "name": "Ethernet2",
+                        "interfaceAddress": [],
+                        "interfaceStatistics": {},
+                        "interfaceCounters": {
+                            "linkStatusChanges": 2,
+                            "totalInErrors": 0,
+                            "inputErrorsDetail": {"runtFrames": 0, "giantFrames": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 0},
+                            "totalOutErrors": 0,
+                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 0, "deferredTransmissions": 0, "txPause": 0},
+                        },
+                    },
+                    "Ethernet4": {
+                        "name": "Ethernet4",
+                        "interfaceStatistics": {},
+                        "interfaceCounters": {
+                            "linkStatusChanges": 2,
+                            "totalInErrors": 2,
+                            "inputErrorsDetail": {"runtFrames": 5, "giantFrames": 5, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 0},
+                            "totalOutErrors": 3,
+                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 5, "deferredTransmissions": 5, "txPause": 0},
+                        },
+                    },
+                }
+            }
+        ],
+        "inputs": {"error_threshold": 5, "link_status_changes": 2},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-multiple-intfs-input-errors",
+        "test": VerifyInterfaceErrors,
+        "eos_data": [
+            {
+                "interfaces": {
+                    "Ethernet2": {
+                        "name": "Ethernet2",
+                        "interfaceAddress": [],
+                        "interfaceStatistics": {},
+                        "interfaceCounters": {
+                            "linkStatusChanges": 2,
+                            "totalInErrors": 10,
+                            "inputErrorsDetail": {"runtFrames": 10, "giantFrames": 10, "fcsErrors": 10, "alignmentErrors": 10, "symbolErrors": 10, "rxPause": 0},
+                            "totalOutErrors": 0,
+                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 0, "deferredTransmissions": 0, "txPause": 0},
+                        },
+                    },
+                    "Ethernet4": {
+                        "name": "Ethernet4",
+                        "interfaceStatistics": {},
+                        "interfaceCounters": {
+                            "linkStatusChanges": 2,
+                            "totalInErrors": 20,
+                            "inputErrorsDetail": {"runtFrames": 20, "giantFrames": 20, "fcsErrors": 20, "alignmentErrors": 20, "symbolErrors": 20, "rxPause": 0},
+                            "totalOutErrors": 0,
+                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 0, "deferredTransmissions": 0, "txPause": 0},
+                        },
+                    },
+                }
+            }
         ],
         "inputs": None,
         "expected": {
             "result": "failure",
             "messages": [
-                "Interface: Ethernet1 - Non-zero error counter(s) - inErrors: 42",
-                "Interface: Ethernet6 - Non-zero error counter(s) - alignmentErrors: 666",
+                "Interface: Ethernet2 - Non-zero input error counter(s) - runtFrames: 10, giantFrames: 10, fcsErrors: 10, alignmentErrors: 10, symbolErrors: 10",
+                "Interface: Ethernet2 - Total input error counter(s) mismatch - Expected: 0 Actual: 10",
+                "Interface: Ethernet4 - Non-zero input error counter(s) - runtFrames: 20, giantFrames: 20, fcsErrors: 20, alignmentErrors: 20, symbolErrors: 20",
+                "Interface: Ethernet4 - Total input error counter(s) mismatch - Expected: 0 Actual: 20",
             ],
         },
     },
     {
-        "name": "failure-multiple-intfs-multiple-errors",
+        "name": "failure-intfs-output-errors",
         "test": VerifyInterfaceErrors,
         "eos_data": [
             {
-                "interfaceErrorCounters": {
-                    "Ethernet1": {"inErrors": 42, "frameTooLongs": 0, "outErrors": 10, "frameTooShorts": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0},
-                    "Ethernet6": {"inErrors": 0, "frameTooLongs": 0, "outErrors": 0, "frameTooShorts": 0, "fcsErrors": 0, "alignmentErrors": 6, "symbolErrors": 10},
-                },
-            },
+                "interfaces": {
+                    "Ethernet2": {
+                        "name": "Ethernet2",
+                        "interfaceAddress": [],
+                        "interfaceStatistics": {},
+                        "interfaceCounters": {
+                            "linkStatusChanges": 2,
+                            "totalInErrors": 0,
+                            "inputErrorsDetail": {"runtFrames": 0, "giantFrames": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 0},
+                            "totalOutErrors": 10,
+                            "outputErrorsDetail": {"collisions": 20, "lateCollisions": 20, "deferredTransmissions": 0, "txPause": 0},
+                        },
+                    },
+                    "Ethernet4": {
+                        "name": "Ethernet4",
+                        "interfaceStatistics": {},
+                        "interfaceCounters": {
+                            "linkStatusChanges": 2,
+                            "totalInErrors": 0,
+                            "inputErrorsDetail": {"runtFrames": 0, "giantFrames": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 0},
+                            "totalOutErrors": 0,
+                            "outputErrorsDetail": {"collisions": 0, "lateCollisions": 0, "deferredTransmissions": 0, "txPause": 0},
+                        },
+                    },
+                }
+            }
         ],
         "inputs": None,
         "expected": {
             "result": "failure",
             "messages": [
-                "Interface: Ethernet1 - Non-zero error counter(s) - inErrors: 42, outErrors: 10",
-                "Interface: Ethernet6 - Non-zero error counter(s) - alignmentErrors: 6, symbolErrors: 10",
+                "Interface: Ethernet2 - Non-zero output error counter(s) - collisions: 20, lateCollisions: 20",
+                "Interface: Ethernet2 - Total output error counter(s) mismatch - Expected: 0 Actual: 10",
             ],
         },
     },
     {
-        "name": "failure-single-intf-multiple-errors",
+        "name": "failure-intf-multiple-errors",
         "test": VerifyInterfaceErrors,
         "eos_data": [
             {
-                "interfaceErrorCounters": {
-                    "Ethernet1": {"inErrors": 42, "frameTooLongs": 0, "outErrors": 2, "frameTooShorts": 0, "fcsErrors": 0, "alignmentErrors": 0, "symbolErrors": 0},
-                },
-            },
+                "interfaces": {
+                    "Ethernet2": {
+                        "name": "Ethernet2",
+                        "interfaceAddress": [],
+                        "interfaceStatistics": {},
+                        "interfaceCounters": {
+                            "linkStatusChanges": 32,
+                            "totalInErrors": 20,
+                            "inputErrorsDetail": {"runtFrames": 30, "giantFrames": 34, "fcsErrors": 20, "alignmentErrors": 53, "symbolErrors": 30, "rxPause": 4},
+                            "totalOutErrors": 10,
+                            "outputErrorsDetail": {"collisions": 20, "lateCollisions": 20, "deferredTransmissions": 0, "txPause": 0},
+                        },
+                    },
+                    "Ethernet4": {
+                        "name": "Ethernet4",
+                        "interfaceStatistics": {},
+                        "interfaceCounters": {
+                            "linkStatusChanges": 32,
+                            "totalInErrors": 20,
+                            "inputErrorsDetail": {"runtFrames": 30, "giantFrames": 0, "fcsErrors": 30, "alignmentErrors": 0, "symbolErrors": 0, "rxPause": 30},
+                            "totalOutErrors": 42,
+                            "outputErrorsDetail": {"collisions": 30, "lateCollisions": 43, "deferredTransmissions": 0, "txPause": 20},
+                        },
+                    },
+                }
+            }
         ],
-        "inputs": None,
+        "inputs": {"error_threshold": 5, "link_status_changes": 2},
         "expected": {
             "result": "failure",
-            "messages": ["Interface: Ethernet1 - Non-zero error counter(s) - inErrors: 42, outErrors: 2"],
+            "messages": [
+                "Interface: Ethernet2 - Non-zero input error counter(s) - runtFrames: 30, giantFrames: 34, fcsErrors: 20, alignmentErrors: 53, symbolErrors: 30",
+                "Interface: Ethernet2 - Non-zero output error counter(s) - collisions: 20, lateCollisions: 20",
+                "Interface: Ethernet2 - Total input error counter(s) mismatch - Expected: 5 Actual: 20",
+                "Interface: Ethernet2 - Total output error counter(s) mismatch - Expected: 5 Actual: 10",
+                "Interface: Ethernet2 - Link Status changes mismatch - Expected: 2 Actual: 32",
+                "Interface: Ethernet4 - Non-zero input error counter(s) - runtFrames: 30, fcsErrors: 30, rxPause: 30",
+                "Interface: Ethernet4 - Non-zero output error counter(s) - collisions: 30, lateCollisions: 43, txPause: 20",
+                "Interface: Ethernet4 - Total input error counter(s) mismatch - Expected: 5 Actual: 20",
+                "Interface: Ethernet4 - Total output error counter(s) mismatch - Expected: 5 Actual: 42",
+                "Interface: Ethernet4 - Link Status changes mismatch - Expected: 2 Actual: 32",
+            ],
         },
     },
     {
@@ -893,6 +1061,22 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": None,
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-error-threshold",
+        "test": VerifyInterfaceDiscards,
+        "eos_data": [
+            {
+                "inDiscardsTotal": 0,
+                "interfaces": {
+                    "Ethernet2": {"outDiscards": 0, "inDiscards": 0},
+                    "Ethernet1": {"outDiscards": 0, "inDiscards": 0},
+                },
+                "outDiscardsTotal": 0,
+            },
+        ],
+        "inputs": {"error_threshold": 3},
         "expected": {"result": "success"},
     },
     {
@@ -914,6 +1098,28 @@ DATA: list[dict[str, Any]] = [
             "messages": [
                 "Interface: Ethernet2 - Non-zero discard counter(s): outDiscards: 42",
                 "Interface: Ethernet1 - Non-zero discard counter(s): inDiscards: 42",
+            ],
+        },
+    },
+    {
+        "name": "failure-error-threshold",
+        "test": VerifyInterfaceDiscards,
+        "eos_data": [
+            {
+                "inDiscardsTotal": 0,
+                "interfaces": {
+                    "Ethernet2": {"outDiscards": 10, "inDiscards": 10},
+                    "Ethernet1": {"outDiscards": 0, "inDiscards": 10},
+                },
+                "outDiscardsTotal": 0,
+            },
+        ],
+        "inputs": {"error_threshold": 3},
+        "expected": {
+            "result": "failure",
+            "messages": [
+                "Interface: Ethernet2 - Non-zero discard counter(s): outDiscards: 10, inDiscards: 10",
+                "Interface: Ethernet1 - Non-zero discard counter(s): inDiscards: 10",
             ],
         },
     },
