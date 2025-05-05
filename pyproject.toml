@@ -17,7 +17,6 @@ maintainers = [
   { name = "Carl Baillargeon", email = "carl.baillargeon@arista.com" },
 ]
 description = "Arista Network Test Automation (ANTA) Framework"
-license = { file = "LICENSE" }
 dependencies = [
   "asyncssh>=2.16",
   "cvprac>=1.3.1",
@@ -32,8 +31,9 @@ dependencies = [
   "typing_extensions>=4.12"  # required for deprecated before Python 3.13
 ]
 keywords = ["test", "anta", "Arista", "network", "automation", "networking", "devops", "netdevops"]
+license = "Apache-2.0"
+license-files = ["LICENSE"]
 classifiers = [
-    "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
@@ -56,7 +56,6 @@ requires-python = ">=3.9"
 [project.optional-dependencies]
 cli = [
   "click~=8.1.6",
-  "click-help-colors>=0.9",
 ]
 dev = [
   "bumpver>=2023.1129",

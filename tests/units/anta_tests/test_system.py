@@ -44,7 +44,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
-        "name": "success-valid-cause",
+        "name": "success-valid-cause-user",
         "test": VerifyReloadCause,
         "eos_data": [
             {
@@ -63,6 +63,66 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
+        "name": "success-valid-reload-cause-ztp",
+        "test": VerifyReloadCause,
+        "eos_data": [
+            {
+                "resetCauses": [
+                    {
+                        "description": "System reloaded due to Zero Touch Provisioning",
+                        "timestamp": 1729856740.0,
+                        "recommendedAction": "No action necessary.",
+                        "debugInfoIsDir": False,
+                    }
+                ],
+                "full": False,
+            }
+        ],
+        "inputs": {"allowed_causes": ["ZTP"]},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "success-valid-reload-cause-fpga",
+        "test": VerifyReloadCause,
+        "eos_data": [
+            {
+                "resetCauses": [
+                    {
+                        "description": "Reload requested after FPGA upgrade",
+                        "timestamp": 1729856740.0,
+                        "recommendedAction": "No action necessary.",
+                        "debugInfoIsDir": False,
+                    }
+                ],
+                "full": False,
+            }
+        ],
+        "inputs": {"allowed_causes": ["fpga"]},
+        "expected": {"result": "success"},
+    },
+    {
+        "name": "failure-invalid-reload-cause",
+        "test": VerifyReloadCause,
+        "eos_data": [
+            {
+                "resetCauses": [
+                    {
+                        "description": "Reload requested after FPGA upgrade",
+                        "timestamp": 1729856740.0,
+                        "recommendedAction": "No action necessary.",
+                        "debugInfoIsDir": False,
+                    }
+                ],
+                "full": False,
+            }
+        ],
+        "inputs": {"allowed_causes": ["ZTP"]},
+        "expected": {
+            "result": "failure",
+            "messages": ["Invalid reload cause -  Expected: 'System reloaded due to Zero Touch Provisioning' Actual: 'Reload requested after FPGA upgrade'"],
+        },
+    },
+    {
         "name": "failure",
         "test": VerifyReloadCause,
         # The failure cause is made up
@@ -75,7 +135,10 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": None,
-        "expected": {"result": "failure", "messages": ["Reload cause is: Reload after crash."]},
+        "expected": {
+            "result": "failure",
+            "messages": ["Invalid reload cause -  Expected: 'Reload requested by the user.', 'Reload requested after FPGA upgrade' Actual: 'Reload after crash.'"],
+        },
     },
     {
         "name": "success-without-minidump",

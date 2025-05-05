@@ -42,6 +42,34 @@ def _check_bgp_neighbor_capability(capability_status: dict[str, bool]) -> bool:
     return all(capability_status.get(state, False) for state in ("advertised", "received", "enabled"))
 
 
+def _get_bgp_peer_data(peer: BgpPeer, command_output: dict[str, Any]) -> dict[str, Any] | None:
+    """Retrieve BGP peer data for the given peer from the command output.
+
+    Parameters
+    ----------
+    peer
+        The BgpPeer object to look up.
+    command_output
+        Parsed output of the command.
+
+    Returns
+    -------
+    dict | None
+        The peer data dictionary if found, otherwise None.
+    """
+    if peer.interface is not None:
+        # RFC5549
+        identity = peer.interface
+        lookup_key = "ifName"
+    else:
+        identity = str(peer.peer_address)
+        lookup_key = "peerAddress"
+
+    peer_list = get_value(command_output, f"vrfs.{peer.vrf}.peerList", default=[])
+
+    return get_item(peer_list, lookup_key, identity)
+
+
 class VerifyBGPPeerCount(AntaTest):
     """Verifies the count of BGP peers for given address families.
 
@@ -348,14 +376,14 @@ class VerifyBGPSpecificPeers(AntaTest):
 
 
 class VerifyBGPPeerSession(AntaTest):
-    """Verifies the session state of BGP IPv4 peer(s).
+    """Verifies the session state of BGP peers.
 
     This test performs the following checks for each specified peer:
 
       1. Verifies that the peer is found in its VRF in the BGP configuration.
       2. Verifies that the BGP session is `Established` and, if specified, has remained established for at least the duration given by `minimum_established_time`.
       3. Ensures that both input and output TCP message queues are empty.
-      Can be disabled by setting `check_tcp_queues` global flag to `False`.
+      Can be disabled by setting `check_tcp_queues` input flag to `False`.
 
     Expected Results
     ----------------
@@ -387,6 +415,13 @@ class VerifyBGPPeerSession(AntaTest):
                 vrf: DEV
               - peer_address: 10.1.255.4
                 vrf: DEV
+              - peer_address: fd00:dc:1::1
+                vrf: default
+              # RFC5549
+              - interface: Ethernet1
+                vrf: default
+              - interface: Vlan3499
+                vrf: PROD
     ```
     """
 
@@ -397,11 +432,11 @@ class VerifyBGPPeerSession(AntaTest):
         """Input model for the VerifyBGPPeerSession test."""
 
         minimum_established_time: PositiveInt | None = None
-        """Minimum established time (seconds) for all the BGP sessions."""
+        """Minimum established time (seconds) for all BGP sessions."""
         check_tcp_queues: bool = True
-        """Flag to check if the TCP session queues are empty for all BGP peers. Defaults to `True`."""
+        """Flag to check if the TCP session queues are empty for all BGP peers."""
         bgp_peers: list[BgpPeer]
-        """List of BGP IPv4 peers."""
+        """List of BGP peers."""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -411,11 +446,8 @@ class VerifyBGPPeerSession(AntaTest):
         output = self.instance_commands[0].json_output
 
         for peer in self.inputs.bgp_peers:
-            peer_ip = str(peer.peer_address)
-            peer_list = get_value(output, f"vrfs.{peer.vrf}.peerList", default=[])
-
             # Check if the peer is found
-            if (peer_data := get_item(peer_list, "peerAddress", peer_ip)) is None:
+            if (peer_data := _get_bgp_peer_data(peer, output)) is None:
                 self.result.is_failure(f"{peer} - Not found")
                 continue
 
@@ -444,16 +476,17 @@ class VerifyBGPExchangedRoutes(AntaTest):
 
       For each advertised and received route:
         - Confirms that the route exists in the BGP route table.
-        - Verifies that the route is in an 'active' and 'valid' state.
+        - If `check_active` input flag is True, verifies that the route is 'valid' and 'active'.
+        - If `check_active` input flag is False, verifies that the route is 'valid'.
 
     Expected Results
     ----------------
     * Success: If all of the following conditions are met:
         - All specified advertised/received routes are found in the BGP route table.
-        - All routes are in both 'active' and 'valid' states.
+        - All routes are 'active' and 'valid' or 'valid' only per the `check_active` input flag.
     * Failure: If any of the following occur:
         - An advertised/received route is not found in the BGP route table.
-        - Any route is not in an 'active' or 'valid' state.
+        - Any route is not 'active' and 'valid' or 'valid' only per `check_active` input flag.
 
     Examples
     --------
@@ -461,6 +494,7 @@ class VerifyBGPExchangedRoutes(AntaTest):
     anta.tests.routing:
       bgp:
         - VerifyBGPExchangedRoutes:
+            check_active: True
             bgp_peers:
               - peer_address: 172.30.255.5
                 vrf: default
@@ -485,8 +519,10 @@ class VerifyBGPExchangedRoutes(AntaTest):
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPExchangedRoutes test."""
 
+        check_active: bool = True
+        """Flag to check if the provided prefixes must be active and valid. If False, checks if the prefixes are valid only. """
         bgp_peers: list[BgpPeer]
-        """List of BGP IPv4 peers."""
+        """List of BGP peers."""
         BgpNeighbor: ClassVar[type[BgpNeighbor]] = BgpNeighbor
 
         @field_validator("bgp_peers")
@@ -503,7 +539,7 @@ class VerifyBGPExchangedRoutes(AntaTest):
         """Render the template for each BGP peer in the input list."""
         return [template.render(peer=str(bgp_peer.peer_address), vrf=bgp_peer.vrf) for bgp_peer in self.inputs.bgp_peers]
 
-    def _validate_bgp_route_paths(self, peer: str, route_type: str, route: str, entries: dict[str, Any]) -> str | None:
+    def _validate_bgp_route_paths(self, peer: str, route_type: str, route: str, entries: dict[str, Any], *, active_flag: bool = True) -> str | None:
         """Validate the BGP route paths."""
         # Check if the route is found
         if route in entries:
@@ -511,8 +547,11 @@ class VerifyBGPExchangedRoutes(AntaTest):
             route_paths = entries[route]["bgpRoutePaths"][0]["routeType"]
             is_active = route_paths["active"]
             is_valid = route_paths["valid"]
-            if not is_active or not is_valid:
-                return f"{peer} {route_type} route: {route} - Valid: {is_valid} Active: {is_active}"
+            if active_flag:
+                if not is_active or not is_valid:
+                    return f"{peer} {route_type} route: {route} - Valid: {is_valid} Active: {is_active}"
+            elif not is_valid:
+                return f"{peer} {route_type} route: {route} - Valid: {is_valid}"
             return None
 
         return f"{peer} {route_type} route: {route} - Not found"
@@ -544,14 +583,14 @@ class VerifyBGPExchangedRoutes(AntaTest):
 
                 entries = command_output[route_type]
                 for route in routes:
-                    # Check if the route is found. If yes then checks the route is active and valid
-                    failure_msg = self._validate_bgp_route_paths(str(peer), route_type, str(route), entries)
+                    # Check if the route is found. If yes then checks the route is active/valid
+                    failure_msg = self._validate_bgp_route_paths(str(peer), route_type, str(route), entries, active_flag=self.inputs.check_active)
                     if failure_msg:
                         self.result.is_failure(failure_msg)
 
 
 class VerifyBGPPeerMPCaps(AntaTest):
-    """Verifies the multiprotocol capabilities of BGP IPv4 peer(s).
+    """Verifies the multiprotocol capabilities of BGP peers.
 
     This test performs the following checks for each specified peer:
 
@@ -588,6 +627,19 @@ class VerifyBGPPeerMPCaps(AntaTest):
                 capabilities:
                   - ipv4 labeled-Unicast
                   - ipv4MplsVpn
+              - peer_address: fd00:dc:1::1
+                vrf: default
+                strict: False
+                capabilities:
+                  - ipv4 labeled-Unicast
+                  - ipv4MplsVpn
+              # RFC5549
+              - interface: Ethernet1
+                vrf: default
+                strict: False
+                capabilities:
+                  - ipv4 labeled-Unicast
+                  - ipv4MplsVpn
     ```
     """
 
@@ -598,7 +650,7 @@ class VerifyBGPPeerMPCaps(AntaTest):
         """Input model for the VerifyBGPPeerMPCaps test."""
 
         bgp_peers: list[BgpPeer]
-        """List of BGP IPv4 peers."""
+        """List of BGP peers."""
         BgpPeer: ClassVar[type[BgpPeer]] = BgpPeer
 
         @field_validator("bgp_peers")
@@ -619,16 +671,15 @@ class VerifyBGPPeerMPCaps(AntaTest):
         output = self.instance_commands[0].json_output
 
         for peer in self.inputs.bgp_peers:
-            peer_ip = str(peer.peer_address)
-            peer_list = get_value(output, f"vrfs.{peer.vrf}.peerList", default=[])
-
             # Check if the peer is found
-            if (peer_data := get_item(peer_list, "peerAddress", peer_ip)) is None:
+            if (peer_data := _get_bgp_peer_data(peer, output)) is None:
                 self.result.is_failure(f"{peer} - Not found")
                 continue
 
-            # Fetching the multiprotocol capabilities
-            act_mp_caps = get_value(peer_data, "neighborCapabilities.multiprotocolCaps")
+            # Check if the multiprotocol capabilities are found
+            if (act_mp_caps := get_value(peer_data, "neighborCapabilities.multiprotocolCaps")) is None:
+                self.result.is_failure(f"{peer} - Multiprotocol capabilities not found")
+                continue
 
             # If strict is True, check if only the specified capabilities are configured
             if peer.strict and sorted(peer.capabilities) != sorted(act_mp_caps):
@@ -647,7 +698,7 @@ class VerifyBGPPeerMPCaps(AntaTest):
 
 
 class VerifyBGPPeerASNCap(AntaTest):
-    """Verifies the four octet ASN capability of BGP IPv4 peer(s).
+    """Verifies the four octet ASN capability of BGP peers.
 
     This test performs the following checks for each specified peer:
 
@@ -675,6 +726,11 @@ class VerifyBGPPeerASNCap(AntaTest):
             bgp_peers:
               - peer_address: 172.30.11.1
                 vrf: default
+              - peer_address: fd00:dc:1::1
+                vrf: default
+              # RFC5549
+              - interface: Ethernet1
+                vrf: MGMT
     ```
     """
 
@@ -685,7 +741,7 @@ class VerifyBGPPeerASNCap(AntaTest):
         """Input model for the VerifyBGPPeerASNCap test."""
 
         bgp_peers: list[BgpPeer]
-        """List of BGP IPv4 peers."""
+        """List of BGP peers."""
         BgpPeer: ClassVar[type[BgpPeer]] = BgpPeer
 
     @AntaTest.anta_test
@@ -696,11 +752,8 @@ class VerifyBGPPeerASNCap(AntaTest):
         output = self.instance_commands[0].json_output
 
         for peer in self.inputs.bgp_peers:
-            peer_ip = str(peer.peer_address)
-            peer_list = get_value(output, f"vrfs.{peer.vrf}.peerList", default=[])
-
             # Check if the peer is found
-            if (peer_data := get_item(peer_list, "peerAddress", peer_ip)) is None:
+            if (peer_data := _get_bgp_peer_data(peer, output)) is None:
                 self.result.is_failure(f"{peer} - Not found")
                 continue
 
@@ -715,7 +768,7 @@ class VerifyBGPPeerASNCap(AntaTest):
 
 
 class VerifyBGPPeerRouteRefreshCap(AntaTest):
-    """Verifies the route refresh capabilities of IPv4 BGP peer(s) in a specified VRF.
+    """Verifies the route refresh capabilities of BGP peers.
 
     This test performs the following checks for each specified peer:
 
@@ -743,6 +796,11 @@ class VerifyBGPPeerRouteRefreshCap(AntaTest):
             bgp_peers:
               - peer_address: 172.30.11.1
                 vrf: default
+              - peer_address: fd00:dc:1::1
+                vrf: default
+              # RFC5549
+              - interface: Ethernet1
+                vrf: MGMT
     ```
     """
 
@@ -753,7 +811,7 @@ class VerifyBGPPeerRouteRefreshCap(AntaTest):
         """Input model for the VerifyBGPPeerRouteRefreshCap test."""
 
         bgp_peers: list[BgpPeer]
-        """List of BGP IPv4 peers."""
+        """List of BGP peers."""
         BgpPeer: ClassVar[type[BgpPeer]] = BgpPeer
 
     @AntaTest.anta_test
@@ -764,11 +822,8 @@ class VerifyBGPPeerRouteRefreshCap(AntaTest):
         output = self.instance_commands[0].json_output
 
         for peer in self.inputs.bgp_peers:
-            peer_ip = str(peer.peer_address)
-            peer_list = get_value(output, f"vrfs.{peer.vrf}.peerList", default=[])
-
             # Check if the peer is found
-            if (peer_data := get_item(peer_list, "peerAddress", peer_ip)) is None:
+            if (peer_data := _get_bgp_peer_data(peer, output)) is None:
                 self.result.is_failure(f"{peer} - Not found")
                 continue
 
@@ -783,7 +838,7 @@ class VerifyBGPPeerRouteRefreshCap(AntaTest):
 
 
 class VerifyBGPPeerMD5Auth(AntaTest):
-    """Verifies the MD5 authentication and state of IPv4 BGP peer(s) in a specified VRF.
+    """Verifies the MD5 authentication and state of BGP peers.
 
     This test performs the following checks for each specified peer:
 
@@ -813,6 +868,11 @@ class VerifyBGPPeerMD5Auth(AntaTest):
                 vrf: default
               - peer_address: 172.30.11.5
                 vrf: default
+              - peer_address: fd00:dc:1::1
+                vrf: default
+              # RFC5549
+              - interface: Ethernet1
+                vrf: default
     ```
     """
 
@@ -823,7 +883,7 @@ class VerifyBGPPeerMD5Auth(AntaTest):
         """Input model for the VerifyBGPPeerMD5Auth test."""
 
         bgp_peers: list[BgpPeer]
-        """List of IPv4 BGP peers."""
+        """List of BGP peers."""
         BgpPeer: ClassVar[type[BgpPeer]] = BgpPeer
 
     @AntaTest.anta_test
@@ -834,11 +894,8 @@ class VerifyBGPPeerMD5Auth(AntaTest):
         output = self.instance_commands[0].json_output
 
         for peer in self.inputs.bgp_peers:
-            peer_ip = str(peer.peer_address)
-            peer_list = get_value(output, f"vrfs.{peer.vrf}.peerList", default=[])
-
             # Check if the peer is found
-            if (peer_data := get_item(peer_list, "peerAddress", peer_ip)) is None:
+            if (peer_data := _get_bgp_peer_data(peer, output)) is None:
                 self.result.is_failure(f"{peer} - Not found")
                 continue
 
@@ -921,24 +978,21 @@ class VerifyEVPNType2Route(AntaTest):
 
 
 class VerifyBGPAdvCommunities(AntaTest):
-    """Verifies that advertised communities are standard, extended and large for BGP IPv4 peer(s).
+    """Verifies the advertised communities of BGP peers.
 
     This test performs the following checks for each specified peer:
 
       1. Verifies that the peer is found in its VRF in the BGP configuration.
-      2. Validates that all required community types are advertised:
-        - Standard communities
-        - Extended communities
-        - Large communities
+      2. Validates that given community types are advertised. If not provided, validates that all communities (standard, extended, large) are advertised.
 
     Expected Results
     ----------------
     * Success: If all of the following conditions are met:
         - All specified peers are found in the BGP configuration.
-        - Each peer advertises standard, extended and large communities.
+        - Each peer advertises the given community types.
     * Failure: If any of the following occur:
         - A specified peer is not found in the BGP configuration.
-        - A peer does not advertise standard, extended or large communities.
+        - A peer does not advertise any of the given community types.
 
     Examples
     --------
@@ -950,7 +1004,14 @@ class VerifyBGPAdvCommunities(AntaTest):
               - peer_address: 172.30.11.17
                 vrf: default
               - peer_address: 172.30.11.21
+                vrf: MGMT
+                advertised_communities: ["standard", "extended"]
+              - peer_address: fd00:dc:1::1
                 vrf: default
+              # RFC5549
+              - interface: Ethernet1
+                vrf: default
+                advertised_communities: ["standard", "extended"]
     ```
     """
 
@@ -961,7 +1022,7 @@ class VerifyBGPAdvCommunities(AntaTest):
         """Input model for the VerifyBGPAdvCommunities test."""
 
         bgp_peers: list[BgpPeer]
-        """List of BGP IPv4 peers."""
+        """List of BGP peers."""
         BgpPeer: ClassVar[type[BgpPeer]] = BgpPeer
 
     @AntaTest.anta_test
@@ -972,21 +1033,18 @@ class VerifyBGPAdvCommunities(AntaTest):
         output = self.instance_commands[0].json_output
 
         for peer in self.inputs.bgp_peers:
-            peer_ip = str(peer.peer_address)
-            peer_list = get_value(output, f"vrfs.{peer.vrf}.peerList", default=[])
-
             # Check if the peer is found
-            if (peer_data := get_item(peer_list, "peerAddress", peer_ip)) is None:
+            if (peer_data := _get_bgp_peer_data(peer, output)) is None:
                 self.result.is_failure(f"{peer} - Not found")
                 continue
 
             # Check BGP peer advertised communities
-            if not all(get_value(peer_data, f"advertisedCommunities.{community}") is True for community in ["standard", "extended", "large"]):
+            if not all(get_value(peer_data, f"advertisedCommunities.{community}") is True for community in peer.advertised_communities):
                 self.result.is_failure(f"{peer} - {format_data(peer_data['advertisedCommunities'])}")
 
 
 class VerifyBGPTimers(AntaTest):
-    """Verifies the timers of BGP IPv4 peer(s).
+    """Verifies the timers of BGP peers.
 
     This test performs the following checks for each specified peer:
 
@@ -1017,6 +1075,15 @@ class VerifyBGPTimers(AntaTest):
                 vrf: default
                 hold_time: 180
                 keep_alive_time: 60
+              - peer_address: fd00:dc:1::1
+                vrf: default
+                hold_time: 180
+                keep_alive_time: 60
+              # RFC5549
+              - interface: Ethernet1
+                vrf: MGMT
+                hold_time: 180
+                keep_alive_time: 60
     ```
     """
 
@@ -1027,7 +1094,7 @@ class VerifyBGPTimers(AntaTest):
         """Input model for the VerifyBGPTimers test."""
 
         bgp_peers: list[BgpPeer]
-        """List of BGP IPv4 peers."""
+        """List of BGP peers."""
         BgpPeer: ClassVar[type[BgpPeer]] = BgpPeer
 
         @field_validator("bgp_peers")
@@ -1048,11 +1115,8 @@ class VerifyBGPTimers(AntaTest):
         output = self.instance_commands[0].json_output
 
         for peer in self.inputs.bgp_peers:
-            peer_ip = str(peer.peer_address)
-            peer_list = get_value(output, f"vrfs.{peer.vrf}.peerList", default=[])
-
             # Check if the peer is found
-            if (peer_data := get_item(peer_list, "peerAddress", peer_ip)) is None:
+            if (peer_data := _get_bgp_peer_data(peer, output)) is None:
                 self.result.is_failure(f"{peer} - Not found")
                 continue
 
@@ -1064,7 +1128,7 @@ class VerifyBGPTimers(AntaTest):
 
 
 class VerifyBGPPeerDropStats(AntaTest):
-    """Verifies BGP NLRI drop statistics for the provided BGP IPv4 peer(s).
+    """Verifies BGP NLRI drop statistics of BGP peers.
 
     This test performs the following checks for each specified peer:
 
@@ -1096,6 +1160,17 @@ class VerifyBGPPeerDropStats(AntaTest):
                 drop_stats:
                   - inDropAsloop
                   - prefixEvpnDroppedUnsupportedRouteType
+              - peer_address: fd00:dc:1::1
+                vrf: default
+                drop_stats:
+                  - inDropAsloop
+                  - prefixEvpnDroppedUnsupportedRouteType
+              # RFC5549
+              - interface: Ethernet1
+                vrf: MGMT
+                drop_stats:
+                  - inDropAsloop
+                  - prefixEvpnDroppedUnsupportedRouteType
     ```
     """
 
@@ -1106,7 +1181,7 @@ class VerifyBGPPeerDropStats(AntaTest):
         """Input model for the VerifyBGPPeerDropStats test."""
 
         bgp_peers: list[BgpPeer]
-        """List of BGP IPv4 peers."""
+        """List of BGP peers."""
         BgpPeer: ClassVar[type[BgpPeer]] = BgpPeer
 
     @AntaTest.anta_test
@@ -1117,12 +1192,9 @@ class VerifyBGPPeerDropStats(AntaTest):
         output = self.instance_commands[0].json_output
 
         for peer in self.inputs.bgp_peers:
-            peer_ip = str(peer.peer_address)
             drop_stats_input = peer.drop_stats
-            peer_list = get_value(output, f"vrfs.{peer.vrf}.peerList", default=[])
-
             # Check if the peer is found
-            if (peer_data := get_item(peer_list, "peerAddress", peer_ip)) is None:
+            if (peer_data := _get_bgp_peer_data(peer, output)) is None:
                 self.result.is_failure(f"{peer} - Not found")
                 continue
 
@@ -1140,7 +1212,7 @@ class VerifyBGPPeerDropStats(AntaTest):
 
 
 class VerifyBGPPeerUpdateErrors(AntaTest):
-    """Verifies BGP update error counters for the provided BGP IPv4 peer(s).
+    """Verifies BGP update error counters of BGP peers.
 
     This test performs the following checks for each specified peer:
 
@@ -1173,6 +1245,15 @@ class VerifyBGPPeerUpdateErrors(AntaTest):
                 vrf: default
                 update_errors:
                   - inUpdErrWithdraw
+              - peer_address: fd00:dc:1::1
+                vrf: default
+                update_errors:
+                  - inUpdErrWithdraw
+              # RFC5549
+              - interface: Ethernet1
+                vrf: MGMT
+                update_errors:
+                  - inUpdErrWithdraw
     ```
     """
 
@@ -1183,7 +1264,7 @@ class VerifyBGPPeerUpdateErrors(AntaTest):
         """Input model for the VerifyBGPPeerUpdateErrors test."""
 
         bgp_peers: list[BgpPeer]
-        """List of BGP IPv4 peers."""
+        """List of BGP peers."""
         BgpPeer: ClassVar[type[BgpPeer]] = BgpPeer
 
     @AntaTest.anta_test
@@ -1194,12 +1275,9 @@ class VerifyBGPPeerUpdateErrors(AntaTest):
         output = self.instance_commands[0].json_output
 
         for peer in self.inputs.bgp_peers:
-            peer_ip = str(peer.peer_address)
             update_errors_input = peer.update_errors
-            peer_list = get_value(output, f"vrfs.{peer.vrf}.peerList", default=[])
-
             # Check if the peer is found
-            if (peer_data := get_item(peer_list, "peerAddress", peer_ip)) is None:
+            if (peer_data := _get_bgp_peer_data(peer, output)) is None:
                 self.result.is_failure(f"{peer} - Not found")
                 continue
 
@@ -1217,7 +1295,7 @@ class VerifyBGPPeerUpdateErrors(AntaTest):
 
 
 class VerifyBgpRouteMaps(AntaTest):
-    """Verifies BGP inbound and outbound route-maps of BGP IPv4 peer(s).
+    """Verifies BGP inbound and outbound route-maps of BGP peers.
 
     This test performs the following checks for each specified peer:
 
@@ -1244,6 +1322,15 @@ class VerifyBgpRouteMaps(AntaTest):
                 vrf: default
                 inbound_route_map: RM-MLAG-PEER-IN
                 outbound_route_map: RM-MLAG-PEER-OUT
+              - peer_address: fd00:dc:1::1
+                vrf: default
+                inbound_route_map: RM-MLAG-PEER-IN
+                outbound_route_map: RM-MLAG-PEER-OUT
+              # RFC5549
+              - interface: Ethernet1
+                vrf: MGMT
+                inbound_route_map: RM-MLAG-PEER-IN
+                outbound_route_map: RM-MLAG-PEER-OUT
     ```
     """
 
@@ -1254,7 +1341,7 @@ class VerifyBgpRouteMaps(AntaTest):
         """Input model for the VerifyBgpRouteMaps test."""
 
         bgp_peers: list[BgpPeer]
-        """List of BGP IPv4 peers."""
+        """List of BGP peers."""
         BgpPeer: ClassVar[type[BgpPeer]] = BgpPeer
 
         @field_validator("bgp_peers")
@@ -1275,13 +1362,11 @@ class VerifyBgpRouteMaps(AntaTest):
         output = self.instance_commands[0].json_output
 
         for peer in self.inputs.bgp_peers:
-            peer_ip = str(peer.peer_address)
             inbound_route_map = peer.inbound_route_map
             outbound_route_map = peer.outbound_route_map
-            peer_list = get_value(output, f"vrfs.{peer.vrf}.peerList", default=[])
 
             # Check if the peer is found
-            if (peer_data := get_item(peer_list, "peerAddress", peer_ip)) is None:
+            if (peer_data := _get_bgp_peer_data(peer, output)) is None:
                 self.result.is_failure(f"{peer} - Not found")
                 continue
 
@@ -1295,7 +1380,7 @@ class VerifyBgpRouteMaps(AntaTest):
 
 
 class VerifyBGPPeerRouteLimit(AntaTest):
-    """Verifies maximum routes and warning limit for BGP IPv4 peer(s).
+    """Verifies maximum routes and warning limit for BGP peers.
 
     This test performs the following checks for each specified peer:
 
@@ -1322,6 +1407,15 @@ class VerifyBGPPeerRouteLimit(AntaTest):
                 vrf: default
                 maximum_routes: 12000
                 warning_limit: 10000
+              - peer_address: fd00:dc:1::1
+                vrf: default
+                maximum_routes: 12000
+                warning_limit: 10000
+              # RFC5549
+              - interface: Ethernet1
+                vrf: MGMT
+                maximum_routes: 12000
+                warning_limit: 10000
     ```
     """
 
@@ -1332,7 +1426,7 @@ class VerifyBGPPeerRouteLimit(AntaTest):
         """Input model for the VerifyBGPPeerRouteLimit test."""
 
         bgp_peers: list[BgpPeer]
-        """List of BGP IPv4 peers."""
+        """List of BGP peers."""
         BgpPeer: ClassVar[type[BgpPeer]] = BgpPeer
 
         @field_validator("bgp_peers")
@@ -1353,13 +1447,11 @@ class VerifyBGPPeerRouteLimit(AntaTest):
         output = self.instance_commands[0].json_output
 
         for peer in self.inputs.bgp_peers:
-            peer_ip = str(peer.peer_address)
             maximum_routes = peer.maximum_routes
             warning_limit = peer.warning_limit
-            peer_list = get_value(output, f"vrfs.{peer.vrf}.peerList", default=[])
 
             # Check if the peer is found
-            if (peer_data := get_item(peer_list, "peerAddress", peer_ip)) is None:
+            if (peer_data := _get_bgp_peer_data(peer, output)) is None:
                 self.result.is_failure(f"{peer} - Not found")
                 continue
 
@@ -1373,7 +1465,7 @@ class VerifyBGPPeerRouteLimit(AntaTest):
 
 
 class VerifyBGPPeerGroup(AntaTest):
-    """Verifies BGP peer group of BGP IPv4 peer(s).
+    """Verifies BGP peer group of BGP peers.
 
     This test performs the following checks for each specified peer:
 
@@ -1399,6 +1491,13 @@ class VerifyBGPPeerGroup(AntaTest):
               - peer_address: 172.30.11.1
                 vrf: default
                 peer_group: IPv4-UNDERLAY-PEERS
+              - peer_address: fd00:dc:1::1
+                vrf: default
+                peer_group: IPv4-UNDERLAY-PEERS
+              # RFC5549
+              - interface: Ethernet1
+                vrf: MGMT
+                peer_group: IPv4-UNDERLAY-PEERS
     ```
     """
 
@@ -1409,7 +1508,7 @@ class VerifyBGPPeerGroup(AntaTest):
         """Input model for the VerifyBGPPeerGroup test."""
 
         bgp_peers: list[BgpPeer]
-        """List of BGP IPv4 peers."""
+        """List of BGP peers."""
 
         @field_validator("bgp_peers")
         @classmethod
@@ -1429,11 +1528,8 @@ class VerifyBGPPeerGroup(AntaTest):
         output = self.instance_commands[0].json_output
 
         for peer in self.inputs.bgp_peers:
-            peer_ip = str(peer.peer_address)
-            peer_list = get_value(output, f"vrfs.{peer.vrf}.peerList", default=[])
-
             # Check if the peer is found
-            if (peer_data := get_item(peer_list, "peerAddress", peer_ip)) is None:
+            if (peer_data := _get_bgp_peer_data(peer, output)) is None:
                 self.result.is_failure(f"{peer} - Not found")
                 continue
 
@@ -1442,7 +1538,7 @@ class VerifyBGPPeerGroup(AntaTest):
 
 
 class VerifyBGPPeerSessionRibd(AntaTest):
-    """Verifies the session state of BGP IPv4 peer(s).
+    """Verifies the session state of BGP peers.
 
     Compatible with EOS operating in `ribd` routing protocol model.
 
@@ -1451,7 +1547,7 @@ class VerifyBGPPeerSessionRibd(AntaTest):
       1. Verifies that the peer is found in its VRF in the BGP configuration.
       2. Verifies that the BGP session is `Established` and, if specified, has remained established for at least the duration given by `minimum_established_time`.
       3. Ensures that both input and output TCP message queues are empty.
-      Can be disabled by setting `check_tcp_queues` global flag to `False`.
+      Can be disabled by setting `check_tcp_queues` input flag to `False`.
 
     Expected Results
     ----------------
@@ -1477,12 +1573,13 @@ class VerifyBGPPeerSessionRibd(AntaTest):
             bgp_peers:
               - peer_address: 10.1.0.1
                 vrf: default
-              - peer_address: 10.1.0.2
-                vrf: default
-              - peer_address: 10.1.255.2
-                vrf: DEV
               - peer_address: 10.1.255.4
                 vrf: DEV
+              - peer_address: fd00:dc:1::1
+                vrf: default
+              # RFC5549
+              - interface: Ethernet1
+                vrf: MGMT
     ```
     """
 
@@ -1497,7 +1594,7 @@ class VerifyBGPPeerSessionRibd(AntaTest):
         check_tcp_queues: bool = True
         """Flag to check if the TCP session queues are empty for all BGP peers. Defaults to `True`."""
         bgp_peers: list[BgpPeer]
-        """List of BGP IPv4 peers."""
+        """List of BGP peers."""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -1507,11 +1604,8 @@ class VerifyBGPPeerSessionRibd(AntaTest):
         output = self.instance_commands[0].json_output
 
         for peer in self.inputs.bgp_peers:
-            peer_address = str(peer.peer_address)
-            peers = get_value(output, f"vrfs.{peer.vrf}.peerList", default=[])
-
             # Check if the peer is found
-            if (peer_data := get_item(peers, "peerAddress", peer_address)) is None:
+            if (peer_data := _get_bgp_peer_data(peer, output)) is None:
                 self.result.is_failure(f"{peer} - Not found")
                 continue
 
@@ -1534,7 +1628,7 @@ class VerifyBGPPeerSessionRibd(AntaTest):
 
 
 class VerifyBGPPeersHealthRibd(AntaTest):
-    """Verifies the health of all the BGP IPv4 peer(s).
+    """Verifies the health of all the BGP peers.
 
     Compatible with EOS operating in `ribd` routing protocol model.
 
@@ -1542,7 +1636,7 @@ class VerifyBGPPeersHealthRibd(AntaTest):
 
       1. Verifies that the BGP session is in the `Established` state.
       2. Checks that both input and output TCP message queues are empty.
-      Can be disabled by setting `check_tcp_queues` global flag to `False`.
+      Can be disabled by setting `check_tcp_queues` input flag to `False`.
 
     Expected Results
     ----------------
@@ -1594,7 +1688,7 @@ class VerifyBGPPeersHealthRibd(AntaTest):
 
 
 class VerifyBGPNlriAcceptance(AntaTest):
-    """Verifies that all received NLRI are accepted for all AFI/SAFI configured for BGP IPv4 peer(s).
+    """Verifies that all received NLRI are accepted for all AFI/SAFI configured for BGP peers.
 
     This test performs the following checks for each specified peer:
 
@@ -1619,11 +1713,27 @@ class VerifyBGPNlriAcceptance(AntaTest):
                 vrf: default
                 capabilities:
                   - ipv4Unicast
+              - peer_address: 2001:db8:1::2
+                vrf: default
+                capabilities:
+                  - ipv6Unicast
+              - peer_address: fe80::2%Et1
+                vrf: default
+                capabilities:
+                  - ipv6Unicast
+              # RFC 5549
+              - peer_address: fe80::2%Et1
+                vrf: default
+                capabilities:
+                  - ipv6Unicast
     ```
     """
 
     categories: ClassVar[list[str]] = ["bgp"]
-    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [AntaCommand(command="show bgp summary vrf all", revision=1)]
+    commands: ClassVar[list[AntaCommand | AntaTemplate]] = [
+        AntaCommand(command="show bgp summary vrf all", revision=1),
+        AntaCommand(command="show bgp neighbors vrf all", revision=3),
+    ]
 
     class Input(AntaTest.Input):
         """Input model for the VerifyBGPNlriAcceptance test."""
@@ -1641,16 +1751,50 @@ class VerifyBGPNlriAcceptance(AntaTest):
                     raise ValueError(msg)
             return bgp_peers
 
+    @staticmethod
+    def _get_peer_address(peer: BgpPeer, command_output: dict[str, Any]) -> str | None:
+        """Retrieve the peer address for the given BGP peer data.
+
+        If an interface is specified, the address is extracted from the command output;
+        otherwise, it is retrieved directly from the peer object.
+
+        Parameters
+        ----------
+        peer
+            The BGP peer object to look up.
+        command_output
+            Parsed output from the relevant command.
+
+        Returns
+        -------
+        str | None
+            The peer address if found, otherwise None.
+        """
+        if peer.interface is not None:
+            # RFC5549
+            interface = str(peer.interface)
+            lookup_key = "ifName"
+
+            peer_list = get_value(command_output, f"vrfs.{peer.vrf}.peerList", default=[])
+            # Check if the peer is found
+            if (peer_details := get_item(peer_list, lookup_key, interface)) is not None:
+                return str(peer_details.get("peerAddress"))
+            return None
+
+        return str(peer.peer_address)
+
     @AntaTest.anta_test
     def test(self) -> None:
         """Main test function for VerifyBGPNlriAcceptance."""
         self.result.is_success()
 
         output = self.instance_commands[0].json_output
+        peer_output = self.instance_commands[1].json_output
 
         for peer in self.inputs.bgp_peers:
+            identity = self._get_peer_address(peer, peer_output)
             # Check if the peer is found
-            if not (peer_data := get_value(output, f"vrfs..{peer.vrf}..peers..{peer.peer_address}", separator="..")):
+            if not (peer_data := get_value(output, f"vrfs..{peer.vrf}..peers..{identity}", separator="..")):
                 self.result.is_failure(f"{peer} - Not found")
                 continue
 
@@ -1931,7 +2075,7 @@ class VerifyBGPRedistribution(AntaTest):
 
 
 class VerifyBGPPeerTtlMultiHops(AntaTest):
-    """Verifies BGP TTL and max-ttl-hops count for BGP IPv4 peer(s).
+    """Verifies BGP TTL and max-ttl-hops count for BGP peers.
 
     This test performs the following checks for each specified BGP peer:
 
@@ -1960,6 +2104,15 @@ class VerifyBGPPeerTtlMultiHops(AntaTest):
                   vrf: test
                   ttl: 30
                   max_ttl_hops: 30
+                - peer_address: fd00:dc:1::1
+                  vrf: default
+                  ttl: 30
+                  max_ttl_hops: 30
+                # RFC5549
+                - interface: Ethernet1
+                  vrf: MGMT
+                  ttl: 30
+                  max_ttl_hops: 30
     ```
     """
 
@@ -1970,7 +2123,7 @@ class VerifyBGPPeerTtlMultiHops(AntaTest):
         """Input model for the VerifyBGPPeerTtlMultiHops test."""
 
         bgp_peers: list[BgpPeer]
-        """List of IPv4 peer(s)."""
+        """List of peer(s)."""
 
         @field_validator("bgp_peers")
         @classmethod
@@ -1993,11 +2146,8 @@ class VerifyBGPPeerTtlMultiHops(AntaTest):
         command_output = self.instance_commands[0].json_output
 
         for peer in self.inputs.bgp_peers:
-            peer_ip = str(peer.peer_address)
-            peer_list = get_value(command_output, f"vrfs.{peer.vrf}.peerList", default=[])
-
             # Check if the peer is found
-            if (peer_details := get_item(peer_list, "peerAddress", peer_ip)) is None:
+            if (peer_details := _get_bgp_peer_data(peer, command_output)) is None:
                 self.result.is_failure(f"{peer} - Not found")
                 continue
 

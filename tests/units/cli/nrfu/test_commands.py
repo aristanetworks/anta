@@ -178,7 +178,7 @@ def test_anta_nrfu_md_report(click_runner: CliRunner, tmp_path: Path) -> None:
 def test_anta_nrfu_md_report_failure(click_runner: CliRunner, tmp_path: Path) -> None:
     """Test anta nrfu md-report failure."""
     md_output = tmp_path / "test.md"
-    with patch("anta.reporter.md_reporter.MDReportGenerator.generate", side_effect=OSError()):
+    with patch("anta.reporter.md_reporter.MDReportGenerator.generate_sections", side_effect=OSError()):
         result = click_runner.invoke(anta, ["nrfu", "md-report", "--md-output", str(md_output)])
 
     assert result.exit_code == ExitCode.USAGE_ERROR
@@ -206,5 +206,17 @@ def test_anta_nrfu_md_report_with_hide(click_runner: CliRunner, tmp_path: Path) 
     total_tests = int(match.group(1))
     total_tests_success = int(match.group(2))
 
-    assert total_tests == 0
-    assert total_tests_success == 0
+    assert total_tests == 3
+    assert total_tests_success == 3
+
+    # Collecting the rows inside the Test Results section
+    row_count = 0
+    lines = content.splitlines()
+
+    idx = lines.index("## Test Results")
+
+    for line in lines[idx + 1 :]:
+        if line.startswith("|") and "---" not in line:
+            row_count += 1
+    # Reducing the row count by 1, as above conditions counts the TABLE_HEADING
+    assert (row_count - 1) == 0
