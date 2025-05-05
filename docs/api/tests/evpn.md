@@ -1,5 +1,5 @@
 ---
-anta_title: ANTA catalog for CVX tests
+anta_title: ANTA catalog for EVPN tests
 ---
 
 <!--
@@ -10,13 +10,14 @@ anta_title: ANTA catalog for CVX tests
 
 # Tests
 
-::: anta.tests.cvx
+::: anta.tests.evpn
 
     options:
       anta_hide_test_module_description: true
       filters:
         - "!test"
         - "!render"
+        - "!^_[^_]"
       merge_init_into_class: false
       show_bases: false
       show_labels: true
@@ -27,13 +28,12 @@ anta_title: ANTA catalog for CVX tests
 
 # Input models
 
-::: anta.input_models.cvx
+::: anta.input_models.evpn
 
     options:
       anta_hide_test_module_description: true
       filters:
-        - "!test"
-        - "!render"
+        - "!^__str__"
       merge_init_into_class: false
       show_bases: false
       show_labels: true

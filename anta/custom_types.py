@@ -189,6 +189,23 @@ def update_bgp_redistributed_proto_user(value: str) -> str:
     return value
 
 
+def convert_reload_cause(value: str) -> str:
+    """Convert a reload cause abbreviation into its full descriptive string.
+
+    Examples
+    --------
+    ```python
+    >>> convert_reload_cause("ZTP")
+    'System reloaded due to Zero Touch Provisioning'
+    ```
+    """
+    reload_causes = {"ZTP": "System reloaded due to Zero Touch Provisioning", "USER": "Reload requested by the user.", "FPGA": "Reload requested after FPGA upgrade"}
+    if not reload_causes.get(value.upper()):
+        msg = f"Invalid reload cause: '{value}' - expected causes are {list(reload_causes)}"
+        raise ValueError(msg)
+    return reload_causes[value.upper()]
+
+
 # AntaTest.Input types
 AAAAuthMethod = Annotated[str, AfterValidator(aaa_group_prefix)]
 VlanId = Annotated[int, Field(ge=0, le=4094)]
@@ -405,3 +422,8 @@ RedistributedAfiSafi = Annotated[Literal["v4u", "v4m", "v6u", "v6m"], BeforeVali
 NTPStratumLevel = Annotated[int, Field(ge=0, le=16)]
 PowerSupplyFanStatus = Literal["failed", "ok", "unknownHwStatus", "powerLoss", "unsupported"]
 PowerSupplyStatus = Literal["ok", "unknown", "powerLoss", "failed"]
+ReloadCause = Annotated[
+    Literal["System reloaded due to Zero Touch Provisioning", "Reload requested by the user.", "Reload requested after FPGA upgrade", "USER", "FPGA", "ZTP"],
+    BeforeValidator(convert_reload_cause),
+]
+BgpCommunity = Literal["standard", "extended", "large"]
