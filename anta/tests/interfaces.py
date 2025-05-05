@@ -153,8 +153,8 @@ class VerifyInterfaceErrors(AntaTest):
                 self.inputs.link_status_changes and error_counters.get("linkStatusChanges") > self.inputs.link_status_changes
             ):  # TODO: Need to check for the default value for linkStatusChanges
                 self.result.is_failure(
-                    f"Interface: {interface} - Link Status changes mismatch - Expected: {self.inputs.link_status_changes} "
-                    "Actual: {error_counters['linkStatusChanges']}"
+                    f"Interface: {interface} - Link status changes mismatch - Expected: {self.inputs.link_status_changes} "
+                    f"Actual: {error_counters['linkStatusChanges']}"
                 )
 
 
