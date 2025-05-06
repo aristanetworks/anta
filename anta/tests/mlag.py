@@ -59,6 +59,9 @@ class VerifyMlagStatus(AntaTest):
         # Verifies the peerLinkStatus
         if (peer_link_state := command_output["peerLinkStatus"]) != "up":
             self.result.is_failure(f"Operational state of the MLAG peer link is not correct - Expected: up Actual: {peer_link_state}")
+        # Verifies the configSanity
+        if (config_sanity := command_output["configSanity"]) != "consistent":
+            self.result.is_failure(f"Operational state of the MLAG config sanity is not correct - Expected: consistent Actual: {config_sanity}")
 
 
 class VerifyMlagInterfaces(AntaTest):

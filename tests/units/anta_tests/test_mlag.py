@@ -14,7 +14,7 @@ DATA: list[dict[str, Any]] = [
     {
         "name": "success",
         "test": VerifyMlagStatus,
-        "eos_data": [{"state": "active", "negStatus": "connected", "peerLinkStatus": "up", "localIntfStatus": "up"}],
+        "eos_data": [{"configSanity": "consistent", "state": "active", "negStatus": "connected", "peerLinkStatus": "up", "localIntfStatus": "up"}],
         "inputs": None,
         "expected": {"result": "success"},
     },
@@ -32,7 +32,7 @@ DATA: list[dict[str, Any]] = [
     {
         "name": "failure-negotiation-status",
         "test": VerifyMlagStatus,
-        "eos_data": [{"state": "active", "negStatus": "connecting", "peerLinkStatus": "up", "localIntfStatus": "up"}],
+        "eos_data": [{"configSanity": "consistent", "state": "active", "negStatus": "connecting", "peerLinkStatus": "up", "localIntfStatus": "up"}],
         "inputs": None,
         "expected": {
             "result": "failure",
@@ -42,7 +42,7 @@ DATA: list[dict[str, Any]] = [
     {
         "name": "failure-local-interface",
         "test": VerifyMlagStatus,
-        "eos_data": [{"state": "active", "negStatus": "connected", "peerLinkStatus": "up", "localIntfStatus": "down"}],
+        "eos_data": [{"configSanity": "consistent", "state": "active", "negStatus": "connected", "peerLinkStatus": "up", "localIntfStatus": "down"}],
         "inputs": None,
         "expected": {
             "result": "failure",
@@ -52,11 +52,21 @@ DATA: list[dict[str, Any]] = [
     {
         "name": "failure-peer-link",
         "test": VerifyMlagStatus,
-        "eos_data": [{"state": "active", "negStatus": "connected", "peerLinkStatus": "down", "localIntfStatus": "up"}],
+        "eos_data": [{"configSanity": "consistent", "state": "active", "negStatus": "connected", "peerLinkStatus": "down", "localIntfStatus": "up"}],
         "inputs": None,
         "expected": {
             "result": "failure",
             "messages": ["Operational state of the MLAG peer link is not correct - Expected: up Actual: down"],
+        },
+    },
+    {
+        "name": "failure-config-sanity",
+        "test": VerifyMlagStatus,
+        "eos_data": [{"configSanity": "inconsistent", "state": "active", "negStatus": "connected", "peerLinkStatus": "up", "localIntfStatus": "up"}],
+        "inputs": None,
+        "expected": {
+            "result": "failure",
+            "messages": ["Operational state of the MLAG config sanity is not correct - Expected: consistent Actual: inconsistent"],
         },
     },
     {
