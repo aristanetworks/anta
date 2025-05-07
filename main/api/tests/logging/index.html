@@ -3203,10 +3203,10 @@
         <div class="highlight"><pre><span></span><code><span class="nt">anta.tests.logging</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyLoggingEntries</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">logging_entries</span><span class="p">:</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">regex_match</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;.ACCOUNTING-5-EXEC:</span><span class="nv"> </span><span class="s">cvpadmin</span><span class="nv"> </span><span class="s">ssh.&quot;</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">regex_match</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;.*ACCOUNTING-5-EXEC:</span><span class="nv"> </span><span class="s">cvpadmin</span><span class="nv"> </span><span class="s">ssh.*&quot;</span>
 <span class="w">          </span><span class="nt">last_number_messages</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span>
 <span class="w">          </span><span class="nt">severity_level</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">alerts</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">regex_match</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;.SPANTREE-6-INTERFACE_ADD:.&quot;</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">regex_match</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;.*SPANTREE-6-INTERFACE_ADD:.*&quot;</span>
 <span class="w">          </span><span class="nt">last_number_messages</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
 <span class="w">          </span><span class="nt">severity_level</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">critical</span>
 </code></pre></div>
@@ -3326,10 +3326,10 @@
 <span class="sd">    anta.tests.logging:</span>
 <span class="sd">      - VerifyLoggingEntries:</span>
 <span class="sd">          logging_entries:</span>
-<span class="sd">            - regex_match: &quot;.ACCOUNTING-5-EXEC: cvpadmin ssh.&quot;</span>
+<span class="sd">            - regex_match: &quot;.*ACCOUNTING-5-EXEC: cvpadmin ssh.*&quot;</span>
 <span class="sd">              last_number_messages: 30</span>
 <span class="sd">              severity_level: alerts</span>
-<span class="sd">            - regex_match: &quot;.SPANTREE-6-INTERFACE_ADD:.&quot;</span>
+<span class="sd">            - regex_match: &quot;.*SPANTREE-6-INTERFACE_ADD:.*&quot;</span>
 <span class="sd">              last_number_messages: 10</span>
 <span class="sd">              severity_level: critical</span>
 <span class="sd">    ```</span>
@@ -3358,7 +3358,7 @@
             <span class="n">output</span> <span class="o">=</span> <span class="n">command_output</span><span class="o">.</span><span class="n">text_output</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">logging_entry</span><span class="o">.</span><span class="n">regex_match</span><span class="p">,</span> <span class="n">output</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Pattern: </span><span class="si">{</span><span class="n">logging_entry</span><span class="o">.</span><span class="n">regex_match</span><span class="si">}</span><span class="s2"> - Not found in last </span><span class="si">{</span><span class="n">logging_entry</span><span class="o">.</span><span class="n">last_number_messages</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">logging_entry</span><span class="o">.</span><span class="n">severity_level</span><span class="si">}</span><span class="s2"> log entries&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Pattern: `</span><span class="si">{</span><span class="n">logging_entry</span><span class="o">.</span><span class="n">regex_match</span><span class="si">}</span><span class="s2">` - Not found in last </span><span class="si">{</span><span class="n">logging_entry</span><span class="o">.</span><span class="n">last_number_messages</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">logging_entry</span><span class="o">.</span><span class="n">severity_level</span><span class="si">}</span><span class="s2"> log entries&quot;</span>
                 <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
