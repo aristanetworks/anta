@@ -329,10 +329,10 @@ anta.tests.logging:
   - VerifyLoggingEntries:
       # Verifies that the expected log string is present in the last specified log messages.
       logging_entries:
-        - regex_match: ".ACCOUNTING-5-EXEC: cvpadmin ssh."
+        - regex_match: ".*ACCOUNTING-5-EXEC: cvpadmin ssh.*"
           last_number_messages: 30
           severity_level: alerts
-        - regex_match: ".SPANTREE-6-INTERFACE_ADD:."
+        - regex_match: ".*SPANTREE-6-INTERFACE_ADD:.*"
           last_number_messages: 10
           severity_level: critical
   - VerifyLoggingErrors:
