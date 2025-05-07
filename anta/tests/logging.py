@@ -450,10 +450,10 @@ class VerifyLoggingEntries(AntaTest):
     anta.tests.logging:
       - VerifyLoggingEntries:
           logging_entries:
-            - regex_match: ".ACCOUNTING-5-EXEC: cvpadmin ssh."
+            - regex_match: ".*ACCOUNTING-5-EXEC: cvpadmin ssh.*"
               last_number_messages: 30
               severity_level: alerts
-            - regex_match: ".SPANTREE-6-INTERFACE_ADD:."
+            - regex_match: ".*SPANTREE-6-INTERFACE_ADD:.*"
               last_number_messages: 10
               severity_level: critical
     ```
@@ -482,5 +482,5 @@ class VerifyLoggingEntries(AntaTest):
             output = command_output.text_output
             if not re.search(logging_entry.regex_match, output):
                 self.result.is_failure(
-                    f"Pattern: {logging_entry.regex_match} - Not found in last {logging_entry.last_number_messages} {logging_entry.severity_level} log entries"
+                    f"Pattern: `{logging_entry.regex_match}` - Not found in last {logging_entry.last_number_messages} {logging_entry.severity_level} log entries"
                 )
