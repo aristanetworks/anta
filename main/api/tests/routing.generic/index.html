@@ -1578,6 +1578,40 @@
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#anta.tests.routing.generic.VerifyRoutingStatus" class="md-nav__link">
+      <span class="md-ellipsis">
+        VerifyRoutingStatus
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="VerifyRoutingStatus">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.routing.generic.VerifyRoutingStatus-attributes" class="md-nav__link">
+      <span class="md-ellipsis">
+        Inputs
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#anta.tests.routing.generic.VerifyRoutingTableEntry" class="md-nav__link">
       <span class="md-ellipsis">
         VerifyRoutingTableEntry
@@ -2699,6 +2733,40 @@
           
             <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
 <li class="md-nav__item">
+    <a href="#anta.tests.routing.generic.VerifyRoutingStatus" class="md-nav__link">
+      <span class="md-ellipsis">
+        VerifyRoutingStatus
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+      <nav class="md-nav" aria-label="VerifyRoutingStatus">
+        <ul class="md-nav__list">
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
+    <a href="#anta.tests.routing.generic.VerifyRoutingStatus-attributes" class="md-nav__link">
+      <span class="md-ellipsis">
+        Inputs
+      </span>
+    </a>
+
+    <!-- Table of contents list -->
+    
+  </li>
+          
+          
+        </ul>
+      </nav>
+    
+  </li>
+          
+          
+          
+            <!-- Courtesy of https://github.com/squidfunk/mkdocs-material/issues/4827#issuecomment-1869812019 -->
+<li class="md-nav__item">
     <a href="#anta.tests.routing.generic.VerifyRoutingTableEntry" class="md-nav__link">
       <span class="md-ellipsis">
         VerifyRoutingTableEntry
@@ -3589,6 +3657,264 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Routing model is misconfigured - Expected: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">model</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">operating_model</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+  </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="anta.tests.routing.generic.VerifyRoutingStatus" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">VerifyRoutingStatus</span>
+
+
+<a href="#anta.tests.routing.generic.VerifyRoutingStatus" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+
+        <p>Verifies the routing status for IPv4/IPv6 unicast, multicast, and IPv6 interfaces (RFC5549).</p>
+
+
+<details class="expected-results" open>
+  <summary>Expected Results</summary>
+  <ul>
+<li>Success: The test will pass if the routing status is correct.</li>
+<li>Failure: The test will fail if the routing status doesn&rsquo;t match the expected configuration.</li>
+</ul>
+</details>
+
+
+<details class="example" open>
+  <summary>Examples</summary>
+        <div class="highlight"><pre><span></span><code><span class="nt">anta.tests.routing</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">generic</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">VerifyRoutingStatus</span><span class="p">:</span>
+<span class="w">       </span><span class="nt">ipv4_unicast</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
+<span class="w">       </span><span class="nt">ipv6_unicast</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
+</code></pre></div>
+</details>
+
+
+
+
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+<h3 id="anta.tests.routing.generic.VerifyRoutingStatus-attributes">Inputs<a href="#anta.tests.routing.generic.VerifyRoutingStatus-attributes" class="headerlink" title="Permanent link">&para;</a></h3>  
+
+  <div class="doc doc-children">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Description</th>
+              <th>Default</th>
+            </tr>
+          </thead>
+          <tbody>
+              <tr>
+                <td><code>ipv4_unicast</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    IPv4 unicast routing status.
+                  </div>
+                </td>
+                <td>
+                      <code>False</code>
+                </td>
+              </tr>
+              <tr>
+                <td><code>ipv6_unicast</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    IPv6 unicast routing status.
+                  </div>
+                </td>
+                <td>
+                      <code>False</code>
+                </td>
+              </tr>
+              <tr>
+                <td><code>ipv4_multicast</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    IPv4 multicast routing status.
+                  </div>
+                </td>
+                <td>
+                      <code>False</code>
+                </td>
+              </tr>
+              <tr>
+                <td><code>ipv6_multicast</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    IPv6 multicast routing status.
+                  </div>
+                </td>
+                <td>
+                      <code>False</code>
+                </td>
+              </tr>
+              <tr>
+                <td><code>ipv6_interfaces</code></td>
+                <td>
+                      <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
+                </td>
+                <td>
+                  <div class="doc-md-description">
+                    IPv6 interface forwarding status.
+                  </div>
+                </td>
+                <td>
+                      <code>False</code>
+                </td>
+              </tr>
+          </tbody>
+        </table>
+  </div>
+
+
+
+
+
+  </div>
+  <details class="quote">
+  <summary>Source code in <code>anta/tests/routing/generic.py</code></summary>
+  <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">354</span>
+<span class="normal">355</span>
+<span class="normal">356</span>
+<span class="normal">357</span>
+<span class="normal">358</span>
+<span class="normal">359</span>
+<span class="normal">360</span>
+<span class="normal">361</span>
+<span class="normal">362</span>
+<span class="normal">363</span>
+<span class="normal">364</span>
+<span class="normal">365</span>
+<span class="normal">366</span>
+<span class="normal">367</span>
+<span class="normal">368</span>
+<span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span>
+<span class="normal">384</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span>
+<span class="normal">388</span>
+<span class="normal">389</span>
+<span class="normal">390</span>
+<span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span>
+<span class="normal">394</span>
+<span class="normal">395</span>
+<span class="normal">396</span>
+<span class="normal">397</span>
+<span class="normal">398</span>
+<span class="normal">399</span>
+<span class="normal">400</span>
+<span class="normal">401</span>
+<span class="normal">402</span>
+<span class="normal">403</span>
+<span class="normal">404</span>
+<span class="normal">405</span>
+<span class="normal">406</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerifyRoutingStatus</span><span class="p">(</span><span class="n">AntaTest</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies the routing status for IPv4/IPv6 unicast, multicast, and IPv6 interfaces (RFC5549).</span>
+
+<span class="sd">    Expected Results</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    * Success: The test will pass if the routing status is correct.</span>
+<span class="sd">    * Failure: The test will fail if the routing status doesn&#39;t match the expected configuration.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    ```yaml</span>
+<span class="sd">    anta.tests.routing:</span>
+<span class="sd">      generic:</span>
+<span class="sd">        - VerifyRoutingStatus:</span>
+<span class="sd">           ipv4_unicast: True</span>
+<span class="sd">           ipv6_unicast: True</span>
+<span class="sd">    ```</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">categories</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;routing&quot;</span><span class="p">]</span>
+    <span class="n">commands</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">AntaCommand</span> <span class="o">|</span> <span class="n">AntaTemplate</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">AntaCommand</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="s2">&quot;show ip&quot;</span><span class="p">,</span> <span class="n">revision</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+
+    <span class="k">class</span><span class="w"> </span><span class="nc">Input</span><span class="p">(</span><span class="n">AntaTest</span><span class="o">.</span><span class="n">Input</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input model for the VerifyRoutingStatus test.&quot;&quot;&quot;</span>
+
+        <span class="n">ipv4_unicast</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;IPv4 unicast routing status.&quot;&quot;&quot;</span>
+        <span class="n">ipv6_unicast</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;IPv6 unicast routing status.&quot;&quot;&quot;</span>
+        <span class="n">ipv4_multicast</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;IPv4 multicast routing status.&quot;&quot;&quot;</span>
+        <span class="n">ipv6_multicast</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;IPv6 multicast routing status.&quot;&quot;&quot;</span>
+        <span class="n">ipv6_interfaces</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;IPv6 interface forwarding status.&quot;&quot;&quot;</span>
+
+    <span class="nd">@AntaTest</span><span class="o">.</span><span class="n">anta_test</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main test function for VerifyRoutingStatus.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_success</span><span class="p">()</span>
+        <span class="n">command_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance_commands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">json_output</span>
+        <span class="n">actual_routing_status</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;ipv4_unicast&quot;</span><span class="p">:</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;v4RoutingEnabled&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;ipv6_unicast&quot;</span><span class="p">:</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;v6RoutingEnabled&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;ipv4_multicast&quot;</span><span class="p">:</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;multicastRouting&quot;</span><span class="p">][</span><span class="s2">&quot;ipMulticastEnabled&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;ipv6_multicast&quot;</span><span class="p">:</span> <span class="n">command_output</span><span class="p">[</span><span class="s2">&quot;multicastRouting&quot;</span><span class="p">][</span><span class="s2">&quot;ip6MulticastEnabled&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;ipv6_interfaces&quot;</span><span class="p">:</span> <span class="n">command_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;v6IntfForwarding&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+        <span class="p">}</span>
+
+        <span class="k">for</span> <span class="n">input_key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">input_key</span> <span class="ow">in</span> <span class="n">actual_routing_status</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">!=</span> <span class="n">actual_routing_status</span><span class="p">[</span><span class="n">input_key</span><span class="p">]:</span>
+                <span class="n">route_type</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([{</span><span class="s2">&quot;ipv4&quot;</span><span class="p">:</span> <span class="s2">&quot;IPv4&quot;</span><span class="p">,</span> <span class="s2">&quot;ipv6&quot;</span><span class="p">:</span> <span class="s2">&quot;IPv6&quot;</span><span class="p">}</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">part</span><span class="p">,</span> <span class="n">part</span><span class="p">)</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">input_key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">is_failure</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">route_type</span><span class="si">}</span><span class="s2"> routing enabled status mismatch - Expected: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> Actual: </span><span class="si">{</span><span class="n">actual_routing_status</span><span class="p">[</span><span class="n">input_key</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
   </details>
     </div>
