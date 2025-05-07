@@ -791,6 +791,10 @@ anta.tests.routing.generic:
   - VerifyRoutingProtocolModel:
       # Verifies the configured routing protocol model.
       model: multi-agent
+  - VerifyRoutingStatus:
+      # Verifies the routing status for IPv4/IPv6 unicast, multicast, and IPv6 interfaces (RFC5549).
+      ipv4_unicast: True
+      ipv6_unicast: True
   - VerifyRoutingTableEntry:
       # Verifies that the provided routes are present in the routing table of a specified VRF.
       vrf: default
