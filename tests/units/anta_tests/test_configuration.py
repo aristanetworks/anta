@@ -58,7 +58,7 @@ DATA: list[dict[str, Any]] = [
         "test": VerifyRunningConfigLines,
         "eos_data": ["enable password something\nsome other line"],
         "inputs": {"regex_patterns": ["bla", "bleh"]},
-        "expected": {"result": "failure", "messages": ["Regex pattern: bla - Not found", "Regex pattern: bleh - Not found"]},
+        "expected": {"result": "failure", "messages": ["Regex pattern: `bla` - Not found", "Regex pattern: `bleh` - Not found"]},
     },
     {
         "name": "success-section",
@@ -117,9 +117,9 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Section: ^interface Ethernet1$ Regex pattern: switchport mode trunk - Not found",
-                "Section: router bgp 65101 Regex pattern: router-id 10.111.255.12 - Not found",
-                "Section: router bgp 65101 Regex pattern: network 10.110.254.1 - Not found",
+                "Section: `^interface Ethernet1$` Regex pattern: `switchport mode trunk` - Not found",
+                "Section: `router bgp 65101` Regex pattern: `router-id 10.111.255.12` - Not found",
+                "Section: `router bgp 65101` Regex pattern: `network 10.110.254.1` - Not found",
             ],
         },
     },
@@ -141,10 +141,10 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Regex pattern: ^router isis 2 vrf TEST1$ - Not found",
-                "Regex pattern: mlag configuration - Not found",
-                "Section: router bgp 65101 Regex pattern: router-id 10.111.255.12 - Not found",
-                "Section: router bgp 65101 Regex pattern: network 10.110.254.1 - Not found",
+                "Regex pattern: `^router isis 2 vrf TEST1$` - Not found",
+                "Regex pattern: `mlag configuration` - Not found",
+                "Section: `router bgp 65101` Regex pattern: `router-id 10.111.255.12` - Not found",
+                "Section: `router bgp 65101` Regex pattern: `network 10.110.254.1` - Not found",
             ],
         },
     },

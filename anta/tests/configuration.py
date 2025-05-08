@@ -156,7 +156,7 @@ class VerifyRunningConfigLines(AntaTest):
             not_found_patterns = [pattern for pattern in self.inputs.regex_patterns if not re.search(pattern, output, re.IGNORECASE | re.MULTILINE)]
 
         for pattern in not_found_patterns:
-            self.result.is_failure(f"Regex pattern: {pattern} - Not found")
+            self.result.is_failure(f"Regex pattern: `{pattern}` - Not found")
 
         # If sections are specified, matching configurations will be searched only within their respective configuration sections
         if self.inputs.sections:
@@ -169,4 +169,4 @@ class VerifyRunningConfigLines(AntaTest):
                     # Verifies expected regex patterns in the section matcher
                     match_found = any(re.search(match_pattern, item) for item in matched_entries)
                     if not match_found:
-                        self.result.is_failure(f"Section: {section.section} Regex pattern: {match_pattern} - Not found")
+                        self.result.is_failure(f"Section: `{section.section}` Regex pattern: `{match_pattern}` - Not found")
