@@ -331,10 +331,10 @@ anta.tests.logging:
   - VerifyLoggingEntries:
       # Verifies that the expected log string is present in the last specified log messages.
       logging_entries:
-        - regex_match: ".ACCOUNTING-5-EXEC: cvpadmin ssh."
+        - regex_match: ".*ACCOUNTING-5-EXEC: cvpadmin ssh.*"
           last_number_messages: 30
           severity_level: alerts
-        - regex_match: ".SPANTREE-6-INTERFACE_ADD:."
+        - regex_match: ".*SPANTREE-6-INTERFACE_ADD:.*"
           last_number_messages: 10
           severity_level: critical
   - VerifyLoggingErrors:
@@ -793,6 +793,10 @@ anta.tests.routing.generic:
   - VerifyRoutingProtocolModel:
       # Verifies the configured routing protocol model.
       model: multi-agent
+  - VerifyRoutingStatus:
+      # Verifies the routing status for IPv4/IPv6 unicast, multicast, and IPv6 interfaces (RFC5549).
+      ipv4_unicast: True
+      ipv6_unicast: True
   - VerifyRoutingTableEntry:
       # Verifies that the provided routes are present in the routing table of a specified VRF.
       vrf: default
