@@ -227,6 +227,9 @@ anta.tests.hardware:
       # Verifies the power supplies status.
       states:
         - ok
+  - VerifyEnvironmentPowerVoltage:
+      # Verifies the power voltage status.
+      min_input_voltage:  1
   - VerifyEnvironmentSystemCooling:
       # Verifies the device's system cooling status.
   - VerifyTemperature:
