@@ -21,7 +21,7 @@ from .models import CategoryStats, DeviceStats, TestStats
 logger = logging.getLogger(__name__)
 
 
-# pylint: disable=too-many-instance-attributes
+# pylint: disable=too-many-instance-attributes,too-many-public-methods
 class ResultManager:
     """Manager of ANTA Results.
 
@@ -278,6 +278,10 @@ class ResultManager:
 
         # Return the total number of results for multiple statuses
         return sum(len(self.results_by_status.get(status, [])) for status in status)
+
+    def serialize_results(self, *, with_evidence: bool = False) -> list[dict[str, Any]]:
+        """Return a list of JSON serializable dictionaries of the results."""
+        return [result.dump(with_evidence=with_evidence) for result in self._result_entries]
 
     def get_status(self, *, ignore_error: bool = False) -> str:
         """Return the current status including error_status if ignore_error is False."""

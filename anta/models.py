@@ -18,13 +18,14 @@ from pydantic import BaseModel, ConfigDict, ValidationError, create_model
 from anta.constants import EOS_BLACKLIST_CMDS, KNOWN_EOS_ERRORS, UNSUPPORTED_PLATFORM_ERRORS
 from anta.custom_types import Revision
 from anta.logger import anta_log_exception, exc_to_str
-from anta.result_manager.models import AntaTestStatus, TestResult
+from anta.result_manager.models import AntaTestStatus, TestEvidence, TestResult
 
 if TYPE_CHECKING:
     from collections.abc import Coroutine
 
     from rich.progress import Progress, TaskID
 
+    from anta.catalog import RawCatalogInput
     from anta.device import AntaDevice
 
 F = TypeVar("F", bound=Callable[..., Any])
@@ -431,6 +432,8 @@ class AntaTest(ABC):
         device: AntaDevice,
         inputs: dict[str, Any] | AntaTest.Input | None = None,
         eos_data: list[dict[Any, Any] | str] | None = None,
+        *,
+        save_evidence: bool = False,
     ) -> None:
         """Initialize an AntaTest instance.
 
@@ -443,6 +446,8 @@ class AntaTest(ABC):
         eos_data
             Populate outputs of the test commands instead of collecting from devices.
             This list must have the same length and order than the `instance_commands` instance attribute.
+        save_evidence
+            Save the test definition and commands used to run the test in the TestResult object.
         """
         self.logger: logging.Logger = logging.getLogger(f"{self.module}.{self.__class__.__name__}")
         self.device: AntaDevice = device
@@ -457,6 +462,9 @@ class AntaTest(ABC):
         self._init_inputs(inputs)
         if self.result.result == AntaTestStatus.UNSET:
             self._init_commands(eos_data)
+
+            if save_evidence:
+                self.result.evidence = TestEvidence(self.test_definition, self.instance_commands)
 
     def _init_inputs(self, inputs: dict[str, Any] | AntaTest.Input | None) -> None:
         """Instantiate the `inputs` instance attribute with an `AntaTest.Input` instance to validate test inputs using the model.
@@ -549,6 +557,12 @@ class AntaTest(ABC):
     def module(self) -> str:
         """Return the Python module in which this AntaTest class is defined."""
         return self.__module__
+
+    @property
+    def test_definition(self) -> RawCatalogInput:
+        """Return the catalog test definition of this AntaTest."""
+        input_dict = self.inputs.model_dump(mode="json", exclude_unset=True)
+        return {self.module: [{self.name: input_dict}]}
 
     @property
     def collected(self) -> bool:
