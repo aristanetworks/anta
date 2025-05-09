@@ -139,10 +139,7 @@ class MDReportBase(ABC):
             return ""
 
         # Replace newlines with <br> to preserve line breaks in HTML
-        text = text.replace("\n", "<br>")
-
-        # Replace backticks with single quotes
-        return text.replace("`", "'")
+        return text.replace("\n", "<br>")
 
 
 class ANTAReport(MDReportBase):
