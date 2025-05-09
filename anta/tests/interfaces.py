@@ -515,12 +515,10 @@ class VerifyL3MTU(AntaTest):
         mtu: int = 1500
         """Expected L3 MTU configured on all non-excluded interfaces."""
         ignored_interfaces: list[InterfaceType | Interface] = Field(default=["Management", "Loopback", "Vxlan", "Tunnel"])
-        """A list of L3 interfaces example Loopback0, Ethernet1 or interface types such as Ethernet (It will ignore all the ethernet interface),
+        """A list of L3 interfaces or interfaces types like Loopback, Tunnel which will ignore all Loopback and Tunnel interfaces. Takes precedence over the `specific_mtu` field.
          Port-Channel to ignore."""
         specific_mtu: list[dict[str, int]] = Field(default=[])
-        """A list of dictionary of L3 interfaces with their expected L3 MTU configured.
-           If an interface is marked as ignored, its MTU will not be checked, even if it is included in the specific_mtu input dictionary.
-        """
+        """A list of dictionary of L3 interfaces with their expected L3 MTU configured."""
 
     @AntaTest.anta_test
     def test(self) -> None:
@@ -590,9 +588,9 @@ class VerifyIPProxyARP(AntaTest):
 
 
 class VerifyL2MTU(AntaTest):
-    """Verifies the L2 MTU of routed interfaces.
+    """Verifies the L2 MTU of bridged interfaces.
 
-    Test that layer 2 (routed) interfaces are configured with the correct MTU.
+    Test that layer 2 (bridged) interfaces are configured with the correct MTU.
 
     Expected Results
     ----------------
@@ -623,12 +621,10 @@ class VerifyL2MTU(AntaTest):
         mtu: int = 9214
         """Expected L2 MTU configured on all non-excluded interfaces."""
         ignored_interfaces: list[InterfaceType | Interface] = Field(default=["Management", "Loopback", "Vxlan", "Tunnel"])
-        """A list of L2 interfaces, such as Loopback0, Ethernet1, or interface types like Ethernet (which will ignore all Ethernet interfaces) and Port-Channel,
+        """A list of L2 interfaces or interface types like Ethernet, Port-Channel which will ignore all Ethernet and Port-Channel interfaces. Takes precedence over the `specific_mtu` field.
          to be ignored."""
         specific_mtu: list[dict[Interface, int]] = Field(default=[])
-        """A list of dictionary of L2 interfaces with their specific MTU configured
-        If an interface is marked as ignored, its MTU will not be checked, even if it is included in the specific_mtu input dictionary.
-        """
+        """A list of dictionary of L2 interfaces with their expected L2 MTU configured."""
 
     @AntaTest.anta_test
     def test(self) -> None:
