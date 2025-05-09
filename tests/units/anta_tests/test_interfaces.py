@@ -1577,7 +1577,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
-        "name": "success",
+        "name": "success-2",
         "test": VerifyL3MTU,
         "eos_data": [
             {
@@ -2164,8 +2164,8 @@ DATA: list[dict[str, Any]] = [
         "expected": {
             "result": "failure",
             "messages": [
-                "Interface: Ethernet10 - Incorrect MTU configured - Expected: 1500 Actual: 9214",
-                "Interface: Port-Channel2 - Incorrect MTU configured - Expected: 1500 Actual: 9214",
+                "Interface: Ethernet10 - Incorrect MTU - Expected: 1500 Actual: 9214",
+                "Interface: Port-Channel2 - Incorrect MTU - Expected: 1500 Actual: 9214",
             ],
         },
     },
@@ -2239,7 +2239,7 @@ DATA: list[dict[str, Any]] = [
             },
         ],
         "inputs": {"specific_mtu": [{"Et10": 9214}, {"Port-Channel2": 10000}], "ignored_interfaces": ["Ethernet", "Vxlan1"]},
-        "expected": {"result": "failure", "messages": ["Interface: Port-Channel2 - Incorrect MTU configured - Expected: 10000 Actual: 9214"]},
+        "expected": {"result": "failure", "messages": ["Interface: Port-Channel2 - Incorrect MTU - Expected: 10000 Actual: 9214"]},
     },
     {
         "name": "success",

@@ -497,7 +497,7 @@ class VerifyL3MTU(AntaTest):
       - VerifyL3MTU:
           mtu: 1500
           ignored_interfaces:
-              - Vxlan1
+              - Management  # Ignore all Management interfaces
               - Ethernet2.100
               - Ethernet1/1
           specific_mtu:
@@ -515,9 +515,10 @@ class VerifyL3MTU(AntaTest):
         mtu: int = 1500
         """Expected L3 MTU configured on all non-excluded interfaces."""
         ignored_interfaces: list[InterfaceType | Interface] = Field(default=["Management", "Loopback", "Vxlan", "Tunnel"])
-        """A list of L3 interfaces or interfaces types like Loopback, Tunnel which will ignore all Loopback and Tunnel interfaces. Takes precedence over the `specific_mtu` field.
-         Port-Channel to ignore."""
-        specific_mtu: list[dict[str, int]] = Field(default=[])
+        """A list of L3 interfaces or interfaces types like Loopback, Tunnel which will ignore all Loopback and Tunnel interfaces.
+
+        Takes precedence over the `specific_mtu` field."""
+        specific_mtu: list[dict[Interface, int]] = Field(default=[])
         """A list of dictionary of L3 interfaces with their expected L3 MTU configured."""
 
     @AntaTest.anta_test
@@ -525,23 +526,18 @@ class VerifyL3MTU(AntaTest):
         """Main test function for VerifyL3MTU."""
         self.result.is_success()
         command_output = self.instance_commands[0].json_output
-        # Set list of interfaces with specific settings
-        specific_interfaces: list[str] = []
-        if self.inputs.specific_mtu:
-            for d in self.inputs.specific_mtu:
-                specific_interfaces.extend(d)
-        for interface, values in command_output["interfaces"].items():
-            # Verification is skipped if the interface is in the ignored interfaces list.
-            if _is_interface_ignored(interface, self.inputs.ignored_interfaces) or values["forwardingModel"] != "routed":
+        specific_interfaces = {intf: mtu for intf_mtu in self.inputs.specific_mtu for intf, mtu in intf_mtu.items()}
+
+        for interface, details in command_output["interfaces"].items():
+            # Verification is skipped if the interface is in the ignored interfaces list
+            if _is_interface_ignored(interface, self.inputs.ignored_interfaces) or details["forwardingModel"] != "routed":
                 continue
 
-            if interface in specific_interfaces:
-                invalid_mtu = next((values["mtu"] for custom_data in self.inputs.specific_mtu if values["mtu"] != (expected_mtu := custom_data[interface])), None)
-                if invalid_mtu:
-                    self.result.is_failure(f"Interface: {interface} - Incorrect MTU - Expected: {expected_mtu} Actual: {invalid_mtu}")
-            # Comparison with generic setting
-            elif values["mtu"] != self.inputs.mtu:
-                self.result.is_failure(f"Interface: {interface} - Incorrect MTU - Expected: {self.inputs.mtu} Actual: {values['mtu']}")
+            actual_mtu = details["mtu"]
+            expected_mtu = specific_interfaces.get(interface, self.inputs.mtu)
+
+            if (actual_mtu := details["mtu"]) != expected_mtu:
+                self.result.is_failure(f"Interface: {interface} - Incorrect MTU - Expected: {expected_mtu} Actual: {actual_mtu}")
 
 
 class VerifyIPProxyARP(AntaTest):
@@ -604,8 +600,8 @@ class VerifyL2MTU(AntaTest):
       - VerifyL2MTU:
           mtu: 1500
           ignored_interfaces:
-            - Management1
-            - Vxlan1
+            - Ethernet2/1
+            - Port-Channel  # Ignore all Port-Channel interfaces
           specific_mtu:
             - Ethernet1/1: 1500
     ```
@@ -621,8 +617,9 @@ class VerifyL2MTU(AntaTest):
         mtu: int = 9214
         """Expected L2 MTU configured on all non-excluded interfaces."""
         ignored_interfaces: list[InterfaceType | Interface] = Field(default=["Management", "Loopback", "Vxlan", "Tunnel"])
-        """A list of L2 interfaces or interface types like Ethernet, Port-Channel which will ignore all Ethernet and Port-Channel interfaces. Takes precedence over the `specific_mtu` field.
-         to be ignored."""
+        """A list of L2 interfaces or interface types like Ethernet, Port-Channel which will ignore all Ethernet and Port-Channel interfaces.
+
+        Takes precedence over the `specific_mtu` field."""
         specific_mtu: list[dict[Interface, int]] = Field(default=[])
         """A list of dictionary of L2 interfaces with their expected L2 MTU configured."""
 
@@ -631,17 +628,18 @@ class VerifyL2MTU(AntaTest):
         """Main test function for VerifyL2MTU."""
         self.result.is_success()
         interface_output = self.instance_commands[0].json_output["interfaces"]
-        specific_interfaces = {key: value for details in self.inputs.specific_mtu for key, value in details.items()}
+        specific_interfaces = {intf: mtu for intf_mtu in self.inputs.specific_mtu for intf, mtu in intf_mtu.items()}
 
         for interface, details in interface_output.items():
+            # Verification is skipped if the interface is in the ignored interfaces list
             if _is_interface_ignored(interface, self.inputs.ignored_interfaces) or details["forwardingModel"] != "bridged":
                 continue
-            if interface in specific_interfaces:
-                if (mtu := specific_interfaces[interface]) != (act_mtu := details["mtu"]):
-                    self.result.is_failure(f"Interface: {interface} - Incorrect MTU configured - Expected: {mtu} Actual: {act_mtu}")
 
-            elif (act_mtu := details["mtu"]) != self.inputs.mtu:
-                self.result.is_failure(f"Interface: {interface} - Incorrect MTU configured - Expected: {self.inputs.mtu} Actual: {act_mtu}")
+            actual_mtu = details["mtu"]
+            expected_mtu = specific_interfaces.get(interface, self.inputs.mtu)
+
+            if (actual_mtu := details["mtu"]) != expected_mtu:
+                self.result.is_failure(f"Interface: {interface} - Incorrect MTU - Expected: {expected_mtu} Actual: {actual_mtu}")
 
 
 class VerifyInterfaceIPv4(AntaTest):
