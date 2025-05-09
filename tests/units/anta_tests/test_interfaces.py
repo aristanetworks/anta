@@ -2238,7 +2238,7 @@ DATA: list[dict[str, Any]] = [
                 },
             },
         ],
-        "inputs": {"specific_mtu": [{"Et10": 9214}, {"Port-Channel2": 10000}], "ignored_interfaces": ["Ethernet"]},
+        "inputs": {"specific_mtu": [{"Et10": 9214}, {"Port-Channel2": 10000}], "ignored_interfaces": ["Ethernet", "Vxlan1"]},
         "expected": {"result": "failure", "messages": ["Interface: Port-Channel2 - Incorrect MTU configured - Expected: 10000 Actual: 9214"]},
     },
     {
