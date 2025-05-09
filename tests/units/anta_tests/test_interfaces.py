@@ -1577,7 +1577,7 @@ DATA: list[dict[str, Any]] = [
         "expected": {"result": "success"},
     },
     {
-        "name": "success-2",
+        "name": "success-ignored-interfaces",
         "test": VerifyL3MTU,
         "eos_data": [
             {

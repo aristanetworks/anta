@@ -501,7 +501,7 @@ class VerifyL3MTU(AntaTest):
               - Ethernet2.100
               - Ethernet1/1
           specific_mtu:
-              - Ethernet10: 2500
+              - Ethernet10: 9200
     ```
     """
 
@@ -514,7 +514,7 @@ class VerifyL3MTU(AntaTest):
 
         mtu: int = 1500
         """Expected L3 MTU configured on all non-excluded interfaces."""
-        ignored_interfaces: list[InterfaceType | Interface] = Field(default=["Management", "Loopback", "Vxlan", "Tunnel"])
+        ignored_interfaces: list[InterfaceType | Interface] = Field(default=["Dps", "Fabric", "Loopback", "Management", "Recirc-Channel", "Tunnel", "Vxlan"])
         """A list of L3 interfaces or interfaces types like Loopback, Tunnel which will ignore all Loopback and Tunnel interfaces.
 
         Takes precedence over the `specific_mtu` field."""
@@ -598,7 +598,7 @@ class VerifyL2MTU(AntaTest):
     ```yaml
     anta.tests.interfaces:
       - VerifyL2MTU:
-          mtu: 1500
+          mtu: 9214
           ignored_interfaces:
             - Ethernet2/1
             - Port-Channel  # Ignore all Port-Channel interfaces
@@ -616,7 +616,7 @@ class VerifyL2MTU(AntaTest):
 
         mtu: int = 9214
         """Expected L2 MTU configured on all non-excluded interfaces."""
-        ignored_interfaces: list[InterfaceType | Interface] = Field(default=["Management", "Loopback", "Vxlan", "Tunnel"])
+        ignored_interfaces: list[InterfaceType | Interface] = Field(default=["Dps", "Fabric", "Loopback", "Management", "Recirc-Channel", "Tunnel", "Vlan", "Vxlan"])
         """A list of L2 interfaces or interface types like Ethernet, Port-Channel which will ignore all Ethernet and Port-Channel interfaces.
 
         Takes precedence over the `specific_mtu` field."""
