@@ -368,7 +368,7 @@ def test_from_ansible_overwrite(
             None,
             True,
             False,
-            "`anta get tests --module <module>` does not support relative imports",
+            "`--module <module>` option does not support relative imports",
             ExitCode.USAGE_ERROR,
             id="Use relative module name",
         ),
@@ -454,3 +454,92 @@ def test_get_tests_local_module(click_runner: CliRunner) -> None:
     if cwd != local_module_parent_path:
         assert "injecting CWD in PYTHONPATH and retrying..." in result.output
     assert "No test found in 'local_module'" in result.output
+
+
+@pytest.mark.parametrize(
+    ("module", "test_name", "expected_output", "expected_exit_code"),
+    [
+        pytest.param(
+            None,
+            None,
+            "VerifyAcctConsoleMethods",
+            ExitCode.OK,
+            id="Get all commands",
+        ),
+        pytest.param(
+            "anta.tests.aaa",
+            None,
+            "VerifyAcctConsoleMethods",
+            ExitCode.OK,
+            id="Get commands, filter on module",
+        ),
+        pytest.param(
+            None,
+            "VerifyNTPAssociations",
+            "VerifyNTPAssociations",
+            ExitCode.OK,
+            id="Get commands, filter on exact test name",
+        ),
+        pytest.param(
+            None,
+            "VerifyNTP",
+            "anta.tests.system",
+            ExitCode.OK,
+            id="Get commands, filter on included test name",
+        ),
+        pytest.param(
+            "unknown_module",
+            None,
+            "Module `unknown_module` was not found!",
+            ExitCode.USAGE_ERROR,
+            id="Get commands wrong module",
+        ),
+        pytest.param(
+            "unknown_module.unknown",
+            None,
+            "Module `unknown_module.unknown` was not found!",
+            ExitCode.USAGE_ERROR,
+            id="Get commands wrong submodule",
+        ),
+        pytest.param(
+            ".unknown_module",
+            None,
+            "`--module <module>` option does not support relative imports",
+            ExitCode.USAGE_ERROR,
+            id="Use relative module name",
+        ),
+        pytest.param(
+            None,
+            "VerifySomething",
+            "No test 'VerifySomething' found in 'anta.tests'",
+            ExitCode.OK,
+            id="Get commands wrong test name",
+        ),
+        pytest.param(
+            "anta.tests.aaa",
+            "VerifyNTP",
+            "No test 'VerifyNTP' found in 'anta.tests.aaa'",
+            ExitCode.OK,
+            id="Get commands test exists but not in module",
+        ),
+    ],
+)
+def test_get_commands(click_runner: CliRunner, module: str | None, test_name: str | None, *, expected_output: str, expected_exit_code: str) -> None:
+    """Test `anta get commands`.
+
+    TODO: Add catalog
+    """
+    cli_args = [
+        "get",
+        "commands",
+    ]
+    if module is not None:
+        cli_args.extend(["--module", module])
+
+    if test_name is not None:
+        cli_args.extend(["--test", test_name])
+
+    result = click_runner.invoke(anta, cli_args)
+
+    assert result.exit_code == expected_exit_code
+    assert expected_output in result.output
