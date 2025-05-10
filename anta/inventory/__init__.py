@@ -200,7 +200,7 @@ class AntaInventory(dict[str, AntaDevice]):
         enable_password
             Enable password to use if required.
         timeout
-            Timeout value in seconds for outgoing API calls.
+            Global timeout value in seconds for outgoing eAPI calls. None means no timeout.
         file_format
             Whether the inventory file is in JSON or YAML.
         enable
@@ -304,6 +304,19 @@ class AntaInventory(dict[str, AntaDevice]):
         for device in filtered_devices:
             result.add_device(device)
         return result
+
+    # TODO: Update docstring
+    def get_potential_connections(self) -> float | None:
+        """Total potential concurrent connections needed for the current inventory. `None` if cannot be determined."""
+        potential_connections = 0
+        all_have_connections = True
+        for device in self.devices:
+            # If an AntaDevice implementation doesn't provide max_connections, we cannot determine the total count
+            if not hasattr(device, "max_connections") or device.max_connections is None:
+                all_have_connections = False
+                break
+            potential_connections += device.max_connections
+        return None if not all_have_connections else potential_connections
 
     ###########################################################################
     # SET methods
